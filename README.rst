@@ -34,8 +34,6 @@ You'll see the following Checkout Options have been added.
 
 For each one that you would like to activate, simply click into that section, enter your API credentials, and setup the options however you like.
 
-You may obtain Sandbox credentials by logging into your account at http://developer.paypal.com and click the profile link for any sandbox account you have setup there.
-
 *********
 Resources
 *********
