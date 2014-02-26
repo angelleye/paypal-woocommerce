@@ -1,0 +1,563 @@
+<?php
+
+/**
+ * WC_Gateway_PayPal_Pro_PayFlow class.
+ *
+ * @extends WC_Payment_Gateway
+ */
+class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
+
+	/**
+	 * __construct function.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	function __construct() {
+
+		$this->id					= 'paypal_pro_payflow';
+		$this->method_title 		= __( 'PayPal Payments Pro 2.0 (PayFlow)', 'wc_paypal_pro' );
+		$this->method_description 	= __( 'PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'wc_paypal_pro' );
+		$this->icon 				= WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+		$this->has_fields 			= true;
+		$this->liveurl				= 'https://payflowpro.paypal.com';
+		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
+		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD' ) );
+
+		// Load the form fields
+		$this->init_form_fields();
+
+		// Load the settings.
+		$this->init_settings();
+
+		// Get setting values
+		$this->title           = $this->settings['title'];
+		$this->description     = $this->settings['description'];
+		$this->enabled         = $this->settings['enabled'];
+
+		$this->paypal_vendor   = $this->settings['paypal_vendor'];
+		$this->paypal_partner  = ! empty( $this->settings['paypal_partner'] ) ? $this->settings['paypal_partner'] : 'PayPal';
+		$this->paypal_password = $this->settings['paypal_password'];
+		$this->paypal_user     = ! empty( $this->settings['paypal_user'] ) ? $this->settings['paypal_user'] : $this->paypal_vendor;
+
+		$this->testmode        = $this->settings['testmode'];
+
+        if ($this->testmode=="yes") {
+            $this->paypal_vendor   = $this->settings['sandbox_paypal_vendor'];
+            $this->paypal_partner  = ! empty( $this->settings['sandbox_paypal_partner'] ) ? $this->settings['sandbox_paypal_partner'] : 'PayPal';
+            $this->paypal_password = $this->settings['sandbox_paypal_password'];
+            $this->paypal_user     = ! empty( $this->settings['sandbox_paypal_user'] ) ? $this->settings['sandbox_paypal_user'] : $this->paypal_vendor;
+        }
+
+		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
+
+		/* 1.6.6 */
+		add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
+
+		/* 2.0.0 */
+		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+	}
+    function add_log( $message ) {
+        if ( empty( $this->log ) )
+            $this->log = new WC_Logger();
+        $this->log->add( 'paypal_payflow', $message );
+    }
+	/**
+	 * payment_scripts function.
+	 *
+	 * @access public
+	 */
+	function payment_scripts() {
+
+		if ( ! is_checkout() )
+			return;
+
+		wp_enqueue_style( 'wc-paypal-pro', plugins_url( 'assets/css/checkout.css', dirname( __FILE__ ) ) );
+		wp_enqueue_script( 'card-type-detection', plugins_url( 'assets/js/card-type-detection.min.js', dirname( __FILE__ ) ), 'jquery', '1.0.0', true );
+	}
+
+	/**
+     * Initialise Gateway Settings Form Fields
+     */
+    function init_form_fields() {
+
+    	$this->form_fields = array(
+			'enabled'         => array(
+							'title'       => __( 'Enable/Disable', 'wc_paypal_pro' ),
+							'label'       => __( 'Enable PayPal Pro Payflow Edition', 'wc_paypal_pro' ),
+							'type'        => 'checkbox',
+							'description' => '',
+							'default'     => 'no'
+						),
+			'title'           => array(
+							'title'       => __( 'Title', 'wc_paypal_pro' ),
+							'type'        => 'text',
+							'description' => __( 'This controls the title which the user sees during checkout.', 'wc_paypal_pro' ),
+							'default'     => __( 'Credit card', 'wc_paypal_pro' )
+						),
+			'description'     => array(
+							'title'       => __( 'Description', 'wc_paypal_pro' ),
+							'type'        => 'textarea',
+							'description' => __( 'This controls the description which the user sees during checkout.', 'wc_paypal_pro' ),
+							'default'     => __( 'Pay with your credit card.', 'wc_paypal_pro' )
+						),
+			'testmode'        => array(
+							'title'       => __( 'Test Mode', 'wc_paypal_pro' ),
+							'label'       => __( 'Enable PayPal Sandbox/Test Mode', 'wc_paypal_pro' ),
+							'type'        => 'checkbox',
+							'description' => __( 'Place the payment gateway in development mode.', 'wc_paypal_pro' ),
+							'default'     => 'no'
+						),
+            'sandbox_paypal_vendor'   => array(
+                'title'       => __( 'Sandbox PayPal Vendor', 'wc_paypal_pro' ),
+                'type'        => 'text',
+                'description' => __( 'Your merchant login ID that you created when you registered for the account.', 'wc_paypal_pro' ),
+                'default'     => ''
+            ),
+            'sandbox_paypal_password' => array(
+                'title'       => __( 'Sandbox PayPal Password', 'wc_paypal_pro' ),
+                'type'        => 'password',
+                'description' => __( 'The password that you defined while registering for the account.', 'wc_paypal_pro' ),
+                'default'     => ''
+            ),
+            'sandbox_paypal_user'     => array(
+                'title'       => __( 'Sandbox PayPal User', 'wc_paypal_pro' ),
+                'type'        => 'text',
+                'description' => __( 'If you set up one or more additional users on the account, this value is the ID
+of the user authorized to process transactions. Otherwise, leave this field blank.', 'wc_paypal_pro' ),
+                'default'     => ''
+            ),
+            'sandbox_paypal_partner'  => array(
+                'title'       => __( 'Sandbox PayPal Partner', 'wc_paypal_pro' ),
+                'type'        => 'text',
+                'description' => __( 'The ID provided to you by the authorized PayPal Reseller who registered you
+for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank.', 'wc_paypal_pro' ),
+                'default'     => 'PayPal'
+            ),
+			'paypal_vendor'   => array(
+							'title'       => __( 'Live PayPal Vendor', 'wc_paypal_pro' ),
+							'type'        => 'text',
+							'description' => __( 'Your merchant login ID that you created when you registered for the account.', 'wc_paypal_pro' ),
+							'default'     => ''
+						),
+			'paypal_password' => array(
+							'title'       => __( 'Live PayPal Password', 'wc_paypal_pro' ),
+							'type'        => 'password',
+							'description' => __( 'The password that you defined while registering for the account.', 'wc_paypal_pro' ),
+							'default'     => ''
+						),
+			'paypal_user'     => array(
+							'title'       => __( 'Live PayPal User', 'wc_paypal_pro' ),
+							'type'        => 'text',
+							'description' => __( 'If you set up one or more additional users on the account, this value is the ID
+of the user authorized to process transactions. Otherwise, leave this field blank.', 'wc_paypal_pro' ),
+							'default'     => ''
+						),
+			'paypal_partner'  => array(
+							'title'       => __( 'Live PayPal Partner', 'wc_paypal_pro' ),
+							'type'        => 'text',
+							'description' => __( 'The ID provided to you by the authorized PayPal Reseller who registered you
+for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank.', 'wc_paypal_pro' ),
+							'default'     => 'PayPal'
+						),
+			);
+    }
+
+	/**
+     * Check if this gateway is enabled and available in the user's country
+     *
+     * This method no is used anywhere??? put above but need a fix below
+     */
+	function is_available() {
+
+		if ( $this->enabled == "yes" ) {
+
+			if ( $this->testmode == "no" && get_option('woocommerce_force_ssl_checkout')=='no' && !class_exists( 'WordPressHTTPS' ) )
+				return false;
+
+			// Currency check
+			if ( ! in_array( get_option('woocommerce_currency'), $this->allowed_currencies ) )
+				return false;
+
+			// Required fields check
+			if ( ! $this->paypal_vendor || ! $this->paypal_password )
+				return false;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+     * Process the payment
+     */
+	function process_payment( $order_id ) {
+
+		if ( ! session_id() )
+			session_start();
+
+		$order = new WC_Order( $order_id );
+
+		$card_number = ! empty( $_POST['paypal_pro_payflow_card_number']) ? str_replace( array( ' ', '-' ), '', woocommerce_clean( $_POST['paypal_pro_payflow_card_number'] ) ) : '';
+		$card_csc    = ! empty( $_POST['paypal_pro_payflow_card_csc']) ? woocommerce_clean( $_POST['paypal_pro_payflow_card_csc'] ) : '';
+		$card_exp    = ! empty( $_POST['paypal_pro_payflow_card_expiration']) ? woocommerce_clean( $_POST['paypal_pro_payflow_card_expiration'] ) : '';
+
+		// Do payment with paypal
+		return $this->do_payment( $order, $card_number, $card_exp, $card_csc );
+	}
+
+	/**
+	 * do_payment function.
+	 *
+	 * @access public
+	 * @param mixed $order
+	 * @param mixed $card_number
+	 * @param mixed $card_exp
+	 * @param mixed $card_csc
+	 * @param string $centinelPAResStatus (default: '')
+	 * @param string $centinelEnrolled (default: '')
+	 * @param string $centinelCavv (default: '')
+	 * @param string $centinelEciFlag (default: '')
+	 * @param string $centinelXid (default: '')
+	 * @return void
+	 */
+    function do_payment( $order, $card_number, $card_exp, $card_csc, $centinelPAResStatus = '', $centinelEnrolled = '', $centinelCavv = '', $centinelEciFlag = '', $centinelXid = '' ) {
+        if ( empty( $GLOBALS['wp_rewrite'] ) )
+            $GLOBALS['wp_rewrite'] = new WP_Rewrite();
+            $this->add_log($order->get_checkout_order_received_url());
+        // Send request to paypal
+        try {
+            $url = $this->testmode == 'yes' ? $this->testurl : $this->liveurl;
+            $post_data = array();
+            $post_data['USER']     = $this->paypal_user;
+            $post_data['VENDOR']   = $this->paypal_vendor;
+            $post_data['PARTNER']  = $this->paypal_partner;
+            $post_data['PWD']      = trim( $this->paypal_password );
+            $post_data['VERBOSITY']= 'HIGH';
+            $post_data['BUTTONSOURCE'] = 'AngellEYE_PHPClass';
+            $post_data['TENDER']   = 'C'; // Credit card
+            $post_data['TRXTYPE']  = 'S'; // Sale
+            $post_data['ACCT']     = $card_number; // Credit Card
+            $post_data['EXPDATE']  = $card_exp; //MMYY
+            $post_data['AMT']      = $order->get_total(); // Order total
+            $post_data['CURRENCY'] = get_option('woocommerce_currency'); // Currency code
+            $post_data['CUSTIP']   = $this->get_user_ip(); // User IP Address
+            $post_data['CVV2']     = $card_csc; // CVV code
+            $post_data['EMAIL']    = $order->billing_email;
+            $post_data['INVNUM']   = str_replace("#","",$order->get_order_number());
+            if ( $order->customer_note )
+                $post_data['COMMENT1'] = wptexturize( $order->customer_note );
+            /* Send Item details */
+            $item_loop = 0;
+            if ( sizeof( $order->get_items() ) > 0 ) {
+                $ITEMAMT = 0;
+                foreach ( $order->get_items() as $item ) {
+                    $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
+                    $_product = $order->get_product_from_item( $item );
+                    if ( $item['qty'] ) {
+                        $sku = $_product->get_sku();
+                        if ($_product->product_type=='variation') {
+                            if (empty($sku)) {
+                                $sku = $_product->parent->get_sku();
+                            }
+                            $item_meta = new WC_Order_Item_Meta( $item['item_meta'] );
+                            $meta = $item_meta->display(true, true);
+                            if (!empty($meta)) {
+                                $item['name'] .= " - ".str_replace(", \n", " - ",$meta);
+                            }
+                        }
+                        if ( get_option( 'woocommerce_prices_include_tax' ) == 'yes' ) {
+                            $product_price = $order->get_item_subtotal( $item, true, false );
+                        } else {
+                            $product_price = $order->get_item_subtotal( $item, false, true );
+                        }
+
+                        $post_data[ 'L_NUMBER' . $item_loop ] = $sku;
+                        $post_data[ 'L_NAME' . $item_loop ] = $item['name'];
+                        $post_data[ 'L_COST' . $item_loop ] = $product_price;
+                        $post_data[ 'L_QTY' . $item_loop ]  = $item['qty'];
+                        if ( $sku )
+                            $post_data[ 'L_SKU' . $item_loop ] = $sku;
+                        $ITEMAMT += $product_price * $item['qty'];
+                        $item_loop++;
+                    }
+                }
+
+
+                //Cart Discount
+                if ( $order->get_cart_discount()>0 ) {
+                    foreach ( WC()->cart->get_coupons( 'cart' ) as $code => $coupon ) {
+
+                        $post_data[ 'L_NUMBER' . $item_loop ]	= $code;
+                        $post_data[ 'L_NAME' . $item_loop ]		= 'Cart Discount';
+                        $post_data[ 'L_AMT' . $item_loop ]		= '-' . WC()->cart->coupon_discount_amounts[ $code ];
+                        $post_data[ 'L_QTY' . $item_loop ]		= 1;
+                        $item_loop++;
+                    }
+                    $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
+                }
+
+                //Order Discount
+                if ( $order->get_order_discount()>0 ) {
+                    foreach ( WC()->cart->get_coupons( 'order' ) as $code => $coupon ) {
+                        $post_data[ 'L_NUMBER' . $item_loop ]	= $code;
+                        $post_data[ 'L_NAME' . $item_loop ]		= 'Order Discount';
+                        $post_data[ 'L_AMT' . $item_loop ]		= '-' . WC()->cart->coupon_discount_amounts[ $code ];
+                        $post_data[ 'L_QTY' . $item_loop ]		= 1;
+                        $item_loop++;
+                    }
+                    $ITEMAMT = $ITEMAMT - $order->get_order_discount();
+                }
+
+                if ( get_option( 'woocommerce_prices_include_tax' ) == 'yes' ) {
+                    $shipping 		= $order->get_total_shipping() + $order->get_shipping_tax();
+                    $tax			= 0;
+                } else {
+                    $shipping 		= $order->get_total_shipping();
+                    $tax 			= $order->get_total_tax();
+                }
+
+                //tax
+                if ($tax>0){
+                    $post_data[ 'TAXAMT' ] = $tax;
+                }
+
+                // Shipping
+                if ( $shipping > 0 ) {
+                    $post_data[ 'FREIGHTAMT' ] = $shipping;
+                }
+
+                $post_data[ 'ITEMAMT' ] = number_format($ITEMAMT, 2, '.', '');
+            }
+            $post_data['ORDERDESC']      = 'Order ' . $order->get_order_number() . ' on ' . get_bloginfo( 'name' );
+            $post_data['FIRSTNAME']      = $order->billing_first_name;
+            $post_data['LASTNAME']       = $order->billing_last_name;
+            $post_data['STREET']         = $order->billing_address_1 . ' ' . $order->billing_address_2;
+            $post_data['CITY']           = $order->billing_city;
+            $post_data['STATE']          = $order->billing_state;
+            $post_data['COUNTRY']        = $order->billing_country;
+            $post_data['ZIP']            = $order->billing_postcode;
+            if ( $order->shipping_address_1 ) {
+
+                $post_data['SHIPTOFIRSTNAME']   = $order->shipping_first_name;
+
+                $post_data['SHIPTOLASTNAME']    = $order->shipping_last_name;
+
+                $post_data['SHIPTOSTREET']      = $order->shipping_address_1 . ' ' . $order->shipping_address_2;
+
+                $post_data['SHIPTOCITY']        = $order->shipping_city;
+
+                $post_data['SHIPTOSTATE']       = $order->shipping_state;
+
+                $post_data['SHIPTOCOUNTRY']     = $order->shipping_country;
+
+                $post_data['SHIPTOZIP']         = $order->shipping_postcode;
+
+            }
+
+            //add string lenght
+            foreach ($post_data as $key=>$value){
+                $send_data[]= $key."[".strlen($value)."]=$value";
+            }
+            $send_data = implode("&", $send_data);
+
+            $response = wp_remote_post( $url, array(
+
+                'method'		=> 'POST',
+
+                'body' 			=> $send_data,
+
+                'timeout' 		=> 70,
+
+                'sslverify' 	=> false,
+
+                'user-agent' 	=> 'WooCommerce'
+
+            ));
+
+            $this->add_log('Send request: '.$url);
+
+            $this->add_log(print_r($send_data,true));
+
+            $this->add_log(print_r($response ,true));
+
+
+
+            if ( is_wp_error( $response ) )
+
+                throw new Exception( __( 'There was a problem connecting to the payment gateway.', 'wc_paypal_pro' ) );
+
+
+
+            if ( empty( $response['body'] ) )
+
+                throw new Exception( __( 'Empty PayPal response.', 'wc_paypal_pro' ) );
+
+
+
+            parse_str( $response['body'], $parsed_response );
+
+            $this->add_log(add_query_arg( 'key', $order->order_key, add_query_arg( 'order', $order->id, get_permalink(woocommerce_get_page_id('thanks') ) ) ));
+
+            if ( isset( $parsed_response['RESULT'] ) && ($parsed_response['RESULT'] == 0 || $parsed_response['RESULT'] == 126)) {
+                // Add order note
+                if ($parsed_response['RESULT'] == 126) {
+                    $order->add_order_note( $parsed_response['RESPMSG']);
+                    $order->add_order_note( $parsed_response['PREFPSMSG']);
+                    $order->add_order_note( "The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.");
+                } else {
+                    $order->add_order_note( sprintf( __( 'PayPal Pro payment completed (PNREF: %s)', 'wc_paypal_pro' ), $parsed_response['PNREF'] ) );
+                }
+
+
+
+                // Payment complete
+
+                $order->payment_complete();
+
+
+
+                // Remove cart
+
+                WC()->cart->empty_cart();
+
+
+
+                // Return thank you page redirect
+
+                return array(
+                    'result' 	=> 'success',
+                    'redirect'	=> $this->get_return_url( $order )
+                );
+
+
+
+            } else {
+
+
+
+                // Payment failed :(
+
+                $order->update_status( 'failed', __('PayPal Pro payment failed. Payment was rejected due to an error: ', 'wc_paypal_pro' ) . '(' . $parsed_response['RESULT'] . ') ' . '"' . $parsed_response['RESPMSG'] . '"' );
+
+
+
+                wc_add_notice( __( 'Payment error:', 'wc_paypal_pro' ) . ' ' . $parsed_response['RESPMSG'], "error" );
+
+                return;
+
+            }
+
+
+
+        } catch( Exception $e ) {
+
+            wc_add_notice( __('Connection error:', 'wc_paypal_pro' ) . ': "' . $e->getMessage() . '"', "error" );
+
+            return;
+
+        }
+
+    }
+
+	/**
+     * Payment form on checkout page
+     */
+	function payment_fields() {
+
+		if ( $this->description ) {
+			echo '<p>';
+			if ( $this->testmode == 'yes' )
+				echo __('TEST MODE/SANDBOX ENABLED', 'wc_paypal_pro') . ' ';
+			echo $this->description;
+			echo '</p>';
+		}
+		?>
+		<fieldset class="paypal_pro_credit_card_form">
+			<p class="form-row form-row-wide validate-required paypal_pro_payflow_card_number_wrap">
+				<label for="paypal_pro_payflow_card_number"><?php _e( "Card number", "wc_paypal_pro" ) ?></label>
+				<input type="text" class="input-text" name="paypal_pro_payflow_card_number" id="paypal_pro_payflow_card_number" pattern="[0-9]{12,19}" />
+				<span id="paypal_pro_payflow_card_type_image"></span>
+			</p>
+			<p class="form-row form-row-first validate-required">
+				<label for="paypal_pro_payflow_card_expiration"><?php _e( "Expiry date <small>(MMYY)</small>", "wc_paypal_pro" ) ?></label>
+				<input type="text" class="input-text" placeholder="MMYY" name="paypal_pro_payflow_card_expiration" id="paypal_pro_payflow_card_expiration" size="4" maxlength="4" max="1299" min="0100" pattern="[0-9]+" />
+			</p>
+			<p class="form-row form-row-last validate-required">
+				<label for="paypal_pro_payflow_card_csc"><?php _e( "Card security code", "wc_paypal_pro" ) ?></label>
+				<input type="text" class="input-text" id="paypal_pro_payflow_card_csc" name="paypal_pro_payflow_card_csc" maxlength="4" size="4" pattern="[0-9]+" />
+			</p>
+			<div class="clear"></div>
+			<?php /*<p class="form-row form-row-wide">
+				<label for="paypal_pro_payflow_card_type"><?php _e( "Card type", 'wc_paypal_pro' ) ?></label>
+				<select id="paypal_pro_payflow_card_type" name="paypal_pro_payflow_card_type" class="woocommerce-select">
+					<?php foreach ( $available_cards as $card => $label ) : ?>
+								<option value="<?php echo $card ?>"><?php echo $label; ?></options>
+					<?php endforeach; ?>
+					<option value="other"><?php _e( 'Other', 'woocommerce' ); ?></options>
+				</select>
+			</p>*/ ?>
+		</fieldset>
+		<?php
+
+        wc_enqueue_js( "
+			/*jQuery('body').bind('updated_checkout', function() {
+				jQuery('#paypal_pro_payflow_card_type').parent().hide(); // Use JS detection if JS enabled
+			});*/
+
+			jQuery('form.checkout, #order_review').on( 'keyup change blur', '#paypal_pro_payflow_card_number', function() {
+				var csc = jQuery('#paypal_pro_payflow_card_csc').parent();
+				var card_number = jQuery('#paypal_pro_payflow_card_number').val();
+
+				jQuery('#paypal_pro_payflow_card_type_image').attr('class', '');
+
+				if ( is_valid_card( card_number ) ) {
+
+					var card_type = get_card_type( card_number );
+
+					if ( card_type ) {
+						jQuery('#paypal_pro_payflow_card_type_image').addClass( card_type );
+
+						if ( card_type == 'visa' || card_type == 'amex' || card_type == 'discover' || card_type == 'mastercard' ) {
+							csc.show();
+						} else {
+							csc.hide();
+						}
+
+						//jQuery('#paypal_pro_payflow_card_type').val(card_type);
+					} else {
+						//jQuery('#paypal_pro_payflow_card_type').val('other');
+					}
+
+					jQuery('#paypal_pro_payflow_card_number').parent().addClass('woocommerce-validated').removeClass('woocommerce-invalid');
+				} else {
+					jQuery('#paypal_pro_payflow_card_number').parent().removeClass('woocommerce-validated').addClass('woocommerce-invalid');
+				}
+			}).change();
+		" );
+	}
+
+
+	/**
+     * Get user's IP address
+     */
+	function get_user_ip() {
+		return ! empty( $_SERVER['HTTP_X_FORWARD_FOR'] ) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
+	}
+
+	/**
+	 * clear_centinel_session function.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	function clear_centinel_session() {
+        unset( $_SESSION['Message'] );
+        foreach ( $_SESSION as $key => $value ) {
+            if ( preg_match( "/^Centinel_.*/", $key ) > 0 ) {
+                unset( $_SESSION[ $key ] );
+            }
+        }
+    }
+}
