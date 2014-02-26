@@ -1,0 +1,43 @@
+#paypal_pro_payflow_card_number {
+	width: 47%;
+	margin-right: 6% !important;
+	float: left;
+}
+#paypal_pro_payflow_card_csc {
+	width: auto;
+	padding-right: 1em;
+}
+#paypal_pro_payflow_card_type_image {
+	background: url(../images/cards.png) no-repeat 32px 0;
+	width: 32px;
+	height: 24px;
+	margin: 0 0 0 -3px;
+	position: relative;
+	float: left;
+	display: none;
+}
+#paypal_pro_payflow_card_type_image.visa,
+#paypal_pro_payflow_card_type_image.visa_electron {
+	background-position: 0 0;
+	display: block;
+}
+#paypal_pro_payflow_card_type_image.mastercard {
+	background-position: -33px 0;
+	display: block;
+}
+#paypal_pro_payflow_card_type_image.maestro {
+	background-position: -66px 0;
+	display: block;
+}
+#paypal_pro_payflow_card_type_image.amex {
+	background-position: -132px 0;
+	display: block;
+}
+#paypal_pro_payflow_card_type_image.discover {
+	background-position: -99px 0;
+	display: block;
+}
+#paypal_pro_payflow_card_type_image.amex {
+	background-position: -132px 0;
+	display: block;
+}
