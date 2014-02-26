@@ -36,8 +36,9 @@ For each one that you would like to activate, simply click into that section, en
 
 You may obtain Sandbox credentials by logging into your account at http://developer.paypal.com and click the profile link for any sandbox account you have setup there.
 
--  `Obtain Sandbox PayPal API Credentials
-<https://www.sandbox.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run>`_
+*********
+Resources
+*********
 
--  `Obtain Live PayPal API Credentials
-<https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run>`_
+-  `Obtain Sandbox PayPal API Credentials<https://www.sandbox.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run>`_
+-  `Obtain Live PayPal API Credentials<https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run>`_
