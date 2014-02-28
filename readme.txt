@@ -1,7 +1,7 @@
 === PayPal for WooCommerce ===
 Contributors: angelleye
 Donate link: http://www.angelleye.com/product/buy-beer/
-Tags: woocommerce, paypal, express checkout, payments pro, angelleye, dodirectpayment, payflow
+Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 3.8.1
 Stable tag: 1.0.1
@@ -21,6 +21,21 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
 We are PayPal specialists who have been integrating PayPal into a wide variety of shopping cart systems over the years.  We've run into all the common problems associated with PayPal integration, and we know how to eliminate them.  We've also learned some tricks of the trade to make working with shopping carts and PayPal as seamless as possible.
 
 This plugin brings that experience to WooCommerce so that you can rest assured your payments will be processed correctly…and, it's free!
+
+= Quality Control =
+Payment processing can't go wrong.  It's as simple as that.  Our certified PayPal engineers have developed and thoroughly tested this plugin on the PayPal sandbox (test) servers.  
+
+= Seamless PayPal Integration =
+Stop bouncing back and forth between WooCommerce and PayPal to manage and reconcile orders.  We've made sure to include all WooCommerce order data in PayPal transactions so that everything matches in both places.  If you're looking at a PayPal transaction details page it will have all of the same data as a WooCommerce order page, and vice-versa.  
+
+= Error Handling (Correctly) =
+PayPal's system can be tricky when it comes to handling errors.  Most PayPal plugins do not correctly process the PayPal response which can result in big problems.  For example:
+
+* Fraud Filters could throw a "warning" instead of a full "success" response even when the payment was completed successfully.  
+* Many plugins treat these as failures and customers end up with duplicate payments if they continue to retry.
+
+= Get Involved =
+Developers can contribute to the source code on the PayPal for [WooCommerce GitHub repository](https://github.com/angelleye/paypal-woocommerce).
 
 == Installation ==
 
