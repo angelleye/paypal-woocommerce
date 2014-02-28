@@ -4,7 +4,7 @@ Donate link: http://www.angelleye.com/product/buy-beer/
 Tags: woocommerce, paypal, express checkout, payments pro
 Requires at least: 3.8.0
 Tested up to: 3.8.1
-Stable tag: 1.0
+Stable tag: 1.0.1
 License: GNU General Public License v3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -34,6 +34,9 @@ Integrate PayPal into WooCommerce in a seamless fashion.
  * Live credentials can be obtained by signing in to your live PayPal account here:  https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
 
 == Changelog ==
+
+= 1.0.1 =
+Adds better error handling when PayPal API credentials are incorrect.
 
 = 1.0 =
 Initial, stable release.
