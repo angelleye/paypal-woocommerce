@@ -232,6 +232,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $this->add_log( 'Short Error Message: ' . $ErrorShortMsg );
                     $this->add_log( 'Error Code: ' . $ErrorCode );
                     $this->add_log( 'Error Severity Code: ' . $ErrorSeverityCode );
+                    // Notice admin if has any issue from Paypal
+                    $admin_email = get_option("admin_email");
+                    $message="SetExpressCheckout API call failed.\n";
+                    $message.='Detailed Error Message: ' . $ErrorLongMsg ."\n";
+                    $message.='Short Error Message: ' . $ErrorShortMsg ."\n";
+                    $message.='Error Code: ' . $ErrorCode."\n";
+                    $message.='Error Severity Code: ' . $ErrorSeverityCode."\n";
+                    wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
+                    wc_add_notice(  sprintf( __( 'Please try a different a different payment method.', 'wc-paypal-express' ) ), 'error' );
+                    wp_redirect( get_permalink( wc_get_page_id( 'cart' ) ) );
+                    exit;
                 }
             }
         } elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'revieworder' ) {
