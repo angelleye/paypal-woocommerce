@@ -12,19 +12,29 @@ Easily integrate PayPal Express Checkout and Payments Pro into the WooCommerce s
 
 == Description ==
 
-Integrate PayPal into WooCommerce in a seamless fashion.
+Easily add PayPal payment options to your WordPress / WooCommerce website.
 
  * PayPal Express Checkout
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayFlow)
+ 
+We are PayPal specialists who have been integrating PayPal into a wide variety of shopping cart systems over the years.  We've run into all the common problems associated with PayPal integration, and we know how to eliminate them.  We've also learned some tricks of the trade to make working with shopping carts and PayPal as seamless as possible.
+
+This plugin brings that experience to WooCommerce so that you can rest assured your payments will be processed correctly…and, it's free!
 
 == Installation ==
 
- * Unzip the files and upload the folder into your plugins folder (wp-content/plugins/) overwriting old versions if they exist
- * Activate the plugin in your WordPress admin area.
- * Open the settings page for WooCommerce and click the "Checkout" tab
- * Click on the sub-item for PayPal Express Checkout or Payments Pro.
- * Configure your settings accordingly.
+ 1. Unzip the files and upload the folder into your plugins folder (wp-content/plugins/) overwriting old versions if they exist
+ 2. Activate the plugin in your WordPress admin area.
+ 3. Open the settings page for WooCommerce and click the "Checkout" tab
+ 4. Click on the sub-item for PayPal Express Checkout or Payments Pro.
+ 5. Configure your settings accordingly.
+ 
+== Screenshots ==
+
+1. Display Pay with Credit Card and Pay with PayPal options on the shopping cart page.
+2. Your logo and cart items accurately displayed on PayPal Express Checkout review pages.
+3. Direct credit card processing option available with PayPal Payments Pro.
 
 == Frequently Asked Questions ==
 
