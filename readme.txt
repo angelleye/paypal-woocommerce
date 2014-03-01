@@ -37,7 +37,7 @@ PayPal's system can be tricky when it comes to handling errors.  Most PayPal plu
 Our plugins always handle these warnings/errors correctly so that you do not have to worry about dealing with those types of situations.
 
 = Get Involved =
-Developers can contribute to the source code on the PayPal for [WooCommerce GitHub repository](https://github.com/angelleye/paypal-woocommerce).
+Developers can contribute to the source code on the [PayPal for WooCommerce GitHub repository](https://github.com/angelleye/paypal-woocommerce).
 
 == Installation ==
 
