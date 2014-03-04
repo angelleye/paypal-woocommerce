@@ -963,132 +963,137 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$PaymentOrderItems = array();
 		$ctr = 0;
         $ITEMAMT = 0;
-		if (sizeof($order->get_items())>0) {
-                foreach ($order->get_items() as $values) {
-                    $_product = $order->get_product_from_item($values);
-                    $qty               = absint( $values['qty'] );
-                    $sku = $_product->get_sku();
-                    $values['name'] = html_entity_decode($values['name'], ENT_NOQUOTES, 'UTF-8');
-                    if ($_product->product_type=='variation') {
-                        if (empty($sku)) {
-                            $sku = $_product->parent->get_sku();
-                        }
-
-                        $item_meta = new WC_Order_Item_Meta( $values['item_meta'] );
-                        $meta = $item_meta->display(true, true);
-                        if (!empty($meta)) {
-                            $values['name'] .= " - ".str_replace(", \n", " - ",$meta);
-                        }
-                    }
-					
-					/* 
-					 * Set price based on tax option.
-					 */
-					if(get_option('woocommerce_prices_include_tax') == 'yes')
+		if(sizeof($order->get_items())>0)
+		{
+        	foreach ($order->get_items() as $values) 
+			{
+				$_product = $order->get_product_from_item($values);
+				$qty               = absint( $values['qty'] );
+				$sku = $_product->get_sku();
+				$values['name'] = html_entity_decode($values['name'], ENT_NOQUOTES, 'UTF-8');
+				if ($_product->product_type=='variation')
+				{
+					if (empty($sku))
 					{
-                    	$product_price = $order->get_item_subtotal($values,true,false);
-                    }
-					else
-					{
-                    	$product_price = $order->get_item_subtotal($values,false,true);
-                    }
-					
-					$Item = array(
-								'name' => $values['name'], 								// Item name. 127 char max.
-								'desc' => '', 								// Item description. 127 char max.
-								'amt' => number_format($product_price,2,'.'.''), 								// Cost of item.
-								'number' => $sku, 							// Item number.  127 char max.
-								'qty' => $qty, 								// Item qty on order.  Any positive integer.
-								'taxamt' => '', 							// Item sales tax
-								'itemurl' => '', 							// URL for the item.
-								'itemcategory' => '', 						// One of the following values:  Digital, Physical
-								'itemweightvalue' => '', 					// The weight value of the item.
-								'itemweightunit' => '', 					// The weight unit of the item.
-								'itemheightvalue' => '', 					// The height value of the item.
-								'itemheightunit' => '', 					// The height unit of the item.
-								'itemwidthvalue' => '', 					// The width value of the item.
-								'itemwidthunit' => '', 						// The width unit of the item.
-								'itemlengthvalue' => '', 					// The length value of the item.
-								'itemlengthunit' => '',  					// The length unit of the item.
-								'ebayitemnumber' => '', 					// Auction item number.  
-								'ebayitemauctiontxnid' => '', 				// Auction transaction ID number.  
-								'ebayitemorderid' => '',  					// Auction order ID number.
-								'ebayitemcartid' => ''						// The unique identifier provided by eBay for this order from the buyer. These parameters must be ordered sequentially beginning with 0 (for example L_EBAYITEMCARTID0, L_EBAYITEMCARTID1). Character length: 255 single-byte characters
-								);
-					array_push($PaymentOrderItems, $Item);
-
-                    $ITEMAMT += $product_price * $values['qty'];
-					
-					/*
-					 * Get discounts 
-					 */
-					if($order->get_cart_discount()>0)
-					{
-						foreach(WC()->cart->get_coupons('cart') as $code => $coupon)
-						{
-							$Item = array(
-								'name' => 'Cart Discount', 
-								'number' => $code,
-								'qty' => '1', 
-								'amt' => '-'.number_format(WC()->cart->coupon_discount_amounts[$code],2,'.','')
-							);
-							array_push($PaymentOrderItems,$Item);
-						}
-						$ITEMAMT -= $order->get_cart_discount();
+						$sku = $_product->parent->get_sku();
 					}
-					
-					if($order->get_order_discount()>0)
+	
+					$item_meta = new WC_Order_Item_Meta( $values['item_meta'] );
+					$meta = $item_meta->display(true, true);
+					if (!empty($meta))
 					{
-						foreach(WC()->cart->get_coupons('order') as $code => $coupon)
-						{
-							$Item = array(
-								'name' => 'Order Discount', 
-								'number' => $code,
-								'qty' => '1', 
-								'amt' => '-'.number_format(WC()->cart->coupon_discount_amounts[$code],2,'.','')
-							);
-							array_push($PaymentOrderItems,$Item);
-						}
-						$ITEMAMT -= $order->get_order_discount();
+						$values['name'] .= " - ".str_replace(", \n", " - ",$meta);
 					}
-                }
+				}
 				
-				/*
-				 * Set shipping and tax values.
+				/* 
+				 * Set price based on tax option.
 				 */
 				if(get_option('woocommerce_prices_include_tax') == 'yes')
 				{
-					$shipping 		= $order->get_total_shipping() + $order->get_shipping_tax();
-					$tax			= 0;
+					$product_price = $order->get_item_subtotal($values,true,false);
 				}
 				else
 				{
-					$shipping 		= $order->get_total_shipping();
-					$tax 			= $order->get_total_tax();
+					$product_price = $order->get_item_subtotal($values,false,true);
 				}
-				
-				/*
-				 * Now that we have all items and subtotals 
-				 * we can fill in necessary values.
-				 */
-				 $Payment['itemamt'] = number_format($ITEMAMT,2,'.',''); 						// Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.  
-				
-				/*
-				 * Set tax
-				 */
-				 if($tax>0)
-				 {
-					 $Payment['taxamt'] = number_format($tax,2,'.',''); 						// Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order. 
-				 }
-				 
-				 /*
-				  * Set shipping
-				  */
-				if($shipping > 0)
-				{
-					$Payment['shippingamt'] = number_format($shipping,2,'.',''); 					// Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
-				}
+					
+				$Item = array(
+							'name' => $values['name'], 								// Item name. 127 char max.
+							'desc' => '', 								// Item description. 127 char max.
+							'amt' => $product_price, 								// Cost of item.
+							'number' => $sku, 							// Item number.  127 char max.
+							'qty' => $qty, 								// Item qty on order.  Any positive integer.
+							'taxamt' => '', 							// Item sales tax
+							'itemurl' => '', 							// URL for the item.
+							'itemcategory' => '', 						// One of the following values:  Digital, Physical
+							'itemweightvalue' => '', 					// The weight value of the item.
+							'itemweightunit' => '', 					// The weight unit of the item.
+							'itemheightvalue' => '', 					// The height value of the item.
+							'itemheightunit' => '', 					// The height unit of the item.
+							'itemwidthvalue' => '', 					// The width value of the item.
+							'itemwidthunit' => '', 						// The width unit of the item.
+							'itemlengthvalue' => '', 					// The length value of the item.
+							'itemlengthunit' => '',  					// The length unit of the item.
+							'ebayitemnumber' => '', 					// Auction item number.  
+							'ebayitemauctiontxnid' => '', 				// Auction transaction ID number.  
+							'ebayitemorderid' => '',  					// Auction order ID number.
+							'ebayitemcartid' => ''						// The unique identifier provided by eBay for this order from the buyer. These parameters must be ordered sequentially beginning with 0 (for example L_EBAYITEMCARTID0, L_EBAYITEMCARTID1). Character length: 255 single-byte characters
+							);
+				array_push($PaymentOrderItems, $Item);
+
+				$ITEMAMT += $product_price * $values['qty'];
             }
+				
+			/*
+			 * Get discounts 
+			 */
+			if($order->get_cart_discount()>0)
+			{
+				foreach(WC()->cart->get_coupons('cart') as $code => $coupon)
+				{
+					$Item = array(
+						'name' => 'Cart Discount', 
+						'number' => $code,
+						'qty' => '1', 
+						'amt' => '-'.number_format(WC()->cart->coupon_discount_amounts[$code],2,'.','')
+					);
+					array_push($PaymentOrderItems,$Item);
+				}
+				$ITEMAMT -= $order->get_cart_discount();
+			}
+				
+			if($order->get_order_discount()>0)
+			{
+				foreach(WC()->cart->get_coupons('order') as $code => $coupon)
+				{
+					$Item = array(
+						'name' => 'Order Discount', 
+						'number' => $code,
+						'qty' => '1', 
+						'amt' => '-'.number_format(WC()->cart->coupon_discount_amounts[$code],2,'.','')
+					);
+					array_push($PaymentOrderItems,$Item);
+				}
+				$ITEMAMT -= $order->get_order_discount();
+			}
+				
+			/*
+			 * Set shipping and tax values.
+			 */
+			if(get_option('woocommerce_prices_include_tax') == 'yes')
+			{
+				$shipping 		= $order->get_total_shipping() + $order->get_shipping_tax();
+				$tax			= 0;
+			}
+			else
+			{
+				$shipping 		= $order->get_total_shipping();
+				$tax 			= $order->get_total_tax();
+			}
+				
+			/*
+			 * Now that we have all items and subtotals 
+			 * we can fill in necessary values.
+			 */
+			 $Payment['itemamt'] = number_format($ITEMAMT,2,'.',''); 						// Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.  
+				
+			/*
+			 * Set tax
+			 */
+			 if($tax>0)
+			 {
+				 $Payment['taxamt'] = number_format($tax,2,'.',''); 						// Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order. 
+			 }
+				 
+			 /*
+			  * Set shipping
+			  */
+			if($shipping > 0)
+			{
+				$Payment['shippingamt'] = number_format($shipping,2,'.',''); 					// Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+			}
+        }
 		
 		$Payment['order_items'] = $PaymentOrderItems;				
 		array_push($Payments, $Payment);
