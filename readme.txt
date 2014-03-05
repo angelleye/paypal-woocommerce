@@ -78,8 +78,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.0.2 =
-Stripped out all the original Woo PayPal integration code and replaced it with the Angelleye PHP Class Library for PayPal.
+= 1.0.2 - 05/03/2014 =
+* Refactor - Stripped out all the original Woo PayPal integration code and replaced it with the Angelleye PHP Class Library for PayPal.
 
 = 1.0.1 =
 Adds better error handling when PayPal API credentials are incorrect.
