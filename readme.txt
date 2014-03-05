@@ -1,4 +1,4 @@
-=== PayPal for WooCommerce ===
+﻿=== PayPal for WooCommerce ===
 Contributors: angelleye
 Donate link: http://www.angelleye.com/product/buy-beer/
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
@@ -78,7 +78,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.0.2 - 05/03/2014 =
+= 1.0.2 - 03/05/2014 =
 * Refactor - Stripped out all the original Woo PayPal integration code and replaced it with the Angelleye PHP Class Library for PayPal.
 
 = 1.0.1 =
