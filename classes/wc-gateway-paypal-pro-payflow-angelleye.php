@@ -208,7 +208,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 	}
 
 	/**
-	 * do_payment function.
+	 * do_payment
+	 *
+	 * Process the PayFlow transaction with PayPal.
 	 *
 	 * @access public
 	 * @param mixed $order
@@ -222,244 +224,294 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 	 * @param string $centinelXid (default: '')
 	 * @return void
 	 */
-    function do_payment( $order, $card_number, $card_exp, $card_csc, $centinelPAResStatus = '', $centinelEnrolled = '', $centinelCavv = '', $centinelEciFlag = '', $centinelXid = '' ) {
-        if ( empty( $GLOBALS['wp_rewrite'] ) )
-            $GLOBALS['wp_rewrite'] = new WP_Rewrite();
-            $this->add_log($order->get_checkout_order_received_url());
-        // Send request to paypal
-        try {
-            $url = $this->testmode == 'yes' ? $this->testurl : $this->liveurl;
-            $post_data = array();
-            $post_data['USER']     = $this->paypal_user;
-            $post_data['VENDOR']   = $this->paypal_vendor;
-            $post_data['PARTNER']  = $this->paypal_partner;
-            $post_data['PWD']      = trim( $this->paypal_password );
-            $post_data['VERBOSITY']= 'HIGH';
-            $post_data['BUTTONSOURCE'] = 'AngellEYE_PHPClass';
-            $post_data['TENDER']   = 'C'; // Credit card
-            $post_data['TRXTYPE']  = 'S'; // Sale
-            $post_data['ACCT']     = $card_number; // Credit Card
-            $post_data['EXPDATE']  = $card_exp; //MMYY
-            $post_data['AMT']      = $order->get_total(); // Order total
-            $post_data['CURRENCY'] = get_option('woocommerce_currency'); // Currency code
-            $post_data['CUSTIP']   = $this->get_user_ip(); // User IP Address
-            $post_data['CVV2']     = $card_csc; // CVV code
-            $post_data['EMAIL']    = $order->billing_email;
-            $post_data['INVNUM']   = str_replace("#","",$order->get_order_number());
-            if ( $order->customer_note )
-                $post_data['COMMENT1'] = wptexturize( $order->customer_note );
-            /* Send Item details */
+    function do_payment( $order, $card_number, $card_exp, $card_csc, $centinelPAResStatus = '', $centinelEnrolled = '', $centinelCavv = '', $centinelEciFlag = '', $centinelXid = '')
+	{
+		/*
+		 * Display message to user if session has expired.
+		 */
+		if(sizeof(WC()->cart->get_cart()) == 0)
+		{
+            wc_add_notice(sprintf(__( 'Sorry, your session has expired. <a href="%s">Return to homepage &rarr;</a>', 'wc-paypal-express' ), home_url()),"error");
+		}
+		
+		/*
+		 * Check if the PayPal_PayFlow class has already been established.
+		 */
+		if(!class_exists('PayPal_PayFlow' )) 
+		{
+			require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+			require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');	
+		}
+		
+		/**
+		 * Create PayPal_PayFlow object.
+		 */
+		$PayPalConfig = array(
+						'Sandbox' => $sandbox, 
+						'APIUsername' => $this->paypal_user, 
+						'APIPassword' => trim($this->paypal_password), 
+						'APIVendor' => $this->paypal_vendor, 
+						'APIPartner' => $this->paypal_partner
+					  );
+		$PayPal = new PayPal_PayFlow($PayPalConfig);
+		
+		/**
+		 * Pulled from original Woo extension.
+		 */
+		if(empty($GLOBALS['wp_rewrite']))
+		{
+        	$GLOBALS['wp_rewrite'] = new WP_Rewrite();
+		}
+		
+		$this->add_log($order->get_checkout_order_received_url());
+		
+		try
+		{
+			/**
+			 * Parameter set by original Woo.  I can probably ditch this, but leaving it for now.
+			 */
+			$url = $this->testmode == 'yes' ? $this->testurl : $this->liveurl;
+			
+			/**
+			 * PayPal PayFlow Gateway Request Params
+			 */
+			$PayPalRequestData = array(
+					'tender'=>'C', 				// Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
+					'trxtype'=>'S', 				// Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
+					'acct'=>$card_number, 				// Required for credit card transaction.  Credit card or purchase card number.
+					'expdate'=>$card_exp, 				// Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
+					'amt'=>$order->get_total(), 					// Required.  Amount of the transaction.  Must have 2 decimal places. 
+					'currency'=>get_option('woocommerce_currency'), // 
+					'dutyamt'=>'', 				//
+					'freightamt'=>'', 			//
+					'taxamt'=>'', 				//
+					'taxexempt'=>'', 			// 
+					'comment1'=>$order->customer_note ? wptexturize($order->customer_note) : '', 			// Merchant-defined value for reporting and auditing purposes.  128 char max
+					'comment2'=>'', 			// Merchant-defined value for reporting and auditing purposes.  128 char max
+					'cvv2'=>$card_csc, 				// A code printed on the back of the card (or front for Amex)
+					'recurring'=>'', 			// Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring. 
+					'swipe'=>'', 				// Required for card-present transactions.  Used to pass either Track 1 or Track 2, but not both.
+					'orderid'=>str_replace("#","",$order->get_order_number()), 				// Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
+					'orderdesc'=>'Order ' . $order->get_order_number() . ' on ' . get_bloginfo( 'name' ), //
+					'billtoemail'=>$order->billing_email, 			// Account holder's email address.
+					'billtophonenum'=>'', 		// Account holder's phone number.
+					'billtofirstname'=>$order->billing_first_name, 		// Account holder's first name.
+					'billtomiddlename'=>'', 	// Account holder's middle name.
+					'billtolastname'=>$order->billing_last_name, 		// Account holder's last name.
+					'billtostreet'=>$order->billing_address_1.' '.$order->billing_address_2, 		// The cardholder's street address (number and street name).  150 char max
+					'billtocity'=>$order->billing_city, 			// Bill to city.  45 char max
+					'billtostate'=>$order->billing_state, 			// Bill to state.  
+					'billtozip'=>$order->billing_postcode, 			// Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
+					'billtocountry'=>$order->billing_country, 		// Bill to Country.  3 letter country code.
+					'origid'=>'', 				// Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.  
+					'custref'=>'', 				// 
+					'custcode'=>'', 			// 
+					'custip'=>$this->get_user_ip(), 				// 
+					'invnum'=>str_replace("#","",$order->get_order_number()), 				// 
+					'ponum'=>'', 				// 
+					'starttime'=>'', 			// For inquiry transaction when using CUSTREF to specify the transaction.
+					'endtime'=>'', 				// For inquiry transaction when using CUSTREF to specify the transaction.
+					'securetoken'=>'', 			// Required if using secure tokens.  A value the Payflow server created upon your request for storing transaction data.  32 char
+					'partialauth'=>'', 			// Required for partial authorizations.  Set to Y to submit a partial auth.    
+					'authcode'=>'' 			// Rrequired for voice authorizations.  Returned only for approved voice authorization transactions.  AUTHCODE is the approval code received over the phone from the processing network.  6 char max
+					);
+			
+			/**
+			 * Shipping info
+			 */
+			if($order->shipping_address_1)
+			{
+                $PayPalRequestData['SHIPTOFIRSTNAME']   = $order->shipping_first_name;
+                $PayPalRequestData['SHIPTOLASTNAME']    = $order->shipping_last_name;
+                $PayPalRequestData['SHIPTOSTREET']      = $order->shipping_address_1 . ' ' . $order->shipping_address_2;
+                $PayPalRequestData['SHIPTOCITY']        = $order->shipping_city;
+                $PayPalRequestData['SHIPTOSTATE']       = $order->shipping_state;
+                $PayPalRequestData['SHIPTOCOUNTRY']     = $order->shipping_country;
+                $PayPalRequestData['SHIPTOZIP']         = $order->shipping_postcode;
+            }
+					
+			/* Send Item details */
             $item_loop = 0;
-            if ( sizeof( $order->get_items() ) > 0 ) {
+            if(sizeof($order->get_items()) > 0)
+			{
                 $ITEMAMT = 0;
-                foreach ( $order->get_items() as $item ) {
+                foreach($order->get_items() as $item)
+				{
                     $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
-                    $_product = $order->get_product_from_item( $item );
-                    if ( $item['qty'] ) {
+                    $_product = $order->get_product_from_item($item);
+                    if($item['qty'])
+					{
                         $sku = $_product->get_sku();
-                        if ($_product->product_type=='variation') {
-                            if (empty($sku)) {
+                        if ($_product->product_type=='variation')
+						{
+                            if (empty($sku))
+							{
                                 $sku = $_product->parent->get_sku();
                             }
                             $item_meta = new WC_Order_Item_Meta( $item['item_meta'] );
                             $meta = $item_meta->display(true, true);
-                            if (!empty($meta)) {
+                            if (!empty($meta))
+							{
                                 $item['name'] .= " - ".str_replace(", \n", " - ",$meta);
                             }
                         }
-                        if ( get_option( 'woocommerce_prices_include_tax' ) == 'yes' ) {
+                        if ( get_option( 'woocommerce_prices_include_tax' ) == 'yes' )
+						{
                             $product_price = $order->get_item_subtotal( $item, true, false );
-                        } else {
+                        }
+						else
+						{
                             $product_price = $order->get_item_subtotal( $item, false, true );
                         }
 
-                        $post_data[ 'L_NUMBER' . $item_loop ] = $sku;
-                        $post_data[ 'L_NAME' . $item_loop ] = $item['name'];
-                        $post_data[ 'L_COST' . $item_loop ] = $product_price;
-                        $post_data[ 'L_QTY' . $item_loop ]  = $item['qty'];
-                        if ( $sku )
-                            $post_data[ 'L_SKU' . $item_loop ] = $sku;
-                        $ITEMAMT += $product_price * $item['qty'];
+                        $PayPalRequestData['L_NUMBER' . $item_loop ] = $sku;
+                        $PayPalRequestData['L_NAME' . $item_loop ] = $item['name'];
+                        $PayPalRequestData['L_COST' . $item_loop ] = $product_price;
+                        $PayPalRequestData['L_QTY' . $item_loop ]  = $item['qty'];
+                        if ($sku)
+						{
+                            $PayPalRequestData[ 'L_SKU' . $item_loop ] = $sku;
+						}
+						$ITEMAMT += $product_price * $item['qty'];
                         $item_loop++;
                     }
                 }
 
 
                 //Cart Discount
-                if ( $order->get_cart_discount()>0 ) {
-                    foreach ( WC()->cart->get_coupons( 'cart' ) as $code => $coupon ) {
+                if ( $order->get_cart_discount()>0 )
+				{
+                    foreach ( WC()->cart->get_coupons( 'cart' ) as $code => $coupon )
+					{
 
-                        $post_data[ 'L_NUMBER' . $item_loop ]	= $code;
-                        $post_data[ 'L_NAME' . $item_loop ]		= 'Cart Discount';
-                        $post_data[ 'L_AMT' . $item_loop ]		= '-' . WC()->cart->coupon_discount_amounts[ $code ];
-                        $post_data[ 'L_QTY' . $item_loop ]		= 1;
+                        $PayPalRequestData['L_NUMBER' . $item_loop ]	= $code;
+                        $PayPalRequestData['L_NAME' . $item_loop ]		= 'Cart Discount';
+                        $PayPalRequestData['L_AMT' . $item_loop ]		= '-' . WC()->cart->coupon_discount_amounts[ $code ];
+                        $PayPalRequestData['L_QTY' . $item_loop ]		= 1;
                         $item_loop++;
                     }
                     $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
                 }
 
                 //Order Discount
-                if ( $order->get_order_discount()>0 ) {
-                    foreach ( WC()->cart->get_coupons( 'order' ) as $code => $coupon ) {
-                        $post_data[ 'L_NUMBER' . $item_loop ]	= $code;
-                        $post_data[ 'L_NAME' . $item_loop ]		= 'Order Discount';
-                        $post_data[ 'L_AMT' . $item_loop ]		= '-' . WC()->cart->coupon_discount_amounts[ $code ];
-                        $post_data[ 'L_QTY' . $item_loop ]		= 1;
+                if ( $order->get_order_discount()>0 )
+				{
+                    foreach ( WC()->cart->get_coupons( 'order' ) as $code => $coupon )
+					{
+                        $PayPalRequestData['L_NUMBER' . $item_loop ]	= $code;
+                        $PayPalRequestData['L_NAME' . $item_loop ]		= 'Order Discount';
+                        $PayPalRequestData['L_AMT' . $item_loop ]		= '-' . WC()->cart->coupon_discount_amounts[ $code ];
+                        $PayPalRequestData['L_QTY' . $item_loop ]		= 1;
                         $item_loop++;
                     }
                     $ITEMAMT = $ITEMAMT - $order->get_order_discount();
                 }
 
-                if ( get_option( 'woocommerce_prices_include_tax' ) == 'yes' ) {
+                if( get_option( 'woocommerce_prices_include_tax' ) == 'yes' )
+				{
                     $shipping 		= $order->get_total_shipping() + $order->get_shipping_tax();
                     $tax			= 0;
-                } else {
+                }
+				else
+				{
                     $shipping 		= $order->get_total_shipping();
                     $tax 			= $order->get_total_tax();
                 }
 
                 //tax
-                if ($tax>0){
-                    $post_data[ 'TAXAMT' ] = $tax;
+                if($tax>0)
+				{
+                    $PayPalRequestData['TAXAMT'] = $tax;
                 }
 
                 // Shipping
-                if ( $shipping > 0 ) {
-                    $post_data[ 'FREIGHTAMT' ] = $shipping;
+                if($shipping > 0)
+				{
+                    $PayPalRequestData['FREIGHTAMT'] = $shipping;
                 }
 
-                $post_data[ 'ITEMAMT' ] = number_format($ITEMAMT, 2, '.', '');
+                $PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
             }
-            $post_data['ORDERDESC']      = 'Order ' . $order->get_order_number() . ' on ' . get_bloginfo( 'name' );
-            $post_data['FIRSTNAME']      = $order->billing_first_name;
-            $post_data['LASTNAME']       = $order->billing_last_name;
-            $post_data['STREET']         = $order->billing_address_1 . ' ' . $order->billing_address_2;
-            $post_data['CITY']           = $order->billing_city;
-            $post_data['STATE']          = $order->billing_state;
-            $post_data['COUNTRY']        = $order->billing_country;
-            $post_data['ZIP']            = $order->billing_postcode;
-            if ( $order->shipping_address_1 ) {
-
-                $post_data['SHIPTOFIRSTNAME']   = $order->shipping_first_name;
-
-                $post_data['SHIPTOLASTNAME']    = $order->shipping_last_name;
-
-                $post_data['SHIPTOSTREET']      = $order->shipping_address_1 . ' ' . $order->shipping_address_2;
-
-                $post_data['SHIPTOCITY']        = $order->shipping_city;
-
-                $post_data['SHIPTOSTATE']       = $order->shipping_state;
-
-                $post_data['SHIPTOCOUNTRY']     = $order->shipping_country;
-
-                $post_data['SHIPTOZIP']         = $order->shipping_postcode;
-
-            }
-
-            //add string lenght
-            foreach ($post_data as $key=>$value){
+			
+			/**
+			 * Woo's original extension wasn't sending the request with 
+			 * character count like it's supposed to.  This was added
+			 * to fix that, but now that we're using my library it's
+			 * already handled correctly so this won't be necessary.
+			 */
+            /*foreach ($post_data as $key=>$value){
                 $send_data[]= $key."[".strlen($value)."]=$value";
             }
-            $send_data = implode("&", $send_data);
-
-            $response = wp_remote_post( $url, array(
-
-                'method'		=> 'POST',
-
-                'body' 			=> $send_data,
-
-                'timeout' 		=> 70,
-
-                'sslverify' 	=> false,
-
-                'user-agent' 	=> 'WooCommerce'
-
-            ));
-
-            $this->add_log('Send request: '.$url);
-
-            $this->add_log(print_r($send_data,true));
-
-            $this->add_log(print_r($response ,true));
-
-
-
-            if ( is_wp_error( $response ) )
-
-                throw new Exception( __( 'There was a problem connecting to the payment gateway.', 'wc_paypal_pro' ) );
-
-
-
-            if ( empty( $response['body'] ) )
-
-                throw new Exception( __( 'Empty PayPal response.', 'wc_paypal_pro' ) );
-
-
-
-            parse_str( $response['body'], $parsed_response );
-
-            $this->add_log(add_query_arg( 'key', $order->order_key, add_query_arg( 'order', $order->id, get_permalink(woocommerce_get_page_id('thanks') ) ) ));
-
-            if ( isset( $parsed_response['RESULT'] ) && ($parsed_response['RESULT'] == 0 || $parsed_response['RESULT'] == 126)) {
+            $send_data = implode("&", $send_data);*/
+			
+			/**
+			 * Pass data to to the class and store the $PayPalResult
+			 */
+			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+			
+			/**
+			 * Log results
+			 */
+			$this->add_log('PayFlow Endpoint: '.$PayPal->APIEndPoint);
+            $this->add_log(print_r($PayPalResult,true));
+			
+			/**
+			 * Error check
+			 */
+			if(empty($PayPalResult['RAWRESPONSE']))
+			{
+                throw new Exception(__('Empty PayPal response.', 'wc_paypal_pro'));
+			}
+			
+			/** 
+			 * More logs
+			 */
+			$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(woocommerce_get_page_id('thanks')))));
+			
+			/**
+			 * Check for errors or fraud filter warnings and proceed accordingly.
+			 */
+			if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126))
+			{
                 // Add order note
-                if ($parsed_response['RESULT'] == 126) {
-                    $order->add_order_note( $parsed_response['RESPMSG']);
-                    $order->add_order_note( $parsed_response['PREFPSMSG']);
+                if ($PayPalResult['RESULT'] == 126)
+				{
+                    $order->add_order_note( $PayPalResult['RESPMSG']);
+                    $order->add_order_note( $PayPalResult['PREFPSMSG']);
                     $order->add_order_note( "The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.");
-                } else {
-                    $order->add_order_note( sprintf( __( 'PayPal Pro payment completed (PNREF: %s)', 'wc_paypal_pro' ), $parsed_response['PNREF'] ) );
+                }
+				else
+				{
+                    $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s)','wc_paypal_pro'),$PayPalResult['PNREF']));
                 }
 
-
-
                 // Payment complete
-
                 $order->payment_complete();
 
-
-
                 // Remove cart
-
                 WC()->cart->empty_cart();
 
-
-
                 // Return thank you page redirect
-
                 return array(
                     'result' 	=> 'success',
-                    'redirect'	=> $this->get_return_url( $order )
+                    'redirect'	=> $this->get_return_url($order)
                 );
-
-
-
-            } else {
-
-
-
+            }
+			else
+			{
                 // Payment failed :(
-
                 $order->update_status( 'failed', __('PayPal Pro payment failed. Payment was rejected due to an error: ', 'wc_paypal_pro' ) . '(' . $parsed_response['RESULT'] . ') ' . '"' . $parsed_response['RESPMSG'] . '"' );
-
-
-
                 wc_add_notice( __( 'Payment error:', 'wc_paypal_pro' ) . ' ' . $parsed_response['RESPMSG'], "error" );
-
                 return;
 
             }
-
-
-
-        } catch( Exception $e ) {
-
-            wc_add_notice( __('Connection error:', 'wc_paypal_pro' ) . ': "' . $e->getMessage() . '"', "error" );
-
+		}
+		catch(Exception $e)
+		{
+            wc_add_notice( __('Connection error:', 'wc_paypal_pro' ) . ': "' . $e->getMessage() . '"', "error");
             return;
-
-        }
-
-    }
+        }	
+	}
 
 	/**
      * Payment form on checkout page
