@@ -82,7 +82,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Refactor - Stripped out all the original Woo PayPal integration code and replaced it with the Angelleye PHP Class Library for PayPal.
 
 = 1.0.1 =
-Adds better error handling when PayPal API credentials are incorrect.
+* Tweak - Adds better error handling when PayPal API credentials are incorrect.
 
 = 1.0 =
-Initial, stable release.
+* Feature - PayPal Express Checkout
+* Feature - PayPal Website Payments Pro 3.0 (DoDirectPayment)
+* Feature - PayPal Payments Pro 2.0 (PayPal Manager / PayFlow)
