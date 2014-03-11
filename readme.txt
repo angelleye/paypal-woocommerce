@@ -78,6 +78,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.0.3 - 03/11/2014 =
+* Tweak - Update the checkout button verbiage based on enabled payment gateways.
+* Fix - Eliminate PHP warnings that would surface if error reporting was enabled on the server.
+* Fix - Eliminate conflict with WooCommerce if plugin is enabled while updating WooCommerce. 
+
 = 1.0.2 - 03/05/2014 =
 * Refactor - Stripped out all the original Woo PayPal integration code and replaced it with the Angelleye PHP Class Library for PayPal.
 
