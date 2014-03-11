@@ -12,7 +12,7 @@
  * Domain Path:       /languages
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  */
- 
+
 if (!defined('ABSPATH'))
 {
     exit(); // Exit if accessed directly
@@ -32,7 +32,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         public function __construct()
         {
-            add_filter('woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
+            add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
             add_action( 'plugins_loaded', array($this, 'init'));
             register_activation_hook( __FILE__, array($this, 'activate_woocommerce_paypal_express' ));
             add_action( 'wp_enqueue_scripts', array($this, 'woocommerce_paypal_express_init_styles'), 12 );
@@ -52,7 +52,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $plugin_data = get_plugin_data( __FILE__, false );
 
             if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-                if( is_plugin_active($plugin) ) {
+                if(!in_array(@$_GET['action'],array('activate-plugin', 'upgrade-plugin','activate','do-plugin-upgrade')) && is_plugin_active($plugin) ) {
                     deactivate_plugins( $plugin );
                     wp_die( "<strong>".$plugin_data['Name']."</strong> requires <strong>WooCommerce</strong> plugin to work normally. Please active it or install it from <a href=\"http://wordpress.org/plugins/woocommerce/\" target=\"_blank\">here</a>.<br /><br />Back to the WordPress <a href='".get_admin_url(null, 'plugins.php')."'>Plugins page</a>." );
                 }
@@ -76,14 +76,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if (@$pp_pro['enabled']=='yes' || @$pp_payflow['enabled']=='yes') {
                 // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
                 if ( get_option('woocommerce_force_ssl_checkout')=='no' && ! class_exists( 'WordPressHTTPS' ) && !get_user_meta($user_id, 'ignore_pp_ssl') )
-                    echo '<div class="error"><p>' . sprintf( __('WooCommerce PayPal Payments Pro requires that the <a href="%s">Force secure checkout</a> option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode. | <a href="'.add_query_arg("ignore_pp_ssl",0).'">Hide Notice</a>', 'wc_paypal_pro'), admin_url('admin.php?page=woocommerce' ) ) . '</p></div>';
+                    echo '<div class="error"><p>' . __('WooCommerce PayPal Payments Pro requires that the <a href="'.admin_url('admin.php?page=woocommerce').'">Force secure checkout</a> option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode. | <a href="'.add_query_arg("ignore_pp_ssl",0).'">Hide Notice</a>', 'wc_paypal_pro')  . '</p></div>';
                 if ((@$pp_pro['testmode']=='yes' || @$pp_payflow['testmode']=='yes' || @$pp_settings['testmode']=='yes') && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
                     $testmodes = array();
                     if (@$pp_pro['enabled']=='yes' && @$pp_pro['testmode']=='yes') $testmodes[] = 'PayPal Pro';
                     if (@$pp_payflow['enabled']=='yes' && @$pp_payflow['testmode']=='yes') $testmodes[] = 'PayPal Pro PayFlow';
                     if (@$pp_settings['enabled']=='yes' && @$pp_settings['testmode']=='yes') $testmodes[] = 'PayPal Express';
                     $testmodes_str = implode(", ", $testmodes);
-                    echo '<div class="error"><p>' . sprintf( __('WooCommerce PayPal Payments ( %s ) is currently running in Sandbox mode and will NOT process any actual payments. | <a href="'.add_query_arg("ignore_pp_sandbox",0).'">Hide Notice</a>', 'wc_paypal_pro'), $testmodes_str ) . '</p></div>';
+                    echo '<div class="error"><p>' . __('WooCommerce PayPal Payments ( '.$testmodes_str.' ) is currently running in Sandbox mode and will NOT process any actual payments. | <a href="'.add_query_arg("ignore_pp_sandbox",0).'">Hide Notice</a>', 'wc_paypal_pro') . '</p></div>';
                 }
             } elseif (@$pp_settings['enabled']=='yes'){
                 if (@$pp_settings['testmode']=='yes' && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
@@ -158,10 +158,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
 
-		/**
-		 * Adds PayPal gateway options for Payments Pro and Express Checkout into the WooCommerce checkout settings.
-		 *
-		 */
+        /**
+         * Adds PayPal gateway options for Payments Pro and Express Checkout into the WooCommerce checkout settings.
+         *
+         */
         function angelleye_add_paypal_pro_gateway( $methods ) {
             foreach ($methods as $key=>$method){
                 if (in_array($method, array('WC_Gateway_PayPal_Pro', 'WC_Gateway_PayPal_Pro_Payflow', 'WC_Gateway_PayPal_Express'))) {
