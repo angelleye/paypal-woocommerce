@@ -8,3 +8,6 @@
 */*/_notes/
 */*/*/_notes/
 temp/
+.settings
+.buildpath
+.project
