@@ -4,7 +4,7 @@ Donate link: http://www.angelleye.com/product/buy-beer/
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 3.8.1
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -51,6 +51,8 @@ Automatic installation is the easiest option as WordPress handles the file trans
 
 In the search field type PayPal for WooCommerce and click Search Plugins. Once you've found our plugin you can view details about it such as the the point release, rating and description. Most importantly of course, you can install it by simply clicking Install Now.
 
+Once the extension has been installed and activated you will find the PayPal Express Checkout and Pro settings available under WooCommerce -> Settings -> Checkout tab.
+
 = Manual Installation =
 
  1. Unzip the files and upload the folder into your plugins folder (wp-content/plugins/) overwriting old versions if they exist
@@ -77,6 +79,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
  * Live credentials can be obtained by signing in to your live PayPal account here:  https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
 
 == Changelog ==
+
+= 1.0.4 - 03/12/2014 = 
+* Fix - Resolves issue with invalid order number getting sent to PayPal for merchants in some countries.
 
 = 1.0.3 - 03/11/2014 =
 * Tweak - Update the checkout button verbiage based on enabled payment gateways.
