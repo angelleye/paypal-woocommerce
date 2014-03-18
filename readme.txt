@@ -4,7 +4,7 @@ Donate link: http://www.angelleye.com/product/buy-beer/
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 3.8.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -79,6 +79,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
  * Live credentials can be obtained by signing in to your live PayPal account here:  https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
 
 == Changelog ==
+
+= 1.0.5 - 03/17/2014 =
+* Refactor - Minor code adjustments and cleanup.
 
 = 1.0.4 - 03/12/2014 = 
 * Fix - Resolves issue with invalid order number getting sent to PayPal for merchants in some countries.
