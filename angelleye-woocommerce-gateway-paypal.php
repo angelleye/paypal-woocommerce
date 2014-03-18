@@ -34,8 +34,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         {
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
             add_action( 'plugins_loaded', array($this, 'init'));
-            register_activation_hook( __FILE__, array($this, 'activate_woocommerce_paypal_express' ));
-            add_action( 'wp_enqueue_scripts', array($this, 'woocommerce_paypal_express_init_styles'), 12 );
+            register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
+            register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
+			add_action( 'wp_enqueue_scripts', array($this, 'woocommerce_paypal_express_init_styles'), 12 );
             add_action( 'admin_notices', array($this, 'wc_gateway_paypal_pro_ssl_check') );
             add_action( 'admin_init', array($this, 'set_ignore_tag'));
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
@@ -145,18 +146,44 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 ) ) );
             }
         }
-
-        function activate_woocommerce_paypal_express() {
-            if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) )) {
-                deactivate_plugins( plugin_basename( __FILE__ ) );
-            } else {
+		
+		/**
+		 * Run when plugin is activated
+		 */
+        function activate_paypal_for_woocommerce()
+		{
+			// If WooCommerce is not enabled, deactivate plugin.
+            if(!in_array( 'woocommerce/woocommerce.php',apply_filters('active_plugins',get_option('active_plugins'))))
+			{
+                deactivate_plugins(plugin_basename(__FILE__));
+            }
+			else
+			{
                 global $woocommerce;
                 //include_once $woocommerce->plugin_path() . '/admin/woocommerce-admin-install.php';
 
-                // Pay page
-                wc_create_page( esc_sql( _x( 'review-order', 'page_slug', 'woocommerce' ) ), 'woocommerce_review_order_page_id', __( 'Checkout &rarr; Review Order', 'woocommerce' ), '[woocommerce_review_order]', woocommerce_get_page_id( 'checkout' ) );
-            }
+                // Create review page for Express Checkout
+                wc_create_page(esc_sql(_x('review-order','page_slug','woocommerce')),'woocommerce_review_order_page_id',__('Checkout &rarr; Review Order','woocommerce'),'[woocommerce_review_order]',woocommerce_get_page_id('checkout'));
+            
+				// Log activation in Angell EYE database via web service.
+				$log_url = $_SERVER['HTTP_HOST'];
+				$log_plugin_id = 1;
+				$log_activation_status = 1;
+				wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
+			}
         }
+		
+		/**
+		 * Run when plugin is deactivated.
+		 */
+		function deactivate_paypal_for_woocommerce()
+		{
+			// Log activation in Angell EYE database via web service.
+			$log_url = $_SERVER['HTTP_HOST'];
+			$log_plugin_id = 1;
+			$log_activation_status = 0;
+			wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);	
+		}
 
         /**
          * Adds PayPal gateway options for Payments Pro and Express Checkout into the WooCommerce checkout settings.
