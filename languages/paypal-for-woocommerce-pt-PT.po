@@ -1,0 +1,587 @@
+﻿#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/angelleye-woocommerce-gateway-paypal.php:80
+#, php-format
+msgid "WooCommerce PayPal Payments Pro requires that the %sForce secure checkout%s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode. | <a href=%s>%s</a>"
+msgstr "WooCommerce pagamentos PayPal Pro requer que %sa opção de seguro check-out force%s está habilitado; sua saída pode não ser seguro! Por favor, ative o SSL e garantir o seu servidor tem um certificado SSL válido - PayPal Pro só vai funcionar em modo de teste. | <a href=%s>%s</a>"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/angelleye-woocommerce-gateway-paypal.php:87
+#, php-format
+msgid "WooCommerce PayPal Payments ( %s ) is currently running in Sandbox mode and will NOT process any actual payments. | <a href=%s>%s</a>"
+msgstr "WooCommerce PayPal Payments (WooCommerce pagamentos PayPal ( %s ) está atualmente em execução no modo Sandbox e não irá processar todos os pagamentos reais. | <a href=%s>%s</a>"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/angelleye-woocommerce-gateway-paypal.php:91
+#, php-format
+msgid "WooCommerce PayPal Express is currently running in Sandbox mode and will NOT process any actual payments. | <a href=%s>%s</a>"
+msgstr "WooCommerce PayPal Express está sendo executado no modo seguro e não irá processar todos os pagamentos reais. | <a href=%s>%s</a>"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/angelleye-woocommerce-gateway-paypal.php:96
+#, php-format
+msgid "WooCommerce PayPal Payments requires WooCommerce plugin to work normally. Please active it or install it from <a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>here</a>. | <a href=%s>%s</a>"
+msgstr "WooCommerce pagamentos PayPal exige WooCommerce plugin para funcionar normalmente. Por favor, ative-lo ou instalá-lo a partir de <a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>lá</a>. | <a href=%s>%s</a>"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/angelleye-woocommerce-gateway-paypal.php:167
+msgid "Checkout &rarr; Review Order"
+msgstr "Caixa &rarr; Revisão da encomenda"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/angelleye-woocommerce-gateway-paypal.php:243
+msgid "Cancel order"
+msgstr "Ordem Cancelar"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/angelleye-woocommerce-gateway-paypal.php:244
+msgid "Place Order"
+msgstr "Fazer Pedido"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:11
+msgid "PayPal Express Checkout "
+msgstr "PayPal Express Checkout"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:12
+msgid "PayPal Express Checkout is designed to make the checkout experience for buyers using PayPal much more quick and easy than filling out billing and shipping forms.  Customers will be taken directly to PayPal to sign in and authorize the payment, and are then returned back to your store to choose a shipping method, review the final order total, and complete the payment."
+msgstr "PayPal Express Checkout é projetado para tornar a experiência de check-out para os compradores usando o PayPal muito mais rápido e fácil do que o preenchimento de faturamento e envio de formulários. Clientes será levado diretamente para o PayPal para entrar e autorizar o pagamento, e, em seguida, são devolvidos de volta para sua loja para escolher um método de envio, analise o total final ordem, e completar o pagamento."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:89
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:110
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:86
+msgid "Enable/Disable"
+msgstr "Activar / Desactivar"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:90
+msgid "Enable PayPal Express"
+msgstr "Ativar PayPal Express"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:96
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:117
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:93
+msgid "Title"
+msgstr "Título"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:98
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:119
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:95
+msgid "This controls the title which the user sees during checkout."
+msgstr "Isto controla o título que o usuário vê durante o checkout."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:99
+msgid "PayPal Express"
+msgstr "PayPal Express"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:102
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:123
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:99
+msgid "Description"
+msgstr "Descrição"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:104
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:125
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:101
+msgid "This controls the description which the user sees during checkout."
+msgstr "Isto controla a descrição que o usuário vê durante o checkout."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:105
+msgid "Pay via PayPal; you can pay with your credit card if you dont have a PayPal account"
+msgstr "Pague com PayPal, você pode pagar com seu cartão de crédito, se você não tiver uma conta PayPal"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:108
+msgid "Sandbox API User Name"
+msgstr "API Sandbox Usuário"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:110
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:116
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:122
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:138
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:144
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:150
+#, fuzzy
+msgid "You may create sandbox accounts and obtain credentials from your PayPal account profile."
+msgstr "Você pode criar contas de sandbox e obter credenciais do perfil da sua conta PayPal."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:114
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:142
+msgid "Sandbox API Password"
+msgstr "API Sandbox senha"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:120
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:148
+msgid "Sandbox API Signature"
+msgstr "Assinatura API Sandbox"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:126
+msgid "Live API User Name"
+msgstr "API vivo Usuário"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:128
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:134
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:140
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:156
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:162
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:168
+msgid "You may obtain your API credentials from your PayPal account profile."
+msgstr "Você pode obter as suas credenciais de API do perfil da sua conta PayPal."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:132
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:160
+msgid "Live API Password"
+msgstr "Vivo API senha"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:138
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:166
+msgid "Live API Signature"
+msgstr "Assinatura API Vivo"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:144
+msgid "PayPal Sandbox"
+msgstr "PayPal Sandbox"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:146
+msgid "Enable PayPal Sandbox"
+msgstr "Ativar PayPal Sandbox"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:150
+msgid "Debug"
+msgstr "Depurar"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:152
+msgid "Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )"
+msgstr "Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:156
+msgid "Checkout Button Style"
+msgstr "Caixa Estilo Botão"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:158
+msgid "Use Checkout with PayPal image button"
+msgstr "Use Caixa com botão de imagem PayPal"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:168
+msgid "Standard Checkout"
+msgstr "Caixa Padrão"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:170
+msgid "Show express checkout button on checkout page"
+msgstr "Mostrar botão de check-out expresso no pedido página"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:174
+msgid "PayPal Account Optional"
+msgstr "PayPal Conta opcional"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:176
+msgid "Allow customers to checkout without a PayPal account using their credit card. PayPal Account Optional must be turned on in your PayPal account. "
+msgstr "Permitir que os clientes check-out sem uma conta PayPal usando seu cartão de crédito. PayPal Conta opcional deve ser ativado em sua conta PayPal."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:180
+msgid "Landing Page"
+msgstr "Landing Page"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:182
+msgid "Type of PayPal page to display as default. PayPal Account Optional must be checked for this option to be used."
+msgstr "Tipo de PayPal página para exibir como padrão. PayPal Conta opcional deve ser marcada para esta opção a ser utilizada."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:220
+#, fuzzy
+msgid "Have a PayPal account."
+msgstr "Ter uma conta PayPal."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:270
+msgid "Please try a different a different payment method."
+msgstr "Por favor, tente um outro método de pagamento diferente."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:360
+msgid "PayPal Express payment completed"
+msgstr "Pagamento PayPal Express concluída"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:369
+msgid "PayPal Express Checkout is not available at this time."
+msgstr "PayPal Express Checkout não está disponível neste momento."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:385
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:524
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:834
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:896
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:566
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:234
+#, php-format
+msgid "Sorry, your session has expired. %sReturn to homepage &rarr;%s"
+msgstr "Desculpe, sua sessão expirou. %sRetornar à página &rarr;%s"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:390
+msgid "Invalid shipping method."
+msgstr "Método de envio inválido."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1289
+msgid "Proceed to Checkout"
+msgstr "Prossiga para Caixa"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1297
+msgid "Pay with Credit Card"
+msgstr "Pague com cartão de crédito"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1301
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1304
+msgid "Pay with PayPal"
+msgstr "Pague com PayPal"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:16
+msgid "PayPal Website Payments Pro (DoDirectPayment) "
+msgstr "PayPal Website Payments Pro (DoDirectPayment) "
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:17
+msgid "PayPal Website Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected."
+msgstr "PayPal Website Payments Pro permite-lhe aceitar cartões de crédito diretamente em seu site, sem qualquer redirecionamento através do PagSeguro. Você hospeda a forma de pagamento no seu próprio servidor web, então você precisará de um certificado SSL para assegurar que seus dados de clientes está protegida."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:111
+msgid "Enable PayPal Pro"
+msgstr "Ativar PayPal Pro"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:120
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:96
+msgid "Credit card"
+msgstr "Cartão de crédito"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:126
+msgid "Pay with your credit card"
+msgstr "Pague com seu cartão de crédito"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:129
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:105
+msgid "Test Mode"
+msgstr "Modo de Teste"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:130
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:106
+msgid "Enable PayPal Sandbox/Test Mode"
+msgstr "Ativar Modo Sandbox / Teste PayPal"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:132
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:108
+msgid "Place the payment gateway in development mode."
+msgstr "Coloque o gateway de pagamento no modo de desenvolvimento."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:136
+msgid "Sandbox API Username"
+msgstr "API Sandbox Usuário"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:154
+msgid "Live API Username"
+msgstr "API vivo Usuário"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:172
+msgid "3DSecure"
+msgstr "3DSecure"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:173
+msgid "Enable 3DSecure"
+msgstr "Habilitar 3D Secure"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:175
+msgid "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
+msgstr "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:179
+msgid "Centinel PID"
+msgstr "Centinel PID"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:181
+msgid "If enabling 3D Secure, enter your Cardinal Centinel Processor ID."
+msgstr "Se permitindo 3D Secure, digite o seu ID Processor Cardeal Centinel."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:185
+msgid "Centinel MID"
+msgstr "Sentinela MOD"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:187
+msgid "If enabling 3D Secure, enter your Cardinal Centinel Merchant ID."
+msgstr "Se permitindo 3D Secure, digite o seu Cardeal Centinel Merchant ID."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:191
+msgid "Transaction Password"
+msgstr "Transação senha"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:193
+#, fuzzy
+msgid "If enabling 3D Secure, enter your Cardinal Centinel Transaction Password."
+msgstr "Se permitindo 3D Secure, digite a Senha Cardeal Centinel Transação."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:197
+msgid "Liability Shift"
+msgstr "Responsabilidade Mudança"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:198
+msgid "Require liability shift"
+msgstr "Exigir mudança de responsabilidade"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:200
+msgid "Only accept payments when liability shift has occurred."
+msgstr "Só aceitamos pagamentos quando mudança de responsabilidade ocorreu."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:211
+msgid "Debug Log"
+msgstr "Debug Log"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:213
+msgid "Enable logging"
+msgstr "Ativar registro"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:215
+msgid "Log PayPal events inside <code>woocommerce/logs/paypal-pro.txt</code>"
+msgstr "Registrar eventos PayPal dentro woocommerce / logs / paypal-Pro.txt"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:318
+msgid "Card security code is invalid (only digits are allowed)"
+msgstr "Card security code is invalid (only digits are allowed)"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:322
+msgid "Card security code is invalid (wrong length)"
+msgstr "Card security code is invalid (wrong length)"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:334
+msgid "Card expiration date is invalid"
+msgstr "Data de validade do cartão é inválido"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:340
+msgid "Card number is invalid"
+msgstr "Número do cartão é inválido"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:454
+#, fuzzy
+msgid "Authentication unavailable. Please try a different payment method or card."
+msgstr "Autenticação indisponíveis. Por favor, tente um método de pagamento diferente ou cartão."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:461
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:534
+msgid "Error in 3D secure authentication: "
+msgstr "Erro na autenticação segura 3D:"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:514
+#, fuzzy
+msgid "Authentication unavailable.  Please try a different payment method or card."
+msgstr "Autenticação indisponíveis. Por favor, tente um método de pagamento diferente ou cartão."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:515
+msgid "3D Secure error: No liability shift"
+msgstr "Erro 3D Secure: Sem mudança de responsabilidade"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:528
+msgid "Payer Authentication failed.  Please try a different payment method."
+msgstr "Autenticação Payer falhou. Por favor, tente um método de pagamento diferente."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:529
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:535
+#, php-format
+msgid "3D Secure error: %s"
+msgstr "Erro 3D Secure:%s"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:827
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:463
+msgid "Empty PayPal response."
+msgstr "Esvazie resposta PayPal."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:833
+#, php-format
+msgid "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
+msgstr "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:853
+msgid "There was a problem connecting to the payment gateway."
+msgstr "Houve um problema de conexão com o gateway de pagamento."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:860
+#, fuzzy, php-format
+msgid "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s"
+msgstr "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:861
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:504
+msgid "Payment error:"
+msgstr "Erro de pagamento:"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:19
+msgid "PayPal Payments Pro 2.0 (PayFlow)"
+msgstr "PayPal Payments Pro 2.0 (PayFlow)"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:20
+msgid "PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected."
+msgstr "Pagamentos PayPal Pro permite-lhe aceitar cartões de crédito diretamente em seu site, sem qualquer redirecionamento através do PagSeguro. Você hospeda a forma de pagamento no seu próprio servidor web, então você precisará de um certificado SSL para assegurar que seus dados de clientes está protegida."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:87
+msgid "Enable PayPal Pro Payflow Edition"
+msgstr "Ativar PayPal Pro Payflow Edição"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:102
+msgid "Pay with your credit card."
+msgstr "Pague com seu cartão de crédito."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:112
+msgid "Sandbox PayPal Vendor"
+msgstr "Sandbox PayPal Vendedor"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:114
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:140
+#, fuzzy
+msgid "Your merchant login ID that you created when you registered for the account."
+msgstr "O seu ID de login comerciante que você criou quando se registrou para a conta."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:118
+msgid "Sandbox PayPal Password"
+msgstr "Sandbox PayPal senha"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:120
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:146
+msgid "The password that you defined while registering for the account."
+msgstr "A senha que você definiu durante o registo para a conta."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:124
+msgid "Sandbox PayPal User"
+msgstr "Sandbox PayPal Usuário"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:126
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:152
+msgid "If you set up one or more additional users on the account, this value is the IDnof the user authorized to process transactions. Otherwise, leave this field blank."
+msgstr "Se você configurar um ou mais usuários na conta, este valor é o ID do usuário autorizado a processar as transações. Caso contrário, deixe este campo em branco."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:131
+msgid "Sandbox PayPal Partner"
+msgstr "Sandbox PayPal Parceiro"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:133
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:159
+msgid "The ID provided to you by the authorized PayPal Reseller who registered younfor the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank."
+msgstr "O ID-lhe fornecida pelo PayPal Revendedor autorizado que se registou para o Payflow SDK. Se você comprou a sua conta diretamente do PayPal, use PayPal ou deixe em branco."
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:138
+msgid "Live PayPal Vendor"
+msgstr "Viva PayPal Vendedor"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:144
+msgid "Live PayPal Password"
+msgstr "Viva PayPal senha"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:150
+msgid "Live PayPal User"
+msgstr "Viva PayPal Usuário"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:157
+msgid "Live PayPal Partner"
+msgstr "Viva PayPal Parceiro"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:485
+#, php-format
+msgid "PayPal Pro payment completed (PNREF: %s)"
+msgstr "PayPal Pro payment completed (PNREF: %s)"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:503
+msgid "PayPal Pro payment failed. Payment was rejected due to an error: "
+msgstr "PayPal Pro pagamento falhou. O pagamento foi rejeitada devido a um erro:"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:511
+msgid "Connection error:"
+msgstr "Erro de conexão:"
+
+#: E:DocumentsMy Box FilesWoocommerce
+#: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:524
+msgid "TEST MODE/SANDBOX ENABLED"
+msgstr "MODO DE TESTE / AREIA HABILITADO"
+

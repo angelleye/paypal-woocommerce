@@ -77,29 +77,30 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if (@$pp_pro['enabled']=='yes' || @$pp_payflow['enabled']=='yes') {
                 // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
                 if ( get_option('woocommerce_force_ssl_checkout')=='no' && ! class_exists( 'WordPressHTTPS' ) && !get_user_meta($user_id, 'ignore_pp_ssl') )
-                    echo '<div class="error"><p>' . __('WooCommerce PayPal Payments Pro requires that the <a href="'.admin_url('admin.php?page=woocommerce').'">Force secure checkout</a> option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode. | <a href="'.add_query_arg("ignore_pp_ssl",0).'">Hide Notice</a>', 'wc_paypal_pro')  . '</p></div>';
+                    echo '<div class="error"><p>' . sprintf(__('WooCommerce PayPal Payments Pro requires that the %sForce secure checkout%s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '<a href="'.admin_url('admin.php?page=woocommerce').'">', "</a>", '"'.add_query_arg("ignore_pp_ssl",0).'"', __("Hide this notice", 'woocommerce'))  . '</p></div>';
                 if ((@$pp_pro['testmode']=='yes' || @$pp_payflow['testmode']=='yes' || @$pp_settings['testmode']=='yes') && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
                     $testmodes = array();
                     if (@$pp_pro['enabled']=='yes' && @$pp_pro['testmode']=='yes') $testmodes[] = 'PayPal Pro';
                     if (@$pp_payflow['enabled']=='yes' && @$pp_payflow['testmode']=='yes') $testmodes[] = 'PayPal Pro PayFlow';
                     if (@$pp_settings['enabled']=='yes' && @$pp_settings['testmode']=='yes') $testmodes[] = 'PayPal Express';
                     $testmodes_str = implode(", ", $testmodes);
-                    echo '<div class="error"><p>' . __('WooCommerce PayPal Payments ( '.$testmodes_str.' ) is currently running in Sandbox mode and will NOT process any actual payments. | <a href="'.add_query_arg("ignore_pp_sandbox",0).'">Hide Notice</a>', 'wc_paypal_pro') . '</p></div>';
+                    echo '<div class="error"><p>' . sprintf(__('WooCommerce PayPal Payments ( %s ) is currently running in Sandbox mode and will NOT process any actual payments. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), $testmodes_str, '"'.add_query_arg("ignore_pp_sandbox",0).'"',  __("Hide this notice", 'woocommerce')) . '</p></div>';
                 }
             } elseif (@$pp_settings['enabled']=='yes'){
                 if (@$pp_settings['testmode']=='yes' && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
-                    echo '<div class="error"><p>' . __('WooCommerce PayPal Express is currently running in Sandbox mode and will NOT process any actual payments. | <a href="'.add_query_arg("ignore_pp_sandbox",0).'">Hide Notice</a>', 'wc_paypal_pro') . '</p></div>';
+                    echo '<div class="error"><p>' . sprintf(__('WooCommerce PayPal Express is currently running in Sandbox mode and will NOT process any actual payments. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.add_query_arg("ignore_pp_sandbox",0).'"', __("Hide this notice", 'woocommerce')) . '</p></div>';
                 }
             }
 
             if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) && !get_user_meta($user_id, 'ignore_pp_woo')) {
-                echo '<div class="error"><p>' . sprintf( __('WooCommerce PayPal Payments requires WooCommerce plugin to work normally. Please active it or install it from <a href="http://wordpress.org/plugins/woocommerce/" target="_blank">here</a>. | <a href="'.add_query_arg("ignore_pp_woo",0).'">Hide Notice</a>', 'wc_paypal_pro'), admin_url('admin.php?page=woocommerce' ) ) . '</p></div>';
+                echo '<div class="error"><p>' . sprintf( __("WooCommerce PayPal Payments requires WooCommerce plugin to work normally. Please active it or install it from <a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>here</a>. | <a href=%s>%s</a>", 'paypal-for-woocommerce'), '"'.add_query_arg("ignore_pp_woo",0).'"', __("Hide this notice", 'woocommerce') ) . '</p></div>';
             }
         }
 
         //init function
         function init(){
             if (!class_exists("WC_Payment_Gateway")) return;
+            load_plugin_textdomain('paypal-for-woocommerce', false, dirname(plugin_basename(__FILE__)). '/languages/');
             add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
             remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_paypal_express_checkout_button', 12 );
             add_action( 'woocommerce_proceed_to_checkout', array( 'WC_Gateway_PayPal_Express_AngellEYE', 'woocommerce_paypal_express_checkout_button_angelleye'), 12 );
@@ -122,10 +123,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         function woocommerce_paypal_express_init_styles() {
             global $pp_settings;
-
+            /*
             if ( ! is_admin() && is_cart() && isset( $pp_settings['hide_checkout_button'] ) && $pp_settings['hide_checkout_button'] == 'yes' )
                 wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/cart.css' , __FILE__ ) );
-
+            */
             if ( ! is_admin() && is_checkout() )
                 wp_enqueue_style( 'ppe_checkout', plugins_url( 'assets/css/checkout.css' , __FILE__ ) );
 
@@ -239,8 +240,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $template = plugin_dir_path( __FILE__ ) . 'template/review-order.php';
             load_template( $template, false );
             do_action( 'woocommerce_ppe_checkout_order_review' );
-            echo '<p><a class="button cancel" href="' . $woocommerce->cart->get_cart_url() . '">'.__('Cancel order', 'woothemes').'</a> ';
-            echo '<input type="submit" class="button" value="' . __( 'Place Order','woothemes') . '" /></p>';
+            echo '<p><a class="button cancel" href="' . $woocommerce->cart->get_cart_url() . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
+            echo '<input type="submit" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
             echo '</form>';
         }
         function woocommerce_paypal_express_review_order_page_angelleye() {

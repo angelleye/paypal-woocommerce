@@ -13,8 +13,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
      */
     function __construct() {
         $this->id					= 'paypal_pro';
-        $this->method_title 		= __( 'PayPal Website Payments Pro (DoDirectPayment) ', 'wc_paypal_pro' );
-        $this->method_description 	= __( 'PayPal Website Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'wc_paypal_pro' );
+        $this->method_title 		= __( 'PayPal Website Payments Pro (DoDirectPayment) ', 'paypal-for-woocommerce' );
+        $this->method_description 	= __( 'PayPal Website Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
         $this->icon 				= WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
         $this->has_fields 			= true;
         $this->liveurl				= 'https://api-3t.paypal.com/nvp';
@@ -107,104 +107,104 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
     function init_form_fields() {
         $this->form_fields = array(
             'enabled' => array(
-                'title' => __( 'Enable/Disable', 'wc_paypal_pro' ),
-                'label' => __( 'Enable PayPal Pro', 'wc_paypal_pro' ),
+                'title' => __( 'Enable/Disable', 'paypal-for-woocommerce' ),
+                'label' => __( 'Enable PayPal Pro', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
                 'description' => '',
                 'default' => 'no'
             ),
             'title' => array(
-                'title' => __( 'Title', 'wc_paypal_pro' ),
+                'title' => __( 'Title', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'This controls the title which the user sees during checkout.', 'wc_paypal_pro' ),
-                'default' => __( 'Credit card', 'wc_paypal_pro' )
+                'description' => __( 'This controls the title which the user sees during checkout.', 'paypal-for-woocommerce' ),
+                'default' => __( 'Credit card', 'paypal-for-woocommerce' )
             ),
             'description' => array(
-                'title' => __( 'Description', 'wc_paypal_pro' ),
+                'title' => __( 'Description', 'paypal-for-woocommerce' ),
                 'type' => 'textarea',
-                'description' => __( 'This controls the description which the user sees during checkout.', 'wc_paypal_pro' ),
-                'default' => __( 'Pay with your credit card', 'wc_paypal_pro' )
+                'description' => __( 'This controls the description which the user sees during checkout.', 'paypal-for-woocommerce' ),
+                'default' => __( 'Pay with your credit card', 'paypal-for-woocommerce' )
             ),
             'testmode' => array(
-                'title' => __( 'Test Mode', 'wc_paypal_pro' ),
-                'label' => __( 'Enable PayPal Sandbox/Test Mode', 'wc_paypal_pro' ),
+                'title' => __( 'Test Mode', 'paypal-for-woocommerce' ),
+                'label' => __( 'Enable PayPal Sandbox/Test Mode', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'description' => __( 'Place the payment gateway in development mode.', 'wc_paypal_pro' ),
+                'description' => __( 'Place the payment gateway in development mode.', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
             'sandbox_api_username' => array(
-                'title' => __( 'Sandbox API Username', 'wc_paypal_pro' ),
+                'title' => __( 'Sandbox API Username', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'wc_paypal_pro' ),
+                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'sandbox_api_password' => array(
-                'title' => __( 'Sandbox API Password', 'wc_paypal_pro' ),
+                'title' => __( 'Sandbox API Password', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'wc_paypal_pro' ),
+                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'sandbox_api_signature' => array(
-                'title' => __( 'Sandbox API Signature', 'wc_paypal_pro' ),
+                'title' => __( 'Sandbox API Signature', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'wc_paypal_pro' ),
+                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_username' => array(
-                'title' => __( 'Live API Username', 'wc_paypal_pro' ),
+                'title' => __( 'Live API Username', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'wc_paypal_pro' ),
+                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_password' => array(
-                'title' => __( 'Live API Password', 'wc_paypal_pro' ),
+                'title' => __( 'Live API Password', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'wc_paypal_pro' ),
+                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_signature' => array(
-                'title' => __( 'Live API Signature', 'wc_paypal_pro' ),
+                'title' => __( 'Live API Signature', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'wc_paypal_pro' ),
+                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'enable_3dsecure' => array(
-                'title' => __( '3DSecure', 'wc_paypal_pro' ),
-                'label' => __( 'Enable 3DSecure', 'wc_paypal_pro' ),
+                'title' => __( '3DSecure', 'paypal-for-woocommerce' ),
+                'label' => __( 'Enable 3DSecure', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'description' => __( 'Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)', 'wc_paypal_pro' ),
+                'description' => __( 'Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
             'centinel_pid' => array(
-                'title' => __( 'Centinel PID', 'wc_paypal_pro' ),
+                'title' => __( 'Centinel PID', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'If enabling 3D Secure, enter your Cardinal Centinel Processor ID.', 'wc_paypal_pro' ),
+                'description' => __( 'If enabling 3D Secure, enter your Cardinal Centinel Processor ID.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'centinel_mid' => array(
-                'title' => __( 'Centinel MID', 'wc_paypal_pro' ),
+                'title' => __( 'Centinel MID', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'If enabling 3D Secure, enter your Cardinal Centinel Merchant ID.', 'wc_paypal_pro' ),
+                'description' => __( 'If enabling 3D Secure, enter your Cardinal Centinel Merchant ID.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'centinel_pwd' => array(
-                'title' => __( 'Transaction Password', 'wc_paypal_pro' ),
+                'title' => __( 'Transaction Password', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'If enabling 3D Secure, enter your Cardinal Centinel Transaction Password.', 'wc_paypal_pro' ),
+                'description' => __( 'If enabling 3D Secure, enter your Cardinal Centinel Transaction Password.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'liability_shift' => array(
-                'title' => __( 'Liability Shift', 'wc_paypal_pro' ),
-                'label' => __( 'Require liability shift', 'wc_paypal_pro' ),
+                'title' => __( 'Liability Shift', 'paypal-for-woocommerce' ),
+                'label' => __( 'Require liability shift', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'description' => __( 'Only accept payments when liability shift has occurred.', 'wc_paypal_pro' ),
+                'description' => __( 'Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
             /*'send_items' => array(
-                'title' => __( 'Send Item Details', 'wc_paypal_pro' ),
-                'label' => __( 'Send Line Items to PayPal', 'wc_paypal_pro' ),
+                'title' => __( 'Send Item Details', 'paypal-for-woocommerce' ),
+                'label' => __( 'Send Line Items to PayPal', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'description' => __( 'Sends line items to PayPal. If you experience rounding errors this can be disabled.', 'wc_paypal_pro' ),
+                'description' => __( 'Sends line items to PayPal. If you experience rounding errors this can be disabled.', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),*/
             'debug' => array(
@@ -238,15 +238,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
     function payment_fields() {
         $available_cards = $this->avaiable_card_types[WC()->countries->get_base_country()];
         ?>
-        <?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE/SANDBOX ENABLED', 'wc_paypal_pro'); ?></p><?php endif; ?>
+        <?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE/SANDBOX ENABLED', 'paypal-for-woocommerce'); ?></p><?php endif; ?>
         <?php if ($this->description) : ?><p><?php echo $this->description; ?></p><?php endif; ?>
         <fieldset>
             <p class="form-row form-row-first">
-                <label for="paypal_pro_cart_number"><?php _e("Credit Card number", 'wc_paypal_pro') ?> <span class="required">*</span></label>
+                <label for="paypal_pro_cart_number"><?php _e("Credit Card number", 'paypal-for-woocommerce') ?> <span class="required">*</span></label>
                 <input type="text" class="input-text" name="paypal_pro_card_number" />
             </p>
             <p class="form-row form-row-last">
-                <label for="paypal_pro_cart_type"><?php _e("Card type", 'wc_paypal_pro') ?> <span class="required">*</span></label>
+                <label for="paypal_pro_cart_type"><?php _e("Card type", 'paypal-for-woocommerce') ?> <span class="required">*</span></label>
                 <select id="paypal_pro_card_type" name="paypal_pro_card_type" class="woocommerce-select">
                     <?php foreach ($available_cards as $card => $label) : ?>
                     <option value="<?php echo $card ?>"><?php echo $label; ?></option>
@@ -255,27 +255,27 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             </p>
             <div class="clear"></div>
             <p class="form-row form-row-first">
-                <label for="cc-expire-month"><?php _e("Expiration date", 'wc_paypal_pro') ?> <span class="required">*</span></label>
+                <label for="cc-expire-month"><?php _e("Expiration date", 'paypal-for-woocommerce') ?> <span class="required">*</span></label>
                 <select name="paypal_pro_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month">
-                    <option value=""><?php _e('Month', 'wc_paypal_pro') ?></option>
+                    <option value=""><?php _e('Month', 'paypal-for-woocommerce') ?></option>
                     <?php
                     $months = array();
                     for ($i = 1; $i <= 12; $i++) :
                         $timestamp = mktime(0, 0, 0, $i, 1);
-                        $months[date('n', $timestamp)] = date_i18n( _x( 'F', 'Month Names', 'wc_paypal_pro' ), $timestamp );
+                        $months[date('n', $timestamp)] = date_i18n( _x( 'F', 'Month Names', 'paypal-for-woocommerce' ), $timestamp );
                     endfor;
                     foreach ($months as $num => $name) printf('<option value="%u">%s</option>', $num, $name);
                     ?>
                 </select>
                 <select name="paypal_pro_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year">
-                    <option value=""><?php _e('Year', 'wc_paypal_pro') ?></option>
+                    <option value=""><?php _e('Year', 'paypal-for-woocommerce') ?></option>
                     <?php
                     for ($i = date('y'); $i <= date('y') + 15; $i++) printf('<option value="%u">20%u</option>', $i, $i);
                     ?>
                 </select>
             </p>
             <p class="form-row form-row-last">
-                <label for="paypal_pro_card_csc"><?php _e("Card security code", 'wc_paypal_pro') ?> <span class="required">*</span></label>
+                <label for="paypal_pro_card_csc"><?php _e("Card security code", 'paypal-for-woocommerce') ?> <span class="required">*</span></label>
                 <input type="text" class="input-text" id="paypal_pro_card_csc" name="paypal_pro_card_csc" maxlength="4" style="width:4em;" />
                 <span class="help paypal_pro_card_csc_description"></span>
             </p>
@@ -292,9 +292,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                         csc.fadeOut("fast");
                     }
                     if (card_type == "Visa" || card_type == "MasterCard" || card_type == "Discover") {
-                        jQuery('.paypal_pro_card_csc_description').text("<?php _e('3 digits usually found on the signature strip.', 'wc_paypal_pro'); ?>");
+                        jQuery('.paypal_pro_card_csc_description').text("<?php _e('3 digits usually found on the signature strip.', 'paypal-for-woocommerce'); ?>");
                     } else if ( card_type == "AmEx" ) {
-                        jQuery('.paypal_pro_card_csc_description').text("<?php _e('4 digits usually found on the front of the card.', 'wc_paypal_pro'); ?>");
+                        jQuery('.paypal_pro_card_csc_description').text("<?php _e('4 digits usually found on the front of the card.', 'paypal-for-woocommerce'); ?>");
                     } else {
                         jQuery('.paypal_pro_card_csc_description').text('');
                     }
@@ -315,11 +315,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? woocommerce_clean($_POST['paypal_pro_card_expiration_year']) : '';
         // Check card security code
         if (!ctype_digit($card_csc)) :
-            wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'wc_paypal_pro'), "error");
+            wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'), "error");
             return false;
         endif;
         if ((strlen($card_csc) != 3 && in_array($card_type, array('Visa', 'MasterCard', 'Discover'))) || (strlen($card_csc) != 4 && $card_type == 'AmEx')) :
-            wc_add_notice(__('Card security code is invalid (wrong length)', 'wc_paypal_pro'), "error");
+            wc_add_notice(__('Card security code is invalid (wrong length)', 'paypal-for-woocommerce'), "error");
             return false;
         endif;
         // Check card expiration data
@@ -331,13 +331,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $card_exp_year < date('y') ||
             $card_exp_year > date('y') + 20
         ) :
-            wc_add_notice(__('Card expiration date is invalid', 'wc_paypal_pro'), "error");
+            wc_add_notice(__('Card expiration date is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         endif;
         // Check card number
         $card_number = str_replace(array(' ', '-'), '', $card_number);
         if (empty($card_number) || !ctype_digit($card_number)) :
-            wc_add_notice(__('Card number is invalid', 'wc_paypal_pro'), "error");
+            wc_add_notice(__('Card number is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         endif;
         return true;
@@ -440,7 +440,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                             'card_exp_year' 	=> $card_exp_year
                         ))); ?>">
                         <noscript>
-                            <div class="woocommerce_message"><?php _e('Processing your Payer Authentication Transaction', 'wc_paypal_pro'); ?> - <?php _e('Please click Submit to continue the processing of your transaction.', 'wc_paypal_pro'); ?>  <input type="submit" class="button" id="3ds_submit" value="Submit" /></div>
+                            <div class="woocommerce_message"><?php _e('Processing your Payer Authentication Transaction', 'paypal-for-woocommerce'); ?> - <?php _e('Please click Submit to continue the processing of your transaction.', 'paypal-for-woocommerce'); ?>  <input type="submit" class="button" id="3ds_submit" value="Submit" /></div>
                         </noscript>
                     </form>
                     <script>
@@ -451,14 +451,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                     <?php
                     exit;
                 } elseif ( $this->liability_shift && $_SESSION['Centinel_Enrolled'] != 'N' ) {
-                    wc_add_notice(__('Authentication unavailable. Please try a different payment method or card.','wc_paypal_pro'), "error");
+                    wc_add_notice(__('Authentication unavailable. Please try a different payment method or card.','paypal-for-woocommerce'), "error");
                     return;
                 } else {
                     // Customer not-enrolled, so just carry on with PayPal process
                     return $this->do_payment( $order, $card_number, $card_type, $card_exp_month, $card_exp_year, $card_csc, '', $_SESSION['Centinel_Enrolled'], '', $_SESSION["Centinel_EciFlag"], '' );
                 }
             } else {
-                wc_add_notice( __('Error in 3D secure authentication: ', 'wc_paypal_pro') . $_SESSION['Centinel_ErrorNo'], "error");
+                wc_add_notice( __('Error in 3D secure authentication: ', 'paypal-for-woocommerce') . $_SESSION['Centinel_ErrorNo'], "error");
                 return;
             }
         }
@@ -511,8 +511,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $redirect_url = $this->get_return_url( $order );
         if ( $this->liability_shift ) {
             if ( $_SESSION["Centinel_EciFlag"] == '07' || $_SESSION["Centinel_EciFlag"] == '01' ) {
-                wc_add_notice(__('Authentication unavailable.  Please try a different payment method or card.','wc_paypal_pro'), "error");
-                $order->update_status('failed', __('3D Secure error: No liability shift', 'wc_paypal_pro') );
+                wc_add_notice(__('Authentication unavailable.  Please try a different payment method or card.','paypal-for-woocommerce'), "error");
+                $order->update_status('failed', __('3D Secure error: No liability shift', 'paypal-for-woocommerce') );
                 wp_redirect( $redirect_url );
                 exit;
             }
@@ -525,14 +525,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 wp_redirect( $redirect_url );
                 exit;
             } else {
-                wc_add_notice(__('Payer Authentication failed.  Please try a different payment method.','wc_paypal_pro'), "error");
-                $order->update_status('failed', sprintf(__('3D Secure error: %s', 'wc_paypal_pro'), $_SESSION['Centinel_ErrorDesc'] ) );
+                wc_add_notice(__('Payer Authentication failed.  Please try a different payment method.','paypal-for-woocommerce'), "error");
+                $order->update_status('failed', sprintf(__('3D Secure error: %s', 'paypal-for-woocommerce'), $_SESSION['Centinel_ErrorDesc'] ) );
                 wp_redirect( $redirect_url );
                 exit;
             }
         } else {
-            wc_add_notice( __('Error in 3D secure authentication: ', 'wc_paypal_pro') . $_SESSION['Centinel_ErrorDesc'], "error" );
-            $order->update_status('failed', sprintf(__('3D Secure error: %s', 'wc_paypal_pro'), $_SESSION['Centinel_ErrorDesc'] ) );
+            wc_add_notice( __('Error in 3D secure authentication: ', 'paypal-for-woocommerce') . $_SESSION['Centinel_ErrorDesc'], "error" );
+            $order->update_status('failed', sprintf(__('3D Secure error: %s', 'paypal-for-woocommerce'), $_SESSION['Centinel_ErrorDesc'] ) );
             wp_redirect( $redirect_url );
             exit;
         }
@@ -563,7 +563,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		 */
 		if(sizeof(WC()->cart->get_cart()) == 0)
 		{
-            wc_add_notice(sprintf(__( 'Sorry, your session has expired. <a href="%s">Return to homepage &rarr;</a>', 'wc-paypal-express' ), home_url()),"error");
+            wc_add_notice(sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"'),"error");
 		}
 		
 		/*
@@ -775,14 +775,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 
 			$PaymentDetails['itemamt'] = number_format($ITEMAMT,2,'.',''); 						// Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
         }
-		
-		if($this->debug)
-		{
-            $log = $post_data;
-            $log['ACCT'] = '****';
-            $log['CVV2'] = '****';
-            $this->log->add('paypal-pro','Do payment request '.print_r($log,true));
-        }
+
 		
 		/**
 		 * 3D Secure Params
@@ -812,6 +805,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 								   'OrderItems' => $OrderItems, 
 								   'Secure3D' => $Secure3D
 								   );
+
+        if($this->debug)
+        {
+            $log = $PayPalRequestData;
+            $log['CCDetails']['acct'] = '****';
+            $log['CCDetails']['cvv2'] = '****';
+            $this->log->add('paypal-pro','Do payment request '.print_r($log,true));
+        }
 		
 		// Pass data into class for processing with PayPal and load the response array into $PayPalResult
 		$PayPalResult = $PayPal->DoDirectPayment($PayPalRequestData);
@@ -823,13 +824,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		
 		if(empty($PayPalResult))
 		{
-            throw new Exception(__('Empty PayPal response.', 'wc_paypal_pro'));
+            throw new Exception(__('Empty PayPal response.', 'paypal-for-woocommerce'));
 		}
 		
 		if($PayPal->APICallSuccessful($PayPalResult['ACK']))
 		{
 			// Add order note
-			$order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'wc_paypal_pro'), $parsed_response['TRANSACTIONID'], $parsed_response['CORRELATIONID'] ) );
+			$order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID'] ) );
 			
 			// Payment complete
 			$order->payment_complete();
@@ -849,15 +850,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			{
                 $this->log->add('paypal-pro','Error '.print_r($PayPalResult['ERRORS'],true));
 			}
-			throw new Exception( __( 'There was a problem connecting to the payment gateway.', 'wc_paypal_pro'));	
+			throw new Exception( __( 'There was a problem connecting to the payment gateway.', 'paypal-for-woocommerce'));
 			
 			// Get error message
 			$error_code = $PayPalResult['ERRORS'][0]['L_ERRORCODE'];
 			$error_message = $error_code.'-'.$PayPalResult['ERRORS'][0]['L_LONGMESSAGE'];
 			
 			// Payment failed :(
-			$order->update_status( 'failed', sprintf(__('PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: ', 'wc_paypal_pro'), $parsed_response['CORRELATIONID'] ) . '(' . $parsed_response['L_ERRORCODE0'] . ') ' . '"' . $error_message . '"' );
-			wc_add_notice(__('Payment error:', 'wc_paypal_pro') . ' ' . $error_message, "error" );
+			$order->update_status( 'failed', sprintf(__('PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s', 'paypal-for-woocommerce'), $PayPalResult['CORRELATIONID'], '(' . $PayPalResult['L_ERRORCODE0'] . ') ' . '"' . $error_message . '"' ) );
+			wc_add_notice(__('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message, "error" );
 			return;
 		}
 	}
