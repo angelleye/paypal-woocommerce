@@ -40,7 +40,33 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'admin_notices', array($this, 'wc_gateway_paypal_pro_ssl_check') );
             add_action( 'admin_init', array($this, 'set_ignore_tag'));
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
+			
+			// http://stackoverflow.com/questions/22577727/problems-adding-action-links-to-wordpress-plugin
+			$basename = plugin_basename(__FILE__);
+			$prefix = is_network_admin() ? 'network_admin_' : '';
+			add_filter("{$prefix}plugin_action_links_$basename",array($this,'plugin_action_links'),10,4);
         }
+		
+		/**
+		 * Return the plugin action links.  This will only be called if the plugin
+		 * is active.
+		 *
+		 * @since 1.0.6
+		 * @param array $actions associative array of action names to anchor tags
+		 * @return array associative array of plugin action links
+		 */
+		public function plugin_action_links($actions, $plugin_file, $plugin_data, $context)
+		{
+			$custom_actions = array(
+				'configure' => sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wc-settings&tab=checkout' ), __( 'Configure', 'paypal-for-woocommerce' ) ),
+				'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://docs.angelleye.com/paypal-for-woocommerce/', __( 'Docs', 'paypal-for-woocommerce' ) ),
+				'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://www.angelleye.com/contact-us/', __( 'Support', 'paypal-for-woocommerce' ) ),
+				'review'    => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/view/plugin-reviews/paypal-for-woocommerce', __( 'Write a Review', 'paypal-for-woocommerce' ) ),
+			);
+	
+			// add the links to the front of the actions list
+			return array_merge( $custom_actions, $actions );
+		}
 
         function woocommerce_product_title($title){
             $title = str_replace(array("&#8211;", "&#8211"), array("-"), $title);
