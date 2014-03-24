@@ -45,6 +45,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 			$basename = plugin_basename(__FILE__);
 			$prefix = is_network_admin() ? 'network_admin_' : '';
 			add_filter("{$prefix}plugin_action_links_$basename",array($this,'plugin_action_links'),10,4);
+            add_action( 'woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'));
+            add_action( 'add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
         }
 		
 		/**
@@ -275,6 +277,35 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $woocommerce_ppe = new WC_Gateway_PayPal_Express_AngellEYE();
                 $woocommerce_ppe->paypal_express_checkout();
             }
+        }
+
+        function buy_now_button() {
+            global $pp_settings, $post;
+            $_product = get_product($post->ID);
+            $hide = '';
+            if ($_product->product_type == 'variation') {
+                $hide = 'display:none;';
+            }
+            if ( ! empty( $pp_settings['checkout_with_pp_button'] ) && $pp_settings['checkout_with_pp_button'] == 'yes' )
+            {
+                $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
+                $button_img =  "https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif";
+                echo '<input type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+            }
+            else
+            {
+                $add_to_cart_action = add_query_arg( 'express_checkout', '1');
+                echo '<input type="submit" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap paypal_checkout_button button alt" name="express_checkout"  onclick="',"jQuery('form.cart').attr('action','",$add_to_cart_action,"');jQuery('form.cart').submit();",'" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+
+            }
+
+        }
+
+        function add_to_cart_redirect($url) {
+            if (isset($_REQUEST['express_checkout'])||isset($_REQUEST['express_checkout_x'])){
+                $url = add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) ;
+            }
+            return $url;
         }
     }
 }
