@@ -332,7 +332,7 @@ msgstr "Aktivieren 3D Secure"
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:175
 msgid "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
-msgstr "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
+msgstr "Ermöglicht UK Händlern, um 3-D Secure Authentifizierungsdaten an PayPal für Debit-und Kreditkarten geben. Aktualisieren Sie Ihre Website mit 3-D Secure ermöglicht die Teilnahme an den Verified by Visa und Mastercard Secure Programme. (Obligatorisch akzeptieren Maestro)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:179
@@ -398,12 +398,12 @@ msgstr "Melden PayPal Ereignisse innerhalb WooCommerce / logs / paypal-pro.txt"
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:318
 msgid "Card security code is invalid (only digits are allowed)"
-msgstr "Card security code is invalid (only digits are allowed)"
+msgstr "Kartensicherheitscode ist ungültig (nur Ziffern erlaubt sind)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:322
 msgid "Card security code is invalid (wrong length)"
-msgstr "Card security code is invalid (wrong length)"
+msgstr "Kartensicherheitscode ist ungültig (falsche Länge)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:334
@@ -460,7 +460,7 @@ msgstr "Leeren PayPal Antwort."
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:833
 #, php-format
 msgid "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
-msgstr "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
+msgstr "Pro PayPal Zahlung abgeschlossen (Transaction ID: %s, Korrelations-ID: %s)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:853
@@ -471,7 +471,7 @@ msgstr "Es gab ein Problem beim Verbinden mit dem Payment-Gateway."
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:860
 #, fuzzy, php-format
 msgid "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s"
-msgstr "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s"
+msgstr "Pro PayPal Zahlung fehlgeschlagen (Correlation-ID:% s). Die Zahlung wurde aufgrund eines Fehlers abgelehnt: %s"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:861
@@ -482,7 +482,7 @@ msgstr "Zahlungsfehler:"
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:19
 msgid "PayPal Payments Pro 2.0 (PayFlow)"
-msgstr "PayPal Payments Pro 2.0 (PayFlow)"
+msgstr "PayPal-Zahlungen Pro 2.0 (PayFlow)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:20
@@ -568,7 +568,7 @@ msgstr "Live-Partner PayPal"
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:485
 #, php-format
 msgid "PayPal Pro payment completed (PNREF: %s)"
-msgstr "PayPal Pro payment completed (PNREF: %s)"
+msgstr "PayPal Zahlung abgeschlossen Pro (PNREF: %s)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:503

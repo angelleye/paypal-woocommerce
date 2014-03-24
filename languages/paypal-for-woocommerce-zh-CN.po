@@ -170,7 +170,7 @@ msgstr "调试"
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:152
 msgid "Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )"
-msgstr "Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )"
+msgstr "啟用日誌記錄 ( <code>woocommerce/logs/paypal_express.txt</code> )"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:156
@@ -268,7 +268,7 @@ msgstr "贝宝支付"
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:16
 msgid "PayPal Website Payments Pro (DoDirectPayment) "
-msgstr "PayPal Website Payments Pro (DoDirectPayment) "
+msgstr "貝寶網站付款專業版（DoDirectPayment） "
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:17
@@ -332,7 +332,7 @@ msgstr "启用3D安全"
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:175
 msgid "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
-msgstr "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
+msgstr "允許英國商人到3-D安全認證數據傳遞給貝寶的借記卡和信用卡。更新與3-D安全你的網站可以讓您在Visa驗證和萬事達卡SecureCode程序的參與。 （需要接受大師）"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:179
@@ -398,12 +398,12 @@ msgstr "日志里面的 woocommerce /日志/贝宝-pro.txt 的贝宝事件"
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:318
 msgid "Card security code is invalid (only digits are allowed)"
-msgstr "Card security code is invalid (only digits are allowed)"
+msgstr "信用卡安全碼是無效的（僅數字是允許的）"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:322
 msgid "Card security code is invalid (wrong length)"
-msgstr "Card security code is invalid (wrong length)"
+msgstr "信用卡安全碼是無效的（錯誤的長度）"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:334
@@ -460,7 +460,7 @@ msgstr "空贝宝回应。"
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:833
 #, php-format
 msgid "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
-msgstr "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
+msgstr "親貝寶完成付款（事務ID： ％s，相關ID： ％s）"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:853
@@ -471,7 +471,7 @@ msgstr "无法连接到支付网关的一个问题。"
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:860
 #, fuzzy, php-format
 msgid "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s"
-msgstr "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s"
+msgstr "親貝寶付款失敗（相關ID： ％s）。付款被拒絕了由於錯誤： ％s"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:861
@@ -482,7 +482,7 @@ msgstr "付款错误："
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:19
 msgid "PayPal Payments Pro 2.0 (PayFlow)"
-msgstr "PayPal Payments Pro 2.0 (PayFlow)"
+msgstr "貝寶付款專業版2.0（PayFlow）"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:20
@@ -568,7 +568,7 @@ msgstr "住PayPal合作伙伴"
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:485
 #, php-format
 msgid "PayPal Pro payment completed (PNREF: %s)"
-msgstr "PayPal Pro payment completed (PNREF: %s)"
+msgstr "親貝寶完成付款（PNREF： ％s）"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:503

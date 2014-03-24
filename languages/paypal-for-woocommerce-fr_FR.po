@@ -142,7 +142,7 @@ msgstr "Debug"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:152
 msgid "Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )"
-msgstr "Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )"
+msgstr "Activer la journalisation ( <code>woocommerce/logs/paypal_express.txt</code> )"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:156
 msgid "Checkout Button Style"
@@ -274,7 +274,7 @@ msgstr "Activare 3D Secure"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:175
 msgid "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
-msgstr "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
+msgstr "Permet aux commerçants britanniques de passer 3-D Secure données d'authentification à PayPal de débit et cartes de crédit. Mise à jour de votre site avec 3-D Secure permet à votre participation dans les programmes SecureCode Verified by Visa et MasterCard. (Obligatoire pour accepter Maestro)"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:179
 msgid "Centinel PID"
@@ -327,11 +327,11 @@ msgstr "Expéditeur Les événements PayPal intérieur WooCommerce / logs / payp
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:318
 msgid "Card security code is invalid (only digits are allowed)"
-msgstr "Card security code is invalid (only digits are allowed)"
+msgstr "Code de sécurité de la carte n'est pas valide (seuls les chiffres sont autorisés)"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:322
 msgid "Card security code is invalid (wrong length)"
-msgstr "Card security code is invalid (wrong length)"
+msgstr "Code de sécurité de la carte n'est pas valide (mauvaise longueur)"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:334
 msgid "Card expiration date is invalid"
@@ -368,7 +368,7 @@ msgstr "Payer une authentification Échoué. Sil vous plaît essayer Une Autre M
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:535
 #, php-format
 msgid "3D Secure error: %s"
-msgstr "Erreur 3D Secure:%s"
+msgstr "Erreur 3D Secure: %s"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:827
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:463
@@ -378,7 +378,7 @@ msgstr "Vider Réponse PayPal."
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:833
 #, php-format
 msgid "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
-msgstr "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
+msgstr "Le paiement de PayPal Pro achevé (Transaction ID: %s, ID de corrélation: %s)"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:853
 msgid "There was a problem connecting to the payment gateway."
@@ -387,7 +387,7 @@ msgstr "Il y avait non Problème de connexion à la passerelle de paiement."
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:860
 #, fuzzy, php-format
 msgid "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s"
-msgstr "Le paiement de PayPal Pro Échoué. Le paiement was rejetée en raison dune Erreur:"
+msgstr "Le paiement de PayPal Pro échoué (ID de corrélation: %s). Le paiement a été rejetée en raison d'une erreur: %s"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:861
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:504
@@ -396,7 +396,7 @@ msgstr "Erreur de paiement:"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:19
 msgid "PayPal Payments Pro 2.0 (PayFlow)"
-msgstr "PayPal Payments Pro 2.0 (PayFlow)"
+msgstr "Les paiements de PayPal Pro 2.0 (PayFlow)"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:20
 msgid "PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected."
@@ -466,7 +466,7 @@ msgstr "Vivre PayPal partenaire"
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:485
 #, php-format
 msgid "PayPal Pro payment completed (PNREF: %s)"
-msgstr "PayPal Pro payment completed (PNREF: %s)"
+msgstr "Le paiement de PayPal Pro achevé (PNREF: %s)"
 
 #: paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:503
 msgid "PayPal Pro payment failed. Payment was rejected due to an error: "

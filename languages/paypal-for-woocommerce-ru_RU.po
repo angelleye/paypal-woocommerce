@@ -170,7 +170,7 @@ msgstr "Отлаживать"
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:152
 msgid "Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )"
-msgstr "Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )"
+msgstr "Включите ведение журнала ( <code>woocommerce/logs/paypal_express.txt</code> )"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:156
@@ -332,7 +332,7 @@ msgstr "Включить 3D Secure"
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:175
 msgid "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
-msgstr "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
+msgstr "Позволяет UK купцы пройти Безопасные данные аутентификации 3-D, чтобы PayPal для дебетовых и кредитных карт. Обновление сайта с 3-D Secure позволяет ваше участие в Verified By Visa и MasterCard SecureCode программ. (Требуется принять Maestro)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:179
@@ -398,12 +398,12 @@ msgstr "Войти PayPal события внутри WooCommerce / журнал
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:318
 msgid "Card security code is invalid (only digits are allowed)"
-msgstr "Card security code is invalid (only digits are allowed)"
+msgstr "Код безопасности карты является недействительным (только цифры допускаются)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:322
 msgid "Card security code is invalid (wrong length)"
-msgstr "Card security code is invalid (wrong length)"
+msgstr "Код безопасности карты является недействительным (неправильная длина)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:334
@@ -460,7 +460,7 @@ msgstr "Слейте PayPal ответ."
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:833
 #, php-format
 msgid "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
-msgstr "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
+msgstr "PayPal Pro оплаты завершен (ID транзакции: %s, Корреляция ID: %s)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:853
@@ -471,7 +471,7 @@ msgstr "Существовал проблема подключения к пла
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:860
 #, fuzzy, php-format
 msgid "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s"
-msgstr "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s"
+msgstr "PayPal Pro платеж не прошел (Корреляция ID: %s). Оплата была отклонена из-за ошибки: %s"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:861
@@ -482,7 +482,7 @@ msgstr "Ошибка Оплата:"
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:19
 msgid "PayPal Payments Pro 2.0 (PayFlow)"
-msgstr "PayPal Payments Pro 2.0 (PayFlow)"
+msgstr "PayPal Оплата Pro 2.0 (Payflow)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:20
@@ -568,7 +568,7 @@ msgstr "Жить Paypal Партнеру"
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:485
 #, php-format
 msgid "PayPal Pro payment completed (PNREF: %s)"
-msgstr "PayPal Pro payment completed (PNREF: %s)"
+msgstr "PayPal Pro оплаты завершен (PNREF: %s)"
 
 #: E:DocumentsMy Box FilesWoocommerce
 #: Workspaypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:503
