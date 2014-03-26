@@ -233,9 +233,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Use Checkout with PayPal image button', 'paypal-for-woocommerce' ),
                 'class' => 'checkout_with_pp_button_type',
                 'options' => array(
-                    'paypalimage' => 'PayPal Image Button',
-                    'textbutton' => 'PayPal Text Button',
-                    'customimage' => 'Custom My Image'
+                    'paypalimage' => 'PayPal Image',
+                    'textbutton' => 'PayPal Text',
+                    'customimage' => 'Custom Image'
                 ) // array of options for select/multiselects only
             ),
             'checkout_with_pp_button_type_my_custom' => array(
