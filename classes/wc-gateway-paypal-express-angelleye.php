@@ -24,7 +24,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->api_signature           = $this->settings['api_signature'];
         $this->testmode                = $this->settings['testmode'];
         $this->debug                   = $this->settings['debug'];
-        $this->checkout_with_pp_button = $this->settings['checkout_with_pp_button'];
+        //$this->checkout_with_pp_button = $this->settings['checkout_with_pp_button'];
         //$this->hide_checkout_button    = $this->settings['hide_checkout_button'];
         $this->show_on_checkout        = $this->settings['show_on_checkout'];
         $this->paypal_account_optional = $this->settings['paypal_account_optional'];
@@ -64,6 +64,73 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      *
      * @since 1.0.0
      */
+    public function admin_options() { ?>
+
+        <h3><?php echo isset( $this->method_title ) ? $this->method_title : __( 'Settings', 'woocommerce' ) ; ?></h3>
+
+        <?php echo isset( $this->method_description ) ? wpautop( $this->method_description ) : ''; ?>
+        <table class="form-table">
+            <?php $this->generate_settings_html(); ?>
+        </table>
+        <?php
+        $this->scriptAdminOption();
+    }
+    public function scriptAdminOption(){
+        ?>
+        <script type="text/javascript">
+            jQuery(document).ready(function ($){
+                if ($("#woocommerce_paypal_express_checkout_with_pp_button_type").val() == "customimage") {
+                    jQuery('.form-table tr td #woocommerce_paypal_express_checkout_with_pp_button_type_my_custom').each(function (i, el) {
+                        jQuery(el).closest('tr').show();
+                    });
+                } else {
+                    jQuery('.form-table tr td #woocommerce_paypal_express_checkout_with_pp_button_type_my_custom').each(function (i, el) {
+                        jQuery(el).closest('tr').hide();
+                    });
+                }
+                $("#woocommerce_paypal_express_checkout_with_pp_button_type").change(function () {
+                    if ($(this).val() == "customimage") {
+                        jQuery('.form-table tr td #woocommerce_paypal_express_checkout_with_pp_button_type_my_custom').each(function (i, el) {
+                            jQuery(el).closest('tr').show();
+                        });
+                    } else {
+                        jQuery('.form-table tr td #woocommerce_paypal_express_checkout_with_pp_button_type_my_custom').each(function (i, el) {
+                            jQuery(el).closest('tr').hide();
+                        });
+                    }
+                });
+                jQuery("#woocommerce_paypal_express_checkout_with_pp_button_type_my_custom").css({float: "left"});
+                jQuery("#woocommerce_paypal_express_checkout_with_pp_button_type_my_custom").after('<a href="#" id="upload" class="button">Upload</a>');
+                var custom_uploader;
+                $('#upload').click(function (e) {
+                    var BTthis = jQuery(this);
+                    e.preventDefault();
+                    //If the uploader object has already been created, reopen the dialog
+                    if (custom_uploader) {
+                        custom_uploader.open();
+                        return;
+                    }
+                    //Extend the wp.media object
+                    custom_uploader = wp.media.frames.file_frame = wp.media({
+                        title: 'Choose Image',
+                        button: {
+                            text: 'Choose Image'
+                        },
+                        multiple: false
+                    });
+                    //When a file is selected, grab the URL and set it as the text field's value
+                    custom_uploader.on('select', function () {
+                        attachment = custom_uploader.state().get('selection').first().toJSON();
+                        BTthis.prev('input').val(attachment.url);
+                    });
+                    //Open the uploader dialog
+                    custom_uploader.open();
+                });
+            });
+        </script>
+        <?php
+    }
+
     public function get_confirm_order($order){
         $this->confirm_order_id = $order->id;
     }
@@ -152,11 +219,30 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
+            /*
             'checkout_with_pp_button' => array(
                 'title' => __( 'Checkout Button Style', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
                 'label' => __( 'Use Checkout with PayPal image button', 'paypal-for-woocommerce' ),
                 'default' => 'yes'
+            ),
+            */
+            'checkout_with_pp_button_type' => array(
+                'title' => __( 'Checkout Button Type', 'paypal-for-woocommerce' ),
+                'type' => 'select',
+                'label' => __( 'Use Checkout with PayPal image button', 'paypal-for-woocommerce' ),
+                'class' => 'checkout_with_pp_button_type',
+                'options' => array(
+                    'paypalimage' => 'Paypal Text Button',
+                    'normal' => 'Paypal Image Button',
+                    'customimage' => 'Custom My Image'
+                ) // array of options for select/multiselects only
+            ),
+            'checkout_with_pp_button_type_my_custom' => array(
+                'title' => __( 'Select Image', 'paypal-for-woocommerce' ),
+                'type' => 'text',
+                'label' => __( 'Use Checkout with PayPal image button', 'paypal-for-woocommerce' ),
+                'class' => 'checkout_with_pp_button_type_my_custom',
             ),
             /*'hide_checkout_button' => array(
                 'title' => __( 'Standard Checkout Button', 'paypal-for-woocommerce' ),
@@ -1302,16 +1388,30 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				{
                     echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
                 }
-                if ( ! empty( $pp_settings['checkout_with_pp_button'] ) && $pp_settings['checkout_with_pp_button'] == 'yes' )
-				{
-					$button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
-                    echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
-                    echo "<img src='https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif' width='145' height='42' style='width: 145px; height: 42px; float:right; margin-right: 10px;' border='0' align='top' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
-                    echo "</a>";
-                }
-				else
-				{
-                    echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'" style="margin-top:10px;">' . __('Pay with PayPal', 'paypal-for-woocommerce') .'</a>';
+                switch($pp_settings['checkout_with_pp_button_type']){
+                    case "paypalimage":
+                        echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'" style="margin-top:10px;">' . __('Pay with PayPal', 'paypal-for-woocommerce') .'</a>';
+                        break;
+                    case "normal":
+                        $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
+                        echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
+                        echo "<img src='https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif' width='145' height='42' style='width: 145px; height: 42px; float:right; margin-right: 10px;' border='0' align='top' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
+                        echo "</a>";
+                        break;
+                    case "customimage":
+                        if(!empty($pp_settings['checkout_with_pp_button_type'])){
+                            $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
+                        }else{
+                            $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
+                            $button_img =  "https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif";
+                        }
+                        echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
+                        echo "<img src='{$button_img}' width='145' height='42' style='width: 145px; height: 42px; float:right; margin-right: 10px;' border='0' align='top' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
+                        echo "</a>";
+                        break;
+                    default:
+                        echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'" style="margin-top:10px;">' . __('Pay with PayPal', 'paypal-for-woocommerce') .'</a>';
+                        break;
                 }
             }
         }
