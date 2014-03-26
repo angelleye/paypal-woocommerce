@@ -233,8 +233,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Use Checkout with PayPal image button', 'paypal-for-woocommerce' ),
                 'class' => 'checkout_with_pp_button_type',
                 'options' => array(
-                    'paypalimage' => 'Paypal Text Button',
-                    'normal' => 'Paypal Image Button',
+                    'paypalimage' => 'PayPal Image Button',
+                    'textbutton' => 'PayPal Text Button',
                     'customimage' => 'Custom My Image'
                 ) // array of options for select/multiselects only
             ),
@@ -255,6 +255,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Show express checkout button on checkout page', 'paypal-for-woocommerce' ),
                 'default' => 'yes'
+            ),
+            'show_on_product_page' => array(
+                'title' => __( 'Product Page', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'label' => __( 'Show express checkout button on product page', 'paypal-for-woocommerce' ),
+                'default' => 'no'
             ),
             'paypal_account_optional' => array(
                 'title' => __( 'PayPal Account Optional', 'paypal-for-woocommerce' ),
@@ -343,7 +349,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $this->add_log( 'Error Code: ' . $ErrorCode );
                     $this->add_log( 'Error Severity Code: ' . $ErrorSeverityCode );
 
-                    // Notice admin if has any issue from Paypal
+                    // Notice admin if has any issue from PayPal
                     $admin_email = get_option("admin_email");
                     $message="There is a problem with your PayPal Express Checkout configuration.\n\n";
                     $message.="SetExpressCheckout API call failed.\n";
@@ -1388,29 +1394,23 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				{
                     echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
                 }
+
+                if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
                 switch($pp_settings['checkout_with_pp_button_type']){
-                    case "paypalimage":
-                        echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'" style="margin-top:10px;">' . __('Pay with PayPal', 'paypal-for-woocommerce') .'</a>';
+                    case "textbutton":
+                        echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'" style="margin-top:10px;margin-right:10px;float:right;width: 145px; ">' . __('Pay with PayPal', 'paypal-for-woocommerce') .'</a>';
                         break;
-                    case "normal":
+                    case "paypalimage":
                         $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
                         echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
                         echo "<img src='https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif' width='145' height='42' style='width: 145px; height: 42px; float:right; margin-right: 10px;' border='0' align='top' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
                         echo "</a>";
                         break;
                     case "customimage":
-                        if(!empty($pp_settings['checkout_with_pp_button_type'])){
-                            $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
-                        }else{
-                            $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
-                            $button_img =  "https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif";
-                        }
+                        $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
                         echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
-                        echo "<img src='{$button_img}' width='145' height='42' style='width: 145px; height: 42px; float:right; margin-right: 10px;' border='0' align='top' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
+                        echo "<img src='{$button_img}' width='145' height='42' style='width: 145px; height: auto; float:right; margin-right: 10px;' border='0' align='top' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
                         echo "</a>";
-                        break;
-                    default:
-                        echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'" style="margin-top:10px;">' . __('Pay with PayPal', 'paypal-for-woocommerce') .'</a>';
                         break;
                 }
             }
