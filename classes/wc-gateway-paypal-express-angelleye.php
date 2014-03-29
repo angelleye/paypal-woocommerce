@@ -382,6 +382,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $result = $this->CallGetShippingDetails( $this->get_session( 'TOKEN' ) );
             $this->add_log( print_r($result, true) );
             if ( ! empty( $result ) ) {
+                $this->set_session( 'RESULT', serialize($result) );
                 if ( isset( $result['SHIPTONAME'] ) ) WC()->customer->shiptoname =  $result['SHIPTONAME'] ;
                 if ( isset( $result['SHIPTOSTREET'] ) ) WC()->customer->set_address( $result['SHIPTOSTREET'] );
                 if ( isset( $result['SHIPTOCITY'] ) ) WC()->customer->set_city( $result['SHIPTOCITY'] );
@@ -391,6 +392,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ( isset( $result['SHIPTOCOUNTRYCODE'] ) ) WC()->customer->set_shipping_country( $result['SHIPTOCOUNTRYCODE'] );
                 if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_shipping_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
                 if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_shipping_postcode( $result['SHIPTOZIP'] );
+                if ( isset( $result['EMAIL'] ) ) $this->set_session( 'EMAIL', $result['EMAIL'] );
                 WC()->cart->calculate_totals();
             } else {
                 $this->add_log( "...ERROR: GetShippingDetails returned empty result" );
@@ -422,6 +424,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $order_id = $this->prepare_order();
                 else
                     $order_id = WC()->checkout()->create_order();
+                // Customer accounts
+                update_post_meta( $order_id, '_customer_user', 	get_current_user_id() );
                 $result = $this->CallGetShippingDetails( $this->get_session( 'TOKEN' ) );
                 if ( ! empty( $result ) ) {
                     update_post_meta( $order_id, '_payment_method',   $this->id );
@@ -1065,7 +1069,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptozip' => $shipping_postcode, 						// Required if shipping is included.  Postal code of shipping address.  20 char max.
             'shiptocountrycode' => $shipping_country, 				// Required if shipping is included.  Country code of shipping address.  2 char max.
             'shiptophonenum' => '',  				// Phone number for shipping address.  20 char max.
-            'notetext' => $customer_notes, 						// Note to the merchant.  255 char max.
+            'notetext' => @$customer_notes, 						// Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', 			// The payment method type.  Specify the value InstantPaymentOnly.
             'paymentaction' => 'Sale', 					// How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
             'paymentrequestid' => '',  				// A unique identifier of the specific payment request, which is required for parallel payments.
