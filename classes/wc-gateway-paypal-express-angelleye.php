@@ -28,7 +28,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         //$this->hide_checkout_button    = $this->settings['hide_checkout_button'];
         $this->show_on_checkout        = $this->settings['show_on_checkout'];
         $this->paypal_account_optional = $this->settings['paypal_account_optional'];
-        $this->landing_page            = $this->settings['landing_page'];
+        //$this->landing_page            = $this->settings['landing_page'];
         /*
         ' Define the PayPal Redirect URLs.
         ' 	This is the URL that the buyer is first sent to do authorize payment with their paypal account
@@ -268,14 +268,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Allow customers to checkout without a PayPal account using their credit card. PayPal Account Optional must be turned on in your PayPal account. ', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
-            'landing_page' => array(
+            /*
+			 * Removing the landing page option because it's not really necessary.
+			 * Instead, we're simply setting this based on the PayPal Account Optional setting. 
+			 * 
+			 'landing_page' => array(
                 'title' => __( 'Landing Page', 'paypal-for-woocommerce' ),
                 'type' => 'select',
                 'description' => __( 'Type of PayPal page to display as default. PayPal Account Optional must be checked for this option to be used.', 'paypal-for-woocommerce'  ),
                 'options' => array('login' => 'Login',
                     'billing' => 'Billing'),
                 'default' => 'login',
-            )/*,
+            )*//*,
             'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                 'type' => 'select',
@@ -659,8 +663,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'skipdetails' => '', 						// This is a custom field not included in the PayPal documentation.  It's used to specify whether you want to skip the GetExpressCheckoutDetails part of checkout or not.  See PayPal docs for more info.
             'email' => '', 								// Email address of the buyer as entered during checkout.  PayPal uses this value to pre-fill the PayPal sign-in page.  127 char max.
             'solutiontype' => $this->paypal_account_optional == 'yes' ? 'Sole' : '', 						// Type of checkout flow.  Must be Sole (express checkout for auctions) or Mark (normal express checkout)
-            'landingpage' => $this->landing_page == 'login' ? 'Login' : 'Billing', 						// Type of PayPal page to display.  Can be Billing or Login.  If billing it shows a full credit card form.  If Login it just shows the login screen.
-            'channeltype' => '', 						// Type of channel.  Must be Merchant (non-auction seller) or eBayItem (eBay auction)
+            'landingpage' => $this->paypal_account_optional == 'yes' ? 'Billing' : '', 						// Type of PayPal page to display.  Can be Billing or Login.  If billing it shows a full credit card form.  If Login it just shows the login screen.
+            'userselectedfundingsource' => $this->paypal_account_optional == 'yes' ? 'CreditCard' : '',		
+			'channeltype' => '', 						// Type of channel.  Must be Merchant (non-auction seller) or eBayItem (eBay auction)
             'giropaysuccessurl' => '', 					// The URL on the merchant site to redirect to after a successful giropay payment.  Only use this field if you are using giropay or bank transfer payment methods in Germany.
             'giropaycancelurl' => '', 					// The URL on the merchant site to redirect to after a canceled giropay payment.  Only use this field if you are using giropay or bank transfer methods in Germany.
             'banktxnpendingurl' => '',  				// The URL on the merchant site to transfer to after a bank transfter payment.  Use this field only if you are using giropay or bank transfer methods in Germany.
