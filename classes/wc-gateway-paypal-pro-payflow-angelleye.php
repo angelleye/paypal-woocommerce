@@ -271,7 +271,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         	$GLOBALS['wp_rewrite'] = new WP_Rewrite();
 		}
 		
-		$this->add_log($order->get_checkout_order_received_url());
+		if($this->debug)
+		{
+			$this->add_log($order->get_checkout_order_received_url());
+		}
 		
 		try
 		{
@@ -477,7 +480,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			/** 
 			 * More logs
 			 */
-			$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(woocommerce_get_page_id('thanks')))));
+			if($this->debug)
+			{
+				$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(woocommerce_get_page_id('thanks')))));
+			}
 			
 			/**
 			 * Check for errors or fraud filter warnings and proceed accordingly.
