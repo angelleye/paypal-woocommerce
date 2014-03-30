@@ -28,7 +28,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         //$this->hide_checkout_button    = $this->settings['hide_checkout_button'];
         $this->show_on_checkout        = $this->settings['show_on_checkout'];
         $this->paypal_account_optional = $this->settings['paypal_account_optional'];
+		$this->error_display_type      = $this->settings['error_display_type'];
         //$this->landing_page            = $this->settings['landing_page'];
+		
         /*
         ' Define the PayPal Redirect URLs.
         ' 	This is the URL that the buyer is first sent to do authorize payment with their paypal account
@@ -268,6 +270,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Allow customers to checkout without a PayPal account using their credit card. PayPal Account Optional must be turned on in your PayPal account. ', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
+			'error_display_type' => array(
+                'title' => __( 'Error Display Type', 'paypal-for-woocommerce' ),
+                'type' => 'select',
+                'label' => __( 'Display detailed or generic errors', 'paypal-for-woocommerce' ),
+                'class' => 'error_display_type_option',
+                'options' => array(
+                    'detailed' => 'Detailed',
+                    'generic' => 'Generic'
+                ),
+				'description' => 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
+									and helps to prevent fraudulant activity on your site.'
+            ),
             /*
 			 * Removing the landing page option because it's not really necessary.
 			 * Instead, we're simply setting this based on the PayPal Account Optional setting. 
@@ -338,11 +352,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $cancelURL        = urlencode( WC()->cart->get_cart_url() );
                 $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL );
                 $ack              = strtoupper( $resArray["ACK"] );
-                if ( $ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING" ) {
+                
+				if($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING")
+				{
                     $this->add_log( 'Redirecting to PayPal' );
                     $this->RedirectToPayPal( $resArray["TOKEN"] );
-                } else {
-                    //Display a user friendly Error on the page and log details
+                }
+				else
+				{
+                    // Display a user friendly Error on the page and log details
                     $ErrorCode         = urldecode( $resArray["L_ERRORCODE0"] );
                     $ErrorShortMsg     = urldecode( $resArray["L_SHORTMESSAGE0"] );
                     $ErrorLongMsg      = urldecode( $resArray["L_LONGMESSAGE0"] );
@@ -363,7 +381,26 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $message.='Detailed Error Message: ' . $ErrorLongMsg ."\n";
 
                     wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
-                    wc_add_notice(  sprintf( __( 'Please try a different a different payment method.', 'paypal-for-woocommerce' ) ), 'error' );
+					
+					// Generate error message based on Error Display Type setting
+					if($this->error_display_type == 'detailed')
+					{
+						$sec_error_notice = $ErrorCode.' - '.$ErrorLongMsg;
+						
+						/*
+						 * We don't need to translate this because I can't possibly fit all of PayPal's
+						 * errors into a translation file.  At least not easily.  May decide to revisit this 
+						 * at some point, but for now actual PayPal errors will be displayed in English.
+						 */
+						// wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );
+						wc_add_notice($sec_error_notice,'error');
+						
+					}
+					else
+					{
+						wc_add_notice(  sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) ), 'error' );	
+					}
+					
                     wp_redirect( get_permalink( wc_get_page_id( 'cart' ) ) );
                     exit;
                 }
@@ -450,7 +487,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log( '...Cart Total: '.WC()->cart->get_total() );
                 $this->add_log( "...Token:" . $this->get_session( 'TOKEN' ) );
                 $result = $this->ConfirmPayment( $order->order_total );
-                if ( $result['ACK'] == 'Success' ) {
+                
+				if($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning')
+				{
                     $this->add_log( 'Payment confirmed with PayPal successfully' );
                     $result = apply_filters( 'woocommerce_payment_successful_result', $result );
                     $order->add_order_note( __( 'PayPal Express payment completed', 'paypal-for-woocommerce' ) .
@@ -459,13 +498,58 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $order->payment_complete();
                     // Empty the Cart
                     WC()->cart->empty_cart();
-                } else {
+					wp_redirect( $this->get_return_url( $order ) );
+					exit();
+                }
+				else
+				{
                     $this->add_log( '...Error confirming order '.$order_id.' with PayPal' );
                     $this->add_log( '...response:'.print_r( $result, true ) );
-                    wc_add_notice(  sprintf( __( 'PayPal Express Checkout is not available at this time.', 'paypal-for-woocommerce' ) ), 'error' );
-                }
-                wp_redirect( $this->get_return_url( $order ) );
-                exit;
+					
+					// Display a user friendly Error on the page and log details
+                    $ErrorCode         = urldecode( $result["L_ERRORCODE0"] );
+                    $ErrorShortMsg     = urldecode( $result["L_SHORTMESSAGE0"] );
+                    $ErrorLongMsg      = urldecode( $result["L_LONGMESSAGE0"] );
+                    $ErrorSeverityCode = urldecode( $result["L_SEVERITYCODE0"] );
+                    $this->add_log( 'SetExpressCheckout API call failed. ' );
+                    $this->add_log( 'Detailed Error Message: ' . $ErrorLongMsg );
+                    $this->add_log( 'Short Error Message: ' . $ErrorShortMsg );
+                    $this->add_log( 'Error Code: ' . $ErrorCode );
+                    $this->add_log( 'Error Severity Code: ' . $ErrorSeverityCode );
+
+                    // Notice admin if has any issue from PayPal
+                    $admin_email = get_option("admin_email");
+                    $message="There is a problem with your PayPal Express Checkout configuration.\n\n";
+                    $message.="DoExpressCheckoutPayment API call failed.\n";
+                    $message.='Error Code: ' . $ErrorCode."\n";
+                    $message.='Error Severity Code: ' . $ErrorSeverityCode."\n";
+                    $message.='Short Error Message: ' . $ErrorShortMsg ."\n";
+                    $message.='Detailed Error Message: ' . $ErrorLongMsg ."\n";
+
+                    wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
+					
+					// Generate error message based on Error Display Type setting
+					if($this->error_display_type == 'detailed')
+					{
+						$sec_error_notice = $ErrorCode.' - '.$ErrorLongMsg;
+						
+						/*
+						 * We don't need to translate this because I can't possibly fit all of PayPal's
+						 * errors into a translation file.  At least not easily.  May decide to revisit this 
+						 * at some point, but for now actual PayPal errors will be displayed in English.
+						 */
+						// wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );
+						wc_add_notice($sec_error_notice,'error');
+						
+					}
+					else
+					{
+						wc_add_notice(  sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) ), 'error' );	
+					}
+					
+					wp_redirect(get_permalink(wc_get_page_id('cart')));
+					exit();
+                }				
             }
         }
     }
