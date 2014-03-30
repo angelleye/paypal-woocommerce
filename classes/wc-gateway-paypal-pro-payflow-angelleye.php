@@ -23,7 +23,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->liveurl				= 'https://payflowpro.paypal.com';
 		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
 		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD' ) );
-		$this->debug				= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
 		
 		// Load the form fields
 		$this->init_form_fields();
@@ -42,6 +41,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->paypal_user     = ! empty( $this->settings['paypal_user'] ) ? $this->settings['paypal_user'] : $this->paypal_vendor;
 
 		$this->testmode        = $this->settings['testmode'];
+		$this->debug		   = isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
 
         if ($this->testmode=="yes") {
             $this->paypal_vendor   = $this->settings['sandbox_paypal_vendor'];
