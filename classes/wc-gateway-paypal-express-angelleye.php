@@ -174,44 +174,44 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'sandbox_api_username' => array(
                 'title' => __( 'Sandbox API User Name', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Create sandbox accounts and obtain API credentials from within your 
+									<a href="http://developer.paypal.com">PayPal developer account</a>.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'sandbox_api_password' => array(
                 'title' => __( 'Sandbox API Password', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'sandbox_api_signature' => array(
                 'title' => __( 'Sandbox API Signature', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_username' => array(
                 'title' => __( 'Live API User Name', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using 
+									<a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_password' => array(
                 'title' => __( 'Live API Password', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_signature' => array(
                 'title' => __( 'Live API Signature', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'testmode' => array(
                 'title' => __( 'PayPal Sandbox', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
                 'label' => __( 'Enable PayPal Sandbox', 'paypal-for-woocommerce' ),
-                'default' => 'yes'
+                'default' => 'yes', 
+				'description' => 'The sandbox is PayPal\'s test environment and is only for use with sandbox accounts created 
+									within your <a href="http://developer.paypal.com" target="_blank">PayPal developer account</a>.'
             ),
             'debug' => array(
                 'title' => __( 'Debug', 'paypal-for-woocommerce' ),
@@ -253,20 +253,22 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'show_on_checkout' => array(
                 'title' => __( 'Standard Checkout', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'label' => __( 'Show express checkout button on checkout page', 'paypal-for-woocommerce' ),
+                'label' => __( 'Show Express Checkout button on checkout page', 'paypal-for-woocommerce' ),
                 'default' => 'yes'
             ),
             'show_on_product_page' => array(
                 'title' => __( 'Product Page', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'label' => __( 'Show express checkout button on product page', 'paypal-for-woocommerce' ),
-                'default' => 'no'
+                'label' => __( 'Show the Express Checkout button on product detail pages.', 'paypal-for-woocommerce' ),
+                'default' => 'no', 
+				'description' => 'Allows customers to checkout using PayPal directly from a product page.'
             ),
             'paypal_account_optional' => array(
                 'title' => __( 'PayPal Account Optional', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'label' => __( 'Allow customers to checkout without a PayPal account using their credit card. PayPal Account Optional must be turned on in your PayPal account. ', 'paypal-for-woocommerce' ),
-                'default' => 'no'
+                'label' => __( 'Allow customers to checkout without a PayPal account using their credit card.', 'paypal-for-woocommerce' ),
+                'default' => 'no', 
+				'description' => 'PayPal Account Optional must be turned on in your PayPal account profile under Website Preferences.'
             ),
             /*
 			 * Removing the landing page option because it's not really necessary.
