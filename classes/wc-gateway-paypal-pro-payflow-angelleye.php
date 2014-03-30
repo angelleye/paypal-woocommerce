@@ -23,7 +23,8 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->liveurl				= 'https://payflowpro.paypal.com';
 		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
 		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD' ) );
-
+		$this->debug				= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
+		
 		// Load the form fields
 		$this->init_form_fields();
 
@@ -108,6 +109,13 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 							'description' => __( 'Place the payment gateway in development mode.', 'paypal-for-woocommerce' ),
 							'default'     => 'no'
 						),
+			'debug' => array(
+                'title' => __( 'Debug Log', 'woocommerce' ),
+                'type' => 'checkbox',
+                'label' => __( 'Enable logging', 'woocommerce' ),
+                'default' => 'no',
+                'description' => __( 'Log PayPal events inside <code>woocommerce/logs/paypal-payflow.txt</code>' ),
+            ),
             'sandbox_paypal_vendor'   => array(
                 'title'       => __( 'Sandbox PayPal Vendor', 'paypal-for-woocommerce' ),
                 'type'        => 'text',
@@ -452,8 +460,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			/**
 			 * Log results
 			 */
-			$this->add_log('PayFlow Endpoint: '.$PayPal->APIEndPoint);
-            $this->add_log(print_r($PayPalResult,true));
+			if($this->debug)
+			{
+				$this->add_log('PayFlow Endpoint: '.$PayPal->APIEndPoint);
+            	$this->add_log(print_r($PayPalResult,true));
+			}
 			
 			/**
 			 * Error check
