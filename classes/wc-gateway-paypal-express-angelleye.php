@@ -29,6 +29,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->show_on_checkout        = $this->settings['show_on_checkout'];
         $this->paypal_account_optional = $this->settings['paypal_account_optional'];
         $this->landing_page            = $this->settings['landing_page'];
+		$this->show_bill_me_later	   = isset( $this->settings['show_bill_me_later'] ) ? $this->settings['show_bill_me_later'] : '';
         /*
         ' Define the PayPal Redirect URLs.
         ' 	This is the URL that the buyer is first sent to do authorize payment with their paypal account
@@ -268,6 +269,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Allow customers to checkout without a PayPal account using their credit card. PayPal Account Optional must be turned on in your PayPal account. ', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
+			'show_bill_me_later' => array(
+					'title' => __( 'Enable Bill Me Later', 'paypal-for-woocommerce' ),
+					'type' => 'checkbox',
+					'label' => __( 'Show the Bill Me Later button next to the Pay Pal Express button on the Checkout page.', 'paypal-for-woocommerce' ),
+					'default' => 'yes'
+				),
             'landing_page' => array(
                 'title' => __( 'Landing Page', 'paypal-for-woocommerce' ),
                 'type' => 'select',
@@ -328,11 +335,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) )
                     define( 'WOOCOMMERCE_CHECKOUT', true );
                 $this->add_log( 'Start Express Checkout' );
+				
+				/**
+				 * Check if the EC button used was the BML button.
+				 * This $useBML flag will be used to adjust the SEC request accordingly.
+				 */
+				if(isset($_GET['use_bml']) && 'true' == $_GET['use_bml'])
+				{
+					$useBML = true;
+				}
+				else
+				{
+					$useBML = false;
+				}
+				
                 WC()->cart->calculate_totals();
                 $paymentAmount    = WC()->cart->get_total();
                 $returnURL        = urlencode( add_query_arg( 'pp_action', 'revieworder', get_permalink( woocommerce_get_page_id( 'review_order' )) ) );
                 $cancelURL        = urlencode( WC()->cart->get_cart_url() );
-                $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL );
+                $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $useBML );
                 $ack              = strtoupper( $resArray["ACK"] );
                 if ( $ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING" ) {
                     $this->add_log( 'Redirecting to PayPal' );
@@ -606,7 +627,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @returnURL (string) URL for PayPal to send the buyer to after review and continue from PayPal.
      * @cancelURL (string) URL for PayPal to send the buyer to if they cancel the payment.
      */
-    function CallSetExpressCheckout($paymentAmount,$returnURL,$cancelURL)
+    function CallSetExpressCheckout($paymentAmount,$returnURL,$cancelURL,$useBML = false)
     {
         /*
          * Display message to user if session has expired.
@@ -683,6 +704,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'taxidtype' => '', 							// The buyer's tax ID type.  This field is required for Brazil and used for Brazil only.  Values:  BR_CPF for individuals and BR_CNPJ for businesses.
             'taxid' => ''								// The buyer's tax ID.  This field is required for Brazil and used for Brazil only.  The tax ID is 11 single-byte characters for individutals and 14 single-byte characters for businesses.
         );
+		
+		/**
+		 * If BML is being used, override the necessary parameters
+		 */
+		if($useBML)
+		{
+			$SECFields['solutiontype'] = 'Sole';
+			$SECFields['landingpage'] = 'Billing';
+			$SECFields['userselectedfundingsource'] = 'BML';	
+		}
 
         // Basic array of survey choices.  Nothing but the values should go in here.
         $SurveyChoices = array('Choice 1', 'Choice2', 'Choice3', 'etc');
@@ -1413,6 +1444,22 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         echo "</a>";
                         break;
                 }
+				
+				if ( $pp_settings['show_bill_me_later'] == 'yes' ) 
+				{
+
+					// Bill Me Later button
+					$bml_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg( 'use_bml', 'true', add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) ) . '" >';
+					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='145' height='32' style='width: 145px; height: 32px; float: right; clear: both;' border='0' align='top' alt='Check out with PayPal Bill Me Later'/>";
+					$bml_button_markup .= '</a>';
+
+					// Marketing Message
+					$bml_button_markup .= '<a href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
+					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='130' height='22' style='width: 130px; height: 22px; float: right; clear: both;' border='0' align='top' />";
+					$bml_button_markup .= '</a>';
+					
+					echo $bml_button_markup;
+				}
             }
         }
     }
