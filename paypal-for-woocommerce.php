@@ -75,7 +75,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 		{
 			$custom_actions = array(
 				'configure' => sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wc-settings&tab=checkout' ), __( 'Configure', 'paypal-for-woocommerce' ) ),
-				'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://docs.angelleye.com/paypal-for-woocommerce/', __( 'Docs', 'paypal-for-woocommerce' ) ),
+				'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://www.angelleye.com/category/docs/paypal-for-woocommerce/', __( 'Docs', 'paypal-for-woocommerce' ) ),
 				'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/plugin/paypal-for-woocommerce', __( 'Support', 'paypal-for-woocommerce' ) ),
 				'review'    => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/view/plugin-reviews/paypal-for-woocommerce', __( 'Write a Review', 'paypal-for-woocommerce' ) ),
 			);
