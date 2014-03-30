@@ -388,15 +388,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					if($this->error_display_type == 'detailed')
 					{
 						$sec_error_notice = $ErrorCode.' - '.$ErrorLongMsg;
-						
-						/*
-						 * We don't need to translate this because I can't possibly fit all of PayPal's
-						 * errors into a translation file.  At least not easily.  May decide to revisit this 
-						 * at some point, but for now actual PayPal errors will be displayed in English.
-						 */
-						// wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );
-						wc_add_notice($sec_error_notice,'error');
-						
+						wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );						
 					}
 					else
 					{
@@ -534,15 +526,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					if($this->error_display_type == 'detailed')
 					{
 						$sec_error_notice = $ErrorCode.' - '.$ErrorLongMsg;
-						
-						/*
-						 * We don't need to translate this because I can't possibly fit all of PayPal's
-						 * errors into a translation file.  At least not easily.  May decide to revisit this 
-						 * at some point, but for now actual PayPal errors will be displayed in English.
-						 */
-						// wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );
-						wc_add_notice($sec_error_notice,'error');
-						
+						wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );						
 					}
 					else
 					{
