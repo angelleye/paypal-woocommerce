@@ -399,7 +399,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     exit;
                 }
             }
-        } elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'revieworder' ) {
+        }
+		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'revieworder' )
+		{
             // The customer has logged into PayPal and approved order.
             // Retrieve the shipping details and present the order for completion.
             if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) )
@@ -414,9 +416,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             $this->add_log( "...Token:" . $this->get_session( 'TOKEN' ) );
             $this->add_log( "...PayerID: " . $this->get_session( 'PayerID' ) );
-            $result = $this->CallGetShippingDetails( $this->get_session( 'TOKEN' ) );
-            $this->add_log( print_r($result, true) );
-            if ( ! empty( $result ) ) {
+            
+			$result = $this->CallGetShippingDetails($this->get_session('TOKEN'));
+			
+            if(!empty($result))
+			{
                 if ( isset( $result['SHIPTONAME'] ) ) WC()->customer->shiptoname =  $result['SHIPTONAME'] ;
                 if ( isset( $result['SHIPTOSTREET'] ) ) WC()->customer->set_address( $result['SHIPTOSTREET'] );
                 if ( isset( $result['SHIPTOCITY'] ) ) WC()->customer->set_city( $result['SHIPTOCITY'] );
@@ -427,12 +431,28 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_shipping_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
                 if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_shipping_postcode( $result['SHIPTOZIP'] );
                 WC()->cart->calculate_totals();
-            } else {
+				
+				/**
+				 * Save GECD data in sessions for use in DECP
+				 */
+				$this->set_session('shiptoname',isset($result['SHIPTONAME']) ? $result['SHIPTONAME'] : '');
+				$this->set_session('shiptostreet',isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
+				$this->set_session('shiptostreet2',isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
+				$this->set_session('shiptocity',isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '');
+				$this->set_session('shiptocountrycode',isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
+				$this->set_session('shiptostate',isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '');
+				$this->set_session('shiptozip',isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
+				$this->set_session('payeremail',isset($result['EMAIL']) ? $result['EMAIL'] : '');
+            } 
+			else
+			{
                 $this->add_log( "...ERROR: GetShippingDetails returned empty result" );
             }
-        } elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'payaction' ) {
-            if ( isset( $_POST ) ) {
-
+        }
+		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'payaction' )
+		{
+            if ( isset( $_POST ) ) 
+			{
                 // Update customer shipping and payment method to posted method
                 $chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
 
@@ -457,23 +477,23 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $order_id = $this->prepare_order();
                 else
                     $order_id = WC()->checkout()->create_order();
-                $result = $this->CallGetShippingDetails( $this->get_session( 'TOKEN' ) );
-                if ( ! empty( $result ) ) {
-                    update_post_meta( $order_id, '_payment_method',   $this->id );
-                    update_post_meta( $order_id, '_payment_method_title',  $this->title );
-                    update_post_meta( $order_id, '_billing_email',    $result['EMAIL'] );
-                    update_post_meta( $order_id, '_shipping_first_name',  $result['SHIPTONAME'] );
-                    update_post_meta( $order_id, '_shipping_last_name',  "" );
-                    update_post_meta( $order_id, '_shipping_company',   "" );
-                    update_post_meta( $order_id, '_shipping_address_1',  $result['SHIPTOSTREET'] );
-                    update_post_meta( $order_id, '_shipping_address_2',  ( isset( $result['SHIPTOSTREET2'] ) ) ? $result['SHIPTOSTREET2'] : '' );
-                    update_post_meta( $order_id, '_shipping_city',    $result['SHIPTOCITY'] );
-                    update_post_meta( $order_id, '_shipping_postcode',   $result['SHIPTOZIP'] );
-                    update_post_meta( $order_id, '_shipping_country',   $result['SHIPTOCOUNTRYCODE'] );
-                    update_post_meta( $order_id, '_shipping_state',   $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
-                } else {
-                    $this->add_log( "...ERROR: GetShippingDetails returned empty result" );
-                }
+				
+				/**
+				 * Update meta data with session data
+				 */
+				update_post_meta( $order_id, '_payment_method',   $this->id );
+				update_post_meta( $order_id, '_payment_method_title',  $this->title );
+				update_post_meta( $order_id, '_billing_email',    $this->get_session('payeremail'));
+				update_post_meta( $order_id, '_shipping_first_name',  $this->get_session('shiptoname'));
+				update_post_meta( $order_id, '_shipping_last_name',  "" );
+				update_post_meta( $order_id, '_shipping_company',   "" );
+				update_post_meta( $order_id, '_shipping_address_1',  $this->get_session('shiptostreet'));
+				update_post_meta( $order_id, '_shipping_address_2',  $this->get_session('shiptostreet2'));
+				update_post_meta( $order_id, '_shipping_city',    $this->get_session('shiptocity'));
+				update_post_meta( $order_id, '_shipping_postcode',   $this->get_session('shiptozip'));
+				update_post_meta( $order_id, '_shipping_country',   $this->get_session('shiptocountrycode'));
+				update_post_meta( $order_id, '_shipping_state',   $this->get_state_code( $this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
+               
                 $this->add_log( '...Order ID: ' . $order_id );
                 $order = new WC_Order( $order_id );
                 do_action( 'woocommerce_ppe_do_payaction', $order );
