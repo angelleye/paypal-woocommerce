@@ -29,7 +29,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->show_on_checkout        = $this->settings['show_on_checkout'];
         $this->paypal_account_optional = $this->settings['paypal_account_optional'];
         $this->landing_page            = $this->settings['landing_page'];
-		$this->show_bill_me_later	   = isset( $this->settings['show_bill_me_later'] ) ? $this->settings['show_bill_me_later'] : '';
+		$this->show_bill_me_later	   = isset($this->settings['show_bill_me_later']) ? $this->settings['show_bill_me_later'] : '';
+		
         /*
         ' Define the PayPal Redirect URLs.
         ' 	This is the URL that the buyer is first sent to do authorize payment with their paypal account
@@ -1407,6 +1408,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     static function woocommerce_paypal_express_checkout_button_angelleye()
 	{
         global $pp_settings, $pp_pro, $pp_payflow;
+		
+		/*echo '<pre />';
+		print_r($pp_settings);
+		exit();*/
+		
         if (@$pp_settings['enabled']=='yes' && 0 < WC()->cart->total )
 		{
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
@@ -1445,17 +1451,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         break;
                 }
 				
-				if ( $pp_settings['show_bill_me_later'] == 'yes' ) 
+				/**
+				 * Displays the Bill Me Later checkout button if enabled in EC settings.
+				 */
+				if($pp_settings['show_bill_me_later'] == 'yes') 
 				{
-
 					// Bill Me Later button
+					$bml_button_markup = '';
 					$bml_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg( 'use_bml', 'true', add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) ) . '" >';
-					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='145' height='32' style='width: 145px; height: 32px; float: right; clear: both;' border='0' align='top' alt='Check out with PayPal Bill Me Later'/>";
+					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='145' height='32' style='width: 145px; height: 32px; float: right; clear: both; margin:3px 10px 0 0;' border='0' align='top' alt='Check out with PayPal Bill Me Later'/>";
 					$bml_button_markup .= '</a>';
 
 					// Marketing Message
 					$bml_button_markup .= '<a href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
-					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='130' height='22' style='width: 130px; height: 22px; float: right; clear: both;' border='0' align='top' />";
+					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='130' height='22' style='width: 130px; height: 22px; float: right; clear: both; margin:3px 10px 0 0' border='0' align='top' />";
 					$bml_button_markup .= '</a>';
 					
 					echo $bml_button_markup;
