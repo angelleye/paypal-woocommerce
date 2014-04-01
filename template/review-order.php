@@ -4,16 +4,22 @@
  */
 
 global $woocommerce;
+$checked = get_option('woocommerce_enable_guest_checkout');
 ?>
 <style type="text/css">
     #payment{
         display:none;
     }
+    <?php if ( !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']) ): ?>
+    .shipping, .order-total{
+        display: none;
+    }
+    <?php endif;?>
 </style>
 <div id="paypalexpress_order_review">
     <?php
-    $checked = get_option('woocommerce_enable_guest_checkout');
-    if ( !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']) ): ?>
+
+    if ( !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']) ): woocommerce_order_review(); ?>
         <style type="text/css">
 
             .woocommerce #content p.form-row input.button,
@@ -67,11 +73,11 @@ global $woocommerce;
             <div class="clear"></div>
             <p class="form-row form-row-first">
                 <label for="paypalexpress_order_review_password">Password:<span class="required">*</span></label>
-                <input type="password" name="password" id="paypalexpress_order_review_password" />
+                <input type="password" name="password" id="paypalexpress_order_review_password" class="input-text" />
             </p>
             <p class="form-row form-row-last">
                 <label for="paypalexpress_order_review_repassword">Re Password:<span class="required">*</span></label>
-                <input type="password" name="repassword" id="paypalexpress_order_review_repassword" />
+                <input type="password" name="repassword" id="paypalexpress_order_review_repassword" class="input-text"/>
             </p>
             <div class="clear"></div>
             <p>
@@ -81,7 +87,6 @@ global $woocommerce;
             </p>
         </form>
 
-    <?php woocommerce_order_review(); ?>
     <?php else: ?>
         <?php
         echo '<form class="checkout" method="POST" action="' . add_query_arg( 'pp_action', 'payaction', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) . '">';
