@@ -539,6 +539,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				update_post_meta( $order_id, '_shipping_postcode',   $this->get_session('shiptozip'));
 				update_post_meta( $order_id, '_shipping_country',   $this->get_session('shiptocountrycode'));
 				update_post_meta( $order_id, '_shipping_state',   $this->get_state_code( $this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
+                update_post_meta( $order_id, '_customer_user', 	get_current_user_id() );
                
                 $this->add_log( '...Order ID: ' . $order_id );
                 $order = new WC_Order( $order_id );
