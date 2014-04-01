@@ -75,8 +75,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 		{
 			$custom_actions = array(
 				'configure' => sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wc-settings&tab=checkout' ), __( 'Configure', 'paypal-for-woocommerce' ) ),
-				'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://docs.angelleye.com/paypal-for-woocommerce/', __( 'Docs', 'paypal-for-woocommerce' ) ),
-				'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://www.angelleye.com/contact-us/', __( 'Support', 'paypal-for-woocommerce' ) ),
+				'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://www.angelleye.com/category/docs/paypal-for-woocommerce/', __( 'Docs', 'paypal-for-woocommerce' ) ),
+				'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/plugin/paypal-for-woocommerce', __( 'Support', 'paypal-for-woocommerce' ) ),
 				'review'    => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/view/plugin-reviews/paypal-for-woocommerce', __( 'Write a Review', 'paypal-for-woocommerce' ) ),
 			);
 	
@@ -97,7 +97,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
                 if(!in_array(@$_GET['action'],array('activate-plugin', 'upgrade-plugin','activate','do-plugin-upgrade')) && is_plugin_active($plugin) ) {
                     deactivate_plugins( $plugin );
-                    wp_die( "<strong>".$plugin_data['Name']."</strong> requires <strong>WooCommerce</strong> plugin to work normally. Please active it or install it from <a href=\"http://wordpress.org/plugins/woocommerce/\" target=\"_blank\">here</a>.<br /><br />Back to the WordPress <a href='".get_admin_url(null, 'plugins.php')."'>Plugins page</a>." );
+                    wp_die( "<strong>".$plugin_data['Name']."</strong> requires <strong>WooCommerce</strong> plugin to work normally. Please activate it or install it from <a href=\"http://wordpress.org/plugins/woocommerce/\" target=\"_blank\">here</a>.<br /><br />Back to the WordPress <a href='".get_admin_url(null, 'plugins.php')."'>Plugins page</a>." );
                 }
             }
             $user_id = $current_user->ID;

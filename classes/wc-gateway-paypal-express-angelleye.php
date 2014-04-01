@@ -28,7 +28,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         //$this->hide_checkout_button    = $this->settings['hide_checkout_button'];
         $this->show_on_checkout        = $this->settings['show_on_checkout'];
         $this->paypal_account_optional = $this->settings['paypal_account_optional'];
-        $this->landing_page            = $this->settings['landing_page'];
+		$this->error_display_type 	   = isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
+        //$this->landing_page            = $this->settings['landing_page'];
+		
         /*
         ' Define the PayPal Redirect URLs.
         ' 	This is the URL that the buyer is first sent to do authorize payment with their paypal account
@@ -174,44 +176,44 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'sandbox_api_username' => array(
                 'title' => __( 'Sandbox API User Name', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Create sandbox accounts and obtain API credentials from within your 
+									<a href="http://developer.paypal.com">PayPal developer account</a>.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'sandbox_api_password' => array(
                 'title' => __( 'Sandbox API Password', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'sandbox_api_signature' => array(
                 'title' => __( 'Sandbox API Signature', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_username' => array(
                 'title' => __( 'Live API User Name', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using 
+									<a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_password' => array(
                 'title' => __( 'Live API Password', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_signature' => array(
                 'title' => __( 'Live API Signature', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'testmode' => array(
                 'title' => __( 'PayPal Sandbox', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
                 'label' => __( 'Enable PayPal Sandbox', 'paypal-for-woocommerce' ),
-                'default' => 'yes'
+                'default' => 'yes', 
+				'description' => 'The sandbox is PayPal\'s test environment and is only for use with sandbox accounts created 
+									within your <a href="http://developer.paypal.com" target="_blank">PayPal developer account</a>.'
             ),
             'debug' => array(
                 'title' => __( 'Debug', 'paypal-for-woocommerce' ),
@@ -233,9 +235,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Use Checkout with PayPal image button', 'paypal-for-woocommerce' ),
                 'class' => 'checkout_with_pp_button_type',
                 'options' => array(
-                    'paypalimage' => 'PayPal Image Button',
-                    'textbutton' => 'PayPal Text Button',
-                    'customimage' => 'Custom My Image'
+                    'paypalimage' => 'PayPal Image',
+                    'textbutton' => 'PayPal Text',
+                    'customimage' => 'Custom Image'
                 ) // array of options for select/multiselects only
             ),
             'checkout_with_pp_button_type_my_custom' => array(
@@ -253,29 +255,47 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'show_on_checkout' => array(
                 'title' => __( 'Standard Checkout', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'label' => __( 'Show express checkout button on checkout page', 'paypal-for-woocommerce' ),
+                'label' => __( 'Show Express Checkout button on checkout page', 'paypal-for-woocommerce' ),
                 'default' => 'yes'
             ),
             'show_on_product_page' => array(
                 'title' => __( 'Product Page', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'label' => __( 'Show express checkout button on product page', 'paypal-for-woocommerce' ),
-                'default' => 'no'
+                'label' => __( 'Show the Express Checkout button on product detail pages.', 'paypal-for-woocommerce' ),
+                'default' => 'no', 
+				'description' => 'Allows customers to checkout using PayPal directly from a product page.'
             ),
             'paypal_account_optional' => array(
                 'title' => __( 'PayPal Account Optional', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'label' => __( 'Allow customers to checkout without a PayPal account using their credit card. PayPal Account Optional must be turned on in your PayPal account. ', 'paypal-for-woocommerce' ),
-                'default' => 'no'
+                'label' => __( 'Allow customers to checkout without a PayPal account using their credit card.', 'paypal-for-woocommerce' ),
+                'default' => 'no', 
+				'description' => 'PayPal Account Optional must be turned on in your PayPal account profile under Website Preferences.'
             ),
-            'landing_page' => array(
+			'error_display_type' => array(
+                'title' => __( 'Error Display Type', 'paypal-for-woocommerce' ),
+                'type' => 'select',
+                'label' => __( 'Display detailed or generic errors', 'paypal-for-woocommerce' ),
+                'class' => 'error_display_type_option',
+                'options' => array(
+                    'detailed' => 'Detailed',
+                    'generic' => 'Generic'
+                ),
+				'description' => 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
+									and helps to prevent fraudulant activity on your site.'
+            ),
+            /*
+			 * Removing the landing page option because it's not really necessary.
+			 * Instead, we're simply setting this based on the PayPal Account Optional setting. 
+			 * 
+			 'landing_page' => array(
                 'title' => __( 'Landing Page', 'paypal-for-woocommerce' ),
                 'type' => 'select',
                 'description' => __( 'Type of PayPal page to display as default. PayPal Account Optional must be checked for this option to be used.', 'paypal-for-woocommerce'  ),
                 'options' => array('login' => 'Login',
                     'billing' => 'Billing'),
                 'default' => 'login',
-            )/*,
+            )*//*,
             'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                 'type' => 'select',
@@ -334,11 +354,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $cancelURL        = urlencode( WC()->cart->get_cart_url() );
                 $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL );
                 $ack              = strtoupper( $resArray["ACK"] );
-                if ( $ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING" ) {
+                
+				if($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING")
+				{
                     $this->add_log( 'Redirecting to PayPal' );
                     $this->RedirectToPayPal( $resArray["TOKEN"] );
-                } else {
-                    //Display a user friendly Error on the page and log details
+                }
+				else
+				{
+                    // Display a user friendly Error on the page and log details
                     $ErrorCode         = urldecode( $resArray["L_ERRORCODE0"] );
                     $ErrorShortMsg     = urldecode( $resArray["L_SHORTMESSAGE0"] );
                     $ErrorLongMsg      = urldecode( $resArray["L_LONGMESSAGE0"] );
@@ -359,12 +383,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $message.='Detailed Error Message: ' . $ErrorLongMsg ."\n";
 
                     wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
-                    wc_add_notice(  sprintf( __( 'Please try a different a different payment method.', 'paypal-for-woocommerce' ) ), 'error' );
+					
+					// Generate error message based on Error Display Type setting
+					if($this->error_display_type == 'detailed')
+					{
+						$sec_error_notice = $ErrorCode.' - '.$ErrorLongMsg;
+						wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );						
+					}
+					else
+					{
+						wc_add_notice(  sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) ), 'error' );	
+					}
+					
                     wp_redirect( get_permalink( wc_get_page_id( 'cart' ) ) );
                     exit;
                 }
             }
-        } elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'revieworder' ) {
+        }
+		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'revieworder' )
+		{
             // The customer has logged into PayPal and approved order.
             // Retrieve the shipping details and present the order for completion.
             if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) )
@@ -379,10 +416,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             $this->add_log( "...Token:" . $this->get_session( 'TOKEN' ) );
             $this->add_log( "...PayerID: " . $this->get_session( 'PayerID' ) );
-            $result = $this->CallGetShippingDetails( $this->get_session( 'TOKEN' ) );
-            $this->add_log( print_r($result, true) );
-            if ( ! empty( $result ) ) {
-                $this->set_session( 'RESULT', serialize($result) );
+            
+			$result = $this->CallGetShippingDetails($this->get_session('TOKEN'));
+			
+            if(!empty($result))
+			{
                 if ( isset( $result['SHIPTONAME'] ) ) WC()->customer->shiptoname =  $result['SHIPTONAME'] ;
                 if ( isset( $result['SHIPTOSTREET'] ) ) WC()->customer->set_address( $result['SHIPTOSTREET'] );
                 if ( isset( $result['SHIPTOCITY'] ) ) WC()->customer->set_city( $result['SHIPTOCITY'] );
@@ -392,14 +430,29 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ( isset( $result['SHIPTOCOUNTRYCODE'] ) ) WC()->customer->set_shipping_country( $result['SHIPTOCOUNTRYCODE'] );
                 if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_shipping_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
                 if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_shipping_postcode( $result['SHIPTOZIP'] );
-                if ( isset( $result['EMAIL'] ) ) $this->set_session( 'EMAIL', $result['EMAIL'] );
                 WC()->cart->calculate_totals();
-            } else {
+				
+				/**
+				 * Save GECD data in sessions for use in DECP
+				 */
+				$this->set_session('shiptoname',isset($result['SHIPTONAME']) ? $result['SHIPTONAME'] : '');
+				$this->set_session('shiptostreet',isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
+				$this->set_session('shiptostreet2',isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
+				$this->set_session('shiptocity',isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '');
+				$this->set_session('shiptocountrycode',isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
+				$this->set_session('shiptostate',isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '');
+				$this->set_session('shiptozip',isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
+				$this->set_session('payeremail',isset($result['EMAIL']) ? $result['EMAIL'] : '');
+            } 
+			else
+			{
                 $this->add_log( "...ERROR: GetShippingDetails returned empty result" );
             }
-        } elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'payaction' ) {
-            if ( isset( $_POST ) ) {
-
+        }
+		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'payaction' )
+		{
+            if ( isset( $_POST ) ) 
+			{
                 // Update customer shipping and payment method to posted method
                 $chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
 
@@ -424,25 +477,23 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $order_id = $this->prepare_order();
                 else
                     $order_id = WC()->checkout()->create_order();
-                // Customer accounts
-                update_post_meta( $order_id, '_customer_user', 	get_current_user_id() );
-                $result = $this->CallGetShippingDetails( $this->get_session( 'TOKEN' ) );
-                if ( ! empty( $result ) ) {
-                    update_post_meta( $order_id, '_payment_method',   $this->id );
-                    update_post_meta( $order_id, '_payment_method_title',  $this->title );
-                    update_post_meta( $order_id, '_billing_email',    $result['EMAIL'] );
-                    update_post_meta( $order_id, '_shipping_first_name',  $result['SHIPTONAME'] );
-                    update_post_meta( $order_id, '_shipping_last_name',  "" );
-                    update_post_meta( $order_id, '_shipping_company',   "" );
-                    update_post_meta( $order_id, '_shipping_address_1',  $result['SHIPTOSTREET'] );
-                    update_post_meta( $order_id, '_shipping_address_2',  ( isset( $result['SHIPTOSTREET2'] ) ) ? $result['SHIPTOSTREET2'] : '' );
-                    update_post_meta( $order_id, '_shipping_city',    $result['SHIPTOCITY'] );
-                    update_post_meta( $order_id, '_shipping_postcode',   $result['SHIPTOZIP'] );
-                    update_post_meta( $order_id, '_shipping_country',   $result['SHIPTOCOUNTRYCODE'] );
-                    update_post_meta( $order_id, '_shipping_state',   $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
-                } else {
-                    $this->add_log( "...ERROR: GetShippingDetails returned empty result" );
-                }
+				
+				/**
+				 * Update meta data with session data
+				 */
+				update_post_meta( $order_id, '_payment_method',   $this->id );
+				update_post_meta( $order_id, '_payment_method_title',  $this->title );
+				update_post_meta( $order_id, '_billing_email',    $this->get_session('payeremail'));
+				update_post_meta( $order_id, '_shipping_first_name',  $this->get_session('shiptoname'));
+				update_post_meta( $order_id, '_shipping_last_name',  "" );
+				update_post_meta( $order_id, '_shipping_company',   "" );
+				update_post_meta( $order_id, '_shipping_address_1',  $this->get_session('shiptostreet'));
+				update_post_meta( $order_id, '_shipping_address_2',  $this->get_session('shiptostreet2'));
+				update_post_meta( $order_id, '_shipping_city',    $this->get_session('shiptocity'));
+				update_post_meta( $order_id, '_shipping_postcode',   $this->get_session('shiptozip'));
+				update_post_meta( $order_id, '_shipping_country',   $this->get_session('shiptocountrycode'));
+				update_post_meta( $order_id, '_shipping_state',   $this->get_state_code( $this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
+               
                 $this->add_log( '...Order ID: ' . $order_id );
                 $order = new WC_Order( $order_id );
                 do_action( 'woocommerce_ppe_do_payaction', $order );
@@ -450,7 +501,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log( '...Cart Total: '.WC()->cart->get_total() );
                 $this->add_log( "...Token:" . $this->get_session( 'TOKEN' ) );
                 $result = $this->ConfirmPayment( $order->order_total );
-                if ( $result['ACK'] == 'Success' ) {
+                
+				if($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning')
+				{
                     $this->add_log( 'Payment confirmed with PayPal successfully' );
                     $result = apply_filters( 'woocommerce_payment_successful_result', $result );
                     $order->add_order_note( __( 'PayPal Express payment completed', 'paypal-for-woocommerce' ) .
@@ -459,13 +512,50 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $order->payment_complete();
                     // Empty the Cart
                     WC()->cart->empty_cart();
-                } else {
+					wp_redirect( $this->get_return_url( $order ) );
+					exit();
+                }
+				else
+				{
                     $this->add_log( '...Error confirming order '.$order_id.' with PayPal' );
                     $this->add_log( '...response:'.print_r( $result, true ) );
-                    wc_add_notice(  sprintf( __( 'PayPal Express Checkout is not available at this time.', 'paypal-for-woocommerce' ) ), 'error' );
-                }
-                wp_redirect( $this->get_return_url( $order ) );
-                exit;
+					
+					// Display a user friendly Error on the page and log details
+                    $ErrorCode         = urldecode( $result["L_ERRORCODE0"] );
+                    $ErrorShortMsg     = urldecode( $result["L_SHORTMESSAGE0"] );
+                    $ErrorLongMsg      = urldecode( $result["L_LONGMESSAGE0"] );
+                    $ErrorSeverityCode = urldecode( $result["L_SEVERITYCODE0"] );
+                    $this->add_log( 'SetExpressCheckout API call failed. ' );
+                    $this->add_log( 'Detailed Error Message: ' . $ErrorLongMsg );
+                    $this->add_log( 'Short Error Message: ' . $ErrorShortMsg );
+                    $this->add_log( 'Error Code: ' . $ErrorCode );
+                    $this->add_log( 'Error Severity Code: ' . $ErrorSeverityCode );
+
+                    // Notice admin if has any issue from PayPal
+                    $admin_email = get_option("admin_email");
+                    $message="There is a problem with your PayPal Express Checkout configuration.\n\n";
+                    $message.="DoExpressCheckoutPayment API call failed.\n";
+                    $message.='Error Code: ' . $ErrorCode."\n";
+                    $message.='Error Severity Code: ' . $ErrorSeverityCode."\n";
+                    $message.='Short Error Message: ' . $ErrorShortMsg ."\n";
+                    $message.='Detailed Error Message: ' . $ErrorLongMsg ."\n";
+
+                    wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
+					
+					// Generate error message based on Error Display Type setting
+					if($this->error_display_type == 'detailed')
+					{
+						$sec_error_notice = $ErrorCode.' - '.$ErrorLongMsg;
+						wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );						
+					}
+					else
+					{
+						wc_add_notice(  sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) ), 'error' );	
+					}
+					
+					wp_redirect(get_permalink(wc_get_page_id('cart')));
+					exit();
+                }				
             }
         }
     }
@@ -663,8 +753,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'skipdetails' => '', 						// This is a custom field not included in the PayPal documentation.  It's used to specify whether you want to skip the GetExpressCheckoutDetails part of checkout or not.  See PayPal docs for more info.
             'email' => '', 								// Email address of the buyer as entered during checkout.  PayPal uses this value to pre-fill the PayPal sign-in page.  127 char max.
             'solutiontype' => $this->paypal_account_optional == 'yes' ? 'Sole' : '', 						// Type of checkout flow.  Must be Sole (express checkout for auctions) or Mark (normal express checkout)
-            'landingpage' => $this->landing_page == 'login' ? 'Login' : 'Billing', 						// Type of PayPal page to display.  Can be Billing or Login.  If billing it shows a full credit card form.  If Login it just shows the login screen.
-            'channeltype' => '', 						// Type of channel.  Must be Merchant (non-auction seller) or eBayItem (eBay auction)
+            'landingpage' => $this->paypal_account_optional == 'yes' ? 'Billing' : '', 						// Type of PayPal page to display.  Can be Billing or Login.  If billing it shows a full credit card form.  If Login it just shows the login screen.
+            'userselectedfundingsource' => $this->paypal_account_optional == 'yes' ? 'CreditCard' : '',		
+			'channeltype' => '', 						// Type of channel.  Must be Merchant (non-auction seller) or eBayItem (eBay auction)
             'giropaysuccessurl' => '', 					// The URL on the merchant site to redirect to after a successful giropay payment.  Only use this field if you are using giropay or bank transfer payment methods in Germany.
             'giropaycancelurl' => '', 					// The URL on the merchant site to redirect to after a canceled giropay payment.  Only use this field if you are using giropay or bank transfer methods in Germany.
             'banktxnpendingurl' => '',  				// The URL on the merchant site to transfer to after a bank transfter payment.  Use this field only if you are using giropay or bank transfer methods in Germany.
@@ -1069,7 +1160,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptozip' => $shipping_postcode, 						// Required if shipping is included.  Postal code of shipping address.  20 char max.
             'shiptocountrycode' => $shipping_country, 				// Required if shipping is included.  Country code of shipping address.  2 char max.
             'shiptophonenum' => '',  				// Phone number for shipping address.  20 char max.
-            'notetext' => @$customer_notes, 						// Note to the merchant.  255 char max.
+            'notetext' => $customer_notes, 						// Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', 			// The payment method type.  Specify the value InstantPaymentOnly.
             'paymentaction' => 'Sale', 					// How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
             'paymentrequestid' => '',  				// A unique identifier of the specific payment request, which is required for parallel payments.

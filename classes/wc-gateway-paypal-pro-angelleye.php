@@ -61,17 +61,18 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         // Load the settings.
         $this->init_settings();
         // Get setting values
-        $this->title 			= $this->settings['title'];
-        $this->description 		= $this->settings['description'];
-        $this->enabled 			= $this->settings['enabled'];
-        $this->api_username 	= $this->settings['api_username'];
-        $this->api_password 	= $this->settings['api_password'];
-        $this->api_signature 	= $this->settings['api_signature'];
-        $this->testmode 		= $this->settings['testmode'];
-        $this->enable_3dsecure 	= isset( $this->settings['enable_3dsecure'] ) && $this->settings['enable_3dsecure'] == 'yes' ? true : false;
-        $this->liability_shift 	= isset( $this->settings['liability_shift'] ) && $this->settings['liability_shift'] == 'yes' ? true : false;
-        $this->debug			= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
-        $this->send_items		= true;//isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'yes' ? true : false;
+        $this->title 				= $this->settings['title'];
+        $this->description 			= $this->settings['description'];
+        $this->enabled 				= $this->settings['enabled'];
+        $this->api_username 		= $this->settings['api_username'];
+        $this->api_password 		= $this->settings['api_password'];
+        $this->api_signature 		= $this->settings['api_signature'];
+        $this->testmode 			= $this->settings['testmode'];
+		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
+        $this->enable_3dsecure 		= isset( $this->settings['enable_3dsecure'] ) && $this->settings['enable_3dsecure'] == 'yes' ? true : false;
+        $this->liability_shift 		= isset( $this->settings['liability_shift'] ) && $this->settings['liability_shift'] == 'yes' ? true : false;
+        $this->debug				= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
+        $this->send_items			= true;//isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'yes' ? true : false;
         // 3DS
         if ( $this->enable_3dsecure ) {
             $this->centinel_pid		= $this->settings['centinel_pid'];
@@ -135,37 +136,35 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             'sandbox_api_username' => array(
                 'title' => __( 'Sandbox API Username', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Create sandbox accounts and obtain API credentials from within your 
+									<a href="http://developer.paypal.com">PayPal developer account</a>.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'sandbox_api_password' => array(
                 'title' => __( 'Sandbox API Password', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'sandbox_api_signature' => array(
                 'title' => __( 'Sandbox API Signature', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may create sandbox accounts and obtain credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_username' => array(
                 'title' => __( 'Live API Username', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using 
+									<a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_password' => array(
                 'title' => __( 'Live API Password', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_signature' => array(
                 'title' => __( 'Live API Signature', 'paypal-for-woocommerce' ),
                 'type' => 'password',
-                'description' => __( 'You may obtain your API credentials from your PayPal account profile.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'enable_3dsecure' => array(
@@ -200,6 +199,18 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 'description' => __( 'Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
+			'error_display_type' => array(
+                'title' => __( 'Error Display Type', 'paypal-for-woocommerce' ),
+                'type' => 'select',
+                'label' => __( 'Display detailed or generic errors', 'paypal-for-woocommerce' ),
+                'class' => 'error_display_type_option',
+                'options' => array(
+                    'detailed' => 'Detailed',
+                    'generic' => 'Generic'
+                ),
+				'description' => 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
+									and helps to prevent fraudulant activity on your site.'
+            ),
             /*'send_items' => array(
                 'title' => __( 'Send Item Details', 'paypal-for-woocommerce' ),
                 'label' => __( 'Send Line Items to PayPal', 'paypal-for-woocommerce' ),
@@ -212,7 +223,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Enable logging', 'woocommerce' ),
                 'default' => 'no',
-                'description' => __( 'Log PayPal events inside <code>woocommerce/logs/paypal-pro.txt</code>' ),
+                'description' => __( 'Log PayPal events inside <code>woocommerce/logs/paypal-pro.txt</code>'
+			)
             )
         );
     }
@@ -846,19 +858,31 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		}
 		else
 		{
+			// Get error message
+			$error_code = isset($PayPalResult['ERRORS'][0]['L_ERRORCODE']) ? $PayPalResult['ERRORS'][0]['L_ERRORCODE'] : '';
+			$long_message = isset($PayPalResult['ERRORS'][0]['L_LONGMESSAGE']) ? $PayPalResult['ERRORS'][0]['L_LONGMESSAGE'] : '';
+			$error_message = $error_code.'-'.$long_message;
+			
 			if($this->debug)
 			{
                 $this->log->add('paypal-pro','Error '.print_r($PayPalResult['ERRORS'],true));
 			}
-			throw new Exception( __( 'There was a problem connecting to the payment gateway.', 'paypal-for-woocommerce'));
 			
-			// Get error message
-			$error_code = $PayPalResult['ERRORS'][0]['L_ERRORCODE'];
-			$error_message = $error_code.'-'.$PayPalResult['ERRORS'][0]['L_LONGMESSAGE'];
+			$order->update_status( 'failed', sprintf(__('PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s', 
+						'paypal-for-woocommerce'), $PayPalResult['CORRELATIONID'], '(' . $PayPalResult['L_ERRORCODE0'] . ') ' . '"' . $error_message . '"' ) );
 			
-			// Payment failed :(
-			$order->update_status( 'failed', sprintf(__('PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s', 'paypal-for-woocommerce'), $PayPalResult['CORRELATIONID'], '(' . $PayPalResult['L_ERRORCODE0'] . ') ' . '"' . $error_message . '"' ) );
-			wc_add_notice(__('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message, "error" );
+			// Generate error message based on Error Display Type setting
+			if($this->error_display_type == 'detailed')
+			{
+				throw new Exception( __( $error_message, 'paypal-for-woocommerce'));
+				wc_add_notice(__('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message, "error" );		
+			}
+			else
+			{
+				throw new Exception( __( 'There was a problem connecting to the payment gateway.', 'paypal-for-woocommerce'));
+				wc_add_notice(__('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message, "error" );		
+			}
+			
 			return;
 		}
 	}
