@@ -10,16 +10,14 @@ $checked = get_option('woocommerce_enable_guest_checkout');
     #payment{
         display:none;
     }
-    <?php if ( !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']) ): ?>
-    .shipping, .order-total{
-        display: none;
-    }
-    <?php endif;?>
 </style>
 <div id="paypalexpress_order_review">
     <?php
 
-    if ( !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']) ): woocommerce_order_review(); ?>
+    if ( !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']) ):  ?>
+        <form class="checkout" method="POST" action="">
+            <?php woocommerce_order_review();?>
+        </form>
         <style type="text/css">
 
             .woocommerce #content p.form-row input.button,
@@ -60,6 +58,7 @@ $checked = get_option('woocommerce_enable_guest_checkout');
             )
         );
         $result = unserialize(WC()->session->RESULT);
+        $email = (!empty($_POST['email']))?$_POST['email']:$result['EMAIL'];
         ?>
         </form>
         <header>
@@ -68,7 +67,7 @@ $checked = get_option('woocommerce_enable_guest_checkout');
         <form action="" method="post">
             <p class="form-row form-row-first">
                 <label for="paypalexpress_order_review_email">Email:<span class="required">*</span></label>
-                <input style="width: 100%;" type="email" name="email" id="paypalexpress_order_review_email" value="<?php echo $result['EMAIL']; ?>" />
+                <input style="width: 100%;" type="email" name="email" id="paypalexpress_order_review_email" value="<?php echo $email; ?>" />
             </p>
             <div class="clear"></div>
             <p class="form-row form-row-first">
@@ -83,7 +82,6 @@ $checked = get_option('woocommerce_enable_guest_checkout');
             <p>
                 <input class="button" type="submit" name="createaccount" value="Create Account" />
                 <input type="hidden" name="address" value="<?php echo WC()->customer->get_address(); ?>">
-                <input type="hidden" name="email" value="<?php echo $result['EMAIL']; ?>">
             </p>
         </form>
 

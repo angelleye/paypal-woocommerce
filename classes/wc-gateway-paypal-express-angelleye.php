@@ -452,7 +452,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
 
             if(isset($_POST['createaccount'])){
-                if(empty($_POST['password']) || empty($_POST['repassword'])){
+                if(empty($_POST['email'])){
+                    wc_add_notice(__('Please provide a valid email address.', 'woocommerce'), 'error');
+                }if(empty($_POST['password']) || empty($_POST['repassword'])){
                     wc_add_notice(__('Password is required.', 'woocommerce'), 'error');
                 }elseif($_POST['password'] != $_POST['repassword']){
                     wc_add_notice(__('Passwords do not match.', 'woocommerce'), 'error');
