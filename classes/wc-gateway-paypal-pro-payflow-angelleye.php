@@ -23,7 +23,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->liveurl				= 'https://payflowpro.paypal.com';
 		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
 		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD' ) );
-
+		
 		// Load the form fields
 		$this->init_form_fields();
 
@@ -31,22 +31,25 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->init_settings();
 
 		// Get setting values
-		$this->title           = $this->settings['title'];
-		$this->description     = $this->settings['description'];
-		$this->enabled         = $this->settings['enabled'];
+		$this->title          		= $this->settings['title'];
+		$this->description    		= $this->settings['description'];
+		$this->enabled        		= $this->settings['enabled'];
 
-		$this->paypal_vendor   = $this->settings['paypal_vendor'];
-		$this->paypal_partner  = ! empty( $this->settings['paypal_partner'] ) ? $this->settings['paypal_partner'] : 'PayPal';
-		$this->paypal_password = $this->settings['paypal_password'];
-		$this->paypal_user     = ! empty( $this->settings['paypal_user'] ) ? $this->settings['paypal_user'] : $this->paypal_vendor;
+		$this->paypal_vendor  		= $this->settings['paypal_vendor'];
+		$this->paypal_partner 		= ! empty( $this->settings['paypal_partner'] ) ? $this->settings['paypal_partner'] : 'PayPal';
+		$this->paypal_password 		= $this->settings['paypal_password'];
+		$this->paypal_user     		= ! empty( $this->settings['paypal_user'] ) ? $this->settings['paypal_user'] : $this->paypal_vendor;
 
-		$this->testmode        = $this->settings['testmode'];
+		$this->testmode        		= $this->settings['testmode'];
+		$this->debug		   		= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
+		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
+
 
         if ($this->testmode=="yes") {
-            $this->paypal_vendor   = $this->settings['sandbox_paypal_vendor'];
-            $this->paypal_partner  = ! empty( $this->settings['sandbox_paypal_partner'] ) ? $this->settings['sandbox_paypal_partner'] : 'PayPal';
-            $this->paypal_password = $this->settings['sandbox_paypal_password'];
-            $this->paypal_user     = ! empty( $this->settings['sandbox_paypal_user'] ) ? $this->settings['sandbox_paypal_user'] : $this->paypal_vendor;
+            $this->paypal_vendor   	= $this->settings['sandbox_paypal_vendor'];
+            $this->paypal_partner  	= ! empty( $this->settings['sandbox_paypal_partner'] ) ? $this->settings['sandbox_paypal_partner'] : 'PayPal';
+            $this->paypal_password 	= $this->settings['sandbox_paypal_password'];
+            $this->paypal_user     	= ! empty( $this->settings['sandbox_paypal_user'] ) ? $this->settings['sandbox_paypal_user'] : $this->paypal_vendor;
         }
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
@@ -108,6 +111,25 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 							'description' => __( 'Place the payment gateway in development mode.', 'paypal-for-woocommerce' ),
 							'default'     => 'no'
 						),
+			'debug' => array(
+                'title' => __( 'Debug Log', 'woocommerce' ),
+                'type' => 'checkbox',
+                'label' => __( 'Enable logging', 'woocommerce' ),
+                'default' => 'no',
+                'description' => __( 'Log PayPal events inside <code>woocommerce/logs/paypal-payflow.txt</code>' ),
+            ),
+			'error_display_type' => array(
+                'title' => __( 'Error Display Type', 'paypal-for-woocommerce' ),
+                'type' => 'select',
+                'label' => __( 'Display detailed or generic errors', 'paypal-for-woocommerce' ),
+                'class' => 'error_display_type_option',
+                'options' => array(
+                    'detailed' => 'Detailed',
+                    'generic' => 'Generic'
+                ),
+				'description' => 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
+									and helps to prevent fraudulant activity on your site.'
+            ),
             'sandbox_paypal_vendor'   => array(
                 'title'       => __( 'Sandbox PayPal Vendor', 'paypal-for-woocommerce' ),
                 'type'        => 'text',
@@ -263,7 +285,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         	$GLOBALS['wp_rewrite'] = new WP_Rewrite();
 		}
 		
-		$this->add_log($order->get_checkout_order_received_url());
+		if($this->debug)
+		{
+			$this->add_log($order->get_checkout_order_received_url());
+		}
 		
 		try
 		{
@@ -452,8 +477,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			/**
 			 * Log results
 			 */
-			$this->add_log('PayFlow Endpoint: '.$PayPal->APIEndPoint);
-            $this->add_log(print_r($PayPalResult,true));
+			if($this->debug)
+			{
+				$this->add_log('PayFlow Endpoint: '.$PayPal->APIEndPoint);
+            	$this->add_log(print_r($PayPalResult,true));
+			}
 			
 			/**
 			 * Error check
@@ -466,7 +494,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			/** 
 			 * More logs
 			 */
-			$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(woocommerce_get_page_id('thanks')))));
+			if($this->debug)
+			{
+				$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(woocommerce_get_page_id('thanks')))));
+			}
 			
 			/**
 			 * Check for errors or fraud filter warnings and proceed accordingly.
@@ -499,9 +530,18 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             }
 			else
 			{
-                // Payment failed :(
-                $order->update_status( 'failed', __('PayPal Pro payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce' ) . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"' );
-                wc_add_notice( __( 'Payment error:', 'paypal-for-woocommerce' ) . ' ' . $PayPalResult['RESPMSG'], "error" );
+				$order->update_status( 'failed', __('PayPal Pro payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce' ) . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"' );
+				
+				// Generate error message based on Error Display Type setting
+				if($this->error_display_type == 'detailed')
+				{
+                	wc_add_notice( __( 'Payment error:', 'paypal-for-woocommerce' ) . ' ' . $PayPalResult['RESULT'].'-'.$PayPalResult['RESPMSG'], "error" );
+				}
+				else
+				{
+                	wc_add_notice( __( 'Payment error:', 'paypal-for-woocommerce' ) . ' There was a problem processing your payment.  Please try another method.', "error" );
+				}
+				
                 return;
 
             }
