@@ -402,6 +402,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
 		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'revieworder' )
 		{
+            wc_clear_notices();
             // The customer has logged into PayPal and approved order.
             // Retrieve the shipping details and present the order for completion.
             if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) )
@@ -421,6 +422,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			
             if(!empty($result))
 			{
+                $this->set_session('RESULT',serialize($result));
                 if ( isset( $result['SHIPTONAME'] ) ) WC()->customer->shiptoname =  $result['SHIPTONAME'] ;
                 if ( isset( $result['SHIPTOSTREET'] ) ) WC()->customer->set_address( $result['SHIPTOSTREET'] );
                 if ( isset( $result['SHIPTOCITY'] ) ) WC()->customer->set_city( $result['SHIPTOCITY'] );
@@ -431,7 +433,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_shipping_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
                 if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_shipping_postcode( $result['SHIPTOZIP'] );
                 WC()->cart->calculate_totals();
-				
+
 				/**
 				 * Save GECD data in sessions for use in DECP
 				 */
@@ -447,6 +449,48 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			else
 			{
                 $this->add_log( "...ERROR: GetShippingDetails returned empty result" );
+            }
+
+            if(isset($_POST['createaccount'])){
+                if(empty($_POST['password']) || empty($_POST['repassword'])){
+                    wc_add_notice(__('Password is required.', 'woocommerce'), 'error');
+                }elseif($_POST['password'] != $_POST['repassword']){
+                    wc_add_notice(__('Passwords do not match.', 'woocommerce'), 'error');
+                }elseif(get_user_by( 'email',  $_POST['email'])!=false){
+                    wc_add_notice(__('This email address is already registered.', 'woocommerce'), 'error');
+                }else{
+                    $data  = array(
+                        'user_login' => addslashes( $_POST['email'] ),
+                        'user_email' => addslashes( $_POST['email'] ),
+                        'user_pass' => addslashes( $_POST['password'] ),
+                    );
+                    $userID = wp_insert_user($data);
+                    if( !is_wp_error($userID) ) {
+                        update_user_meta( $userID, 'billing_first_name',  $result['FIRSTNAME'] );
+                        update_user_meta( $userID, 'billing_last_name',   $result['LASTNAME'] );
+                        update_user_meta( $userID, 'billing_address_1',  $result['SHIPTOSTREET'] );
+                        update_user_meta( $userID, 'billing_state',   $result['SHIPTOSTATE'] );
+                        update_user_meta( $userID, 'billing_email',   $result['EMAIL'] );
+                        /* USER SIGON */
+                        $user_login     = esc_attr($_POST["email"]);
+                        $user_password  = esc_attr($_POST["password"]);
+                        $user_email     = esc_attr($_POST["email"]);
+                        $creds = array(
+                            'user_login' => $user_login,
+                            'user_password' => $user_password,
+                            'remember' => true,
+                        );
+
+                        $user = wp_signon( $creds, false );
+                        if ( is_wp_error($user) )
+                            wc_add_notice($user->get_error_message(), 'error');
+                        else
+                        {
+                            wp_set_current_user($user->ID); //Here is where we update the global user variables
+                        }
+                    }
+
+                }
             }
         }
 		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'payaction' )
