@@ -135,7 +135,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
             }
             if(@$pp_settings['enabled']=='yes' && @$pp_standard['enabled']=='yes' && !get_user_meta($user_id, 'ignore_pp_check')){
-                echo '<div class="error"><p>' . sprintf(__('WooCommerce PayPal Express is enabled, please disable Paypal Standard | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.add_query_arg("ignore_pp_check",0).'"', __("Hide this notice", 'woocommerce')) . '</p></div>';
+                echo '<div class="error"><p>' . sprintf(__('You currently have both PayPal (standard) and Express Checkout enabled.  It is recommended that you disable the standard PayPal from <a href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal">the settings page</a> when using Express Checkout. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.add_query_arg("ignore_pp_check",0).'"', __("Hide this notice", 'woocommerce')) . '</p></div>';
             }
 
             if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) && !get_user_meta($user_id, 'ignore_pp_woo')) {
