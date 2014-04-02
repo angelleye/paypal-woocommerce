@@ -11,6 +11,13 @@
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.html
  * Domain Path:       /languages
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
+ *
+ *************
+ * Attribution
+ *************
+ * PayPal for WooCommerce is a derivative work of the code from WooThemes,
+ * which is licensed with GPLv3.  This code is also licensed under the terms 
+ * of the GNU Public License, version 3.
  */
 
 if (!defined('ABSPATH'))
