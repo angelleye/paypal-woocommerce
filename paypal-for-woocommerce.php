@@ -36,17 +36,18 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'plugins_loaded', array($this, 'init'));
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
-			add_action( 'wp_enqueue_scripts', array($this, 'woocommerce_paypal_express_init_styles'), 12 );
+            add_action( 'wp_enqueue_scripts', array($this, 'woocommerce_paypal_express_init_styles'), 12 );
             add_action( 'admin_notices', array($this, 'admin_notices') );
             add_action( 'admin_init', array($this, 'set_ignore_tag'));
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
-			
-			// http://stackoverflow.com/questions/22577727/problems-adding-action-links-to-wordpress-plugin
-			$basename = plugin_basename(__FILE__);
-			$prefix = is_network_admin() ? 'network_admin_' : '';
-			add_filter("{$prefix}plugin_action_links_$basename",array($this,'plugin_action_links'),10,4);
+
+            // http://stackoverflow.com/questions/22577727/problems-adding-action-links-to-wordpress-plugin
+            $basename = plugin_basename(__FILE__);
+            $prefix = is_network_admin() ? 'network_admin_' : '';
+            add_filter("{$prefix}plugin_action_links_$basename",array($this,'plugin_action_links'),10,4);
             add_action( 'woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'));
             add_action( 'add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
+            add_action( 'woocommerce_after_single_variation', array($this, 'buy_now_button_js'));
             add_action('admin_print_scripts', array( $this , 'onetarek_wpmut_admin_scripts' ) );
             add_action('admin_print_styles', array( $this , 'onetarek_wpmut_admin_styles' ) );
 
@@ -62,27 +63,28 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         function onetarek_wpmut_admin_styles()
         {
             wp_enqueue_style('thickbox');
+
         }
-		/**
-		 * Return the plugin action links.  This will only be called if the plugin
-		 * is active.
-		 *
-		 * @since 1.0.6
-		 * @param array $actions associative array of action names to anchor tags
-		 * @return array associative array of plugin action links
-		 */
-		public function plugin_action_links($actions, $plugin_file, $plugin_data, $context)
-		{
-			$custom_actions = array(
-				'configure' => sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wc-settings&tab=checkout' ), __( 'Configure', 'paypal-for-woocommerce' ) ),
-				'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://docs.angelleye.com/paypal-for-woocommerce/', __( 'Docs', 'paypal-for-woocommerce' ) ),
-				'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://www.angelleye.com/contact-us/', __( 'Support', 'paypal-for-woocommerce' ) ),
-				'review'    => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/view/plugin-reviews/paypal-for-woocommerce', __( 'Write a Review', 'paypal-for-woocommerce' ) ),
-			);
-	
-			// add the links to the front of the actions list
-			return array_merge( $custom_actions, $actions );
-		}
+        /**
+         * Return the plugin action links.  This will only be called if the plugin
+         * is active.
+         *
+         * @since 1.0.6
+         * @param array $actions associative array of action names to anchor tags
+         * @return array associative array of plugin action links
+         */
+        public function plugin_action_links($actions, $plugin_file, $plugin_data, $context)
+        {
+            $custom_actions = array(
+                'configure' => sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wc-settings&tab=checkout' ), __( 'Configure', 'paypal-for-woocommerce' ) ),
+                'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://docs.angelleye.com/paypal-for-woocommerce/', __( 'Docs', 'paypal-for-woocommerce' ) ),
+                'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://www.angelleye.com/contact-us/', __( 'Support', 'paypal-for-woocommerce' ) ),
+                'review'    => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/view/plugin-reviews/paypal-for-woocommerce', __( 'Write a Review', 'paypal-for-woocommerce' ) ),
+            );
+
+            // add the links to the front of the actions list
+            return array_merge( $custom_actions, $actions );
+        }
 
         function woocommerce_product_title($title){
             $title = str_replace(array("&#8211;", "&#8211"), array("-"), $title);
@@ -169,12 +171,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         function woocommerce_paypal_express_init_styles() {
             global $pp_settings;
-            /*
-            if ( ! is_admin() && is_cart() && isset( $pp_settings['hide_checkout_button'] ) && $pp_settings['hide_checkout_button'] == 'yes' )
+            if ( ! is_admin() && is_cart())
                 wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/cart.css' , __FILE__ ) );
-            */
+
             if ( ! is_admin() && is_checkout() )
                 wp_enqueue_style( 'ppe_checkout', plugins_url( 'assets/css/checkout.css' , __FILE__ ) );
+            if ( ! is_admin() && is_single()){
+                wp_enqueue_style( 'ppe_single', plugins_url( 'assets/css/single.css' , __FILE__ ) );
+            }
 
             if (is_page( wc_get_page_id( 'review_order' ) )) {
                 $assets_path          = str_replace( array( 'http:', 'https:' ), '', WC()->plugin_url() ) . '/assets/';
@@ -193,44 +197,44 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 ) ) );
             }
         }
-		
-		/**
-		 * Run when plugin is activated
-		 */
+
+        /**
+         * Run when plugin is activated
+         */
         function activate_paypal_for_woocommerce()
-		{
-			// If WooCommerce is not enabled, deactivate plugin.
+        {
+            // If WooCommerce is not enabled, deactivate plugin.
             if(!in_array( 'woocommerce/woocommerce.php',apply_filters('active_plugins',get_option('active_plugins'))))
-			{
+            {
                 deactivate_plugins(plugin_basename(__FILE__));
             }
-			else
-			{
+            else
+            {
                 global $woocommerce;
                 //include_once $woocommerce->plugin_path() . '/admin/woocommerce-admin-install.php';
 
                 // Create review page for Express Checkout
                 wc_create_page(esc_sql(_x('review-order','page_slug','woocommerce')),'woocommerce_review_order_page_id',__('Checkout &rarr; Review Order','woocommerce'),'[woocommerce_review_order]',woocommerce_get_page_id('checkout'));
-            
-				// Log activation in Angell EYE database via web service.
-				$log_url = $_SERVER['HTTP_HOST'];
-				$log_plugin_id = 1;
-				$log_activation_status = 1;
-				wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
-			}
+
+                // Log activation in Angell EYE database via web service.
+                $log_url = $_SERVER['HTTP_HOST'];
+                $log_plugin_id = 1;
+                $log_activation_status = 1;
+                wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
+            }
         }
-		
-		/**
-		 * Run when plugin is deactivated.
-		 */
-		function deactivate_paypal_for_woocommerce()
-		{
-			// Log activation in Angell EYE database via web service.
-			$log_url = $_SERVER['HTTP_HOST'];
-			$log_plugin_id = 1;
-			$log_activation_status = 0;
-			wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);	
-		}
+
+        /**
+         * Run when plugin is deactivated.
+         */
+        function deactivate_paypal_for_woocommerce()
+        {
+            // Log activation in Angell EYE database via web service.
+            $log_url = $_SERVER['HTTP_HOST'];
+            $log_plugin_id = 1;
+            $log_activation_status = 0;
+            wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
+        }
 
         /**
          * Adds PayPal gateway options for Payments Pro and Express Checkout into the WooCommerce checkout settings.
@@ -302,38 +306,51 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         /**
+         * Javascript code to move it in to button add to cart wrap
+         */
+        function buy_now_button_js() {
+            ?>
+            <script type="text/javascript">
+                jQuery(document).ready(function(){
+                    jQuery('input.single_variation_wrap').appendTo(".variations_button");
+                });
+            </script>
+        <?php
+        }
+
+        /**
          * Display Paypal Express Checkout on product page
          */
         function buy_now_button() {
             global $pp_settings, $post;
             if (!empty($pp_settings['show_on_product_page']) && $pp_settings['show_on_product_page']=='yes') {
-            $_product = get_product($post->ID);
-            $hide = '';
-            if ($_product->product_type == 'variation') {
-                $hide = 'display:none;';
-            }
+                $_product = get_product($post->ID);
+                $hide = '';
+                if ($_product->product_type == 'variation') {
+                    $hide = 'display:none;';
+                }
 
                 if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
-            switch($pp_settings['checkout_with_pp_button_type']){
+                switch($pp_settings['checkout_with_pp_button_type']){
                     case "textbutton":
-                    $add_to_cart_action = add_query_arg( 'express_checkout', '1');
-                    echo '<input type="submit" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap paypal_checkout_button button alt" name="express_checkout"  onclick="',"jQuery('form.cart').attr('action','",$add_to_cart_action,"');jQuery('form.cart').submit();",'" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
-                    break;
+                        $add_to_cart_action = add_query_arg( 'express_checkout', '1');
+                        echo '<input type="submit" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap paypal_checkout_button button alt" name="express_checkout"  onclick="',"jQuery('form.cart').attr('action','",$add_to_cart_action,"');jQuery('form.cart').submit();",'" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+                        break;
                     case "paypalimage":
-                    $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
-                    $button_img =  "https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif";
-                    echo '<input type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
-                    break;
-                case "customimage":
-                    if(!empty($pp_settings['checkout_with_pp_button_type'])){
-                        $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
-                    }else{
                         $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
                         $button_img =  "https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif";
-                    }
-                    echo '<input type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
-                    break;
-            }
+                        echo '<input type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+                        break;
+                    case "customimage":
+                        if(!empty($pp_settings['checkout_with_pp_button_type'])){
+                            $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
+                        }else{
+                            $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
+                            $button_img =  "https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif";
+                        }
+                        echo '<input type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+                        break;
+                }
             }
 
         }

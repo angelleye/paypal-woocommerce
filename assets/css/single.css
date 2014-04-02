@@ -1,0 +1,5 @@
+.woocommerce #content div.product form.cart .button, .woocommerce div.product form.cart .button, .woocommerce-page #content div.product form.cart .button, .woocommerce-page div.product form.cart .button {
+    float: left;
+    margin-bottom: 10px;
+    vertical-align: middle;
+}

@@ -1,3 +1,17 @@
+a img{
+    border: none;
+}
 .cart .paypal_checkout_button img {
 	vertical-align: middle;
+}
+.paypal_box_button {
+    clear: both;
+    float: right;
+}
+.woocommerce #content table.cart .paypal_box_button img, .woocommerce table.cart .paypal_box_button img, .woocommerce-page #content table.cart .paypal_box_button img, .woocommerce-page table.cart .paypal_box_button img {
+    display: block;
+    margin-bottom: 5px;
+    width: 150px;
+    border-radius: 0px;
+    box-shadow: none;
 }
