@@ -519,9 +519,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) )
                     define( 'WOOCOMMERCE_CHECKOUT', true );
                 WC()->cart->calculate_totals();
-                if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '<' ) )
-                    $order_id = $this->prepare_order();
-                else
                     $order_id = WC()->checkout()->create_order();
 				
 				/**
@@ -1461,9 +1458,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @return void
      */
     private function set_session( $key, $value ) {
-        if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '<' ) )
-            $_SESSION[ $key ] = $value;
-        else
             WC()->session->$key = $value;
     }
     /**
@@ -1474,20 +1468,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @return void
      */
     private function get_session( $key ) {
-        if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '<' ) ) {
-            if ( ! empty( $_SESSION[ $key ] ) )
-                return $_SESSION[ $key ];
-        } else {
-            if ( ! empty( WC()->session->$key ) )
-                return WC()->session->$key;
-        }
-        return '';
+        return WC()->session->$key;
     }
     private function remove_session( $key ) {
-        if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '<' ) )
-            unset($_SESSION[ $key ]);
-        else
-            WC()->session->$key = "";
+        WC()->session->$key = "";
     }
 
 
