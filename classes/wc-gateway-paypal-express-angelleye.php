@@ -177,8 +177,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'sandbox_api_username' => array(
                 'title' => __( 'Sandbox API User Name', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'Create sandbox accounts and obtain API credentials from within your 
-									<a href="http://developer.paypal.com">PayPal developer account</a>.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Create sandbox accounts and obtain API credentials from within your <a href="http://developer.paypal.com">PayPal developer account</a>.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'sandbox_api_password' => array(
@@ -194,8 +193,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'api_username' => array(
                 'title' => __( 'Live API User Name', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using 
-									<a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using <a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_password' => array(
@@ -213,8 +211,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Enable PayPal Sandbox', 'paypal-for-woocommerce' ),
                 'default' => 'yes', 
-				'description' => 'The sandbox is PayPal\'s test environment and is only for use with sandbox accounts created 
-									within your <a href="http://developer.paypal.com" target="_blank">PayPal developer account</a>.'
+				'description' => 'The sandbox is PayPal\'s test environment and is only for use with sandbox accounts created within your <a href="http://developer.paypal.com" target="_blank">PayPal developer account</a>.'
             ),
             'debug' => array(
                 'title' => __( 'Debug', 'paypal-for-woocommerce' ),
@@ -355,12 +352,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				$bml_button_markup .= '<a target="_blank" href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
 				$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='150' />";
 				$bml_button_markup .= '</a>';
-				$bml_button_markup .= '<div class="clear"></div></div><div class="clear"></div>';
+				$bml_button_markup .= '</div>';
 				echo $bml_button_markup;
 			}
-			
-			echo '</p>';
-			echo '</div>';
+            echo '<p class="checkoutStatus">', __( 'Skip the forms and pay faster with Paypal', 'paypal-for-woocommerce' ), '</p>';
+			echo '<div class="clear"></div></div>';
 			echo '</div>';
 			echo '<div style="clear:both; margin-bottom:10px;"></div>';
 			
@@ -1583,7 +1579,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . __('Proceed to Checkout', 'paypal-for-woocommerce') .'</a>';
             }
             else
-			{
+			{                
                 unset($payment_gateways['paypal_pro']);
                 unset($payment_gateways['paypal_pro_payflow']);
                 $pp_pro = get_option('woocommerce_paypal_pro_settings');
@@ -1592,7 +1588,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				{
                     echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
                 }
-                echo '<div class="paypal_box_button">';
+		echo '<div class="paypal_box_button">';
 
                 if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
                 switch($pp_settings['checkout_with_pp_button_type']){
