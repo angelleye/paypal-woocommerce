@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-04-02 14:59+0700\n"
-"PO-Revision-Date: 2014-04-02 14:59+0700\n"
+"POT-Creation-Date: 2014-04-03 16:02+0700\n"
+"PO-Revision-Date: 2014-04-03 16:02+0700\n"
 "Last-Translator: Le Van Sy <levansy@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,27 +15,27 @@ msgstr ""
 "\\paypal-for-woocommerce\n"
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:77
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:79
 msgid "Configure"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:78
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:80
 msgid "Docs"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:79
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:81
 msgid "Support"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:80
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:82
 msgid "Write a Review"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:123
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:125
 #, php-format
 msgid ""
 "WooCommerce PayPal Payments Pro requires that the %sForce secure checkout%s "
@@ -45,16 +45,16 @@ msgid ""
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:123
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:130
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:134
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:138
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:142
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:125
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:132
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:136
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:140
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:144
 msgid "Hide this notice"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:130
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:132
 #, php-format
 msgid ""
 "WooCommerce PayPal Payments ( %s ) is currently running in Sandbox mode and "
@@ -62,7 +62,7 @@ msgid ""
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:134
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:136
 #, php-format
 msgid ""
 "WooCommerce PayPal Express is currently running in Sandbox mode and will NOT "
@@ -70,14 +70,14 @@ msgid ""
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:138
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:140
 msgid ""
 "You currently have both PayPal (standard) and Express Checkout enabled.  It "
 "is recommended that you disable the standard PayPal from <a href=\""
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:142
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:144
 #, php-format
 msgid ""
 "WooCommerce PayPal Payments requires WooCommerce plugin to work normally. "
@@ -86,17 +86,17 @@ msgid ""
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:213
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:217
 msgid "Checkout &rarr; Review Order"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:320
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:325
-#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:334
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1598
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1604
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1612
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:337
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:342
+#: Works\paypal-for-woocommerce/paypal-for-woocommerce.php:351
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1596
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1602
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1610
 msgid "Pay with PayPal"
 msgstr ""
 
@@ -179,205 +179,192 @@ msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:180
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:139
 msgid ""
-"Create sandbox accounts and obtain API credentials from within your \n"
-"\t\t\t\t\t\t\t\t\t<a href=\"http://developer.paypal.com\">PayPal developer "
-"account</a>."
+"Create sandbox accounts and obtain API credentials from within your <a href="
+"\"http://developer.paypal.com\">PayPal developer account</a>."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:185
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:184
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:144
 msgid "Sandbox API Password"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:190
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:189
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:149
 msgid "Sandbox API Signature"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:195
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:194
 msgid "Live API User Name"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:197
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:156
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:196
 msgid ""
 "Get your live account API credentials from your PayPal account profile under "
-"the API Access section <br />or by using \n"
-"\t\t\t\t\t\t\t\t\t<a target=\"_blank\" href=\"https://www.paypal.com/us/cgi-"
-"bin/webscr?cmd=_login-api-run\">this tool</a>."
+"the API Access section <br />or by using <a target=\"_blank\" href=\"https://"
+"www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run\">this tool</a>."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:202
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:200
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:161
 msgid "Live API Password"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:207
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:205
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:166
 msgid "Live API Signature"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:212
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:210
 msgid "PayPal Sandbox"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:214
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:212
 msgid "Enable PayPal Sandbox"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:220
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:217
 msgid "Debug"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:222
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:219
 msgid "Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:234
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:231
 msgid "Checkout Button Type"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:236
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:247
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:233
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:244
 msgid "Use Checkout with PayPal image button"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:245
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:242
 msgid "Select Image"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:257
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:254
 msgid "Standard Checkout"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:259
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:256
 msgid "Show Express Checkout button on checkout page"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:263
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:260
 msgid "Product Page"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:265
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:262
 msgid "Show the Express Checkout button on product detail pages."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:270
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:267
 msgid "PayPal Account Optional"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:272
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:269
 msgid ""
 "Allow customers to checkout without a PayPal account using their credit card."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:277
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:274
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:203
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:122
 msgid "Error Display Type"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:279
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:276
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:205
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:124
 msgid "Display detailed or generic errors"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:289
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:286
 msgid "Enable Bill Me Later"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:291
-msgid ""
-"Show the Bill Me Later button next to the Pay Pal Express button on the "
-"Checkout page."
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:288
+msgid "Show the Bill Me Later button next to the Express Checkout button."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:295
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:292
 msgid "Landing Page"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:297
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:294
 msgid ""
 "Type of PayPal page to display as default. PayPal Account Optional must be "
 "checked for this option to be used."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:303
-msgid "Locale"
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:358
+msgid "Skip the forms and pay faster with Paypal"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:305
-msgid ""
-"Locale of pages displayed by PayPal during Express Checkout. It is one of "
-"the following values supported by PayPal"
-msgstr ""
-
-#: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:443
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:645
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:440
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:642
 msgid "There was a problem paying with PayPal.  Please try another method."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:504
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:501
 msgid "Please provide a valid email address."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:506
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:503
 msgid "Password is required."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:508
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:505
 msgid "Passwords do not match."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:510
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:507
 msgid "This email address is already registered."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:601
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:598
 msgid "PayPal Express payment completed"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:663
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:802
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1131
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1193
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:660
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:799
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1128
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1190
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:578
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:256
 #, php-format
@@ -386,17 +373,17 @@ msgid ""
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:668
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:665
 msgid "Invalid shipping method."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1582
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1579
 msgid "Proceed to Checkout"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
-#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1592
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1589
 msgid "Pay with Credit Card"
 msgstr ""
 
@@ -454,8 +441,25 @@ msgid "Sandbox API Username"
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:139
+msgid ""
+"Create sandbox accounts and obtain API credentials from within your \n"
+"\t\t\t\t\t\t\t\t\t<a href=\"http://developer.paypal.com\">PayPal developer "
+"account</a>."
+msgstr ""
+
+#: E:\Documents\My Box Files\Woocommerce
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:154
 msgid "Live API Username"
+msgstr ""
+
+#: E:\Documents\My Box Files\Woocommerce
+#: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:156
+msgid ""
+"Get your live account API credentials from your PayPal account profile under "
+"the API Access section <br />or by using \n"
+"\t\t\t\t\t\t\t\t\t<a target=\"_blank\" href=\"https://www.paypal.com/us/cgi-"
+"bin/webscr?cmd=_login-api-run\">this tool</a>."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
