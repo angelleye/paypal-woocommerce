@@ -81,7 +81,7 @@ msgstr ""
 #, php-format
 msgid ""
 "WooCommerce PayPal Payments requires WooCommerce plugin to work normally. "
-"Please active it or install it from <a href='http://wordpress.org/plugins/"
+"Please activate it or install it from <a href='http://wordpress.org/plugins/"
 "woocommerce/' target='_blank'>here</a>. | <a href=%s>%s</a>"
 msgstr ""
 
