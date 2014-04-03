@@ -14,7 +14,7 @@ The official PayPal extension for WooCommerce, developed by a PayPal partner.
 
 Easily add PayPal payment options to your WordPress / WooCommerce website.
 
- * PayPal Express Checkout
+ * PayPal Express Checkout / Bill Me Later
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayPal Manager / PayFlow Gateway)
  
@@ -82,15 +82,21 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.0.6 - 03/23/2014 =
-* Localization - German translation by Google.
-* Localization - Spanish translation.
-* Localization - French translation.
-* Localization - Italian translation by Google.
-* Localization - Polish translation by Google.
-* Localization - Portuguese translation by Google.
-* Localization - Russian translation by Google.
-* Localization - Chinese translation.
-* Refactor - Change plugin filename to match directory.
+* Fix - If WooCommerce Guest Checkout is disabled, Express Checkout now requires login or account creation.
+* Localization - Ready for translation.
+* Feature - Adds the option to include a Bill Me Later button on cart and checkout pages.
+* Feature - Adds option to display detailed or generic errors to users when payments fail.
+* Feature - Adds ability to set a custom image in place of the default PayPal Express Checkout button.
+* Feature - Adds option to include Express Checkout button on product pages.
+* Tweak - Improves CSS styles on Express Checkout and Bill Me Later buttons.
+* Tweak - Improves CSS styles on Payments Pro checkout forms.
+* Tweak - Adds admin notice when both PayPal Standard and Express Checkout are enabled.
+* Tweak - Adds the option to enable/disable logging in Payments Pro (PayFlow)
+* Tweak - Updates PayPal API version in Angell EYE PayPal PHP Library
+* Tweak - Updates guest checkout options in Express Checkout to work with new API parameters.
+* Tweak - Adds links to obtain API credentials from settings page for easy access.
+* Refactor - Strips out unnecessary code from original WooThemes extension.
+* Refactor - Stripped unnecessary additional calls to GetExpressCheckoutDetails to reduce server loads.
 
 = 1.0.5 - 03/17/2014 =
 * Refactor - Minor code adjustments and cleanup.
