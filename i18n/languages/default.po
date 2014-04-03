@@ -326,7 +326,7 @@ msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
 #: Works\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:358
-msgid "Skip the forms and pay faster with Paypal"
+msgid "Skip the forms and pay faster with Paypal."
 msgstr ""
 
 #: E:\Documents\My Box Files\Woocommerce
