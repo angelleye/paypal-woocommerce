@@ -7,7 +7,7 @@ a img{
 .paypal_box_button {
     clear: both;
     float: right;
-	margin: 7px 0 0 0;
+	margin: 7px 7px 0 0;
 }
 .woocommerce #content table.cart .paypal_box_button img, .woocommerce table.cart .paypal_box_button img, .woocommerce-page #content table.cart .paypal_box_button img, .woocommerce-page table.cart .paypal_box_button img {
     display: block;
