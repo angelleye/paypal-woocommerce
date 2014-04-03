@@ -177,8 +177,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'sandbox_api_username' => array(
                 'title' => __( 'Sandbox API User Name', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'Create sandbox accounts and obtain API credentials from within your 
-									<a href="http://developer.paypal.com">PayPal developer account</a>.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Create sandbox accounts and obtain API credentials from within your <a href="http://developer.paypal.com">PayPal developer account</a>.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'sandbox_api_password' => array(
@@ -194,8 +193,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'api_username' => array(
                 'title' => __( 'Live API User Name', 'paypal-for-woocommerce' ),
                 'type' => 'text',
-                'description' => __( 'Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using 
-									<a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using <a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'api_password' => array(
@@ -213,8 +211,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Enable PayPal Sandbox', 'paypal-for-woocommerce' ),
                 'default' => 'yes', 
-				'description' => 'The sandbox is PayPal\'s test environment and is only for use with sandbox accounts created 
-									within your <a href="http://developer.paypal.com" target="_blank">PayPal developer account</a>.'
+				'description' => 'The sandbox is PayPal\'s test environment and is only for use with sandbox accounts created within your <a href="http://developer.paypal.com" target="_blank">PayPal developer account</a>.'
             ),
             'debug' => array(
                 'title' => __( 'Debug', 'paypal-for-woocommerce' ),
@@ -288,7 +285,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			'show_bill_me_later' => array(
 					'title' => __( 'Enable Bill Me Later', 'paypal-for-woocommerce' ),
 					'type' => 'checkbox',
-					'label' => __( 'Show the Bill Me Later button next to the Pay Pal Express button on the Checkout page.', 'paypal-for-woocommerce' ),
+					'label' => __( 'Show the Bill Me Later button next to the Express Checkout button.', 'paypal-for-woocommerce' ),
 					'default' => 'yes'
 				),
             'landing_page' => array(
@@ -299,7 +296,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'billing' => 'Billing'),
                 'default' => 'login',
             ),
-            'Locale' => array(
+            /*'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                 'type' => 'select',
                 'description' => __( 'Locale of pages displayed by PayPal during Express Checkout. It is one of the following values supported by PayPal', 'paypal-for-woocommerce'  ),
@@ -322,7 +319,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     "RU"=>"Russia",
                     "US"=>"United States"),
                 'default' => 'US',
-            )
+            )*/
         );
     }
 	
@@ -337,7 +334,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			echo '<div id="paypal_box_button">';
             //echo '<div id="paypal_ec_button">';
 			echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', get_class(), home_url( '/' ) ) ) . '">';
-            echo "<img src='https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif' width='145' height='42'' border='0' align='top' alt='Check out with PayPal'/>";
+            echo "<img src='https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif' width='150' alt='Check out with PayPal'/>";
             echo '</a>';
 			//echo '</div>';
 			/**
@@ -348,19 +345,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				// Bill Me Later button
 				$bml_button_markup = '<div id="paypal_ec_bml_button">';
 				$bml_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg( 'use_bml', 'true', add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) ) . '" >';
-				$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='145' height='32' border='0' alt='Check out with PayPal Bill Me Later'/>";
-				$bml_button_markup .= '</a><br />';
+				$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='150' alt='Check out with PayPal Bill Me Later'/>";
+				$bml_button_markup .= '</a>';
 	
 				// Marketing Message
 				$bml_button_markup .= '<a target="_blank" href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
-				$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='130' height='22' border='0' />";
+				$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='150' />";
 				$bml_button_markup .= '</a>';
 				$bml_button_markup .= '</div>';
 				echo $bml_button_markup;
 			}
-			
-			echo '</p>';
-			echo '</div>';
+            echo '<p class="checkoutStatus">', __( 'Skip the forms and pay faster with Paypal', 'paypal-for-woocommerce' ), '</p>';
+			echo '<div class="clear"></div></div>';
 			echo '</div>';
 			echo '<div style="clear:both; margin-bottom:10px;"></div>';
 			
@@ -1583,8 +1579,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . __('Proceed to Checkout', 'paypal-for-woocommerce') .'</a>';
             }
             else
-			{
-                echo '<div class="paypal_box_button">';
+			{                
                 unset($payment_gateways['paypal_pro']);
                 unset($payment_gateways['paypal_pro_payflow']);
                 $pp_pro = get_option('woocommerce_paypal_pro_settings');
@@ -1593,17 +1588,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				{
                     echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
                 }
+		echo '<div class="paypal_box_button">';
 
                 if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
                 switch($pp_settings['checkout_with_pp_button_type']){
                     case "textbutton":
-                        echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'" style="margin-top:10px;margin-right:10px;float:right;width: 145px; ">' . __('Pay with PayPal', 'paypal-for-woocommerce') .'</a>';
+                        echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . __('Pay with PayPal', 'paypal-for-woocommerce') .'</a>';
                         break;
                     case "paypalimage":
                         $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
                         echo '<div id="paypal_ec_button">';
 						echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
-                        echo "<img src='https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif' width='145' height='42' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
+                        echo "<img src='https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
                         echo "</a>";
 						echo '</div>';
                         break;
@@ -1611,7 +1607,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
                         echo '<div id="paypal_ec_button">';
 						echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
-                        echo "<img src='{$button_img}' width='145' height='42' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
+                        echo "<img src='{$button_img}' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
                         echo "</a>";
 						echo '</div>';
                         break;
@@ -1625,18 +1621,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					// Bill Me Later button
 					$bml_button_markup = '<div id="paypal_ec_bml_button">';
 					$bml_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg( 'use_bml', 'true', add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) ) . '" >';
-					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='145' height='32' border='0' alt='Check out with PayPal Bill Me Later'/>";
+					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='150' alt='Check out with PayPal Bill Me Later'/>";
 					$bml_button_markup .= '</a>';
 
 					// Marketing Message
 					$bml_button_markup .= '<a target="_blank" href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
-					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='130' height='22' border='0' />";
+					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='150' />";
 					$bml_button_markup .= '</a>';
 					$bml_button_markup .= '</div>';
 					
 					echo $bml_button_markup;
 				}
-                echo "</div>";
+                echo "<div class='clear'></div></div>";
             }
         }
     }

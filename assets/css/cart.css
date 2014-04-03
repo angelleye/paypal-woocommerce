@@ -10,8 +10,11 @@ a img{
 }
 .woocommerce #content table.cart .paypal_box_button img, .woocommerce table.cart .paypal_box_button img, .woocommerce-page #content table.cart .paypal_box_button img, .woocommerce-page table.cart .paypal_box_button img {
     display: block;
-    margin-bottom: 5px;
     width: 150px;
     border-radius: 0px;
     box-shadow: none;
+    padding: 0px;
+}
+.paypal_box_button div a img {
+    border: medium none;
 }

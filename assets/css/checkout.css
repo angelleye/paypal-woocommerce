@@ -46,24 +46,44 @@ a img{
 }
 body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_button > div img {
     display: block;
-    margin: 4px auto;
     width: 150px;
+    padding: 0px;
 }
 body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_button img{
     float: left ;
     display: inline;
+    border: none;
+    padding: 0px;
+    background: none;
 }
+/*
 #paypal_box_button {
     margin: auto;
     text-align: center;
-    width: 300px;
+    width: 620px;
 }
+*/
 #paypal_ec_bml_button {
     float: left;
-    margin-top: -7px;
+    margin-right: 20px;
+    margin-top: -2px;
     width: 150px;
 }
 .entry-content img, .comment-content img, .widget img, img.header-image, .author-avatar img, img.wp-post-image{
     border-radius: 0px;
     box-shadow: none;
+    border: none;
+}
+.woocommerce-select{
+    border-color: #C8BFC6 #D4CDD2 #D4CDD2;
+    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.4);
+    border: 1px solid #CCCCCC;
+    border-radius: 3px;
+    font-family: inherit;
+    padding: 0.428571rem;
+}
+.checkoutStatus {
+    width: 90%;
+    word-wrap: break-word;
+    font-size: 1.3em;
 }
