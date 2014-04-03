@@ -333,10 +333,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             echo '<div id="checkout_paypal_message" class="woocommerce-info info">';
 			echo '<div id="paypal_box_button">';
             //echo '<div id="paypal_ec_button">';
+			
+			/**
+			 * Need to add some margin on the right side
+			 * of the EC button when the BML button is not 
+			 * present.
+			 */
+			$ecbutton_css = $this->show_bill_me_later == 'yes' ? '' : 'style="margin-right:25px;"';
 			echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', get_class(), home_url( '/' ) ) ) . '">';
-            echo "<img src='https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif' width='150' alt='Check out with PayPal'/>";
+            echo "<img $ecbutton_css src='https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif' width='150' alt='Check out with PayPal'/>";
             echo '</a>';
 			//echo '</div>';
+			
 			/**
 			 * Displays the Bill Me Later checkout button if enabled in EC settings.
 			 */
