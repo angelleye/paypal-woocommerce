@@ -339,7 +339,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			 * of the EC button when the BML button is not 
 			 * present.
 			 */
-			$ecbutton_css = $this->show_bill_me_later == 'yes' ? '' : 'style="margin-right:25px;"';
+			$ecbutton_css = $this->show_bill_me_later == 'yes' ? 'style="margin-right:10px;"' : 'style="margin-right:25px;"';
 			echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', get_class(), home_url( '/' ) ) ) . '">';
             echo "<img $ecbutton_css src='https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif' width='150' alt='Check out with PayPal'/>";
             echo '</a>';
