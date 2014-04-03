@@ -15,7 +15,7 @@
  *************
  * Attribution
  *************
- * PayPal for WooCommerce is a derivative work of the code from WooThemes,
+ * PayPal for WooCommerce is a derivative work of the code from WooThemes / SkyVerge,
  * which is licensed with GPLv3.  This code is also licensed under the terms 
  * of the GNU Public License, version 3.
  */
