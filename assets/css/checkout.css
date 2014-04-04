@@ -56,6 +56,9 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
     padding: 0px;
     background: none;
 }
+body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_button a.paypal_checkout_button_text{
+    float: left;
+}
 /*
 #paypal_box_button {
     margin: auto;
