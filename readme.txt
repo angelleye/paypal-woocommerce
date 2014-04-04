@@ -4,7 +4,7 @@ Donate link: http://www.angelleye.com/product/buy-beer/
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 3.8.1
-Stable tag: 1.0.6
+Stable tag: 1.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -90,7 +90,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.0.6 - 03/23/2014 =
+= 1.1 - 04/03/2014 =
 * Fix - If WooCommerce Guest Checkout is disabled, Express Checkout now requires login or account creation.
 * Localization - Ready for translation.
 * Feature - Adds the option to include a Bill Me Later button on cart and checkout pages.
