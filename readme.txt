@@ -68,16 +68,25 @@ Automatic updates should work great for you.  As always, though, we recommend ba
  
 == Screenshots ==
 
-1. Display Pay with Credit Card and Pay with PayPal options on the shopping cart page.
-2. Your logo and cart items accurately displayed on PayPal Express Checkout review pages.
-3. Direct credit card processing option available with PayPal Payments Pro.
+1. Display Pay with Credit Card and Pay with PayPal / Bill Me Later options on the shopping cart page.
+2. PayPal Express Checkout button on product detail page.
+3. Your logo and cart items accurately displayed on PayPal Express Checkout review pages.
+4. Direct credit card processing option available with PayPal Payments Pro.
 
 == Frequently Asked Questions ==
 
+= How do I create sandbox accounts for testing? =
+
+* Login at http://developer.paypal.com.  
+* Click the Applications tab in the top menu.
+* Click Sandbox Accounts in the left sidebar menu.
+* Click the Create Account button to create a new sandbox account.
+* TIP: Create at least one "seller" account and one "buyer" account if you want to fully test Express Checkout or other PayPal wallet payments. 
+
 = Where do I get my API credentials? =
 
-* Sandbox credentials can be obtained by signing in with a sandbox account here:  https://www.sandbox.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
 * Live credentials can be obtained by signing in to your live PayPal account here:  https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
+* Sandbox credentials can be obtained by viewing the sandbox account profile within your PayPal developer account, or by signing in with a sandbox account here:  https://www.sandbox.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
 
 == Changelog ==
 
@@ -88,15 +97,15 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds option to display detailed or generic errors to users when payments fail.
 * Feature - Adds ability to set a custom image in place of the default PayPal Express Checkout button.
 * Feature - Adds option to include Express Checkout button on product pages.
-* Tweak - Improves CSS styles on Express Checkout and Bill Me Later buttons.
-* Tweak - Improves CSS styles on Payments Pro checkout forms.
 * Tweak - Adds admin notice when both PayPal Standard and Express Checkout are enabled.
 * Tweak - Adds the option to enable/disable logging in Payments Pro (PayFlow)
+* Tweak - Adds links to obtain API credentials from settings page for easy access.
+* Tweak - Improves CSS styles on Express Checkout and Bill Me Later buttons.
+* Tweak - Improves CSS styles on Payments Pro checkout forms.
 * Tweak - Updates PayPal API version in Angell EYE PayPal PHP Library
 * Tweak - Updates guest checkout options in Express Checkout to work with new API parameters.
-* Tweak - Adds links to obtain API credentials from settings page for easy access.
-* Refactor - Strips out unnecessary code from original WooThemes extension.
-* Refactor - Stripped unnecessary additional calls to GetExpressCheckoutDetails to reduce server loads.
+* Refactor - Strips unnecessary code from original WooThemes extension.
+* Refactor - Strips unnecessary additional calls to GetExpressCheckoutDetails to reduce server loads.
 
 = 1.0.5 - 03/17/2014 =
 * Refactor - Minor code adjustments and cleanup.
