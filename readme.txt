@@ -4,13 +4,15 @@ Donate link: http://www.angelleye.com/product/buy-beer/
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 3.8.1
-Stable tag: 1.1
+Stable tag: 1.1.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 The official PayPal extension for WooCommerce, developed by a PayPal partner.
 
 == Description ==
+
+= Introduction =
 
 Easily add PayPal payment options to your WordPress / WooCommerce website.
 
@@ -35,6 +37,11 @@ PayPal's system can be tricky when it comes to handling errors.  Most PayPal plu
 * Many plugins treat these as failures and customers end up with duplicate payments if they continue to retry.
 
 Our plugins always handle these warnings/errors correctly so that you do not have to worry about dealing with those types of situations.
+
+= Localization = 
+The PayPal Express Checkout buttons and checkout pages will translate based off your WordPress language setting by default.  The rest of the plugin was also developed with localization in mind and is ready for translation.
+
+If you're interested in helping translate please [let us know](http://www.angelleye.com/contact-us/)!
 
 = Get Involved =
 Developers can contribute to the source code on the [PayPal for WooCommerce GitHub repository](https://github.com/angelleye/paypal-woocommerce).
@@ -88,7 +95,14 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Live credentials can be obtained by signing in to your live PayPal account here:  https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
 * Sandbox credentials can be obtained by viewing the sandbox account profile within your PayPal developer account, or by signing in with a sandbox account here:  https://www.sandbox.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
 
+= How do I know which version of Payments Pro I have? = 
+* If you have a PayPal Manager account at http://manager.paypal.com as well as your regular PayPal account at http://www.paypal.com, then you are on Payments Pro 2.0.
+* If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
+
 == Changelog ==
+
+= 1.1.1 - 04/05/2014 = 
+* Fix - PayPal Express Checkout button no longer shows up on the product page for an external product.
 
 = 1.1 - 04/03/2014 =
 * Fix - If WooCommerce Guest Checkout is disabled, Express Checkout now requires login or account creation.
