@@ -33,6 +33,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$this->show_bill_me_later	   = isset($this->settings['show_bill_me_later']) ? $this->settings['show_bill_me_later'] : '';
 		$this->brand_name	  		   = isset($this->settings['brand_name']) ? $this->settings['brand_name'] : '';
 		$this->customer_service_number = isset($this->settings['customer_service_number']) ? $this->settings['customer_service_number'] : '';
+		$this->gift_wrap_enabled	   = isset($this->settings['gift_wrap_enabled']) ? $this->settings['gift_wrap_enabled'] : '';
+		$this->gift_message_enabled	   = isset($this->settings['gift_message_enabled']) ? $this->settings['gift_message_enabled'] : '';
+		$this->gift_receipt_enabled	   = isset($this->settings['gift_receipt_enabled']) ? $this->settings['gift_receipt_enabled'] : '';
+		$this->gift_wrap_name		   = isset($this->settings['gift_wrap_name']) ? $this->settings['gift_wrap_name'] : '';
+		$this->gift_wrap_amount		   = isset($this->settings['gift_wrap_amount']) ? $this->settings['gift_wrap_amount'] : '';
 		
         /*
         ' Define the PayPal Redirect URLs.
@@ -310,6 +315,39 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __( 'This controls what users see for your customer service phone number on PayPal review pages.', 'paypal-for-woocommerce' ),
                 'default' => __('', 'paypal-for-woocommerce' )
             ),
+			'gift_wrap_enabled' => array(
+                'title' => __( 'Gift Wrap', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'label' => __( 'Enables the gift wrap options for buyers.', 'paypal-for-woocommerce' ),
+                'default' => 'no', 
+				'description' => 'This will display a gift wrap option to buyers during checkout based on the following Gift Wrap settings.'
+            ),
+			'gift_message_enabled' => array(
+                'title' => __( 'Gift Message', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'label' => __( 'Enables the gift message widget on PayPal pages.', 'paypal-for-woocommerce' ),
+                'default' => 'no', 
+				'description' => 'This will allow buyers to enter a message they would like to include with the item as a gift.'
+            ),
+			'gift_receipt_enabled' => array(
+                'title' => __( 'Gift Receipt', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'label' => __( 'Enables the gift receipt widget on PayPal pages.', 'paypal-for-woocommerce' ),
+                'default' => 'no', 
+				'description' => 'This will allow buyers to choose whether or not to include a gift receipt in the order.'
+            ),
+			'gift_wrap_name' => array(
+                'title' => __( 'Gift Wrap Name', 'paypal-for-woocommerce' ),
+                'type' => 'text',
+                'description' => __( 'Label for the gift wrap option on PayPal pages, such as "Box with ribbon"', 'paypal-for-woocommerce' ),
+                'default' => __('Box with ribbon', 'paypal-for-woocommerce' )
+            ),
+			'gift_wrap_amount' => array(
+                'title' => __( 'Gift Wrap Amount', 'paypal-for-woocommerce' ),
+                'type' => 'text',
+                'description' => __( 'Amount to be charged to the buyer for adding the gift wrap option.', 'paypal-for-woocommerce' ),
+                'default' => __('0.00', 'paypal-for-woocommerce' )
+            ),
             /*'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                 'type' => 'select',
@@ -431,7 +469,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				}
 				
                 WC()->cart->calculate_totals();
-                $paymentAmount    = WC()->cart->get_total();
+                //$paymentAmount    = WC()->cart->get_total();
+				$paymentAmount	  = number_format(WC()->cart->total,2,'.','');
                 $returnURL        = urlencode( add_query_arg( 'pp_action', 'revieworder', get_permalink( woocommerce_get_page_id( 'review_order' )) ) );
                 $cancelURL        = urlencode( WC()->cart->get_cart_url() );
                 $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $useBML );
@@ -483,7 +522,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }
 		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'revieworder' )
-		{
+		{	
             wc_clear_notices();
             // The customer has logged into PayPal and approved order.
             // Retrieve the shipping details and present the order for completion.
@@ -527,6 +566,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				$this->set_session('shiptostate',isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '');
 				$this->set_session('shiptozip',isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
 				$this->set_session('payeremail',isset($result['EMAIL']) ? $result['EMAIL'] : '');
+				$this->set_session('giftmessage',isset($result['GIFTMESSAGE']) ? $result['GIFTMESSAGE'] : '');
+				$this->set_session('giftreceiptenable',isset($result['GIFTRECEIPTENABLE']) ? $result['GIFTRECEIPTENABLE'] : '');
+				$this->set_session('giftwrapname',isset($result['GIFTWRAPNAME']) ? $result['GIFTWRAPNAME'] : '');
+				$this->set_session('giftwrapamount',isset($result['GIFTWRAPAMOUNT']) ? $result['GIFTWRAPAMOUNT'] : '');
+				
+				/**
+				 * If gift message options were included, set them up here.
+				 */
+				if($this->get_session('giftwrapamount') != '')
+				{
+					WC()->cart->add_fee( __('Gift Wrap', 'paypal-for-woocommerce'), $this->get_session('giftwrapamount') );
+				}
             } 
 			else
 			{
@@ -884,11 +935,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'banktxnpendingurl' => '',  				// The URL on the merchant site to transfer to after a bank transfter payment.  Use this field only if you are using giropay or bank transfer methods in Germany.
             'brandname' => $this->brand_name, 							// A label that overrides the business name in the PayPal account on the PayPal hosted checkout pages.  127 char max.
             'customerservicenumber' => $this->customer_service_number, 				// Merchant Customer Service number displayed on the PayPal Review page. 16 char max.
-            'giftmessageenable' => '', 					// Enable gift message widget on the PayPal Review page. Allowable values are 0 and 1
-            'giftreceiptenable' => '', 					// Enable gift receipt widget on the PayPal Review page. Allowable values are 0 and 1
-            'giftwrapenable' => '', 					// Enable gift wrap widget on the PayPal Review page.  Allowable values are 0 and 1.
-            'giftwrapname' => '', 						// Label for the gift wrap option such as "Box with ribbon".  25 char max.
-            'giftwrapamount' => '', 					// Amount charged for gift-wrap service.
             'buyeremailoptionenable' => '', 			// Enable buyer email opt-in on the PayPal Review page. Allowable values are 0 and 1
             'surveyquestion' => '', 					// Text for the survey question on the PayPal Review page. If the survey question is present, at least 2 survey answer options need to be present.  50 char max.
             'surveyenable' => '', 						// Enable survey functionality. Allowable values are 0 and 1
@@ -901,6 +947,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'taxidtype' => '', 							// The buyer's tax ID type.  This field is required for Brazil and used for Brazil only.  Values:  BR_CPF for individuals and BR_CNPJ for businesses.
             'taxid' => ''								// The buyer's tax ID.  This field is required for Brazil and used for Brazil only.  The tax ID is 11 single-byte characters for individutals and 14 single-byte characters for businesses.
         );
+		
+		/**
+		 * If Gift Wrap options are enabled, add them to SEC
+		 */
+		if(strtolower($this->gift_wrap_enabled) == 'yes')
+		{
+			$SECFields['giftwrapenable'] = '1'; 					// Enable gift wrap widget on the PayPal Review page.  Allowable values are 0 and 1.
+			$SECFields['giftmessageenable'] = $this->gift_message_enabled ? '1' : ''; 					// Enable gift message widget on the PayPal Review page. Allowable values are 0 and 1
+            $SECFields['giftreceiptenable'] = $this->gift_receipt_enabled ? '1' : ''; 					// Enable gift receipt widget on the PayPal Review page. Allowable values are 0 and 1
+            $SECFields['giftwrapname'] = $this->gift_wrap_name; 						// Label for the gift wrap option such as "Box with ribbon".  25 char max.
+            $SECFields['giftwrapamount'] = $this->gift_wrap_amount;			// Amount charged for gift-wrap service.
+		}
 		
 		/**
 		 * If BML is being used, override the necessary parameters
