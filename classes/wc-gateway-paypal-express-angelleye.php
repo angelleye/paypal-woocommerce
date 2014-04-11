@@ -31,6 +31,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$this->error_display_type 	   = isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
         $this->landing_page            = isset($this->settings['landing_page']) ? $this->settings['landing_page'] : '';
 		$this->show_bill_me_later	   = isset($this->settings['show_bill_me_later']) ? $this->settings['show_bill_me_later'] : '';
+		$this->brand_name	  		   = isset($this->settings['brand_name']) ? $this->settings['brand_name'] : '';
+		$this->customer_service_number = isset($this->settings['customer_service_number']) ? $this->settings['customer_service_number'] : '';
 		
         /*
         ' Define the PayPal Redirect URLs.
@@ -270,6 +272,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no', 
 				'description' => 'PayPal Account Optional must be turned on in your PayPal account profile under Website Preferences.'
             ),
+			'landing_page' => array(
+                'title' => __( 'Landing Page', 'paypal-for-woocommerce' ),
+                'type' => 'select',
+                'description' => __( 'Type of PayPal page to display as default. PayPal Account Optional must be checked for this option to be used.', 'paypal-for-woocommerce'  ),
+                'options' => array('login' => 'Login',
+                    'billing' => 'Billing'),
+                'default' => 'login',
+            ),
 			'error_display_type' => array(
                 'title' => __( 'Error Display Type', 'paypal-for-woocommerce' ),
                 'type' => 'select',
@@ -288,13 +298,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					'label' => __( 'Show the Bill Me Later button next to the Express Checkout button.', 'paypal-for-woocommerce' ),
 					'default' => 'yes'
 				),
-            'landing_page' => array(
-                'title' => __( 'Landing Page', 'paypal-for-woocommerce' ),
-                'type' => 'select',
-                'description' => __( 'Type of PayPal page to display as default. PayPal Account Optional must be checked for this option to be used.', 'paypal-for-woocommerce'  ),
-                'options' => array('login' => 'Login',
-                    'billing' => 'Billing'),
-                'default' => 'login',
+			'brand_name' => array(
+                'title' => __( 'Brand Name', 'paypal-for-woocommerce' ),
+                'type' => 'text',
+                'description' => __( 'This controls what users see as the brand / company name on PayPal review pages.', 'paypal-for-woocommerce' ),
+                'default' => __( get_bloginfo('name'), 'paypal-for-woocommerce' )
+            ),
+			'customer_service_number' => array(
+                'title' => __( 'Customer Service Number', 'paypal-for-woocommerce' ),
+                'type' => 'text',
+                'description' => __( 'This controls what users see for your customer service phone number on PayPal review pages.', 'paypal-for-woocommerce' ),
+                'default' => __('', 'paypal-for-woocommerce' )
             ),
             /*'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
@@ -868,8 +882,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'giropaysuccessurl' => '', 					// The URL on the merchant site to redirect to after a successful giropay payment.  Only use this field if you are using giropay or bank transfer payment methods in Germany.
             'giropaycancelurl' => '', 					// The URL on the merchant site to redirect to after a canceled giropay payment.  Only use this field if you are using giropay or bank transfer methods in Germany.
             'banktxnpendingurl' => '',  				// The URL on the merchant site to transfer to after a bank transfter payment.  Use this field only if you are using giropay or bank transfer methods in Germany.
-            'brandname' => '', 							// A label that overrides the business name in the PayPal account on the PayPal hosted checkout pages.  127 char max.
-            'customerservicenumber' => '', 				// Merchant Customer Service number displayed on the PayPal Review page. 16 char max.
+            'brandname' => $this->brand_name, 							// A label that overrides the business name in the PayPal account on the PayPal hosted checkout pages.  127 char max.
+            'customerservicenumber' => $this->customer_service_number, 				// Merchant Customer Service number displayed on the PayPal Review page. 16 char max.
             'giftmessageenable' => '', 					// Enable gift message widget on the PayPal Review page. Allowable values are 0 and 1
             'giftreceiptenable' => '', 					// Enable gift receipt widget on the PayPal Review page. Allowable values are 0 and 1
             'giftwrapenable' => '', 					// Enable gift wrap widget on the PayPal Review page.  Allowable values are 0 and 1.
