@@ -57,8 +57,23 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_after_single_variation', array($this, 'buy_now_button_js'));
             add_action('admin_print_scripts', array( $this , 'onetarek_wpmut_admin_scripts' ) );
             add_action('admin_print_styles', array( $this , 'onetarek_wpmut_admin_styles' ) );
+            add_action( 'woocommerce_cart_calculate_fees', array($this, 'woocommerce_custom_surcharge') );
 
         }
+
+        /**
+         * Add gift amount to cart
+         * @param $cart
+         */
+        function woocommerce_custom_surcharge($cart){
+            global $wp_query;
+            $post_id = $wp_query->post->ID;
+            var_dump($post_id);
+            if (is_page( wc_get_page_id( 'review_order' ) ) && WC()->session->giftwrapamount){
+                $cart->add_fee( __('Gift Wrap', 'paypal-for-woocommerce'), WC()->session->giftwrapamount );
+            }
+        }
+
         function onetarek_wpmut_admin_scripts()
         {
             $dir = plugin_dir_path( __FILE__ );

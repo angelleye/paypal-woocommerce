@@ -553,7 +553,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ( isset( $result['SHIPTOCOUNTRYCODE'] ) ) WC()->customer->set_shipping_country( $result['SHIPTOCOUNTRYCODE'] );
                 if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_shipping_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
                 if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_shipping_postcode( $result['SHIPTOZIP'] );
-                WC()->cart->calculate_totals();
 
 				/**
 				 * Save GECD data in sessions for use in DECP
@@ -570,14 +569,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				$this->set_session('giftreceiptenable',isset($result['GIFTRECEIPTENABLE']) ? $result['GIFTRECEIPTENABLE'] : '');
 				$this->set_session('giftwrapname',isset($result['GIFTWRAPNAME']) ? $result['GIFTWRAPNAME'] : '');
 				$this->set_session('giftwrapamount',isset($result['GIFTWRAPAMOUNT']) ? $result['GIFTWRAPAMOUNT'] : '');
-				
-				/**
-				 * If gift message options were included, set them up here.
-				 */
-				if($this->get_session('giftwrapamount') != '')
-				{
-					WC()->cart->add_fee( __('Gift Wrap', 'paypal-for-woocommerce'), $this->get_session('giftwrapamount') );
-				}
+                WC()->cart->calculate_totals();
+
             } 
 			else
 			{
@@ -683,6 +676,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				{
                     $this->add_log( 'Payment confirmed with PayPal successfully' );
                     $result = apply_filters( 'woocommerce_payment_successful_result', $result );
+                    if ($this->get_session('giftwrapamount')!='') {
+                        $order->add_order_note("GIFT: <br/>Message: {$this->get_session('giftmessage')}
+                                                  <br/>Receipt Enable: {$this->get_session('giftreceiptenable')}
+                                                  <br/>Name: {$this->get_session('giftwrapname')}
+                                                  <br/>Amount: {$this->get_session('giftwrapamount')}");
+                    }
                     $order->add_order_note( __( 'PayPal Express payment completed', 'paypal-for-woocommerce' ) .
                         ' ( Response Code: ' . $result['ACK'] . ", " .
                         ' TransactionID: '.$result['PAYMENTINFO_0_TRANSACTIONID'] . ' )' );
@@ -1333,10 +1332,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'token' => urlencode($this->get_session('TOKEN')), 								// Required.  A timestamped token, the value of which was returned by a previous SetExpressCheckout call.
             'payerid' => urlencode($this->get_session('payer_id')), 							// Required.  Unique PayPal customer id of the payer.  Returned by GetExpressCheckoutDetails, or if you used SKIPDETAILS it's returned in the URL back to your RETURNURL.
             'returnfmfdetails' => '', 					// Flag to indiciate whether you want the results returned by Fraud Management Filters or not.  1 or 0.
-            'giftmessage' => '', 						// The gift message entered by the buyer on the PayPal Review page.  150 char max.
-            'giftreceiptenable' => '', 					// Pass true if a gift receipt was selected by the buyer on the PayPal Review page. Otherwise pass false.
-            'giftwrapname' => '', 						// The gift wrap name only if the gift option on the PayPal Review page was selected by the buyer.
-            'giftwrapamount' => '', 					// The amount only if the gift option on the PayPal Review page was selected by the buyer.
+            'giftmessage' => $this->get_session('giftmessage'), 						// The gift message entered by the buyer on the PayPal Review page.  150 char max.
+            'giftreceiptenable' => $this->get_session('giftreceiptenable'), 					// Pass true if a gift receipt was selected by the buyer on the PayPal Review page. Otherwise pass false.
+            'giftwrapname' => $this->get_session('giftwrapname'), 						// The gift wrap name only if the gift option on the PayPal Review page was selected by the buyer.
+            'giftwrapamount' => $this->get_session('giftwrapamount'), 					// The amount only if the gift option on the PayPal Review page was selected by the buyer.
             'buyermarketingemail' => '', 				// The buyer email address opted in by the buyer on the PayPal Review page.
             'surveyquestion' => '', 					// The survey question on the PayPal Review page.  50 char max.
             'surveychoiceselected' => '',  				// The survey response selected by the buyer on the PayPal Review page.  15 char max.

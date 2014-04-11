@@ -61,6 +61,7 @@ jQuery(function($) {
 			s_city:				s_city,
 			s_address:			s_address,
 			s_address_2:		s_address_2,
+            pp_action:          'revieworder',
 			post_data:			$('form.checkout').serialize()
 		};
 
