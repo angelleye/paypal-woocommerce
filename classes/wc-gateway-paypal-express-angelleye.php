@@ -676,12 +676,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				{
                     $this->add_log( 'Payment confirmed with PayPal successfully' );
                     $result = apply_filters( 'woocommerce_payment_successful_result', $result );
-                    if ($this->get_session('giftwrapamount')!='') {
-                        $order->add_order_note("GIFT: <br/>Message: {$this->get_session('giftmessage')}
-                                                  <br/>Receipt Enable: {$this->get_session('giftreceiptenable')}
-                                                  <br/>Name: {$this->get_session('giftwrapname')}
-                                                  <br/>Amount: {$this->get_session('giftwrapamount')}");
+                    
+					/**
+					 * Gift Wrap Notes
+					 */
+					if ($this->get_session('giftwrapamount')!='') 
+					{
+						$giftwrap_note = 'Gift Wrap Added';
+						$giftwrap_note .= $this->get_session('giftwrapname') != '' ? ' - ' . $this->get_session('giftwrapname') : '';
+						$giftwrap_note .= $this->get_session('giftmessage') != '' ? '<br />Message: ' . $this->get_session('giftmessage') : '';
+						$giftwrap_note .= '<br />Use Gift Receipt?: ';
+						$giftwrap_note .= strtolower($this->get_session('giftreceiptenable')) == 'true' ? 'Yes' : 'No';
+						//$giftwrap_note .= '<br />Fee: ' . woocommerce_price(number_format($this->get_session('giftwrapamount'),2));
+                        $order->add_order_note($giftwrap_note);
                     }
+					
                     $order->add_order_note( __( 'PayPal Express payment completed', 'paypal-for-woocommerce' ) .
                         ' ( Response Code: ' . $result['ACK'] . ", " .
                         ' TransactionID: '.$result['PAYMENTINFO_0_TRANSACTIONID'] . ' )' );
@@ -910,7 +919,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         $SECFields = array(
             'token' => '', 								// A timestamped token, the value of which was returned by a previous SetExpressCheckout call.
-            'maxamt' => number_format(($paymentAmount + ($paymentAmount * .5)),2,'.',''), 							// The expected maximum total amount the order will be, including S&H and sales tax.
+            'maxamt' => number_format(($paymentAmount * 2),2,'.',''), 							// The expected maximum total amount the order will be, including S&H and sales tax.
             'returnurl' => urldecode($returnURL), 							// Required.  URL to which the customer will be returned after returning from PayPal.  2048 char max.
             'cancelurl' => urldecode($cancelURL), 							// Required.  URL to which the customer will be returned if they cancel payment on PayPal's site.
             'callback' => '', 							// URL to which the callback request from PayPal is sent.  Must start with https:// for production.
