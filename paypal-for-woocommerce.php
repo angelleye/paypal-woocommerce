@@ -66,10 +66,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * @param $cart
          */
         function woocommerce_custom_surcharge($cart){
-            global $wp_query;
-            $post_id = $wp_query->post->ID;
-            var_dump($post_id);
-            if (is_page( wc_get_page_id( 'review_order' ) ) && WC()->session->giftwrapamount){
+            if (isset($_REQUEST['pp_action']) && ($_REQUEST['pp_action']=='revieworder' || $_REQUEST['pp_action']=='payaction') && WC()->session->giftwrapamount){
                 $cart->add_fee( __('Gift Wrap', 'paypal-for-woocommerce'), WC()->session->giftwrapamount );
             }
         }
