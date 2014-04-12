@@ -569,6 +569,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				$this->set_session('giftreceiptenable',isset($result['GIFTRECEIPTENABLE']) ? $result['GIFTRECEIPTENABLE'] : '');
 				$this->set_session('giftwrapname',isset($result['GIFTWRAPNAME']) ? $result['GIFTWRAPNAME'] : '');
 				$this->set_session('giftwrapamount',isset($result['GIFTWRAPAMOUNT']) ? $result['GIFTWRAPAMOUNT'] : '');
+				$this->set_session('customer_notes',isset($result['PAYMENTREQUEST_0_NOTETEXT']) ? $result['PAYMENTREQUEST_0_NOTETEXT'] : '');
                 WC()->cart->calculate_totals();
 
             } 
@@ -671,6 +672,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log( '...Cart Total: '.WC()->cart->get_total() );
                 $this->add_log( "...Token:" . $this->get_session( 'TOKEN' ) );
                 $result = $this->ConfirmPayment( $order->order_total );
+				
+				/**
+				 * Customer Notes
+				 */
+				$order->add_order_note('Customer Notes: '.$this->get_session('customer_notes'));
                 
 				if($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning')
 				{
