@@ -381,6 +381,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     function checkout_message()
 	{
         global $pp_settings;
+
         if(WC()->cart->total > 0)
 		{
             echo '<div id="checkout_paypal_message" class="woocommerce-info info">';
@@ -1115,6 +1116,35 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $total_items += $product_price*$values['quantity'];
             $ctr++;
         }
+        foreach ( WC()->cart->get_fees() as $fee ) {
+            $Item = array(
+                'name' => $fee->name, // Item name. 127 char max.
+                'desc' => '', // Item description. 127 char max.
+                'amt' => number_format($fee->amount,2,'.',''), // Cost of item.
+                'number' => $fee->id, // Item number. 127 char max.
+                'qty' => 1, // Item qty on order. Any positive integer.
+                'taxamt' => '', // Item sales tax
+                'itemurl' => '', // URL for the item.
+                'itemcategory' => '', // One of the following values: Digital, Physical
+                'itemweightvalue' => '', // The weight value of the item.
+                'itemweightunit' => '', // The weight unit of the item.
+                'itemheightvalue' => '', // The height value of the item.
+                'itemheightunit' => '', // The height unit of the item.
+                'itemwidthvalue' => '', // The width value of the item.
+                'itemwidthunit' => '', // The width unit of the item.
+                'itemlengthvalue' => '', // The length value of the item.
+                'itemlengthunit' => '', // The length unit of the item.
+                'ebayitemnumber' => '', // Auction item number.
+                'ebayitemauctiontxnid' => '', // Auction transaction ID number.
+                'ebayitemorderid' => '', // Auction order ID number.
+                'ebayitemcartid' => '' // The unique identifier provided by eBay for this order from the buyer. These parameters must be ordered sequentially beginning with 0 (for example L_EBAYITEMCARTID0, L_EBAYITEMCARTID1). Character length: 255 single-byte characters
+            );
+            array_push($PaymentOrderItems, $Item);
+
+            $total_items += $fee->amount*$Item[qty];
+            $ctr++;
+
+        }
 
         /*
          * Get discount(s)
@@ -1695,7 +1725,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . __('Proceed to Checkout', 'paypal-for-woocommerce') .'</a>';
             }
             else
-			{                
+			{
                 unset($payment_gateways['paypal_pro']);
                 unset($payment_gateways['paypal_pro_payflow']);
                 $pp_pro = get_option('woocommerce_paypal_pro_settings');
@@ -1705,8 +1735,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
                 }
             }
+            echo '<div class="clear"></div>';
             echo '<div class="paypal_box_button">';
-
+            $url = '';
             if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
             switch($pp_settings['checkout_with_pp_button_type']){
                 case "textbutton":

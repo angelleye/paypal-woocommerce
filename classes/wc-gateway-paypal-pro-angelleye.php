@@ -205,11 +205,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Display detailed or generic errors', 'paypal-for-woocommerce' ),
                 'class' => 'error_display_type_option',
                 'options' => array(
-                    'detailed' => 'Detailed',
-                    'generic' => 'Generic'
+                    'detailed' => __( 'Detailed' , 'paypal-for-woocommerce' ),
+                    'generic' => __( 'Generic' , 'paypal-for-woocommerce' )
                 ),
-				'description' => 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
-									and helps to prevent fraudulant activity on your site.'
+				'description' => __( 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
+									and helps to prevent fraudulant activity on your site.' , 'paypal-for-woocommerce')
             ),
             /*'send_items' => array(
                 'title' => __( 'Send Item Details', 'paypal-for-woocommerce' ),
@@ -843,7 +843,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		{
 			// Add order note
 			$order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID'] ) );
-			
+			//$order->add_order_note("PayPal Results: ".print_r($PayPalResult,true));
+
 			// Payment complete
 			$order->payment_complete();
 			
