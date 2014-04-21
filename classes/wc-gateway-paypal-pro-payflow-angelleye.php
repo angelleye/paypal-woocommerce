@@ -127,8 +127,8 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
                     'detailed' => 'Detailed',
                     'generic' => 'Generic'
                 ),
-				'description' => 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
-									and helps to prevent fraudulant activity on your site.'
+				'description' => __( 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
+									and helps to prevent fraudulant activity on your site.' , 'paypal-for-woocommerce' )
             ),
             'sandbox_paypal_vendor'   => array(
                 'title'       => __( 'Sandbox PayPal Vendor', 'paypal-for-woocommerce' ),
@@ -517,6 +517,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 }
 
                 // Payment complete
+                //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
                 $order->payment_complete();
 
                 // Remove cart

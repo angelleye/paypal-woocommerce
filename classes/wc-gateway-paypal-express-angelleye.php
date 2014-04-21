@@ -76,7 +76,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      */
     public function admin_options() { ?>
 
-        <h3><?php echo isset( $this->method_title ) ? $this->method_title : __( 'Settings', 'woocommerce' ) ; ?></h3>
+        <h3><?php echo isset( $this->method_title ) ? $this->method_title : __( 'Settings', 'paypal-for-woocommerce' ) ; ?></h3>
 
         <?php echo isset( $this->method_description ) ? wpautop( $this->method_description ) : ''; ?>
         <table class="form-table">
@@ -122,9 +122,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                     //Extend the wp.media object
                     custom_uploader = wp.media.frames.file_frame = wp.media({
-                        title: 'Choose Image',
+                        title: <?php _e('Choose Image','paypal-for-woocommerce'); ?>,
                         button: {
-                            text: 'Choose Image'
+                            text: <?php _e('Choose Image','paypal-for-woocommerce'); ?>
                         },
                         multiple: false
                     });
@@ -218,7 +218,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Enable PayPal Sandbox', 'paypal-for-woocommerce' ),
                 'default' => 'yes', 
-				'description' => 'The sandbox is PayPal\'s test environment and is only for use with sandbox accounts created within your <a href="http://developer.paypal.com" target="_blank">PayPal developer account</a>.'
+				'description' => __( 'The sandbox is PayPal\'s test environment and is only for use with sandbox accounts created within your <a href="http://developer.paypal.com" target="_blank">PayPal developer account</a>.','paypal-for-woocommerce')
             ),
             'debug' => array(
                 'title' => __( 'Debug', 'paypal-for-woocommerce' ),
@@ -240,9 +240,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Use Checkout with PayPal image button', 'paypal-for-woocommerce' ),
                 'class' => 'checkout_with_pp_button_type',
                 'options' => array(
-                    'paypalimage' => 'PayPal Image',
-                    'textbutton' => 'PayPal Text',
-                    'customimage' => 'Custom Image'
+                    'paypalimage' => __('PayPal Image','paypal-for-woocommerce'),
+                    'textbutton' => __('PayPal Text','paypal-for-woocommerce'),
+                    'customimage' => __('Custom Image','paypal-for-woocommerce')
                 ) // array of options for select/multiselects only
             ),
             'checkout_with_pp_button_type_my_custom' => array(
@@ -268,21 +268,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Show the Express Checkout button on product detail pages.', 'paypal-for-woocommerce' ),
                 'default' => 'no', 
-				'description' => 'Allows customers to checkout using PayPal directly from a product page.'
+				'description' => __('Allows customers to checkout using PayPal directly from a product page.','paypal-for-woocommerce')
             ),
             'paypal_account_optional' => array(
                 'title' => __( 'PayPal Account Optional', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
                 'label' => __( 'Allow customers to checkout without a PayPal account using their credit card.', 'paypal-for-woocommerce' ),
                 'default' => 'no', 
-				'description' => 'PayPal Account Optional must be turned on in your PayPal account profile under Website Preferences.'
+				'description' => __('PayPal Account Optional must be turned on in your PayPal account profile under Website Preferences.','paypal-for-woocommerce')
             ),
 			'landing_page' => array(
                 'title' => __( 'Landing Page', 'paypal-for-woocommerce' ),
                 'type' => 'select',
                 'description' => __( 'Type of PayPal page to display as default. PayPal Account Optional must be checked for this option to be used.', 'paypal-for-woocommerce'  ),
-                'options' => array('login' => 'Login',
-                    'billing' => 'Billing'),
+                'options' => array('login' => __( 'Login' , 'paypal-for-woocommerce' ),
+                    'billing' => __( 'Billing' , 'paypal-for-woocommerce' ) ),
                 'default' => 'login',
             ),
 			'error_display_type' => array(
@@ -291,11 +291,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Display detailed or generic errors', 'paypal-for-woocommerce' ),
                 'class' => 'error_display_type_option',
                 'options' => array(
-                    'detailed' => 'Detailed',
-                    'generic' => 'Generic'
+                    'detailed' => __( 'Detailed' , 'paypal-for-woocommerce' ),
+                    'generic' => __( 'Generic' , 'paypal-for-woocommerce' )
                 ),
-				'description' => 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
-									and helps to prevent fraudulant activity on your site.'
+				'description' => __( 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
+									and helps to prevent fraudulant activity on your site.' , 'paypal-for-woocommerce' )
             ),
 			'show_bill_me_later' => array(
 					'title' => __( 'Enable Bill Me Later', 'paypal-for-woocommerce' ),
@@ -313,28 +313,28 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __( 'Customer Service Number', 'paypal-for-woocommerce' ),
                 'type' => 'text',
                 'description' => __( 'This controls what users see for your customer service phone number on PayPal review pages.', 'paypal-for-woocommerce' ),
-                'default' => __('', 'paypal-for-woocommerce' )
+                'default' => ''
             ),
 			'gift_wrap_enabled' => array(
                 'title' => __( 'Gift Wrap', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
                 'label' => __( 'Enables the gift wrap options for buyers.', 'paypal-for-woocommerce' ),
                 'default' => 'no', 
-				'description' => 'This will display a gift wrap option to buyers during checkout based on the following Gift Wrap settings.'
+				'description' => __( 'This will display a gift wrap option to buyers during checkout based on the following Gift Wrap settings.' , 'paypal-for-woocommerce' )
             ),
 			'gift_message_enabled' => array(
                 'title' => __( 'Gift Message', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
                 'label' => __( 'Enables the gift message widget on PayPal pages.', 'paypal-for-woocommerce' ),
                 'default' => 'no', 
-				'description' => 'This will allow buyers to enter a message they would like to include with the item as a gift.'
+				'description' => __( 'This will allow buyers to enter a message they would like to include with the item as a gift.' , 'paypal-for-woocommerce' )
             ),
 			'gift_receipt_enabled' => array(
                 'title' => __( 'Gift Receipt', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
                 'label' => __( 'Enables the gift receipt widget on PayPal pages.', 'paypal-for-woocommerce' ),
                 'default' => 'no', 
-				'description' => 'This will allow buyers to choose whether or not to include a gift receipt in the order.'
+				'description' => __( 'This will allow buyers to choose whether or not to include a gift receipt in the order.' , 'paypal-for-woocommerce' )
             ),
 			'gift_wrap_name' => array(
                 'title' => __( 'Gift Wrap Name', 'paypal-for-woocommerce' ),
@@ -381,6 +381,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     function checkout_message()
 	{
         global $pp_settings;
+
         if(WC()->cart->total > 0)
 		{
             echo '<div id="checkout_paypal_message" class="woocommerce-info info">';
@@ -488,20 +489,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $ErrorShortMsg     = urldecode( $resArray["L_SHORTMESSAGE0"] );
                     $ErrorLongMsg      = urldecode( $resArray["L_LONGMESSAGE0"] );
                     $ErrorSeverityCode = urldecode( $resArray["L_SEVERITYCODE0"] );
-                    $this->add_log( 'SetExpressCheckout API call failed. ' );
-                    $this->add_log( 'Detailed Error Message: ' . $ErrorLongMsg );
-                    $this->add_log( 'Short Error Message: ' . $ErrorShortMsg );
-                    $this->add_log( 'Error Code: ' . $ErrorCode );
-                    $this->add_log( 'Error Severity Code: ' . $ErrorSeverityCode );
+                    $this->add_log( __( 'SetExpressCheckout API call failed. ' , 'paypal-for-woocommerce') );
+                    $this->add_log( __('Detailed Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorLongMsg );
+                    $this->add_log( __( 'Short Error Message: ' , 'paypal-for-woocommerce') . $ErrorShortMsg );
+                    $this->add_log( __( 'Error Code: ' , 'paypal-for-woocommerce' ) . $ErrorCode );
+                    $this->add_log( __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode );
 
                     // Notice admin if has any issue from PayPal
                     $admin_email = get_option("admin_email");
-                    $message="There is a problem with your PayPal Express Checkout configuration.\n\n";
-                    $message.="SetExpressCheckout API call failed.\n";
-                    $message.='Error Code: ' . $ErrorCode."\n";
-                    $message.='Error Severity Code: ' . $ErrorSeverityCode."\n";
-                    $message.='Short Error Message: ' . $ErrorShortMsg ."\n";
-                    $message.='Detailed Error Message: ' . $ErrorLongMsg ."\n";
+                    $message = __( "There is a problem with your PayPal Express Checkout configuration." , "paypal-for-woocommerce" )."'\n\n";
+                    $message .= __( "SetExpressCheckout API call failed" , "paypal-for-woocommerce" )."'.\n";
+                    $message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $ErrorCode."\n";
+                    $message .= __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode."\n";
+                    $message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
+                    $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
 
                     wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
 					
@@ -580,13 +581,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
             if(isset($_POST['createaccount'])){
                 if(empty($_POST['email'])){
-                    wc_add_notice(__('Please provide a valid email address.', 'woocommerce'), 'error');
+                    wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
                 }if(empty($_POST['password']) || empty($_POST['repassword'])){
-                    wc_add_notice(__('Password is required.', 'woocommerce'), 'error');
+                    wc_add_notice(__('Password is required.', 'paypal-for-woocommerce'), 'error');
                 }elseif($_POST['password'] != $_POST['repassword']){
-                    wc_add_notice(__('Passwords do not match.', 'woocommerce'), 'error');
+                    wc_add_notice(__('Passwords do not match.', 'paypal-for-woocommerce'), 'error');
                 }elseif(get_user_by( 'email',  $_POST['email'])!=false){
-                    wc_add_notice(__('This email address is already registered.', 'woocommerce'), 'error');
+                    wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
                 }else{
                     $data  = array(
                         'user_login' => addslashes( $_POST['email'] ),
@@ -676,7 +677,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				/**
 				 * Customer Notes
 				 */
-				$order->add_order_note('Customer Notes: '.$this->get_session('customer_notes'));
+				$order->add_order_note(__( 'Customer Notes: ' , 'paypal-for-woocommerce' ).$this->get_session('customer_notes'));
                 
 				if($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning')
 				{
@@ -688,10 +689,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					 */
 					if ($this->get_session('giftwrapamount')!='') 
 					{
-						$giftwrap_note = 'Gift Wrap Added';
+						$giftwrap_note = __( 'Gift Wrap Added' , 'paypal-for-woocommerce');
 						$giftwrap_note .= $this->get_session('giftwrapname') != '' ? ' - ' . $this->get_session('giftwrapname') : '';
 						$giftwrap_note .= $this->get_session('giftmessage') != '' ? '<br />Message: ' . $this->get_session('giftmessage') : '';
-						$giftwrap_note .= '<br />Use Gift Receipt?: ';
+						$giftwrap_note .= '<br />'.__( 'Use Gift Receipt?: ' , 'paypal-for-woocommerce' );
 						$giftwrap_note .= strtolower($this->get_session('giftreceiptenable')) == 'true' ? 'Yes' : 'No';
 						//$giftwrap_note .= '<br />Fee: ' . woocommerce_price(number_format($this->get_session('giftwrapamount'),2));
                         $order->add_order_note($giftwrap_note);
@@ -700,6 +701,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $order->add_order_note( __( 'PayPal Express payment completed', 'paypal-for-woocommerce' ) .
                         ' ( Response Code: ' . $result['ACK'] . ", " .
                         ' TransactionID: '.$result['PAYMENTINFO_0_TRANSACTIONID'] . ' )' );
+                    $REVIEW_RESULT = unserialize( $this->get_session('RESULT') );
+                    $payerstatus_note = __( 'Payer Status: ' , 'paypal-for-woocommerce' );
+                    $payerstatus_note .= ucfirst( $REVIEW_RESULT['PAYERSTATUS'] );
+                    $order->add_order_note($payerstatus_note);
+                    $addressstatus_note = __( 'Address Status: ' , 'paypal-for-woocommerce' );
+                    $addressstatus_note .= ucfirst( $REVIEW_RESULT['ADDRESSSTATUS'] );
+                    $order->add_order_note($addressstatus_note);
                     $order->payment_complete();
                     // Empty the Cart
                     WC()->cart->empty_cart();
@@ -1107,6 +1115,35 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
             $total_items += $product_price*$values['quantity'];
             $ctr++;
+        }
+        foreach ( WC()->cart->get_fees() as $fee ) {
+            $Item = array(
+                'name' => $fee->name, // Item name. 127 char max.
+                'desc' => '', // Item description. 127 char max.
+                'amt' => number_format($fee->amount,2,'.',''), // Cost of item.
+                'number' => $fee->id, // Item number. 127 char max.
+                'qty' => 1, // Item qty on order. Any positive integer.
+                'taxamt' => '', // Item sales tax
+                'itemurl' => '', // URL for the item.
+                'itemcategory' => '', // One of the following values: Digital, Physical
+                'itemweightvalue' => '', // The weight value of the item.
+                'itemweightunit' => '', // The weight unit of the item.
+                'itemheightvalue' => '', // The height value of the item.
+                'itemheightunit' => '', // The height unit of the item.
+                'itemwidthvalue' => '', // The width value of the item.
+                'itemwidthunit' => '', // The width unit of the item.
+                'itemlengthvalue' => '', // The length value of the item.
+                'itemlengthunit' => '', // The length unit of the item.
+                'ebayitemnumber' => '', // Auction item number.
+                'ebayitemauctiontxnid' => '', // Auction transaction ID number.
+                'ebayitemorderid' => '', // Auction order ID number.
+                'ebayitemcartid' => '' // The unique identifier provided by eBay for this order from the buyer. These parameters must be ordered sequentially beginning with 0 (for example L_EBAYITEMCARTID0, L_EBAYITEMCARTID1). Character length: 255 single-byte characters
+            );
+            array_push($PaymentOrderItems, $Item);
+
+            $total_items += $fee->amount*$Item[qty];
+            $ctr++;
+
         }
 
         /*
@@ -1688,7 +1725,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . __('Proceed to Checkout', 'paypal-for-woocommerce') .'</a>';
             }
             else
-			{                
+			{
                 unset($payment_gateways['paypal_pro']);
                 unset($payment_gateways['paypal_pro_payflow']);
                 $pp_pro = get_option('woocommerce_paypal_pro_settings');
@@ -1697,52 +1734,53 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				{
                     echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
                 }
-		echo '<div class="paypal_box_button">';
-
-                if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
-                switch($pp_settings['checkout_with_pp_button_type']){
-                    case "textbutton":
-                        echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . __('Pay with PayPal', 'paypal-for-woocommerce') .'</a>';
-                        break;
-                    case "paypalimage":
-                        $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
-                        echo '<div id="paypal_ec_button">';
-						echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
-                        echo "<img src='https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
-                        echo "</a>";
-						echo '</div>';
-                        break;
-                    case "customimage":
-                        $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
-                        echo '<div id="paypal_ec_button">';
-						echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
-                        echo "<img src='{$button_img}' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
-                        echo "</a>";
-						echo '</div>';
-                        break;
-                }
-				
-				/**
-				 * Displays the Bill Me Later checkout button if enabled in EC settings.
-				 */
-				if($pp_settings['show_bill_me_later'] == 'yes') 
-				{
-					// Bill Me Later button
-					$bml_button_markup = '<div id="paypal_ec_bml_button">';
-					$bml_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg( 'use_bml', 'true', add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) ) . '" >';
-					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='150' alt='Check out with PayPal Bill Me Later'/>";
-					$bml_button_markup .= '</a>';
-
-					// Marketing Message
-					$bml_button_markup .= '<a target="_blank" href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
-					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='150' />";
-					$bml_button_markup .= '</a>';
-					$bml_button_markup .= '</div>';
-					
-					echo $bml_button_markup;
-				}
-                echo "<div class='clear'></div></div>";
             }
+            echo '<div class="clear"></div>';
+            echo '<div class="paypal_box_button">';
+            $url = '';
+            if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
+            switch($pp_settings['checkout_with_pp_button_type']){
+                case "textbutton":
+                    echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . __('Pay with PayPal', 'paypal-for-woocommerce') .'</a>';
+                    break;
+                case "paypalimage":
+                    $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
+                    echo '<div id="paypal_ec_button">';
+                    echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
+                    echo "<img src='https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
+                    echo "</a>";
+                    echo '</div>';
+                    break;
+                case "customimage":
+                    $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
+                    echo '<div id="paypal_ec_button">';
+                    echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
+                    echo "<img src='{$button_img}' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
+                    echo "</a>";
+                    echo '</div>';
+                    break;
+            }
+
+            /**
+             * Displays the Bill Me Later checkout button if enabled in EC settings.
+             */
+            if($pp_settings['show_bill_me_later'] == 'yes')
+            {
+                // Bill Me Later button
+                $bml_button_markup = '<div id="paypal_ec_bml_button">';
+                $bml_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg( 'use_bml', 'true', add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) ) . '" >';
+                $bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='150' alt='Check out with PayPal Bill Me Later'/>";
+                $bml_button_markup .= '</a>';
+
+                // Marketing Message
+                $bml_button_markup .= '<a target="_blank" href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
+                $bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='150' />";
+                $bml_button_markup .= '</a>';
+                $bml_button_markup .= '</div>';
+
+                echo $bml_button_markup;
+            }
+            echo "<div class='clear'></div></div>";
         }
     }
 }

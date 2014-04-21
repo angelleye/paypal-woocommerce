@@ -1,0 +1,908 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: VietName\n"
+"POT-Creation-Date: 2014-04-17 15:16+0700\n"
+"PO-Revision-Date: 2014-04-17 15:16+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.4\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: E:\\xampp\\htdocs\\izwebtest\\wp-content\\plugins"
+"\\paypal-for-woocommerce\n"
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:11
+msgid "PayPal Express Checkout "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:12
+msgid ""
+"PayPal Express Checkout is designed to make the checkout experience for "
+"buyers using PayPal much more quick and easy than filling out billing and "
+"shipping forms.  Customers will be taken directly to PayPal to sign in and "
+"authorize the payment, and are then returned back to your store to choose a "
+"shipping method, review the final order total, and complete the payment."
+msgstr ""
+"PayPal Express Checkout được thiết kế để làm cho kinh nghiệm thanh toán cho "
+"người mua sử dụng PayPal nhiều hơn nữa nhanh chóng và dễ dàng hơn điền thanh "
+"toán và vận chuyển mẫu. Khách hàng sẽ được đưa trực tiếp vào PayPal để đăng "
+"nhập và cho phép thanh toán, và sau đó quay trở lại cửa hàng của bạn để lựa "
+"chọn một phương pháp vận chuyển, xem xét tổng số thứ tự cuối cùng, và hoàn "
+"thành thanh toán."
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:79
+msgid "Settings"
+msgstr "Thiệt lập"
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:125
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:127
+msgid "Choose Image"
+msgstr "Chọn hình ảnh"
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:166
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:111
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:89
+msgid "Enable/Disable"
+msgstr "Bật / Tắt"
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:167
+msgid "Enable PayPal Express"
+msgstr "Bật  PayPal Express"
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:173
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:118
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:96
+msgid "Title"
+msgstr "Tiêu đề"
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:175
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:120
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:98
+msgid "This controls the title which the user sees during checkout."
+msgstr "Này điều khiển tiêu đề mà người dùng thấy trong kiểm tra."
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:176
+msgid "PayPal Express"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:179
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:124
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:102
+msgid "Description"
+msgstr "Mô tả"
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:181
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:126
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:104
+msgid "This controls the description which the user sees during checkout."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:182
+msgid ""
+"Pay via PayPal; you can pay with your credit card if you don't have a PayPal "
+"account"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:185
+msgid "Sandbox API User Name"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:187
+msgid ""
+"Create sandbox accounts and obtain API credentials from within your <a href="
+"\"http://developer.paypal.com\">PayPal developer account</a>."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:191
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:144
+msgid "Sandbox API Password"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:196
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:149
+msgid "Sandbox API Signature"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:201
+msgid "Live API User Name"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:203
+msgid ""
+"Get your live account API credentials from your PayPal account profile under "
+"the API Access section <br />or by using <a target=\"_blank\" href=\"https://"
+"www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run\">this tool</a>."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:207
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:161
+msgid "Live API Password"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:212
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:166
+msgid "Live API Signature"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:217
+msgid "PayPal Sandbox"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:219
+msgid "Enable PayPal Sandbox"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:221
+msgid ""
+"The sandbox is PayPal's test environment and is only for use with sandbox "
+"accounts created within your <a href=\"http://developer.paypal.com\" target="
+"\"_blank\">PayPal developer account</a>."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:224
+msgid "Debug"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:226
+msgid "Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:238
+msgid "Checkout Button Type"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:240
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:251
+msgid "Use Checkout with PayPal image button"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:243
+msgid "PayPal Image"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:244
+msgid "PayPal Text"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:245
+msgid "Custom Image"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:249
+msgid "Select Image"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:261
+msgid "Standard Checkout"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:263
+msgid "Show Express Checkout button on checkout page"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:267
+msgid "Product Page"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:269
+msgid "Show the Express Checkout button on product detail pages."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:271
+msgid "Allows customers to checkout using PayPal directly from a product page."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:274
+msgid "PayPal Account Optional"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:276
+msgid ""
+"Allow customers to checkout without a PayPal account using their credit card."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:278
+msgid ""
+"PayPal Account Optional must be turned on in your PayPal account profile "
+"under Website Preferences."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:281
+msgid "Landing Page"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:283
+msgid ""
+"Type of PayPal page to display as default. PayPal Account Optional must be "
+"checked for this option to be used."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:284
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/template/review-order.php:80
+msgid "Login"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:285
+msgid "Billing"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:289
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:203
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:122
+msgid "Error Display Type"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:291
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:205
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:124
+msgid "Display detailed or generic errors"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:294
+msgid "Detailed"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:295
+msgid "Generic"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:297
+msgid ""
+"Detailed displays actual errors returned from PayPal.  Generic displays "
+"general errors that do not reveal details \n"
+"\t\t\t\t\t\t\t\t\tand helps to prevent fraudulant activity on your site."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:301
+msgid "Enable Bill Me Later"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:303
+msgid "Show the Bill Me Later button next to the Express Checkout button."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:307
+msgid "Brand Name"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:309
+msgid ""
+"This controls what users see as the brand / company name on PayPal review "
+"pages."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:313
+msgid "Customer Service Number"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:315
+msgid ""
+"This controls what users see for your customer service phone number on "
+"PayPal review pages."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:319
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:74
+msgid "Gift Wrap"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:321
+msgid "Enables the gift wrap options for buyers."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:323
+msgid ""
+"This will display a gift wrap option to buyers during checkout based on the "
+"following Gift Wrap settings."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:326
+msgid "Gift Message"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:328
+msgid "Enables the gift message widget on PayPal pages."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:330
+msgid ""
+"This will allow buyers to enter a message they would like to include with "
+"the item as a gift."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:333
+msgid "Gift Receipt"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:335
+msgid "Enables the gift receipt widget on PayPal pages."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:337
+msgid ""
+"This will allow buyers to choose whether or not to include a gift receipt in "
+"the order."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:340
+msgid "Gift Wrap Name"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:342
+msgid ""
+"Label for the gift wrap option on PayPal pages, such as \"Box with ribbon\""
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:343
+msgid "Box with ribbon"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:346
+msgid "Gift Wrap Amount"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:348
+msgid "Amount to be charged to the buyer for adding the gift wrap option."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:349
+msgid "0.00"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:391
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:397
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:405
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1706
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1712
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1720
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:365
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:370
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:382
+msgid "Pay with PayPal"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:433
+msgid "Skip the forms and pay faster with PayPal."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:491
+msgid "SetExpressCheckout API call failed. "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:492
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:504
+msgid "Detailed Error Message: "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:493
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:503
+msgid "Short Error Message: "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:494
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:501
+msgid "Error Code: "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:495
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:502
+msgid "Error Severity Code: "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:499
+msgid "There is a problem with your PayPal Express Checkout configuration."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:500
+msgid "SetExpressCheckout API call failed"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:516
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:744
+msgid "There was a problem paying with PayPal.  Please try another method."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:583
+msgid "Please provide a valid email address."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:585
+msgid "Password is required."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:587
+msgid "Passwords do not match."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:589
+msgid "This email address is already registered."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:679
+msgid "Customer Notes: "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:691
+msgid "Gift Wrap Added"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:694
+msgid "Use Gift Receipt?: "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:700
+msgid "PayPal Express payment completed"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:762
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:901
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1237
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1299
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:578
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:256
+#, php-format
+msgid ""
+"Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:767
+msgid "Invalid shipping method."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1688
+msgid "Proceed to Checkout"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-express-angelleye.php:1698
+msgid "Pay with Credit Card"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:16
+msgid "PayPal Website Payments Pro (DoDirectPayment) "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:17
+msgid ""
+"PayPal Website Payments Pro allows you to accept credit cards directly on "
+"your site without any redirection through PayPal.  You host the checkout "
+"form on your own web server, so you will need an SSL certificate to ensure "
+"your customer data is protected."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:112
+msgid "Enable PayPal Pro"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:121
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:99
+msgid "Credit card"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:127
+msgid "Pay with your credit card"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:130
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:108
+msgid "Test Mode"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:131
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:109
+msgid "Enable PayPal Sandbox/Test Mode"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:133
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:111
+msgid "Place the payment gateway in development mode."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:137
+msgid "Sandbox API Username"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:139
+msgid ""
+"Create sandbox accounts and obtain API credentials from within your \n"
+"\t\t\t\t\t\t\t\t\t<a href=\"http://developer.paypal.com\">PayPal developer "
+"account</a>."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:154
+msgid "Live API Username"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:156
+msgid ""
+"Get your live account API credentials from your PayPal account profile under "
+"the API Access section <br />or by using \n"
+"\t\t\t\t\t\t\t\t\t<a target=\"_blank\" href=\"https://www.paypal.com/us/cgi-"
+"bin/webscr?cmd=_login-api-run\">this tool</a>."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:171
+msgid "3DSecure"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:172
+msgid "Enable 3DSecure"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:174
+msgid ""
+"Allows UK merchants to pass 3-D Secure authentication data to PayPal for "
+"debit and credit cards. Updating your site with 3-D Secure enables your "
+"participation in the Verified by Visa and MasterCard SecureCode programs. "
+"(Required to accept Maestro)"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:178
+msgid "Centinel PID"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:180
+msgid "If enabling 3D Secure, enter your Cardinal Centinel Processor ID."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:184
+msgid "Centinel MID"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:186
+msgid "If enabling 3D Secure, enter your Cardinal Centinel Merchant ID."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:190
+msgid "Transaction Password"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:192
+msgid ""
+"If enabling 3D Secure, enter your Cardinal Centinel Transaction Password."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:196
+msgid "Liability Shift"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:197
+msgid "Require liability shift"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:199
+msgid "Only accept payments when liability shift has occurred."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:222
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:115
+msgid "Debug Log"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:224
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:117
+msgid "Enable logging"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:226
+msgid "Log PayPal events inside <code>woocommerce/logs/paypal-pro.txt</code>"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:253
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:564
+msgid "TEST MODE/SANDBOX ENABLED"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:257
+msgid "Credit Card number"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:261
+msgid "Card type"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:270
+msgid "Expiration date"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:272
+msgid "Month"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:283
+msgid "Year"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:290
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:580
+msgid "Card security code"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:307
+msgid "3 digits usually found on the signature strip."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:309
+msgid "4 digits usually found on the front of the card."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:330
+msgid "Card security code is invalid (only digits are allowed)"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:334
+msgid "Card security code is invalid (wrong length)"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:346
+msgid "Card expiration date is invalid"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:352
+msgid "Card number is invalid"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:455
+msgid "Processing your Payer Authentication Transaction"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:455
+msgid "Please click Submit to continue the processing of your transaction."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:466
+msgid ""
+"Authentication unavailable. Please try a different payment method or card."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:473
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:546
+msgid "Error in 3D secure authentication: "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:526
+msgid ""
+"Authentication unavailable.  Please try a different payment method or card."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:527
+msgid "3D Secure error: No liability shift"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:540
+msgid "Payer Authentication failed.  Please try a different payment method."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:541
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:547
+#, php-format
+msgid "3D Secure error: %s"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:839
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:491
+msgid "Empty PayPal response."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:845
+#, php-format
+msgid "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:871
+#, php-format
+msgid ""
+"PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to "
+"an error: %s"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:878
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:883
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:538
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:542
+msgid "Payment error:"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-angelleye.php:882
+msgid "There was a problem connecting to the payment gateway."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:19
+msgid "PayPal Payments Pro 2.0 (PayFlow)"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:20
+msgid ""
+"PayPal Payments Pro allows you to accept credit cards directly on your site "
+"without any redirection through PayPal.  You host the checkout form on your "
+"own web server, so you will need an SSL certificate to ensure your customer "
+"data is protected."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:90
+msgid "Enable PayPal Pro Payflow Edition"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:105
+msgid "Pay with your credit card."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:119
+msgid ""
+"Log PayPal events inside <code>woocommerce/logs/paypal-payflow.txt</code>"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:134
+msgid "Sandbox PayPal Vendor"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:136
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:162
+msgid ""
+"Your merchant login ID that you created when you registered for the account."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:140
+msgid "Sandbox PayPal Password"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:142
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:168
+msgid "The password that you defined while registering for the account."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:146
+msgid "Sandbox PayPal User"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:148
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:174
+msgid ""
+"If you set up one or more additional users on the account, this value is the "
+"ID\n"
+"of the user authorized to process transactions. Otherwise, leave this field "
+"blank."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:153
+msgid "Sandbox PayPal Partner"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:155
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:181
+msgid ""
+"The ID provided to you by the authorized PayPal Reseller who registered you\n"
+"for the Payflow SDK. If you purchased your account directly from PayPal, use "
+"PayPal or leave blank."
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:160
+msgid "Live PayPal Vendor"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:166
+msgid "Live PayPal Password"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:172
+msgid "Live PayPal User"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:179
+msgid "Live PayPal Partner"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:516
+#, php-format
+msgid "PayPal Pro payment completed (PNREF: %s)"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:533
+msgid "PayPal Pro payment failed. Payment was rejected due to an error: "
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:551
+msgid "Connection error:"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:571
+msgid "Card number"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/classes/wc-gateway-paypal-pro-payflow-angelleye.php:576
+msgid "Expiry date <small>(MMYY)</small>"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:30
+msgid ""
+"This plugin requires Wordpress version 3.8 or higher and woocommerce version "
+"2.1 or higher. Please upgrade!"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:104
+msgid "Docs"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:105
+msgid "Support"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:106
+msgid "Write a Review"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:149
+#, php-format
+msgid ""
+"WooCommerce PayPal Payments Pro requires that the %sForce secure checkout%s "
+"option is enabled; your checkout may not be secure! Please enable SSL and "
+"ensure your server has a valid SSL certificate - PayPal Pro will only work "
+"in test mode. | <a href=%s>%s</a>"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:149
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:156
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:160
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:164
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:168
+msgid "Hide this notice"
+msgstr "Ẩn thông báo này"
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:156
+#, php-format
+msgid ""
+"WooCommerce PayPal Payments ( %s ) is currently running in Sandbox mode and "
+"will NOT process any actual payments. | <a href=%s>%s</a>"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:160
+#, php-format
+msgid ""
+"WooCommerce PayPal Express is currently running in Sandbox mode and will NOT "
+"process any actual payments. | <a href=%s>%s</a>"
+msgstr ""
+"WooCommerce PayPal Express hiện đang chạy trong chế độ Sandbox và sẽ không "
+"xử lý bất kỳ khoản thanh toán thực tế.  | <a href=%s>%s</a>"
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:164
+msgid ""
+"You currently have both PayPal (standard) and Express Checkout enabled.  It "
+"is recommended that you disable the standard PayPal from <a href=\""
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:168
+#, php-format
+msgid ""
+"WooCommerce PayPal Payments requires WooCommerce plugin to work normally. "
+"Please activate it or install it from <a href='http://wordpress.org/plugins/"
+"woocommerce/' target='_blank'>here</a>. | <a href=%s>%s</a>"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/paypal-for-woocommerce.php:241
+msgid "Checkout &rarr; Review Order"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/template/review-order.php:29
+msgid "Customer details"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/template/review-order.php:37
+msgid "Shipping Address"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/template/review-order.php:108
+msgid "Create A New Account"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/template/review-order.php:133
+msgid "Cancel order"
+msgstr ""
+
+#: E:\xampp\htdocs\izwebtest\wp-content\plugins\paypal-for-woocommerce/template/review-order.php:134
+msgid "Place Order"
+msgstr ""
