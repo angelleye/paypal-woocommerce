@@ -277,7 +277,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __( 'Custom Text', 'paypal-for-woocommerce' ),
                 'type' => 'text',
                 'class' => 'checkout_with_pp_button_type_text_button',
-                'default' => 'Process to checkout',
+                'default' => 'Proceed to Checkout',
             ),
             /*'hide_checkout_button' => array(
                 'title' => __( 'Standard Checkout Button', 'paypal-for-woocommerce' ),
