@@ -89,6 +89,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         ?>
         <script type="text/javascript">
             jQuery(document).ready(function ($){
+                alert("OK");
                 if ($("#woocommerce_paypal_express_checkout_with_pp_button_type").val() == "customimage") {
                     jQuery('.form-table tr td #woocommerce_paypal_express_checkout_with_pp_button_type_my_custom').each(function (i, el) {
                         jQuery(el).closest('tr').show();
@@ -122,9 +123,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                     //Extend the wp.media object
                     custom_uploader = wp.media.frames.file_frame = wp.media({
-                        title: <?php _e('Choose Image','paypal-for-woocommerce'); ?>,
+                        title: '<?php _e('Choose Image','paypal-for-woocommerce'); ?>',
                         button: {
-                            text: <?php _e('Choose Image','paypal-for-woocommerce'); ?>
+                            text: '<?php _e('Choose Image','paypal-for-woocommerce'); ?>'
                         },
                         multiple: false
                     });
@@ -1720,24 +1721,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		{
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
             // Pay with Credit Card
-            if(empty($payment_gateways))
-			{
-                echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . __('Proceed to Checkout', 'paypal-for-woocommerce') .'</a>';
+
+            unset($payment_gateways['paypal_pro']);
+            unset($payment_gateways['paypal_pro_payflow']);
+            $pp_pro     = get_option('woocommerce_paypal_pro_settings');
+            $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
+            if (empty($payment_gateways) && (@$pp_pro['enabled']=='yes' || @$pp_payflow['enabled']=='yes'))
+            {
+                echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
             }
-            else
-			{
-                unset($payment_gateways['paypal_pro']);
-                unset($payment_gateways['paypal_pro_payflow']);
-                $pp_pro = get_option('woocommerce_paypal_pro_settings');
-                $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
-                if (empty($payment_gateways) && (@$pp_pro['enabled']=='yes' || @$pp_payflow['enabled']=='yes'))
-				{
-                    echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
-                }
-            }
+
             echo '<div class="clear"></div>';
             echo '<div class="paypal_box_button">';
-            $url = '';
             if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
             switch($pp_settings['checkout_with_pp_button_type']){
                 case "textbutton":

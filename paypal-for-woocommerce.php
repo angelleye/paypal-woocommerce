@@ -59,7 +59,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'));
             add_action( 'add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
             add_action( 'woocommerce_after_single_variation', array($this, 'buy_now_button_js'));
-            add_action('admin_print_scripts', array( $this , 'onetarek_wpmut_admin_scripts' ) );
+            add_action('admin_enqueue_scripts', array( $this , 'onetarek_wpmut_admin_scripts' ) );
             add_action('admin_print_styles', array( $this , 'onetarek_wpmut_admin_styles' ) );
             add_action( 'woocommerce_cart_calculate_fees', array($this, 'woocommerce_custom_surcharge') );
 
@@ -79,8 +79,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         {
             $dir = plugin_dir_path( __FILE__ );
             wp_enqueue_media();
-            //wp_register_script('my-upload', plugins_url( '/jss/upload-image.js' , __FILE__ ), array('jquery','media-upload','thickbox'));
-            //wp_enqueue_script('my-upload');
+            wp_enqueue_script( 'jquery');
+            wp_register_script('my-upload', plugins_url( '/jss/upload-image.js' , __FILE__ ), array('jquery','media-upload','thickbox'));
+            wp_enqueue_script('my-upload');
         }
 
         function onetarek_wpmut_admin_styles()
@@ -181,11 +182,33 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'init', array($this, 'woocommerce_paypal_express_review_order_page_angelleye') );
             remove_shortcode( 'woocommerce_review_order');
             add_shortcode( 'woocommerce_review_order', array($this, 'get_woocommerce_review_order_angelleye' ));
+            add_action( 'woocommerce_before_calculate_totals', array($this, 'woo_add_cart_fee' ));
 
             require_once('classes/wc-gateway-paypal-pro-payflow-angelleye.php');
             require_once('classes/wc-gateway-paypal-pro-angelleye.php');
             require_once('classes/wc-gateway-paypal-express-angelleye.php');
         }
+        // Add Fee to all products
+        function woo_add_cart_fee() {
+            global $woocommerce;
+            $additional_fee_name = "Service Fee";
+            $extra_fee = 2;
+            $additional_fee_taxable = true;
+
+            $addedFee = false;
+            // first check to make sure it isn't already there
+            foreach ( $woocommerce->cart->get_fees() as $_fee ) {
+                if ($_fee->id == sanitize_title($additional_fee_name)) {
+                    $_fee->amount = (float) esc_attr( $extra_fee );
+                    $_fee->taxable = $additional_fee_taxable;
+                    $addedFee = true;
+                }
+            }
+            if (!$addedFee) {
+                $woocommerce->cart->add_fee( __($additional_fee_name, 'woocommerce'), $extra_fee, $additional_fee_taxable );
+            }
+        }
+
 
         /**
          * woocommerce_paypal_express_init_styles function.
