@@ -20,15 +20,18 @@
  * of the GNU Public License, version 3.
  */
 
+/**
+ * Exit if accessed directly.
+ */
 if (!defined('ABSPATH'))
 {
-    exit(); // Exit if accessed directly
+    exit();
 }
-global $woocommerce, $pp_settings,$wp_version;
 
-if(version_compare($wp_version,'3.8','<') && version_compare($woocommerce->version,'2.1','<')){
-    exit(__('This plugin requires Wordpress version 3.8 or higher and woocommerce version 2.1 or higher. Please upgrade!','paypal-for-woocommerce'));
-}
+/**
+ * Set global parameters
+ */
+global $woocommerce, $pp_settings, $wp_version;
 
 /**
  * Get Settings
@@ -43,6 +46,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         public function __construct()
         {
+			
+			/**
+			 * Check current WooCommerce version to ensure compatibility.
+			 */
+			$woo_version = $this->wpbo_get_woo_version_number();
+			if(version_compare($woo_version,'2.1','<'))
+			{
+				exit( __('PayPal for WooCommerce requires WooCommerce version 2.1 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce'));
+			}
+
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
             add_action( 'plugins_loaded', array($this, 'init'));
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
@@ -62,8 +75,35 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('admin_enqueue_scripts', array( $this , 'onetarek_wpmut_admin_scripts' ) );
             add_action('admin_print_styles', array( $this , 'onetarek_wpmut_admin_styles' ) );
             add_action( 'woocommerce_cart_calculate_fees', array($this, 'woocommerce_custom_surcharge') );
-
         }
+		
+		/**
+		 * Get WooCommerce Version Number
+		 * http://wpbackoffice.com/get-current-woocommerce-version-number/
+		 */
+		function wpbo_get_woo_version_number()
+		{
+			// If get_plugins() isn't available, require it
+			if ( ! function_exists( 'get_plugins' ) )
+			{
+				require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			}
+			
+			// Create the plugins folder and file variables
+			$plugin_folder = get_plugins( '/' . 'woocommerce' );
+			$plugin_file = 'woocommerce.php';
+			
+			// If the plugin version number is set, return it 
+			if ( isset( $plugin_folder[$plugin_file]['Version'] ) )
+			{
+				return $plugin_folder[$plugin_file]['Version'];
+			}
+			else
+			{
+				// Otherwise return null
+				return NULL;
+			}
+		}
 
         /**
          * Add gift amount to cart
