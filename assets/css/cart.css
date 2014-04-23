@@ -7,16 +7,19 @@ a img{
 .paypal_box_button {
     clear: both;
     float: right;
-	margin: 7px 7px 0 0;
 }
 .woocommerce #content table.cart .paypal_box_button img, .woocommerce table.cart .paypal_box_button img, .woocommerce-page #content table.cart .paypal_box_button img, .woocommerce-page table.cart .paypal_box_button img {
-    display: block;
     width: 150px;
     border-radius: 0px;
     box-shadow: none;
     padding: 0px;
-	background:none;
+    display: inline;
 }
 .paypal_box_button div a img {
     border: medium none;
+}
+#paypal_ec_bml_button a {
+    display: block;
+    text-align: center;
+    width: 100%;
 }
