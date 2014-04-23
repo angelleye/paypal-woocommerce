@@ -454,9 +454,23 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				{
                     $PayPalRequestData['FREIGHTAMT'] = $shipping;
                 }
-
-                $PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
             }
+			
+			/**
+			 * Add custom Woo cart fees as line items
+			 */
+			foreach ( WC()->cart->get_fees() as $fee )
+			{
+				$PayPalRequestData['L_NUMBER' . $item_loop ]	= $fee->id;
+				$PayPalRequestData['L_NAME' . $item_loop ]		= $fee->name;
+				$PayPalRequestData['L_AMT' . $item_loop ]		= number_format($fee->amount,2,'.','');
+				$PayPalRequestData['L_QTY' . $item_loop ]		= 1;
+				$item_loop++;
+				
+				$ITEMAMT += $fee->amount*$Item['qty'];
+			}
+			
+			$PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
 			
 			/**
 			 * Woo's original extension wasn't sending the request with 

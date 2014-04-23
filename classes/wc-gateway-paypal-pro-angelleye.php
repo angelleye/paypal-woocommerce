@@ -784,10 +784,45 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			{
 				$PaymentDetails['shippingamt'] = $shipping;					// Total shipping costs for the order.  If you specify shippingamt, you must also specify itemamt.
             }
-
-			$PaymentDetails['itemamt'] = number_format($ITEMAMT,2,'.',''); 						// Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
         }
-
+		
+		/**
+		 * Add custom Woo cart fees as line items
+		 */
+		$item_loop = 0;
+		foreach ( WC()->cart->get_fees() as $fee )
+		{
+			$Item = array(
+				'name' => $fee->name, // Item name. 127 char max.
+				'desc' => '', // Item description. 127 char max.
+				'amt' => number_format($fee->amount,2,'.',''), // Cost of item.
+				'number' => $fee->id, // Item number. 127 char max.
+				'qty' => 1, // Item qty on order. Any positive integer.
+				'taxamt' => '', // Item sales tax
+				'itemurl' => '', // URL for the item.
+				'itemcategory' => '', // One of the following values: Digital, Physical
+				'itemweightvalue' => '', // The weight value of the item.
+				'itemweightunit' => '', // The weight unit of the item.
+				'itemheightvalue' => '', // The height value of the item.
+				'itemheightunit' => '', // The height unit of the item.
+				'itemwidthvalue' => '', // The width value of the item.
+				'itemwidthunit' => '', // The width unit of the item.
+				'itemlengthvalue' => '', // The length value of the item.
+				'itemlengthunit' => '', // The length unit of the item.
+				'ebayitemnumber' => '', // Auction item number.
+				'ebayitemauctiontxnid' => '', // Auction transaction ID number.
+				'ebayitemorderid' => '', // Auction order ID number.
+				'ebayitemcartid' => '' // The unique identifier provided by eBay for this order from the buyer. These parameters must be ordered sequentially beginning with 0 (for example L_EBAYITEMCARTID0, L_EBAYITEMCARTID1). Character length: 255 single-byte characters
+			);
+			
+				
+			array_push($OrderItems, $Item);
+			
+			$ITEMAMT += $fee->amount*$Item['qty'];
+			$item_loop++;
+		}
+		
+		$PaymentDetails['itemamt'] = number_format($ITEMAMT,2,'.',''); 						// Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
 		
 		/**
 		 * 3D Secure Params
