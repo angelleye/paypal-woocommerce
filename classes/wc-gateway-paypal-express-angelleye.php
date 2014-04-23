@@ -715,8 +715,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				/**
 				 * Customer Notes
 				 */
-				$order->add_order_note(__( 'Customer Notes: ' , 'paypal-for-woocommerce' ).$this->get_session('customer_notes'));
-                
+				if($this->get_session('customer_notes') != '')
+				{
+					$order->add_order_note(__( 'Customer Notes: ' , 'paypal-for-woocommerce' ).$this->get_session('customer_notes'));
+				}
+				
 				if($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning')
 				{
                     $this->add_log( 'Payment confirmed with PayPal successfully' );
@@ -1455,7 +1458,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptozip' => $shipping_postcode, 						// Required if shipping is included.  Postal code of shipping address.  20 char max.
             'shiptocountrycode' => $shipping_country, 				// Required if shipping is included.  Country code of shipping address.  2 char max.
             'shiptophonenum' => '',  				// Phone number for shipping address.  20 char max.
-            'notetext' => $customer_notes, 						// Note to the merchant.  255 char max.
+            'notetext' => $this->get_session('customer_notes'), 						// Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', 			// The payment method type.  Specify the value InstantPaymentOnly.
             'paymentaction' => 'Sale', 					// How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
             'paymentrequestid' => '',  				// A unique identifier of the specific payment request, which is required for parallel payments.
