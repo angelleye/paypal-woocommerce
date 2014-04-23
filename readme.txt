@@ -4,11 +4,11 @@ Donate link: http://www.angelleye.com/product/buy-beer/
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 3.9
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-The official PayPal extension for WooCommerce, developed by a PayPal partner.
+PayPal integration for WooCommerce done right.
 
 == Description ==
 
@@ -100,6 +100,14 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.1.2 - 04/23/2014 =
+* Fix - Removes PHP warnings/notices from PayPal Express Checkout review page.
+* Fix - Custom fees applied to the Woo cart are now handled correctly in each gateway.
+* Fix - Old logic for which buttons to display (based on active gateways) has been removed and replaced with new logic utilizing the Checkout Button Type option in Express Checkout.
+* Feature - Express Checkout now has the option to set a Brand Name and a Customer Service Number that will be used on the PayPal review pages.
+* Feature - Express Checkout now has the option to enable a Gift Wrap option for your buyers on the PayPal review pages.
+* Feature - Customer notes left on the PayPal review pages during an Express Checkout order are now saved in the Woo order notes.
 
 = 1.1.1 - 04/05/2014 = 
 * Fix - PayPal Express Checkout button no longer shows up on the product page for an external product.
