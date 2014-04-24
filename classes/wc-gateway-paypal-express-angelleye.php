@@ -24,6 +24,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->api_signature           = $this->settings['api_signature'];
         $this->testmode                = $this->settings['testmode'];
         $this->debug                   = $this->settings['debug'];
+        $this->error_email_notify      = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
         //$this->checkout_with_pp_button = $this->settings['checkout_with_pp_button'];
         //$this->hide_checkout_button    = $this->settings['hide_checkout_button'];
         $this->show_on_checkout        = $this->settings['show_on_checkout'];
@@ -247,6 +248,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Enable logging ( <code>woocommerce/logs/paypal_express.txt</code> )', 'paypal-for-woocommerce' ),
                 'default' => 'no'
+            ),
+			'error_email_notify' => array(
+                'title' => __( 'Error Email Notifications', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'label' => __( 'Enable admin email notifications for errors.', 'paypal-for-woocommerce' ),
+                'default' => 'yes', 
+				'description' => __( 'This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.','paypal-for-woocommerce' )
             ),
             /*
             'checkout_with_pp_button' => array(
@@ -536,15 +544,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $this->add_log( __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode );
 
                     // Notice admin if has any issue from PayPal
-                    $admin_email = get_option("admin_email");
-                    $message = __( "There is a problem with your PayPal Express Checkout configuration." , "paypal-for-woocommerce" )."'\n\n";
-                    $message .= __( "SetExpressCheckout API call failed" , "paypal-for-woocommerce" )."'.\n";
-                    $message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $ErrorCode."\n";
-                    $message .= __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode."\n";
-                    $message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
-                    $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
-
-                    wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
+					if($this->error_email_notify)
+					{
+						$admin_email = get_option("admin_email");
+						$message .= __( "SetExpressCheckout API call failed." , "paypal-for-woocommerce" )."\n\n";
+						$message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $ErrorCode."\n";
+						$message .= __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode."\n";
+						$message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
+						$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
+	
+						wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
+					}
 					
 					// Generate error message based on Error Display Type setting
 					if($this->error_display_type == 'detailed')
@@ -772,17 +782,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $this->add_log( 'Short Error Message: ' . $ErrorShortMsg );
                     $this->add_log( 'Error Code: ' . $ErrorCode );
                     $this->add_log( 'Error Severity Code: ' . $ErrorSeverityCode );
-
-                    // Notice admin if has any issue from PayPal
-                    $admin_email = get_option("admin_email");
-                    $message="There is a problem with your PayPal Express Checkout configuration.\n\n";
-                    $message.="DoExpressCheckoutPayment API call failed.\n";
-                    $message.='Error Code: ' . $ErrorCode."\n";
-                    $message.='Error Severity Code: ' . $ErrorSeverityCode."\n";
-                    $message.='Short Error Message: ' . $ErrorShortMsg ."\n";
-                    $message.='Detailed Error Message: ' . $ErrorLongMsg ."\n";
-
-                    wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
+					
+					// Notice admin if has any issue from PayPal
+					if($this->error_email_notify)
+					{
+						$admin_email = get_option("admin_email");
+						$message .= __( "DoExpressCheckoutPayment API call failed." , "paypal-for-woocommerce" )."\n\n";
+						$message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $ErrorCode."\n";
+						$message .= __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode."\n";
+						$message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
+						$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
+	
+						wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
+					}
 					
 					// Generate error message based on Error Display Type setting
 					if($this->error_display_type == 'detailed')

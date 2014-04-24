@@ -68,6 +68,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->api_password 		= $this->settings['api_password'];
         $this->api_signature 		= $this->settings['api_signature'];
         $this->testmode 			= $this->settings['testmode'];
+		$this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
 		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
         $this->enable_3dsecure 		= isset( $this->settings['enable_3dsecure'] ) && $this->settings['enable_3dsecure'] == 'yes' ? true : false;
         $this->liability_shift 		= isset( $this->settings['liability_shift'] ) && $this->settings['liability_shift'] == 'yes' ? true : false;
@@ -132,6 +133,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'description' => __( 'Place the payment gateway in development mode.', 'paypal-for-woocommerce' ),
                 'default' => 'no'
+            ),
+			'error_email_notify' => array(
+                'title' => __( 'Error Email Notifications', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'label' => __( 'Enable admin email notifications for errors.', 'paypal-for-woocommerce' ),
+                'default' => 'yes', 
+				'description' => __( 'This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.','paypal-for-woocommerce' )
             ),
             'sandbox_api_username' => array(
                 'title' => __( 'Sandbox API Username', 'paypal-for-woocommerce' ),
@@ -898,6 +906,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			$error_code = isset($PayPalResult['ERRORS'][0]['L_ERRORCODE']) ? $PayPalResult['ERRORS'][0]['L_ERRORCODE'] : '';
 			$long_message = isset($PayPalResult['ERRORS'][0]['L_LONGMESSAGE']) ? $PayPalResult['ERRORS'][0]['L_LONGMESSAGE'] : '';
 			$error_message = $error_code.'-'.$long_message;
+			
+			// Notice admin if has any issue from PayPal
+			if($this->error_email_notify)
+			{
+				$admin_email = get_option("admin_email");
+				$message .= __( "DoDirectPayment API call failed." , "paypal-for-woocommerce" )."\n\n";
+				$message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $error_code."\n";
+				$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $long_message ."\n";
+
+				wp_mail($admin_email, "PayPal Pro Error Notification",$message);
+			}
 			
 			if($this->debug)
 			{

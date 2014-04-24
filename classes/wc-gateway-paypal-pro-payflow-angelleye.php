@@ -42,6 +42,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 
 		$this->testmode        		= $this->settings['testmode'];
 		$this->debug		   		= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
+		$this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
 		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
 
 
@@ -117,6 +118,13 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Enable logging', 'woocommerce' ),
                 'default' => 'no',
                 'description' => __( 'Log PayPal events inside <code>woocommerce/logs/paypal-payflow.txt</code>' ),
+            ),
+			'error_email_notify' => array(
+                'title' => __( 'Error Email Notifications', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'label' => __( 'Enable admin email notifications for errors.', 'paypal-for-woocommerce' ),
+                'default' => 'yes', 
+				'description' => __( 'This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.','paypal-for-woocommerce' )
             ),
 			'error_display_type' => array(
                 'title' => __( 'Error Display Type', 'paypal-for-woocommerce' ),
@@ -555,6 +563,18 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				else
 				{
                 	wc_add_notice( __( 'Payment error:', 'paypal-for-woocommerce' ) . ' There was a problem processing your payment.  Please try another method.', "error" );
+				}
+				
+				// Notice admin if has any issue from PayPal
+				if($this->error_email_notify)
+				{
+					$admin_email = get_option("admin_email");
+					$message .= __( "PayFlow API call failed." , "paypal-for-woocommerce" )."\n\n";
+					$message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $PayPalResult['RESULT'] ."\n";
+					$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
+					$message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] ."\n" : "\n";
+	
+					wp_mail($admin_email, "PayPal Pro Error Notification",$message);
 				}
 				
                 return;
