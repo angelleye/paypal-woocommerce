@@ -469,7 +469,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				$bml_button_markup .= '</div>';
 				echo $bml_button_markup;
 			}
-            echo '<p class="checkoutStatus">', __( 'Skip the forms and pay faster with PayPal.', 'paypal-for-woocommerce' ), '</p>';
+            echo '<div class="woocommerce_paypal_ec_checkout_message">';
+			echo '<p class="checkoutStatus">', __( 'Skip the forms and pay faster with PayPal.', 'paypal-for-woocommerce' ), '</p>';
+			echo '</div>';
 			echo '<div class="clear"></div></div>';
 			echo '</div>';
 			echo '<div style="clear:both; margin-bottom:10px;"></div>';

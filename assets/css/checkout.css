@@ -68,7 +68,6 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
 */
 #paypal_ec_bml_button {
     float: left;
-    margin-right: 20px;
     margin-top: -2px;
     width: 150px;
 }
@@ -89,4 +88,9 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
     width: 90%;
     word-wrap: break-word;
     font-size: 1.3em;
+}
+.woocommerce_paypal_ec_checkout_message {
+	float:left;
+	width:50%;
+	margin: 0 0 0 20px;
 }
