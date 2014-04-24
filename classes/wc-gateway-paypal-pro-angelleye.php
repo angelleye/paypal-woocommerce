@@ -887,6 +887,28 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			// Add order note
 			$order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID'] ) );
 			//$order->add_order_note("PayPal Results: ".print_r($PayPalResult,true));
+			
+			/**
+			 * Add order notes for AVS result
+			 */
+			$avs_response_code = isset($PayPalResult['AVSCODE']) ? $PayPalResult['AVSCODE'] : '';
+			$avs_response_message = $PayPal->GetAVSCodeMessage($avs_response_code);
+			$avs_response_order_note = __('Address Verification Result','paypal-for-woocommerce');
+			$avs_response_order_note .= "\n";
+			$avs_response_order_note .= $avs_response_code;
+			$avs_response_order_note .= $avs_response_message != '' ? ' - ' . $avs_response_message : '';
+			$order->add_order_note($avs_response_order_note);
+			
+			/**
+			 * Add order notes for CVV2 result
+			 */
+			$cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
+			$cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvv2_response_code);
+			$cvv2_response_order_note = __('Card Security Code Result','paypal-for-woocommerce');
+			$cvv2_response_order_note .= "\n";
+			$cvv2_response_order_note .= $cvv2_response_code;
+			$cvv2_response_order_note .= $cvv2_response_message != '' ? ' - ' . $cvv2_response_message : '';
+			$order->add_order_note($cvv2_response_order_note);
 
 			// Payment complete
 			$order->payment_complete();

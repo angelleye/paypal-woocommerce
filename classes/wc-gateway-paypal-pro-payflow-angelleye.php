@@ -537,6 +537,28 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				{
                     $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s)','paypal-for-woocommerce'),$PayPalResult['PNREF']));
                 }
+				
+				/**
+				 * Add order notes for AVS result
+				 */
+				$avs_address_response_code = isset($PayPalResult['AVSADDR']) ? $PayPalResult['AVSADDR'] : '';
+				$avs_zip_response_code = isset($PayPalResult['AVSZIP']) ? $PayPalResult['AVSZIP'] : '';
+				
+				$avs_response_order_note = __('Address Verification Result','paypal-for-woocommerce');
+				$avs_response_order_note .= "\n";
+				$avs_response_order_note .= sprintf(__('Address Match: %s','paypal-for-woocommerce'),$avs_address_response_code);
+				$avs_response_order_note .= "\n";
+				$avs_response_order_note .= sprintf(__('Postal Match: %s','paypal-for-woocommerce'),$avs_zip_response_code);
+				$order->add_order_note($avs_response_order_note);
+				
+				/**
+				 * Add order notes for CVV2 result
+				 */
+				$cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
+				$cvv2_response_order_note = __('Card Security Code Result','paypal-for-woocommerce');
+				$cvv2_response_order_note .= "\n";
+				$cvv2_response_order_note .= sprintf(__('CVV2 Match: %s','paypal-for-woocommerce'),$cvv2_response_code);
+				$order->add_order_note($cvv2_response_order_note);
 
                 // Payment complete
                 //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
