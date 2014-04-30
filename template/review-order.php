@@ -13,14 +13,12 @@ $show_login = (!is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_ac
     }
 </style>
 
-<?php if (!$show_login):?>
-    <form class="checkout" method="POST" action="<?php echo add_query_arg( 'pp_action', 'payaction', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) );?>">
-<?php endif;?>
+
+<form class="checkout" method="POST" action="<?php echo add_query_arg( 'pp_action', 'payaction', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) );?>">
 
 <div id="paypalexpress_order_review">
         <?php woocommerce_order_review();?>
 </div>
-
 
 <?php if ( WC()->cart->needs_shipping()  ) : ?>
 
@@ -61,6 +59,7 @@ $show_login = (!is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_ac
     </div><!-- /.col2-set -->
 <?php endif; ?>
 <?php if ( $show_login ):  ?>
+</form>
     <style type="text/css">
 
         .woocommerce #content p.form-row input.button,
