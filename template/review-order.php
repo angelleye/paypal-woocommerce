@@ -14,7 +14,7 @@ $show_login = (!is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_ac
 </style>
 
 <div id="paypalexpress_order_review">
-    <form class="angelleye_checkout" method="POST" action="<?php echo add_query_arg( 'pp_action', 'payaction', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) );?>">
+    <form class="checkout" method="POST" action="<?php echo add_query_arg( 'pp_action', 'payaction', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) );?>">
         <?php woocommerce_order_review();?>
     </form>
 </div>
