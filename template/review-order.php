@@ -12,13 +12,13 @@ $show_login = (!is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_ac
         display:none;
     }
 </style>
+
+<?php if (!$show_login):?>
+    <form class="angelleye_checkout" method="POST" action="<?php echo add_query_arg( 'pp_action', 'payaction', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) );?>">
+<?php endif;?>
+
 <div id="paypalexpress_order_review">
-    <form class="checkout" method="POST" action="<?php echo add_query_arg( 'pp_action', 'payaction', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) );?>">
-        <?php
-            woocommerce_order_review();
-            if ($show_login)
-                echo '</form><!--close the checkout form-->';
-        ?>
+        <?php woocommerce_order_review();?>
 </div>
 
 
@@ -128,11 +128,9 @@ $show_login = (!is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_ac
         </p>
     </form>
 <?php else:
-    if ( (is_user_logged_in() || $checked==="yes") && isset($_REQUEST['pp_action']) ){
         echo '<div class="clear"></div>';
         echo '<p><a class="button cancel" href="' . $woocommerce->cart->get_cart_url() . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
         echo '<input type="submit" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
-    }
     ?>
     </form><!--close the checkout form-->
 <?php endif; ?>
