@@ -71,8 +71,8 @@ jQuery(function($) {
 			data: 		data,
 			success: 	function( response ) {
 				if ( response ) {
-					var order_output = $(response);
-					$('#order_review').html(order_output.html());
+					//var order_output = $(response);
+					$('#order_review').html(response);
 					$('body').trigger('updated_checkout');
 				}
 			}
