@@ -14,21 +14,22 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	function __construct() {
-
+        $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
 		$this->id					= 'paypal_pro_payflow';
 		$this->method_title 		= __( 'PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce' );
 		$this->method_description 	= __( 'PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
-		$this->icon 				= WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+		$this->icon 				= (!empty($pp_payflow['cart_icon'])) ? $pp_payflow['cart_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
 		$this->has_fields 			= true;
 		$this->liveurl				= 'https://payflowpro.paypal.com';
 		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
 		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD' ) );
-		
-		// Load the form fields
-		$this->init_form_fields();
 
-		// Load the settings.
-		$this->init_settings();
+
+        // Load the form fields
+        $this->init_form_fields();
+
+        // Load the settings.
+        $this->init_settings();
 
 		// Get setting values
 		$this->title          		= $this->settings['title'];
@@ -79,7 +80,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		wp_enqueue_style( 'wc-paypal-pro', plugins_url( 'assets/css/checkout.css', dirname( __FILE__ ) ) );
 		wp_enqueue_script( 'card-type-detection', plugins_url( 'assets/js/card-type-detection.min.js', dirname( __FILE__ ) ), 'jquery', '1.0.0', true );
 	}
-
 	/**
      * Initialise Gateway Settings Form Fields
      */
@@ -112,6 +112,11 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 							'description' => __( 'Place the payment gateway in development mode.', 'paypal-for-woocommerce' ),
 							'default'     => 'no'
 						),
+            'cart_icon'        => array(
+                'title'       => __( 'Cart Icon', 'paypal-for-woocommerce' ),
+                'type'        => 'text',
+                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png'
+            ),
 			'debug' => array(
                 'title' => __( 'Debug Log', 'woocommerce' ),
                 'type' => 'checkbox',
@@ -623,6 +628,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			echo '</p>';
 		}
 		?>
+        <style type="text/css">
+            #paypal_pro_payflow_card_type_image {
+                background: url(<?php echo $this->settings['cart_icon']; ?>) no-repeat 32px 0;
+            }
+        </style>
 		<fieldset class="paypal_pro_credit_card_form">
 			<p class="form-row form-row-wide validate-required paypal_pro_payflow_card_number_wrap">
 				<label for="paypal_pro_payflow_card_number"><?php _e( "Card number", "wc_paypal_pro" ) ?></label>
