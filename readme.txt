@@ -8,7 +8,7 @@ Stable tag: 1.1.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Developed by an Ace Certified PayPal Developer, official PayPal Partner, PayPal Ambassador, and 3-time PayPal Star Developer Award Winner.  
+Developed by an Ace Certified PayPal Developer, official PayPal Partner, PayPal Ambassador, and 3-time PayPal Star Developer Award Winner. 
 
 == Description ==
 
@@ -20,9 +20,7 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayPal Manager / PayFlow Gateway)
  
-We are PayPal specialists who have been integrating PayPal into a wide variety of shopping cart systems over the years.  We've run into all the common problems associated with PayPal integration, and we know how to eliminate them.  We've also learned some tricks of the trade to make working with shopping carts and PayPal as seamless as possible.
-
-This plugin brings that experience to WooCommerce so that you can rest assured your payments will be processed correctly.  Also, it is and will always be free!
+[youtube https://www.youtube.com/watch?v=svq9ovWGp7I]
 
 = Quality Control =
 Payment processing can't go wrong.  It's as simple as that.  Our certified PayPal engineers have developed and thoroughly tested this plugin on the PayPal sandbox (test) servers to ensure your customers don't have problems paying you.  
