@@ -298,6 +298,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Hide standard checkout button on cart page', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),*/
+            'showhide_button' => array(
+                'title' => __( 'Show on Cart', 'paypal-for-woocommerce' ),
+                'label' => __( 'Enable/Disable', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'description' => 'Option to Show/Hide EC Button on Cart Page',
+                'default' => 'yes'
+            ),
             'show_on_checkout' => array(
                 'title' => __( 'Standard Checkout', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
@@ -459,74 +466,73 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 	{
         global $pp_settings;
 
-        if(WC()->cart->total > 0)
-		{
-            $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
-            // Pay with Credit Card
+        if(WC()->cart->total > 0) {
+                $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+                // Pay with Credit Card
 
-            unset($payment_gateways['paypal_pro']);
-            unset($payment_gateways['paypal_pro_payflow']);
-            echo '<div id="checkout_paypal_message" class="woocommerce-info info">';
-			echo '<div id="paypal_box_button">';
-            if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
-            switch($pp_settings['checkout_with_pp_button_type']){
-                case "textbutton":
-                    if (empty($payment_gateways)) {
-                        $button_text = __( 'Proceed to Checkout', 'woocommerce' );
-                    } else {
-                        $button_text = __( 'Pay with PayPal', 'paypal-for-woocommerce');
-                    }
-                    echo '<a class="paypal_checkout_button paypal_checkout_button_text button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . $button_text .'</a>';
-                    break;
-                case "paypalimage":
-                    $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
-                    echo '<div id="paypal_ec_button">';
-                    echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
-                    echo "<img src='https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
-                    echo "</a>";
-                    echo '</div>';
-                    break;
-                case "customimage":
-                    $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
-                    echo '<div id="paypal_ec_button">';
-                    echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
-                    echo "<img src='{$button_img}' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
-                    echo "</a>";
-                    echo '</div>';
-                    break;
-            }
-            //echo '<div id="paypal_ec_button">';
-			//echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', get_class(), home_url( '/' ) ) ) . '">';
-            //echo "<img src='https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif' width='150' alt='Check out with PayPal'/>";
-            //echo '</a>';
-			//echo '</div>';
-			/**
-			 * Displays the Bill Me Later checkout button if enabled in EC settings.
-			 */
-			if($this->show_bill_me_later == 'yes') 
-			{
-				// Bill Me Later button
-				$bml_button_markup = '<div id="paypal_ec_bml_button">';
-				$bml_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg( 'use_bml', 'true', add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) ) . '" >';
-				$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='150' alt='Check out with PayPal Bill Me Later'/>";
-				$bml_button_markup .= '</a>';
-	
-				// Marketing Message
-				$bml_button_markup .= '<a target="_blank" href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
-				$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='150' />";
-				$bml_button_markup .= '</a>';
-				$bml_button_markup .= '</div>';
-				echo $bml_button_markup;
-			}
-            echo '<div class="woocommerce_paypal_ec_checkout_message">';
-			echo '<p class="checkoutStatus">', __( 'Skip the forms and pay faster with PayPal.', 'paypal-for-woocommerce' ), '</p>';
-			echo '</div>';
-			echo '<div class="clear"></div></div>';
-			echo '</div>';
-			echo '<div style="clear:both; margin-bottom:10px;"></div>';
-			
-			//echo apply_filters( 'woocommerce_ppe_checkout_message', __( 'Have a PayPal account?', 'paypal-for-woocommerce' ) ) . '</p>';
-		}
+                unset($payment_gateways['paypal_pro']);
+                unset($payment_gateways['paypal_pro_payflow']);
+                echo '<div id="checkout_paypal_message" class="woocommerce-info info">';
+                echo '<div id="paypal_box_button">';
+                if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type'] = 'paypalimage';
+                switch ($pp_settings['checkout_with_pp_button_type']) {
+                    case "textbutton":
+                        if (empty($payment_gateways)) {
+                            $button_text = __('Proceed to Checkout', 'woocommerce');
+                        } else {
+                            $button_text = __('Pay with PayPal', 'paypal-for-woocommerce');
+                        }
+                        echo '<a class="paypal_checkout_button paypal_checkout_button_text button alt" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">' . $button_text . '</a>';
+                        break;
+                    case "paypalimage":
+                        $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
+                        echo '<div id="paypal_ec_button">';
+                        echo '<a class="paypal_checkout_button" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">';
+                        echo "<img src='https://www.paypal.com/" . $button_locale_code . "/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                        echo "</a>";
+                        echo '</div>';
+                        break;
+                    case "customimage":
+                        $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
+                        echo '<div id="paypal_ec_button">';
+                        echo '<a class="paypal_checkout_button" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">';
+                        echo "<img src='{$button_img}' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                        echo "</a>";
+                        echo '</div>';
+                        break;
+                }
+                //echo '<div id="paypal_ec_button">';
+                //echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', get_class(), home_url( '/' ) ) ) . '">';
+                //echo "<img src='https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif' width='150' alt='Check out with PayPal'/>";
+                //echo '</a>';
+                //echo '</div>';
+                /**
+                 * Displays the Bill Me Later checkout button if enabled in EC settings.
+                 */
+                if ($this->show_bill_me_later == 'yes') {
+                    // Bill Me Later button
+                    $bml_button_markup = '<div id="paypal_ec_bml_button">';
+                    $bml_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg('use_bml', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '" >';
+                    $bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='150' alt='Check out with PayPal Bill Me Later'/>";
+                    $bml_button_markup .= '</a>';
+
+                    // Marketing Message
+                    $bml_button_markup .= '<a target="_blank" href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
+                    $bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='150' />";
+                    $bml_button_markup .= '</a>';
+                    $bml_button_markup .= '</div>';
+                    echo $bml_button_markup;
+                }
+                echo '<div class="woocommerce_paypal_ec_checkout_message">';
+                echo '<p class="checkoutStatus">', __('Skip the forms and pay faster with PayPal.', 'paypal-for-woocommerce'), '</p>';
+                echo '</div>';
+                echo '<div class="clear"></div></div>';
+                echo '</div>';
+                echo '<div style="clear:both; margin-bottom:10px;"></div>';
+
+                //echo apply_filters( 'woocommerce_ppe_checkout_message', __( 'Have a PayPal account?', 'paypal-for-woocommerce' ) ) . '</p>';
+
+        }
     }
     /**
      *  PayPal Express Checkout
@@ -1865,12 +1871,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     static function woocommerce_paypal_express_checkout_button_angelleye()
 	{
         global $pp_settings, $pp_pro, $pp_payflow;
-		
 		/*echo '<pre />';
 		print_r($pp_settings);
 		exit();*/
 		
-        if (@$pp_settings['enabled']=='yes' && 0 < WC()->cart->total )
+        if (@$pp_settings['enabled']=='yes' && 0 < WC()->cart->total && $pp_settings['showhide_button']=='yes' )
 		{
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
             // Pay with Credit Card
