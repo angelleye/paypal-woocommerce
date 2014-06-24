@@ -12,10 +12,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
      * @return void
      */
     function __construct() {
+        $pp_pro = get_option('woocommerce_paypal_pro_settings');
         $this->id					= 'paypal_pro';
         $this->method_title 		= __( 'PayPal Website Payments Pro (DoDirectPayment) ', 'paypal-for-woocommerce' );
         $this->method_description 	= __( 'PayPal Website Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
-        $this->icon 				= WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+        $this->icon 				= (!empty($pp_pro['cart_icon'])) ? $pp_pro['cart_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
         $this->has_fields 			= true;
         $this->liveurl				= 'https://api-3t.paypal.com/nvp';
         $this->testurl				= 'https://api-3t.sandbox.paypal.com/nvp';
@@ -134,6 +135,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 'description' => __( 'Place the payment gateway in development mode.', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
+            'cart_icon' => array(
+                'title' => __( 'Cart Icon', 'paypal-for-woocommerce' ),
+                'type' => 'text',
+                'default' => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png'
+            ),
 			'error_email_notify' => array(
                 'title' => __( 'Error Email Notifications', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
@@ -235,6 +241,58 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			)
             )
         );
+    }
+    /*
+     * Admin Options
+     */
+    public function admin_options() { ?>
+
+        <h3><?php echo isset( $this->method_title ) ? $this->method_title : __( 'Settings', 'paypal-for-woocommerce' ) ; ?></h3>
+
+        <?php echo isset( $this->method_description ) ? wpautop( $this->method_description ) : ''; ?>
+        <table class="form-table">
+            <?php $this->generate_settings_html(); ?>
+        </table>
+        <?php
+        $this->scriptAdminOption();
+    }
+    /*
+     * Script admin options
+     */
+    function scriptAdminOption(){
+        ?>
+        <script type="text/javascript">
+            jQuery(document).ready(function ($){
+                jQuery("#woocommerce_paypal_pro_cart_icon").css({float: "left"});
+                jQuery("#woocommerce_paypal_pro_cart_icon").after('<a href="#" id="upload" class="button">Upload</a>');
+                var custom_uploader;
+                $('#upload').click(function (e) {
+                    var BTthis = jQuery(this);
+                    e.preventDefault();
+                    //If the uploader object has already been created, reopen the dialog
+                    if (custom_uploader) {
+                        custom_uploader.open();
+                        return;
+                    }
+                    //Extend the wp.media object
+                    custom_uploader = wp.media.frames.file_frame = wp.media({
+                        title: '<?php _e('Choose Image','paypal-for-woocommerce'); ?>',
+                        button: {
+                            text: '<?php _e('Choose Image','paypal-for-woocommerce'); ?>'
+                        },
+                        multiple: false
+                    });
+                    //When a file is selected, grab the URL and set it as the text field's value
+                    custom_uploader.on('select', function () {
+                        attachment = custom_uploader.state().get('selection').first().toJSON();
+                        BTthis.prev('input').val(attachment.url);
+                    });
+                    //Open the uploader dialog
+                    custom_uploader.open();
+                });
+            });
+        </script>
+    <?
     }
     /**
      * Check if this gateway is enabled and available in the user's country
