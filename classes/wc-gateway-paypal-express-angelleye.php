@@ -93,6 +93,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         ?>
 <script type="text/javascript">
             jQuery(document).ready(function ($){
+                $("#woocommerce_paypal_express_customer_service_number").attr("maxlength","16");
                 if ($("#woocommerce_paypal_express_checkout_with_pp_button_type").val() == "customimage") {
                     jQuery('.form-table tr td #woocommerce_paypal_express_checkout_with_pp_button_type_my_custom').each(function (i, el) {
                         jQuery(el).closest('tr').show();
