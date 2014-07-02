@@ -538,7 +538,80 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      */
     function paypal_express_checkout() {
         if ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'expresscheckout' ) {
-            $this->expresscheckout();
+            if ( sizeof( WC()->cart->get_cart() ) > 0 ) {
+
+                // The customer has initiated the Express Checkout process with the button on the cart page
+                if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) )
+                    define( 'WOOCOMMERCE_CHECKOUT', true );
+                $this->add_log( 'Start Express Checkout' );
+
+                /**
+                 * Check if the EC button used was the BML button.
+                 * This $useBML flag will be used to adjust the SEC request accordingly.
+                 */
+                if(isset($_GET['use_bml']) && 'true' == $_GET['use_bml'])
+                {
+                    $useBML = true;
+                }
+                else
+                {
+                    $useBML = false;
+                }
+
+                WC()->cart->calculate_totals();
+                //$paymentAmount    = WC()->cart->get_total();
+                $paymentAmount	  = number_format(WC()->cart->total,2,'.','');
+                $returnURL        = urlencode( add_query_arg( 'pp_action', 'revieworder', get_permalink( woocommerce_get_page_id( 'review_order' )) ) );
+                $cancelURL        = urlencode( WC()->cart->get_cart_url() );
+                $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $useBML );
+                $ack              = strtoupper( $resArray["ACK"] );
+                if($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING")
+                {
+                    $this->add_log( 'Redirecting to PayPal' );
+                    $this->RedirectToPayPal( $resArray["TOKEN"] );
+                }
+                else
+                {
+                    // Display a user friendly Error on the page and log details
+                    $ErrorCode         = urldecode( $resArray["L_ERRORCODE0"] );
+                    $ErrorShortMsg     = urldecode( $resArray["L_SHORTMESSAGE0"] );
+                    $ErrorLongMsg      = urldecode( $resArray["L_LONGMESSAGE0"] );
+                    $ErrorSeverityCode = urldecode( $resArray["L_SEVERITYCODE0"] );
+                    $this->add_log( __( 'SetExpressCheckout API call failed. ' , 'paypal-for-woocommerce') );
+                    $this->add_log( __('Detailed Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorLongMsg );
+                    $this->add_log( __( 'Short Error Message: ' , 'paypal-for-woocommerce') . $ErrorShortMsg );
+                    $this->add_log( __( 'Error Code: ' , 'paypal-for-woocommerce' ) . $ErrorCode );
+                    $this->add_log( __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode );
+
+                    // Notice admin if has any issue from PayPal
+                    $message = '';
+                    if($this->error_email_notify)
+                    {
+                        $admin_email = get_option("admin_email");
+                        $message .= __( "SetExpressCheckout API call failed." , "paypal-for-woocommerce" )."\n\n";
+                        $message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $ErrorCode."\n";
+                        $message .= __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode."\n";
+                        $message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
+                        $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
+
+                        wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
+                    }
+
+                    // Generate error message based on Error Display Type setting
+                    if($this->error_display_type == 'detailed')
+                    {
+                        $sec_error_notice = $ErrorCode.' - '.$ErrorLongMsg;
+                        wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );
+                    }
+                    else
+                    {
+                        wc_add_notice(  sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) ), 'error' );
+                    }
+
+                    wp_redirect( get_permalink( wc_get_page_id( 'cart' ) ) );
+                    exit;
+                }
+            }
         }
 		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'revieworder' )
 		{	
@@ -691,7 +764,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log( '...Cart Total: '.WC()->cart->get_total() );
                 $this->add_log( "...Token:" . $this->get_session( 'TOKEN' ) );
                 $result = $this->ConfirmPayment( $order->order_total );
-				
+
 				/**
 				 * Customer Notes
 				 */
@@ -745,14 +818,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $ErrorShortMsg     = urldecode( $result["L_SHORTMESSAGE0"] );
                     $ErrorLongMsg      = urldecode( $result["L_LONGMESSAGE0"] );
                     $ErrorSeverityCode = urldecode( $result["L_SEVERITYCODE0"] );
-                    if($ErrorCode == '10486'){
-                        $this->expresscheckout();
-                    }
                     $this->add_log( 'SetExpressCheckout API call failed. ' );
                     $this->add_log( 'Detailed Error Message: ' . $ErrorLongMsg );
                     $this->add_log( 'Short Error Message: ' . $ErrorShortMsg );
                     $this->add_log( 'Error Code: ' . $ErrorCode );
                     $this->add_log( 'Error Severity Code: ' . $ErrorSeverityCode );
+                    if($ErrorCode == '10486'){
+                        $this->RedirectToPayPal( $this->get_session( 'TOKEN' ) );
+                    }
 					
 					// Notice admin if has any issue from PayPal
                     $message = '';
