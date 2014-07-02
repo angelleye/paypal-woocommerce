@@ -932,7 +932,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		
 		if($this->debug)
 		{
-            $this->log->add('paypal-pro','Result ' .print_r($PayPalResult, true ) );
+			$PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+			$PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+			
+			$this->log->add('paypal-pro','Request: '.print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)),true));
+			$this->log->add('paypal-pro','Response: '.print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)),true));
 		}
 		
 		if(empty($PayPalResult))

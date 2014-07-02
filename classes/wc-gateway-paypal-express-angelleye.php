@@ -1356,7 +1356,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         $this->add_log('Test Mode: '.$this->testmode);
         $this->add_log('Endpoint: '.$this->API_Endpoint);
-        $this->add_log('Result: '.print_r($PayPalResult,true));
+		
+		$PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+		$PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+		
+        $this->add_log('Request: '.print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)),true));
+		$this->add_log('Response: '.print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)),true));
 
         /*
          * Error handling
@@ -1414,13 +1419,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          * Call GetExpressCheckoutDetails
          */
         $PayPalResult = $PayPal->GetExpressCheckoutDetails($token);
-
-        /*
+		
+		/*
          * Log API result
          */
         $this->add_log('Test Mode: '.$this->testmode);
         $this->add_log('Endpoint: '.$this->API_Endpoint);
-        $this->add_log('Result: '.print_r($PayPalResult,true));
+		
+		$PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+		$PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+		
+        $this->add_log('Request: '.print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)),true));
+		$this->add_log('Response: '.print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)),true));
 
         /*
          * Error handling
@@ -1737,14 +1747,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->DoExpressCheckoutPayment($PayPalRequestData);
-
-        /*
+		
+		/*
          * Log API result
          */
         $this->add_log('Test Mode: '.$this->testmode);
         $this->add_log('Endpoint: '.$this->API_Endpoint);
-        $this->add_log('Result: '.print_r($PayPalResult,true));
-
+		
+		$PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+		$PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+		
+        $this->add_log('Request: '.print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)),true));
+		$this->add_log('Response: '.print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)),true));
+		
         /*
          * Error handling
          */
