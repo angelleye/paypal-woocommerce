@@ -354,8 +354,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 			</script>
 			";
             //echo '<form class="checkout" method="POST" action="' . add_query_arg( 'pp_action', 'payaction', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) . '">';
-            $template = plugin_dir_path( __FILE__ ) . 'template/review-order.php';
-            load_template( $template, false );
+            $template = plugin_dir_path( __FILE__ ) . 'template/';
+
+            //Allow override in theme: <theme_name>/woocommerce/paypal-paypal-review-order.php
+            wc_get_template('paypal-review-order.php', array(), '', $template);
+
             do_action( 'woocommerce_ppe_checkout_order_review' );
             //echo '<p><a class="button cancel" href="' . $woocommerce->cart->get_cart_url() . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
             //echo '<input type="submit" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
