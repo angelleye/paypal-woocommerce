@@ -5,7 +5,9 @@
 
 global $woocommerce;
 $checked = get_option('woocommerce_enable_guest_checkout');
-$show_login = (!is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']));
+
+//Add hook to show login form or not
+$show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']));
 ?>
 <style type="text/css">
     #payment{
