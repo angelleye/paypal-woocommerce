@@ -667,6 +667,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				$this->set_session('giftwrapname',isset($result['GIFTWRAPNAME']) ? $result['GIFTWRAPNAME'] : '');
 				$this->set_session('giftwrapamount',isset($result['GIFTWRAPAMOUNT']) ? $result['GIFTWRAPAMOUNT'] : '');
 				$this->set_session('customer_notes',isset($result['PAYMENTREQUEST_0_NOTETEXT']) ? $result['PAYMENTREQUEST_0_NOTETEXT'] : '');
+                $this->set_session('phonenum',isset($result['PHONENUM']) ? $result['PHONENUM'] : '');
                 WC()->cart->calculate_totals();
 
             } 
@@ -754,6 +755,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				update_post_meta( $order_id, '_shipping_first_name',  $this->get_session('shiptoname'));
 				update_post_meta( $order_id, '_shipping_last_name',  "" );
 				update_post_meta( $order_id, '_shipping_company',   "" );
+                update_post_meta( $order_id, '_billing_phone',   $this->get_session('phonenum'));
 				update_post_meta( $order_id, '_shipping_address_1',  $this->get_session('shiptostreet'));
 				update_post_meta( $order_id, '_shipping_address_2',  $this->get_session('shiptostreet2'));
 				update_post_meta( $order_id, '_shipping_city',    $this->get_session('shiptocity'));
