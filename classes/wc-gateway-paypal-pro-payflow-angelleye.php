@@ -23,7 +23,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->liveurl				= 'https://payflowpro.paypal.com';
 		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
 		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD' ) );
-		
+
 		// Load the form fields
 		$this->init_form_fields();
 
@@ -127,7 +127,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
                     'detailed' => 'Detailed',
                     'generic' => 'Generic'
                 ),
-				'description' => __( 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
+				'description' => __( 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
 									and helps to prevent fraudulant activity on your site.' , 'paypal-for-woocommerce' )
             ),
             'sandbox_paypal_vendor'   => array(
@@ -198,7 +198,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				return false;
 
 			// Currency check
-			if ( ! in_array( get_option('woocommerce_currency'), $this->allowed_currencies ) )
+			if ( ! in_array( get_woocommerce_currency(), $this->allowed_currencies ) )
 				return false;
 
 			// Required fields check
@@ -255,28 +255,28 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		{
             wc_add_notice(sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"'),"error");
 		}
-		
+
 		/*
 		 * Check if the PayPal_PayFlow class has already been established.
 		 */
-		if(!class_exists('PayPal_PayFlow' )) 
+		if(!class_exists('PayPal_PayFlow' ))
 		{
 			require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
-			require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');	
+			require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
 		}
-		
+
 		/**
 		 * Create PayPal_PayFlow object.
 		 */
 		$PayPalConfig = array(
-						'Sandbox' => ($this->testmode=='yes')? true:false, 
-						'APIUsername' => $this->paypal_user, 
-						'APIPassword' => trim($this->paypal_password), 
-						'APIVendor' => $this->paypal_vendor, 
+						'Sandbox' => ($this->testmode=='yes')? true:false,
+						'APIUsername' => $this->paypal_user,
+						'APIPassword' => trim($this->paypal_password),
+						'APIVendor' => $this->paypal_vendor,
 						'APIPartner' => $this->paypal_partner
 					  );
 		$PayPal = new PayPal_PayFlow($PayPalConfig);
-		
+
 		/**
 		 * Pulled from original Woo extension.
 		 */
@@ -284,19 +284,19 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		{
         	$GLOBALS['wp_rewrite'] = new WP_Rewrite();
 		}
-		
+
 		if($this->debug)
 		{
 			$this->add_log($order->get_checkout_order_received_url());
 		}
-		
+
 		try
 		{
 			/**
 			 * Parameter set by original Woo.  I can probably ditch this, but leaving it for now.
 			 */
 			$url = $this->testmode == 'yes' ? $this->testurl : $this->liveurl;
-			
+
 			/**
 			 * PayPal PayFlow Gateway Request Params
 			 */
@@ -305,16 +305,16 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'trxtype'=>'S', 				// Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
 					'acct'=>$card_number, 				// Required for credit card transaction.  Credit card or purchase card number.
 					'expdate'=>$card_exp, 				// Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
-					'amt'=>$order->get_total(), 					// Required.  Amount of the transaction.  Must have 2 decimal places. 
-					'currency'=>get_option('woocommerce_currency'), // 
+					'amt'=>$order->get_total(), 					// Required.  Amount of the transaction.  Must have 2 decimal places.
+					'currency'=>get_woocommerce_currency(), //
 					'dutyamt'=>'', 				//
 					'freightamt'=>'', 			//
 					'taxamt'=>'', 				//
-					'taxexempt'=>'', 			// 
+					'taxexempt'=>'', 			//
 					'comment1'=>$order->customer_note ? wptexturize($order->customer_note) : '', 			// Merchant-defined value for reporting and auditing purposes.  128 char max
 					'comment2'=>'', 			// Merchant-defined value for reporting and auditing purposes.  128 char max
 					'cvv2'=>$card_csc, 				// A code printed on the back of the card (or front for Amex)
-					'recurring'=>'', 			// Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring. 
+					'recurring'=>'', 			// Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring.
 					'swipe'=>'', 				// Required for card-present transactions.  Used to pass either Track 1 or Track 2, but not both.
 					'orderid'=>preg_replace("/[^0-9,.]/", "", $order->get_order_number()), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
 					'orderdesc'=>'Order ' . $order->get_order_number() . ' on ' . get_bloginfo( 'name' ), //
@@ -325,22 +325,22 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'billtolastname'=>$order->billing_last_name, 		// Account holder's last name.
 					'billtostreet'=>$order->billing_address_1.' '.$order->billing_address_2, 		// The cardholder's street address (number and street name).  150 char max
 					'billtocity'=>$order->billing_city, 			// Bill to city.  45 char max
-					'billtostate'=>$order->billing_state, 			// Bill to state.  
+					'billtostate'=>$order->billing_state, 			// Bill to state.
 					'billtozip'=>$order->billing_postcode, 			// Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
 					'billtocountry'=>$order->billing_country, 		// Bill to Country.  3 letter country code.
-					'origid'=>'', 				// Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.  
-					'custref'=>'', 				// 
-					'custcode'=>'', 			// 
-					'custip'=>$this->get_user_ip(), 				// 
-					'invnum'=>str_replace("#","",$order->get_order_number()), 				// 
-					'ponum'=>'', 				// 
+					'origid'=>'', 				// Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.
+					'custref'=>'', 				//
+					'custcode'=>'', 			//
+					'custip'=>$this->get_user_ip(), 				//
+					'invnum'=>str_replace("#","",$order->get_order_number()), 				//
+					'ponum'=>'', 				//
 					'starttime'=>'', 			// For inquiry transaction when using CUSTREF to specify the transaction.
 					'endtime'=>'', 				// For inquiry transaction when using CUSTREF to specify the transaction.
 					'securetoken'=>'', 			// Required if using secure tokens.  A value the Payflow server created upon your request for storing transaction data.  32 char
-					'partialauth'=>'', 			// Required for partial authorizations.  Set to Y to submit a partial auth.    
+					'partialauth'=>'', 			// Required for partial authorizations.  Set to Y to submit a partial auth.
 					'authcode'=>'' 			// Rrequired for voice authorizations.  Returned only for approved voice authorization transactions.  AUTHCODE is the approval code received over the phone from the processing network.  6 char max
 					);
-			
+
 			/**
 			 * Shipping info
 			 */
@@ -354,7 +354,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $PayPalRequestData['SHIPTOCOUNTRY']     = $order->shipping_country;
                 $PayPalRequestData['SHIPTOZIP']         = $order->shipping_postcode;
             }
-					
+
 			/* Send Item details */
             $item_loop = 0;
             if(sizeof($order->get_items()) > 0)
@@ -455,7 +455,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     $PayPalRequestData['FREIGHTAMT'] = $shipping;
                 }
             }
-			
+
 			/**
 			 * Add custom Woo cart fees as line items
 			 */
@@ -466,14 +466,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				$PayPalRequestData['L_AMT' . $item_loop ]		= number_format($fee->amount,2,'.','');
 				$PayPalRequestData['L_QTY' . $item_loop ]		= 1;
 				$item_loop++;
-				
+
 				$ITEMAMT += $fee->amount*$Item['qty'];
 			}
-			
+
 			$PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
-			
+
 			/**
-			 * Woo's original extension wasn't sending the request with 
+			 * Woo's original extension wasn't sending the request with
 			 * character count like it's supposed to.  This was added
 			 * to fix that, but now that we're using my library it's
 			 * already handled correctly so this won't be necessary.
@@ -482,12 +482,12 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $send_data[]= $key."[".strlen($value)."]=$value";
             }
             $send_data = implode("&", $send_data);*/
-			
+
 			/**
 			 * Pass data to to the class and store the $PayPalResult
 			 */
 			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
-			
+
 			/**
 			 * Log results
 			 */
@@ -496,7 +496,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				$this->add_log('PayFlow Endpoint: '.$PayPal->APIEndPoint);
             	$this->add_log(print_r($PayPalResult,true));
 			}
-			
+
 			/**
 			 * Error check
 			 */
@@ -504,15 +504,15 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			{
                 throw new Exception(__('Empty PayPal response.', 'paypal-for-woocommerce'));
 			}
-			
-			/** 
+
+			/**
 			 * More logs
 			 */
 			if($this->debug)
 			{
 				$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(woocommerce_get_page_id('thanks')))));
 			}
-			
+
 			/**
 			 * Check for errors or fraud filter warnings and proceed accordingly.
 			 */
@@ -546,7 +546,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			else
 			{
 				$order->update_status( 'failed', __('PayPal Pro payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce' ) . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"' );
-				
+
 				// Generate error message based on Error Display Type setting
 				if($this->error_display_type == 'detailed')
 				{
@@ -556,7 +556,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				{
                 	wc_add_notice( __( 'Payment error:', 'paypal-for-woocommerce' ) . ' There was a problem processing your payment.  Please try another method.', "error" );
 				}
-				
+
                 return;
 
             }
@@ -565,7 +565,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		{
             wc_add_notice( __('Connection error:', 'paypal-for-woocommerce' ) . ': "' . $e->getMessage() . '"', "error");
             return;
-        }	
+        }
 	}
 
 	/**
