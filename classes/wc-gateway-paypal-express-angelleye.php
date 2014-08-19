@@ -66,6 +66,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         // Actions
         add_action( 'woocommerce_api_' . strtolower( get_class() ), array( $this, 'paypal_express_checkout' ), 12 );
         add_action( 'woocommerce_receipt_paypal_express', array( $this, 'receipt_page' ) );
+        add_action( 'woocommerce_settings_save_checkout', array( &$this, 'process_admin_options' ) );
+
 
         if ( $this->show_on_checkout == 'yes' )
             add_action( 'woocommerce_before_checkout_form', array( $this, 'checkout_message' ), 5 );
@@ -195,7 +197,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         $require_ssl = '';
         if (!is_ssl()) {
-            $require_ssl = __( 'This image requires an SSL host.  Please upload your image to <a href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce' );
+            $require_ssl = __( 'This image requires an SSL host.  Please upload your image to <a target="_blank" href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce' );
         }
         $this->form_fields = array(
             'enabled' => array(
