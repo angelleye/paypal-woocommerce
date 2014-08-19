@@ -33,6 +33,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$this->error_display_type 	   = isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
         $this->landing_page            = isset($this->settings['landing_page']) ? $this->settings['landing_page'] : '';
         $this->checkout_logo           = isset($this->settings['checkout_logo']) ? $this->settings['checkout_logo'] : '';
+        $this->checkout_logo_hdrimg    = isset($this->settings['checkout_logo_hdrimg']) ? $this->settings['checkout_logo_hdrimg'] : '';
 		$this->show_bill_me_later	   = isset($this->settings['show_bill_me_later']) ? $this->settings['show_bill_me_later'] : '';
 		$this->brand_name	  		   = isset($this->settings['brand_name']) ? $this->settings['brand_name'] : '';
 		$this->customer_service_number = isset($this->settings['customer_service_number']) ? $this->settings['customer_service_number'] : '';
@@ -65,9 +66,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         // Actions
         add_action( 'woocommerce_api_' . strtolower( get_class() ), array( $this, 'paypal_express_checkout' ), 12 );
         add_action( 'woocommerce_receipt_paypal_express', array( $this, 'receipt_page' ) );
-        //add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( &$this, 'process_admin_options' ),1 );
-        //add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( &$this, 'process_admin_options1' ),1 );
-        add_action( 'woocommerce_settings_save_checkout', array( &$this, 'process_admin_options1' ),1 );
 
         if ( $this->show_on_checkout == 'yes' )
             add_action( 'woocommerce_before_checkout_form', array( $this, 'checkout_message' ), 5 );
@@ -137,17 +135,22 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                 });
                 jQuery("#woocommerce_paypal_express_pp_button_type_my_custom").css({float: "left"});
-                jQuery("#woocommerce_paypal_express_pp_button_type_my_custom").after('<a href="#" id="upload" class="button">Upload</a>');
-                jQuery("#woocommerce_paypal_express_checkout_logo").after('<input type="file" name="checkoutlogo" />');
+                jQuery("#woocommerce_paypal_express_pp_button_type_my_custom").after('<a href="#" id="upload" class="button_upload">Upload</a>');
+                <?php if (is_ssl()) { ?>
+                    jQuery("#woocommerce_paypal_express_checkout_logo").after('<a href="#" id="checkout_logo" class="button_upload">Upload</a>');
+                    jQuery("#woocommerce_paypal_express_checkout_logo_hdrimg").after('<a href="#" id="checkout_logo_hdrimg" class="button_upload">Upload</a>');
+                <?php
+                    }
+                ?>
                 var custom_uploader;
-                $('#upload').click(function (e) {
+                $('.button_upload').click(function (e) {
                     var BTthis = jQuery(this);
                     e.preventDefault();
                     //If the uploader object has already been created, reopen the dialog
-                    if (custom_uploader) {
+                    /*if (custom_uploader) {
                         custom_uploader.open();
                         return;
-                    }
+                    }*/
                     //Extend the wp.media object
                     custom_uploader = wp.media.frames.file_frame = wp.media({
                         title: '<?php _e('Choose Image','paypal-for-woocommerce'); ?>',
@@ -159,7 +162,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     //When a file is selected, grab the URL and set it as the text field's value
                     custom_uploader.on('select', function () {
                         attachment = custom_uploader.state().get('selection').first().toJSON();
-                        BTthis.prev('input').val(attachment.url);
+                        BTthis.prev().val(attachment.url);
                     });
                     //Open the uploader dialog
                     custom_uploader.open();
@@ -189,6 +192,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * Initialize Gateway Settings Form Fields
      */
     function init_form_fields() {
+
+        $require_ssl = '';
+        if (!is_ssl()) {
+            $require_ssl = __( 'This image requires an SSL host.  Please upload your image to <a href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce' );
+        }
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __( 'Enable/Disable', 'paypal-for-woocommerce' ),
@@ -357,9 +365,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => __( get_bloginfo('name'), 'paypal-for-woocommerce' )
             ),
             'checkout_logo' => array(
-                'title' => __('PayPal Checkout Logo', 'paypal-for-woocommerce'),
+                'title' => __('PayPal Checkout Logo (190x90px)', 'paypal-for-woocommerce'),
                 'type'  => 'text',
-                'description' => __( 'This controls what users see as the logo on PayPal review pages.', 'paypal-for-woocommerce' ),
+                'description' => __( 'This controls what users see as the logo on PayPal review pages. ', 'paypal-for-woocommerce' ).$require_ssl,
+                'default'   => ''
+            ),
+            'checkout_logo_hdrimg' => array(
+                'title' => __('PayPal Checkout Logo HDRIMG (750x90px)', 'paypal-for-woocommerce'),
+                'type'  => 'text',
+                'description' => __( 'This controls what users see as the logo on PayPal review pages. ', 'paypal-for-woocommerce' ).$require_ssl,
                 'default'   => ''
             ),
 			'customer_service_number' => array(
@@ -427,37 +441,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             )*/
         );
     }
-    /*
-     * Process Admin Options
-     * Check file and upload to server
-     */
-    public function process_admin_options1() {
-        $this->validate_settings_fields();
-        if(isset($_FILES['checkoutlogo']) && $_FILES['checkoutlogo']['error'] == 0){
-            $file_tmp= $_FILES['checkoutlogo']['tmp_name'];
-            $data = file_get_contents($file_tmp);
-            $base64 = base64_encode($data);
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, __SERVICE_URL__);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS,
-                array('content' => $base64,
-                    'mime_type' => $_FILES['checkoutlogo']['type'],
-                    ));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $postResult = curl_exec($ch);
-            curl_close($ch);
-            $response = json_decode($postResult);
-            if($response->Success){
-                $this->sanitized_fields['checkout_logo'] = $response->Path;
-            }else{
 
-            }
-        }
-        update_option( $this->plugin_id . $this->id . '_settings', apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->sanitized_fields ) );
-        $this->init_settings();
-        return true;
-    }
     /**
      *  Checkout Message
      */
@@ -1083,9 +1067,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          *
          */
         if (!empty($this->checkout_logo)) {
-            //$SECFields['LOGOURL'] = $this->checkout_logo;
-            $SECFields['HDRIMG'] = $this->checkout_logo;
+            $SECFields['LOGOURL'] = $this->checkout_logo;
         }
+
+        if (!empty($this->checkout_logo_hdrimg)) {
+            $SECFields['HDRIMG'] = $this->checkout_logo_hdrimg;
+        }
+
 
         /**
 		 * If Gift Wrap options are enabled, add them to SEC
