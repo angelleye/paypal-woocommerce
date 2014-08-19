@@ -120,10 +120,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $dir = plugin_dir_path( __FILE__ );
             wp_enqueue_media();
             wp_enqueue_script( 'jquery');
-            wp_register_script('my-upload', plugins_url( '/js/upload-image.js' , __FILE__ ), array('jquery','media-upload','thickbox'));
-            wp_enqueue_script('my-upload');
-            wp_enqueue_style( 'wp-color-picker' );
-            wp_enqueue_script( 'wc_paypaladv-script-handle', plugins_url('js/misc.js', __FILE__ ), array( 'wp-color-picker' ), false, true );
         }
 
         function onetarek_wpmut_admin_styles()

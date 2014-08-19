@@ -138,9 +138,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 });
                 jQuery("#woocommerce_paypal_express_pp_button_type_my_custom").css({float: "left"});
                 jQuery("#woocommerce_paypal_express_pp_button_type_my_custom").after('<a href="#" id="upload" class="button_upload button">Upload</a>');
-                <?php if (is_ssl()) { ?>
+                <?php if ($this->is_ssl()) { ?>
                     jQuery("#woocommerce_paypal_express_checkout_logo").after('<a href="#" id="checkout_logo" class="button_upload button">Upload</a>');
-                    jQuery("#woocommerce_paypal_express_checkout_logo_hdrimg").after('<a href="#" id="checkout_logo_hdrimg button" class="button_upload">Upload</a>');
+                    jQuery("#woocommerce_paypal_express_checkout_logo_hdrimg").after('<a href="#" id="checkout_logo_hdrimg" class="button_upload button">Upload</a>');
                 <?php
                     }
                 ?>
@@ -163,8 +163,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     });
                     //When a file is selected, grab the URL and set it as the text field's value
                     custom_uploader.on('select', function () {
-                        attachment = custom_uploader.state().get('selection').first().toJSON();
-                        BTthis.prev().val(attachment.url);
+                        var attachment = custom_uploader.state().get('selection').first().toJSON();
+                        var pre_input = BTthis.prev();
+                        var url = attachment.url;
+                        if (BTthis.attr('id')!='upload'){
+                            if (attachment.url.indexOf('http:') > -1) {
+                                url = url.replace('http', 'https');
+                            }
+                        }
+                        pre_input.val(url);
                     });
                     //Open the uploader dialog
                     custom_uploader.open();
@@ -190,13 +197,22 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->log->add( 'paypal_express', $message );
         }
     }
+
+    /**
+     * Check if site is SSL ready
+     *
+     */
+    function is_ssl() {
+        if (is_ssl() || get_option('woocommerce_force_ssl_checkout')=='yes' || class_exists( 'WordPressHTTPS' )) return true;
+        return false;
+    }
     /**
      * Initialize Gateway Settings Form Fields
      */
     function init_form_fields() {
 
         $require_ssl = '';
-        if (!is_ssl()) {
+        if (!$this->is_ssl()) {
             $require_ssl = __( 'This image requires an SSL host.  Please upload your image to <a target="_blank" href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce' );
         }
         $this->form_fields = array(
