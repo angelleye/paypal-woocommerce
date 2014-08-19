@@ -389,9 +389,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default'   => ''
             ),
             'checkout_logo_hdrimg' => array(
-                'title' => __('PayPal Checkout Logo HDRIMG (750x90px)', 'paypal-for-woocommerce'),
+                'title' => __('PayPal Checkout Banner (750x90px)', 'paypal-for-woocommerce'),
                 'type'  => 'text',
-                'description' => __( 'This controls what users see as the logo on PayPal review pages. ', 'paypal-for-woocommerce' ).$require_ssl,
+                'description' => __( 'This controls what users see as the header banner on PayPal review pages. ', 'paypal-for-woocommerce' ).$require_ssl,
                 'default'   => ''
             ),
 			'customer_service_number' => array(
@@ -1054,7 +1054,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'addroverride' => '', 						// The value 1 indiciates that the PayPal pages should display the shipping address set by you in the SetExpressCheckout request, not the shipping address on file with PayPal.  This does not allow the customer to edit the address here.  Must be 1 or 0.
             'localecode' => substr(WPLANG, -2), 						// Locale of pages displayed by PayPal during checkout.  Should be a 2 character country code.  You can retrive the country code by passing the country name into the class' GetCountryCode() function.
             'pagestyle' => '', 							// Sets the Custom Payment Page Style for payment pages associated with this button/link.
-            'hdrimg' => '', 							// URL for the image displayed as the header during checkout.  Max size of 750x90.  Should be stored on an https:// server or you'll get a warning message in the browser.
+            'hdrimg' => $this->checkout_logo_hdrimg, 							// URL for the image displayed as the header during checkout.  Max size of 750x90.  Should be stored on an https:// server or you'll get a warning message in the browser.
+            'logourl' => $this->checkout_logo,
             'hdrbordercolor' => '', 					// Sets the border color around the header of the payment page.  The border is a 2-pixel permiter around the header space.  Default is black.
             'hdrbackcolor' => '', 						// Sets the background color for the header of the payment page.  Default is white.
             'payflowcolor' => '', 						// Sets the background color for the payment page.  Default is white.
@@ -1078,19 +1079,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'taxidtype' => '', 							// The buyer's tax ID type.  This field is required for Brazil and used for Brazil only.  Values:  BR_CPF for individuals and BR_CNPJ for businesses.
             'taxid' => ''								// The buyer's tax ID.  This field is required for Brazil and used for Brazil only.  The tax ID is 11 single-byte characters for individutals and 14 single-byte characters for businesses.
         );
-
-        /**
-         *
-         * Add logo param
-         *
-         */
-        if (!empty($this->checkout_logo)) {
-            $SECFields['LOGOURL'] = $this->checkout_logo;
-        }
-
-        if (!empty($this->checkout_logo_hdrimg)) {
-            $SECFields['HDRIMG'] = $this->checkout_logo_hdrimg;
-        }
 
 
         /**
