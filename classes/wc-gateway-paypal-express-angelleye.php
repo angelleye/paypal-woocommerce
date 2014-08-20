@@ -66,7 +66,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         // Actions
         add_action( 'woocommerce_api_' . strtolower( get_class() ), array( $this, 'paypal_express_checkout' ), 12 );
         add_action( 'woocommerce_receipt_paypal_express', array( $this, 'receipt_page' ) );
-        add_action( 'woocommerce_settings_save_checkout', array( &$this, 'process_admin_options' ) );
+
+        //Save settings
+        add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
+        add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
 
         if ( $this->show_on_checkout == 'yes' )
