@@ -989,7 +989,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         update_post_meta( $order_id, '_customer_user',    ( int ) get_current_user_id() );
         update_post_meta( $order_id, '_order_items',    $order_items );
         update_post_meta( $order_id, '_order_taxes',    $order_taxes );
-        update_post_meta( $order_id, '_order_currency',   get_option( 'woocommerce_currency' ) );
+        update_post_meta( $order_id, '_order_currency',   get_woocommerce_currency() );
         update_post_meta( $order_id, '_prices_include_tax',  get_option( 'woocommerce_prices_include_tax' ) );
         // Order status
         wp_set_object_terms( $order_id, 'pending', 'shop_order_status' );
@@ -1134,7 +1134,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $Payments = array();
         $Payment = array(
             'amt' => number_format(WC()->cart->total,2,'.',''), 							// Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
-            'currencycode' => get_option('woocommerce_currency'), 					// A three-character currency code.  Default is USD.
+            'currencycode' => get_woocommerce_currency(), 					// A three-character currency code.  Default is USD.
             'shippingamt' => number_format($shipping,2,'.',''), 					// Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
             'shippingdiscamt' => '', 				// Shipping discount for this order, specified as a negative number.
             'insuranceamt' => '', 					// Total shipping insurance costs for this order.
@@ -1522,7 +1522,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $Payments = array();
         $Payment = array(
             'amt' => number_format($FinalPaymentAmt,2,'.',''), 							// Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
-            'currencycode' => get_option('woocommerce_currency'), 					// A three-character currency code.  Default is USD.
+            'currencycode' => get_woocommerce_currency(), 					// A three-character currency code.  Default is USD.
             'shippingdiscamt' => '', 				// Total shipping discount for this order, specified as a negative number.
             'insuranceoptionoffered' => '', 		// If true, the insurance drop-down on the PayPal review page displays the string 'Yes' and the insurance amount.  If true, the total shipping insurance for this order must be a positive number.
             'handlingamt' => '', 					// Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
