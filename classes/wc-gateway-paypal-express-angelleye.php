@@ -34,7 +34,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->landing_page            = isset($this->settings['landing_page']) ? $this->settings['landing_page'] : '';
         $this->checkout_logo           = isset($this->settings['checkout_logo']) ? $this->settings['checkout_logo'] : '';
         $this->checkout_logo_hdrimg    = isset($this->settings['checkout_logo_hdrimg']) ? $this->settings['checkout_logo_hdrimg'] : '';
-		$this->show_bill_me_later	   = isset($this->settings['show_bill_me_later']) ? $this->settings['show_bill_me_later'] : '';
+		$this->show_paypal_credit	   = isset($this->settings['show_paypal_credit']) ? $this->settings['show_paypal_credit'] : '';
 		$this->brand_name	  		   = isset($this->settings['brand_name']) ? $this->settings['brand_name'] : '';
 		$this->customer_service_number = isset($this->settings['customer_service_number']) ? $this->settings['customer_service_number'] : '';
 		$this->gift_wrap_enabled	   = isset($this->settings['gift_wrap_enabled']) ? $this->settings['gift_wrap_enabled'] : '';
@@ -373,10 +373,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				'description' => __( 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
 									and helps to prevent fraudulant activity on your site.' , 'paypal-for-woocommerce' )
             ),
-			'show_bill_me_later' => array(
-					'title' => __( 'Enable Bill Me Later', 'paypal-for-woocommerce' ),
+			'show_paypal_credit' => array(
+					'title' => __( 'Enable PayPal Credit', 'paypal-for-woocommerce' ),
 					'type' => 'checkbox',
-					'label' => __( 'Show the Bill Me Later button next to the Express Checkout button.', 'paypal-for-woocommerce' ),
+					'label' => __( 'Show the PayPal Credit button next to the Express Checkout button.', 'paypal-for-woocommerce' ),
 					'default' => 'yes'
 				),
 			'brand_name' => array(
@@ -511,22 +511,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 //echo '</a>';
                 //echo '</div>';
                 /**
-                 * Displays the Bill Me Later checkout button if enabled in EC settings.
+                 * Displays the PayPal Credit checkout button if enabled in EC settings.
                  */
-                if ($this->show_bill_me_later == 'yes') {
-                    // Bill Me Later button
-                    $bml_button_markup = '<div id="paypal_ec_bml_button">';
-                    $bml_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg('use_bml', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '" >';
-                    $bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='150' alt='Check out with PayPal Bill Me Later'/>";
-                    $bml_button_markup .= '</a>';
+                if ($this->show_paypal_credit == 'yes') {
+                    // PayPal Credit button
+                    $paypal_credit_button_markup = '<div id="paypal_ec_paypal_credit_button">';
+                    $paypal_credit_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '" >';
+                    $paypal_credit_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' width='150' alt='Check out with PayPal Credit'/>";
+                    $paypal_credit_button_markup .= '</a>';
+                    $paypal_credit_button_markup .= '</div>';
 
-                    // Marketing Message
-                    $bml_button_markup .= '<a target="_blank" href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
-                    $bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='150' />";
-                    $bml_button_markup .= '</a>';
-                    $bml_button_markup .= '</div>';
-                    echo $bml_button_markup;
+                    echo $paypal_credit_button_markup;
                 }
+
                 echo '<div class="woocommerce_paypal_ec_checkout_message">';
                 echo '<p class="checkoutStatus">', __('Skip the forms and pay faster with PayPal.', 'paypal-for-woocommerce'), '</p>';
                 echo '</div>';
@@ -556,16 +553,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log( 'Start Express Checkout' );
 
                 /**
-                 * Check if the EC button used was the BML button.
-                 * This $useBML flag will be used to adjust the SEC request accordingly.
+                 * Check if the EC button used was the PayPal Credit button.
+                 * This $usePayPalCredit flag will be used to adjust the SEC request accordingly.
                  */
-                if(isset($_GET['use_bml']) && 'true' == $_GET['use_bml'])
+                if(isset($_GET['use_paypal_credit']) && 'true' == $_GET['use_paypal_credit'])
                 {
-                    $useBML = true;
+                    $usePayPalCredit = true;
                 }
                 else
                 {
-                    $useBML = false;
+                    $usePayPalCredit = false;
                 }
 
                 WC()->cart->calculate_totals();
@@ -573,7 +570,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $paymentAmount	  = number_format(WC()->cart->total,2,'.','');
                 $returnURL        = urlencode( add_query_arg( 'pp_action', 'revieworder', get_permalink( woocommerce_get_page_id( 'review_order' )) ) );
                 $cancelURL        = urlencode( WC()->cart->get_cart_url() );
-                $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $useBML );
+                $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $usePayPalCredit );
                 $ack              = strtoupper( $resArray["ACK"] );
                 if($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING")
                 {
@@ -1011,7 +1008,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @returnURL (string) URL for PayPal to send the buyer to after review and continue from PayPal.
      * @cancelURL (string) URL for PayPal to send the buyer to if they cancel the payment.
      */
-    function CallSetExpressCheckout($paymentAmount,$returnURL,$cancelURL,$useBML = false)
+    function CallSetExpressCheckout($paymentAmount,$returnURL,$cancelURL,$usePayPalCredit = false)
     {
         /*
          * Display message to user if session has expired.
@@ -1097,9 +1094,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		}
 
 		/**
-		 * If BML is being used, override the necessary parameters
+		 * If PayPal Credit is being used, override the necessary parameters
 		 */
-		if($useBML)
+		if($usePayPalCredit)
 		{
 			$SECFields['solutiontype'] = 'Sole';
 			$SECFields['landingpage'] = 'Billing';
@@ -1939,23 +1936,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             	}
 
 				/**
-				 * Displays the Bill Me Later checkout button if enabled in EC settings.
+				 * Displays the PayPal Credit checkout button if enabled in EC settings.
 				 */
-				if($pp_settings['show_bill_me_later'] == 'yes')
+				if(isset($pp_settings['show_paypal_credit']) && $pp_settings['show_paypal_credit'] == 'yes')
 				{
-					// Bill Me Later button
-					$bml_button_markup = '<div id="paypal_ec_bml_button">';
-					$bml_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg( 'use_bml', 'true', add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) ) . '" >';
-					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png' width='150' alt='Check out with PayPal Bill Me Later'/>";
-					$bml_button_markup .= '</a>';
+                    // PayPal Credit button
+                    $paypal_credit_button_markup = '<div id="paypal_ec_paypal_credit_button">';
+                    $paypal_credit_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '" >';
+                    $paypal_credit_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' width='150' alt='Check out with PayPal Credit'/>";
+                    $paypal_credit_button_markup .= '</a>';
+                    $paypal_credit_button_markup .= '</div>';
 
-					// Marketing Message
-					$bml_button_markup .= '<a target="_blank" href="https://www.securecheckout.billmelater.com/paycapture-content/fetch?hash=AU826TU8&content=/bmlweb/ppwpsiw.html" >';
-					$bml_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_text.png' width='150' />";
-					$bml_button_markup .= '</a>';
-					$bml_button_markup .= '</div>';
-
-					echo $bml_button_markup;
+                    echo $paypal_credit_button_markup;
 				}
 				echo "<div class='clear'></div></div>";
 		}

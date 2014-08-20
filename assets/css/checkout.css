@@ -66,10 +66,15 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
     width: 620px;
 }
 */
-#paypal_ec_bml_button {
+#paypal_ec_button {
+    float: left;
+    width: 150px;
+}
+#paypal_ec_paypal_credit_button {
     float: left;
     margin-top: -2px;
     width: 150px;
+    margin-left: 10px;
 }
 .entry-content img, .comment-content img, .widget img, img.header-image, .author-avatar img, img.wp-post-image{
     border-radius: 0px;

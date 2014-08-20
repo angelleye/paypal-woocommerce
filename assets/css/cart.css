@@ -1,6 +1,3 @@
-a img{
-    border: none;
-}
 .cart .paypal_checkout_button img {
 	vertical-align: middle;
 }
@@ -16,9 +13,9 @@ a img{
     display: inline;
 }
 .paypal_box_button div a img {
-    border: medium none;
+    border: none;
 }
-#paypal_ec_bml_button a {
+#paypal_ec_paypal_credit_button a {
     display: block;
     text-align: center;
     width: 100%;
