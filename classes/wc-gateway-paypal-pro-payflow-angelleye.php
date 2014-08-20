@@ -211,7 +211,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				return false;
 
 			// Currency check
-			if ( ! in_array( get_option('woocommerce_currency'), $this->allowed_currencies ) )
+			if ( ! in_array( get_woocommerce_currency(), $this->allowed_currencies ) )
 				return false;
 
 			// Required fields check
@@ -319,7 +319,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'acct'=>$card_number, 				// Required for credit card transaction.  Credit card or purchase card number.
 					'expdate'=>$card_exp, 				// Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
 					'amt'=>$order->get_total(), 					// Required.  Amount of the transaction.  Must have 2 decimal places. 
-					'currency'=>get_option('woocommerce_currency'), // 
+					'currency'=>get_woocommerce_currency(), // 
 					'dutyamt'=>'', 				//
 					'freightamt'=>'', 			//
 					'taxamt'=>'', 				//
