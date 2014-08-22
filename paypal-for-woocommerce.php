@@ -375,6 +375,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Javascript code to move it in to button add to cart wrap
          */
         function buy_now_button_js() {
+            global $pp_settings;
+            if (@$pp_settings['enabled']=='yes' && @$pp_settings['show_on_product_page']=='yes')
+            {
             ?>
             <script type="text/javascript">
                 jQuery(document).ready(function(){
@@ -382,6 +385,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 });
             </script>
         <?php
+            }
         }
 
         /**
