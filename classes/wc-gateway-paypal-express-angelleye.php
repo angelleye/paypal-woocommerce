@@ -1,5 +1,4 @@
 <?php
-define('__SERVICE_URL__','https://izweb.biz');
 class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     /**
      * __construct function.
@@ -1859,7 +1858,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     static function woocommerce_before_cart() {
         global $pp_settings, $pp_pro, $pp_payflow;
         echo "<style>table.cart td.actions .input-text, table.cart td.actions .button, table.cart td.actions .checkout-button {margin-bottom: 0.53em !important}</style>";
-        if (@$pp_settings['enabled']=='yes' && 0 < WC()->cart->total ) {
+        if ((@$pp_settings['enabled']== 'yes' || @$pp_pro['enabled'] == 'yes' || @$pp_payflow['enabled'] == 'yes') && 0 < WC()->cart->total ) {
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
             unset($payment_gateways['paypal_pro']);
             unset($payment_gateways['paypal_pro_payflow']);
@@ -1883,73 +1882,68 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     static function woocommerce_paypal_express_checkout_button_angelleye()
 	{
         global $pp_settings, $pp_pro, $pp_payflow;
-		/*echo '<pre />';
-		print_r($pp_settings);
-		exit();*/
 
 
-            $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
-            // Pay with Credit Card
+        $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+        // Pay with Credit Card
 
-            unset($payment_gateways['paypal_pro']);
-            unset($payment_gateways['paypal_pro_payflow']);
-            $pp_pro     = get_option('woocommerce_paypal_pro_settings');
-            $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
-            if (empty($payment_gateways) && (@$pp_pro['enabled']=='yes' || @$pp_payflow['enabled']=='yes'))
-            {
-                echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
+        unset($payment_gateways['paypal_pro']);
+        unset($payment_gateways['paypal_pro_payflow']);
+        if (empty($payment_gateways) && (@$pp_pro['enabled']=='yes' || @$pp_payflow['enabled']=='yes'))
+        {
+            echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
+        }
+
+        echo '<div class="clear"></div>';
+
+        if (@$pp_settings['enabled']=='yes' && 0 < WC()->cart->total && $pp_settings['show_on_cart']=='yes' )
+        {
+            echo '<div class="paypal_box_button">';
+            if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
+            switch($pp_settings['checkout_with_pp_button_type']){
+                case "textbutton":
+                    if(!empty($pp_settings['pp_button_type_text_button'])){
+                        $button_text = $pp_settings['pp_button_type_text_button'];
+                    }
+                    else
+                    {
+                        $button_text = __( 'Proceed to Checkout', 'woocommerce' );
+                    }
+                    echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . $button_text .'</a>';
+                    break;
+                case "paypalimage":
+                    $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
+                    echo '<div id="paypal_ec_button">';
+                    echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
+                    echo "<img src='https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
+                    echo "</a>";
+                    echo '</div>';
+                    break;
+                case "customimage":
+                    $button_img = $pp_settings['pp_button_type_my_custom'];
+                    echo '<div id="paypal_ec_button">';
+                    echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
+                    echo "<img src='{$button_img}' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
+                    echo "</a>";
+                    echo '</div>';
+                    break;
             }
 
-            echo '<div class="clear"></div>';
+            /**
+             * Displays the PayPal Credit checkout button if enabled in EC settings.
+             */
+            if(isset($pp_settings['show_paypal_credit']) && $pp_settings['show_paypal_credit'] == 'yes')
+            {
+                // PayPal Credit button
+                $paypal_credit_button_markup = '<div id="paypal_ec_paypal_credit_button">';
+                $paypal_credit_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '" >';
+                $paypal_credit_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' width='150' alt='Check out with PayPal Credit'/>";
+                $paypal_credit_button_markup .= '</a>';
+                $paypal_credit_button_markup .= '</div>';
 
-			if (@$pp_settings['enabled']=='yes' && 0 < WC()->cart->total && $pp_settings['show_on_cart']=='yes' )
-			{
-            	echo '<div class="paypal_box_button">';
-            	if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
-            	switch($pp_settings['checkout_with_pp_button_type']){
-                	case "textbutton":
-                    	if(!empty($pp_settings['pp_button_type_text_button'])){
-                        	$button_text = $pp_settings['pp_button_type_text_button'];
-                    	}
-						else
-						{
-                        	$button_text = __( 'Proceed to Checkout', 'woocommerce' );
-                    	}
-                    	echo '<a class="paypal_checkout_button button alt" href="'. add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">' . $button_text .'</a>';
-                    	break;
-                	case "paypalimage":
-                    	$button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
-                    	echo '<div id="paypal_ec_button">';
-						echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
-						echo "<img src='https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
-						echo "</a>";
-						echo '</div>';
-						break;
-					case "customimage":
-						$button_img = $pp_settings['pp_button_type_my_custom'];
-						echo '<div id="paypal_ec_button">';
-						echo '<a class="paypal_checkout_button" href="' . add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) ) .'">';
-						echo "<img src='{$button_img}' width='150' border='0' alt='". __('Pay with PayPal', 'paypal-for-woocommerce')."'/>";
-						echo "</a>";
-						echo '</div>';
-						break;
-            	}
-
-				/**
-				 * Displays the PayPal Credit checkout button if enabled in EC settings.
-				 */
-				if(isset($pp_settings['show_paypal_credit']) && $pp_settings['show_paypal_credit'] == 'yes')
-				{
-                    // PayPal Credit button
-                    $paypal_credit_button_markup = '<div id="paypal_ec_paypal_credit_button">';
-                    $paypal_credit_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '" >';
-                    $paypal_credit_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' width='150' alt='Check out with PayPal Credit'/>";
-                    $paypal_credit_button_markup .= '</a>';
-                    $paypal_credit_button_markup .= '</div>';
-
-                    echo $paypal_credit_button_markup;
-				}
-				echo "<div class='clear'></div></div>";
+                echo $paypal_credit_button_markup;
+            }
+            echo "<div class='clear'></div></div>";
 		}
     }
 }
