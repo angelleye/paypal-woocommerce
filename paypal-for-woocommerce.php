@@ -144,7 +144,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 				'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/plugin/paypal-for-woocommerce/', __( 'Support', 'paypal-for-woocommerce' ) ),
 				'review'    => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/view/plugin-reviews/paypal-for-woocommerce', __( 'Write a Review', 'paypal-for-woocommerce' ) ),
 			);
-	
+
 			// add the links to the front of the actions list
 			return array_merge( $custom_actions, $actions );
 		}
@@ -389,7 +389,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         function buy_now_button() {
             global $pp_settings, $post;
-            if (!empty($pp_settings['show_on_product_page']) && $pp_settings['show_on_product_page']=='yes')
+            if (@$pp_settings['enabled']=='yes' && @$pp_settings['show_on_product_page']=='yes')
 			{
                 $_product = get_product($post->ID);
                 $hide = '';

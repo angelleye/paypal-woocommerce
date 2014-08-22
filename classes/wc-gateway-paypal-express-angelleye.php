@@ -72,7 +72,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
 
-        if ( $this->show_on_checkout == 'yes' )
+        if ( $this->enabled == 'yes' && $this->show_on_checkout == 'yes' )
             add_action( 'woocommerce_before_checkout_form', array( $this, 'checkout_message' ), 5 );
         add_action( 'woocommerce_ppe_do_payaction', array($this, 'get_confirm_order'));
 
@@ -1858,8 +1858,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     static function woocommerce_before_cart() {
         global $pp_settings, $pp_pro, $pp_payflow;
+        echo "<style>table.cart td.actions .input-text, table.cart td.actions .button, table.cart td.actions .checkout-button {margin-bottom: 0.53em !important}</style>";
         if (@$pp_settings['enabled']=='yes' && 0 < WC()->cart->total ) {
-            echo "<style>table.cart td.actions .input-text, table.cart td.actions .button, table.cart td.actions .checkout-button {margin-bottom: 0.53em !important}</style>";
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
             unset($payment_gateways['paypal_pro']);
             unset($payment_gateways['paypal_pro_payflow']);
