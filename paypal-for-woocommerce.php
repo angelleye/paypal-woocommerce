@@ -31,12 +31,14 @@ if (!defined('ABSPATH'))
 /**
  * Set global parameters
  */
-global $woocommerce, $pp_settings, $wp_version;
+global $woocommerce, $pp_settings, $pp_pro, $pp_payflow, $wp_version;
 
 /**
  * Get Settings
  */
 $pp_settings = get_option( 'woocommerce_paypal_express_settings' );
+$pp_pro     = get_option('woocommerce_paypal_pro_settings');
+$pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
 if(!class_exists('AngellEYE_Gateway_Paypal')){
     class AngellEYE_Gateway_Paypal
     {
