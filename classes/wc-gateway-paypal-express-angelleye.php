@@ -750,11 +750,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				/**
 				 * Update meta data with session data
 				 */
+
+                // Parse SHIPTONAME to fist and last name
+                require_once("lib/NameParser.php");
+                $parser = new FullNameParser();
+                $split_name = $parser->split_full_name($this->get_session('shiptoname'));
+                $shipping_first_name    = $split_name['fname'];
+                $shipping_last_name     = $split_name['lname'];
+                $full_name              = $split_name['fullname'];
+
 				update_post_meta( $order_id, '_payment_method',   $this->id );
 				update_post_meta( $order_id, '_payment_method_title',  $this->title );
 				update_post_meta( $order_id, '_billing_email',    $this->get_session('payeremail'));
-				update_post_meta( $order_id, '_shipping_first_name',  $this->get_session('shiptoname'));
-				update_post_meta( $order_id, '_shipping_last_name',  "" );
+				update_post_meta( $order_id, '_shipping_first_name',  $shipping_first_name );
+				update_post_meta( $order_id, '_shipping_last_name',  $shipping_last_name );
+				update_post_meta( $order_id, '_shipping_full_name',  $full_name );
 				update_post_meta( $order_id, '_shipping_company',   "" );
                 update_post_meta( $order_id, '_billing_phone',   $this->get_session('phonenum'));
 				update_post_meta( $order_id, '_shipping_address_1',  $this->get_session('shiptostreet'));
