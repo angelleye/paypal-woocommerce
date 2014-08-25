@@ -131,7 +131,7 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
 <?php else:
         echo '<div class="clear"></div>';
         echo '<p><a class="button cancel" href="' . $woocommerce->cart->get_cart_url() . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
-        echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); return true;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
+        echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
     ?>
     </form><!--close the checkout form-->
 <?php endif; ?>
