@@ -3,8 +3,8 @@ Contributors: angelleye
 Donate link: http://www.angelleye.com/product/buy-beer/
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
-Tested up to: 3.9
-Stable tag: 1.1.4
+Tested up to: 3.9.2
+Stable tag: 1.1.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -16,11 +16,13 @@ Developed by an Ace Certified PayPal Developer, official PayPal Partner, PayPal 
 
 Easily add PayPal payment options to your WordPress / WooCommerce website.
 
- * PayPal Express Checkout / Bill Me Later
+ * PayPal Express Checkout / PayPal Credit
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayPal Manager / PayFlow Gateway)
  
 [youtube https://www.youtube.com/watch?v=svq9ovWGp7I]
+
+[youtube https://www.youtube.com/watch?v=VhQT8rX7uwE]
 
 = Quality Control =
 Payment processing can't go wrong.  It's as simple as that.  Our certified PayPal engineers have developed and thoroughly tested this plugin on the PayPal sandbox (test) servers to ensure your customers don't have problems paying you.  
@@ -73,7 +75,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
  
 == Screenshots ==
 
-1. Display Pay with Credit Card and Pay with PayPal / Bill Me Later options on the shopping cart page.
+1. Display Pay with Credit Card and Pay with PayPal / PayPal Credit options on the shopping cart page.
 2. PayPal Express Checkout button on product detail page.
 3. Your logo and cart items accurately displayed on PayPal Express Checkout review pages.
 4. Direct credit card processing option available with PayPal Payments Pro.
@@ -98,6 +100,29 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.1.5 - 08/26/2014 =
+* Fix - Re-creates checkout review when unavailable to eliminate Invalid ReturnURL error from PayPal.
+* Fix - Resolves an issue with long field names on some servers causing the Express Checkout settings page to fail when saving.
+* Fix - Resolves an issue where two checkout buttons were sometimes displayed on the cart depending on which payment gateways were currently enabled.
+* Fix - Resolves an issue where Express Checkout buttons were displayed in certain places on the site even when Express Checkout was disabled.
+* Fix - Removes included javascript on pages where it wasn't being used to eliminate 404 warnings.
+* Fix - Adjusts CSS on Express Checkout buttons to eliminate potential conflicts with some themes.
+* Fix - Adds namespace to class names on checkout forms to eliminate potential conflicts with some themes.
+* Tweak - Disables "Place Order" button on review order page to eliminate duplicate orders and/or errors during checkout.
+* Tweak - Splits the ship to name returned from PayPal Express Checkout so that it's correctly entered into WooCommerce first and last name fields.
+* Tweak - Updates PayPal Bill Me Later to PayPal Credit
+* Tweak - Masks API credentials in API log files.
+* Tweak - Adds length validation to Customer Service Phone number option in Express Checkout to eliminate warning codes (11835) from being returned.
+* Tweak - Adds handling of PayPal error 10486 and returns the user to PayPal so they can choose another payment method per PayPal's documentation.
+* Tweak - Adds the ship to phone number returned from Express Checkout to WooCommerce order details.
+* Feature - Adds the ability to show/hide the Express Checkout button on the cart page.
+* Feature - Adds hooks so that developers can override the template used for the Express Checkout review order page.
+* Feature - Adds AVS and CVV2 response codes to WooCommerce order notes.
+* Feature - Adds Payer Status and Address Status to WooCommerce order notes.
+* Feature - Adds an option to enable/disable an admin email notification when PayPal errors occur.
+* Feature - Adds the ability to include custom banner/logo for PayPal hosted checkout pages.
+* Refactor - Updates function used to obtain currency code so that "currency switcher" plugins will work correctly with PayPal.
 
 = 1.1.4 - 05/02/2014 =
 * Fix - Corrects an issue happening with some browsers on the Express Checkout review page.
