@@ -62,7 +62,7 @@ jQuery(function($) {
 			s_address:			s_address,
 			s_address_2:		s_address_2,
             pp_action:          'revieworder',
-			post_data:			$('form.checkout').serialize()
+			post_data:			$('form.angelleye_checkout').serialize()
 		};
 
 		xhr = $.ajax({
@@ -112,7 +112,7 @@ jQuery(function($) {
 		}
 	}
 
-	$('form.checkout')
+	$('form.angelleye_checkout')
 
 	/* Update totals/taxes/shipping */
 
