@@ -567,7 +567,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 WC()->cart->calculate_totals();
                 //$paymentAmount    = WC()->cart->get_total();
                 $paymentAmount	  = number_format(WC()->cart->total,2,'.','');
-                $returnURL        = urlencode( add_query_arg( 'pp_action', 'revieworder', get_permalink( woocommerce_get_page_id( 'review_order' )) ) );
+
+                //Check if review order page is exist, otherwise re-create it on the fly
+                $review_order_page_url =  get_permalink( wc_get_page_id( 'review_order' ) );
+                if (!$review_order_page_url) {
+                    $this->add_log( __( 'Review Order Page not found, re-create it. ' , 'paypal-for-woocommerce') );
+                    include_once( WC()->plugin_path() . '/includes/admin/wc-admin-functions.php' );
+                    $page_id = wc_create_page(esc_sql(_x('review-order','page_slug','woocommerce')),'woocommerce_review_order_page_id',__('Checkout &rarr; Review Order','paypal-for-woocommerce'),'[woocommerce_review_order]',wc_get_page_id('checkout'));
+                    $review_order_page_url = get_permalink( $page_id );
+                }
+                $returnURL        = urlencode( add_query_arg( 'pp_action', 'revieworder', $review_order_page_url ) );
                 $cancelURL        = urlencode( WC()->cart->get_cart_url() );
                 $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $usePayPalCredit );
                 $ack              = strtoupper( $resArray["ACK"] );

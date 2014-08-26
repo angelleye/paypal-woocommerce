@@ -279,7 +279,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 //include_once $woocommerce->plugin_path() . '/admin/woocommerce-admin-install.php';
 
                 // Create review page for Express Checkout
-                wc_create_page(esc_sql(_x('review-order','page_slug','woocommerce')),'woocommerce_review_order_page_id',__('Checkout &rarr; Review Order','paypal-for-woocommerce'),'[woocommerce_review_order]',woocommerce_get_page_id('checkout'));
+                wc_create_page(esc_sql(_x('review-order','page_slug','woocommerce')),'woocommerce_review_order_page_id',__('Checkout &rarr; Review Order','paypal-for-woocommerce'),'[woocommerce_review_order]',wc_get_page_id('checkout'));
 
                 // Log activation in Angell EYE database via web service.
                 $log_url = $_SERVER['HTTP_HOST'];
