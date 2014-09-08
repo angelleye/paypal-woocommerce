@@ -27,7 +27,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->error_email_notify      = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
         //$this->checkout_with_pp_button = $this->settings['checkout_with_pp_button'];
         //$this->hide_checkout_button    = $this->settings['hide_checkout_button'];
-        $this->show_on_checkout        = $this->settings['show_on_checkout'];
+        $this->show_on_checkout        = isset($this->settings['show_on_checkout']) ? $this->settings['show_on_checkout'] : 'no';
         $this->paypal_account_optional = $this->settings['paypal_account_optional'];
 		$this->error_display_type 	   = isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
         $this->landing_page            = isset($this->settings['landing_page']) ? $this->settings['landing_page'] : '';
@@ -41,6 +41,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$this->gift_receipt_enabled	   = isset($this->settings['gift_receipt_enabled']) ? $this->settings['gift_receipt_enabled'] : '';
 		$this->gift_wrap_name		   = isset($this->settings['gift_wrap_name']) ? $this->settings['gift_wrap_name'] : '';
 		$this->gift_wrap_amount		   = isset($this->settings['gift_wrap_amount']) ? $this->settings['gift_wrap_amount'] : '';
+
+        $this->button_locale_code      = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
+
 
         /*
         ' Define the PayPal Redirect URLs.
@@ -71,10 +74,27 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
 
-        if ( $this->enabled == 'yes' && $this->show_on_checkout == 'yes' )
+        if ( $this->enabled == 'yes' && $this->show_on_checkout == 'top' )
             add_action( 'woocommerce_before_checkout_form', array( $this, 'checkout_message' ), 5 );
         add_action( 'woocommerce_ppe_do_payaction', array($this, 'get_confirm_order'));
+        add_action( 'woocommerce_after_checkout_validation', array($this, 'regular_checkout'));
 
+    }
+
+    /**
+     * get_icon function.
+     *
+     * @access public
+     * @return string
+     */
+    public function get_icon() {
+
+        $icon = "<img src='https://www.paypal.com/" . $this->button_locale_code . "/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+        if ($this->show_paypal_credit=='yes') {
+            $icon .=" <img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' width='150' alt='Check out with PayPal Credit'/>";
+        }
+
+        return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
     }
     /**
      * Override this method so this gateway does not appear on checkout page
@@ -186,7 +206,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public function get_confirm_order($order){
         $this->confirm_order_id = $order->id;
     }
+
     function is_available() {
+        if ($this->enabled == 'yes' && $this->show_on_checkout == 'regular') return true;
         return false;
     }
     /**
@@ -334,9 +356,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'show_on_checkout' => array(
                 'title' => __( 'Standard Checkout', 'paypal-for-woocommerce' ),
-                'type' => 'checkbox',
-                'label' => __( 'Show Express Checkout button on checkout page', 'paypal-for-woocommerce' ),
-                'default' => 'yes'
+                'type' => 'select',
+                'options' => array(
+                            'no' => __( "Don't show on checkout page" , 'paypal-for-woocommerce' ),
+                            'top' => __( 'Show Express Checkout button on top of checkout page' , 'paypal-for-woocommerce' ) ,
+                            'regular' => __( 'Show Express Checkout button on regular payments list' , 'paypal-for-woocommerce' )),
+                'default' => 'no',
             ),
             'show_on_product_page' => array(
                 'title' => __( 'Product Page', 'paypal-for-woocommerce' ),
@@ -488,10 +513,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         echo '<a class="paypal_checkout_button paypal_checkout_button_text button alt" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">' . $button_text . '</a>';
                         break;
                     case "paypalimage":
-                        $button_locale_code = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
                         echo '<div id="paypal_ec_button">';
                         echo '<a class="paypal_checkout_button" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">';
-                        echo "<img src='https://www.paypal.com/" . $button_locale_code . "/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                        echo "<img src='https://www.paypal.com/" . $this->button_locale_code . "/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                         echo "</a>";
                         echo '</div>';
                         break;
@@ -542,8 +566,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      *  2. 'revieworder' - Customer has reviewed the order. Saves shipping info to order.
      *  3. 'payaction' - Customer has pressed "Place Order" on the review page.
      */
-    function paypal_express_checkout() {
-        if ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'expresscheckout' ) {
+    function paypal_express_checkout($posted = null) {
+        if ( !empty($posted) || ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'expresscheckout' ) ) {
             if ( sizeof( WC()->cart->get_cart() ) > 0 ) {
 
                 // The customer has initiated the Express Checkout process with the button on the cart page
@@ -578,12 +602,23 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
                 $returnURL        = urlencode( add_query_arg( 'pp_action', 'revieworder', $review_order_page_url ) );
                 $cancelURL        = urlencode( WC()->cart->get_cart_url() );
-                $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $usePayPalCredit );
+                $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $usePayPalCredit, $posted );
                 $ack              = strtoupper( $resArray["ACK"] );
                 if($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING")
                 {
                     $this->add_log( 'Redirecting to PayPal' );
-                    $this->RedirectToPayPal( $resArray["TOKEN"] );
+                    if ( is_ajax() ) {
+                        $result = array (
+                                'redirect' => $this->PAYPAL_URL . $resArray["TOKEN"],
+                                'result'   => 'success'
+                        );
+
+                        echo '<!--WC_START-->' . json_encode( $result ) . '<!--WC_END-->';
+                        exit;
+                    } else {
+                        $this->RedirectToPayPal( $resArray["TOKEN"] );
+                        exit;
+                    }
                 }
                 else
                 {
@@ -622,9 +657,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     {
                         wc_add_notice(  sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) ), 'error' );
                     }
-
-                    wp_redirect( get_permalink( wc_get_page_id( 'cart' ) ) );
-                    exit;
+                    if ( !is_ajax() ) {
+                        wp_redirect( get_permalink( wc_get_page_id( 'cart' ) ) );
+                        exit;
+                    } else return;
                 }
             }
         }
@@ -1026,7 +1062,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @returnURL (string) URL for PayPal to send the buyer to after review and continue from PayPal.
      * @cancelURL (string) URL for PayPal to send the buyer to if they cancel the payment.
      */
-    function CallSetExpressCheckout($paymentAmount,$returnURL,$cancelURL,$usePayPalCredit = false)
+    function CallSetExpressCheckout($paymentAmount,$returnURL,$cancelURL,$usePayPalCredit = false, $posted)
     {
         /*
          * Display message to user if session has expired.
@@ -1097,6 +1133,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'taxidtype' => '', 							// The buyer's tax ID type.  This field is required for Brazil and used for Brazil only.  Values:  BR_CPF for individuals and BR_CNPJ for businesses.
             'taxid' => ''								// The buyer's tax ID.  This field is required for Brazil and used for Brazil only.  The tax ID is 11 single-byte characters for individutals and 14 single-byte characters for businesses.
         );
+
+
 
 
         /**
@@ -1177,6 +1215,34 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'paymentrequestid' => '',  				// A unique identifier of the specific payment request, which is required for parallel payments.
             'sellerpaypalaccountid' => ''			// A unique identifier for the merchant.  For parallel payments, this field is required and must contain the Payer ID or the email address of the merchant.
         );
+
+        /**
+         * If checkout like regular payment
+         */
+
+        if (!empty($posted) && WC()->cart->needs_shipping() ) {
+            $SECFields['addroverride']      = 1;
+            if (@$posted['ship_to_different_address']) {
+                $Payment['shiptoname']          = $posted['shipping_first_name'].' '.$posted['shipping_last_name'];
+                $Payment['shiptostreet']        = $posted['shipping_address_1'];
+                $Payment['shiptostreet2']       = @$posted['shipping_address_2'];
+                $Payment['shiptocity']          = @$posted['shipping_city'];
+                $Payment['shiptostate']         = @$posted['shipping_state'];
+                $Payment['shiptozip']           = @$posted['shipping_postcode'];
+                $Payment['shiptocountrycode']   = @$posted['shipping_country'];
+                $Payment['shiptophonenum']      = @$posted['shipping_phone'];
+            } else {
+                $Payment['shiptoname']          = $posted['billing_first_name'].' '.$posted['billing_last_name'];
+                $Payment['shiptostreet']        = $posted['billing_address_1'];
+                $Payment['shiptostreet2']       = @$posted['billing_address_2'];
+                $Payment['shiptocity']          = @$posted['billing_city'];
+                $Payment['shiptostate']         = @$posted['billing_state'];
+                $Payment['shiptozip']           = @$posted['billing_postcode'];
+                $Payment['shiptocountrycode']   = @$posted['billing_country'];
+                $Payment['shiptophonenum']      = @$posted['billing_phone'];
+            }
+
+        }
 
         $PaymentOrderItems = array();
         $ctr = $total_items = $total_discount = $total_tax = $order_total = 0;
@@ -1964,5 +2030,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             echo "<div class='clear'></div></div>";
 		}
+    }
+
+    /**
+     * Regular checkout process
+     */
+    function regular_checkout($posted) {
+        if ($posted['payment_method'] == 'paypal_express' && wc_notice_count( 'error' ) == 0 ) {
+            $this->paypal_express_checkout($posted);
+        }
+        return;
     }
 }
