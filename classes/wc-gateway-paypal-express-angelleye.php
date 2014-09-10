@@ -89,11 +89,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      */
     public function get_icon() {
 
-        $icon = "<img src='https://www.paypal.com/" . $this->button_locale_code . "/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+        $image_path = WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/paypal.png';
         if ($this->show_paypal_credit=='yes') {
-            $icon .=" <img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' width='150' alt='Check out with PayPal Credit'/>";
+            $image_path = WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/paypalcredit.png';
         }
-
+        $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
         return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
     }
     /**
