@@ -27,7 +27,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->error_email_notify      = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
         //$this->checkout_with_pp_button = $this->settings['checkout_with_pp_button'];
         //$this->hide_checkout_button    = $this->settings['hide_checkout_button'];
-        $this->show_on_checkout        = isset($this->settings['show_on_checkout']) ? $this->settings['show_on_checkout'] : 'no';
+        $this->show_on_checkout        = isset($this->settings['show_on_checkout']) ? $this->settings['show_on_checkout'] : 'both';
         $this->paypal_account_optional = $this->settings['paypal_account_optional'];
 		$this->error_display_type 	   = isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
         $this->landing_page            = isset($this->settings['landing_page']) ? $this->settings['landing_page'] : '';
@@ -74,7 +74,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
 
-        if ( $this->enabled == 'yes' && $this->show_on_checkout == 'top' )
+        if ( $this->enabled == 'yes' && ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both') )
             add_action( 'woocommerce_before_checkout_form', array( $this, 'checkout_message' ), 5 );
         add_action( 'woocommerce_ppe_do_payaction', array($this, 'get_confirm_order'));
         add_action( 'woocommerce_after_checkout_validation', array($this, 'regular_checkout'));
@@ -208,7 +208,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     function is_available() {
-        if ($this->enabled == 'yes' && $this->show_on_checkout == 'regular') return true;
+        if ($this->enabled == 'yes' && ( $this->show_on_checkout == 'regular' || $this->show_on_checkout == 'both') ) return true;
         return false;
     }
     /**
@@ -355,13 +355,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'yes'
             ),
             'show_on_checkout' => array(
-                'title' => __( 'Standard Checkout', 'paypal-for-woocommerce' ),
+                'title' => __( 'Checkout Page Display', 'paypal-for-woocommerce' ),
                 'type' => 'select',
                 'options' => array(
-                            'no' => __( "Don't show on checkout page" , 'paypal-for-woocommerce' ),
-                            'top' => __( 'Show Express Checkout button on top of checkout page' , 'paypal-for-woocommerce' ) ,
-                            'regular' => __( 'Show Express Checkout button on regular payments list' , 'paypal-for-woocommerce' )),
-                'default' => 'no',
+                            'no' => __( "Do not display on checkout page." , 'paypal-for-woocommerce' ),
+                            'top' => __( 'Display at the top of the checkout page.' , 'paypal-for-woocommerce' ) ,
+                            'regular' => __( 'Display in general list of enabled gatways on checkout page.' , 'paypal-for-woocommerce' ) , 
+							'both' => __( 'Display both at the top and in the general list of gateways on the checkout page.' ) ) ,
+                'default' => 'top',
+				'description' => __( 'Displaying the checkout button at the top of the checkout page will allow users to skip filling out the forms and can potentially increase conversion rates.' )
             ),
             'show_on_product_page' => array(
                 'title' => __( 'Product Page', 'paypal-for-woocommerce' ),
