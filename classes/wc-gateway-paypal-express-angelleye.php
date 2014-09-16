@@ -689,13 +689,23 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if(!empty($result))
 			{
                 $this->set_session('RESULT',serialize($result));
+                if ( isset( $result['SHIPTOCOUNTRYCODE'] ) ) {
+                    /**
+                     * Check if shiptocountry is in the allowed countries list
+                     */
+                    if (!array_key_exists($result['SHIPTOCOUNTRYCODE'], WC()->countries->get_allowed_countries())) {
+                        wc_add_notice(  sprintf( __('We do not sell in your country, please try again with another address.', 'paypal-for-woocommerce' ) ), 'error' );
+                        wp_redirect( get_permalink( wc_get_page_id( 'cart' ) ) );
+                        exit;
+                    };
+                    WC()->customer->set_shipping_country( $result['SHIPTOCOUNTRYCODE'] );
+                }
                 if ( isset( $result['SHIPTONAME'] ) ) WC()->customer->shiptoname =  $result['SHIPTONAME'] ;
                 if ( isset( $result['SHIPTOSTREET'] ) ) WC()->customer->set_address( $result['SHIPTOSTREET'] );
                 if ( isset( $result['SHIPTOCITY'] ) ) WC()->customer->set_city( $result['SHIPTOCITY'] );
                 if ( isset( $result['SHIPTOCOUNTRYCODE'] ) ) WC()->customer->set_country( $result['SHIPTOCOUNTRYCODE'] );
                 if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
                 if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_postcode( $result['SHIPTOZIP'] );
-                if ( isset( $result['SHIPTOCOUNTRYCODE'] ) ) WC()->customer->set_shipping_country( $result['SHIPTOCOUNTRYCODE'] );
                 if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_shipping_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
                 if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_shipping_postcode( $result['SHIPTOZIP'] );
 
