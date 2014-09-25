@@ -1983,7 +1983,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         echo '<div class="clear"></div>';
 
-        if (@$pp_settings['enabled']=='yes' && 0 < WC()->cart->total && $pp_settings['show_on_cart']=='yes' )
+        /**
+         * Show the paypal express checkout button in cart page when express checkout is enabled and cart total > 0
+         * If show_on_cart is empty so it's value default to yes
+         */
+        if (@$pp_settings['enabled']=='yes' && (empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart']=='yes') && 0 < WC()->cart->total )
         {
             echo '<div class="paypal_box_button">';
             if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
