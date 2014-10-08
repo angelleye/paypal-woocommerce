@@ -72,7 +72,6 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
 }
 #paypal_ec_paypal_credit_button {
     float: left;
-    margin-top: -2px;
     width: 150px;
     margin-left: 10px;
 }
