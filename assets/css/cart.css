@@ -20,3 +20,6 @@
     text-align: center;
     width: 100%;
 }
+#paypal_ec_button {
+    margin-bottom: 3px;
+}
