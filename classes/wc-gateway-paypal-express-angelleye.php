@@ -41,8 +41,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$this->gift_receipt_enabled	   = isset($this->settings['gift_receipt_enabled']) ? $this->settings['gift_receipt_enabled'] : '';
 		$this->gift_wrap_name		   = isset($this->settings['gift_wrap_name']) ? $this->settings['gift_wrap_name'] : '';
 		$this->gift_wrap_amount		   = isset($this->settings['gift_wrap_amount']) ? $this->settings['gift_wrap_amount'] : '';
-
-        $this->button_locale_code      = defined(WPLANG) && WPLANG != '' ? WPLANG : 'en_US';
+        $this->use_wp_locale_code      = isset($this->settings['use_wp_locale_code']) ? $this->settings['use_wp_locale_code'] : '';
+        $this->button_locale_code      = defined(WPLANG) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : '';
 
 
         /*
@@ -405,7 +405,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					'label' => __( 'Show the PayPal Credit button next to the Express Checkout button.', 'paypal-for-woocommerce' ),
 					'default' => 'yes'
 				),
-			'brand_name' => array(
+            'use_wp_locale_code' => array(
+                'title' => __( 'Use WordPress Locale Code', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'label' => __( 'Pass the WordPress Locale Code setting to PayPal in order to display localized PayPal pages to buyers.', 'paypal-for-woocommerce' ),
+                'default' => 'yes'
+            ),
+            'brand_name' => array(
                 'title' => __( 'Brand Name', 'paypal-for-woocommerce' ),
                 'type' => 'text',
                 'description' => __( 'This controls what users see as the brand / company name on PayPal review pages.', 'paypal-for-woocommerce' ),
@@ -1118,7 +1124,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'noshipping' => '', 						// The value 1 indiciates that on the PayPal pages, no shipping address fields should be displayed.  Maybe 1 or 0.
             'allownote' => '', 							// The value 1 indiciates that the customer may enter a note to the merchant on the PayPal page during checkout.  The note is returned in the GetExpresscheckoutDetails response and the DoExpressCheckoutPayment response.  Must be 1 or 0.
             'addroverride' => '', 						// The value 1 indiciates that the PayPal pages should display the shipping address set by you in the SetExpressCheckout request, not the shipping address on file with PayPal.  This does not allow the customer to edit the address here.  Must be 1 or 0.
-            'localecode' => substr(WPLANG, -2), 						// Locale of pages displayed by PayPal during checkout.  Should be a 2 character country code.  You can retrive the country code by passing the country name into the class' GetCountryCode() function.
+            'localecode' => $this->use_wp_locale_code == 'yes' ? substr(WPLANG, -2) : '', 						// Locale of pages displayed by PayPal during checkout.  Should be a 2 character country code.  You can retrive the country code by passing the country name into the class' GetCountryCode() function.
             'pagestyle' => '', 							// Sets the Custom Payment Page Style for payment pages associated with this button/link.
             'hdrimg' => $this->checkout_logo_hdrimg, 							// URL for the image displayed as the header during checkout.  Max size of 750x90.  Should be stored on an https:// server or you'll get a warning message in the browser.
             'logourl' => $this->checkout_logo,
