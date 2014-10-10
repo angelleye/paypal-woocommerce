@@ -401,7 +401,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $_product = get_product($post->ID);
                 $hide = '';
                 if($_product->product_type == 'variation' ||
-                    $_product->is_type('external'))
+                    $_product->is_type('external') ||
+                    $_product->get_price() == 0 ||
+                    $_product->get_price() == '')
                 {
                     $hide = 'display:none;';
                 }
