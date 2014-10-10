@@ -22,7 +22,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->has_fields 			= true;
 		$this->liveurl				= 'https://payflowpro.paypal.com';
 		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
-		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD' ) );
+		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD', 'NZD' ) );
 
 
         // Load the form fields
