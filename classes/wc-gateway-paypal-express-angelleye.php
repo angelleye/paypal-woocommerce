@@ -42,7 +42,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$this->gift_wrap_name		   = isset($this->settings['gift_wrap_name']) ? $this->settings['gift_wrap_name'] : '';
 		$this->gift_wrap_amount		   = isset($this->settings['gift_wrap_amount']) ? $this->settings['gift_wrap_amount'] : '';
         $this->use_wp_locale_code      = isset($this->settings['use_wp_locale_code']) ? $this->settings['use_wp_locale_code'] : '';
-        $this->button_locale_code      = defined(WPLANG) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : '';
+        $this->button_locale_code      = defined(WPLANG) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : 'en_US';
 
 
         /*
