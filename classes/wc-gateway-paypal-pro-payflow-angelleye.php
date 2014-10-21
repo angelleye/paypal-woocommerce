@@ -54,6 +54,11 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
             $this->paypal_user     	= ! empty( $this->settings['sandbox_paypal_user'] ) ? $this->settings['sandbox_paypal_user'] : $this->paypal_vendor;
         }
 
+        $this->supports 			= array(
+            'products',
+            'refunds'
+        );
+
 		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
 
 		/* 1.6.6 */
@@ -567,7 +572,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                 // Payment complete
                 //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
-                $order->payment_complete();
+                $order->payment_complete($PayPalResult['PNREF']);
 
                 // Remove cart
                 WC()->cart->empty_cart();
@@ -718,5 +723,57 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 unset( $_SESSION[ $key ] );
             }
         }
+    }
+    /**
+     * Process a refund if supported
+     * @param  int $order_id
+     * @param  float $amount
+     * @param  string $reason
+     * @return  bool|wp_error True or false based on success, or a WP_Error object
+     */
+    public function process_refund( $order_id, $amount = null, $reason = '' ) {
+        $order = wc_get_order( $order_id );
+        $this->add_log( 'Begin Refund' );
+        $this->add_log( 'Order: '. print_r($order, true) );
+        $this->add_log( 'Transaction ID: '. print_r($order->get_transaction_id(), true) );
+        if ( ! $order || ! $order->get_transaction_id() || ! $this->paypal_user || ! $this->paypal_password || ! $this->paypal_vendor ) {
+            return false;
+        }
+        /*
+		 * Check if the PayPal_PayFlow class has already been established.
+		 */
+        if(!class_exists('PayPal_PayFlow' ))
+        {
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
+        }
+
+        /**
+         * Create PayPal_PayFlow object.
+         */
+        $PayPalConfig = array(
+            'Sandbox' => ($this->testmode=='yes')? true:false,
+            'APIUsername' => $this->paypal_user,
+            'APIPassword' => trim($this->paypal_password),
+            'APIVendor' => $this->paypal_vendor,
+            'APIPartner' => $this->paypal_partner
+        );
+        $PayPal = new PayPal_PayFlow($PayPalConfig);
+        $PayPalRequestData = array(
+            'TENDER' => 'C', // C = credit card, P = PayPal
+            'TRXTYPE' => 'C', //  S=Sale, A= Auth, C=Credit, D=Delayed Capture, V=Void
+            'ORIGID' => $order->get_transaction_id(),
+            'AMT' => $amount,
+            'CURRENCY' => $order->get_order_currency()
+        );
+        $this->add_log('Refund Request: '.print_r( $PayPalRequestData, true ) );
+        $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+        $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
+        if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)){
+            return true;
+        }else{
+            return new WP_Error( 'paypal-error', $PayPalResult['RESPMSG'] );
+        }
+        return false;
     }
 }

@@ -85,6 +85,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $this->centinel_url = $this->testmode == "no" ? $this->liveurl_3ds : $this->testurl_3ds;
         }
 
+        $this->supports 			= array(
+            'products',
+            'refunds'
+        );
+
         if ($this->testmode == 'yes') {
             $this->api_username 	= $this->settings['sandbox_api_username'];
             $this->api_password 	= $this->settings['sandbox_api_password'];
@@ -309,6 +314,16 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             return isset($this->avaiable_card_types[WC()->countries->get_base_country()]);
         endif;
         return false;
+    }
+    /**
+     * Use WooCommerce logger if debug is enabled.
+     */
+    function add_log( $message ) {
+        if ( $this->debug=='yes' ) {
+            if ( empty( $this->log ) )
+                $this->log = new WC_Logger();
+            $this->log->add( 'paypal-pro', $message );
+        }
     }
     /**
      * Payment form on checkout page
@@ -973,7 +988,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			$order->add_order_note($cvv2_response_order_note);
 
 			// Payment complete
-			$order->payment_complete();
+			$order->payment_complete($PayPalResult['TRANSACTIONID']);
 			
 			// Remove cart
 			WC()->cart->empty_cart();
@@ -1045,5 +1060,82 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 unset($_SESSION[$key]);
             }
         }
+    }
+    /**
+     * Process a refund if supported
+     * @param  int $order_id
+     * @param  float $amount
+     * @param  string $reason
+     * @return  bool|wp_error True or false based on success, or a WP_Error object
+     */
+    public function process_refund( $order_id, $amount = null, $reason = '' ) {
+        $order = wc_get_order( $order_id );
+        $this->add_log( 'Begin Refund' );
+        $this->add_log( 'Order: '. print_r($order, true) );
+        $this->add_log( 'Transaction ID: '. print_r($order->get_transaction_id(), true) );
+        $this->add_log( 'API Username: '. print_r($this->api_username, true) );
+        $this->add_log( 'API Password: '. print_r($this->api_password, true) );
+        $this->add_log( 'API Signature: '. print_r($this->api_signature, true) );
+        if ( ! $order || ! $order->get_transaction_id() || ! $this->api_username || ! $this->api_password || ! $this->api_signature ) {
+            return false;
+        }
+        $this->add_log('Include Class Request' );
+        /*
+         * Check if the PayPal class has already been established.
+         */
+        if(!class_exists('PayPal' ))
+        {
+            require_once( 'lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+        }
+
+        /*
+         * Create PayPal object.
+         */
+        $PayPalConfig = array(
+            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature
+        );
+        $PayPal = new PayPal($PayPalConfig);
+        if ( $reason ) {
+            if ( 255 < strlen( $reason ) ) {
+                $reason = substr( $reason, 0, 252 ) . '...';
+            }
+
+            $reason = html_entity_decode( $reason, ENT_NOQUOTES, 'UTF-8' );
+        }
+
+        // Prepare request arrays
+        $RTFields = array(
+            'transactionid' => $order->get_transaction_id(), 							// Required.  PayPal transaction ID for the order you're refunding.
+            'payerid' => '', 								// Encrypted PayPal customer account ID number.  Note:  Either transaction ID or payer ID must be specified.  127 char max
+            'invoiceid' => '', 								// Your own invoice tracking number.
+            'refundtype' => $order->get_total() == $amount ? 'Full' : 'Partial', 							// Required.  Type of refund.  Must be Full, Partial, or Other.
+            'amt' => number_format( $amount, 2, '.', '' ), 									// Refund Amt.  Required if refund type is Partial.
+            'currencycode' => $order->get_order_currency(), 							// Three-letter currency code.  Required for Partial Refunds.  Do not use for full refunds.
+            'note' => $reason,  									// Custom memo about the refund.  255 char max.
+            'retryuntil' => '', 							// Maximum time until you must retry the refund.  Note:  this field does not apply to point-of-sale transactions.
+            'refundsource' => '', 							// Type of PayPal funding source (balance or eCheck) that can be used for auto refund.  Values are:  any, default, instant, eCheck
+            'merchantstoredetail' => '', 					// Information about the merchant store.
+            'refundadvice' => '', 							// Flag to indicate that the buyer was already given store credit for a given transaction.  Values are:  1/0
+            'refunditemdetails' => '', 						// Details about the individual items to be returned.
+            'msgsubid' => '', 								// A message ID used for idempotence to uniquely identify a message.
+            'storeid' => '', 								// ID of a merchant store.  This field is required for point-of-sale transactions.  50 char max.
+            'terminalid' => ''								// ID of the terminal.  50 char max.
+        );
+
+        $PayPalRequestData = array('RTFields'=>$RTFields);
+        $this->add_log('Refund Request: '.print_r( $PayPalRequestData, true ) );
+        // Pass data into class for processing with PayPal and load the response array into $PayPalResult
+        $PayPalResult = $PayPal->RefundTransaction($PayPalRequestData);
+        $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
+        if($PayPal->APICallSuccessful($PayPalResult['ACK']))
+        {
+            return true;
+        }else{
+            return new WP_Error( 'paypal-error', $PayPalResult['L_LONGMESSAGE0'] );
+        }
+
     }
 }
