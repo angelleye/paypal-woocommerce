@@ -977,7 +977,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature
         );
-        $PayPal = new PayPal($PayPalConfig);
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
 
         /*
          * Prepare PayPal request data.
@@ -1383,7 +1383,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature
         );
-        $PayPal = new PayPal($PayPalConfig);
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
 
         /*
          * Call GetExpressCheckoutDetails
@@ -1450,7 +1450,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature
         );
-        $PayPal = new PayPal($PayPalConfig);
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
 
         /*
          * Get data from WooCommerce object

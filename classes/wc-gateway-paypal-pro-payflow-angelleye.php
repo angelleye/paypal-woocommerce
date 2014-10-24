@@ -288,7 +288,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 						'APIVendor' => $this->paypal_vendor, 
 						'APIPartner' => $this->paypal_partner
 					  );
-		$PayPal = new PayPal_PayFlow($PayPalConfig);
+		$PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
 		
 		/**
 		 * Pulled from original Woo extension.

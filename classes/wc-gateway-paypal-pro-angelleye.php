@@ -661,7 +661,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			'APIPassword' => $this->api_password, 
 			'APISignature' => $this->api_signature
 		);
-		$PayPal = new PayPal($PayPalConfig);
+		$PayPal = new Angelleye_PayPal($PayPalConfig);
 		
 		if(empty($GLOBALS['wp_rewrite']))
 		{
