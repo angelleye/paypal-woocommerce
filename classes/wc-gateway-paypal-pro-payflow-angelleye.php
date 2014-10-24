@@ -234,9 +234,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
 		$order = new WC_Order( $order_id );
 
-		$card_number = ! empty( $_POST['paypal_pro_payflow_card_number']) ? str_replace( array( ' ', '-' ), '', woocommerce_clean( $_POST['paypal_pro_payflow_card_number'] ) ) : '';
-		$card_csc    = ! empty( $_POST['paypal_pro_payflow_card_csc']) ? woocommerce_clean( $_POST['paypal_pro_payflow_card_csc'] ) : '';
-		$card_exp    = ! empty( $_POST['paypal_pro_payflow_card_expiration']) ? woocommerce_clean( $_POST['paypal_pro_payflow_card_expiration'] ) : '';
+		$card_number = ! empty( $_POST['paypal_pro_payflow_card_number']) ? str_replace( array( ' ', '-' ), '', wc_clean( $_POST['paypal_pro_payflow_card_number'] ) ) : '';
+		$card_csc    = ! empty( $_POST['paypal_pro_payflow_card_csc']) ? wc_clean( $_POST['paypal_pro_payflow_card_csc'] ) : '';
+		$card_exp    = ! empty( $_POST['paypal_pro_payflow_card_expiration']) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration'] ) : '';
 
 		// Do payment with paypal
 		return $this->do_payment( $order, $card_number, $card_exp, $card_csc );
@@ -523,7 +523,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			 */
 			if($this->debug)
 			{
-				$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(woocommerce_get_page_id('thanks')))));
+				$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(wc_get_page_id('thanks')))));
 			}
 			
 			/**

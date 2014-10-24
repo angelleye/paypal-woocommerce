@@ -386,11 +386,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
      * Validate the payment form
      */
     function validate_fields() {
-        $card_type 			= isset($_POST['paypal_pro_card_type']) ? woocommerce_clean($_POST['paypal_pro_card_type']) : '';
-        $card_number 		= isset($_POST['paypal_pro_card_number']) ? woocommerce_clean($_POST['paypal_pro_card_number']) : '';
-        $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? woocommerce_clean($_POST['paypal_pro_card_csc']) : '';
-        $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? woocommerce_clean($_POST['paypal_pro_card_expiration_month']) : '';
-        $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? woocommerce_clean($_POST['paypal_pro_card_expiration_year']) : '';
+        $card_type 			= isset($_POST['paypal_pro_card_type']) ? wc_clean($_POST['paypal_pro_card_type']) : '';
+        $card_number 		= isset($_POST['paypal_pro_card_number']) ? wc_clean($_POST['paypal_pro_card_number']) : '';
+        $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? wc_clean($_POST['paypal_pro_card_csc']) : '';
+        $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? wc_clean($_POST['paypal_pro_card_expiration_month']) : '';
+        $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? wc_clean($_POST['paypal_pro_card_expiration_year']) : '';
         // Check card security code
         if (!ctype_digit($card_csc)) :
             wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'), "error");
@@ -429,11 +429,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $order = new WC_Order( $order_id );
         if ( $this->debug )
             $this->log->add( 'paypal-pro', 'Processing order #' . $order_id );
-        $card_type 			= isset($_POST['paypal_pro_card_type']) ? woocommerce_clean($_POST['paypal_pro_card_type']) : '';
-        $card_number 		= isset($_POST['paypal_pro_card_number']) ? woocommerce_clean($_POST['paypal_pro_card_number']) : '';
-        $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? woocommerce_clean($_POST['paypal_pro_card_csc']) : '';
-        $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? woocommerce_clean($_POST['paypal_pro_card_expiration_month']) : '';
-        $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? woocommerce_clean($_POST['paypal_pro_card_expiration_year']) : '';
+        $card_type 			= isset($_POST['paypal_pro_card_type']) ? wc_clean($_POST['paypal_pro_card_type']) : '';
+        $card_number 		= isset($_POST['paypal_pro_card_number']) ? wc_clean($_POST['paypal_pro_card_number']) : '';
+        $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? wc_clean($_POST['paypal_pro_card_csc']) : '';
+        $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? wc_clean($_POST['paypal_pro_card_expiration_month']) : '';
+        $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? wc_clean($_POST['paypal_pro_card_expiration_year']) : '';
         // Format card expiration data
         $card_exp_month = (int) $card_exp_month;
         if ($card_exp_month < 10) :

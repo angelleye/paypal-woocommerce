@@ -398,7 +398,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             global $pp_settings, $post;
             if (@$pp_settings['enabled']=='yes' && @$pp_settings['show_on_product_page']=='yes')
             {
-                $_product = get_product($post->ID);
+                $_product = wc_get_product($post->ID);
                 $hide = '';
                 if($_product->product_type == 'variation' ||
                     $_product->is_type('external') ||
