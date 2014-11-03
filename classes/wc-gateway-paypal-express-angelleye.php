@@ -468,6 +468,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __( 'Amount to be charged to the buyer for adding the gift wrap option.', 'paypal-for-woocommerce' ),
                 'default' => __('0.00', 'paypal-for-woocommerce' )
             ),
+            'angelleye_skip_text' => array(
+                'title' => __( 'Skip Text', 'paypal-for-woocommerce' ),
+                'type' => 'text',
+                'default' => __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce' )
+            ),
             /*'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                 'type' => 'select',
@@ -556,7 +561,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
 
                 echo '<div class="woocommerce_paypal_ec_checkout_message">';
-                echo '<p class="checkoutStatus">', __('Skip the forms and pay faster with PayPal.', 'paypal-for-woocommerce'), '</p>';
+                if( !isset($this->settings['angelleye_skip_text'])){
+                    echo '<p class="checkoutStatus">', __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce' ), '</p>';
+                }else{
+                    echo '<p class="checkoutStatus">', $this->angelleye_skip_text, '</p>';
+                }
                 echo '</div>';
                 echo '<div class="clear"></div></div>';
                 echo '</div>';
