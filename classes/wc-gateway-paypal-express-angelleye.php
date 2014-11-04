@@ -741,9 +741,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
 
             if(isset($_POST['createaccount'])){
-                if(empty($_POST['email'])){
+                if(empty($_POST['username'])){
+                    wc_add_notice(__('Username is required', 'paypal-for-woocommerce'), 'error');
+                }elseif(username_exists( $_POST['username'] )){
+                    wc_add_notice(__('This username is already registered.', 'paypal-for-woocommerce'), 'error');
+                }elseif(empty($_POST['email'])){
                     wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
-                }if(empty($_POST['password']) || empty($_POST['repassword'])){
+                }elseif(empty($_POST['password']) || empty($_POST['repassword'])){
                     wc_add_notice(__('Password is required.', 'paypal-for-woocommerce'), 'error');
                 }elseif($_POST['password'] != $_POST['repassword']){
                     wc_add_notice(__('Passwords do not match.', 'paypal-for-woocommerce'), 'error');
@@ -751,7 +755,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
                 }else{
                     $data  = array(
-                        'user_login' => addslashes( $_POST['email'] ),
+                        'user_login' => addslashes( $_POST['username'] ),
                         'user_email' => addslashes( $_POST['email'] ),
                         'user_pass' => addslashes( $_POST['password'] ),
                     );
@@ -763,7 +767,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         update_user_meta( $userID, 'billing_state',   $result['SHIPTOSTATE'] );
                         update_user_meta( $userID, 'billing_email',   $result['EMAIL'] );
                         /* USER SIGON */
-                        $user_login     = esc_attr($_POST["email"]);
+                        $user_login     = esc_attr($_POST["username"]);
                         $user_password  = esc_attr($_POST["password"]);
                         $user_email     = esc_attr($_POST["email"]);
                         $creds = array(
