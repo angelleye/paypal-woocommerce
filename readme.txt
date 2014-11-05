@@ -1,9 +1,9 @@
 ﻿=== PayPal for WooCommerce ===
 Contributors: angelleye
-Donate link: http://www.angelleye.com/product/buy-beer/
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
-Tested up to: 3.9.2
+Tested up to: 4.0
 Stable tag: 1.1.5.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
