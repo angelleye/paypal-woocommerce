@@ -47,6 +47,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$this->gift_wrap_amount		   = isset($this->settings['gift_wrap_amount']) ? $this->settings['gift_wrap_amount'] : '';
         $this->use_wp_locale_code      = isset($this->settings['use_wp_locale_code']) ? $this->settings['use_wp_locale_code'] : '';
         $this->button_locale_code      = defined(WPLANG) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : 'en_US';
+        $this->skip_final_review	   = $this->settings['skip_final_review'];
 
 
         /*
@@ -472,6 +473,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __( 'Amount to be charged to the buyer for adding the gift wrap option.', 'paypal-for-woocommerce' ),
                 'default' => __('0.00', 'paypal-for-woocommerce' )
             ),
+            'skip_final_review' => array(
+                'title' => __( 'Skip Final Review', 'paypal-for-woocommerce' ),
+                'label' => __( 'Enables Skip Final Review', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'default' => 'no'
+            ),
             /*'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                 'type' => 'select',
@@ -743,6 +750,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			{
                 $this->add_log( "...ERROR: GetShippingDetails returned empty result" );
             }
+            if($this->skip_final_review == 'yes'){
+                $url = add_query_arg( array('wc-api'=>'WC_Gateway_PayPal_Express_AngellEYE', 'pp_action' => 'payaction' ), home_url());
+                wp_redirect($url);
+                exit();
+            }
 
             if(isset($_POST['createaccount'])){
                 if(empty($_POST['email'])){
@@ -790,7 +802,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
 		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'payaction' )
 		{
-            if ( isset( $_POST ) )
+            if ( isset( $_POST ) || $this->skip_final_review == 'yes' )
 			{
                 // Update customer shipping and payment method to posted method
                 $chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
