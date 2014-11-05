@@ -4,7 +4,7 @@ Donate link: http://www.angelleye.com/product/buy-beer/
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 3.9.2
-Stable tag: 1.1.5
+Stable tag: 1.1.5.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -100,6 +100,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.1.5.2 - 11/05/2014 =
+* Tweak - Updates cURL so it uses TLS instead of SSLv3 and resolves vulnerability per PayPal's requirement.
 
 = 1.1.5 - 08/26/2014 =
 * Fix - Re-creates checkout review when unavailable to eliminate Invalid ReturnURL error from PayPal.
