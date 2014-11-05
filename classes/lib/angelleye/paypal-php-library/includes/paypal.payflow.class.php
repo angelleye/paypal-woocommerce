@@ -3,7 +3,7 @@
  * 	Angell EYE PayPal PayFlow Class
  *	An open source PHP library written to easily work with PayPal's API's
  *
- *  Copyright © 2014  Andrew K. Angell
+ *  Copyright ï¿½ 2014  Andrew K. Angell
  *	Email:  andrew@angelleye.com
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  *
  * @package			Angell_EYE_PayPal_PayFlow_Class_Library
  * @author			Andrew K. Angell
- * @copyright       Copyright © 2014 Angell EYE, LLC
+ * @copyright       Copyright ï¿½ 2014 Angell EYE, LLC
  * @link			https://github.com/angelleye/PayPal-PHP-Library
  * @website			http://www.angelleye.com
  * @since			Version 1.52
@@ -103,6 +103,8 @@ class PayPal_PayFlow extends PayPal
 		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 0);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
+        curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
 		curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
 		curl_setopt($curl, CURLOPT_TIMEOUT, 90);
 		curl_setopt($curl, CURLOPT_URL, $this->APIEndPoint);
