@@ -180,7 +180,9 @@
 				curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,  2);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);  
+				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+                curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
+                curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
 				curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);  // CURLOPT_TIMEOUT_MS can also be used
 						  
                 // Curl Debugging options
