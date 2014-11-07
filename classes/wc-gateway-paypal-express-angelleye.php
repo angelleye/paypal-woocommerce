@@ -47,6 +47,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$this->gift_wrap_amount		   = isset($this->settings['gift_wrap_amount']) ? $this->settings['gift_wrap_amount'] : '';
         $this->use_wp_locale_code      = isset($this->settings['use_wp_locale_code']) ? $this->settings['use_wp_locale_code'] : '';
         $this->button_locale_code      = defined(WPLANG) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : 'en_US';
+        $this->angelleye_skip_text     = isset($this->settings['angelleye_skip_text']) ? $this->settings['angelleye_skip_text'] : '';
 
 
         /*
@@ -473,8 +474,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => __('0.00', 'paypal-for-woocommerce' )
             ),
             'angelleye_skip_text' => array(
-                'title' => __( 'Skip Text', 'paypal-for-woocommerce' ),
+                'title' => __( 'Express Checkout Message', 'paypal-for-woocommerce' ),
                 'type' => 'text',
+                'description' => __( 'This message will be displayed next to the PayPal Express Checkout button at the top of the checkout page.' ),
                 'default' => __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce' )
             ),
             /*'Locale' => array(
