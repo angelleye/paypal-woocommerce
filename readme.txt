@@ -182,3 +182,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - PayPal Express Checkout
 * Feature - PayPal Website Payments Pro 3.0 (DoDirectPayment)
 * Feature - PayPal Payments Pro 2.0 (PayPal Manager / PayFlow)
+
+== Upgrade Notice ==
+
+= 1.1.5.2 =
+This is a very important update in response to POODLE, an SSLv3 vulnerability that was recently discovered.  PayPal will be disabling SSLv3 on their servers on 12/03/2014 and has requested that developers use TLS instead of SSL.  However, TLS is only compatible with cURL 7.36.0 or higher!  You need to check what cURL version your web server is running prior to updating in order to avoid payment failures!
