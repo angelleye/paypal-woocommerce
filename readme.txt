@@ -102,7 +102,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.1.5.2 - 11/05/2014 =
-* Tweak - Updates cURL so it uses TLS instead of SSLv3 and resolves vulnerability per PayPal's requirement.
+* Tweak - Updates cURL so it uses TLS instead of SSLv3 and resolves vulnerability per PayPal's requirement.  It is very important that you ensure your server is running cURL version 7.36.0 or higher before installing this update!
 
 = 1.1.5 - 08/26/2014 =
 * Fix - Re-creates checkout review when unavailable to eliminate Invalid ReturnURL error from PayPal.
