@@ -292,7 +292,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 });
             });
         </script>
-    <?
+    <?php
     }
     /**
      * Check if this gateway is enabled and available in the user's country
