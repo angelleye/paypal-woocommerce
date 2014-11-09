@@ -186,4 +186,4 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Upgrade Notice ==
 
 = 1.1.5.2 =
-This is a very important update in response to POODLE, an SSLv3 protocol vulnerability.  PayPal will be disabling SSLv3 on their servers on 12/03/2014 and has requested that developers use TLS instead of SSL.  However, TLS is only compatible with cURL 7.36.0 or higher!  You need to check what cURL version your web server is running prior to updating!
+This is an important update in response to POODLE, an SSLv3 protocol vulnerability.  PayPal will be disabling SSLv3 on their servers on 12/03/2014 and has requested that developers use TLS instead of SSL.  TLS is only compatible with cURL 7.36.0 or higher!  Check your cURL version before updating!
