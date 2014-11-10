@@ -25,9 +25,9 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
 <?php if ( WC()->cart->needs_shipping()  ) : ?>
 
 
-    <header>
+    <div class="title">
         <h2><?php _e( 'Customer details', 'woocommerce' ); ?></h2>
-    </header>
+    </div>
 
     <div class="col2-set addresses">
 
