@@ -33,10 +33,11 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
 
         <div class="col-1">
 
-            <header class="title">
+            <div class="title">
                 <h3><?php _e( 'Shipping Address', 'woocommerce' ); ?></h3>
-            </header>
-            <address><p>
+            </div>
+            <div class="address">
+                <p>
                     <?php
                     // Formatted Addresses
                     $address = array(
@@ -53,7 +54,8 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
 
                     echo WC()->countries->get_formatted_address( $address );
                     ?>
-                </p></address>
+                </p>
+            </div>
 
         </div><!-- /.col-1 -->
         <div class="col-2">
@@ -77,9 +79,9 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
             display: block !important;
         }
     </style>
-    <header>
+    <div class="title">
         <h2><?php _e( 'Login', 'woocommerce' ); ?></h2>
-    </header>
+    </div>
     <form name="" action="" method="post">
         <?php
         function curPageURL() {
@@ -105,9 +107,9 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
         $email = (!empty($_POST['email']))?$_POST['email']:$result['EMAIL'];
         ?>
     </form>
-    <header>
+    <div class="title">
         <h2><?php _e( 'Create A New Account', 'woocommerce' ); ?></h2>
-    </header>
+    </div>
     <form action="" method="post">
         <p class="form-row form-row-first">
             <label for="paypalexpress_order_review_email">Email:<span class="required">*</span></label>
