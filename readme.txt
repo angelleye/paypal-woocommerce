@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 4.0
-Stable tag: 1.1.5.2
+Stable tag: 1.1.5.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -101,6 +101,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+- 1.1.5.3 - 11/12/2014 =
+* Tweak - More adjustments to cURL options in the plugin in response to POODLE.  This update will eliminate the need to update cURL to any specific version.
+
 = 1.1.5.2 - 11/05/2014 =
 * Tweak - Updates cURL so it uses TLS instead of SSLv3 and resolves vulnerability per PayPal's requirement.
 
@@ -182,3 +185,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - PayPal Express Checkout
 * Feature - PayPal Website Payments Pro 3.0 (DoDirectPayment)
 * Feature - PayPal Payments Pro 2.0 (PayPal Manager / PayFlow)
+
+== Upgrade Notice ==
+
+= 1.1.5.3 =
+This update includes more adjustments to cURL settings so that you do NOT need to worry about the cURL version on your server, and you can forget about previous warnings!
