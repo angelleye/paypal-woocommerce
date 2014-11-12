@@ -101,7 +101,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-- 1.1.5.3 - 11/12/2014 =
+= 1.1.5.3 - 11/12/2014 =
 * Tweak - More adjustments to cURL options in the plugin in response to POODLE.  This update will eliminate the need to update cURL to any specific version.
 
 = 1.1.5.2 - 11/05/2014 =
