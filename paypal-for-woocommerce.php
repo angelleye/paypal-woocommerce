@@ -429,7 +429,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     case "customimage":
                         if(!empty($pp_settings['checkout_with_pp_button_type']))
                         {
-                            $button_img = $pp_settings['checkout_with_pp_button_type_my_custom'];
+                            $button_img = $pp_settings['pp_button_type_my_custom'];
                         }
                         else
                         {
