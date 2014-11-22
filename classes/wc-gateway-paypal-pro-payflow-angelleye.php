@@ -42,6 +42,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->paypal_user     		= ! empty( $this->settings['paypal_user'] ) ? $this->settings['paypal_user'] : $this->paypal_vendor;
 
 		$this->testmode        		= $this->settings['testmode'];
+        $this->invoice_id_prefix    = isset( $this->settings['invoice_id_prefix'] ) ? $this->settings['invoice_id_prefix'] : '';
 		$this->debug		   		= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
 		$this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
 		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
@@ -117,6 +118,11 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 							'description' => __( 'Place the payment gateway in development mode.', 'paypal-for-woocommerce' ),
 							'default'     => 'no'
 						),
+            'invoice_id_prefix'           => array(
+                'title'       => __( 'Invoice ID Prefix', 'paypal-for-woocommerce' ),
+                'type'        => 'text',
+                'description' => __( 'Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce' ),
+            ),
             'cart_icon'        => array(
                 'title'       => __( 'Cart Icon', 'paypal-for-woocommerce' ),
                 'type'        => 'text',
@@ -350,7 +356,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'custref'=>'', 				// 
 					'custcode'=>'', 			// 
 					'custip'=>$this->get_user_ip(), 				// 
-					'invnum'=>str_replace("#","",$order->get_order_number()), 				// 
+					'invnum'=>$this->invoice_id_prefix . str_replace("#","",$order->get_order_number()), 				//
 					'ponum'=>'', 				// 
 					'starttime'=>'', 			// For inquiry transaction when using CUSTREF to specify the transaction.
 					'endtime'=>'', 				// For inquiry transaction when using CUSTREF to specify the transaction.

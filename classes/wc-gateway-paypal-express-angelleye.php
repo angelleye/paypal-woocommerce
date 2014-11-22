@@ -28,26 +28,27 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->api_signature           = $this->settings['api_signature'];
         $this->testmode                = $this->settings['testmode'];
         $this->debug                   = $this->settings['debug'];
-        $this->error_email_notify      = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
+        $this->error_email_notify      = isset( $this->settings['error_email_notify'] ) && $this->settings['error_email_notify'] == 'yes' ? true : false;
+        $this->invoice_id_prefix       = isset( $this->settings['invoice_id_prefix'] ) ? $this->settings['invoice_id_prefix'] : '';
         //$this->checkout_with_pp_button = $this->settings['checkout_with_pp_button'];
         //$this->hide_checkout_button    = $this->settings['hide_checkout_button'];
-        $this->show_on_checkout        = isset($this->settings['show_on_checkout']) ? $this->settings['show_on_checkout'] : 'both';
-        $this->paypal_account_optional = $this->settings['paypal_account_optional'];
-		$this->error_display_type 	   = isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
-        $this->landing_page            = isset($this->settings['landing_page']) ? $this->settings['landing_page'] : '';
-        $this->checkout_logo           = isset($this->settings['checkout_logo']) ? $this->settings['checkout_logo'] : '';
-        $this->checkout_logo_hdrimg    = isset($this->settings['checkout_logo_hdrimg']) ? $this->settings['checkout_logo_hdrimg'] : '';
-		$this->show_paypal_credit	   = isset($this->settings['show_paypal_credit']) ? $this->settings['show_paypal_credit'] : '';
-		$this->brand_name	  		   = isset($this->settings['brand_name']) ? $this->settings['brand_name'] : '';
-		$this->customer_service_number = isset($this->settings['customer_service_number']) ? $this->settings['customer_service_number'] : '';
-		$this->gift_wrap_enabled	   = isset($this->settings['gift_wrap_enabled']) ? $this->settings['gift_wrap_enabled'] : '';
-		$this->gift_message_enabled	   = isset($this->settings['gift_message_enabled']) ? $this->settings['gift_message_enabled'] : '';
-		$this->gift_receipt_enabled	   = isset($this->settings['gift_receipt_enabled']) ? $this->settings['gift_receipt_enabled'] : '';
-		$this->gift_wrap_name		   = isset($this->settings['gift_wrap_name']) ? $this->settings['gift_wrap_name'] : '';
-		$this->gift_wrap_amount		   = isset($this->settings['gift_wrap_amount']) ? $this->settings['gift_wrap_amount'] : '';
-        $this->use_wp_locale_code      = isset($this->settings['use_wp_locale_code']) ? $this->settings['use_wp_locale_code'] : '';
-        $this->button_locale_code      = defined(WPLANG) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : 'en_US';
-        $this->angelleye_skip_text     = isset($this->settings['angelleye_skip_text']) ? $this->settings['angelleye_skip_text'] : '';
+        $this->show_on_checkout        = isset( $this->settings['show_on_checkout'] ) ? $this->settings['show_on_checkout'] : 'both';
+        $this->paypal_account_optional = isset( $this->settings['paypal_account_optional'] ) ? $this->settings['paypal_account_optional'] : '';
+		$this->error_display_type 	   = isset( $this->settings['error_display_type'] ) ? $this->settings['error_display_type'] : '';
+        $this->landing_page            = isset( $this->settings['landing_page'] ) ? $this->settings['landing_page'] : '';
+        $this->checkout_logo           = isset( $this->settings['checkout_logo'] ) ? $this->settings['checkout_logo'] : '';
+        $this->checkout_logo_hdrimg    = isset( $this->settings['checkout_logo_hdrimg'] ) ? $this->settings['checkout_logo_hdrimg'] : '';
+		$this->show_paypal_credit	   = isset( $this->settings['show_paypal_credit'] ) ? $this->settings['show_paypal_credit'] : '';
+		$this->brand_name	  		   = isset( $this->settings['brand_name'] ) ? $this->settings['brand_name'] : '';
+		$this->customer_service_number = isset( $this->settings['customer_service_number'] ) ? $this->settings['customer_service_number'] : '';
+		$this->gift_wrap_enabled	   = isset( $this->settings['gift_wrap_enabled'] ) ? $this->settings['gift_wrap_enabled'] : '';
+		$this->gift_message_enabled	   = isset( $this->settings['gift_message_enabled'] ) ? $this->settings['gift_message_enabled'] : '';
+		$this->gift_receipt_enabled	   = isset( $this->settings['gift_receipt_enabled'] ) ? $this->settings['gift_receipt_enabled'] : '';
+		$this->gift_wrap_name		   = isset( $this->settings['gift_wrap_name'] ) ? $this->settings['gift_wrap_name'] : '';
+		$this->gift_wrap_amount		   = isset( $this->settings['gift_wrap_amount'] ) ? $this->settings['gift_wrap_amount'] : '';
+        $this->use_wp_locale_code      = isset( $this->settings['use_wp_locale_code'] ) ? $this->settings['use_wp_locale_code'] : '';
+        $this->button_locale_code      = defined( WPLANG ) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : 'en_US';
+        $this->angelleye_skip_text     = isset( $this->settings['angelleye_skip_text'] ) ? $this->settings['angelleye_skip_text'] : '';
 
 
         /*
@@ -315,6 +316,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Enable admin email notifications for errors.', 'paypal-for-woocommerce' ),
                 'default' => 'yes',
 				'description' => __( 'This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.','paypal-for-woocommerce' )
+            ),
+            'invoice_id_prefix'           => array(
+                'title'       => __( 'Invoice ID Prefix', 'paypal-for-woocommerce' ),
+                'type'        => 'text',
+                'description' => __( 'Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce' ),
             ),
             /*
             'checkout_with_pp_button' => array(
@@ -1515,7 +1521,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'handlingamt' => '', 					// Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
             'desc' => '', 							// Description of items on the order.  127 char max.
             'custom' => '', 						// Free-form field for your own use.  256 char max.
-            'invnum' => $invoice_number, 						// Your own invoice or tracking number.  127 char max.
+            'invnum' => $this->invoice_id_prefix . $invoice_number, 						// Your own invoice or tracking number.  127 char max.
             'notifyurl' => '', 						// URL for receiving Instant Payment Notifications
             'shiptoname' => $shipping_first_name.' '.$shipping_last_name, 					// Required if shipping is included.  Person's name associated with this address.  32 char max.
             'shiptostreet' => $shipping_address_1, 					// Required if shipping is included.  First street address.  100 char max.
