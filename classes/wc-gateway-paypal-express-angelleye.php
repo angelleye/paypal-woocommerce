@@ -905,8 +905,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $addressstatus_note .= ucfirst( $REVIEW_RESULT['ADDRESSSTATUS'] );
                     $order->add_order_note($addressstatus_note);
                     $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
+
+                    //add hook
+                    do_action( 'woocommerce_checkout_order_processed', $order_id );
+
                     // Empty the Cart
                     WC()->cart->empty_cart();
+
 					wp_redirect( $this->get_return_url( $order ) );
 					exit();
                 }
