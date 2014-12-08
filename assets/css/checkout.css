@@ -40,8 +40,8 @@ a img{
 	background-position: -99px 0;
 	display: block;
 }
-#paypal_pro_payflow_card_type_image.amex {
-	background-position: -132px 0;
+#paypal_pro_payflow_card_type_image.jcb {
+	background-position: -165px 0;
 	display: block;
 }
 body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_button > div img {

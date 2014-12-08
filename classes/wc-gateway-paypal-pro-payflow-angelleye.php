@@ -689,7 +689,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					if ( card_type ) {
 						jQuery('#paypal_pro_payflow_card_type_image').addClass( card_type );
 
-						if ( card_type == 'visa' || card_type == 'amex' || card_type == 'discover' || card_type == 'mastercard' ) {
+						if ( card_type == 'visa' || card_type == 'amex' || card_type == 'discover' || card_type == 'mastercard' || card_type == 'jcb' ) {
 							csc.show();
 						} else {
 							csc.hide();
