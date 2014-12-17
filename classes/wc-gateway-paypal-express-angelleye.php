@@ -1007,10 +1007,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         /*
          * Prepare PayPal request data.
+         *
+         * I'm removing MAXAMT here to avoid issues outlined in GitHub #142.
+         * It will be required once we start working with the Instant Update API,
+         * so we'll need to address the issue in a different way at that point.
+         *
          */
         $SECFields = array(
             'token' => '', 								// A timestamped token, the value of which was returned by a previous SetExpressCheckout call.
-            'maxamt' => number_format(($paymentAmount * 2),2,'.',''), 							// The expected maximum total amount the order will be, including S&H and sales tax.
+            //'maxamt' => $paymentAmount < 100 ? number_format($paymentAmount * 5,2,'.','') : number_format(($paymentAmount * 2),2,'.',''), 							// The expected maximum total amount the order will be, including S&H and sales tax.
             'returnurl' => urldecode($returnURL), 							// Required.  URL to which the customer will be returned after returning from PayPal.  2048 char max.
             'cancelurl' => urldecode($cancelURL), 							// Required.  URL to which the customer will be returned if they cancel payment on PayPal's site.
             'callback' => '', 							// URL to which the callback request from PayPal is sent.  Must start with https:// for production.

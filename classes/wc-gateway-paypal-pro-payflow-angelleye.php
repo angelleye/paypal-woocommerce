@@ -18,7 +18,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->id					= 'paypal_pro_payflow';
 		$this->method_title 		= __( 'PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce' );
 		$this->method_description 	= __( 'PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
-		$this->icon 				= (!empty($pp_payflow['cart_icon'])) ? $pp_payflow['cart_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+		$this->icon 				= (!empty($pp_payflow['cart_icon'])) ? $pp_payflow['cart_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png';
 		$this->has_fields 			= true;
 		$this->liveurl				= 'https://payflowpro.paypal.com';
 		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
@@ -126,7 +126,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
             'cart_icon'        => array(
                 'title'       => __( 'Cart Icon', 'paypal-for-woocommerce' ),
                 'type'        => 'text',
-                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png'
+                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png'
             ),
 			'debug' => array(
                 'title' => __( 'Debug Log', 'woocommerce' ),
