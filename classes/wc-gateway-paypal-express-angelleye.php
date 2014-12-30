@@ -510,6 +510,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'US',
             )*/
         );
+        $this->form_fields = apply_filters( 'angelleye_ec_form_fields', $this->form_fields );
     }
 
     /**
@@ -673,19 +674,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
                         $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
 
-                        wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
+                        $error_email_notify_mes = apply_filters( 'angelleye_ec_error_email_notify_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
+                        $subject = "PayPal Express Checkout Error Notification";
+                        $error_email_notify_subject = apply_filters( 'angelleye_ec_error_email_notify_subject', $subject );
+
+                        wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
                     }
 
                     // Generate error message based on Error Display Type setting
                     if($this->error_display_type == 'detailed')
                     {
                         $sec_error_notice = $ErrorCode.' - '.$ErrorLongMsg;
-                        wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );
+                        $error_display_type_message =   sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) );
                     }
                     else
                     {
-                        wc_add_notice(  sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) ), 'error' );
+                        $error_display_type_message = sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) );
                     }
+                    $error_display_type_message = apply_filters( 'angelleye_ec_display_type_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg );
+                    wc_add_notice( $error_display_type_message , 'error' );
                     if ( !is_ajax() ) {
                         wp_redirect( get_permalink( wc_get_page_id( 'cart' ) ) );
                         exit;
@@ -945,19 +952,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 						$message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
 						$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
 
-						wp_mail($admin_email, "PayPal Express Checkout Error Notification",$message);
+                        $error_email_notify_mes = apply_filters( 'angelleye_ec_error_email_notify_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
+                        $subject = "PayPal Express Checkout Error Notification";
+                        $error_email_notify_subject = apply_filters( 'angelleye_ec_error_email_notify_subject', $subject );
+
+						wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
 					}
 
 					// Generate error message based on Error Display Type setting
 					if($this->error_display_type == 'detailed')
 					{
 						$sec_error_notice = $ErrorCode.' - '.$ErrorLongMsg;
-						wc_add_notice(  sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) ), 'error' );
+						$error_display_type_message =   sprintf( __($sec_error_notice, 'paypal-for-woocommerce' ) );
 					}
 					else
 					{
-						wc_add_notice(  sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) ), 'error' );
+                        $error_display_type_message = sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) );
 					}
+                    $error_display_type_message = apply_filters( 'angelleye_ec_display_type_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg );
+                    wc_add_notice( $error_display_type_message , 'error' );
 
 					wp_redirect(get_permalink(wc_get_page_id('cart')));
 					exit();
@@ -983,7 +996,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if(sizeof(WC()->cart->get_cart()) == 0)
         {
-            wc_add_notice(sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"'),"error");
+            $ms = sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"');
+            $set_ec_message = apply_filters( 'angelleye_set_ec_message', $ms );
+            wc_add_notice( $set_ec_message, "error" );
         }
 
         /*
@@ -1394,7 +1409,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if(sizeof(WC()->cart->get_cart()) == 0)
         {
-            wc_add_notice(sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"'),"error");
+            $ms = sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"');
+            $ec_cgsd_message = apply_filters( 'angelleye_get_shipping_ec_message', $ms );
+            wc_add_notice( $ec_cgsd_message, "error" );
         }
 
         /*
@@ -1461,7 +1478,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if(sizeof(WC()->cart->get_cart()) == 0)
         {
-            wc_add_notice(sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"'),"error");
+            $ms = sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"');
+            $ec_confirm_message = apply_filters( 'angelleye_ec_confirm_message', $ms );
+            wc_add_notice( $ec_confirm_message, "error" );
         }
 
         /*
@@ -2029,7 +2048,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $order->update_status( 'refunded' );
             return true;
         }else{
-            return new WP_Error( 'paypal-error', $PayPalResult['L_LONGMESSAGE0'] );
+            $ec_message = apply_filters( 'angelleye_ec_refund_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE'], $PayPalResult );
+            return new WP_Error( 'ec_refund-error', $ec_message );
         }
 
     }
