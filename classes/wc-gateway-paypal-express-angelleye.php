@@ -1866,37 +1866,34 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
             unset($payment_gateways['paypal_pro']);
             unset($payment_gateways['paypal_pro_payflow']);
+            echo '<script type="text/javascript">
+                        jQuery(document).ready(function(){
+                            if (jQuery(".checkout-button").is("input")) {
+                                jQuery(".checkout-button").val("'.__('Pay with Credit Card', 'paypal-for-woocommerce').'");
+                            } else jQuery(".checkout-button").html("<span>'.__('Pay with Credit Card', 'paypal-for-woocommerce').'</span>");
+                        });
+                      </script>';
             if (empty($payment_gateways) ) {
                 echo '<style>.cart input.checkout-button,
                             .cart a.checkout-button {
                                 display: none !important;
                             }</style>';
             }
-
-
         }
     }
-
     /**
-     *  Checkout Button
+     * Checkout Button
      *
-     *  Triggered from the 'woocommerce_proceed_to_checkout' action.
-     *  Displays the PayPal Express button.
+     * Triggered from the 'woocommerce_proceed_to_checkout' action.
+     * Displays the PayPal Express button.
      */
     static function woocommerce_paypal_express_checkout_button_angelleye()
-	{
+    {
         global $pp_settings, $pp_pro, $pp_payflow;
-
-
         $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
         // Pay with Credit Card
-
         unset($payment_gateways['paypal_pro']);
         unset($payment_gateways['paypal_pro_payflow']);
-        if (empty($payment_gateways) && (@$pp_pro['enabled']=='yes' || @$pp_payflow['enabled']=='yes'))
-        {
-            echo '<a class="paypal_checkout_button button alt" href="#" onclick="jQuery(\'.checkout-button\').click(); return false;">' . __('Pay with Credit Card', 'paypal-for-woocommerce') .'</a> &nbsp;';
-        }
 
         echo '<div class="clear"></div>';
 
