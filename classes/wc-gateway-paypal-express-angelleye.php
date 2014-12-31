@@ -520,6 +520,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         global $pp_settings;
 
         if(WC()->cart->total > 0) {
+            wp_enqueue_script('angelleye_button');
                 $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
                 // Pay with Credit Card
 
@@ -580,6 +581,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
                 echo '</div>';
                 echo '<div class="clear"></div></div>';
+                ?>
+                <div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php echo WC()->plugin_url(); ?>/assets/images/ajax-loader@2x.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>
+                <?php
                 echo '</div>';
                 echo '<div style="clear:both; margin-bottom:10px;"></div>';
 
@@ -1906,7 +1910,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if (@$pp_settings['enabled']=='yes' && (empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart']=='yes') && 0 < WC()->cart->total )
         {
-            echo '<div class="paypal_box_button">';
+            echo '<div class="paypal_box_button" style="position: relative;">';
             if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
             switch($pp_settings['checkout_with_pp_button_type']){
                 case "textbutton":
@@ -1951,6 +1955,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 echo $paypal_credit_button_markup;
             }
+            ?>
+            <div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php echo WC()->plugin_url(); ?>/assets/images/ajax-loader@2x.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>
+            <?php
             echo "<div class='clear'></div></div>";
 		}
     }
