@@ -70,11 +70,48 @@ jQuery(function($) {
 			url: 		wc_checkout_params.ajax_url,
 			data: 		data,
 			success: 	function( response ) {
-				if ( response ) {
-					//var order_output = $(response);
-					$('#order_review').html(response);
-					$('body').trigger('updated_checkout');
-				}
+                // Remove old AJAX errors
+                $( '.woocommerce-error-ajax' ).remove();
+
+                // Check reponse
+                if ( '-1' === response ) {
+                    var $form = $( 'form.angelleye_checkout' );
+
+                    $form.prepend( wc_checkout_params.session_expired_message );
+
+                    // Scroll to top
+                    $( 'html, body' ).animate( {
+                        scrollTop: ( $( 'form.angelleye_checkout' ).offset().top - 100 )
+                    }, 1000 );
+
+                } else if ( response ) {
+
+                    // Check the response result
+                    if ( 'failure' == response.result ) {
+
+                        // Form object
+                        var $form = $( 'form.angelleye_checkout' );
+
+                        if ( response.messages ) {
+                            $form.prepend( response.messages );
+                        } else {
+                            $form.prepend( response );
+                        }
+
+                        // Lose focus for all fields
+                        $form.find( '.input-text, select' ).blur();
+
+                        // Scroll to top
+                        $( 'html, body' ).animate( {
+                            scrollTop: ( $( 'form.angelleye_checkout' ).offset().top - 100 )
+                        }, 1000 );
+
+                    }
+
+                    $( '#order_review' ).html( $.trim( response.html ) );
+                    $( '#order_review' ).find( 'input[name=payment_method]:checked' ).trigger( 'click' );
+                    $( 'body' ).trigger( 'updated_checkout' );
+                }
 			}
 		});
 
