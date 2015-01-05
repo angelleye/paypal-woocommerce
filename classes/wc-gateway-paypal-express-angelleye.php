@@ -827,6 +827,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         else
                         {
                             wp_set_current_user($user->ID); //Here is where we update the global user variables
+                            header("Refresh:0");
+                            die();
                         }
                     }
 
