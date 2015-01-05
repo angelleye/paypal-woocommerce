@@ -484,6 +484,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'text',
                 'description' => __( 'This message will be displayed next to the PayPal Express Checkout button at the top of the checkout page.' ),
                 'default' => __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce' )
+            ),
             'skip_final_review' => array(
                 'title' => __( 'Skip Final Review', 'paypal-for-woocommerce' ),
                 'label' => __( 'Enables Skip Final Review', 'paypal-for-woocommerce' ),
