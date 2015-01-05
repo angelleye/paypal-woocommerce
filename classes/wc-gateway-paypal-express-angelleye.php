@@ -49,7 +49,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->use_wp_locale_code      = isset( $this->settings['use_wp_locale_code'] ) ? $this->settings['use_wp_locale_code'] : '';
         $this->button_locale_code      = defined( 'WPLANG' ) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : 'en_US';
         $this->angelleye_skip_text     = isset( $this->settings['angelleye_skip_text'] ) ? $this->settings['angelleye_skip_text'] : '';
-
+        $this->skip_final_review	   = $this->settings['skip_final_review'];
 
         /*
         ' Define the PayPal Redirect URLs.
@@ -484,6 +484,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'text',
                 'description' => __( 'This message will be displayed next to the PayPal Express Checkout button at the top of the checkout page.' ),
                 'default' => __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce' )
+            'skip_final_review' => array(
+                'title' => __( 'Skip Final Review', 'paypal-for-woocommerce' ),
+                'label' => __( 'Enables Skip Final Review', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'default' => 'no'
             ),
             /*'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
@@ -764,6 +769,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			{
                 $this->add_log( "...ERROR: GetShippingDetails returned empty result" );
             }
+            if($this->skip_final_review == 'yes'){
+                $url = add_query_arg( array('wc-api'=>'WC_Gateway_PayPal_Express_AngellEYE', 'pp_action' => 'payaction' ), home_url());
+                wp_redirect($url);
+                exit();
+            }
 
             if(isset($_POST['createaccount'])){
                 if(empty($_POST['email'])){
@@ -811,7 +821,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
 		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'payaction' )
 		{
-            if ( isset( $_POST ) )
+            if ( isset( $_POST ) || $this->skip_final_review == 'yes' )
 			{
                 // Update customer shipping and payment method to posted method
                 $chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
