@@ -47,9 +47,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$this->gift_wrap_name		   = isset( $this->settings['gift_wrap_name'] ) ? $this->settings['gift_wrap_name'] : '';
 		$this->gift_wrap_amount		   = isset( $this->settings['gift_wrap_amount'] ) ? $this->settings['gift_wrap_amount'] : '';
         $this->use_wp_locale_code      = isset( $this->settings['use_wp_locale_code'] ) ? $this->settings['use_wp_locale_code'] : '';
-        $this->button_locale_code      = defined( WPLANG ) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : 'en_US';
+        $this->button_locale_code      = defined( 'WPLANG' ) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : 'en_US';
         $this->angelleye_skip_text     = isset( $this->settings['angelleye_skip_text'] ) ? $this->settings['angelleye_skip_text'] : '';
-
+        $this->skip_final_review	   = isset( $this->settings['skip_final_review'] ) ? $this->settings['skip_final_review'] : '';
 
         /*
         ' Define the PayPal Redirect URLs.
@@ -485,6 +485,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __( 'This message will be displayed next to the PayPal Express Checkout button at the top of the checkout page.' ),
                 'default' => __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce' )
             ),
+            'skip_final_review' => array(
+                'title' => __( 'Skip Final Review', 'paypal-for-woocommerce' ),
+                'label' => __( 'Enables the option to skip the final review page.', 'paypal-for-woocommerce' ),
+                'description' => __( 'By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.' ),
+                'type' => 'checkbox',
+                'default' => 'no'
+            ),
             /*'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                 'type' => 'select',
@@ -520,6 +527,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         global $pp_settings;
 
         if(WC()->cart->total > 0) {
+            wp_enqueue_script('angelleye_button');
                 $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
                 // Pay with Credit Card
 
@@ -580,6 +588,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
                 echo '</div>';
                 echo '<div class="clear"></div></div>';
+                ?>
+                <div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php echo WC()->plugin_url(); ?>/assets/images/ajax-loader@2x.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>
+                <?php
                 echo '</div>';
                 echo '<div style="clear:both; margin-bottom:10px;"></div>';
 
@@ -633,19 +644,27 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $cancelURL        = urlencode( WC()->cart->get_cart_url() );
                 $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $usePayPalCredit, $posted );
                 $ack              = strtoupper( $resArray["ACK"] );
+
+                /**
+                 * I've replaced the original redirect URL's here with
+                 * what the PayPal class library returns so that options like
+                 * "skip details" will work correctly with PayPal's review pages.
+                 */
                 if($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING")
                 {
                     $this->add_log( 'Redirecting to PayPal' );
                     if ( is_ajax() ) {
                         $result = array (
-                                'redirect' => $this->PAYPAL_URL . $resArray["TOKEN"],
-                                'result'   => 'success'
+                            //'redirect' => $this->PAYPAL_URL . $resArray["TOKEN"],
+                            'redirect' => $resArray['REDIRECTURL'],
+                            'result'   => 'success'
                         );
 
                         echo '<!--WC_START-->' . json_encode( $result ) . '<!--WC_END-->';
                         exit;
                     } else {
-                        $this->RedirectToPayPal( $resArray["TOKEN"] );
+                        //$this->RedirectToPayPal( $resArray["TOKEN"] );
+                        wp_redirect($resArray['REDIRECTURL']);
                         exit;
                     }
                 }
@@ -760,6 +779,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			{
                 $this->add_log( "...ERROR: GetShippingDetails returned empty result" );
             }
+            if($this->skip_final_review == 'yes'){
+                $url = add_query_arg( array('wc-api'=>'WC_Gateway_PayPal_Express_AngellEYE', 'pp_action' => 'payaction' ), home_url());
+                wp_redirect($url);
+                exit();
+            }
 
             if(isset($_POST['createaccount'])){
                 if(empty($_POST['username'])){
@@ -811,7 +835,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
 		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'payaction' )
 		{
-            if ( isset( $_POST ) )
+            if ( isset( $_POST ) || $this->skip_final_review == 'yes' )
 			{
                 // Update customer shipping and payment method to posted method
                 $chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
@@ -1041,7 +1065,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'hdrbordercolor' => '', 					// Sets the border color around the header of the payment page.  The border is a 2-pixel permiter around the header space.  Default is black.
             'hdrbackcolor' => '', 						// Sets the background color for the header of the payment page.  Default is white.
             'payflowcolor' => '', 						// Sets the background color for the payment page.  Default is white.
-            'skipdetails' => '', 						// This is a custom field not included in the PayPal documentation.  It's used to specify whether you want to skip the GetExpressCheckoutDetails part of checkout or not.  See PayPal docs for more info.
+            'skipdetails' => $this->skip_final_review == 'yes' ? '1' : '0', 						// This is a custom field not included in the PayPal documentation.  It's used to specify whether you want to skip the GetExpressCheckoutDetails part of checkout or not.  See PayPal docs for more info.
             'email' => '', 								// Email address of the buyer as entered during checkout.  PayPal uses this value to pre-fill the PayPal sign-in page.  127 char max.
 			'channeltype' => '', 						// Type of channel.  Must be Merchant (non-auction seller) or eBayItem (eBay auction)
             'giropaysuccessurl' => '', 					// The URL on the merchant site to redirect to after a successful giropay payment.  Only use this field if you are using giropay or bank transfer payment methods in Germany.
@@ -1915,7 +1939,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if (@$pp_settings['enabled']=='yes' && (empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart']=='yes') && 0 < WC()->cart->total )
         {
-            echo '<div class="paypal_box_button">';
+            echo '<div class="paypal_box_button" style="position: relative;">';
             if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type']='paypalimage';
             switch($pp_settings['checkout_with_pp_button_type']){
                 case "textbutton":
@@ -1960,6 +1984,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 echo $paypal_credit_button_markup;
             }
+            ?>
+            <div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php echo WC()->plugin_url(); ?>/assets/images/ajax-loader@2x.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>
+            <?php
             echo "<div class='clear'></div></div>";
 		}
     }
@@ -2000,7 +2027,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature
         );
-        $PayPal = new PayPal($PayPalConfig);
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
         if ( $reason ) {
             if ( 255 < strlen( $reason ) ) {
                 $reason = substr( $reason, 0, 252 ) . '...';

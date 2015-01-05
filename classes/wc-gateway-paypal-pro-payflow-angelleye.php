@@ -764,7 +764,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             'APIVendor' => $this->paypal_vendor,
             'APIPartner' => $this->paypal_partner
         );
-        $PayPal = new PayPal_PayFlow($PayPalConfig);
+        $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
         $PayPalRequestData = array(
             'TENDER' => 'C', // C = credit card, P = PayPal
             'TRXTYPE' => 'C', //  S=Sale, A= Auth, C=Credit, D=Delayed Capture, V=Void
