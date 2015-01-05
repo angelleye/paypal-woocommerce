@@ -644,19 +644,27 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $cancelURL        = urlencode( WC()->cart->get_cart_url() );
                 $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $usePayPalCredit, $posted );
                 $ack              = strtoupper( $resArray["ACK"] );
+
+                /**
+                 * I've replaced the original redirect URL's here with
+                 * what the PayPal class library returns so that options like
+                 * "skip details" will work correctly with PayPal's review pages.
+                 */
                 if($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING")
                 {
                     $this->add_log( 'Redirecting to PayPal' );
                     if ( is_ajax() ) {
                         $result = array (
-                                'redirect' => $this->PAYPAL_URL . $resArray["TOKEN"],
-                                'result'   => 'success'
+                            //'redirect' => $this->PAYPAL_URL . $resArray["TOKEN"],
+                            'redirect' => $resArray['REDIRECTURL'],
+                            'result'   => 'success'
                         );
 
                         echo '<!--WC_START-->' . json_encode( $result ) . '<!--WC_END-->';
                         exit;
                     } else {
-                        $this->RedirectToPayPal( $resArray["TOKEN"] );
+                        //$this->RedirectToPayPal( $resArray["TOKEN"] );
+                        wp_redirect($resArray['REDIRECTURL']);
                         exit;
                     }
                 }
@@ -1048,7 +1056,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'hdrbordercolor' => '', 					// Sets the border color around the header of the payment page.  The border is a 2-pixel permiter around the header space.  Default is black.
             'hdrbackcolor' => '', 						// Sets the background color for the header of the payment page.  Default is white.
             'payflowcolor' => '', 						// Sets the background color for the payment page.  Default is white.
-            'skipdetails' => '', 						// This is a custom field not included in the PayPal documentation.  It's used to specify whether you want to skip the GetExpressCheckoutDetails part of checkout or not.  See PayPal docs for more info.
+            'skipdetails' => $this->skip_final_review == 'yes' ? '1' : '0', 						// This is a custom field not included in the PayPal documentation.  It's used to specify whether you want to skip the GetExpressCheckoutDetails part of checkout or not.  See PayPal docs for more info.
             'email' => '', 								// Email address of the buyer as entered during checkout.  PayPal uses this value to pre-fill the PayPal sign-in page.  127 char max.
 			'channeltype' => '', 						// Type of channel.  Must be Merchant (non-auction seller) or eBayItem (eBay auction)
             'giropaysuccessurl' => '', 					// The URL on the merchant site to redirect to after a successful giropay payment.  Only use this field if you are using giropay or bank transfer payment methods in Germany.
