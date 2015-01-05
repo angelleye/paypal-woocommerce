@@ -49,7 +49,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->use_wp_locale_code      = isset( $this->settings['use_wp_locale_code'] ) ? $this->settings['use_wp_locale_code'] : '';
         $this->button_locale_code      = defined( 'WPLANG' ) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : 'en_US';
         $this->angelleye_skip_text     = isset( $this->settings['angelleye_skip_text'] ) ? $this->settings['angelleye_skip_text'] : '';
-        $this->skip_final_review	   = $this->settings['skip_final_review'];
+        $this->skip_final_review	   = isset( $this->settings['skip_final_review'] ) ? $this->settings['skip_final_review'] : '';
 
         /*
         ' Define the PayPal Redirect URLs.
