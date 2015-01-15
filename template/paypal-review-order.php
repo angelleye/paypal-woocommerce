@@ -112,6 +112,10 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
     </div>
     <form action="" method="post">
         <p class="form-row form-row-first">
+            <label for="paypalexpress_order_review_username">Username:<span class="required">*</span></label>
+            <input style="width: 100%;" type="text" name="username" id="paypalexpress_order_review_username" value="" />
+        </p>
+        <p class="form-row form-row-last">
             <label for="paypalexpress_order_review_email">Email:<span class="required">*</span></label>
             <input style="width: 100%;" type="email" name="email" id="paypalexpress_order_review_email" value="<?php echo $email; ?>" />
         </p>
