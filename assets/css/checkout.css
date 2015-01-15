@@ -11,7 +11,7 @@ a img{
 	padding-right: 1em;
 }
 #paypal_pro_payflow_card_type_image {
-	background: url(../images/cards.png) no-repeat 32px 0;
+	background: url(../images/payflow-cards.png) no-repeat 32px 0;
 	width: 32px;
 	height: 24px;
 	margin: 0 0 0 -3px;
@@ -40,8 +40,8 @@ a img{
 	background-position: -99px 0;
 	display: block;
 }
-#paypal_pro_payflow_card_type_image.amex {
-	background-position: -132px 0;
+#paypal_pro_payflow_card_type_image.jcb {
+	background-position: -165px 0;
 	display: block;
 }
 body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_button > div img {

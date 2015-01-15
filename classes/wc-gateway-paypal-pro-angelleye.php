@@ -16,7 +16,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->id					= 'paypal_pro';
         $this->method_title 		= __( 'PayPal Website Payments Pro (DoDirectPayment) ', 'paypal-for-woocommerce' );
         $this->method_description 	= __( 'PayPal Website Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
-        $this->icon 				= (!empty($pp_pro['cart_icon'])) ? $pp_pro['cart_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+        $this->icon 				= (!empty($pp_pro['card_icon'])) ? $pp_pro['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
         $this->has_fields 			= true;
         $this->liveurl				= 'https://api-3t.paypal.com/nvp';
         $this->testurl				= 'https://api-3t.sandbox.paypal.com/nvp';
@@ -146,8 +146,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 'type'        => 'text',
                 'description' => __( 'Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce' ),
             ),
-            'cart_icon' => array(
-                'title' => __( 'Cart Icon', 'paypal-for-woocommerce' ),
+            'card_icon' => array(
+                'title' => __( 'Card Icon', 'paypal-for-woocommerce' ),
                 'type' => 'text',
                 'default' => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png'
             ),
@@ -274,8 +274,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         ?>
         <script type="text/javascript">
             jQuery(document).ready(function ($){
-                jQuery("#woocommerce_paypal_pro_cart_icon").css({float: "left"});
-                jQuery("#woocommerce_paypal_pro_cart_icon").after('<a href="#" id="upload" class="button">Upload</a>');
+                jQuery("#woocommerce_paypal_pro_card_icon").css({float: "left"});
+                jQuery("#woocommerce_paypal_pro_card_icon").after('<a href="#" id="upload" class="button">Upload</a>');
                 var custom_uploader;
                 $('#upload').click(function (e) {
                     var BTthis = jQuery(this);

@@ -73,7 +73,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $prefix = is_network_admin() ? 'network_admin_' : '';
             add_filter("{$prefix}plugin_action_links_$basename",array($this,'plugin_action_links'),10,4);
             add_action( 'woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'));
-            add_action( 'woocommerce_after_mini_cart', array($this, 'mini_cart_button'));
+            add_action( 'woocommerce_after_mini_cart', array($this, 'mini_cart_button'));            
             add_action( 'add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
             add_action( 'woocommerce_after_single_variation', array($this, 'buy_now_button_js'));
             add_action('admin_enqueue_scripts', array( $this , 'onetarek_wpmut_admin_scripts' ) );

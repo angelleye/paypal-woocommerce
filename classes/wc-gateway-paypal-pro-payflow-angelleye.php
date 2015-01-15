@@ -18,7 +18,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->id					= 'paypal_pro_payflow';
 		$this->method_title 		= __( 'PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce' );
 		$this->method_description 	= __( 'PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
-		$this->icon 				= (!empty($pp_payflow['cart_icon'])) ? $pp_payflow['cart_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+		$this->icon 				= (!empty($pp_payflow['card_icon'])) ? $pp_payflow['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png';
 		$this->has_fields 			= true;
 		$this->liveurl				= 'https://payflowpro.paypal.com';
 		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
@@ -123,10 +123,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
                 'type'        => 'text',
                 'description' => __( 'Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce' ),
             ),
-            'cart_icon'        => array(
-                'title'       => __( 'Cart Icon', 'paypal-for-woocommerce' ),
+            'card_icon'        => array(
+                'title'       => __( 'Card Icon', 'paypal-for-woocommerce' ),
                 'type'        => 'text',
-                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png'
+                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png'
             ),
 			'debug' => array(
                 'title' => __( 'Debug Log', 'woocommerce' ),
@@ -641,7 +641,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		?>
         <style type="text/css">
             #paypal_pro_payflow_card_type_image {
-                background: url(<?php echo $this->settings['cart_icon']; ?>) no-repeat 32px 0;
+                background: url(<?php echo $this->settings['card_icon']; ?>) no-repeat 32px 0;
             }
         </style>
 		<fieldset class="paypal_pro_credit_card_form">
@@ -689,7 +689,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					if ( card_type ) {
 						jQuery('#paypal_pro_payflow_card_type_image').addClass( card_type );
 
-						if ( card_type == 'visa' || card_type == 'amex' || card_type == 'discover' || card_type == 'mastercard' ) {
+						if ( card_type == 'visa' || card_type == 'amex' || card_type == 'discover' || card_type == 'mastercard' || card_type == 'jcb' ) {
 							csc.show();
 						} else {
 							csc.hide();
