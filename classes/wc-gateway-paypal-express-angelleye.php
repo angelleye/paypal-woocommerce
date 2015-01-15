@@ -758,6 +758,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				/**
 				 * Save GECD data in sessions for use in DECP
 				 */
+				$this->set_session('firstname',isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
+				$this->set_session('lastname',isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
 				$this->set_session('shiptoname',isset($result['SHIPTONAME']) ? $result['SHIPTONAME'] : '');
 				$this->set_session('shiptostreet',isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
 				$this->set_session('shiptostreet2',isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
@@ -901,6 +903,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log( '...Cart Total: '.WC()->cart->get_total() );
                 $this->add_log( "...Token:" . $this->get_session( 'TOKEN' ) );
                 $result = $this->ConfirmPayment( $order->order_total );
+
+                // Set Customer Name
+                if( !get_current_user_id() ){
+                    update_post_meta( $order_id, '_billing_first_name',  $this->get_session('firstname') );
+                    update_post_meta( $order_id, '_billing_last_name',  $this->get_session('lastname'));
+                }
 
 				/**
 				 * Customer Notes
