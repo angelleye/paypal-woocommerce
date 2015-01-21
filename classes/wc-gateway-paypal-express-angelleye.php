@@ -1931,7 +1931,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                     } else jQuery(".checkout-button").html("<span>'.__('Pay with Credit Card', 'paypal-for-woocommerce').'</span>");
                                 });
                               </script>';
-                } else {
+                } elseif(empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart']=='yes') {
                     echo '<style>.cart input.checkout-button,
                                 .cart a.checkout-button {
                                     display: none !important;
