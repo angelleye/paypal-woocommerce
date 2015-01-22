@@ -18,11 +18,11 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->id					= 'paypal_pro_payflow';
 		$this->method_title 		= __( 'PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce' );
 		$this->method_description 	= __( 'PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
-		$this->icon 				= (!empty($pp_payflow['cart_icon'])) ? $pp_payflow['cart_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+		$this->icon 				= (!empty($pp_payflow['card_icon'])) ? $pp_payflow['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png';
 		$this->has_fields 			= true;
 		$this->liveurl				= 'https://payflowpro.paypal.com';
 		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
-		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD' ) );
+		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD', 'NZD' ) );
 
 
         // Load the form fields
@@ -42,6 +42,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->paypal_user     		= ! empty( $this->settings['paypal_user'] ) ? $this->settings['paypal_user'] : $this->paypal_vendor;
 
 		$this->testmode        		= $this->settings['testmode'];
+        $this->invoice_id_prefix    = isset( $this->settings['invoice_id_prefix'] ) ? $this->settings['invoice_id_prefix'] : '';
 		$this->debug		   		= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
 		$this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
 		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
@@ -53,6 +54,11 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
             $this->paypal_password 	= $this->settings['sandbox_paypal_password'];
             $this->paypal_user     	= ! empty( $this->settings['sandbox_paypal_user'] ) ? $this->settings['sandbox_paypal_user'] : $this->paypal_vendor;
         }
+
+        $this->supports 			= array(
+            'products',
+            'refunds'
+        );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
 
@@ -112,17 +118,22 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 							'description' => __( 'Place the payment gateway in development mode.', 'paypal-for-woocommerce' ),
 							'default'     => 'no'
 						),
-            'cart_icon'        => array(
-                'title'       => __( 'Cart Icon', 'paypal-for-woocommerce' ),
+            'invoice_id_prefix'           => array(
+                'title'       => __( 'Invoice ID Prefix', 'paypal-for-woocommerce' ),
                 'type'        => 'text',
-                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png'
+                'description' => __( 'Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce' ),
+            ),
+            'card_icon'        => array(
+                'title'       => __( 'Card Icon', 'paypal-for-woocommerce' ),
+                'type'        => 'text',
+                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png'
             ),
 			'debug' => array(
                 'title' => __( 'Debug Log', 'woocommerce' ),
                 'type' => 'checkbox',
                 'label' => __( 'Enable logging', 'woocommerce' ),
                 'default' => 'no',
-                'description' => __( 'Log PayPal events inside <code>woocommerce/logs/paypal-payflow.txt</code>' ),
+                'description' => __( 'Log PayPal events inside <code>/wc-logs/paypal_payflow.log</code>' ),
             ),
 			'error_email_notify' => array(
                 'title' => __( 'Error Email Notifications', 'paypal-for-woocommerce' ),
@@ -234,9 +245,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
 		$order = new WC_Order( $order_id );
 
-		$card_number = ! empty( $_POST['paypal_pro_payflow_card_number']) ? str_replace( array( ' ', '-' ), '', woocommerce_clean( $_POST['paypal_pro_payflow_card_number'] ) ) : '';
-		$card_csc    = ! empty( $_POST['paypal_pro_payflow_card_csc']) ? woocommerce_clean( $_POST['paypal_pro_payflow_card_csc'] ) : '';
-		$card_exp    = ! empty( $_POST['paypal_pro_payflow_card_expiration']) ? woocommerce_clean( $_POST['paypal_pro_payflow_card_expiration'] ) : '';
+		$card_number = ! empty( $_POST['paypal_pro_payflow_card_number']) ? str_replace( array( ' ', '-' ), '', wc_clean( $_POST['paypal_pro_payflow_card_number'] ) ) : '';
+		$card_csc    = ! empty( $_POST['paypal_pro_payflow_card_csc']) ? wc_clean( $_POST['paypal_pro_payflow_card_csc'] ) : '';
+		$card_exp    = ! empty( $_POST['paypal_pro_payflow_card_expiration']) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration'] ) : '';
 
 		// Do payment with paypal
 		return $this->do_payment( $order, $card_number, $card_exp, $card_csc );
@@ -272,7 +283,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		/*
 		 * Check if the PayPal_PayFlow class has already been established.
 		 */
-		if(!class_exists('PayPal_PayFlow' )) 
+		if(!class_exists('Angelleye_PayPal_PayFlow' ))
 		{
 			require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
 			require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');	
@@ -288,7 +299,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 						'APIVendor' => $this->paypal_vendor, 
 						'APIPartner' => $this->paypal_partner
 					  );
-		$PayPal = new PayPal_PayFlow($PayPalConfig);
+		$PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
 		
 		/**
 		 * Pulled from original Woo extension.
@@ -345,7 +356,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'custref'=>'', 				// 
 					'custcode'=>'', 			// 
 					'custip'=>$this->get_user_ip(), 				// 
-					'invnum'=>str_replace("#","",$order->get_order_number()), 				// 
+					'invnum'=>$this->invoice_id_prefix . str_replace("#","",$order->get_order_number()), 				//
 					'ponum'=>'', 				// 
 					'starttime'=>'', 			// For inquiry transaction when using CUSTREF to specify the transaction.
 					'endtime'=>'', 				// For inquiry transaction when using CUSTREF to specify the transaction.
@@ -523,7 +534,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			 */
 			if($this->debug)
 			{
-				$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(woocommerce_get_page_id('thanks')))));
+				$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(wc_get_page_id('thanks')))));
 			}
 			
 			/**
@@ -567,7 +578,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                 // Payment complete
                 //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
-                $order->payment_complete();
+                $order->payment_complete($PayPalResult['PNREF']);
 
                 // Remove cart
                 WC()->cart->empty_cart();
@@ -630,7 +641,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		?>
         <style type="text/css">
             #paypal_pro_payflow_card_type_image {
-                background: url(<?php echo $this->settings['cart_icon']; ?>) no-repeat 32px 0;
+                background: url(<?php echo $this->settings['card_icon']; ?>) no-repeat 32px 0;
             }
         </style>
 		<fieldset class="paypal_pro_credit_card_form">
@@ -678,7 +689,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					if ( card_type ) {
 						jQuery('#paypal_pro_payflow_card_type_image').addClass( card_type );
 
-						if ( card_type == 'visa' || card_type == 'amex' || card_type == 'discover' || card_type == 'mastercard' ) {
+						if ( card_type == 'visa' || card_type == 'amex' || card_type == 'discover' || card_type == 'mastercard' || card_type == 'jcb' ) {
 							csc.show();
 						} else {
 							csc.hide();
@@ -718,5 +729,58 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 unset( $_SESSION[ $key ] );
             }
         }
+    }
+    /**
+     * Process a refund if supported
+     * @param  int $order_id
+     * @param  float $amount
+     * @param  string $reason
+     * @return  bool|wp_error True or false based on success, or a WP_Error object
+     */
+    public function process_refund( $order_id, $amount = null, $reason = '' ) {
+        $order = wc_get_order( $order_id );
+        $this->add_log( 'Begin Refund' );
+        $this->add_log( 'Order: '. print_r($order, true) );
+        $this->add_log( 'Transaction ID: '. print_r($order->get_transaction_id(), true) );
+        if ( ! $order || ! $order->get_transaction_id() || ! $this->paypal_user || ! $this->paypal_password || ! $this->paypal_vendor ) {
+            return false;
+        }
+        /*
+		 * Check if the PayPal_PayFlow class has already been established.
+		 */
+        if(!class_exists('PayPal_PayFlow' ))
+        {
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
+        }
+
+        /**
+         * Create PayPal_PayFlow object.
+         */
+        $PayPalConfig = array(
+            'Sandbox' => ($this->testmode=='yes')? true:false,
+            'APIUsername' => $this->paypal_user,
+            'APIPassword' => trim($this->paypal_password),
+            'APIVendor' => $this->paypal_vendor,
+            'APIPartner' => $this->paypal_partner
+        );
+        $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+        $PayPalRequestData = array(
+            'TENDER' => 'C', // C = credit card, P = PayPal
+            'TRXTYPE' => 'C', //  S=Sale, A= Auth, C=Credit, D=Delayed Capture, V=Void
+            'ORIGID' => $order->get_transaction_id(),
+            'AMT' => $amount,
+            'CURRENCY' => $order->get_order_currency()
+        );
+        $this->add_log('Refund Request: '.print_r( $PayPalRequestData, true ) );
+        $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+        $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
+        if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)){
+            $order->update_status( 'refunded' );
+            return true;
+        }else{
+            return new WP_Error( 'paypal-error', $PayPalResult['RESPMSG'] );
+        }
+        return false;
     }
 }

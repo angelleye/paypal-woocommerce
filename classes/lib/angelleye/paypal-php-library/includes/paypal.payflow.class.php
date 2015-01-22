@@ -29,7 +29,7 @@
  * @filesource
  */
 
-class PayPal_PayFlow extends PayPal 
+class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 {	
 	/**
 	 * Constructor

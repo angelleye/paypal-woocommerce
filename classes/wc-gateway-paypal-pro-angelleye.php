@@ -16,7 +16,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->id					= 'paypal_pro';
         $this->method_title 		= __( 'PayPal Website Payments Pro (DoDirectPayment) ', 'paypal-for-woocommerce' );
         $this->method_description 	= __( 'PayPal Website Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
-        $this->icon 				= (!empty($pp_pro['cart_icon'])) ? $pp_pro['cart_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+        $this->icon 				= (!empty($pp_pro['card_icon'])) ? $pp_pro['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
         $this->has_fields 			= true;
         $this->liveurl				= 'https://api-3t.paypal.com/nvp';
         $this->testurl				= 'https://api-3t.sandbox.paypal.com/nvp';
@@ -69,8 +69,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->api_password 		= $this->settings['api_password'];
         $this->api_signature 		= $this->settings['api_signature'];
         $this->testmode 			= $this->settings['testmode'];
-		$this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
-		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
+        $this->invoice_id_prefix    = isset( $this->settings['invoice_id_prefix'] ) ? $this->settings['invoice_id_prefix'] : '';
+		$this->error_email_notify   = isset( $this->settings['error_email_notify'] ) && $this->settings['error_email_notify'] == 'yes' ? true : false;
+		$this->error_display_type 	= isset( $this->settings['error_display_type'] ) ? $this->settings['error_display_type'] : '';
         $this->enable_3dsecure 		= isset( $this->settings['enable_3dsecure'] ) && $this->settings['enable_3dsecure'] == 'yes' ? true : false;
         $this->liability_shift 		= isset( $this->settings['liability_shift'] ) && $this->settings['liability_shift'] == 'yes' ? true : false;
         $this->debug				= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
@@ -84,6 +85,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 $this->enable_3dsecure = false;
             $this->centinel_url = $this->testmode == "no" ? $this->liveurl_3ds : $this->testurl_3ds;
         }
+
+        $this->supports 			= array(
+            'products',
+            'refunds'
+        );
 
         if ($this->testmode == 'yes') {
             $this->api_username 	= $this->settings['sandbox_api_username'];
@@ -135,8 +141,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 'description' => __( 'Place the payment gateway in development mode.', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
-            'cart_icon' => array(
-                'title' => __( 'Cart Icon', 'paypal-for-woocommerce' ),
+            'invoice_id_prefix'           => array(
+                'title'       => __( 'Invoice ID Prefix', 'paypal-for-woocommerce' ),
+                'type'        => 'text',
+                'description' => __( 'Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce' ),
+            ),
+            'card_icon' => array(
+                'title' => __( 'Card Icon', 'paypal-for-woocommerce' ),
                 'type' => 'text',
                 'default' => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png'
             ),
@@ -237,7 +248,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Enable logging', 'woocommerce' ),
                 'default' => 'no',
-                'description' => __( 'Log PayPal events inside <code>woocommerce/logs/paypal-pro.txt</code>'
+                'description' => __( 'Log PayPal events inside <code>/wc-logs/paypal-pro.log</code>'
 			)
             )
         );
@@ -263,8 +274,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         ?>
         <script type="text/javascript">
             jQuery(document).ready(function ($){
-                jQuery("#woocommerce_paypal_pro_cart_icon").css({float: "left"});
-                jQuery("#woocommerce_paypal_pro_cart_icon").after('<a href="#" id="upload" class="button">Upload</a>');
+                jQuery("#woocommerce_paypal_pro_card_icon").css({float: "left"});
+                jQuery("#woocommerce_paypal_pro_card_icon").after('<a href="#" id="upload" class="button">Upload</a>');
                 var custom_uploader;
                 $('#upload').click(function (e) {
                     var BTthis = jQuery(this);
@@ -292,7 +303,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 });
             });
         </script>
-    <?
+    <?php
     }
     /**
      * Check if this gateway is enabled and available in the user's country
@@ -309,6 +320,16 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             return isset($this->avaiable_card_types[WC()->countries->get_base_country()]);
         endif;
         return false;
+    }
+    /**
+     * Use WooCommerce logger if debug is enabled.
+     */
+    function add_log( $message ) {
+        if ( $this->debug=='yes' ) {
+            if ( empty( $this->log ) )
+                $this->log = new WC_Logger();
+            $this->log->add( 'paypal-pro', $message );
+        }
     }
     /**
      * Payment form on checkout page
@@ -386,11 +407,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
      * Validate the payment form
      */
     function validate_fields() {
-        $card_type 			= isset($_POST['paypal_pro_card_type']) ? woocommerce_clean($_POST['paypal_pro_card_type']) : '';
-        $card_number 		= isset($_POST['paypal_pro_card_number']) ? woocommerce_clean($_POST['paypal_pro_card_number']) : '';
-        $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? woocommerce_clean($_POST['paypal_pro_card_csc']) : '';
-        $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? woocommerce_clean($_POST['paypal_pro_card_expiration_month']) : '';
-        $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? woocommerce_clean($_POST['paypal_pro_card_expiration_year']) : '';
+        $card_type 			= isset($_POST['paypal_pro_card_type']) ? wc_clean($_POST['paypal_pro_card_type']) : '';
+        $card_number 		= isset($_POST['paypal_pro_card_number']) ? wc_clean($_POST['paypal_pro_card_number']) : '';
+        $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? wc_clean($_POST['paypal_pro_card_csc']) : '';
+        $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? wc_clean($_POST['paypal_pro_card_expiration_month']) : '';
+        $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? wc_clean($_POST['paypal_pro_card_expiration_year']) : '';
         // Check card security code
         if (!ctype_digit($card_csc)) :
             wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'), "error");
@@ -429,11 +450,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $order = new WC_Order( $order_id );
         if ( $this->debug )
             $this->log->add( 'paypal-pro', 'Processing order #' . $order_id );
-        $card_type 			= isset($_POST['paypal_pro_card_type']) ? woocommerce_clean($_POST['paypal_pro_card_type']) : '';
-        $card_number 		= isset($_POST['paypal_pro_card_number']) ? woocommerce_clean($_POST['paypal_pro_card_number']) : '';
-        $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? woocommerce_clean($_POST['paypal_pro_card_csc']) : '';
-        $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? woocommerce_clean($_POST['paypal_pro_card_expiration_month']) : '';
-        $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? woocommerce_clean($_POST['paypal_pro_card_expiration_year']) : '';
+        $card_type 			= isset($_POST['paypal_pro_card_type']) ? wc_clean($_POST['paypal_pro_card_type']) : '';
+        $card_number 		= isset($_POST['paypal_pro_card_number']) ? wc_clean($_POST['paypal_pro_card_number']) : '';
+        $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? wc_clean($_POST['paypal_pro_card_csc']) : '';
+        $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? wc_clean($_POST['paypal_pro_card_expiration_month']) : '';
+        $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? wc_clean($_POST['paypal_pro_card_expiration_year']) : '';
         // Format card expiration data
         $card_exp_month = (int) $card_exp_month;
         if ($card_exp_month < 10) :
@@ -647,7 +668,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		/*
 		 * Check if the PayPal class has already been established.
 		 */
-		if(!class_exists('PayPal' )) 
+		if(!class_exists('Angelleye_PayPal' ))
 		{
 			require_once( 'lib/angelleye/paypal-php-library/includes/paypal.class.php' );	
 		}
@@ -661,7 +682,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			'APIPassword' => $this->api_password, 
 			'APISignature' => $this->api_signature
 		);
-		$PayPal = new PayPal($PayPalConfig);
+		$PayPal = new Angelleye_PayPal($PayPalConfig);
 		
 		if(empty($GLOBALS['wp_rewrite']))
 		{
@@ -723,7 +744,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 								'handlingamt' => '', 					// Total handling costs for the order.  If you specify handlingamt, you must also specify itemamt.
 								'desc' => '', 							// Description of the order the customer is purchasing.  127 char max.
 								'custom' => $order->customer_note ? wptexturize($order->customer_note) : '', 						// Free-form field for your own use.  256 char max.
-								'invnum' => $invoice_number = preg_replace("/[^0-9,.]/", "", $order->id), // Your own invoice or tracking number
+								'invnum' => $invoice_number = $this->invoice_id_prefix . preg_replace("/[^0-9,.]/", "", $order->id), // Your own invoice or tracking number
 								'notifyurl' => '', 						// URL for receiving Instant Payment Notifications.  This overrides what your profile is set to use.
 								'recurring' => ''						// Flag to indicate a recurring transaction.  Value should be Y for recurring, or anything other than Y if it's not recurring.  To pass Y here, you must have an established billing agreement with the buyer.
 							);
@@ -973,7 +994,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			$order->add_order_note($cvv2_response_order_note);
 
 			// Payment complete
-			$order->payment_complete();
+			$order->payment_complete($PayPalResult['TRANSACTIONID']);
 			
 			// Remove cart
 			WC()->cart->empty_cart();
@@ -1045,5 +1066,83 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 unset($_SESSION[$key]);
             }
         }
+    }
+    /**
+     * Process a refund if supported
+     * @param  int $order_id
+     * @param  float $amount
+     * @param  string $reason
+     * @return  bool|wp_error True or false based on success, or a WP_Error object
+     */
+    public function process_refund( $order_id, $amount = null, $reason = '' ) {
+        $order = wc_get_order( $order_id );
+        $this->add_log( 'Begin Refund' );
+        $this->add_log( 'Order: '. print_r($order, true) );
+        $this->add_log( 'Transaction ID: '. print_r($order->get_transaction_id(), true) );
+        $this->add_log( 'API Username: '. print_r($this->api_username, true) );
+        $this->add_log( 'API Password: '. print_r($this->api_password, true) );
+        $this->add_log( 'API Signature: '. print_r($this->api_signature, true) );
+        if ( ! $order || ! $order->get_transaction_id() || ! $this->api_username || ! $this->api_password || ! $this->api_signature ) {
+            return false;
+        }
+        $this->add_log('Include Class Request' );
+        /*
+         * Check if the PayPal class has already been established.
+         */
+        if(!class_exists('PayPal' ))
+        {
+            require_once( 'lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+        }
+
+        /*
+         * Create PayPal object.
+         */
+        $PayPalConfig = array(
+            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature
+        );
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        if ( $reason ) {
+            if ( 255 < strlen( $reason ) ) {
+                $reason = substr( $reason, 0, 252 ) . '...';
+            }
+
+            $reason = html_entity_decode( $reason, ENT_NOQUOTES, 'UTF-8' );
+        }
+
+        // Prepare request arrays
+        $RTFields = array(
+            'transactionid' => $order->get_transaction_id(), 							// Required.  PayPal transaction ID for the order you're refunding.
+            'payerid' => '', 								// Encrypted PayPal customer account ID number.  Note:  Either transaction ID or payer ID must be specified.  127 char max
+            'invoiceid' => '', 								// Your own invoice tracking number.
+            'refundtype' => $order->get_total() == $amount ? 'Full' : 'Partial', 							// Required.  Type of refund.  Must be Full, Partial, or Other.
+            'amt' => number_format( $amount, 2, '.', '' ), 									// Refund Amt.  Required if refund type is Partial.
+            'currencycode' => $order->get_order_currency(), 							// Three-letter currency code.  Required for Partial Refunds.  Do not use for full refunds.
+            'note' => $reason,  									// Custom memo about the refund.  255 char max.
+            'retryuntil' => '', 							// Maximum time until you must retry the refund.  Note:  this field does not apply to point-of-sale transactions.
+            'refundsource' => '', 							// Type of PayPal funding source (balance or eCheck) that can be used for auto refund.  Values are:  any, default, instant, eCheck
+            'merchantstoredetail' => '', 					// Information about the merchant store.
+            'refundadvice' => '', 							// Flag to indicate that the buyer was already given store credit for a given transaction.  Values are:  1/0
+            'refunditemdetails' => '', 						// Details about the individual items to be returned.
+            'msgsubid' => '', 								// A message ID used for idempotence to uniquely identify a message.
+            'storeid' => '', 								// ID of a merchant store.  This field is required for point-of-sale transactions.  50 char max.
+            'terminalid' => ''								// ID of the terminal.  50 char max.
+        );
+
+        $PayPalRequestData = array('RTFields'=>$RTFields);
+        $this->add_log('Refund Request: '.print_r( $PayPalRequestData, true ) );
+        // Pass data into class for processing with PayPal and load the response array into $PayPalResult
+        $PayPalResult = $PayPal->RefundTransaction($PayPalRequestData);
+        $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
+        if($PayPal->APICallSuccessful($PayPalResult['ACK']))
+        {
+            $order->update_status( 'refunded' );
+            return true;
+        }else{
+            return new WP_Error( 'paypal-error', $PayPalResult['L_LONGMESSAGE0'] );
+        }
+
     }
 }

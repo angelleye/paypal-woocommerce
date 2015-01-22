@@ -31,7 +31,7 @@
  * @filesource
 */
 
-class PayPal
+class Angelleye_PayPal
 {
 
 	var $APIUsername = '';

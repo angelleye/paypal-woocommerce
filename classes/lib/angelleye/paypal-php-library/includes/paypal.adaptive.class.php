@@ -29,7 +29,7 @@
  * @filesource
  */
 
-class PayPal_Adaptive extends PayPal
+class Angelleye_PayPal_Adaptive extends Angelleye_PayPal
 {
 	var $DeveloperAccountEmail = '';
 	var $XMLNamespace = '';
