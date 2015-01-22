@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 4.1
-Stable tag: 1.1.5.3
+Stable tag: 1.1.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -101,6 +101,32 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.1.6 - 01/22/2015 =
+* Fix - Adds WooCommerce country limitation compatibility to PayPal Express Checkout.
+* Fix - Resolves minor PHP notices/warnings displayed in certain scenarios.
+* Fix - Removes a PHP short-tag that was used and causing failures on servers where short tags are not enabled.
+* Fix - Adds adjustments for multi-site compatibility.
+* Fix - Resolves issue with custom image used for PayPal Express Checkout button on product detail pages.
+* Tweak - Resolves an issue where the PayPal Express Checkout button was showing up on product pages even for free items.
+* Tweak - Adjusts logic in Payments Pro (PayFlow) to handle duplicate transactions correctly.
+* Tweak - Adds the NZD currency code to Payments Pro (PayFlow)
+* Tweak - Minor code adjustments to keep up with changes to the WooCommerce code.
+* Tweak - Adds a progress "spinner" when the PayPal Express Checkout button is pushed so users can see that it was indeed triggered and can't click it again.
+* Tweak - Adjusts the PayPal Express Checkout review page to include a username field when creating an account due to the WooCommerce "Guest Checkout" option being disabled.
+* Tweak - Adds adjustments to the logic surrounding the display of checkout and/or PayPal buttons on the shopping cart page to reduce theme conflicts.
+* Tweak - Adds WooThemes Points and Rewards extension compatibility.
+* Tweak - Adds PayPal Express Checkout to the WooCommerce cart widget.
+* Tweak - Adjusts order data so that the name of the customer is displayed instead of "Guest" for guest checkouts.
+* Tweak - Adjusts the logic that calculates the MAXAMT in Express Checkout to avoid conflicts with features like gift wrapping where additional cost may be applied.
+* Feature - Adds the option to display PayPal Express Checkout in the general gateway list on the checkout page.
+* Feature - Adds the option to adjust the message displayed next the Express Checkout button at the top of the checkout page.
+* Feature - Adds WooCommerce refund compatibility for PayPal Express Checkout and Payments Pro.
+* Feature - Adds the option to enable/disable the LOCALECODE in PayPal Express Checkout, which can effect the checkout experience.
+* Feature - Adds the option to skip the final review page for PayPal Express Checkout.  This can be used on sites where shipping and tax do not need calculated.
+* Feature - Adds WPML compatibility.
+* Feature - Adds JCB credit cards to the PayPal Payments Pro (PayFlow) gateway.
+* Refactor - Adjusts PayPal class names to ensure no conflicts will occur with 3rd party plugins/themes.
+
 = 1.1.5.3 - 11/12/2014 =
 * Tweak - More adjustments to cURL options in the plugin in response to POODLE.  This update will eliminate the need to update cURL to any specific version.
 
@@ -185,8 +211,3 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - PayPal Express Checkout
 * Feature - PayPal Website Payments Pro 3.0 (DoDirectPayment)
 * Feature - PayPal Payments Pro 2.0 (PayPal Manager / PayFlow)
-
-== Upgrade Notice ==
-
-= 1.1.5.3 =
-This update includes more adjustments to cURL settings so that you do NOT need to worry about the cURL version on your server, and you can forget about previous warnings!
