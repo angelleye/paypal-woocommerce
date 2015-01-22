@@ -2084,6 +2084,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
         if($PayPal->APICallSuccessful($PayPalResult['ACK']))
         {
+            $order->add_order_note( 'Refund Transaction ID:'. $PayPalResult['REFUNDTRANSACTIONID'] );
             $order->update_status( 'refunded' );
             return true;
         }else{

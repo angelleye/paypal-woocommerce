@@ -776,6 +776,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
         $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
         if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)){
+            $order->add_order_note( 'Refund Transaction ID:'. $PayPalResult['PNREF'] );
             $order->update_status( 'refunded' );
             return true;
         }else{
