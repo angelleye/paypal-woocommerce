@@ -459,6 +459,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         echo '<div class="clear"></div>';
                         break;
                 }
+                ?>
+                </div>
+                <?php
             }
 
         }
