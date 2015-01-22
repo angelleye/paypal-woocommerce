@@ -84,7 +84,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             add_action( 'woocommerce_before_checkout_form', array( $this, 'checkout_message' ), 5 );
         add_action( 'woocommerce_ppe_do_payaction', array($this, 'get_confirm_order'));
         add_action( 'woocommerce_after_checkout_validation', array($this, 'regular_checkout'));
-
+        add_action( 'woocommerce_before_cart_table', array( $this, 'top_cart_button') );
     }
 
     /**
@@ -364,6 +364,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __( 'Show Express Checkout button on shopping cart page.', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
                 'default' => 'yes'
+            ),
+            'button_position' => array(
+                'title' => __( 'Cart Button Position', 'paypal-for-woocommerce' ),
+                'label' => __( 'Position to show express checkout', 'paypal-for-woocommerce' ),
+                'description' => __( 'By default, button show on below cart' ),
+                'type' => 'select',
+                'options' => array(
+                    'top' => 'Top',
+                    'bottom' => 'Bottom',
+                    'both' => 'Both'
+                ),
+                'default' => 'bottom'
             ),
             'show_on_checkout' => array(
                 'title' => __( 'Checkout Page Display', 'paypal-for-woocommerce' ),
@@ -2090,6 +2102,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             return new WP_Error( 'paypal-error', $PayPalResult['L_LONGMESSAGE0'] );
         }
 
+    }
+    function top_cart_button(){
+        if( !empty($this->settings['button_position']) && ($this->settings['button_position'] == 'top' || $this->settings['button_position'] == 'both')){
+            $this->woocommerce_paypal_express_checkout_button_angelleye();
+        }
     }
 
     /**
