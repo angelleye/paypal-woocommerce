@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Express Checkout, Website Payments Pro 3.0, and Payments Pro 2.0 (PayFlow).  Each option is available separately so you can enable them individually.
- * Version:           1.1.6.1
+ * Version:           1.1.6.2
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -79,13 +79,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('admin_enqueue_scripts', array( $this , 'onetarek_wpmut_admin_scripts' ) );
             add_action('admin_print_styles', array( $this , 'onetarek_wpmut_admin_styles' ) );
             add_action( 'woocommerce_cart_calculate_fees', array($this, 'woocommerce_custom_surcharge') );
-            add_action( 'woocommerce_before_add_to_cart_button', function(){
-                echo '<div class="angelleye_buton_box_relative" style="position: relative;">';
-            }, 25);
-            add_action( 'woocommerce_after_add_to_cart_button', function(){
-                echo '<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url('.WC()->plugin_url().'/assets/images/ajax-loader@2x.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>';
-                echo '</div>';
-            }, 35);
+            add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'add_div_before_add_to_cart_button' ), 25);
+            add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
         }
 
         /**
@@ -552,6 +547,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 <?php
                 echo "<div class='clear'></div></div>";
             }
+        }
+        function add_div_before_add_to_cart_button(){
+            ?>
+            <div class="angelleye_buton_box_relative" style="position: relative;">
+            <?php
+        }
+        function add_div_after_add_to_cart_button(){
+            ?>
+            <div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php echo WC()->plugin_url(); ?>/assets/images/ajax-loader@2x.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>
+            </div>
+            <?php
         }
     }
 }

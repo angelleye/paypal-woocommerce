@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 4.1
-Stable tag: 1.1.6.1
+Stable tag: 1.1.6.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -100,6 +100,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.1.6.2 - 01/22/2015 =
+* Fix - Resolves a PHP syntax issue that caused failures on PHP 5.2 or earlier.
 
 = 1.1.6.1 - 01/22/2015 =
 * Fix - Adjusts page element CSS problems with PayPal Express Checkout button on product details page.
@@ -214,3 +217,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - PayPal Express Checkout
 * Feature - PayPal Website Payments Pro 3.0 (DoDirectPayment)
 * Feature - PayPal Payments Pro 2.0 (PayPal Manager / PayFlow)
+
+== Upgrade Notice ==
+
+= 1.1.6.2 =
+The 1.1.6 update included PHP syntax that is only valid on PHP 5.3 or higher.  We have received enough complaints about this that we decided to release this update which resolves the issue, but we strongly recommend that you ensure you're running PHP 5.4 or higher at this point.
