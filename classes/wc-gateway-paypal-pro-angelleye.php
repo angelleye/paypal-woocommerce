@@ -12,11 +12,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
      * @return void
      */
     function __construct() {
-        $pp_pro = get_option('woocommerce_paypal_pro_settings');
         $this->id					= 'paypal_pro';
         $this->method_title 		= __( 'PayPal Website Payments Pro (DoDirectPayment) ', 'paypal-for-woocommerce' );
         $this->method_description 	= __( 'PayPal Website Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
-        $this->icon 				= (!empty($pp_pro['card_icon'])) ? $pp_pro['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
         $this->has_fields 			= true;
         $this->liveurl				= 'https://api-3t.paypal.com/nvp';
         $this->testurl				= 'https://api-3t.sandbox.paypal.com/nvp';
@@ -85,6 +83,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 $this->enable_3dsecure = false;
             $this->centinel_url = $this->testmode == "no" ? $this->liveurl_3ds : $this->testurl_3ds;
         }
+
+        //fix ssl for image icon
+        $this->icon = ! empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+        if (is_ssl())
+            $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
+
 
         $this->supports 			= array(
             'products',
@@ -1016,7 +1020,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			if($this->error_email_notify)
 			{
 				$admin_email = get_option("admin_email");
-				$message .= __( "DoDirectPayment API call failed." , "paypal-for-woocommerce" )."\n\n";
+				$message  = __( "DoDirectPayment API call failed." , "paypal-for-woocommerce" )."\n\n";
 				$message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $error_code."\n";
 				$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $long_message ."\n";
 
