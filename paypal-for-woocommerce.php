@@ -59,7 +59,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
 
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
-            add_action( 'plugins_loaded', array($this, 'init'));
+            add_action( 'wp_loaded', array($this, 'init'));
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
             add_action( 'wp_enqueue_scripts', array($this, 'woocommerce_paypal_express_init_styles'), 12 );
@@ -74,7 +74,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter("{$prefix}plugin_action_links_$basename",array($this,'plugin_action_links'),10,4);
             add_action( 'woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'));
             add_action( 'woocommerce_after_mini_cart', array($this, 'mini_cart_button'));            
-            add_action( 'add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
+            add_action( 'woocommerce_add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
             add_action( 'woocommerce_after_single_variation', array($this, 'buy_now_button_js'));
             add_action('admin_enqueue_scripts', array( $this , 'onetarek_wpmut_admin_scripts' ) );
             add_action('admin_print_styles', array( $this , 'onetarek_wpmut_admin_styles' ) );
