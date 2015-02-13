@@ -245,6 +245,28 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!$this->is_ssl()) {
             $require_ssl = __( 'This image requires an SSL host.  Please upload your image to <a target="_blank" href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce' );
         }
+        $args = array(
+            'sort_order' => 'ASC',
+            'sort_column' => 'post_title',
+            'hierarchical' => 1,
+            'exclude' => '',
+            'include' => '',
+            'meta_key' => '',
+            'meta_value' => '',
+            'authors' => '',
+            'child_of' => 0,
+            'parent' => -1,
+            'exclude_tree' => '',
+            'number' => '',
+            'offset' => 0,
+            'post_type' => 'page',
+            'post_status' => 'publish'
+        );
+        $pages = get_pages($args);
+        $cancel_page = array();
+        foreach($pages as $p){
+            $cancel_page[$p->ID] = $p->post_title;
+        }
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __( 'Enable/Disable', 'paypal-for-woocommerce' ),
@@ -492,6 +514,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'default' => 'no'
             ),
+            'cancel_page' => array(
+                'title' => __( 'Cancel Page', 'paypal-for-woocommerce' ),
+                'description' => __( 'By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.' ),
+                'type' => 'select',
+                'options' => $cancel_page,
+            ),
             /*'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                 'type' => 'select',
@@ -641,7 +669,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $review_order_page_url = get_permalink( $page_id );
                 }
                 $returnURL        = urlencode( add_query_arg( 'pp_action', 'revieworder', $review_order_page_url ) );
-                $cancelURL        = urlencode( WC()->cart->get_cart_url() );
+                $cancelURL        = isset( $this->settings['cancel_page'] ) ? get_the_permalink( $this->settings['cancel_page'] ) : WC()->cart->get_cart_url();
+                $cancelURL        = apply_filters( 'angelleye_express_cancel_url', urlencode( $cancelURL ) );
                 $resArray         = $this->CallSetExpressCheckout( $paymentAmount, $returnURL, $cancelURL, $usePayPalCredit, $posted );
                 $ack              = strtoupper( $resArray["ACK"] );
 

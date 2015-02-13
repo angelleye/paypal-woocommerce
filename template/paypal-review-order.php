@@ -135,8 +135,11 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
         </p>
     </form>
 <?php else:
+        global $pp_settings;
+        $cancel_url = isset( $pp_settings['cancel_page'] ) ? get_permalink( $pp_settings['cancel_page'] ) : $woocommerce->cart->get_cart_url();
+        $cancel_url = apply_filters( 'angelleye_review_order_cance_url', $cancel_url );
         echo '<div class="clear"></div>';
-        echo '<p><a class="button angelleye_cancel" href="' . $woocommerce->cart->get_cart_url() . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
+        echo '<p><a class="button angelleye_cancel" href="' . $cancel_url . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
         echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
     ?>
     </form><!--close the checkout form-->
