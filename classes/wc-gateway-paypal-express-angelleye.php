@@ -1932,8 +1932,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 });
                               </script>';
                 } else {
-                    echo '<style>.cart input.checkout-button,
-                                .cart a.checkout-button {
+                    echo '<style> input.checkout-button,
+                                 a.checkout-button {
                                     display: none !important;
                                 }</style>';
                 }
