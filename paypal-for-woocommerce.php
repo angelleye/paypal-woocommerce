@@ -435,8 +435,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         break;
                     case "paypalimage":
                         $add_to_cart_action = add_query_arg( 'express_checkout', '1');
-                        $button_locale_code = defined('WPLANG') && WPLANG != '' ? WPLANG : 'en_US';
-                        $button_img =  "https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif";
+                        $button_img =  "https://www.paypal.com/".WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code()."/i/btn/btn_xpressCheckout.gif";
                         echo '<div id="paypal_ec_button_product">';
                         echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
                         echo '</div>';
@@ -450,8 +449,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         }
                         else
                         {
-                            $button_locale_code = defined('WPLANG') && WPLANG != '' ? WPLANG : 'en_US';
-                            $button_img =  "https://www.paypal.com/".$button_locale_code."/i/btn/btn_xpressCheckout.gif";
+                            $button_img =  "https://www.paypal.com/".WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code()."/i/btn/btn_xpressCheckout.gif";
                         }
                         echo '<div id="paypal_ec_button_product">';
                         echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
@@ -509,10 +507,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         echo '<a class="paypal_checkout_button button alt" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">' . $button_text . '</a>';
                         break;
                     case "paypalimage":
-                        $button_locale_code = defined('WPLANG') && WPLANG != '' ? WPLANG : 'en_US';
                         echo '<div id="paypal_ec_button">';
                         echo '<a class="paypal_checkout_button" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">';
-                        echo "<img src='https://www.paypal.com/" . $button_locale_code . "/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                        echo "<img src='https://www.paypal.com/" . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . "/i/btn/btn_xpressCheckout.gif' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                         echo "</a>";
                         echo '</div>';
                         break;
