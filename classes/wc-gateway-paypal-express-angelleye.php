@@ -2012,8 +2012,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 });
                               </script>';
                 } elseif(empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart']=='yes') {
-                    echo '<style>.cart input.checkout-button,
-                                .cart a.checkout-button {
+                    echo '<style> input.checkout-button,
+                                 a.checkout-button {
                                     display: none !important;
                                 }</style>';
                 }
