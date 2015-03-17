@@ -973,7 +973,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			$this->log->add('paypal-pro','Response: '.print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)),true));
 		}
 		
-		if(empty($PayPalResult))
+		if(empty($PayPalResult['RAWRESPONSE']))
 		{
             $pc_empty_response = apply_filters( 'angelleye_pc_empty_response', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult );
             throw new Exception( $pc_empty_response );
