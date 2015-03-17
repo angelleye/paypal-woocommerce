@@ -507,8 +507,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'billing_address' => array(
                 'title' => __( 'Billing Address', 'paypal-for-woocommerce' ),
-                'label' => __( 'Enables the option to set both shipping and billing address.', 'paypal-for-woocommerce' ),
-                'description' => __( '' ),
+                'label' => __( 'Set billing address in WooCommerce using the address returned by PayPal.', 'paypal-for-woocommerce' ),
+                'description' => __( 'PayPal only returns a shipping address back to the website.  Enable this option if you would like to use this address for both billing and shipping in WooCommerce.' ),
                 'type' => 'checkbox',
                 'default' => 'no'
             ),
