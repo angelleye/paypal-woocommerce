@@ -367,13 +367,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'button_position' => array(
                 'title' => __( 'Cart Button Position', 'paypal-for-woocommerce' ),
-                'label' => __( 'Position to show express checkout', 'paypal-for-woocommerce' ),
-                'description' => __( 'By default, button show on below cart' ),
+                'label' => __( 'Where to display PayPal Express Checkout button(s).', 'paypal-for-woocommerce' ),
+                'description' => __( 'Set where to display the PayPal Express Checkout button(s).' ),
                 'type' => 'select',
                 'options' => array(
-                    'top' => 'Top',
-                    'bottom' => 'Bottom',
-                    'both' => 'Both'
+                    'top' => 'At the top, above the shopping cart details.',
+                    'bottom' => 'At the bottom, below the shopping cart details.',
+                    'both' => 'Both at the top and bottom, above and below the shopping cart details.'
                 ),
                 'default' => 'bottom'
             ),
