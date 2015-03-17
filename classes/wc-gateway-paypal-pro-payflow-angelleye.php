@@ -14,11 +14,9 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	function __construct() {
-        $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
 		$this->id					= 'paypal_pro_payflow';
 		$this->method_title 		= __( 'PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce' );
 		$this->method_description 	= __( 'PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
-		$this->icon 				= (!empty($pp_payflow['card_icon'])) ? $pp_payflow['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png';
 		$this->has_fields 			= true;
 		$this->liveurl				= 'https://payflowpro.paypal.com';
 		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
@@ -47,6 +45,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
 		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
 
+        //fix ssl for image icon
+        $this->icon = ! empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png';
+        if (is_ssl())
+            $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
 
         if ($this->testmode=="yes") {
             $this->paypal_vendor   	= $this->settings['sandbox_paypal_vendor'];
@@ -208,6 +210,59 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 						),
 			);
         $this->form_fields = apply_filters( 'angelleye_fc_form_fields', $this->form_fields );
+    }
+
+    /*
+     * Admin Options
+     */
+    public function admin_options() { ?>
+
+        <h3><?php echo isset( $this->method_title ) ? $this->method_title : __( 'Settings', 'paypal-for-woocommerce' ) ; ?></h3>
+
+        <?php echo isset( $this->method_description ) ? wpautop( $this->method_description ) : ''; ?>
+        <table class="form-table">
+            <?php $this->generate_settings_html(); ?>
+        </table>
+        <?php
+        $this->scriptAdminOption();
+    }
+    /*
+     * Script admin options
+     */
+    function scriptAdminOption(){
+        ?>
+        <script type="text/javascript">
+            jQuery(document).ready(function ($){
+                jQuery("#woocommerce_paypal_pro_payflow_card_icon").css({float: "left"});
+                jQuery("#woocommerce_paypal_pro_payflow_card_icon").after('<a href="#" id="upload" class="button">Upload</a>');
+                var custom_uploader;
+                $('#upload').click(function (e) {
+                    var BTthis = jQuery(this);
+                    e.preventDefault();
+                    //If the uploader object has already been created, reopen the dialog
+                    if (custom_uploader) {
+                        custom_uploader.open();
+                        return;
+                    }
+                    //Extend the wp.media object
+                    custom_uploader = wp.media.frames.file_frame = wp.media({
+                        title: '<?php _e('Choose Image','paypal-for-woocommerce'); ?>',
+                        button: {
+                            text: '<?php _e('Choose Image','paypal-for-woocommerce'); ?>'
+                        },
+                        multiple: false
+                    });
+                    //When a file is selected, grab the URL and set it as the text field's value
+                    custom_uploader.on('select', function () {
+                        attachment = custom_uploader.state().get('selection').first().toJSON();
+                        BTthis.prev('input').val(attachment.url);
+                    });
+                    //Open the uploader dialog
+                    custom_uploader.open();
+                });
+            });
+        </script>
+    <?php
     }
 
 	/**
@@ -383,9 +438,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					
 			/* Send Item details */
             $item_loop = 0;
+            $ITEMAMT = 0;
             if(sizeof($order->get_items()) > 0)
 			{
-                $ITEMAMT = 0;
                 foreach($order->get_items() as $item)
 				{
                     $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
@@ -493,7 +548,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				$PayPalRequestData['L_QTY' . $item_loop ]		= 1;
 				$item_loop++;
 				
-				$ITEMAMT += $fee->amount*$Item['qty'];
+				$ITEMAMT += $fee->amount;
 			}
 			
 			$PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
@@ -648,7 +703,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		?>
         <style type="text/css">
             #paypal_pro_payflow_card_type_image {
-                background: url(<?php echo $this->settings['card_icon']; ?>) no-repeat 32px 0;
+                background: url(<?php echo $this->icon; ?>) no-repeat 32px 0;
             }
         </style>
 		<fieldset class="paypal_pro_credit_card_form">
