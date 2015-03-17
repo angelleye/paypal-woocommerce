@@ -338,7 +338,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         public function ae_paypal_standard_additional_parameters($paypal_args)
         {
-            $paypal_args['bn'] = 'AngellEYE_PHPClass';
+            $paypal_args['bn'] = 'AngellEYE_SP_WooCommerce';
             return $paypal_args;
         }
 
