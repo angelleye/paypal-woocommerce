@@ -50,6 +50,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->button_locale_code      = defined( 'WPLANG' ) && WPLANG != '' && $this->use_wp_locale_code == 'yes' ? WPLANG : 'en_US';
         $this->angelleye_skip_text     = isset( $this->settings['angelleye_skip_text'] ) ? $this->settings['angelleye_skip_text'] : '';
         $this->skip_final_review	   = isset( $this->settings['skip_final_review'] ) ? $this->settings['skip_final_review'] : '';
+        $this->billing_address	       = isset( $this->settings['billing_address'] ) ? $this->settings['billing_address'] : 'no';
 
         /*
         ' Define the PayPal Redirect URLs.
@@ -504,6 +505,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'default' => 'no'
             ),
+            'billing_address' => array(
+                'title' => __( 'Billing Address', 'paypal-for-woocommerce' ),
+                'label' => __( 'Enables the option to set both shipping and billing address.', 'paypal-for-woocommerce' ),
+                'description' => __( '' ),
+                'type' => 'checkbox',
+                'default' => 'no'
+            ),
             /*'Locale' => array(
                 'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                 'type' => 'select',
@@ -914,6 +922,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				update_post_meta( $order_id, '_shipping_country',   $this->get_session('shiptocountrycode'));
 				update_post_meta( $order_id, '_shipping_state',   $this->get_state_code( $this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
                 update_post_meta( $order_id, '_customer_user', 	get_current_user_id() );
+
+                if( $this->billing_address == 'yes'){
+                    update_post_meta( $order_id, '_billing_first_name',  $shipping_first_name );
+                    update_post_meta( $order_id, '_billing_last_name',  $shipping_last_name );
+                    update_post_meta( $order_id, '_billing_full_name',  $full_name );
+                    update_post_meta( $order_id, '_billing_company',   "" );
+                    update_post_meta( $order_id, '_billing_address_1',  $this->get_session('shiptostreet'));
+                    update_post_meta( $order_id, '_billing_address_2',  $this->get_session('shiptostreet2'));
+                    update_post_meta( $order_id, '_billing_city',    $this->get_session('shiptocity'));
+                    update_post_meta( $order_id, '_billing_postcode',   $this->get_session('shiptozip'));
+                    update_post_meta( $order_id, '_billing_country',   $this->get_session('shiptocountrycode'));
+                    update_post_meta( $order_id, '_billing_state',   $this->get_state_code( $this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
+                }
 
                 $this->add_log( '...Order ID: ' . $order_id );
                 $order = new WC_Order( $order_id );
