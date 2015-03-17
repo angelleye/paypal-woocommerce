@@ -188,6 +188,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
             $pp_standard = get_option('woocommerce_paypal_settings');
 
+            do_action( 'angelleye_admin_notices', $pp_pro, $pp_payflow, $pp_standard );
+
             if (@$pp_pro['enabled']=='yes' || @$pp_payflow['enabled']=='yes') {
                 // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
                 if ( get_option('woocommerce_force_ssl_checkout')=='no' && ! class_exists( 'WordPressHTTPS' ) && !get_user_meta($user_id, 'ignore_pp_ssl') )

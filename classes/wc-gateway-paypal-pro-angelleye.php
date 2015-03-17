@@ -252,6 +252,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			)
             )
         );
+        $this->form_fields = apply_filters( 'angelleye_pc_form_fields', $this->form_fields );
     }
     /*
      * Admin Options
@@ -336,6 +337,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
      */
     function payment_fields() {
         $available_cards = $this->avaiable_card_types[WC()->countries->get_base_country()];
+        do_action( 'before_angelleye_pc_payment_fields', $this );
         ?>
         <?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE/SANDBOX ENABLED', 'paypal-for-woocommerce'); ?></p><?php endif; ?>
         <?php if ($this->description) : ?><p><?php echo $this->description; ?></p><?php endif; ?>
@@ -402,6 +404,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             });
         </script>
     <?php
+        do_action( 'after_angelleye_pc_payment_fields', $this );
     }
     /**
      * Validate the payment form
@@ -412,6 +415,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? wc_clean($_POST['paypal_pro_card_csc']) : '';
         $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? wc_clean($_POST['paypal_pro_card_expiration_month']) : '';
         $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? wc_clean($_POST['paypal_pro_card_expiration_year']) : '';
+
+        do_action( 'before_angelleye_pro_checkout_validate_fields', $card_type, $card_number, $card_csc, $card_exp_month, $card_exp_year );
+
         // Check card security code
         if (!ctype_digit($card_csc)) :
             wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'), "error");
@@ -439,6 +445,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             wc_add_notice(__('Card number is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         endif;
+        do_action( 'after_angelleye_pro_checkout_validate_fields', $card_type, $card_number, $card_csc, $card_exp_month, $card_exp_year );
         return true;
     }
     /**
@@ -550,14 +557,16 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                     <?php
                     exit;
                 } elseif ( $this->liability_shift && $_SESSION['Centinel_Enrolled'] != 'N' ) {
-                    wc_add_notice(__('Authentication unavailable. Please try a different payment method or card.','paypal-for-woocommerce'), "error");
+                    $pc_3d_secure_authentication_unavailable = apply_filters( 'angelleye_pc_process_payment_authentication_unavailable', __('Authentication unavailable. Please try a different payment method or card.','paypal-for-woocommerce') );
+                    wc_add_notice( $pc_3d_secure_authentication_unavailable, "error");
                     return;
                 } else {
                     // Customer not-enrolled, so just carry on with PayPal process
                     return $this->do_payment( $order, $card_number, $card_type, $card_exp_month, $card_exp_year, $card_csc, '', $_SESSION['Centinel_Enrolled'], '', $_SESSION["Centinel_EciFlag"], '' );
                 }
             } else {
-                wc_add_notice( __('Error in 3D secure authentication: ', 'paypal-for-woocommerce') . $_SESSION['Centinel_ErrorNo'], "error");
+                $pc_3d_secure_authentication = apply_filters( 'angelleye_pc_process_payment_authentication', __('Error in 3D secure authentication: ', 'paypal-for-woocommerce') . $_SESSION['Centinel_ErrorNo'], $_SESSION['Centinel_ErrorNo'] );
+                wc_add_notice( $pc_3d_secure_authentication , "error");
                 return;
             }
         }
@@ -610,7 +619,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $redirect_url = $this->get_return_url( $order );
         if ( $this->liability_shift ) {
             if ( $_SESSION["Centinel_EciFlag"] == '07' || $_SESSION["Centinel_EciFlag"] == '01' ) {
-                wc_add_notice(__('Authentication unavailable.  Please try a different payment method or card.','paypal-for-woocommerce'), "error");
+                $pc_authentication_unavailable = apply_filters( 'angelleye_pc_3d_authentication_unavailable', __('Authentication unavailable.  Please try a different payment method or card.','paypal-for-woocommerce'));
+                wc_add_notice( $pc_authentication_unavailable, "error" );
                 $order->update_status('failed', __('3D Secure error: No liability shift', 'paypal-for-woocommerce') );
                 wp_redirect( $redirect_url );
                 exit;
@@ -624,13 +634,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 wp_redirect( $redirect_url );
                 exit;
             } else {
-                wc_add_notice(__('Payer Authentication failed.  Please try a different payment method.','paypal-for-woocommerce'), "error");
+                $pc_payer_authentication = apply_filters( 'angelleye_pc_3d_payer_authentication', __('Payer Authentication failed.  Please try a different payment method.','paypal-for-woocommerce'));
+                wc_add_notice( $pc_payer_authentication, "error" );
                 $order->update_status('failed', sprintf(__('3D Secure error: %s', 'paypal-for-woocommerce'), $_SESSION['Centinel_ErrorDesc'] ) );
                 wp_redirect( $redirect_url );
                 exit;
             }
         } else {
-            wc_add_notice( __('Error in 3D secure authentication: ', 'paypal-for-woocommerce') . $_SESSION['Centinel_ErrorDesc'], "error" );
+            $pc_3d_secure_authentication = apply_filters( 'angelleye_pc_3d_secure_authentication', __('Error in 3D secure authentication: ', 'paypal-for-woocommerce') . $_SESSION['Centinel_ErrorDesc'], $_SESSION['Centinel_ErrorDesc']);
+            wc_add_notice( $pc_3d_secure_authentication, "error" );
             $order->update_status('failed', sprintf(__('3D Secure error: %s', 'paypal-for-woocommerce'), $_SESSION['Centinel_ErrorDesc'] ) );
             wp_redirect( $redirect_url );
             exit;
@@ -662,7 +674,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		 */
 		if(sizeof(WC()->cart->get_cart()) == 0)
 		{
-            wc_add_notice(sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"'),"error");
+            $pc_session_expired_error = apply_filters( 'angelleye_pc_session_expired_error', sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"') );
+            wc_add_notice( $pc_session_expired_error, "error" );
 		}
 		
 		/*
@@ -962,7 +975,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		
 		if(empty($PayPalResult))
 		{
-            throw new Exception(__('Empty PayPal response.', 'paypal-for-woocommerce'));
+            $pc_empty_response = apply_filters( 'angelleye_pc_empty_response', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult );
+            throw new Exception( $pc_empty_response );
 		}
 		
 		if($PayPal->APICallSuccessful($PayPalResult['ACK']))
@@ -1016,11 +1030,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			if($this->error_email_notify)
 			{
 				$admin_email = get_option("admin_email");
-				$message .= __( "DoDirectPayment API call failed." , "paypal-for-woocommerce" )."\n\n";
+				$message = __( "DoDirectPayment API call failed." , "paypal-for-woocommerce" )."\n\n";
 				$message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $error_code."\n";
 				$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $long_message ."\n";
 
-				wp_mail($admin_email, "PayPal Pro Error Notification",$message);
+                $pc_error_email_message = apply_filters( 'angelleye_pc_error_email_notify_message', $message, $error_code, $long_message );
+                $pc_error_email_subject = apply_filters( 'angelleye_pc_error_email_notify_subject', "PayPal Pro Error Notification", $error_code, $long_message );
+
+				wp_mail($admin_email, $pc_error_email_subject, $pc_error_email_message);
 			}
 			
 			if($this->debug)
@@ -1034,15 +1051,20 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			// Generate error message based on Error Display Type setting
 			if($this->error_display_type == 'detailed')
 			{
-				throw new Exception( __( $error_message, 'paypal-for-woocommerce'));
-				wc_add_notice(__('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message, "error" );		
+                $pc_display_type_error = __( $error_message, 'paypal-for-woocommerce');
+                $pc_display_type_notice = __('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message;
 			}
 			else
 			{
-				throw new Exception( __( 'There was a problem connecting to the payment gateway.', 'paypal-for-woocommerce'));
-				wc_add_notice(__('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message, "error" );		
+                $pc_display_type_error = __( 'There was a problem connecting to the payment gateway.', 'paypal-for-woocommerce');
+                $pc_display_type_notice = __('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message;
 			}
-			
+
+            $pc_display_type_error = apply_filters( 'angelleye_pc_display_type_error', $pc_display_type_error, $error_code, $long_message );
+            $pc_display_type_notice = apply_filters( 'angelleye_pc_display_type_notice', $pc_display_type_notice, $error_code, $long_message );
+            wc_add_notice( $pc_display_type_notice , "error" );
+            throw new Exception( $pc_display_type_error );
+
 			return;
 		}
 	}
@@ -1141,7 +1163,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $order->update_status( 'refunded' );
             return true;
         }else{
-            return new WP_Error( 'paypal-error', $PayPalResult['L_LONGMESSAGE0'] );
+            $pc_message = apply_filters( 'angelleye_pc_refund_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE'], $PayPalResult );
+            return new WP_Error( 'ec_refund-error', $pc_message );
         }
 
     }

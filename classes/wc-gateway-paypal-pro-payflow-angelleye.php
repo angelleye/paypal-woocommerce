@@ -207,6 +207,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 							'default'     => 'PayPal'
 						),
 			);
+        $this->form_fields = apply_filters( 'angelleye_fc_form_fields', $this->form_fields );
     }
 
 	/**
@@ -277,7 +278,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		 */
 		if(sizeof(WC()->cart->get_cart()) == 0)
 		{
-            wc_add_notice(sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"'),"error");
+            $fc_session_expired = apply_filters( 'angelleye_fc_session_expired', sprintf(__( 'Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce' ), '"'.home_url().'"'), $this );
+            wc_add_notice( $fc_session_expired, "error" );
 		}
 		
 		/*
@@ -526,7 +528,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			 */
 			if(empty($PayPalResult['RAWRESPONSE']))
 			{
-                throw new Exception(__('Empty PayPal response.', 'paypal-for-woocommerce'));
+                $fc_empty_response = apply_filters( 'angelleye_fc_empty_response', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult );
+                throw new Exception( $fc_empty_response );
 			}
 			
 			/** 
@@ -596,23 +599,26 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				// Generate error message based on Error Display Type setting
 				if($this->error_display_type == 'detailed')
 				{
-                	wc_add_notice( __( 'Payment error:', 'paypal-for-woocommerce' ) . ' ' . $PayPalResult['RESULT'].'-'.$PayPalResult['RESPMSG'], "error" );
+                    $fc_error_display_type = __( 'Payment error:', 'paypal-for-woocommerce' ) . ' ' . $PayPalResult['RESULT'].'-'.$PayPalResult['RESPMSG'];
 				}
 				else
 				{
-                	wc_add_notice( __( 'Payment error:', 'paypal-for-woocommerce' ) . ' There was a problem processing your payment.  Please try another method.', "error" );
+                    $fc_error_display_type = __( 'Payment error:', 'paypal-for-woocommerce' ) . ' There was a problem processing your payment.  Please try another method.';
 				}
+                $fc_error_display_type = apply_filters( 'angelleye_fc_dp_error_display_type', $fc_error_display_type, $PayPalResult['RESULT'], $PayPalResult['RESPMSG'], $PayPalResult );
+                wc_add_notice( $fc_error_display_type, "error" );
 				
 				// Notice admin if has any issue from PayPal
 				if($this->error_email_notify)
 				{
 					$admin_email = get_option("admin_email");
-					$message .= __( "PayFlow API call failed." , "paypal-for-woocommerce" )."\n\n";
+					$message = __( "PayFlow API call failed." , "paypal-for-woocommerce" )."\n\n";
 					$message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $PayPalResult['RESULT'] ."\n";
 					$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
 					$message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] ."\n" : "\n";
-	
-					wp_mail($admin_email, "PayPal Pro Error Notification",$message);
+	                $message = apply_filters( 'angelleye_fc_error_email_notify_msg', $message );
+	                $subject = apply_filters( 'angelleye_fc_error_email_notify_subject', "PayPal Pro Error Notification" );
+					wp_mail( $admin_email, $subject, $message );
 				}
 				
                 return;
@@ -621,7 +627,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		}
 		catch(Exception $e)
 		{
-            wc_add_notice( __('Connection error:', 'paypal-for-woocommerce' ) . ': "' . $e->getMessage() . '"', "error");
+            $fc_connect_error = apply_filters( 'angelleye_fc_connect_error', __('Connection error:', 'paypal-for-woocommerce' ) . ': "' . $e->getMessage() . '"', $e  );
+            wc_add_notice( $fc_connect_error, "error");
             return;
         }	
 	}
@@ -630,7 +637,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
      * Payment form on checkout page
      */
 	function payment_fields() {
-
+        do_action( 'angelleye_before_fc_payment_fields', $this );
 		if ( $this->description ) {
 			echo '<p>';
 			if ( $this->testmode == 'yes' )
@@ -706,6 +713,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				}
 			}).change();
 		" );
+        do_action( 'angelleye_after_fc_payment_fields', $this );
 	}
 
 
@@ -738,6 +746,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
      * @return  bool|wp_error True or false based on success, or a WP_Error object
      */
     public function process_refund( $order_id, $amount = null, $reason = '' ) {
+
+        do_action( 'angelleye_before_fc_refund', $order_id, $amount, $reason );
+
         $order = wc_get_order( $order_id );
         $this->add_log( 'Begin Refund' );
         $this->add_log( 'Order: '. print_r($order, true) );
@@ -775,11 +786,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         $this->add_log('Refund Request: '.print_r( $PayPalRequestData, true ) );
         $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
         $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
+        add_action( 'angelleye_after_refund', $PayPalResult, $order, $amount, $reason );
         if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)){
             $order->update_status( 'refunded' );
             return true;
         }else{
-            return new WP_Error( 'paypal-error', $PayPalResult['RESPMSG'] );
+            $fc_refund_error = apply_filters( 'angelleye_fc_refund_error', $PayPalResult['RESPMSG'], $PayPalResult );
+            return new WP_Error( 'paypal-error', $fc_refund_error );
         }
         return false;
     }
