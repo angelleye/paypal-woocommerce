@@ -67,6 +67,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'admin_init', array($this, 'set_ignore_tag'));
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
             add_action( 'woocommerce_sections_checkout', array( $this, 'donate_message' ), 11 );
+            add_action( 'wp_loaded', array($this, 'woocommerce_paypal_express_review_order_page_angelleye') , 11);
 
             // http://stackoverflow.com/questions/22577727/problems-adding-action-links-to-wordpress-plugin
             $basename = plugin_basename(__FILE__);
@@ -228,7 +229,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
             add_action( 'woocommerce_before_cart', array( 'WC_Gateway_PayPal_Express_AngellEYE', 'woocommerce_before_cart'), 12 );
             remove_action( 'init', 'woocommerce_paypal_express_review_order_page') ;
-            add_action( 'init', array($this, 'woocommerce_paypal_express_review_order_page_angelleye') );
             remove_shortcode( 'woocommerce_review_order');
             add_shortcode( 'woocommerce_review_order', array($this, 'get_woocommerce_review_order_angelleye' ));
 
