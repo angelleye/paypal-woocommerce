@@ -69,50 +69,51 @@ jQuery(function($) {
 			type: 		'POST',
 			url: 		wc_checkout_params.ajax_url,
 			data: 		data,
-			success: 	function( response ) {
-                // Remove old AJAX errors
-                $( '.woocommerce-error-ajax' ).remove();
+			success: 	function( data ) {
 
-                // Check reponse
-                if ( '-1' === response ) {
+                // Always update the fragments
+                if ( data && data.fragments ) {
+                    $.each( data.fragments, function ( key, value ) {
+                        $( key ).replaceWith( value );
+                        $( key ).unblock();
+                    } );
+                }
+
+                // Check for error
+                if ( 'failure' == data.result ) {
+
+                    if ( 'true' === data.reload ) {
+                        window.location.reload();
+                        return;
+                    }
+
+                    $( '.woocommerce-error, .woocommerce-message' ).remove();
+
+                    // Form object
                     var $form = $( 'form.angelleye_checkout' );
 
-                    $form.prepend( wc_checkout_params.session_expired_message );
+                    // Add new errors
+                    if ( data.messages ) {
+                        $form.prepend( data.messages );
+                    } else {
+                        $form.prepend( data );
+                    }
+
+                    // Lose focus for all fields
+                    $form.find( '.input-text, select' ).blur();
 
                     // Scroll to top
                     $( 'html, body' ).animate( {
                         scrollTop: ( $( 'form.angelleye_checkout' ).offset().top - 100 )
                     }, 1000 );
 
-                } else if ( response ) {
-
-                    // Check the response result
-                    if ( 'failure' == response.result ) {
-
-                        // Form object
-                        var $form = $( 'form.angelleye_checkout' );
-
-                        if ( response.messages ) {
-                            $form.prepend( response.messages );
-                        } else {
-                            $form.prepend( response );
-                        }
-
-                        // Lose focus for all fields
-                        $form.find( '.input-text, select' ).blur();
-
-                        // Scroll to top
-                        $( 'html, body' ).animate( {
-                            scrollTop: ( $( 'form.angelleye_checkout' ).offset().top - 100 )
-                        }, 1000 );
-
-                    }
-
-                    $( '#order_review' ).html( $.trim( response.html ) );
-                    $( '#order_review' ).find( 'input[name=payment_method]:checked' ).trigger( 'click' );
-                    $( 'body' ).trigger( 'updated_checkout' );
                 }
-			}
+
+                //$( '#order_review' ).html( $.trim( response.html ) );
+                $( '#order_review' ).find( 'input[name=payment_method]:checked' ).trigger( 'click' );
+                $( 'body' ).trigger( 'updated_checkout' );
+            }
+
 		});
 
 	}
