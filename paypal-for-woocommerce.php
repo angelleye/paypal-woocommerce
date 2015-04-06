@@ -427,9 +427,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 switch($pp_settings['checkout_with_pp_button_type'])
                 {
                     case "textbutton":
+                        if(!empty($pp_settings['pp_button_type_text_button'])){
+                            $button_text = $pp_settings['pp_button_type_text_button'];
+                        } else {
+                            $button_text = __( 'Proceed to Checkout', 'woocommerce' );
+                        }
                         $add_to_cart_action = add_query_arg( 'express_checkout', '1');
                         echo '<div id="paypal_ec_button_product">';
-                        echo '<input data-action="'.$add_to_cart_action.'" type="submit" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye paypal_checkout_button button alt" name="express_checkout"  onclick="',"jQuery('form.cart').attr('action','",$add_to_cart_action,"');jQuery('form.cart').submit();",'" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+                        echo '<input data-action="'.$add_to_cart_action.'" type="submit" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye paypal_checkout_button button alt" name="express_checkout"  onclick="',"jQuery('form.cart').attr('action','",$add_to_cart_action,"');jQuery('form.cart').submit();",'" value="' .$button_text .'"/>';
                         echo '</div>';
                         echo '<div class="clear"></div>';
                         break;
@@ -443,14 +448,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         break;
                     case "customimage":
                         $add_to_cart_action = add_query_arg( 'express_checkout', '1');
-                        if(!empty($pp_settings['checkout_with_pp_button_type']) && !empty($pp_settings['checkout_with_pp_button_type_my_custom']))
-                        {
-                            $button_img = $pp_settings['pp_button_type_my_custom'];
-                        }
-                        else
-                        {
-                            $button_img =  "https://www.paypal.com/".WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code()."/i/btn/btn_xpressCheckout.gif";
-                        }
+                        $button_img = $pp_settings['pp_button_type_my_custom'];
                         echo '<div id="paypal_ec_button_product">';
                         echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
                         echo '</div>';
