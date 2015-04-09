@@ -82,6 +82,30 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_cart_calculate_fees', array($this, 'woocommerce_custom_surcharge') );
             add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'add_div_before_add_to_cart_button' ), 25);
             add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
+            add_action ('wp_footer', array( $this, 'paypal_standard_button_filter' ));
+        }
+
+
+        /**
+         * PayPal Standard Button Filter
+         */
+        public function paypal_standard_button_filter() {
+            ?>
+            <script type="text/javascript">
+                (function ($) {
+                    if ($('input[name="business"]').length > 0) {
+                        if ($('input[name="bn"]').length > 0) {
+                            $('input[name="bn"]').val("AngellEYE_PHPClass");
+                        } else {
+                            $('input[name="business"]').after("<input type='hidden' name='bn' value='AngellEYE_PHPClass' />");
+                        }
+                    }
+
+                })(jQuery);
+
+            </script>
+        <?php
+
         }
 
         /**
