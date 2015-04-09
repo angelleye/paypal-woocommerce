@@ -1055,6 +1055,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 						$message .= __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode."\n";
 						$message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
 						$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
+                        $message .= __( 'Order ID: ' ).$order_id ."\n";
+                        $message .= __( 'Customer Name: ' ).$this->get_session('shiptoname')."\n";
+                        $message .= __( 'Customer Email: ' ).$this->get_session('payeremail')."\n";
 
                         $error_email_notify_mes = apply_filters( 'angelleye_ec_error_email_notify_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
                         $subject = "PayPal Express Checkout Error Notification";
