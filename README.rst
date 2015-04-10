@@ -10,7 +10,7 @@ Requirements
 
 -  PHP version 5.2.4+.
 -  WordPress 3.8+
--  WooCommerce 2.1+
+-  WooCommerce 2.3+
 
 ************
 Installation
