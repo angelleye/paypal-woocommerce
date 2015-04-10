@@ -36,6 +36,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             'CA' => array(
                 'Visa' 			=> 'Visa',
                 'MasterCard' 	=> 'MasterCard'
+            ),
+            'AU' => array(
+                'Visa' 			=> 'Visa',
+                'MasterCard' 	=> 'MasterCard',
+                'Discover'		=> 'Discover',
+                'AmEx'			=> 'American Express'
             )
         ) );
         $this->iso4217 = apply_filters( 'woocommerce_paypal_pro_iso_currencies', array(

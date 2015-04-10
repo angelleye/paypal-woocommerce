@@ -586,10 +586,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type'] = 'paypalimage';
                 switch ($pp_settings['checkout_with_pp_button_type']) {
                     case "textbutton":
-                        if (empty($payment_gateways)) {
-                            $button_text = __('Proceed to Checkout', 'woocommerce');
+                        if(!empty($pp_settings['pp_button_type_text_button'])){
+                            $button_text = $pp_settings['pp_button_type_text_button'];
                         } else {
-                            $button_text = __('Pay with PayPal', 'paypal-for-woocommerce');
+                            $button_text = __( 'Proceed to Checkout', 'woocommerce' );
                         }
                         echo '<a class="paypal_checkout_button paypal_checkout_button_text button alt" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">' . $button_text . '</a>';
                         break;
@@ -2094,10 +2094,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     static function get_button_locale_code(){
         $locale_code = defined("WPLANG") && WPLANG != '' ? WPLANG : 'en_US';
-        switch(WPLANG) {
+        switch($locale_code) {
             case "de_DE": $locale_code = "de_DE/DE"; break;
-            case ""     : $locale_code = "en_US"; break;
-            default: $locale_code = WPLANG;
         }
         return $locale_code;
     }
