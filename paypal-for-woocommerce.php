@@ -231,6 +231,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             remove_action( 'init', 'woocommerce_paypal_express_review_order_page') ;
             remove_shortcode( 'woocommerce_review_order');
             add_shortcode( 'woocommerce_review_order', array($this, 'get_woocommerce_review_order_angelleye' ));
+            
+            add_action('wp_footer', 'paypal_woo_add_terms_pop');
+            add_action( 'woocommerce_after_mini_cart' , 'paypal_woo_add_terms_widget' );
+            wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/terms.css' , __FILE__ ) );
 
             require_once('classes/wc-gateway-paypal-pro-payflow-angelleye.php');
             require_once('classes/wc-gateway-paypal-pro-angelleye.php');
@@ -559,6 +563,82 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             </div>
             <?php
         }
+    }
+        //@angel you need to add in admin panel the link file, here http://localhost/linecherry/contrat/cgv%20v1.0.pdf. be careful for the cart widget with this url.
+
+    function paypal_woo_add_terms_pop($link) {
+        echo '<div class="cgv-popup" role="alert">
+                <div class="cgv-popup-container">           
+                    <object data="http://localhost/linecherry/contrat/cgv%20v1.0.pdf" type="application/pdf" class="pdf-cgv">   </object>   
+                    <div class="cgv-buttons">
+                        <div class="cgv-text ">'.__("Please accept terms and agrements", "paypal-for-woocommerce").'</div>  
+                        <div class="cgv-accept">'.__("Accept", "paypal-for-woocommerce").'</div>
+                        <div class="cgv-refused">'.__("Reject", "paypal-for-woocommerce").'</div>
+                    </div>
+                </div>
+            </div>';
+    }
+
+
+
+
+    function paypal_woo_add_terms_widget() {
+        $action ='<script type="text/javascript">
+        function setCookie(key, value) {
+                var expires = new Date();
+                var day=365;
+                expires.setTime(expires.getTime() + (day * 24 * 60 * 60 * 1000));
+                document.cookie = key + "=" + value +";path=/"+ ";expires= + expires.toUTCString();
+        }
+        function getCookie(key) {
+                var keyValue = document.cookie.match("(^|;) ?" + key + "=([^;]*)(;|$));
+                return keyValue ? keyValue[2] : null;
+        }
+
+
+       jQuery(document).ready(function ($){
+        $("#paypal_ec_button_product input").on("click", function(event){
+           if(getCookie("cherryclass-cgv-v1")!=1){
+                    $(".cgv-popup").addClass("is-visible");
+                   
+                }else{
+                    var angelleye_action = $(this).data("action");
+                    $("form.cart").attr( "action", angelleye_action );
+                    $(this).attr("disabled", "disabled");
+                    $("form.cart").submit();
+                    $(".angelleyeOverlay").show();
+            }
+            return false;
+
+        });
+        $(".paypal_checkout_button").on("click", function(event){
+            if(getCookie("cherryclass-cgv-v1")!=1){
+                    $(".cgv-popup").addClass("is-visible");
+                    return false;
+            }else{
+                    $(".angelleyeOverlay").show();
+                    return true;
+            }
+        });
+        $(".cgv-accept").on("click", function(event){
+            $(".cgv-popup").removeClass("is-visible");
+            setCookie("cherryclass-cgv-v1","1");
+            var a_href = $(".paypal_checkout_button").attr("href");    
+             window.open(a_href,"_self");
+             $(".angelleyeOverlay").show();
+                    return false;               
+            
+        }); 
+        $(".cgv-refused").on("click", function(event){
+            $(".cgv-popup").removeClass("is-visible");
+            setCookie("cherryclass-cgv-v1","0"); 
+            location.reload();               
+            
+        });
+    });
+    </script>';
+
+    return $action;
     }
 }
 new AngellEYE_Gateway_Paypal();
