@@ -44,6 +44,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->debug		   		= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
 		$this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
 		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
+        $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'yes' ? true : false;
 
         //fix ssl for image icon
         $this->icon = ! empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png';
@@ -208,6 +209,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank.', 'paypal-for-woocommerce' ),
 							'default'     => 'PayPal'
 						),
+            'send_items' => array(
+                'title' => __( 'Send Item Details', 'paypal-for-woocommerce' ),
+                'label' => __( 'Send Line Items to PayPal', 'paypal-for-woocommerce' ),
+                'type' => 'checkbox',
+                'description' => __( 'Sends line items to PayPal. If you experience rounding errors this can be disabled.', 'paypal-for-woocommerce' ),
+                'default' => 'no'
+            ),
 			);
         $this->form_fields = apply_filters( 'angelleye_fc_form_fields', $this->form_fields );
     }
@@ -435,121 +443,122 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $PayPalRequestData['SHIPTOCOUNTRY']     = $order->shipping_country;
                 $PayPalRequestData['SHIPTOZIP']         = $order->shipping_postcode;
             }
-					
-			/* Send Item details */
-            $item_loop = 0;
-            $ITEMAMT = 0;
-            if(sizeof($order->get_items()) > 0)
-			{
-                foreach($order->get_items() as $item)
-				{
-                    $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
-                    $_product = $order->get_product_from_item($item);
-                    if($item['qty'])
-					{
-                        $sku = $_product->get_sku();
-                        if ($_product->product_type=='variation')
-						{
-                            if (empty($sku))
-							{
-                                $sku = $_product->parent->get_sku();
+
+            if( $this->send_items ) {
+                /* Send Item details */
+                $item_loop = 0;
+                $ITEMAMT = 0;
+                if (sizeof($order->get_items()) > 0) {
+                    foreach ($order->get_items() as $item) {
+                        $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
+                        $_product = $order->get_product_from_item($item);
+                        if ($item['qty']) {
+                            $sku = $_product->get_sku();
+                            if ($_product->product_type == 'variation') {
+                                if (empty($sku)) {
+                                    $sku = $_product->parent->get_sku();
+                                }
+                                $item_meta = new WC_Order_Item_Meta($item['item_meta']);
+                                $meta = $item_meta->display(true, true);
+                                if (!empty($meta)) {
+                                    $item['name'] .= " - " . str_replace(", \n", " - ", $meta);
+                                }
                             }
-                            $item_meta = new WC_Order_Item_Meta( $item['item_meta'] );
-                            $meta = $item_meta->display(true, true);
-                            if (!empty($meta))
-							{
-                                $item['name'] .= " - ".str_replace(", \n", " - ",$meta);
+                            if (get_option('woocommerce_prices_include_tax') == 'yes') {
+                                $product_price = $order->get_item_subtotal($item, true, false);
+                            } else {
+                                $product_price = $order->get_item_subtotal($item, false, true);
                             }
-                        }
-                        if ( get_option( 'woocommerce_prices_include_tax' ) == 'yes' )
-						{
-                            $product_price = $order->get_item_subtotal( $item, true, false );
-                        }
-						else
-						{
-                            $product_price = $order->get_item_subtotal( $item, false, true );
-                        }
 
-                        $PayPalRequestData['L_NUMBER' . $item_loop ] = $sku;
-                        $PayPalRequestData['L_NAME' . $item_loop ] = $item['name'];
-                        $PayPalRequestData['L_COST' . $item_loop ] = $product_price;
-                        $PayPalRequestData['L_QTY' . $item_loop ]  = $item['qty'];
-                        if ($sku)
-						{
-                            $PayPalRequestData[ 'L_SKU' . $item_loop ] = $sku;
-						}
-						$ITEMAMT += $product_price * $item['qty'];
-                        $item_loop++;
+                            $PayPalRequestData['L_NUMBER' . $item_loop] = $sku;
+                            $PayPalRequestData['L_NAME' . $item_loop] = $item['name'];
+                            $PayPalRequestData['L_COST' . $item_loop] = $product_price;
+                            $PayPalRequestData['L_QTY' . $item_loop] = $item['qty'];
+                            if ($sku) {
+                                $PayPalRequestData['L_SKU' . $item_loop] = $sku;
+                            }
+                            $ITEMAMT += $product_price * $item['qty'];
+                            $item_loop++;
+                        }
+                    }
+
+
+                    //Cart Discount
+                    if ($order->get_cart_discount() > 0) {
+                        foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
+
+                            $PayPalRequestData['L_NUMBER' . $item_loop] = $code;
+                            $PayPalRequestData['L_NAME' . $item_loop] = 'Cart Discount';
+                            $PayPalRequestData['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
+                            $PayPalRequestData['L_QTY' . $item_loop] = 1;
+                            $item_loop++;
+                        }
+                        $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
+                    }
+
+                    //Order Discount
+                    if ($order->get_order_discount() > 0) {
+                        foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+                            $PayPalRequestData['L_NUMBER' . $item_loop] = $code;
+                            $PayPalRequestData['L_NAME' . $item_loop] = 'Order Discount';
+                            $PayPalRequestData['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
+                            $PayPalRequestData['L_QTY' . $item_loop] = 1;
+                            $item_loop++;
+                        }
+                        $ITEMAMT = $ITEMAMT - $order->get_order_discount();
+                    }
+
+                    if (get_option('woocommerce_prices_include_tax') == 'yes') {
+                        $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
+                        $tax = 0;
+                    } else {
+                        $shipping = $order->get_total_shipping();
+                        $tax = $order->get_total_tax();
+                    }
+
+                    //tax
+                    if ($tax > 0) {
+                        $PayPalRequestData['TAXAMT'] = $tax;
+                    }
+
+                    // Shipping
+                    if ($shipping > 0) {
+                        $PayPalRequestData['FREIGHTAMT'] = $shipping;
                     }
                 }
 
+                /**
+                 * Add custom Woo cart fees as line items
+                 */
+                foreach (WC()->cart->get_fees() as $fee) {
+                    $PayPalRequestData['L_NUMBER' . $item_loop] = $fee->id;
+                    $PayPalRequestData['L_NAME' . $item_loop] = $fee->name;
+                    $PayPalRequestData['L_AMT' . $item_loop] = number_format($fee->amount, 2, '.', '');
+                    $PayPalRequestData['L_QTY' . $item_loop] = 1;
+                    $item_loop++;
 
-                //Cart Discount
-                if ( $order->get_cart_discount()>0 )
-				{
-                    foreach ( WC()->cart->get_coupons( 'cart' ) as $code => $coupon )
-					{
-
-                        $PayPalRequestData['L_NUMBER' . $item_loop ]	= $code;
-                        $PayPalRequestData['L_NAME' . $item_loop ]		= 'Cart Discount';
-                        $PayPalRequestData['L_AMT' . $item_loop ]		= '-' . WC()->cart->coupon_discount_amounts[ $code ];
-                        $PayPalRequestData['L_QTY' . $item_loop ]		= 1;
-                        $item_loop++;
-                    }
-                    $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
+                    $ITEMAMT += $fee->amount;
                 }
-
-                //Order Discount
-                if ( $order->get_order_discount()>0 )
-				{
-                    foreach ( WC()->cart->get_coupons( 'order' ) as $code => $coupon )
-					{
-                        $PayPalRequestData['L_NUMBER' . $item_loop ]	= $code;
-                        $PayPalRequestData['L_NAME' . $item_loop ]		= 'Order Discount';
-                        $PayPalRequestData['L_AMT' . $item_loop ]		= '-' . WC()->cart->coupon_discount_amounts[ $code ];
-                        $PayPalRequestData['L_QTY' . $item_loop ]		= 1;
-                        $item_loop++;
-                    }
-                    $ITEMAMT = $ITEMAMT - $order->get_order_discount();
-                }
-
-                if( get_option( 'woocommerce_prices_include_tax' ) == 'yes' )
-				{
-                    $shipping 		= $order->get_total_shipping() + $order->get_shipping_tax();
-                    $tax			= 0;
-                }
-				else
-				{
-                    $shipping 		= $order->get_total_shipping();
-                    $tax 			= $order->get_total_tax();
+            }else{
+                if (get_option('woocommerce_prices_include_tax') == 'yes') {
+                    $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
+                    $tax = 0;
+                } else {
+                    $shipping = $order->get_total_shipping();
+                    $tax = $order->get_total_tax();
                 }
 
                 //tax
-                if($tax>0)
-				{
+                if ($tax > 0) {
                     $PayPalRequestData['TAXAMT'] = $tax;
                 }
 
                 // Shipping
-                if($shipping > 0)
-				{
+                if ($shipping > 0) {
                     $PayPalRequestData['FREIGHTAMT'] = $shipping;
                 }
+                $ITEMAMT = WC()->cart->total - $tax - $shipping;
             }
-			
-			/**
-			 * Add custom Woo cart fees as line items
-			 */
-			foreach ( WC()->cart->get_fees() as $fee )
-			{
-				$PayPalRequestData['L_NUMBER' . $item_loop ]	= $fee->id;
-				$PayPalRequestData['L_NAME' . $item_loop ]		= $fee->name;
-				$PayPalRequestData['L_AMT' . $item_loop ]		= number_format($fee->amount,2,'.','');
-				$PayPalRequestData['L_QTY' . $item_loop ]		= 1;
-				$item_loop++;
-				
-				$ITEMAMT += $fee->amount;
-			}
 			
 			$PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
 			
@@ -577,7 +586,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				$this->add_log('PayFlow Endpoint: '.$PayPal->APIEndPoint);
             	$this->add_log(print_r($PayPalResult,true));
 			}
-			
+
 			/**
 			 * Error check
 			 */
