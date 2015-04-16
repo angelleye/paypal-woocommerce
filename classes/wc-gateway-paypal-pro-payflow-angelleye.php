@@ -211,10 +211,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 						),
             'send_items' => array(
                 'title' => __( 'Send Item Details', 'paypal-for-woocommerce' ),
-                'label' => __( 'Send Line Items to PayPal', 'paypal-for-woocommerce' ),
+                'label' => __( 'Send line item details to PayPal', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'description' => __( 'Sends line items to PayPal. If you experience rounding errors this can be disabled.', 'paypal-for-woocommerce' ),
-                'default' => 'no'
+                'description' => __( 'Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce' ),
+                'default' => 'yes'
             ),
 			);
         $this->form_fields = apply_filters( 'angelleye_fc_form_fields', $this->form_fields );
