@@ -136,7 +136,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Enable logging', 'woocommerce' ),
                 'default' => 'no',
-                'description' => __( 'Log PayPal events inside <code>/wc-logs/paypal_payflow.log</code>' ),
+                'description' => __( 'Log PayPal events inside <code>/wp-content/uploads/wc-logs/paypal_payflow-{tag}.log</code>' ),
             ),
 			'error_email_notify' => array(
                 'title' => __( 'Error Email Notifications', 'paypal-for-woocommerce' ),

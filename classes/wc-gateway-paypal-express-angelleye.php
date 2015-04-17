@@ -330,7 +330,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'debug' => array(
                 'title' => __( 'Debug', 'paypal-for-woocommerce' ),
                 'type' => 'checkbox',
-                'label' => __( 'Enable logging <code>/wc-logs/paypal_express.log</code>', 'paypal-for-woocommerce' ),
+                'label' => __( 'Enable logging <code>/wp-content/uploads/wc-logs/paypal_express-{tag}.log</code>', 'paypal-for-woocommerce' ),
                 'default' => 'no'
             ),
 			'error_email_notify' => array(
