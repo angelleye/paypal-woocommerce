@@ -246,6 +246,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!$this->is_ssl()) {
             $require_ssl = __( 'This image requires an SSL host.  Please upload your image to <a target="_blank" href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce' );
         }
+        
+        $woocommerce_enable_guest_checkout = get_option('woocommerce_enable_guest_checkout');
+        if( isset( $woocommerce_enable_guest_checkout ) && ( $woocommerce_enable_guest_checkout === "no" ) ) {
+        	$skip_final_review_option_not_allowed = ' (This is not available because your WooCommerce orders require an account.)';
+        } else {
+        	$skip_final_review_option_not_allowed = '';
+        }
+        
         $args = array(
             'sort_order' => 'ASC',
             'sort_column' => 'post_title',
@@ -523,7 +531,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'skip_final_review' => array(
                 'title' => __( 'Skip Final Review', 'paypal-for-woocommerce' ),
                 'label' => __( 'Enables the option to skip the final review page.', 'paypal-for-woocommerce' ),
-                'description' => __( 'By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.' ),
+                'description' => __( 'By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.'. $skip_final_review_option_not_allowed ),
                 'type' => 'checkbox',
                 'default' => 'no'
             ),
@@ -844,7 +852,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			{
                 $this->add_log( "...ERROR: GetShippingDetails returned empty result" );
             }
-            if($this->skip_final_review == 'yes'){
+            if($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes"){
                 $url = add_query_arg( array('wc-api'=>'WC_Gateway_PayPal_Express_AngellEYE', 'pp_action' => 'payaction' ), home_url());
                 wp_redirect($url);
                 exit();
@@ -902,7 +910,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
 		elseif ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'payaction' )
 		{
-            if ( isset( $_POST ) || $this->skip_final_review == 'yes' )
+            if ( isset( $_POST ) || ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes"))
 			{
                 // Update customer shipping and payment method to posted method
                 $chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
