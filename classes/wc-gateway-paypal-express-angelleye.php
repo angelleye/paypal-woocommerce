@@ -929,14 +929,31 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 // Also, recalculate cart totals to reveal any role-based discounts that were unavailable before registering
                 WC()->cart->calculate_totals();
-                mail('jignesh@multidots.in', 'result', print_r($result, true));
+
                 // Add customer info from other billing fields
                 if ($result['FIRSTNAME'] && apply_filters('woocommerce_checkout_update_customer_data', true, $this)) {
-                    update_user_meta($this->customer_id, 'billing_first_name', $result['FIRSTNAME']);
-                    update_user_meta($this->customer_id, 'billing_last_name', $result['LASTNAME']);
-                    update_user_meta($this->customer_id, 'billing_address_1', $result['SHIPTOSTREET']);
-                    update_user_meta($this->customer_id, 'billing_state', $result['SHIPTOSTATE']);
-                    update_user_meta($this->customer_id, 'billing_email', $result['EMAIL']);
+
+                    update_user_meta($this->customer_id, 'first_name', $result['FIRSTNAME']);
+                    update_user_meta($this->customer_id, 'last_name', $result['LASTNAME']);
+                    update_user_meta($this->customer_id, 'shipping_first_name', $result['FIRSTNAME']);
+                    update_user_meta($this->customer_id, 'shipping_last_name', $result['FIRSTNAME']);
+                    update_user_meta($this->customer_id, 'shipping_address_1', $result['SHIPTOSTREET']);
+                    update_user_meta($this->customer_id, 'shipping_address_2', $result['SHIPTOSTREET2']);
+                    update_user_meta($this->customer_id, 'shipping_city', $result['SHIPTOCITY']);
+                    update_user_meta($this->customer_id, 'shipping_postcode', $result['SHIPTOZIP']);
+                    update_user_meta($this->customer_id, 'shipping_country', $result['SHIPTOCOUNTRYCODE']);
+                    update_user_meta($this->customer_id, 'shipping_state', $result['SHIPTOSTATE']);
+
+                    if ($this->billing_address == 'yes') {
+                        update_user_meta($this->customer_id, 'billing_first_name', $result['FIRSTNAME']);
+                        update_user_meta($this->customer_id, 'billing_last_name', $result['LASTNAME']);
+                        update_user_meta($this->customer_id, 'billing_address_1', $result['SHIPTOSTREET']);
+                        update_user_meta($this->customer_id, 'billing_address_2', $result['SHIPTOSTREET2']);
+                        update_user_meta($this->customer_id, 'billing_city', $result['SHIPTOCITY']);
+                        update_user_meta($this->customer_id, 'billing_postcode', $result['SHIPTOZIP']);
+                        update_user_meta($this->customer_id, 'billing_country', $result['SHIPTOCOUNTRYCODE']);
+                        update_user_meta($this->customer_id, 'billing_state', $result['SHIPTOSTATE']);
+                    }
                 }
             }
         } elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'payaction') {
@@ -2198,7 +2215,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * Regular checkout process
      */
     function regular_checkout($posted) {
-        mail('jignesh@multidots.in', 'test', print_r($posted, true));
+        
         if ($posted['payment_method'] == 'paypal_express' && wc_notice_count('error') == 0) {
 
             if (!is_user_logged_in() && isset($posted['createaccount'])) {
