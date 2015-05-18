@@ -864,95 +864,78 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
 
             if (isset($_POST['createaccount'])) {
-                /* if (empty($_POST['username'])) {
-                  wc_add_notice(__('Username is required', 'paypal-for-woocommerce'), 'error');
-                  } elseif (username_exists($_POST['username'])) {
-                  wc_add_notice(__('This username is already registered.', 'paypal-for-woocommerce'), 'error');
-                  } elseif (empty($_POST['email'])) {
-                  wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
-                  } elseif (empty($_POST['password']) || empty($_POST['repassword'])) {
-                  wc_add_notice(__('Password is required.', 'paypal-for-woocommerce'), 'error');
-                  } elseif ($_POST['password'] != $_POST['repassword']) {
-                  wc_add_notice(__('Passwords do not match.', 'paypal-for-woocommerce'), 'error');
-                  } elseif (get_user_by('email', $_POST['email']) != false) {
-                  wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
-                  } else {
-                  $data = array(
-                  'user_login' => addslashes($_POST['username']),
-                  'user_email' => addslashes($_POST['email']),
-                  'user_pass' => addslashes($_POST['password']),
-                  );
-                  $userID = wp_insert_user($data);
-                  if (!is_wp_error($userID)) {
-                  update_user_meta($userID, 'billing_first_name', $result['FIRSTNAME']);
-                  update_user_meta($userID, 'billing_last_name', $result['LASTNAME']);
-                  update_user_meta($userID, 'billing_address_1', $result['SHIPTOSTREET']);
-                  update_user_meta($userID, 'billing_state', $result['SHIPTOSTATE']);
-                  update_user_meta($userID, 'billing_email', $result['EMAIL']);
-
-                  $user_login = esc_attr($_POST["username"]);
-                  $user_password = esc_attr($_POST["password"]);
-                  $user_email = esc_attr($_POST["email"]);
-                  $creds = array(
-                  'user_login' => $user_login,
-                  'user_password' => $user_password,
-                  'remember' => true,
-                  );
-
-                  $user = wp_signon($creds, false);
-                  if (is_wp_error($user))
-                  wc_add_notice($user->get_error_message(), 'error');
-                  else {
-                  wp_set_current_user($user->ID); //Here is where we update the global user variables
-                  header("Refresh:0");
-                  die();
-                  }
-                  }
-                  } */
-
                 $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
+                if (empty($_POST['username'])) {
+                    wc_add_notice(__('Username is required', 'paypal-for-woocommerce'), 'error');
+                } elseif (username_exists($_POST['username'])) {
+                    wc_add_notice(__('This username is already registered.', 'paypal-for-woocommerce'), 'error');
+                } elseif (empty($_POST['email'])) {
+                    wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
+                } elseif (empty($_POST['password']) || empty($_POST['repassword'])) {
+                    wc_add_notice(__('Password is required.', 'paypal-for-woocommerce'), 'error');
+                } elseif ($_POST['password'] != $_POST['repassword']) {
+                    wc_add_notice(__('Passwords do not match.', 'paypal-for-woocommerce'), 'error');
+                } elseif (get_user_by('email', $_POST['email']) != false) {
+                    wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
+                } else {
 
-                $username = !empty($_POST['username']) ? $_POST['username'] : '';
-                $password = !empty($_POST['password']) ? $_POST['password'] : '';
-                $new_customer = wc_create_new_customer($_POST['email'], $username, $password);
+                    $username = !empty($_POST['username']) ? $_POST['username'] : '';
+                    $password = !empty($_POST['password']) ? $_POST['password'] : '';
+                    $email = $_POST['email'];
 
-                if (is_wp_error($new_customer)) {
-                    throw new Exception($new_customer->get_error_message());
-                }
+                    try {
 
-                $this->customer_id = $new_customer;
+                        // Anti-spam trap
+                        if (!empty($_POST['email_2'])) {
+                            throw new Exception(__('Anti-spam field was filled in.', 'woocommerce'));
+                        }
 
-                wc_set_customer_auth_cookie($this->customer_id);
+                        $new_customer = wc_create_new_customer(sanitize_email($email), wc_clean($username), $password);
 
-                // As we are now logged in, checkout will need to refresh to show logged in data
-                WC()->session->set('reload_checkout', true);
+                        if (is_wp_error($new_customer)) {
+                            throw new Exception($new_customer->get_error_message());
+                        }
 
-                // Also, recalculate cart totals to reveal any role-based discounts that were unavailable before registering
-                WC()->cart->calculate_totals();
+                        if (apply_filters('paypal-for-woocommerce_registration_auth_new_customer', true, $new_customer)) {
+                            wc_set_customer_auth_cookie($new_customer);
+                        }
+                    } catch (Exception $e) {
+                        wc_add_notice('<strong>' . __('Error', 'paypal-for-woocommerce') . ':</strong> ' . $e->getMessage(), 'error');
+                    }
 
-                // Add customer info from other billing fields
-                if ($result['FIRSTNAME'] && apply_filters('woocommerce_checkout_update_customer_data', true, $this)) {
 
-                    update_user_meta($this->customer_id, 'first_name', $result['FIRSTNAME']);
-                    update_user_meta($this->customer_id, 'last_name', $result['LASTNAME']);
-                    update_user_meta($this->customer_id, 'shipping_first_name', $result['FIRSTNAME']);
-                    update_user_meta($this->customer_id, 'shipping_last_name', $result['FIRSTNAME']);
-                    update_user_meta($this->customer_id, 'shipping_address_1', $result['SHIPTOSTREET']);
-                    update_user_meta($this->customer_id, 'shipping_address_2', $result['SHIPTOSTREET2']);
-                    update_user_meta($this->customer_id, 'shipping_city', $result['SHIPTOCITY']);
-                    update_user_meta($this->customer_id, 'shipping_postcode', $result['SHIPTOZIP']);
-                    update_user_meta($this->customer_id, 'shipping_country', $result['SHIPTOCOUNTRYCODE']);
-                    update_user_meta($this->customer_id, 'shipping_state', $result['SHIPTOSTATE']);
+                    $this->customer_id = $new_customer;
 
-                    if ($this->billing_address == 'yes') {
-                        update_user_meta($this->customer_id, 'billing_first_name', $result['FIRSTNAME']);
-                        update_user_meta($this->customer_id, 'billing_last_name', $result['LASTNAME']);
-                        update_user_meta($this->customer_id, 'billing_address_1', $result['SHIPTOSTREET']);
-                        update_user_meta($this->customer_id, 'billing_address_2', $result['SHIPTOSTREET2']);
-                        update_user_meta($this->customer_id, 'billing_city', $result['SHIPTOCITY']);
-                        update_user_meta($this->customer_id, 'billing_postcode', $result['SHIPTOZIP']);
-                        update_user_meta($this->customer_id, 'billing_country', $result['SHIPTOCOUNTRYCODE']);
-                        update_user_meta($this->customer_id, 'billing_state', $result['SHIPTOSTATE']);
+                    // As we are now logged in, checkout will need to refresh to show logged in data
+                    WC()->session->set('reload_checkout', true);
+
+                    // Also, recalculate cart totals to reveal any role-based discounts that were unavailable before registering
+                    WC()->cart->calculate_totals();
+
+                    // Add customer info from other billing fields
+                    if ($result['FIRSTNAME'] && apply_filters('woocommerce_checkout_update_customer_data', true, $this)) {
+
+                        update_user_meta($this->customer_id, 'first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
+                        update_user_meta($this->customer_id, 'last_name', isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
+                        update_user_meta($this->customer_id, 'shipping_first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
+                        update_user_meta($this->customer_id, 'shipping_last_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
+                        update_user_meta($this->customer_id, 'shipping_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
+                        update_user_meta($this->customer_id, 'shipping_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
+                        update_user_meta($this->customer_id, 'shipping_city', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '' );
+                        update_user_meta($this->customer_id, 'shipping_postcode', isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
+                        update_user_meta($this->customer_id, 'shipping_country', isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
+                        update_user_meta($this->customer_id, 'shipping_state', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '' );
+
+                        if ($this->billing_address == 'yes') {
+                            update_user_meta($this->customer_id, 'billing_first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
+                            update_user_meta($this->customer_id, 'billing_last_name', isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
+                            update_user_meta($this->customer_id, 'billing_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
+                            update_user_meta($this->customer_id, 'billing_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
+                            update_user_meta($this->customer_id, 'billing_city', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '');
+                            update_user_meta($this->customer_id, 'billing_postcode', isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
+                            update_user_meta($this->customer_id, 'billing_country', isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
+                            update_user_meta($this->customer_id, 'billing_state', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '');
+                        }
                     }
                 }
             }
@@ -1027,13 +1010,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 $checkout_form_data = maybe_unserialize($this->get_session('checkout_form'));
                 if (isset($checkout_form_data) && !empty($checkout_form_data)) {
-                    if (apply_filters('woocommerce_checkout_update_customer_data', true, $checkout_form_data)) {
-                        foreach ($checkout_form_data as $key => $value) {
-                            if (strpos($key, 'billing_') !== false && !empty($value) && !is_array($value)) {
-                                update_user_meta($this->customer_id, $key, $value);
-                            } elseif (WC()->cart->needs_shipping() && strpos($key, 'shipping_') !== false && !empty($value) && !is_array($value)) {
-                                update_user_meta($this->customer_id, $key, $value);
-                            }
+                    foreach ($checkout_form_data as $key => $value) {
+                        if (strpos($key, 'billing_') !== false && !empty($value) && !is_array($value)) {
+                            update_user_meta($this->customer_id, $key, $value);
+                        } elseif (WC()->cart->needs_shipping() && strpos($key, 'shipping_') !== false && !empty($value) && !is_array($value)) {
+                            update_user_meta($this->customer_id, $key, $value);
                         }
                     }
                     do_action('woocommerce_checkout_update_user_meta', $this->customer_id, $checkout_form_data);
@@ -2215,7 +2196,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * Regular checkout process
      */
     function regular_checkout($posted) {
-        
+
         if ($posted['payment_method'] == 'paypal_express' && wc_notice_count('error') == 0) {
 
             if (!is_user_logged_in() && isset($posted['createaccount'])) {
