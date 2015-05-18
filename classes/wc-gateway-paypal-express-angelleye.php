@@ -970,13 +970,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 require_once("lib/NameParser.php");
                 $parser = new FullNameParser();
                 $split_name = $parser->split_full_name($this->get_session('shiptoname'));
-                $shipping_first_name = $split_name['fname'];
-                $shipping_last_name = $split_name['lname'];
-                $full_name = $split_name['fullname'];
+                $shipping_first_name    = $split_name['fname'];
+                $shipping_last_name     = $split_name['lname'];
+                $full_name              = $split_name['fullname'];
 
-                update_post_meta($order_id, '_payment_method', $this->id);
-                update_post_meta($order_id, '_payment_method_title', $this->title);
-                if (is_user_logged_in()) {
+				update_post_meta( $order_id, '_payment_method',   $this->id );
+				update_post_meta( $order_id, '_payment_method_title',  $this->title );
+                if( is_user_logged_in() ){
                     $userLogined = wp_get_current_user();
                     update_post_meta($order_id, '_billing_email', $userLogined->user_email);
                 } else {
