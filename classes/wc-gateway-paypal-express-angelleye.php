@@ -2009,12 +2009,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     static function woocommerce_before_cart() {
         global $pp_settings, $pp_pro, $pp_payflow;
+        $payment_gateways_count = 0;
         echo "<style>table.cart td.actions .input-text, table.cart td.actions .button, table.cart td.actions .checkout-button {margin-bottom: 0.53em !important}</style>";
         if ((@$pp_settings['enabled']== 'yes') && 0 < WC()->cart->total ) {
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
             unset($payment_gateways['paypal_pro']);
             unset($payment_gateways['paypal_pro_payflow']);
-            if (empty($payment_gateways))
+            if((isset($pp_settings['show_on_checkout']) && $pp_settings['show_on_checkout'] == 'regular') ) {
+            	$payment_gateways_count = 1;
+            } 
+            if ((empty($payment_gateways) || @$pp_settings['enabled']== 'yes') && (count($payment_gateways) == $payment_gateways_count)) {
                 if (@$pp_pro['enabled'] == 'yes' || @$pp_payflow['enabled'] == 'yes') {
                     echo '<script type="text/javascript">
                                 jQuery(document).ready(function(){
@@ -2029,6 +2033,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                     display: none !important;
                                 }</style>';
                 }
+            }
         }
     }
     /**
