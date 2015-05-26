@@ -906,26 +906,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             'user_password' => $password,
                             'remember' => true,
                         );
-
                         $user = wp_signon( $creds, false );
-                        if ( is_wp_error($user) )
+                        if ( is_wp_error($user) ) {
                             wc_add_notice($user->get_error_message(), 'error');
-                        else
-                        {
+                        } else {
                             wp_set_current_user($user->ID); //Here is where we update the global user variables
-                            header("Refresh:0");
-                            die();
                         }
-                        
-                        
                         
                     } catch (Exception $e) {
                         wc_add_notice('<strong>' . __('Error', 'paypal-for-woocommerce') . ':</strong> ' . $e->getMessage(), 'error');
                     }
 
 
-                    $this->customer_id = $new_customer;
-
+                    $this->customer_id = $user->ID;
+                    
                     // As we are now logged in, checkout will need to refresh to show logged in data
                     WC()->session->set('reload_checkout', true);
 
@@ -933,8 +927,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     WC()->cart->calculate_totals();
 
                     // Add customer info from other billing fields
-                    if ($result['FIRSTNAME'] && apply_filters('woocommerce_checkout_update_customer_data', true, $this)) {
-
+                    if (isset($result)) {
                         update_user_meta($this->customer_id, 'first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
                         update_user_meta($this->customer_id, 'last_name', isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
                         update_user_meta($this->customer_id, 'shipping_first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
