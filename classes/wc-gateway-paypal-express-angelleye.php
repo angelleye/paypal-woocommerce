@@ -1470,13 +1470,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             } else {
                 $shipping = WC()->cart->shipping_total;
             }
-            $greater_decimal_amount = $this->round_up_compare(WC()->cart->tax_total, $shipping);
-
-            if ($greater_decimal_amount == WC()->cart->tax_total) {
-                $PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);
-            } else {
-                $PayPalRequestData['Payments'][0]['taxamt'] = $this->cut_off(WC()->cart->tax_total, 2);
-            }
+            $PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);
         }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
@@ -1878,13 +1872,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             } else {
                 $shipping = WC()->cart->shipping_total;
             }
-            $greater_decimal_amount = $this->round_up_compare(WC()->cart->tax_total, $shipping);
-
-            if ($greater_decimal_amount == WC()->cart->tax_total) {
-                $PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);
-            } else {
-                $PayPalRequestData['Payments'][0]['taxamt'] = $this->cut_off(WC()->cart->tax_total, 2);
-            }
+            $PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);
         }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
@@ -2203,18 +2191,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->paypal_express_checkout($posted);
         }
         return;
-    }
-
-    function round_up_compare($amount, $amount2) {
-
-        $amount_array = explode('.', $amount);
-        $amount_array_2 = explode('.', $amount2);
-
-        if ($amount_array[1][3] > $amount_array_2[1][3]) {
-            return $amount;
-        } else {
-            return $amount2;
-        }
     }
 
     function cut_off($number) {
