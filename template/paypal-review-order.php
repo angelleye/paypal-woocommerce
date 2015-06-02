@@ -42,8 +42,7 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
                     // Formatted Addresses
                     $address = array(
                         'first_name' 	=> WC()->customer->shiptoname,
-                        'last_name'		=> "",
-                        'company'		=> "",
+                        'company'		=> WC()->customer->company,
                         'address_1'		=> WC()->customer->get_address(),
                         'address_2'		=> "",
                         'city'			=> WC()->customer->get_city(),
@@ -59,6 +58,55 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
 
         </div><!-- /.col-1 -->
         <div class="col-2">
+        	<?php 
+        	$woocommerce_paypal_express_settings = maybe_unserialize(get_option('woocommerce_paypal_express_settings'));
+        	if( isset($woocommerce_paypal_express_settings['billing_address']) && $woocommerce_paypal_express_settings['billing_address'] == 'yes') :
+        	?>
+        	<div class="col-1">
+
+	            <div class="title">
+	                <h3><?php _e( 'Billing Address', 'woocommerce' ); ?></h3>
+	            </div>
+	            <div class="address">
+	                <p>
+	                    <?php
+	                    // Formatted Addresses
+	                    $user_submit_form = maybe_unserialize(WC()->session->checkout_form);
+	                    
+	                    if( (isset($user_submit_form) && !empty($user_submit_form)) && is_array($user_submit_form) ) {
+	                    	if( isset($user_submit_form['ship_to_different_address']) && $user_submit_form['ship_to_different_address'] == true ) {
+	                    		$billing_address = array(
+		                        'first_name' 	=> $user_submit_form['billing_first_name'],
+		                        'last_name'		=> $user_submit_form['billing_last_name'],
+		                        'company'		=> $user_submit_form['billing_company'],
+		                        'address_1'		=> $user_submit_form['billing_address_1'],
+		                        'address_2'		=> $user_submit_form['billing_address_2'],
+		                        'city'			=> $user_submit_form['billing_city'],
+		                        'state'			=> $user_submit_form['billing_state'],
+		                        'postcode'		=> $user_submit_form['billing_postcode'],
+		                        'country'		=> $user_submit_form['billing_country']
+		                    	) ;
+	                    	}
+	                    } else {
+	                    
+			                    $billing_address = array(
+		                         'first_name' 	=> WC()->customer->shiptoname,
+		                        'company'		=> WC()->customer->company,
+		                        'address_1'		=> WC()->customer->get_address(),
+		                        'address_2'		=> "",
+		                        'city'			=> WC()->customer->get_city(),
+		                        'state'			=> WC()->customer->get_state(),
+		                        'postcode'		=> WC()->customer->get_postcode(),
+		                        'country'		=> WC()->customer->get_country()
+		                    	) ;
+	                    }
+                    	echo WC()->countries->get_formatted_address( $billing_address );
+	                    ?>
+	                </p>
+	            </div>
+
+        </div><!-- /.col-1 -->
+        	<?php endif; ?>
         </div><!-- /.col-2 -->
     </div><!-- /.col2-set -->
 <?php endif; ?>

@@ -816,22 +816,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     };
                     WC()->customer->set_shipping_country($result['SHIPTOCOUNTRYCODE']);
                 }
-                if (isset($result['SHIPTONAME']))
-                    WC()->customer->shiptoname = $result['SHIPTONAME'];
-                if (isset($result['SHIPTOSTREET']))
-                    WC()->customer->set_address($result['SHIPTOSTREET']);
-                if (isset($result['SHIPTOCITY']))
-                    WC()->customer->set_city($result['SHIPTOCITY']);
-                if (isset($result['SHIPTOCOUNTRYCODE']))
-                    WC()->customer->set_country($result['SHIPTOCOUNTRYCODE']);
-                if (isset($result['SHIPTOSTATE']))
-                    WC()->customer->set_state($this->get_state_code($result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE']));
-                if (isset($result['SHIPTOZIP']))
-                    WC()->customer->set_postcode($result['SHIPTOZIP']);
-                if (isset($result['SHIPTOSTATE']))
-                    WC()->customer->set_shipping_state($this->get_state_code($result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE']));
-                if (isset($result['SHIPTOZIP']))
-                    WC()->customer->set_shipping_postcode($result['SHIPTOZIP']);
+                
+                if ( isset( $result['SHIPTONAME'] ) ) WC()->customer->shiptoname =  $result['SHIPTONAME'] ;
+                if ( isset( $result['FIRSTNAME'] ) ) WC()->customer->firstname =  $result['FIRSTNAME'] ;
+                if ( isset( $result['LASTNAME'] ) ) WC()->customer->lastname =  $result['LASTNAME'] ;
+                if ( isset( $result['SHIPTOSTREET'] ) ) WC()->customer->set_address( $result['SHIPTOSTREET'] );
+                if ( isset( $result['SHIPTOCITY'] ) ) WC()->customer->set_city( $result['SHIPTOCITY'] );
+                if ( isset( $result['SHIPTOCOUNTRYCODE'] ) ) WC()->customer->set_country( $result['SHIPTOCOUNTRYCODE'] );
+                if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
+                if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_postcode( $result['SHIPTOZIP'] );
+                if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_shipping_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
+                if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_shipping_postcode( $result['SHIPTOZIP'] );
+             
 
                 /**
                  * Save GECD data in sessions for use in DECP
@@ -920,18 +916,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                     $this->customer_id = $user->ID;
                     
-                    // As we are now logged in, checkout will need to refresh to show logged in data
+                         // As we are now logged in, checkout will need to refresh to show logged in data
                     WC()->session->set('reload_checkout', true);
 
                     // Also, recalculate cart totals to reveal any role-based discounts that were unavailable before registering
                     WC()->cart->calculate_totals();
+                   
+                     require_once("lib/NameParser.php");
+	                $parser = new FullNameParser();
+	                $split_name = $parser->split_full_name($result['SHIPTONAME']);
+	                $shipping_first_name = $split_name['fname'];
+	                $shipping_last_name = $split_name['lname'];
+	                $full_name = $split_name['fullname'];
 
                     // Add customer info from other billing fields
                     if (isset($result)) {
                         update_user_meta($this->customer_id, 'first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
                         update_user_meta($this->customer_id, 'last_name', isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
-                        update_user_meta($this->customer_id, 'shipping_first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
-                        update_user_meta($this->customer_id, 'shipping_last_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
+                        update_user_meta($this->customer_id, 'shipping_first_name', $shipping_first_name);
+                        update_user_meta($this->customer_id, 'shipping_last_name', $shipping_last_name);
                         update_user_meta($this->customer_id, 'shipping_company', isset($result['BUSINESS']) ? $result['BUSINESS'] : '' );
                         update_user_meta($this->customer_id, 'shipping_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
                         update_user_meta($this->customer_id, 'shipping_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
@@ -939,11 +942,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         update_user_meta($this->customer_id, 'shipping_postcode', isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
                         update_user_meta($this->customer_id, 'shipping_country', isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
                         update_user_meta($this->customer_id, 'shipping_state', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '' );
-
-
-                        if ($this->billing_address == 'yes') {
-                            update_user_meta($this->customer_id, 'billing_first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
-                            update_user_meta($this->customer_id, 'billing_last_name', isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
+                		$user_submit_form = maybe_unserialize(WC()->session->checkout_form);
+	                    if( (isset($user_submit_form) && !empty($user_submit_form) && is_array($user_submit_form) )) {
+	                    	update_user_meta($this->customer_id, 'billing_first_name', isset($user_submit_form['billing_first_name']) ?  $user_submit_form['billing_first_name'] : $result['FIRSTNAME']);
+                            update_user_meta($this->customer_id, 'billing_last_name', isset($user_submit_form['billing_last_name']) ?  $user_submit_form['billing_last_name'] : $result['LASTNAME']);
+                            update_user_meta($this->customer_id, 'billing_address_1', isset($user_submit_form['billing_address_1']) ?  $user_submit_form['billing_address_1'] : $result['SHIPTOSTREET']);
+                            update_user_meta($this->customer_id, 'billing_address_2', isset($user_submit_form['billing_address_2']) ?  $user_submit_form['billing_address_2'] : $result['SHIPTOSTREET2']);
+                            update_user_meta($this->customer_id, 'billing_city', isset($user_submit_form['billing_city']) ?  $user_submit_form['billing_city'] : $result['SHIPTOCITY']);
+                            update_user_meta($this->customer_id, 'billing_postcode', isset($user_submit_form['billing_postcode']) ?  $user_submit_form['billing_postcode'] : $result['SHIPTOZIP']);
+                            update_user_meta($this->customer_id, 'billing_country', isset($user_submit_form['billing_country']) ?  $user_submit_form['billing_country'] : $result['SHIPTOCOUNTRYCODE']);
+                            update_user_meta($this->customer_id, 'billing_state', isset($user_submit_form['billing_state']) ?  $user_submit_form['billing_state'] : $result['SHIPTOSTATE']);
+                            update_user_meta($this->customer_id, 'billing_phone', isset($user_submit_form['billing_phone']) ?  $user_submit_form['billing_phone'] : $result['PHONENUM']);
+                            update_user_meta($this->customer_id, 'billing_email', isset($user_submit_form['billing_email']) ?  $user_submit_form['billing_email'] : $result['EMAIL']);
+	                    } else {
+                            update_user_meta($this->customer_id, 'billing_first_name', $shipping_first_name);
+                            update_user_meta($this->customer_id, 'billing_last_name', $shipping_last_name);
                             update_user_meta($this->customer_id, 'billing_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
                             update_user_meta($this->customer_id, 'billing_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
                             update_user_meta($this->customer_id, 'billing_city', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '');
@@ -952,7 +965,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             update_user_meta($this->customer_id, 'billing_state', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '');
                             update_user_meta($this->customer_id, 'billing_phone', isset($result['PHONENUM']) ? $result['PHONENUM'] : '');
                             update_user_meta($this->customer_id, 'billing_email', isset($result['EMAIL']) ? $result['EMAIL'] : '');
-                        }
+	                    }
                     }
                 }
             }
@@ -990,51 +1003,57 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $shipping_first_name = $split_name['fname'];
                 $shipping_last_name = $split_name['lname'];
                 $full_name = $split_name['fullname'];
+                
+               	$this->set_session('firstname', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : $shipping_first_name);
+                $this->set_session('lastname', isset($result['LASTNAME']) ?  $result['LASTNAME'] : $shipping_last_name);
 
                 update_post_meta($order_id, '_payment_method', $this->id);
                 update_post_meta($order_id, '_payment_method_title', $this->title);
+                
                 if (is_user_logged_in()) {
                     $userLogined = wp_get_current_user();
                     update_post_meta($order_id, '_billing_email', $userLogined->user_email);
                 } else {
                     update_post_meta($order_id, '_billing_email', $this->get_session('payeremail'));
                 }
-                update_post_meta($order_id, '_shipping_first_name', $shipping_first_name);
-                update_post_meta($order_id, '_shipping_last_name', $shipping_last_name);
-                update_post_meta($order_id, '_shipping_full_name', $full_name);
-                update_post_meta($order_id, '_shipping_company', $this->get_session('company'));
-                update_post_meta($order_id, '_billing_phone', $this->get_session('phonenum'));
-                update_post_meta($order_id, '_shipping_address_1', $this->get_session('shiptostreet'));
-                update_post_meta($order_id, '_shipping_address_2', $this->get_session('shiptostreet2'));
-                update_post_meta($order_id, '_shipping_city', $this->get_session('shiptocity'));
-                update_post_meta($order_id, '_shipping_postcode', $this->get_session('shiptozip'));
-                update_post_meta($order_id, '_shipping_country', $this->get_session('shiptocountrycode'));
-                update_post_meta($order_id, '_shipping_state', $this->get_state_code($this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
-                update_post_meta($order_id, '_customer_user', get_current_user_id());
-
-                if ($this->billing_address == 'yes') {
-                    update_post_meta($order_id, '_billing_first_name', $shipping_first_name);
-                    update_post_meta($order_id, '_billing_last_name', $shipping_last_name);
-                    update_post_meta($order_id, '_billing_full_name', $full_name);
-                    update_post_meta($order_id, '_billing_company', "");
-                    update_post_meta($order_id, '_billing_address_1', $this->get_session('shiptostreet'));
-                    update_post_meta($order_id, '_billing_address_2', $this->get_session('shiptostreet2'));
-                    update_post_meta($order_id, '_billing_city', $this->get_session('shiptocity'));
-                    update_post_meta($order_id, '_billing_postcode', $this->get_session('shiptozip'));
-                    update_post_meta($order_id, '_billing_country', $this->get_session('shiptocountrycode'));
-                    update_post_meta($order_id, '_billing_state', $this->get_state_code($this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
-                }
-
+               
                 $checkout_form_data = maybe_unserialize($this->get_session('checkout_form'));
                 if (isset($checkout_form_data) && !empty($checkout_form_data)) {
                     foreach ($checkout_form_data as $key => $value) {
                         if (strpos($key, 'billing_') !== false && !empty($value) && !is_array($value)) {
                             update_user_meta($this->customer_id, $key, $value);
+                            update_post_meta($order_id, '_'.$key, $value);
                         } elseif (WC()->cart->needs_shipping() && strpos($key, 'shipping_') !== false && !empty($value) && !is_array($value)) {
                             update_user_meta($this->customer_id, $key, $value);
+                            update_post_meta($order_id, '_'.$key, $value);
                         }
                     }
                     do_action('woocommerce_checkout_update_user_meta', $this->customer_id, $checkout_form_data);
+                } else {
+                	update_post_meta($order_id, '_shipping_first_name', $this->get_session('firstname'));
+	                update_post_meta($order_id, '_shipping_last_name', $this->get_session('lastname'));
+	                update_post_meta($order_id, '_shipping_full_name', $full_name);
+	                update_post_meta($order_id, '_shipping_company', $this->get_session('company'));
+	                update_post_meta($order_id, '_billing_phone', $this->get_session('phonenum'));
+	                update_post_meta($order_id, '_shipping_address_1', $this->get_session('shiptostreet'));
+	                update_post_meta($order_id, '_shipping_address_2', $this->get_session('shiptostreet2'));
+	                update_post_meta($order_id, '_shipping_city', $this->get_session('shiptocity'));
+	                update_post_meta($order_id, '_shipping_postcode', $this->get_session('shiptozip'));
+	                update_post_meta($order_id, '_shipping_country', $this->get_session('shiptocountrycode'));
+	                update_post_meta($order_id, '_shipping_state', $this->get_state_code($this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
+	                update_post_meta($order_id, '_customer_user', get_current_user_id());
+	                if ($this->billing_address == 'yes') {
+	                	update_post_meta( $order_id, '_billing_first_name',  $this->get_session('firstname') );
+	                    update_post_meta( $order_id, '_billing_last_name',  $this->get_session('lastname') );
+	                    update_post_meta( $order_id, '_billing_full_name',  $full_name );
+	                    update_post_meta( $order_id, '_billing_company',   $this->get_session('company') );
+	                    update_post_meta( $order_id, '_billing_address_1',  $this->get_session('shiptostreet'));
+	                    update_post_meta( $order_id, '_billing_address_2',  $this->get_session('shiptostreet2'));
+	                    update_post_meta( $order_id, '_billing_city',    $this->get_session('shiptocity'));
+	                    update_post_meta( $order_id, '_billing_postcode',   $this->get_session('shiptozip'));
+	                    update_post_meta( $order_id, '_billing_country',   $this->get_session('shiptocountrycode'));
+	                    update_post_meta( $order_id, '_billing_state',   $this->get_state_code( $this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
+	                }
                 }
 
 
@@ -1330,6 +1349,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $Payment['shiptozip'] = @$posted['shipping_postcode'];
                 $Payment['shiptocountrycode'] = @$posted['shipping_country'];
                 $Payment['shiptophonenum'] = @$posted['shipping_phone'];
+                
             } else {
                 $Payment['shiptoname'] = $posted['billing_first_name'] . ' ' . $posted['billing_last_name'];
                 $Payment['shiptostreet'] = $posted['billing_address_1'];
