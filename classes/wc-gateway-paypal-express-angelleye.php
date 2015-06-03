@@ -2250,7 +2250,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (!is_user_logged_in() && isset($posted['createaccount']) && $posted['createaccount'] != 0) {
 
                 $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
-
                 $username = !empty($posted['account_username']) ? $posted['account_username'] : '';
                 $password = !empty($posted['account_password']) ? $posted['account_password'] : '';
                 $new_customer = wc_create_new_customer($posted['billing_email'], $username, $password);
