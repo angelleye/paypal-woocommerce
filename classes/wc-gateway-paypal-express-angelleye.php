@@ -1021,6 +1021,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (isset($checkout_form_data) && !empty($checkout_form_data)) {
                     foreach ($checkout_form_data as $key => $value) {
                         if (strpos($key, 'billing_') !== false && !empty($value) && !is_array($value)) {
+                        	if($checkout_form_data['ship_to_different_address'] == false) {
+                        		$shipping_key = str_replace('billing_', 'shipping_', $key);
+                        		update_user_meta($this->customer_id, $shipping_key, $value);
+                        		update_post_meta($order_id, '_'.$shipping_key, $value);
+                        	}
                             update_user_meta($this->customer_id, $key, $value);
                             update_post_meta($order_id, '_'.$key, $value);
                         } elseif (WC()->cart->needs_shipping() && strpos($key, 'shipping_') !== false && !empty($value) && !is_array($value)) {
@@ -2241,7 +2246,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         if ($posted['payment_method'] == 'paypal_express' && wc_notice_count('error') == 0) {
 
-            if (!is_user_logged_in() && isset($posted['createaccount'])) {
+        	//get_option( 'woocommerce_enable_guest_checkout' ) == 'false'
+            if (!is_user_logged_in() && isset($posted['createaccount']) && $posted['createaccount'] != 0) {
 
                 $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
 
