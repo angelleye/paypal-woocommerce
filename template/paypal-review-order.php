@@ -41,14 +41,14 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
                     <?php
                     // Formatted Addresses
                     $address = array(
-                        'first_name' 	=> WC()->customer->shiptoname,
-                        'company'		=> WC()->customer->company,
-                        'address_1'		=> WC()->customer->get_address(),
-                        'address_2'		=> "",
-                        'city'			=> WC()->customer->get_city(),
-                        'state'			=> WC()->customer->get_state(),
-                        'postcode'		=> WC()->customer->get_postcode(),
-                        'country'		=> WC()->customer->get_country()
+                    'first_name' 	=> WC()->customer->shiptoname,
+                    'company'		=> WC()->customer->company,
+                    'address_1'		=> WC()->customer->get_address(),
+                    'address_2'		=> "",
+                    'city'			=> WC()->customer->get_city(),
+                    'state'			=> WC()->customer->get_state(),
+                    'postcode'		=> WC()->customer->get_postcode(),
+                    'country'		=> WC()->customer->get_country()
                     ) ;
 
                     echo WC()->countries->get_formatted_address( $address );
@@ -61,7 +61,39 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
         	<?php 
         	$woocommerce_paypal_express_settings = maybe_unserialize(get_option('woocommerce_paypal_express_settings'));
         	if( isset($woocommerce_paypal_express_settings['billing_address']) && $woocommerce_paypal_express_settings['billing_address'] == 'yes') :
-        	?>
+        	// Formatted Addresses
+        	$user_submit_form = maybe_unserialize(WC()->session->checkout_form);
+
+        	if( (isset($user_submit_form) && !empty($user_submit_form)) && is_array($user_submit_form) ) {
+        		if( isset($user_submit_form['ship_to_different_address']) && $user_submit_form['ship_to_different_address'] == true ) {
+        			$billing_address = array(
+        			'first_name' 	=> $user_submit_form['billing_first_name'],
+        			'last_name'		=> $user_submit_form['billing_last_name'],
+        			'company'		=> $user_submit_form['billing_company'],
+        			'address_1'		=> $user_submit_form['billing_address_1'],
+        			'address_2'		=> $user_submit_form['billing_address_2'],
+        			'city'			=> $user_submit_form['billing_city'],
+        			'state'			=> $user_submit_form['billing_state'],
+        			'postcode'		=> $user_submit_form['billing_postcode'],
+        			'country'		=> $user_submit_form['billing_country']
+        			) ;
+        		}
+        	} else {
+
+        		$billing_address = array(
+        		'first_name' 	=> WC()->customer->shiptoname,
+        		'company'		=> WC()->customer->company,
+        		'address_1'		=> WC()->customer->get_address(),
+        		'address_2'		=> "",
+        		'city'			=> WC()->customer->get_city(),
+        		'state'			=> WC()->customer->get_state(),
+        		'postcode'		=> WC()->customer->get_postcode(),
+        		'country'		=> WC()->customer->get_country()
+        		) ;
+        	}
+
+        	if( isset($billing_address) && !empty($billing_address) ) :
+        		?>
         	<div class="col-1">
 
 	            <div class="title">
@@ -69,44 +101,16 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
 	            </div>
 	            <div class="address">
 	                <p>
-	                    <?php
-	                    // Formatted Addresses
-	                    $user_submit_form = maybe_unserialize(WC()->session->checkout_form);
 	                    
-	                    if( (isset($user_submit_form) && !empty($user_submit_form)) && is_array($user_submit_form) ) {
-	                    	if( isset($user_submit_form['ship_to_different_address']) && $user_submit_form['ship_to_different_address'] == true ) {
-	                    		$billing_address = array(
-		                        'first_name' 	=> $user_submit_form['billing_first_name'],
-		                        'last_name'		=> $user_submit_form['billing_last_name'],
-		                        'company'		=> $user_submit_form['billing_company'],
-		                        'address_1'		=> $user_submit_form['billing_address_1'],
-		                        'address_2'		=> $user_submit_form['billing_address_2'],
-		                        'city'			=> $user_submit_form['billing_city'],
-		                        'state'			=> $user_submit_form['billing_state'],
-		                        'postcode'		=> $user_submit_form['billing_postcode'],
-		                        'country'		=> $user_submit_form['billing_country']
-		                    	) ;
-	                    	}
-	                    } else {
-	                    
-			                    $billing_address = array(
-		                         'first_name' 	=> WC()->customer->shiptoname,
-		                        'company'		=> WC()->customer->company,
-		                        'address_1'		=> WC()->customer->get_address(),
-		                        'address_2'		=> "",
-		                        'city'			=> WC()->customer->get_city(),
-		                        'state'			=> WC()->customer->get_state(),
-		                        'postcode'		=> WC()->customer->get_postcode(),
-		                        'country'		=> WC()->customer->get_country()
-		                    	) ;
-	                    }
-                    	echo WC()->countries->get_formatted_address( $billing_address );
+	                    <?php 
+	                    echo WC()->countries->get_formatted_address( $billing_address );
+
 	                    ?>
 	                </p>
 	            </div>
 
         </div><!-- /.col-1 -->
-        	<?php endif; ?>
+        	<?php endif; endif; ?>
         </div><!-- /.col-2 -->
     </div><!-- /.col2-set -->
 <?php endif; ?>
@@ -133,23 +137,23 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
     <form name="" action="" method="post">
         <?php
         function curPageURL() {
-            $pageURL = 'http';
-            if (@$_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
-            $pageURL .= "://";
-            if ($_SERVER["SERVER_PORT"] != "80") {
-                $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-            } else {
-                $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-            }
-            return $pageURL;
+        	$pageURL = 'http';
+        	if (@$_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
+        	$pageURL .= "://";
+        	if ($_SERVER["SERVER_PORT"] != "80") {
+        		$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+        	} else {
+        		$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+        	}
+        	return $pageURL;
         }
 
         woocommerce_login_form(
-            array(
-                'message'  => 'Please login or create an account to complete your order.',
-                'redirect' => curPageURL(),
-                'hidden'   => true
-            )
+        array(
+        'message'  => 'Please login or create an account to complete your order.',
+        'redirect' => curPageURL(),
+        'hidden'   => true
+        )
         );
         $result = unserialize(WC()->session->RESULT);
         $email = (!empty($_POST['email']))?$_POST['email']:$result['EMAIL'];
@@ -183,12 +187,12 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
         </p>
     </form>
 <?php else:
-        global $pp_settings;
-        $cancel_url = isset( $pp_settings['cancel_page'] ) ? get_permalink( $pp_settings['cancel_page'] ) : $woocommerce->cart->get_cart_url();
-        $cancel_url = apply_filters( 'angelleye_review_order_cance_url', $cancel_url );
-        echo '<div class="clear"></div>';
-        echo '<p><a class="button angelleye_cancel" href="' . $cancel_url . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
-        echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
+global $pp_settings;
+$cancel_url = isset( $pp_settings['cancel_page'] ) ? get_permalink( $pp_settings['cancel_page'] ) : $woocommerce->cart->get_cart_url();
+$cancel_url = apply_filters( 'angelleye_review_order_cance_url', $cancel_url );
+echo '<div class="clear"></div>';
+echo '<p><a class="button angelleye_cancel" href="' . $cancel_url . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
+echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
     ?>
     </form><!--close the checkout form-->
 <?php endif; ?>
