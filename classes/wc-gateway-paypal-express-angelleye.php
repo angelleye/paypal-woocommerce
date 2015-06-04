@@ -1799,7 +1799,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 } else {
                     if ($order->get_total_discount() > 0) {
                         $Item = array(
-                            'name' => __('Total Discount', WC_Paypal_Express::TEXT_DOMAIN),
+                            'name' => 'Total Discount',
                             'qty' => 1,
                             'amt' => - $order->get_total_discount(),
                         );

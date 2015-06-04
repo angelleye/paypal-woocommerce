@@ -482,31 +482,42 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         }
                     }
 
+					if (!$this->is_wc_version_greater_2_3()) {
+	                    //Cart Discount
+	                    if ($order->get_cart_discount() > 0) {
+	                        foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
+	
+	                            $PayPalRequestData['L_NUMBER' . $item_loop] = $code;
+	                            $PayPalRequestData['L_NAME' . $item_loop] = 'Cart Discount';
+	                            $PayPalRequestData['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
+	                            $PayPalRequestData['L_QTY' . $item_loop] = 1;
+	                            $item_loop++;
+	                        }
+	                        $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
+	                    }
+	
+	                    //Order Discount
+	                    if ($order->get_order_discount() > 0) {
+	                        foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+	                            $PayPalRequestData['L_NUMBER' . $item_loop] = $code;
+	                            $PayPalRequestData['L_NAME' . $item_loop] = 'Order Discount';
+	                            $PayPalRequestData['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
+	                            $PayPalRequestData['L_QTY' . $item_loop] = 1;
+	                            $item_loop++;
+	                        }
+	                        $ITEMAMT = $ITEMAMT - $order->get_order_discount();
+	                    }
+					} else {
+						if ($order->get_total_discount() > 0) {
 
-                    //Cart Discount
-                    if ($order->get_cart_discount() > 0) {
-                        foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
-
-                            $PayPalRequestData['L_NUMBER' . $item_loop] = $code;
-                            $PayPalRequestData['L_NAME' . $item_loop] = 'Cart Discount';
-                            $PayPalRequestData['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
-                            $PayPalRequestData['L_QTY' . $item_loop] = 1;
-                            $item_loop++;
-                        }
-                        $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
-                    }
-
-                    //Order Discount
-                    if ($order->get_order_discount() > 0) {
-                        foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
-                            $PayPalRequestData['L_NUMBER' . $item_loop] = $code;
-                            $PayPalRequestData['L_NAME' . $item_loop] = 'Order Discount';
-                            $PayPalRequestData['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
-                            $PayPalRequestData['L_QTY' . $item_loop] = 1;
-                            $item_loop++;
-                        }
-                        $ITEMAMT = $ITEMAMT - $order->get_order_discount();
-                    }
+							 	$PayPalRequestData['L_NUMBER' . $item_loop] = $code;
+	                            $PayPalRequestData['L_NAME' . $item_loop] = 'Order Discount';
+	                            $PayPalRequestData['L_COST' . $item_loop] = '-' . $order->get_total_discount();
+	                            $PayPalRequestData['L_QTY' . $item_loop] = 1;
+	                            $item_loop++;
+	                        	$ITEMAMT -= $order->get_total_discount();
+                    	}
+					}
 
                     if (get_option('woocommerce_prices_include_tax') == 'yes') {
                         $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
@@ -562,6 +573,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			
 			$PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
 			
+			
 			/**
 			 * Woo's original extension wasn't sending the request with 
 			 * character count like it's supposed to.  This was added
@@ -576,6 +588,24 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			/**
 			 * Pass data to to the class and store the $PayPalResult
 			 */
+			
+			// Rounding amendment
+			
+	        // Rounding amendment
+	       if (trim(WC()->cart->total) !== trim($ITEMAMT + $tax + number_format($shipping, 2, '.', ''))) {
+	            if (get_option('woocommerce_prices_include_tax') == 'yes') {
+	                $shipping = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
+	            } else {
+	                $shipping = WC()->cart->shipping_total;
+	            }
+	
+	            if($shipping > 0) {
+					$PayPalRequestData['shippingamt'] = $this->cut_off($shipping, 2);
+	            } else {
+					$PayPalRequestData['taxamt'] = $this->cut_off($tax, 2);
+	            }
+	        }
+        
 			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
 			
 			/**
@@ -860,5 +890,18 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             return new WP_Error( 'paypal-error', $fc_refund_error );
         }
         return false;
+    }
+    
+    function cut_off($number) {
+        $parts = explode(".", $number);
+        $newnumber = $parts[0] . "." . $parts[1][0] . $parts[1][1];
+        return $newnumber;
+    }
+    public function is_wc_version_greater_2_3() {
+        return $this->get_wc_version() && version_compare($this->get_wc_version(), '2.3', '>=');
+    }
+
+    public function get_wc_version() {
+        return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
     }
 }
