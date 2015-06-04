@@ -912,36 +912,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         if ( is_wp_error($user) ) {
                             wc_add_notice($user->get_error_message(), 'error');
                         } else {
-
-                        	$data = array(
-	                        'user_login' => addslashes($_POST['username']),
-	                        'user_email' => addslashes($_POST['email']),
-	                        'user_pass' => addslashes($_POST['password']),
-                    		);
-		                    $userID = wp_insert_user($data);
-		                    if (!is_wp_error($userID)) {
-		                        update_user_meta($userID, 'billing_first_name', $result['FIRSTNAME']);
-		                        update_user_meta($userID, 'billing_last_name', $result['LASTNAME']);
-		                        update_user_meta($userID, 'billing_address_1', $result['SHIPTOSTREET']);
-		                        update_user_meta($userID, 'billing_state', $result['SHIPTOSTATE']);
-		                        update_user_meta($userID, 'billing_email', $result['EMAIL']);
-		                        /* USER SIGON */
-		                        $user_login = esc_attr($_POST["username"]);
-		                        $user_password = esc_attr($_POST["password"]);
-		                        $user_email = esc_attr($_POST["email"]);
-		                        $creds = array(
-		                            'user_login' => $user_login,
-		                            'user_password' => $user_password,
-		                            'remember' => true,
-		                        );
-		
-		                        $user = wp_signon($creds, false);
-		                        if (is_wp_error($user))
-		                            wc_add_notice($user->get_error_message(), 'error');
-		                        else {
-		                            wp_set_current_user($user->ID); //Here is where we update the global user variables
-		                        }
-		                    }
+							wp_set_current_user($user->ID); //Here is where we update the global user variables                        			                            
                     	}
                         
                     } catch (Exception $e) {
@@ -1527,6 +1498,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $total_discount -= WC()->cart->get_order_discount_total();
             }
         }
+        
+        if( $tax > 0) {
+        	$tax_round = number_format($tax, 2, '.', '');
+        }
+        
+        if( $shipping > 0) {
+        	$shipping_round = number_format($shipping, 2, '.', '');
+        }
+        
+        if( isset($total_discount) ) {
+        	$total_discount = round($total_discount, 2);
+        }
+        
         if ($this->send_items) {
             /*
              * Now that all the order items are gathered, including discounts,
@@ -1546,7 +1530,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
              * Now that we've looped and calculated item totals
              * we can fill in the ITEMAMT
              */
-            $Payment['itemamt'] = WC()->cart->total - (float) $tax - (float) $shipping;    // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
+            $Payment['itemamt'] = $total_items + $total_discount; //round(WC()->cart->total - (float) $tax - (float) $shipping, 2);    // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
         }
 
         /*
@@ -1797,7 +1781,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         );
 
         $PaymentOrderItems = array();
-        $ctr = 0;
+        $ctr = $total_items = $total_discount = $total_tax = $shipping = 0;
         $ITEMAMT = 0;
         if (sizeof($order->get_items()) > 0) {
             if ($this->send_items) {
@@ -1928,7 +1912,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $Item = array(
                             'name' => 'Total Discount',
                             'qty' => 1,
-                            'amt' => - $order->get_total_discount(),
+                            'amt' => - round($order->get_total_discount(), 2),
                         );
                         array_push($PaymentOrderItems, $Item);
                         $ITEMAMT -= $order->get_total_discount();
@@ -1946,6 +1930,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $shipping = $order->get_total_shipping();
                 $tax = $order->get_total_tax();
             }
+            
+            if( $tax > 0) {
+        		$tax = number_format($tax, 2, '.', '');
+        	}
+        
+	        if( $shipping > 0) {
+	        	$shipping = number_format($shipping, 2, '.', '');
+	        }
+	        
+	        if( $total_discount ) {
+        		$total_discount = round($total_discount, 2);
+        	}
+        	
             if ($this->send_items) {
 
                 /*
@@ -1993,7 +1990,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         // Rounding amendment
 
-        if (trim(WC()->cart->total) !== trim($ITEMAMT + $tax + number_format($shipping, 2, '.', ''))) {
+        if (trim(WC()->cart->total) !== trim($Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''))) {
             if (get_option('woocommerce_prices_include_tax') == 'yes') {
                 $shipping = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
             } else {

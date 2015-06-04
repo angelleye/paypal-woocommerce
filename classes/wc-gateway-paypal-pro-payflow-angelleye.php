@@ -592,7 +592,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			// Rounding amendment
 			
 	        // Rounding amendment
-	       if (trim(WC()->cart->total) !== trim($ITEMAMT + $tax + number_format($shipping, 2, '.', ''))) {
+	       if (trim(WC()->cart->total) !== trim(number_format($ITEMAMT,2,'.','') + $tax + number_format($shipping, 2, '.', ''))) {
 	            if (get_option('woocommerce_prices_include_tax') == 'yes') {
 	                $shipping = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
 	            } else {
