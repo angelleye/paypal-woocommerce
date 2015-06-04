@@ -816,18 +816,23 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     };
                     WC()->customer->set_shipping_country($result['SHIPTOCOUNTRYCODE']);
                 }
-                
-                if ( isset( $result['SHIPTONAME'] ) ) WC()->customer->shiptoname =  $result['SHIPTONAME'] ;
-                if ( isset( $result['FIRSTNAME'] ) ) WC()->customer->firstname =  $result['FIRSTNAME'] ;
-                if ( isset( $result['LASTNAME'] ) ) WC()->customer->lastname =  $result['LASTNAME'] ;
-                if ( isset( $result['SHIPTOSTREET'] ) ) WC()->customer->set_address( $result['SHIPTOSTREET'] );
-                if ( isset( $result['SHIPTOCITY'] ) ) WC()->customer->set_city( $result['SHIPTOCITY'] );
-                if ( isset( $result['SHIPTOCOUNTRYCODE'] ) ) WC()->customer->set_country( $result['SHIPTOCOUNTRYCODE'] );
-                if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
-                if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_postcode( $result['SHIPTOZIP'] );
-                if ( isset( $result['SHIPTOSTATE'] ) ) WC()->customer->set_shipping_state( $this->get_state_code( $result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE'] ) );
-                if ( isset( $result['SHIPTOZIP'] ) ) WC()->customer->set_shipping_postcode( $result['SHIPTOZIP'] );
-             
+
+                if (isset($result['SHIPTONAME']))
+                    WC()->customer->shiptoname = $result['SHIPTONAME'];
+                if (isset($result['SHIPTOSTREET']))
+                    WC()->customer->set_address($result['SHIPTOSTREET']);
+                if (isset($result['SHIPTOCITY']))
+                    WC()->customer->set_city($result['SHIPTOCITY']);
+                if (isset($result['SHIPTOCOUNTRYCODE']))
+                    WC()->customer->set_country($result['SHIPTOCOUNTRYCODE']);
+                if (isset($result['SHIPTOSTATE']))
+                    WC()->customer->set_state($this->get_state_code($result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE']));
+                if (isset($result['SHIPTOZIP']))
+                    WC()->customer->set_postcode($result['SHIPTOZIP']);
+                if (isset($result['SHIPTOSTATE']))
+                    WC()->customer->set_shipping_state($this->get_state_code($result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE']));
+                if (isset($result['SHIPTOZIP']))
+                    WC()->customer->set_shipping_postcode($result['SHIPTOZIP']);
 
                 /**
                  * Save GECD data in sessions for use in DECP
@@ -885,12 +890,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         // Anti-spam trap
                         if (!empty($_POST['email_2'])) {
                             throw new Exception(__('Anti-spam field was filled in.', 'woocommerce'));
+                            wc_add_notice('<strong>' . __('Anti-spam field was filled in.', 'paypal-for-woocommerce') . ':</strong> ', 'error');
                         }
 
                         $new_customer = wc_create_new_customer(sanitize_email($email), wc_clean($username), $password);
 
                         if (is_wp_error($new_customer)) {
-                            throw new Exception($new_customer->get_error_message());
+                            wc_add_notice($user->get_error_message(), 'error');
                         }
 
                         if (apply_filters('paypal-for-woocommerce_registration_auth_new_customer', true, $new_customer)) {
@@ -906,13 +912,41 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         if ( is_wp_error($user) ) {
                             wc_add_notice($user->get_error_message(), 'error');
                         } else {
-                            wp_set_current_user($user->ID); //Here is where we update the global user variables
-                        }
+
+                        	$data = array(
+	                        'user_login' => addslashes($_POST['username']),
+	                        'user_email' => addslashes($_POST['email']),
+	                        'user_pass' => addslashes($_POST['password']),
+                    		);
+		                    $userID = wp_insert_user($data);
+		                    if (!is_wp_error($userID)) {
+		                        update_user_meta($userID, 'billing_first_name', $result['FIRSTNAME']);
+		                        update_user_meta($userID, 'billing_last_name', $result['LASTNAME']);
+		                        update_user_meta($userID, 'billing_address_1', $result['SHIPTOSTREET']);
+		                        update_user_meta($userID, 'billing_state', $result['SHIPTOSTATE']);
+		                        update_user_meta($userID, 'billing_email', $result['EMAIL']);
+		                        /* USER SIGON */
+		                        $user_login = esc_attr($_POST["username"]);
+		                        $user_password = esc_attr($_POST["password"]);
+		                        $user_email = esc_attr($_POST["email"]);
+		                        $creds = array(
+		                            'user_login' => $user_login,
+		                            'user_password' => $user_password,
+		                            'remember' => true,
+		                        );
+		
+		                        $user = wp_signon($creds, false);
+		                        if (is_wp_error($user))
+		                            wc_add_notice($user->get_error_message(), 'error');
+		                        else {
+		                            wp_set_current_user($user->ID); //Here is where we update the global user variables
+		                        }
+		                    }
+                    	}
                         
                     } catch (Exception $e) {
                         wc_add_notice('<strong>' . __('Error', 'paypal-for-woocommerce') . ':</strong> ' . $e->getMessage(), 'error');
                     }
-
 
                     $this->customer_id = $user->ID;
                     
@@ -971,6 +1005,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         } elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'payaction') {
             if (isset($_POST) || ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes")) {
+
                 // Update customer shipping and payment method to posted method
                 $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
 
@@ -1060,7 +1095,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 	                    update_post_meta( $order_id, '_billing_state',   $this->get_state_code( $this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
 	                }
                 }
-
 
                 $this->add_log('...Order ID: ' . $order_id);
                 $order = new WC_Order($order_id);
@@ -1354,7 +1388,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $Payment['shiptozip'] = @$posted['shipping_postcode'];
                 $Payment['shiptocountrycode'] = @$posted['shipping_country'];
                 $Payment['shiptophonenum'] = @$posted['shipping_phone'];
-                
+
             } else {
                 $Payment['shiptoname'] = $posted['billing_first_name'] . ' ' . $posted['billing_last_name'];
                 $Payment['shiptostreet'] = $posted['billing_address_1'];
@@ -1466,7 +1500,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         /*
          * Get discount(s)
          */
-        if (WC()->cart->get_cart_discount_total()) {
+        if (WC()->cart->get_cart_discount_total() > 0) {
             foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
                 $Item = array(
                     'name' => 'Cart Discount',
@@ -1479,17 +1513,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $total_discount -= WC()->cart->get_cart_discount_total();
         }
 
-        if (WC()->cart->get_order_discount_total()) {
-            foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
-                $Item = array(
-                    'name' => 'Order Discount',
-                    'number' => $code,
-                    'qty' => '1',
-                    'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
-                );
-                array_push($PaymentOrderItems, $Item);
+        if (!$this->is_wc_version_greater_2_3()) {
+            if (WC()->cart->get_order_discount_total() > 0) {
+                foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+                    $Item = array(
+                        'name' => 'Order Discount',
+                        'number' => $code,
+                        'qty' => '1',
+                        'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                    );
+                    array_push($PaymentOrderItems, $Item);
+                }
+                $total_discount -= WC()->cart->get_order_discount_total();
             }
-            $total_discount -= WC()->cart->get_order_discount_total();
         }
         if ($this->send_items) {
             /*
@@ -1552,6 +1588,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 //'ShippingOptions' => $ShippingOptions,
                 //'BillingAgreements' => $BillingAgreements
         );
+
+        // Rounding amendment
+
+        if (trim(WC()->cart->total) !== trim($total_items + $total_discount + $tax + number_format($shipping, 2, '.', ''))) {
+            if (get_option('woocommerce_prices_include_tax') == 'yes') {
+                $shipping = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
+            } else {
+                $shipping = WC()->cart->shipping_total;
+            }
+            $PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);
+        }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->SetExpressCheckout($PayPalRequestData);
@@ -1847,33 +1894,45 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $ctr++;
                 }
 
-                /*
-                 * Get discounts
-                 */
-                if ($order->get_cart_discount() > 0) {
-                    foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
-                        $Item = array(
-                            'name' => 'Cart Discount',
-                            'number' => $code,
-                            'qty' => '1',
-                            'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
-                        );
-                        array_push($PaymentOrderItems, $Item);
+                if (!$this->is_wc_version_greater_2_3()) {
+                    /*
+                     * Get discounts
+                     */
+                    if ($order->get_cart_discount() > 0) {
+                        foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
+                            $Item = array(
+                                'name' => 'Cart Discount',
+                                'number' => $code,
+                                'qty' => '1',
+                                'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                            );
+                            array_push($PaymentOrderItems, $Item);
+                        }
+                        $ITEMAMT -= $order->get_cart_discount();
                     }
-                    $ITEMAMT -= $order->get_cart_discount();
-                }
 
-                if ($order->get_order_discount() > 0) {
-                    foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+                    if ($order->get_order_discount() > 0) {
+                        foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+                            $Item = array(
+                                'name' => 'Order Discount',
+                                'number' => $code,
+                                'qty' => '1',
+                                'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                            );
+                            array_push($PaymentOrderItems, $Item);
+                        }
+                        $ITEMAMT -= $order->get_order_discount();
+                    }
+                } else {
+                    if ($order->get_total_discount() > 0) {
                         $Item = array(
-                            'name' => 'Order Discount',
-                            'number' => $code,
-                            'qty' => '1',
-                            'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                            'name' => 'Total Discount',
+                            'qty' => 1,
+                            'amt' => - $order->get_total_discount(),
                         );
                         array_push($PaymentOrderItems, $Item);
+                        $ITEMAMT -= $order->get_total_discount();
                     }
-                    $ITEMAMT -= $order->get_order_discount();
                 }
             }
 
@@ -1930,6 +1989,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'Payments' => $Payments,
                 //'UserSelectedOptions' => $UserSelectedOptions
         );
+
+
+        // Rounding amendment
+
+        if (trim(WC()->cart->total) !== trim($ITEMAMT + $tax + number_format($shipping, 2, '.', ''))) {
+            if (get_option('woocommerce_prices_include_tax') == 'yes') {
+                $shipping = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
+            } else {
+                $shipping = WC()->cart->shipping_total;
+            }
+            $PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);
+        }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->DoExpressCheckoutPayment($PayPalRequestData);
@@ -2055,10 +2126,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
             unset($payment_gateways['paypal_pro']);
             unset($payment_gateways['paypal_pro_payflow']);
-            if((isset($pp_settings['show_on_checkout']) && $pp_settings['show_on_checkout'] == 'regular') ) {
-            	$payment_gateways_count = 1;
-            } 
-            if ((empty($payment_gateways) || @$pp_settings['enabled']== 'yes') && (count($payment_gateways) == $payment_gateways_count)) {
+            if ((isset($pp_settings['show_on_checkout']) && $pp_settings['show_on_checkout'] == 'regular')) {
+                $payment_gateways_count = 1;
+            }
+            if ((empty($payment_gateways) || @$pp_settings['enabled'] == 'yes') && (count($payment_gateways) == $payment_gateways_count)) {
                 if (@$pp_pro['enabled'] == 'yes' || @$pp_payflow['enabled'] == 'yes') {
                     echo '<script type="text/javascript">
                                 jQuery(document).ready(function(){
@@ -2284,5 +2355,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             return;
         }
     }
+    
+    function cut_off($number) {
+        $parts = explode(".", $number);
+        $newnumber = $parts[0] . "." . $parts[1][0] . $parts[1][1];
+        return $newnumber;
+    }
 
+    public function is_wc_version_greater_2_3() {
+        return $this->get_wc_version() && version_compare($this->get_wc_version(), '2.3', '>=');
+    }
+
+    public function get_wc_version() {
+        return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
+    }
 }

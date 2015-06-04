@@ -827,49 +827,61 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 }
             }
 
-            //Cart Discount
-            if($order->get_cart_discount()>0)
-			{
-                foreach(WC()->cart->get_coupons('cart') as $code => $coupon)
+             if (!$this->is_wc_version_greater_2_3()) {
+	            //Cart Discount
+	            if($order->get_cart_discount()>0)
 				{
-					$Item	 = array(
-									'l_name' => 'Cart Discount', 						// Item Name.  127 char max.
-									'l_desc' => '', 						// Item description.  127 char max.
-									'l_amt' => '-'.WC()->cart->coupon_discount_amounts[$code], 							// Cost of individual item.
-									'l_number' => $code, 						// Item Number.  127 char max.
-									'l_qty' => '1', 							// Item quantity.  Must be any positive integer.  
-									'l_taxamt' => '', 						// Item's sales tax amount.
-									'l_ebayitemnumber' => '', 				// eBay auction number of item.
-									'l_ebayitemauctiontxnid' => '', 		// eBay transaction ID of purchased item.
-									'l_ebayitemorderid' => '' 				// eBay order ID for the item.
-									);
-					array_push($OrderItems, $Item);
-                }
-				
-                $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
-            }
-
-            //Order Discount
-            if($order->get_order_discount()>0)
-			{
-                foreach(WC()->cart->get_coupons('order') as $code => $coupon)
+	                foreach(WC()->cart->get_coupons('cart') as $code => $coupon)
+					{
+						$Item	 = array(
+										'l_name' => 'Cart Discount', 						// Item Name.  127 char max.
+										'l_desc' => '', 						// Item description.  127 char max.
+										'l_amt' => '-'.WC()->cart->coupon_discount_amounts[$code], 							// Cost of individual item.
+										'l_number' => $code, 						// Item Number.  127 char max.
+										'l_qty' => '1', 							// Item quantity.  Must be any positive integer.  
+										'l_taxamt' => '', 						// Item's sales tax amount.
+										'l_ebayitemnumber' => '', 				// eBay auction number of item.
+										'l_ebayitemauctiontxnid' => '', 		// eBay transaction ID of purchased item.
+										'l_ebayitemorderid' => '' 				// eBay order ID for the item.
+										);
+						array_push($OrderItems, $Item);
+	                }
+					
+	                $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
+	            }
+	
+	            //Order Discount
+	            if($order->get_order_discount()>0)
 				{
-					$Item	 = array(
-									'l_name' => 'Order Discount', 						// Item Name.  127 char max.
-									'l_desc' => '', 						// Item description.  127 char max.
-									'l_amt' => '-'.WC()->cart->coupon_discount_amounts[$code], 							// Cost of individual item.
-									'l_number' => $code, 						// Item Number.  127 char max.
-									'l_qty' => '1', 							// Item quantity.  Must be any positive integer.  
-									'l_taxamt' => '', 						// Item's sales tax amount.
-									'l_ebayitemnumber' => '', 				// eBay auction number of item.
-									'l_ebayitemauctiontxnid' => '', 		// eBay transaction ID of purchased item.
-									'l_ebayitemorderid' => '' 				// eBay order ID for the item.
-									);
-					array_push($OrderItems, $Item);
+	                foreach(WC()->cart->get_coupons('order') as $code => $coupon)
+					{
+						$Item	 = array(
+										'l_name' => 'Order Discount', 						// Item Name.  127 char max.
+										'l_desc' => '', 						// Item description.  127 char max.
+										'l_amt' => '-'.WC()->cart->coupon_discount_amounts[$code], 							// Cost of individual item.
+										'l_number' => $code, 						// Item Number.  127 char max.
+										'l_qty' => '1', 							// Item quantity.  Must be any positive integer.  
+										'l_taxamt' => '', 						// Item's sales tax amount.
+										'l_ebayitemnumber' => '', 				// eBay auction number of item.
+										'l_ebayitemauctiontxnid' => '', 		// eBay transaction ID of purchased item.
+										'l_ebayitemorderid' => '' 				// eBay order ID for the item.
+										);
+						array_push($OrderItems, $Item);
+	                }
+					
+	                $ITEMAMT = $ITEMAMT - $order->get_order_discount();
+	            }
+             } else {
+                    if ($order->get_total_discount() > 0) {
+                        $Item = array(
+                            'name' => 'Total Discount',
+                            'qty' => 1,
+                            'amt' => - $order->get_total_discount(),
+                        );
+                        array_push($OrderItems, $Item);
+                        $ITEMAMT -= $order->get_total_discount();
+                    }
                 }
-				
-                $ITEMAMT = $ITEMAMT - $order->get_order_discount();
-            }
 			
 			/**
 			 * Get shipping and tax.
@@ -887,12 +899,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 
             if ($tax>0)
 			{
-				$PaymentDetails['taxamt'] = $tax; 						// Required if you specify itemized cart tax details. Sum of tax for all items on the order.  Total sales tax. 
+				$PaymentDetails['taxamt'] = number_format($tax, 2, '.', ''); 						// Required if you specify itemized cart tax details. Sum of tax for all items on the order.  Total sales tax. 
             }
 
             if($shipping > 0)
 			{
-				$PaymentDetails['shippingamt'] = $shipping;					// Total shipping costs for the order.  If you specify shippingamt, you must also specify itemamt.
+				$PaymentDetails['shippingamt'] = number_format($shipping, 2, '.', '');					// Total shipping costs for the order.  If you specify shippingamt, you must also specify itemamt.
             }
         }
 		
@@ -933,8 +945,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		}
         if( !$this->send_items ){
             $OrderItems = array();
-            $amount = WC()->cart->total - $tax - $shipping;
-            $PaymentDetails['itemamt'] = number_format($amount,2,'.',''); 						// Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
+            $amount = round(WC()->cart->total - round($tax,2) - round($shipping, 2));
+            $PaymentDetails['itemamt'] = number_format($ITEMAMT,2,'.',''); 						// Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
         }else{
             $PaymentDetails['itemamt'] = number_format($ITEMAMT,2,'.',''); 						// Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
         }
@@ -977,6 +989,21 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $this->log->add('paypal-pro','Do payment request '.print_r($log,true));
         }
 		
+        // Rounding amendment
+       if (trim(WC()->cart->total) !== trim($ITEMAMT + $tax + number_format($shipping, 2, '.', ''))) {
+            if (get_option('woocommerce_prices_include_tax') == 'yes') {
+                $shipping = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
+            } else {
+                $shipping = WC()->cart->shipping_total;
+            }
+
+            if($shipping > 0) {
+				$PayPalRequestData['PaymentDetails']['shippingamt'] = $this->cut_off($shipping, 2);
+            } else {
+				$PayPalRequestData['PaymentDetails']['taxamt'] = $this->cut_off($tax, 2);
+            }
+        }
+        
 		// Pass data into class for processing with PayPal and load the response array into $PayPalResult
 		$PayPalResult = $PayPal->DoDirectPayment($PayPalRequestData);
 		
@@ -1184,5 +1211,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             return new WP_Error( 'ec_refund-error', $pc_message );
         }
 
+    }
+    
+    function cut_off($number) {
+        $parts = explode(".", $number);
+        $newnumber = $parts[0] . "." . $parts[1][0] . $parts[1][1];
+        return $newnumber;
+    }
+    
+    public function is_wc_version_greater_2_3() {
+        return $this->get_wc_version() && version_compare($this->get_wc_version(), '2.3', '>=');
+    }
+
+    public function get_wc_version() {
+        return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
     }
 }
