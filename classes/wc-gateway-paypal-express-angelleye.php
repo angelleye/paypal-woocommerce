@@ -1407,13 +1407,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             } else {
                 $product_price = number_format($_product->get_price_excluding_tax(), 2, '.', '');
             }
-
+			$quantity = absint( $values['quantity'] );
             $Item = array(
                 'name' => $values['name'], // Item name. 127 char max.
                 'desc' => '', // Item description. 127 char max.
-                'amt' => number_format($product_price, 2, '.', ''), // Cost of item.
+                'amt' => round( $values['line_subtotal'] / $quantity, 2 ), // Cost of item.
                 'number' => $sku, // Item number.  127 char max.
-                'qty' => $qty, // Item qty on order.  Any positive integer.
+                'qty' => $quantity, // Item qty on order.  Any positive integer.
                 'taxamt' => '', // Item sales tax
                 'itemurl' => '', // URL for the item.
                 'itemcategory' => '', // One of the following values:  Digital, Physical
@@ -1432,7 +1432,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             array_push($PaymentOrderItems, $Item);
 
-            $total_items += $product_price * $values['quantity'];
+            $total_items += $values['line_subtotal'];
             $ctr++;
         }
 

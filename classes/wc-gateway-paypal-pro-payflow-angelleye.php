@@ -529,12 +529,12 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                     //tax
                     if ($tax > 0) {
-                        $PayPalRequestData['TAXAMT'] = $tax;
+                        $PayPalRequestData['taxamt'] = $tax;
                     }
 
                     // Shipping
                     if ($shipping > 0) {
-                        $PayPalRequestData['FREIGHTAMT'] = $shipping;
+                        $PayPalRequestData['freightamt'] = $shipping;
                     }
                 }
 
@@ -561,12 +561,12 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                 //tax
                 if ($tax > 0) {
-                    $PayPalRequestData['TAXAMT'] = $tax;
+                    $PayPalRequestData['taxamt'] = $tax;
                 }
 
                 // Shipping
                 if ($shipping > 0) {
-                    $PayPalRequestData['FREIGHTAMT'] = $shipping;
+                    $PayPalRequestData['freightamt'] = $shipping;
                 }
                 $ITEMAMT = WC()->cart->total - $tax - $shipping;
             }
@@ -600,7 +600,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 	            }
 	
 	            if($shipping > 0) {
-					$PayPalRequestData['shippingamt'] = $this->cut_off($shipping, 2);
+					$PayPalRequestData['freightamt'] = $this->cut_off($shipping, 2);
 	            } else {
 					$PayPalRequestData['taxamt'] = $this->cut_off($tax, 2);
 	            }
