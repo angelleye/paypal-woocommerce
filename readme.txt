@@ -3,8 +3,8 @@ Contributors: angelleye
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
-Tested up to: 4.1
-Stable tag: 1.1.6.2
+Tested up to: 4.2.2
+Stable tag: 1.1.6.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -100,6 +100,28 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.1.6.3 - 06.??.2015 =
+* Fix - Resolves PayPal error 10431, item amount invalid, which would happen on rare occasions.
+* Fix - Resolves a conflict with the Bulk Item Discount plugin that resulted in a PayPal order total error.
+* Fix - Resolves other various PayPal order total errors by adjusting shipping/tax price when WooCommerce orders do not calculate correctly.
+* Fix - Adds better error handling if the PayPal API response is empty.
+* Fix - Resolves "Proceed to Checkout" button display problems since the WooCommerce 2.3 update.
+* Fix - Resolves a conflict with the WooCommerce Wishlist plugin.
+* Fix - Resolves an SSL conflict with the credit card images provided for Payments Pro (PayFlow).
+* Fix - Resolves an issue where customer accounts were not getting created successfully with some Express Checkout transactions.
+* Fix - Resolves an issue causing the Express Checkout default button to be displayed on the product page even if a custom button graphic has been set.
+* Tweak - Adjusts the way the Locale Code is sent to PayPal based on WordPress language settings.
+* Tweak - Adjusts functions that have been deprecated in WooCommerce 2.3.
+* Tweak - Adjusts the width value for the PayPal Express Checkout graphics.
+* Tweak - Adds order details (if any) to the PayPal error email notification that is sent to the site admin (if enabled).
+* Tweak - jQuery adjustments to Express Checkout review page.
+* Feature - Adds option to enable / disable sending line item details to PayPal.
+* Feature - Adds developer hooks for customizing PayPal error notifications.
+* Feature - Adds an option to display the PayPal Express Checkout button(s) below the cart, above the cart, or both.
+* Feature - Adds an option to set the billing address to the same address as shipping when Express Checkout is used.
+* Feature - Adds the ability to choose which page the user gets sent to if they cancel checkout from the PayPal Express Checkout pages.
+* Feature - Adds an option to set orders to be processed as Sale or Authorization.
 
 = 1.1.6.2 - 01/22/2015 =
 * Fix - Resolves a PHP syntax issue that caused failures on PHP 5.2 or earlier.
