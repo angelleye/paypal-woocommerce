@@ -1145,15 +1145,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                     // Notice admin if has any issue from PayPal
                     $message = '';
-                    if ($this->error_email_notify) {
-                        $admin_email = get_option("admin_email");
-                        $message .= __("DoExpressCheckoutPayment API call failed.", "paypal-for-woocommerce") . "\n\n";
-                        $message .= __('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode . "\n";
-                        $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
-                        $message .= __('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg . "\n";
-                        $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
 
-                        $error_email_notify_mes = apply_filters('angelleye_ec_error_email_notify_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
+					if($this->error_email_notify)
+					{
+						$admin_email = get_option("admin_email");
+						$message .= __( "DoExpressCheckoutPayment API call failed." , "paypal-for-woocommerce" )."\n\n";
+						$message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $ErrorCode."\n";
+						$message .= __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode."\n";
+						$message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
+						$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
+                        $message .= __( 'Order ID: ' ).$order_id ."\n";
+                        $message .= __( 'Customer Name: ' ).$this->get_session('shiptoname')."\n";
+                        $message .= __( 'Customer Email: ' ).$this->get_session('payeremail')."\n";
+
+                        $error_email_notify_mes = apply_filters( 'angelleye_ec_error_email_notify_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
                         $subject = "PayPal Express Checkout Error Notification";
                         $error_email_notify_subject = apply_filters('angelleye_ec_error_email_notify_subject', $subject);
 
