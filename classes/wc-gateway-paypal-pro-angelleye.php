@@ -79,6 +79,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->enable_3dsecure 		= isset( $this->settings['enable_3dsecure'] ) && $this->settings['enable_3dsecure'] == 'yes' ? true : false;
         $this->liability_shift 		= isset( $this->settings['liability_shift'] ) && $this->settings['liability_shift'] == 'yes' ? true : false;
         $this->debug				= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
+        $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
         $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'yes' ? true : false;
         // 3DS
         if ( $this->enable_3dsecure ) {
@@ -245,6 +246,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 ),
 				'description' => __( 'Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
 									and helps to prevent fraudulant activity on your site.' , 'paypal-for-woocommerce')
+            ),
+            'payment_action' => array(
+                'title' => __('Payment Action', 'paypal-for-woocommerce'),
+                'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
+                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds through your PayPal account when you are ready to deliver.'),
+                'type' => 'select',
+                'options' => array(
+                    'Sale' => 'Sale',
+                    'Authorization' => 'Authorization',
+                ),
+                'default' => 'Sale'
             ),
             'send_items' => array(
                 'title' => __( 'Send Item Details', 'paypal-for-woocommerce' ),
@@ -718,7 +730,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		 * Generate PayPal request
 		 */
 		$DPFields = array(
-							'paymentaction' => 'Sale', 						// How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
+							'paymentaction' => $this->payment_action == 'Authorization' ? 'Auth' : 'Sale', 						// How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
 							'ipaddress' => $this->get_user_ip(), 							// Required.  IP address of the payer's browser.
 							'returnfmfdetails' => '' 					// Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
 						);

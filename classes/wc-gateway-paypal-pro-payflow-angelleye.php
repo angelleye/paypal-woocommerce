@@ -45,6 +45,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
 		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
         $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'yes' ? true : false;
+        $this->payment_action       = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
 
         //fix ssl for image icon
         $this->icon = ! empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png';
@@ -216,7 +217,18 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'description' => __( 'Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce' ),
                 'default' => 'yes'
             ),
-			);
+            'payment_action' => array(
+                'title' => __('Payment Action', 'paypal-for-woocommerce'),
+                'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
+                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds through your PayPal account when you are ready to deliver.'),
+                'type' => 'select',
+                'options' => array(
+                    'Sale' => 'Sale',
+                    'Authorization' => 'Authorization',
+                ),
+                'default' => 'Sale'
+            ),
+		);
         $this->form_fields = apply_filters( 'angelleye_fc_form_fields', $this->form_fields );
     }
 
@@ -391,7 +403,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			 */
 			$PayPalRequestData = array(
 					'tender'=>'C', 				// Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
-					'trxtype'=>'S', 				// Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
+					'trxtype'=> $this->payment_action == 'Authorization' ? 'A' : 'S', 				// Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
 					'acct'=>$card_number, 				// Required for credit card transaction.  Credit card or purchase card number.
 					'expdate'=>$card_exp, 				// Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
 					'amt'=>$order->get_total(), 					// Required.  Amount of the transaction.  Must have 2 decimal places. 

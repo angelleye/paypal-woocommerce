@@ -51,6 +51,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->use_wp_locale_code = isset($this->settings['use_wp_locale_code']) ? $this->settings['use_wp_locale_code'] : '';
         $this->angelleye_skip_text = isset($this->settings['angelleye_skip_text']) ? $this->settings['angelleye_skip_text'] : '';
         $this->skip_final_review = isset($this->settings['skip_final_review']) ? $this->settings['skip_final_review'] : '';
+        $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
         $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
         $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'yes' ? true : false;
         $this->customer_id = get_current_user_id();
@@ -543,6 +544,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.' . $skip_final_review_option_not_allowed),
                 'type' => 'checkbox',
                 'default' => 'no'
+            ),
+            'payment_action' => array(
+                'title' => __('Payment Action', 'paypal-for-woocommerce'),
+                'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
+                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds through your PayPal account when you are ready to deliver.'),
+                'type' => 'select',
+                'options' => array(
+                    'Sale' => 'Sale',
+                    'Authorization' => 'Authorization',
+                ),
+                'default' => 'Sale'
             ),
             'billing_address' => array(
                 'title' => __('Billing Address', 'paypal-for-woocommerce'),
@@ -1345,7 +1357,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
             'notetext' => '', // Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', // The payment method type.  Specify the value InstantPaymentOnly.
-            'paymentaction' => 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
+            'paymentaction' => $this->payment_action == 'Authorization' ? 'Authorization' : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
             'paymentrequestid' => '', // A unique identifier of the specific payment request, which is required for parallel payments.
             'sellerpaypalaccountid' => ''   // A unique identifier for the merchant.  For parallel payments, this field is required and must contain the Payer ID or the email address of the merchant.
         );
@@ -1776,7 +1788,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
             'notetext' => $this->get_session('customer_notes'), // Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', // The payment method type.  Specify the value InstantPaymentOnly.
-            'paymentaction' => 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
+            'paymentaction' => $this->payment_action == 'Authorization' ? 'Authorization' : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
             'paymentrequestid' => '', // A unique identifier of the specific payment request, which is required for parallel payments.
             'sellerpaypalaccountid' => '', // A unique identifier for the merchant.  For parallel payments, this field is required and must contain the Payer ID or the email address of the merchant.
             'sellerid' => '', // The unique non-changing identifer for the seller at the marketplace site.  This ID is not displayed.
