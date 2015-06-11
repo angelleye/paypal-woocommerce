@@ -2262,7 +2262,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         /*
          * Check if the PayPal class has already been established.
          */
-        if (!class_exists('PayPal')) {
+        if (!class_exists('Angelleye_PayPal')) {
             require_once( 'lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
 
@@ -2311,9 +2311,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
             $order->update_status('refunded');
+            if (ob_get_length()) ob_end_clean();
             return true;
         } else {
-            $ec_message = apply_filters('angelleye_ec_refund_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE'], $PayPalResult);
+            $ec_message = apply_filters('angelleye_ec_refund_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE0'], $PayPalResult);
             return new WP_Error('ec_refund-error', $ec_message);
         }
     }
