@@ -82,6 +82,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_cart_calculate_fees', array($this, 'woocommerce_custom_surcharge') );
             add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'add_div_before_add_to_cart_button' ), 25);
             add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
+            add_action( 'product_type_options', array( $this, 'angelleye_product_type_options_own' ), 10, 1);
+            add_action( 'woocommerce_process_product_meta', array( $this, 'angelleye_woocommerce_process_product_meta_own' ), 10, 1 );
         }
 
         /**
@@ -559,6 +561,26 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             </div>
             <?php
         }
+        function angelleye_product_type_options_own($product_type){
+        	if( isset($product_type) && !empty($product_type) ) {
+				$product_type['no_shipping_required'] = array(
+					'id'            => '_no_shipping_required',
+					'wrapper_class' => '',
+					'label'         => __( 'No shipping required', 'woocommerce' ),
+					'description'   => __( 'No shipping required.', 'woocommerce' ),
+					'default'       => 'no'
+				);
+				return $product_type;
+        	} else {
+        		return $product_type;
+        	}
+        }
+        
+        function angelleye_woocommerce_process_product_meta_own( $post_id ){
+        	$no_shipping_required = isset( $_POST['_no_shipping_required'] ) ? 'yes' : 'no';
+			update_post_meta( $post_id, '_no_shipping_required', $no_shipping_required );
+        }
+        
     }
 }
 new AngellEYE_Gateway_Paypal();

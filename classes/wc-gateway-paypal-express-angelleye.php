@@ -941,17 +941,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                    
                      require_once("lib/NameParser.php");
 	                $parser = new FullNameParser();
-	                $split_name = $parser->split_full_name($result['SHIPTONAME']);
-	                $shipping_first_name = $split_name['fname'];
-	                $shipping_last_name = $split_name['lname'];
-	                $full_name = $split_name['fullname'];
+	                
+	                if( isset($result['SHIPTONAME']) && !empty($result['SHIPTONAME'])) {
+		                $split_name = $parser->split_full_name($result['SHIPTONAME']);
+		                $shipping_first_name = $split_name['fname'];
+		                $shipping_last_name = $split_name['lname'];
+		                $full_name = $split_name['fullname'];
+	                }
 
                     // Add customer info from other billing fields
                     if (isset($result)) {
                         update_user_meta($this->customer_id, 'first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
                         update_user_meta($this->customer_id, 'last_name', isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
-                        update_user_meta($this->customer_id, 'shipping_first_name', $shipping_first_name);
-                        update_user_meta($this->customer_id, 'shipping_last_name', $shipping_last_name);
+                        update_user_meta($this->customer_id, 'shipping_first_name', isset($shipping_first_name) ? $shipping_first_name : '');
+                        update_user_meta($this->customer_id, 'shipping_last_name', isset($shipping_last_name) ? $shipping_first_name : '');
                         update_user_meta($this->customer_id, 'shipping_company', isset($result['BUSINESS']) ? $result['BUSINESS'] : '' );
                         update_user_meta($this->customer_id, 'shipping_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
                         update_user_meta($this->customer_id, 'shipping_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
@@ -972,8 +975,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             update_user_meta($this->customer_id, 'billing_phone', isset($user_submit_form['billing_phone']) ?  $user_submit_form['billing_phone'] : $result['PHONENUM']);
                             update_user_meta($this->customer_id, 'billing_email', isset($user_submit_form['billing_email']) ?  $user_submit_form['billing_email'] : $result['EMAIL']);
 	                    } else {
-                            update_user_meta($this->customer_id, 'billing_first_name', $shipping_first_name);
-                            update_user_meta($this->customer_id, 'billing_last_name', $shipping_last_name);
+                            update_user_meta($this->customer_id, 'billing_first_name', isset($shipping_first_name) ? $shipping_first_name : '');
+                            update_user_meta($this->customer_id, 'billing_last_name', isset($shipping_last_name) ? $shipping_last_name : '');
                             update_user_meta($this->customer_id, 'billing_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
                             update_user_meta($this->customer_id, 'billing_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
                             update_user_meta($this->customer_id, 'billing_city', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '');
@@ -1017,11 +1020,23 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 // Parse SHIPTONAME to fist and last name
                 require_once("lib/NameParser.php");
                 $parser = new FullNameParser();
-                $split_name = $parser->split_full_name($this->get_session('shiptoname'));
-                $shipping_first_name = $split_name['fname'];
-                $shipping_last_name = $split_name['lname'];
-                $full_name = $split_name['fullname'];
                 
+                $shiptoname_from_session = $this->get_session('shiptoname');
+                
+                if( isset($shiptoname_from_session) && !empty($shiptoname_from_session) ) {
+	                $split_name = $parser->split_full_name($this->get_session('shiptoname'));
+	                $shipping_first_name = $split_name['fname'];
+	                $shipping_last_name = $split_name['lname'];
+	                $full_name = $split_name['fullname'];
+                } else {
+                	if( !isset($shipping_first_name) ) {
+                		$shipping_first_name = '';
+                	} 
+                	if( !isset($shipping_last_name) ) {
+                		$shipping_last_name = '';
+                	}
+                }
+	                
                	$this->set_session('firstname', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : $shipping_first_name);
                 $this->set_session('lastname', isset($result['LASTNAME']) ?  $result['LASTNAME'] : $shipping_last_name);
 
@@ -1055,7 +1070,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 } else {
                 	update_post_meta($order_id, '_shipping_first_name', $this->get_session('firstname'));
 	                update_post_meta($order_id, '_shipping_last_name', $this->get_session('lastname'));
-	                update_post_meta($order_id, '_shipping_full_name', $full_name);
+	                update_post_meta($order_id, '_shipping_full_name', isset($full_name) ? $full_name : '');
 	                update_post_meta($order_id, '_shipping_company', $this->get_session('company'));
 	                update_post_meta($order_id, '_billing_phone', $this->get_session('phonenum'));
 	                update_post_meta($order_id, '_shipping_address_1', $this->get_session('shiptostreet'));
@@ -1068,7 +1083,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 	                if ($this->billing_address == 'yes') {
 	                	update_post_meta( $order_id, '_billing_first_name',  $this->get_session('firstname') );
 	                    update_post_meta( $order_id, '_billing_last_name',  $this->get_session('lastname') );
-	                    update_post_meta( $order_id, '_billing_full_name',  $full_name );
+	                    update_post_meta( $order_id, '_billing_full_name',  isset($full_name) ?  $full_name : '');
 	                    update_post_meta( $order_id, '_billing_company',   $this->get_session('company') );
 	                    update_post_meta( $order_id, '_billing_address_1',  $this->get_session('shiptostreet'));
 	                    update_post_meta( $order_id, '_billing_address_2',  $this->get_session('shiptostreet2'));
@@ -1125,7 +1140,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $payerstatus_note .= ucfirst($REVIEW_RESULT['PAYERSTATUS']);
                     $order->add_order_note($payerstatus_note);
                     $addressstatus_note = __('Address Status: ', 'paypal-for-woocommerce');
-                    $addressstatus_note .= ucfirst($REVIEW_RESULT['ADDRESSSTATUS']);
+                    if( isset($REVIEW_RESULT['ADDRESSSTATUS']) && !empty($REVIEW_RESULT['ADDRESSSTATUS']) ) {
+                    	$addressstatus_note .= ucfirst($REVIEW_RESULT['ADDRESSSTATUS']);
+                    }
                     $order->add_order_note($addressstatus_note);
                     $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
 
@@ -1261,7 +1278,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'noshipping' => '', // The value 1 indiciates that on the PayPal pages, no shipping address fields should be displayed.  Maybe 1 or 0.
             'allownote' => '', // The value 1 indiciates that the customer may enter a note to the merchant on the PayPal page during checkout.  The note is returned in the GetExpresscheckoutDetails response and the DoExpressCheckoutPayment response.  Must be 1 or 0.
             'addroverride' => '', // The value 1 indiciates that the PayPal pages should display the shipping address set by you in the SetExpressCheckout request, not the shipping address on file with PayPal.  This does not allow the customer to edit the address here.  Must be 1 or 0.
-            'localecode' => ($this->use_wp_locale_code == 'yes' && WPLANG != '') ? WPLANG : '', // Locale of pages displayed by PayPal during checkout.  Should be a 2 character country code.  You can retrive the country code by passing the country name into the class' GetCountryCode() function.
+            'localecode' => ($this->use_wp_locale_code == 'yes' && defined('WPLANG')) ? WPLANG : '', // Locale of pages displayed by PayPal during checkout.  Should be a 2 character country code.  You can retrive the country code by passing the country name into the class' GetCountryCode() function.
             'pagestyle' => '', // Sets the Custom Payment Page Style for payment pages associated with this button/link.
             'hdrimg' => $this->checkout_logo_hdrimg, // URL for the image displayed as the header during checkout.  Max size of 750x90.  Should be stored on an https:// server or you'll get a warning message in the browser.
             'logourl' => $this->checkout_logo,
@@ -1399,6 +1416,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $qty = absint($values['quantity']);
             $sku = $_product->get_sku();
             $values['name'] = html_entity_decode($_product->get_title(), ENT_NOQUOTES, 'UTF-8');
+            
+            /**
+             * product specific noshipping
+             */
+            if ($_product->downloadable == 'yes' || $_product->virtual == 'yes' ) {
+            	$_no_shipping_required = get_post_meta($_product->id, '_no_shipping_required', true);
+            	if( $_no_shipping_required == 'yes' ) {
+            		$SECFields['noshipping'] = 1;
+            	}
+            }
 
             /*
              * Append variation data to name.
