@@ -2332,8 +2332,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         if ($posted['payment_method'] == 'paypal_express' && wc_notice_count('error') == 0) {
 
-        	//get_option( 'woocommerce_enable_guest_checkout' ) == 'false'
-            if (!is_user_logged_in() && isset($posted['createaccount'])) {
+            if (!is_user_logged_in() && get_option( 'woocommerce_enable_guest_checkout' ) != 'yes') {
 
                 $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
                 $username = !empty($posted['account_username']) ? $posted['account_username'] : '';
