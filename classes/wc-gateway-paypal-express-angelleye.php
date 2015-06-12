@@ -628,11 +628,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     } else {
                         $button_text = __('Proceed to Checkout', 'woocommerce');
                     }
-                    echo '<a class="paypal_checkout_button paypal_checkout_button_text button alt" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">' . $button_text . '</a>';
+                    echo '<a class="paypal_checkout_button paypal_checkout_button_text button alt" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">' . $button_text . '</a>';
                     break;
                 case "paypalimage":
                     echo '<div id="paypal_ec_button">';
-                    echo '<a class="paypal_checkout_button" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">';
+                    echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
                     echo "<img src='https://www.paypal.com/" . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . "/i/btn/btn_xpressCheckout.gif' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                     echo "</a>";
                     echo '</div>';
@@ -640,7 +640,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case "customimage":
                     $button_img = $pp_settings['pp_button_type_my_custom'];
                     echo '<div id="paypal_ec_button">';
-                    echo '<a class="paypal_checkout_button" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">';
+                    echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
                     echo "<img src='{$button_img}' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                     echo "</a>";
                     echo '</div>';
@@ -657,7 +657,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if ($this->show_paypal_credit == 'yes') {
                 // PayPal Credit button
                 $paypal_credit_button_markup = '<div id="paypal_ec_paypal_credit_button">';
-                $paypal_credit_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '" >';
+                $paypal_credit_button_markup .= '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))))) . '" >';
                 $paypal_credit_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' alt='Check out with PayPal Credit'/>";
                 $paypal_credit_button_markup .= '</a>';
                 $paypal_credit_button_markup .= '</div>';
@@ -2192,11 +2192,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     } else {
                         $button_text = __('Proceed to Checkout', 'woocommerce');
                     }
-                    echo '<a class="paypal_checkout_button button alt" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">' . $button_text . '</a>';
+                    echo '<a class="paypal_checkout_button button alt" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">' . $button_text . '</a>';
                     break;
                 case "paypalimage":
                     echo '<div id="paypal_ec_button">';
-                    echo '<a class="paypal_checkout_button" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">';
+                    echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
                     echo "<img src='https://www.paypal.com/" . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . "/i/btn/btn_xpressCheckout.gif' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                     echo "</a>";
                     echo '</div>';
@@ -2204,7 +2204,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case "customimage":
                     $button_img = $pp_settings['pp_button_type_my_custom'];
                     echo '<div id="paypal_ec_button">';
-                    echo '<a class="paypal_checkout_button" href="' . add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))) . '">';
+                    echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
                     echo "<img src='{$button_img}' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                     echo "</a>";
                     echo '</div>';
@@ -2217,7 +2217,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (isset($pp_settings['show_paypal_credit']) && $pp_settings['show_paypal_credit'] == 'yes') {
                 // PayPal Credit button
                 $paypal_credit_button_markup = '<div id="paypal_ec_paypal_credit_button">';
-                $paypal_credit_button_markup .= '<a class="paypal_checkout_button" href="' . add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '" >';
+                $paypal_credit_button_markup .= '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))))) . '" >';
                 $paypal_credit_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' alt='Check out with PayPal Credit'/>";
                 $paypal_credit_button_markup .= '</a>';
                 $paypal_credit_button_markup .= '</div>';
@@ -2262,7 +2262,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         /*
          * Check if the PayPal class has already been established.
          */
-        if (!class_exists('PayPal')) {
+        if (!class_exists('Angelleye_PayPal')) {
             require_once( 'lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
 
@@ -2311,9 +2311,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
             $order->update_status('refunded');
+            if (ob_get_length()) ob_end_clean();
             return true;
         } else {
-            $ec_message = apply_filters('angelleye_ec_refund_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE'], $PayPalResult);
+            $ec_message = apply_filters('angelleye_ec_refund_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE0'], $PayPalResult);
             return new WP_Error('ec_refund-error', $ec_message);
         }
     }
@@ -2331,8 +2332,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         if ($posted['payment_method'] == 'paypal_express' && wc_notice_count('error') == 0) {
 
-        	//get_option( 'woocommerce_enable_guest_checkout' ) == 'false'
-            if (!is_user_logged_in() && isset($posted['createaccount'])) {
+            if (!is_user_logged_in() && get_option( 'woocommerce_enable_guest_checkout' ) != 'yes') {
 
                 $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
                 $username = !empty($posted['account_username']) ? $posted['account_username'] : '';

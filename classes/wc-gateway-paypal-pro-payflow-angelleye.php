@@ -899,6 +899,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)){
             $order->add_order_note( 'Refund Transaction ID:'. $PayPalResult['PNREF'] );
             $order->update_status( 'refunded' );
+            if (ob_get_length()) ob_end_clean();
             return true;
         }else{
             $fc_refund_error = apply_filters( 'angelleye_fc_refund_error', $PayPalResult['RESPMSG'], $PayPalResult );
