@@ -39,9 +39,15 @@ global $woocommerce, $pp_settings, $pp_pro, $pp_payflow, $wp_version;
 $pp_settings = get_option( 'woocommerce_paypal_express_settings' );
 $pp_pro     = get_option('woocommerce_paypal_pro_settings');
 $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
+
+
 if(!class_exists('AngellEYE_Gateway_Paypal')){
     class AngellEYE_Gateway_Paypal
     {
+    	
+    	protected $plugin_screen_hook_suffix = null;
+    	protected $plugin_slug = 'paypal-for-woocommerce';
+    	
         /**
          * General class constructor where we'll setup our actions, hooks, and shortcodes.
          *
@@ -82,6 +88,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_cart_calculate_fees', array($this, 'woocommerce_custom_surcharge') );
             add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'add_div_before_add_to_cart_button' ), 25);
             add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
+            add_action( 'admin_menu', array( $this, 'angelleye_admin_menu_own' ) );
         }
 
         /**
@@ -558,6 +565,20 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             <div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php echo WC()->plugin_url(); ?>/assets/images/ajax-loader@2x.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>
             </div>
             <?php
+        }
+        
+        public function angelleye_admin_menu_own(){
+        	$this->plugin_screen_hook_suffix = add_submenu_page(
+			'options-general.php', 
+			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),
+			__( 'PayPal for WooCommerce', 'paypal-for-woocommerce' ),
+			'manage_options',
+			'paypal-for-woocommerce',
+			array( $this, 'display_plugin_admin_page'));	
+        }
+        
+        public function display_plugin_admin_page(){
+        	include_once( 'template/admin.php' );
         }
     }
 }
