@@ -916,7 +916,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }
                         
                          $creds = array(
-                            'user_login' => $username,
+                            'user_login' => wc_clean($username),
                             'user_password' => $password,
                             'remember' => true,
                         );
@@ -924,7 +924,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         if ( is_wp_error($user) ) {
                             wc_add_notice($user->get_error_message(), 'error');
                         } else {
-							wp_set_current_user($user->ID); //Here is where we update the global user variables                        			                            
+							wp_set_current_user($user->ID); //Here is where we update the global user variables 
+							$secure_cookie = is_ssl() ? true : false;
+	                    	wp_set_auth_cookie( $user->ID, true, $secure_cookie );                     			                            
                     	}
                         
                     } catch (Exception $e) {
@@ -1332,6 +1334,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $shipping = WC()->cart->shipping_total;
             $tax = WC()->cart->get_taxes_total();
         }
+        
+        if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
+        	$tax = wc_round_tax_total( WC()->cart->tax_total + WC()->cart->shipping_tax_total );
+        }
 
         $Payments = array();
         $Payment = array(
@@ -1598,7 +1604,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             } else {
                 $shipping = WC()->cart->shipping_total;
             }
-            $PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);
+            if($shipping > 0) {
+            	$PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);    	
+            } elseif ($tax > 0) {
+            	$PayPalRequestData['Payments'][0]['taxamt'] = $this->cut_off($tax, 2);    	
+            }
+            
         }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
@@ -1831,7 +1842,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $Item = array(
                         'name' => $values['name'], // Item name. 127 char max.
                         'desc' => '', // Item description. 127 char max.
-                        'amt' => $product_price, // Cost of item.
+                        'amt' => round( $values['line_subtotal'] / $qty, 2 ), // Cost of item.
                         'number' => $sku, // Item number.  127 char max.
                         'qty' => $qty, // Item qty on order.  Any positive integer.
                         'taxamt' => '', // Item sales tax
@@ -1852,7 +1863,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     );
                     array_push($PaymentOrderItems, $Item);
 
-                    $ITEMAMT += $product_price * $values['qty'];
+                    $ITEMAMT += $values['line_subtotal'];;
                 }
 
                 /**
@@ -1948,6 +1959,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $tax = $order->get_total_tax();
             }
             
+            if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
+            	$tax = $order->get_total_tax();
+            }
+            
             if( $tax > 0) {
         		$tax = number_format($tax, 2, '.', '');
         	}
@@ -2013,7 +2028,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             } else {
                 $shipping = WC()->cart->shipping_total;
             }
-            $PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);
+            if($shipping > 0) {
+            	$PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);    	
+            } elseif ($tax > 0) {
+            	$PayPalRequestData['Payments'][0]['taxamt'] = $this->cut_off($tax, 2);    	
+            }
+            
         }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
