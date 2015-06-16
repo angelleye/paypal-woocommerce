@@ -469,7 +469,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         function add_to_cart_redirect($url) {
             if (isset($_REQUEST['express_checkout'])||isset($_REQUEST['express_checkout_x'])){
-                $url = esc_url(add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) )) ;
+                $url = esc_url_raw(add_query_arg( 'pp_action', 'expresscheckout', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) )) ;
             }
             return $url;
         }
