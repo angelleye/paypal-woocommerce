@@ -1447,7 +1447,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             array_push($PaymentOrderItems, $Item);
 
-            $total_items += $values['line_subtotal'];
+            $total_items += round( $values['line_subtotal'] / $quantity, 2 ) * $quantity;
             $ctr++;
         }
 
@@ -1838,7 +1838,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     );
                     array_push($PaymentOrderItems, $Item);
 
-                    $ITEMAMT += $values['line_subtotal'];
+                    $ITEMAMT += round( $values['line_subtotal'] / $qty, 2 ) * $qty;
                 }
 
                 /**
