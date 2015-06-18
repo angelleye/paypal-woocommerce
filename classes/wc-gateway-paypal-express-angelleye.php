@@ -1348,7 +1348,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'insuranceamt' => '', // Total shipping insurance costs for this order.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays the string 'Yes' and the insurance amount.  If true, the total shipping insurance for this order must be a positive number.
             'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
-            'taxamt' => $tax, // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
+            'taxamt' => number_format($tax, 2, '.', ''), // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => '', // Free-form field for your own use.  256 char max.
             'invnum' => '', // Your own invoice or tracking number.  127 char max.
