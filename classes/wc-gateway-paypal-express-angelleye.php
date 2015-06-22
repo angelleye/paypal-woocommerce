@@ -1592,6 +1592,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             	$PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
             } elseif ($tax > 0) {
             	$PayPalRequestData['Payments'][0]['taxamt'] = round($tax + $diffrence_amount, 2);
+            } else {
+            	$PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'] + $diffrence_amount, 2);
             }
             
         }
@@ -2004,6 +2006,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             	$PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
             } elseif ($tax > 0) {
             	$PayPalRequestData['Payments'][0]['taxamt'] = round($tax + $diffrence_amount, 2);
+            } else {
+            	$PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'] + $diffrence_amount, 2);
             }
             
         }
@@ -2363,7 +2367,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
     
     function get_diffrent($amout_1, $amount_2) {
-    	$diff_amount = $amout_1 - $amount_2;
+   		$diff_amount = $amout_1 - $amount_2;
     	return round($diff_amount, 2);
     }
     function cut_off($number) {
