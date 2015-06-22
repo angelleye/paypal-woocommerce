@@ -1495,8 +1495,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
                 );
                 array_push($PaymentOrderItems, $Item);
+                $total_discount += number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
             }
-            $total_discount -= WC()->cart->get_cart_discount_total();
+            
         }
 
         if (!$this->is_wc_version_greater_2_3()) {
@@ -1509,8 +1510,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
                     );
                     array_push($PaymentOrderItems, $Item);
+                    $total_discount += number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
                 }
-                $total_discount -= WC()->cart->get_order_discount_total();
+                
             }
         }
         
@@ -1533,7 +1535,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
              * Now that we've looped and calculated item totals
              * we can fill in the ITEMAMT
              */
-            $Payment['itemamt'] = number_format(WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() ), 2, '.', '');    // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
+            $Payment['itemamt'] = number_format($total_items - $total_discount, 2, '.', '');
         } else {
             $Payment['order_items'] = array();
 
@@ -1541,7 +1543,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
              * Now that we've looped and calculated item totals
              * we can fill in the ITEMAMT
              */
-            $Payment['itemamt'] = number_format(WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() ), 2, '.', ''); //round(WC()->cart->total - (float) $tax - (float) $shipping, 2);    // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
+            $Payment['itemamt'] = number_format($total_items - $total_discount, 2, '.', '');
         }
 
         /*
@@ -1586,8 +1588,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         // Rounding amendment
 
-        if (trim(WC()->cart->total) !== trim($Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''))) {
-        	$diffrence_amount = $this->get_diffrent(WC()->cart->total, $this->cut_off($total_items + $total_discount) + $tax + number_format($shipping, 2, '.', ''));
+        if (trim(number_format(WC()->cart->total, 2, '.', '')) !== trim(number_format($total_items - $total_discount + $tax + $shipping, 2, '.', ''))) {
+        	$diffrence_amount = $this->get_diffrent(WC()->cart->total, $total_items - $total_discount + $tax + $shipping);
             if($shipping > 0) {
             	$PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
             } elseif ($tax > 0) {
@@ -1959,10 +1961,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                  * we can fill in necessary values.
                  */
                 
-                $Payment['itemamt'] = number_format(WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() ), 2, '.', '');              // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
+                $Payment['itemamt'] = number_format($ITEMAMT + $total_discount, 2, '.', '');
             } else {
                 $PaymentOrderItems = array();
-                $Payment['itemamt'] = number_format(WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() ), 2, '.', '');
+                $Payment['itemamt'] = number_format($ITEMAMT + $total_discount, 2, '.', '');
             }
 
             /*
@@ -2000,7 +2002,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         // Rounding amendment
         
-         if (trim(WC()->cart->total) !== trim(WC()->cart->cart_contents_total + $tax + number_format($shipping, 2, '.', ''))) {
+         if (trim(number_format(WC()->cart->total, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''), 2, '.', ''))) {
         	$diffrence_amount = $this->get_diffrent(WC()->cart->total, $Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''));
             if($shipping > 0) {
             	$PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
@@ -2368,7 +2370,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     
     function get_diffrent($amout_1, $amount_2) {
    		$diff_amount = $amout_1 - $amount_2;
-    	return round($diff_amount, 2);
+    	return $diff_amount;
     }
     function cut_off($number) {
         $parts = explode(".", $number);
