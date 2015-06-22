@@ -1586,7 +1586,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         // Rounding amendment
 
-        if (trim(WC()->cart->total) !== trim($this->cut_off($total_items + $total_discount) + $tax + number_format($shipping, 2, '.', ''))) {
+        if (trim(WC()->cart->total) !== trim($Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''))) {
         	$diffrence_amount = $this->get_diffrent(WC()->cart->total, $this->cut_off($total_items + $total_discount) + $tax + number_format($shipping, 2, '.', ''));
             if($shipping > 0) {
             	$PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
