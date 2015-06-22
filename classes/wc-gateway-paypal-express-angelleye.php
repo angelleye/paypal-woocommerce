@@ -1533,7 +1533,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
              * Now that we've looped and calculated item totals
              * we can fill in the ITEMAMT
              */
-            $Payment['itemamt'] = WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() );    // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
+            $Payment['itemamt'] = number_format(WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() ), 2, '.', '');    // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
         } else {
             $Payment['order_items'] = array();
 
@@ -1541,7 +1541,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
              * Now that we've looped and calculated item totals
              * we can fill in the ITEMAMT
              */
-            $Payment['itemamt'] = WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() ); //round(WC()->cart->total - (float) $tax - (float) $shipping, 2);    // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
+            $Payment['itemamt'] = number_format(WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() ), 2, '.', ''); //round(WC()->cart->total - (float) $tax - (float) $shipping, 2);    // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
         }
 
         /*
@@ -1959,10 +1959,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                  * we can fill in necessary values.
                  */
                 
-                $Payment['itemamt'] = WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() );                     // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
+                $Payment['itemamt'] = number_format(WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() ), 2, '.', '');              // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
             } else {
                 $PaymentOrderItems = array();
-                $Payment['itemamt'] = WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() );
+                $Payment['itemamt'] = number_format(WC()->cart->cart_contents_total - ( $this->is_wc_version_greater_2_3() ? 0 : WC()->cart->get_order_discount_total() ), 2, '.', '');
             }
 
             /*
