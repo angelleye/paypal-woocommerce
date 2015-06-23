@@ -406,7 +406,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'trxtype'=> $this->payment_action == 'Authorization' ? 'A' : 'S', 				// Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
 					'acct'=>$card_number, 				// Required for credit card transaction.  Credit card or purchase card number.
 					'expdate'=>$card_exp, 				// Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
-					'amt'=>$order->get_total(), 					// Required.  Amount of the transaction.  Must have 2 decimal places. 
+					'amt'=> number_format($order->get_total(),2,'.',''), 					// Required.  Amount of the transaction.  Must have 2 decimal places. 
 					'currency'=>get_woocommerce_currency(), // 
 					'dutyamt'=>'', 				//
 					'freightamt'=>'', 			//
@@ -541,7 +541,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                     //tax
                     if ($tax > 0) {
-                        $PayPalRequestData['taxamt'] = $tax;
+                        $PayPalRequestData['taxamt'] = number_format($tax,2,'.','');
                     }
 
                     // Shipping
@@ -573,7 +573,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                 //tax
                 if ($tax > 0) {
-                    $PayPalRequestData['taxamt'] = $tax;
+                    $PayPalRequestData['taxamt'] = number_format($tax,2,'.','');
                 }
 
                 // Shipping

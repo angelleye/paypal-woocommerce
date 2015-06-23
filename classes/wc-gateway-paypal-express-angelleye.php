@@ -1348,7 +1348,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'insuranceamt' => '', // Total shipping insurance costs for this order.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays the string 'Yes' and the insurance amount.  If true, the total shipping insurance for this order must be a positive number.
             'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
-            'taxamt' => $tax, // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
+            'taxamt' => number_format($tax, 2, '.', ''), // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => '', // Free-form field for your own use.  256 char max.
             'invnum' => '', // Your own invoice or tracking number.  127 char max.
@@ -1421,15 +1421,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $values['name'] .= " - " . str_replace(", \n", " - ", $meta);
                 }
             }
-
-            /*
-             * Set price based on tax option.
-             */
-            if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                $product_price = number_format($_product->get_price_including_tax(), 2, '.', '');
-            } else {
-                $product_price = number_format($_product->get_price_excluding_tax(), 2, '.', '');
-            }
+           
 			$quantity = absint( $values['quantity'] );
             $Item = array(
                 'name' => $values['name'], // Item name. 127 char max.
@@ -1455,7 +1447,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             array_push($PaymentOrderItems, $Item);
 
-            $total_items += $values['line_subtotal'];
+            $total_items += round( $values['line_subtotal'] / $quantity, 2 ) * $quantity;
             $ctr++;
         }
 
@@ -1503,8 +1495,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
                 );
                 array_push($PaymentOrderItems, $Item);
+                $total_discount += number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
             }
-            $total_discount -= WC()->cart->get_cart_discount_total();
+            
         }
 
         if (!$this->is_wc_version_greater_2_3()) {
@@ -1517,18 +1510,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
                     );
                     array_push($PaymentOrderItems, $Item);
+                    $total_discount += number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
                 }
-                $total_discount -= WC()->cart->get_order_discount_total();
+                
             }
         }
         
-        if( $tax > 0) {
-        	$tax_round = number_format($tax, 2, '.', '');
-        }
+       
         
-        if( $shipping > 0) {
-        	$shipping_round = number_format($shipping, 2, '.', '');
-        }
+        
         
         if( isset($total_discount) ) {
         	$total_discount = round($total_discount, 2);
@@ -1545,7 +1535,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
              * Now that we've looped and calculated item totals
              * we can fill in the ITEMAMT
              */
-            $Payment['itemamt'] = $total_items + $total_discount;    // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
+            $Payment['itemamt'] = number_format($total_items - $total_discount, 2, '.', '');
         } else {
             $Payment['order_items'] = array();
 
@@ -1553,7 +1543,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
              * Now that we've looped and calculated item totals
              * we can fill in the ITEMAMT
              */
-            $Payment['itemamt'] = $total_items + $total_discount; //round(WC()->cart->total - (float) $tax - (float) $shipping, 2);    // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
+            $Payment['itemamt'] = number_format($total_items - $total_discount, 2, '.', '');
         }
 
         /*
@@ -1598,16 +1588,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         // Rounding amendment
 
-        if (trim(WC()->cart->total) !== trim($total_items + $total_discount + $tax + number_format($shipping, 2, '.', ''))) {
-            if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                $shipping = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
-            } else {
-                $shipping = WC()->cart->shipping_total;
-            }
+        if (trim(number_format(WC()->cart->total, 2, '.', '')) !== trim(number_format($total_items - $total_discount + $tax + $shipping, 2, '.', ''))) {
+        	$diffrence_amount = $this->get_diffrent(WC()->cart->total, $total_items - $total_discount + $tax + $shipping);
             if($shipping > 0) {
-            	$PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);    	
+            	$PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
             } elseif ($tax > 0) {
-            	$PayPalRequestData['Payments'][0]['taxamt'] = $this->cut_off($tax, 2);    	
+            	$PayPalRequestData['Payments'][0]['taxamt'] = round($tax + $diffrence_amount, 2);
+            } else {
+            	$PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'] + $diffrence_amount, 2);
             }
             
         }
@@ -1830,15 +1818,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }
                     }
 
-                    /*
-                     * Set price based on tax option.
-                     */
-                    if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                        $product_price = $order->get_item_subtotal($values, true, false);
-                    } else {
-                        $product_price = $order->get_item_subtotal($values, false, true);
-                    }
-
                     $Item = array(
                         'name' => $values['name'], // Item name. 127 char max.
                         'desc' => '', // Item description. 127 char max.
@@ -1863,7 +1842,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     );
                     array_push($PaymentOrderItems, $Item);
 
-                    $ITEMAMT += $values['line_subtotal'];;
+                    $ITEMAMT += round( $values['line_subtotal'] / $qty, 2 ) * $qty;
                 }
 
                 /**
@@ -1920,7 +1899,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             );
                             array_push($PaymentOrderItems, $Item);
                         }
-                        $ITEMAMT -= $order->get_cart_discount();
+                        $total_discount -= $order->get_cart_discount();
                     }
 
                     if ($order->get_order_discount() > 0) {
@@ -1933,17 +1912,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             );
                             array_push($PaymentOrderItems, $Item);
                         }
-                        $ITEMAMT -= $order->get_order_discount();
+                        $total_discount -= $order->get_order_discount();
                     }
                 } else {
                     if ($order->get_total_discount() > 0) {
                         $Item = array(
                             'name' => 'Total Discount',
                             'qty' => 1,
-                            'amt' => - round($order->get_total_discount(), 2),
+                            'amt' => - number_format($order->get_total_discount(), 2, '.', ''),
                         );
                         array_push($PaymentOrderItems, $Item);
-                        $ITEMAMT -= $order->get_total_discount();
+                        $total_discount -= $order->get_total_discount();
                     }
                 }
             }
@@ -1981,10 +1960,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                  * Now that we have all items and subtotals
                  * we can fill in necessary values.
                  */
-                $Payment['itemamt'] = number_format($ITEMAMT, 2, '.', '');                        // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
+                
+                $Payment['itemamt'] = number_format($ITEMAMT + $total_discount, 2, '.', '');
             } else {
                 $PaymentOrderItems = array();
-                $Payment['itemamt'] = WC()->cart->total - $tax - $shipping;
+                $Payment['itemamt'] = number_format($ITEMAMT + $total_discount, 2, '.', '');
             }
 
             /*
@@ -2021,17 +2001,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
 
         // Rounding amendment
-
-        if (trim(WC()->cart->total) !== trim($Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''))) {
-            if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                $shipping = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
-            } else {
-                $shipping = WC()->cart->shipping_total;
-            }
+        
+         if (trim(number_format(WC()->cart->total, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''), 2, '.', ''))) {
+        	$diffrence_amount = $this->get_diffrent(WC()->cart->total, $Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''));
             if($shipping > 0) {
-            	$PayPalRequestData['Payments'][0]['shippingamt'] = $this->cut_off($shipping, 2);    	
+            	$PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
             } elseif ($tax > 0) {
-            	$PayPalRequestData['Payments'][0]['taxamt'] = $this->cut_off($tax, 2);    	
+            	$PayPalRequestData['Payments'][0]['taxamt'] = round($tax + $diffrence_amount, 2);
+            } else {
+            	$PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'] + $diffrence_amount, 2);
             }
             
         }
@@ -2352,7 +2330,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         if ($posted['payment_method'] == 'paypal_express' && wc_notice_count('error') == 0) {
 
-            if (!is_user_logged_in() && get_option( 'woocommerce_enable_guest_checkout' ) != 'yes') {
+            if (!is_user_logged_in() && (get_option( 'woocommerce_enable_guest_checkout' ) != 'yes' || (isset($posted['createaccount']) && $posted['createaccount'] == 1) )) {
 
                 $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
                 $username = !empty($posted['account_username']) ? $posted['account_username'] : '';
@@ -2390,6 +2368,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
     }
     
+    function get_diffrent($amout_1, $amount_2) {
+   		$diff_amount = $amout_1 - $amount_2;
+    	return $diff_amount;
+    }
     function cut_off($number) {
         $parts = explode(".", $number);
         $newnumber = $parts[0] . "." . $parts[1][0] . $parts[1][1];
