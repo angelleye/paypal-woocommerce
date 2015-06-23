@@ -476,20 +476,16 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                                     $item['name'] .= " - " . str_replace(", \n", " - ", $meta);
                                 }
                             }
-                            if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                                $product_price = $order->get_item_subtotal($item, true, false);
-                            } else {
-                                $product_price = $order->get_item_subtotal($item, false, true);
-                            }
 
+                            
                             $PayPalRequestData['L_NUMBER' . $item_loop] = $sku;
                             $PayPalRequestData['L_NAME' . $item_loop] = $item['name'];
-                            $PayPalRequestData['L_COST' . $item_loop] = $product_price;
+                            $PayPalRequestData['L_COST' . $item_loop] = round( $item['line_subtotal'] / $item['qty'], 2 );
                             $PayPalRequestData['L_QTY' . $item_loop] = $item['qty'];
                             if ($sku) {
                                 $PayPalRequestData['L_SKU' . $item_loop] = $sku;
                             }
-                            $ITEMAMT += $product_price * $item['qty'];
+                            $ITEMAMT += round( $item['line_subtotal'] / $item['qty'], 2 ) * $item['qty'];
                             $item_loop++;
                         }
                     }
@@ -538,6 +534,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         $shipping = $order->get_total_shipping();
                         $tax = $order->get_total_tax();
                     }
+                    if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
+            			$tax = $order->get_total_tax();
+            		}
 
                     //tax
                     if ($tax > 0) {
@@ -546,7 +545,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                     // Shipping
                     if ($shipping > 0) {
-                        $PayPalRequestData['freightamt'] = $shipping;
+                        $PayPalRequestData['freightamt'] = number_format($shipping, 2, '.', '');	
                     }
                 }
 
@@ -570,6 +569,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     $shipping = $order->get_total_shipping();
                     $tax = $order->get_total_tax();
                 }
+                 if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
+            		$tax = $order->get_total_tax();
+            	}
 
                 //tax
                 if ($tax > 0) {
@@ -580,7 +582,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 if ($shipping > 0) {
                     $PayPalRequestData['freightamt'] = $shipping;
                 }
-                $ITEMAMT = WC()->cart->total - $tax - $shipping;
+                
             }
 			
 			$PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
@@ -604,17 +606,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			// Rounding amendment
 			
 	        // Rounding amendment
-	       if (trim(WC()->cart->total) !== trim(number_format($ITEMAMT,2,'.','') + $tax + number_format($shipping, 2, '.', ''))) {
-	            if (get_option('woocommerce_prices_include_tax') == 'yes') {
-	                $shipping = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
-	            } else {
-	                $shipping = WC()->cart->shipping_total;
-	            }
-	
+	       if (trim(number_format(WC()->cart->total, 2, '.', '')) !== trim(number_format($ITEMAMT,2,'.','') + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''))) {
+				$diffrence_amount = $this->get_diffrent(WC()->cart->total, $ITEMAMT + $tax + number_format($shipping, 2, '.', ''));
 	            if($shipping > 0) {
-					$PayPalRequestData['freightamt'] = $this->cut_off($shipping, 2);
+					$PayPalRequestData['freightamt'] = round($shipping + $diffrence_amount, 2);
+	            } elseif ($tax > 0) {
+					$PayPalRequestData['taxamt'] = round($tax + $diffrence_amount, 2);
 	            } else {
-					$PayPalRequestData['taxamt'] = $this->cut_off($tax, 2);
+	            	$PayPalRequestData['ITEMAMT'] = round($PayPalRequestData['ITEMAMT'] + $diffrence_amount, 2);
 	            }
 	        }
         
@@ -908,6 +907,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         return false;
     }
     
+    function get_diffrent($amout_1, $amount_2) {
+   		$diff_amount = $amout_1 - $amount_2;
+    	return $diff_amount;
+    }
     function cut_off($number) {
         $parts = explode(".", $number);
         $newnumber = $parts[0] . "." . $parts[1][0] . $parts[1][1];
