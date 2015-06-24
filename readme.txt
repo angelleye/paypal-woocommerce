@@ -102,7 +102,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.1.6.3 - 06.??.2015 =
+= 1.1.6.3 - 06.24.2015 =
 * Fix - Resolves PayPal error 10431, item amount invalid, which would happen on rare occasions.
 * Fix - Resolves a conflict with the Bulk Item Discount plugin that resulted in a PayPal order total error.
 * Fix - Resolves other various PayPal order total errors by adjusting shipping/tax price when WooCommerce orders do not calculate correctly.
