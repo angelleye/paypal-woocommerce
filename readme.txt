@@ -243,5 +243,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.1.6.2 =
-The 1.1.6 update included PHP syntax that is only valid on PHP 5.3 or higher.  We have received enough complaints about this that we decided to release this update which resolves the issue, but we strongly recommend that you ensure you're running PHP 5.4 or higher at this point.
+= 1.1.6.3 =
+This update adds new features into the settings panel for PayPal payment gateway options.  Please make sure to review these after updating and save the settings page (even if you don't make changes.)
