@@ -289,7 +289,32 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             else
             {
                 global $woocommerce;
-                //include_once $woocommerce->plugin_path() . '/admin/woocommerce-admin-install.php';
+                
+                // PayFlow
+                $woocommerce_paypal_pro_payflow_settings = get_option('woocommerce_paypal_pro_payflow_settings');
+                if( isset($woocommerce_paypal_pro_payflow_settings) && !empty($woocommerce_paypal_pro_payflow_settings)) {
+                	$woocommerce_paypal_pro_payflow_settings['payment_action'] = 'Sale';
+                	$woocommerce_paypal_pro_payflow_settings['send_items'] = 'yes';
+                	update_option('woocommerce_paypal_pro_payflow_settings', $woocommerce_paypal_pro_payflow_settings);
+                }
+                
+                // DoDirectPayment
+                $woocommerce_paypal_pro_settings = get_option('woocommerce_paypal_pro_settings');
+                if( isset($woocommerce_paypal_pro_settings) && !empty($woocommerce_paypal_pro_settings)) {
+                	$woocommerce_paypal_pro_settings['payment_action'] = 'Sale';
+                	$woocommerce_paypal_pro_settings['send_items'] = 'yes';
+                	update_option('woocommerce_paypal_pro_settings', $woocommerce_paypal_pro_settings);
+                }
+                
+                // PayPal Express Checkout
+                $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
+                if( isset($woocommerce_paypal_express_settings) && !empty($woocommerce_paypal_express_settings)) {
+                	$woocommerce_paypal_express_settings['payment_action'] = 'Sale';
+                	$woocommerce_paypal_express_settings['cancel_page'] = get_option('woocommerce_cart_page_id');
+                	$woocommerce_paypal_express_settings['send_items'] = 'yes';
+                	$woocommerce_paypal_express_settings['billing_address'] = 'no';
+                	update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
+                }
 
                 // Create review page for Express Checkout
                 wc_create_page(esc_sql(_x('review-order','page_slug','woocommerce')),'woocommerce_review_order_page_id',__('Checkout &rarr; Review Order','paypal-for-woocommerce'),'[woocommerce_review_order]',wc_get_page_id('checkout'));
