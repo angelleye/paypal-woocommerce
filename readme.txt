@@ -89,6 +89,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Click Sandbox Accounts in the left sidebar menu.
 * Click the Create Account button to create a new sandbox account.
 * TIP: Create at least one "seller" account and one "buyer" account if you want to fully test Express Checkout or other PayPal wallet payments. 
+* TUTORIAL: See our [step-by-step instructions with video guide](https://www.angelleye.com/create-paypal-sandbox-account/).
 
 = Where do I get my API credentials? =
 
