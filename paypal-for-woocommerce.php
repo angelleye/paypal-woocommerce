@@ -293,26 +293,53 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 // PayFlow
                 $woocommerce_paypal_pro_payflow_settings = get_option('woocommerce_paypal_pro_payflow_settings');
                 if( isset($woocommerce_paypal_pro_payflow_settings) && !empty($woocommerce_paypal_pro_payflow_settings)) {
-                	$woocommerce_paypal_pro_payflow_settings['payment_action'] = 'Sale';
-                	$woocommerce_paypal_pro_payflow_settings['send_items'] = 'yes';
+                	
+                	if( !isset($woocommerce_paypal_pro_payflow_settings['payment_action']) && empty($woocommerce_paypal_pro_payflow_settings['payment_action'])) {
+                		$woocommerce_paypal_pro_payflow_settings['payment_action'] = 'Sale';
+                	}
+                	
+                	if( !isset($woocommerce_paypal_pro_payflow_settings['send_items']) && empty($woocommerce_paypal_pro_payflow_settings['send_items']) ) {
+                		$woocommerce_paypal_pro_payflow_settings['send_items'] = 'yes';
+                	}
+                	
                 	update_option('woocommerce_paypal_pro_payflow_settings', $woocommerce_paypal_pro_payflow_settings);
                 }
                 
                 // DoDirectPayment
                 $woocommerce_paypal_pro_settings = get_option('woocommerce_paypal_pro_settings');
                 if( isset($woocommerce_paypal_pro_settings) && !empty($woocommerce_paypal_pro_settings)) {
-                	$woocommerce_paypal_pro_settings['payment_action'] = 'Sale';
-                	$woocommerce_paypal_pro_settings['send_items'] = 'yes';
+                	
+                	if( !isset($woocommerce_paypal_pro_settings['payment_action']) && empty($woocommerce_paypal_pro_settings['payment_action']) ) {
+                		$woocommerce_paypal_pro_settings['payment_action'] = 'Sale';
+                	}
+                	
+                	if( !isset($woocommerce_paypal_pro_settings['send_items']) && empty($woocommerce_paypal_pro_settings['send_items']) ) {
+                		$woocommerce_paypal_pro_settings['send_items'] = 'yes';
+                	}
+                	
                 	update_option('woocommerce_paypal_pro_settings', $woocommerce_paypal_pro_settings);
                 }
                 
                 // PayPal Express Checkout
                 $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
                 if( isset($woocommerce_paypal_express_settings) && !empty($woocommerce_paypal_express_settings)) {
-                	$woocommerce_paypal_express_settings['payment_action'] = 'Sale';
-                	$woocommerce_paypal_express_settings['cancel_page'] = get_option('woocommerce_cart_page_id');
-                	$woocommerce_paypal_express_settings['send_items'] = 'yes';
-                	$woocommerce_paypal_express_settings['billing_address'] = 'no';
+                	
+                	if( !isset($woocommerce_paypal_express_settings['payment_action']) && empty($woocommerce_paypal_express_settings['payment_action'])) {
+                		$woocommerce_paypal_express_settings['payment_action'] = 'Sale';
+                	}
+                	
+                	if( !isset($woocommerce_paypal_express_settings['cancel_page']) && empty($woocommerce_paypal_express_settings['cancel_page'])) {
+                		$woocommerce_paypal_express_settings['cancel_page'] = get_option('woocommerce_cart_page_id');
+                	}
+                	
+                	if( !isset($woocommerce_paypal_express_settings['send_items']) && empty($woocommerce_paypal_express_settings['send_items'])) {
+                		$woocommerce_paypal_express_settings['send_items'] = 'yes';
+                	}
+                	
+                	if( !isset($woocommerce_paypal_express_settings['billing_address']) && empty($woocommerce_paypal_express_settings['billing_address'])) {
+                		$woocommerce_paypal_express_settings['billing_address'] = 'no';
+                	}
+                	
                 	update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
                 }
 
