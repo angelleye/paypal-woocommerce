@@ -1033,6 +1033,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (is_user_logged_in()) {
                     $userLogined = wp_get_current_user();
                     update_post_meta($order_id, '_billing_email', $userLogined->user_email);
+                    update_post_meta($order_id, '_customer_user', $userLogined->ID);
                 } else {
                     update_post_meta($order_id, '_billing_email', $this->get_session('payeremail'));
                 }
