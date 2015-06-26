@@ -619,6 +619,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 		$woocommerce_paypal_express_settings['billing_address'] = 'no';
                 	}
                 	
+                	if( !isset($woocommerce_paypal_express_settings['button_position']) && empty($woocommerce_paypal_express_settings['button_position'])) {
+                		$woocommerce_paypal_express_settings['button_position'] = 'bottom';
+                	}
+                	
                 	update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
                 }
  				
