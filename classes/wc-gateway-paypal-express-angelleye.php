@@ -2231,7 +2231,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     static function get_button_locale_code() {
-        $locale_code = defined("WPLANG") && WPLANG != '' ? WPLANG : 'en_US';
+        $locale_code = defined("WPLANG") && get_locale() != '' ? get_locale() : 'en_US';
         switch ($locale_code) {
             case "de_DE": $locale_code = "de_DE/DE";
                 break;
