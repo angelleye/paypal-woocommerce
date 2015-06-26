@@ -456,10 +456,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $PayPalRequestData['SHIPTOZIP']         = $order->shipping_postcode;
             }
 
-            if( $this->send_items ) {
-                /* Send Item details */
                 $item_loop = 0;
                 $ITEMAMT = 0;
+                $OrderItems = array();
                 if (sizeof($order->get_items()) > 0) {
                     foreach ($order->get_items() as $item) {
                         $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
@@ -478,13 +477,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                             }
 
                             
-                            $PayPalRequestData['L_NUMBER' . $item_loop] = $sku;
-                            $PayPalRequestData['L_NAME' . $item_loop] = $item['name'];
-                            $PayPalRequestData['L_COST' . $item_loop] = round( $item['line_subtotal'] / $item['qty'], 2 );
-                            $PayPalRequestData['L_QTY' . $item_loop] = $item['qty'];
+                            $Item['L_NUMBER' . $item_loop] = $sku;
+                            $Item['L_NAME' . $item_loop] = $item['name'];
+                            $Item['L_COST' . $item_loop] = round( $item['line_subtotal'] / $item['qty'], 2 );
+                            $Item['L_QTY' . $item_loop] = $item['qty'];
                             if ($sku) {
-                                $PayPalRequestData['L_SKU' . $item_loop] = $sku;
+                                $Item['L_SKU' . $item_loop] = $sku;
                             }
+                            $OrderItems = array_merge($OrderItems, $Item);
                             $ITEMAMT += round( $item['line_subtotal'] / $item['qty'], 2 ) * $item['qty'];
                             $item_loop++;
                         }
@@ -495,10 +495,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 	                    if ($order->get_cart_discount() > 0) {
 	                        foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
 	
-	                            $PayPalRequestData['L_NUMBER' . $item_loop] = $code;
-	                            $PayPalRequestData['L_NAME' . $item_loop] = 'Cart Discount';
-	                            $PayPalRequestData['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
-	                            $PayPalRequestData['L_QTY' . $item_loop] = 1;
+	                            $Item['L_NUMBER' . $item_loop] = $code;
+	                            $Item['L_NAME' . $item_loop] = 'Cart Discount';
+	                            $Item['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
+	                            $Item['L_QTY' . $item_loop] = 1;
+	                            $OrderItems = array_merge($OrderItems, $Item);
 	                            $item_loop++;
 	                        }
 	                        $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
@@ -507,10 +508,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 	                    //Order Discount
 	                    if ($order->get_order_discount() > 0) {
 	                        foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
-	                            $PayPalRequestData['L_NUMBER' . $item_loop] = $code;
-	                            $PayPalRequestData['L_NAME' . $item_loop] = 'Order Discount';
-	                            $PayPalRequestData['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
-	                            $PayPalRequestData['L_QTY' . $item_loop] = 1;
+	                            $Item['L_NUMBER' . $item_loop] = $code;
+	                            $Item['L_NAME' . $item_loop] = 'Order Discount';
+	                            $Item['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
+	                            $Item['L_QTY' . $item_loop] = 1;
+	                            $OrderItems = array_merge($OrderItems, $Item);
 	                            $item_loop++;
 	                        }
 	                        $ITEMAMT = $ITEMAMT - $order->get_order_discount();
@@ -518,10 +520,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					} else {
 						if ($order->get_total_discount() > 0) {
 
-							 	$PayPalRequestData['L_NUMBER' . $item_loop] = $code;
-	                            $PayPalRequestData['L_NAME' . $item_loop] = 'Order Discount';
-	                            $PayPalRequestData['L_COST' . $item_loop] = '-' . $order->get_total_discount();
-	                            $PayPalRequestData['L_QTY' . $item_loop] = 1;
+							 	$Item['L_NUMBER' . $item_loop] = $code;
+	                            $Item['L_NAME' . $item_loop] = 'Order Discount';
+	                            $Item['L_COST' . $item_loop] = '-' . $order->get_total_discount();
+	                            $Item['L_QTY' . $item_loop] = 1;
+	                            $OrderItems = array_merge($OrderItems, $Item);
 	                            $item_loop++;
 	                        	$ITEMAMT -= $order->get_total_discount();
                     	}
@@ -547,45 +550,33 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     if ($shipping > 0) {
                         $PayPalRequestData['freightamt'] = number_format($shipping, 2, '.', '');	
                     }
-                }
+                
 
                 /**
                  * Add custom Woo cart fees as line items
                  */
                 foreach (WC()->cart->get_fees() as $fee) {
-                    $PayPalRequestData['L_NUMBER' . $item_loop] = $fee->id;
-                    $PayPalRequestData['L_NAME' . $item_loop] = $fee->name;
-                    $PayPalRequestData['L_AMT' . $item_loop] = number_format($fee->amount, 2, '.', '');
-                    $PayPalRequestData['L_QTY' . $item_loop] = 1;
+                	
+                    $Item['L_NUMBER' . $item_loop] = $fee->id;
+                    $Item['L_NAME' . $item_loop] = $fee->name;
+                    $Item['L_AMT' . $item_loop] = number_format($fee->amount, 2, '.', '');
+                    $Item['L_QTY' . $item_loop] = 1;
+                    $OrderItems = array_merge($OrderItems, $Item);
                     $item_loop++;
 
                     $ITEMAMT += $fee->amount;
                 }
-            }else{
-                if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                    $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
-                    $tax = 0;
-                } else {
-                    $shipping = $order->get_total_shipping();
-                    $tax = $order->get_total_tax();
-                }
-                 if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
-            		$tax = $order->get_total_tax();
-            	}
-
-                //tax
-                if ($tax > 0) {
-                    $PayPalRequestData['taxamt'] = number_format($tax,2,'.','');
-                }
-
-                // Shipping
-                if ($shipping > 0) {
-                    $PayPalRequestData['freightamt'] = $shipping;
-                }
-                
+            }
+            
+            if( !$this->send_items ) {
+            	$OrderItems = array();
+            	$PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
+            } else {
+            	$PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
+            	$PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
             }
 			
-			$PayPalRequestData['ITEMAMT'] = number_format($ITEMAMT,2,'.','');
+			
 			
 			
 			/**
