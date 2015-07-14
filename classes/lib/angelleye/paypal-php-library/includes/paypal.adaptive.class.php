@@ -48,6 +48,8 @@ class Angelleye_PayPal_Adaptive extends Angelleye_PayPal
 	 */
 	function __construct($DataArray)
 	{
+        $DataArray = apply_filters( 'angelleye_paypal_adaptive_construct_params', $DataArray );
+
 		parent::__construct($DataArray);
 		
 		$this->XMLNamespace = 'http://svcs.paypal.com/types/ap';
