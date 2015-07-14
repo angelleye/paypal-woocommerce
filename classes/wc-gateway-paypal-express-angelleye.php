@@ -2144,11 +2144,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             if ((empty($payment_gateways) || @$pp_settings['enabled'] == 'yes') && (count($payment_gateways) == $payment_gateways_count)) {
                 if (@$pp_pro['enabled'] == 'yes' || @$pp_payflow['enabled'] == 'yes') {
+                    $checkout_button_display_text = !empty($pp_settings['show_on_cart']) && $pp_settings['show_on_cart'] == 'yes' ? __('Pay with Credit Card', 'paypal-for-woocommerce') : __('Proceed to Checkout','paypal-for-woocommerce');
                     echo '<script type="text/javascript">
                                 jQuery(document).ready(function(){
                                     if (jQuery(".checkout-button").is("input")) {
-                                        jQuery(".checkout-button").val("' . __('Pay with Credit Card', 'paypal-for-woocommerce') . '");
-                                    } else jQuery(".checkout-button").html("<span>' . __('Pay with Credit Card', 'paypal-for-woocommerce') . '</span>");
+                                        jQuery(".checkout-button").val("' . $checkout_button_display_text . '");
+                                    } else jQuery(".checkout-button").html("<span>' . $checkout_button_display_text . '</span>");
                                 });
                               </script>';
                 } elseif (empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart'] == 'yes') {
