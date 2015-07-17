@@ -694,7 +694,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     function paypal_express_checkout($posted = null) {
         if (!empty($posted) || ( isset($_GET['pp_action']) && $_GET['pp_action'] == 'expresscheckout' )) {
             if (sizeof(WC()->cart->get_cart()) > 0) {
-
+					
                 // The customer has initiated the Express Checkout process with the button on the cart page
                 if (!defined('WOOCOMMERCE_CHECKOUT'))
                     define('WOOCOMMERCE_CHECKOUT', true);
@@ -711,9 +711,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
 
                 WC()->cart->calculate_totals();
+                
+               $order_id = WC()->checkout()->create_order();
+			   $order = new WC_Order($order_id);
+			   $lineitems_prepare = $this->prepare_line_items($order);
+			   $lineitems = $_SESSION['line_item'];
                 //$paymentAmount    = WC()->cart->get_total();
-                $paymentAmount = number_format(WC()->cart->total, 2, '.', '');
-
+               $order_obj = $order->get_order_item_totals();
+             	 $paymentAmount_amt =  strip_tags($order_obj['order_total']['value']);
+                $paymentAmount = number_format($paymentAmount_amt, 2, '.', '');
+				$order->get_items();
                 //Check if review order page is exist, otherwise re-create it on the fly
                 $review_order_page_url = get_permalink(wc_get_page_id('review_order'));
                 if (!$review_order_page_url) {
@@ -725,7 +732,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $returnURL = urlencode(add_query_arg('pp_action', 'revieworder', $review_order_page_url));
                 $cancelURL = isset($this->settings['cancel_page']) ? get_the_permalink($this->settings['cancel_page']) : WC()->cart->get_cart_url();
                 $cancelURL = apply_filters('angelleye_express_cancel_url', urlencode($cancelURL));
-                $resArray = $this->CallSetExpressCheckout($paymentAmount, $returnURL, $cancelURL, $usePayPalCredit, $posted);
+                $resArray = $this->CallSetExpressCheckout($paymentAmount, $returnURL, $cancelURL, $usePayPalCredit, $posted,$lineitems);
                 $ack = strtoupper($resArray["ACK"]);
 
                 /**
@@ -734,6 +741,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                  * "skip details" will work correctly with PayPal's review pages.
                  */
                 if ($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING") {
+                	
                     $this->add_log('Redirecting to PayPal');
                     if (is_ajax()) {
                         $result = array(
@@ -1207,7 +1215,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @returnURL (string) URL for PayPal to send the buyer to after review and continue from PayPal.
      * @cancelURL (string) URL for PayPal to send the buyer to if they cancel the payment.
      */
-    function CallSetExpressCheckout($paymentAmount, $returnURL, $cancelURL, $usePayPalCredit = false, $posted) {
+    function CallSetExpressCheckout($paymentAmount, $returnURL, $cancelURL, $usePayPalCredit = false, $posted,$lineitems) {
         /*
          * Display message to user if session has expired.
          */
@@ -1342,7 +1350,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         $Payments = array();
         $Payment = array(
-            'amt' => number_format(WC()->cart->total, 2, '.', ''), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
+            'amt' => number_format($paymentAmount, 2, '.', ''), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
             'currencycode' => get_woocommerce_currency(), // A three-character currency code.  Default is USD.
             'shippingamt' => number_format($shipping, 2, '.', ''), // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
             'shippingdiscamt' => '', // Shipping discount for this order, specified as a negative number.
@@ -1407,7 +1415,22 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $sku = $_product->get_sku();
             $values['name'] = html_entity_decode($_product->get_title(), ENT_NOQUOTES, 'UTF-8');
 
-            /*
+//////////////////////////////////////////***************************////////////////////////////////////
+            
+            
+            if (in_array($values['name'], $lineitems)) {
+          		
+          		$arraykey = array_search($values['name'],$lineitems);
+          		$item_position = substr($arraykey, -1);
+          		
+          		$get_amountkey = 'amount_'.$item_position;
+          		$get_qtykey = 'quantity_'.$item_position;
+          		$switcher_amt = $lineitems[$get_amountkey];
+          		$switcher_qty = $lineitems[$get_qtykey];
+          	}
+            
+   //////////////////////////////////////////***************************////////////////////////////////////
+              /*
              * Append variation data to name.
              */
             if ($_product->product_type == 'variation') {
@@ -1427,9 +1450,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $Item = array(
                 'name' => $values['name'], // Item name. 127 char max.
                 'desc' => '', // Item description. 127 char max.
-                'amt' => round( $values['line_subtotal'] / $quantity, 2 ), // Cost of item.
+                'amt' => round( $switcher_amt, 2 ), // Cost of item.
                 'number' => $sku, // Item number.  127 char max.
-                'qty' => $quantity, // Item qty on order.  Any positive integer.
+                'qty' => $switcher_qty, // Item qty on order.  Any positive integer.
                 'taxamt' => '', // Item sales tax
                 'itemurl' => '', // URL for the item.
                 'itemcategory' => '', // One of the following values:  Digital, Physical
@@ -1448,7 +1471,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             array_push($PaymentOrderItems, $Item);
 
-            $total_items += round( $values['line_subtotal'] / $quantity, 2 ) * $quantity;
+            $total_items += round($switcher_amt, 2 ) * $switcher_qty;
             $ctr++;
         }
 
@@ -1596,7 +1619,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             } elseif ($tax > 0) {
             	$PayPalRequestData['Payments'][0]['taxamt'] = round($tax + $diffrence_amount, 2);
             } else {
-            	$PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'] + $diffrence_amount, 2);
+            	$PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'], 2);
             }
             
         }
@@ -1768,8 +1791,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         );
 
         $Payments = array();
+        $final_order_total = $order->get_order_item_totals();
+        $final_order_total_amt = strip_tags($final_order_total['order_total']['value']);
+        
         $Payment = array(
-            'amt' => number_format($FinalPaymentAmt, 2, '.', ''), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
+            'amt' => number_format($final_order_total_amt, 2, '.', ''), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
             'currencycode' => get_woocommerce_currency(), // A three-character currency code.  Default is USD.
             'shippingdiscamt' => '', // Total shipping discount for this order, specified as a negative number.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays the string 'Yes' and the insurance amount.  If true, the total shipping insurance for this order must be a positive number.
@@ -1796,7 +1822,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'sellerregistrationdate' => '', // Date when the seller registered at the marketplace site.
             'softdescriptor' => ''     // A per transaction description of the payment that is passed to the buyer's credit card statement.
         );
-
+		
         $PaymentOrderItems = array();
         $ctr = $total_items = $total_discount = $total_tax = $shipping = 0;
         $ITEMAMT = 0;
@@ -1818,11 +1844,33 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $values['name'] .= " - " . str_replace(", \n", " - ", $meta);
                         }
                     }
+                    
+                    
+                    
+                    
+                    
+//////////////////////////////////////////***************************////////////////////////////////////
+            $lineitems = $_SESSION['line_item'];
+            
+            if (in_array($values['name'], $lineitems)) {
+          		
+          		$arraykey = array_search($values['name'],$lineitems);
+          		$item_position = substr($arraykey, -1);
+          		
+          		$get_amountkey = 'amount_'.$item_position;
+          		$get_qtykey = 'quantity_'.$item_position;
+          		$switcher_amt = $lineitems[$get_amountkey];
+          		$switcher_qty = $lineitems[$get_qtykey];
+          	}
+            
+   //////////////////////////////////////////***************************////////////////////////////////////
+                    
+                    
 
                     $Item = array(
                         'name' => $values['name'], // Item name. 127 char max.
                         'desc' => '', // Item description. 127 char max.
-                        'amt' => round( $values['line_subtotal'] / $qty, 2 ), // Cost of item.
+                        'amt' => round( $switcher_amt, 2 ), // Cost of item.
                         'number' => $sku, // Item number.  127 char max.
                         'qty' => $qty, // Item qty on order.  Any positive integer.
                         'taxamt' => '', // Item sales tax
@@ -1843,7 +1891,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     );
                     array_push($PaymentOrderItems, $Item);
 
-                    $ITEMAMT += round( $values['line_subtotal'] / $qty, 2 ) * $qty;
+                    $ITEMAMT += round( $switcher_amt, 2 ) * $qty;
                 }
 
                 /**
@@ -2010,7 +2058,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             } elseif ($tax > 0) {
             	$PayPalRequestData['Payments'][0]['taxamt'] = round($tax + $diffrence_amount, 2);
             } else {
-            	$PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'] + $diffrence_amount, 2);
+            	$PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'], 2);
             }
             
         }
@@ -2035,6 +2083,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $this->remove_session('TOKEN');
+			if (isset($_SESSION['line_item'])){
+            	unset($_SESSION['line_item']);
+			}
+            
         }
 
         /*
@@ -2387,4 +2439,165 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public function get_wc_version() {
         return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
     }
+    ////////////////////////////////////////////////////////////////////////
+    
+    
+    
+    
+    
+    
+    public function add_line_item( $item_name, $quantity = 1, $amount = 0, $item_number = '' ) {
+		$index = ( sizeof( $this->line_items ) / 4 ) + 1;
+
+		if ( ! $item_name || $amount < 0 || $index > 9 ) {
+			return false;
+		}
+
+		$this->line_items[ 'item_name_' . $index ]   = html_entity_decode( wc_trim_string( $item_name, 127 ), ENT_NOQUOTES, 'UTF-8' );
+		$this->line_items[ 'quantity_' . $index ]    = $quantity;
+		$this->line_items[ 'amount_' . $index ]      = $amount;
+		$this->line_items[ 'item_number_' . $index ] = $item_number;
+		$_SESSION['line_item'] = $this->line_items;
+		return true;
+	}
+	
+	
+	
+	public function prepare_line_items( $order ) {
+		$this->delete_line_items();
+		$calculated_total = 0;
+
+		// Products
+		foreach ( $order->get_items( array( 'line_item', 'fee' ) ) as $item ) {
+			if ( 'fee' === $item['type'] ) {
+				$line_item        = $this->add_line_item( $item['name'], 1, $item['line_total'] );
+				$calculated_total += $item['line_total'];
+			} else {
+				$product          = $order->get_product_from_item( $item );
+				$line_item        = $this->add_line_item( $this->get_order_item_name( $order, $item ), $item['qty'], $order->get_item_subtotal( $item, false ), $product->get_sku() );
+				$calculated_total += $order->get_item_subtotal( $item, false ) * $item['qty'];
+				
+			}
+
+			if ( ! $line_item ) {
+				return false;
+			}
+		}
+
+		// Shipping Cost item - paypal only allows shipping per item, we want to send shipping for the order
+		if ( $order->get_total_shipping() > 0 && ! $this->add_line_item( sprintf( __( 'Shipping via %s', 'woocommerce' ), $order->get_shipping_method() ), 1, round( $order->get_total_shipping(), 2 ) ) ) {
+			return false;
+		}
+
+		// Check for mismatched totals
+		if ( wc_format_decimal( $calculated_total + $order->get_total_tax() + round( $order->get_total_shipping(), 2 ) - round( $order->get_total_discount(), 2 ), 2 ) != wc_format_decimal( $order->get_total(), 2 ) ) {
+			return false;
+		}
+
+		return true;
+	}
+	
+	
+	
+	/**
+	 * Return all line items
+	 */
+	public function get_line_items() {
+		return $this->line_items;
+	}
+
+	/**
+	 * Remove all line items
+	 */
+	public function delete_line_items() {
+		$this->line_items = array();
+	}
+	
+	public function get_order_item_name( $order, $item ) {
+		$item_name = $item['name'];
+		$item_meta = new WC_Order_Item_Meta( $item['item_meta'] );
+
+		if ( $meta = $item_meta->display( true, true ) ) {
+			$item_name .= ' ( ' . $meta . ' )';
+		}
+
+		return $item_name;
+	}
+
+    public function get_line_item_args( $order ) {
+		/**
+		 * Try passing a line item per product if supported
+		 */
+		if ( ( ! wc_tax_enabled() || ! wc_prices_include_tax() ) && $this->prepare_line_items( $order ) ) {
+
+			$line_item_args             = $this->get_line_items();
+			$line_item_args['tax_cart'] = $order->get_total_tax();
+
+			if ( $order->get_total_discount() > 0 ) {
+				$line_item_args['discount_amount_cart'] = round( $order->get_total_discount(), 2 );
+			}
+
+		/**
+		 * Send order as a single item
+		 *
+		 * For shipping, we longer use shipping_1 because paypal ignores it if *any* shipping rules are within paypal, and paypal ignores anything over 5 digits (999.99 is the max)
+		 */
+		} 
+
+		return $line_item_args;
+	}
+	
+	public function get_shipping_args( $order ) {
+		$shipping_args = array();
+
+		if ( 'yes' == $this->gateway->get_option( 'send_shipping' ) ) {
+			$shipping_args['address_override'] = $this->gateway->get_option( 'address_override' ) === 'yes' ? 1 : 0;
+			$shipping_args['no_shipping']      = 0;
+
+			// If we are sending shipping, send shipping address instead of billing
+			$shipping_args['first_name']       = $order->shipping_first_name;
+			$shipping_args['last_name']        = $order->shipping_last_name;
+			$shipping_args['company']          = $order->shipping_company;
+			$shipping_args['address1']         = $order->shipping_address_1;
+			$shipping_args['address2']         = $order->shipping_address_2;
+			$shipping_args['city']             = $order->shipping_city;
+			$shipping_args['state']            = $this->get_paypal_state( $order->shipping_country, $order->shipping_state );
+			$shipping_args['country']          = $order->shipping_country;
+			$shipping_args['zip']              = $order->shipping_postcode;
+		} else {
+			$shipping_args['no_shipping']      = 1;
+		}
+
+		return $shipping_args;
+	}
+	
+	
+	public function get_phone_number_args( $order ) {
+		if ( in_array( $order->billing_country, array( 'US','CA' ) ) ) {
+			$phone_number = str_replace( array( '(', '-', ' ', ')', '.' ), '', $order->billing_phone );
+			$phone_args   = array(
+				'night_phone_a' => substr( $phone_number, 0, 3 ),
+				'night_phone_b' => substr( $phone_number, 3, 3 ),
+				'night_phone_c' => substr( $phone_number, 6, 4 ),
+				'day_phone_a' 	=> substr( $phone_number, 0, 3 ),
+				'day_phone_b' 	=> substr( $phone_number, 3, 3 ),
+				'day_phone_c' 	=> substr( $phone_number, 6, 4 )
+			);
+		} else {
+			$phone_args = array(
+				'night_phone_b' => $order->billing_phone,
+				'day_phone_b' 	=> $order->billing_phone
+			);
+		}
+		return $phone_args;
+	}
+    public function get_order_item_names( $order ) {
+		$item_names = array();
+
+		foreach ( $order->get_items() as $item ) {
+			$item_names[] = $item['name'] . ' x ' . $item['qty'];
+		}
+
+		return implode( ', ', $item_names );
+	}
 }
