@@ -694,7 +694,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     function paypal_express_checkout($posted = null) {
         if (!empty($posted) || ( isset($_GET['pp_action']) && $_GET['pp_action'] == 'expresscheckout' )) {
             if (sizeof(WC()->cart->get_cart()) > 0) {
-					
+
                 // The customer has initiated the Express Checkout process with the button on the cart page
                 if (!defined('WOOCOMMERCE_CHECKOUT'))
                     define('WOOCOMMERCE_CHECKOUT', true);
@@ -711,16 +711,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
 
                 WC()->cart->calculate_totals();
-                
-               $order_id = WC()->checkout()->create_order();
-			   $order = new WC_Order($order_id);
-			   $lineitems_prepare = $this->prepare_line_items($order);
-			   $lineitems = $_SESSION['line_item'];
+
+                $order_id = WC()->checkout()->create_order();
+                $order = new WC_Order($order_id);
+                $lineitems_prepare = $this->prepare_line_items($order);
+                $lineitems = $_SESSION['line_item'];
                 //$paymentAmount    = WC()->cart->get_total();
-               $order_obj = $order->get_order_item_totals();
-             	 $paymentAmount_amt =  strip_tags($order_obj['order_total']['value']);
+                $order_obj = $order->get_order_item_totals();
+                $paymentAmount_amt = strip_tags($order_obj['order_total']['value']);
+
+                $payment_exp_ary = explode(';', $paymentAmount_amt);
+
                 $paymentAmount = number_format($paymentAmount_amt, 2, '.', '');
-				$order->get_items();
+                $order->get_items();
                 //Check if review order page is exist, otherwise re-create it on the fly
                 $review_order_page_url = get_permalink(wc_get_page_id('review_order'));
                 if (!$review_order_page_url) {
@@ -732,7 +735,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $returnURL = urlencode(add_query_arg('pp_action', 'revieworder', $review_order_page_url));
                 $cancelURL = isset($this->settings['cancel_page']) ? get_the_permalink($this->settings['cancel_page']) : WC()->cart->get_cart_url();
                 $cancelURL = apply_filters('angelleye_express_cancel_url', urlencode($cancelURL));
-                $resArray = $this->CallSetExpressCheckout($paymentAmount, $returnURL, $cancelURL, $usePayPalCredit, $posted,$lineitems);
+                $resArray = $this->CallSetExpressCheckout($paymentAmount, $returnURL, $cancelURL, $usePayPalCredit, $posted, $lineitems);
                 $ack = strtoupper($resArray["ACK"]);
 
                 /**
@@ -741,7 +744,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                  * "skip details" will work correctly with PayPal's review pages.
                  */
                 if ($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING") {
-                	
+
                     $this->add_log('Redirecting to PayPal');
                     if (is_ajax()) {
                         $result = array(
@@ -922,39 +925,38 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         if (apply_filters('paypal-for-woocommerce_registration_auth_new_customer', true, $new_customer)) {
                             wc_set_customer_auth_cookie($new_customer);
                         }
-                        
-                         $creds = array(
+
+                        $creds = array(
                             'user_login' => wc_clean($username),
                             'user_password' => $password,
                             'remember' => true,
                         );
-                        $user = wp_signon( $creds, false );
-                        if ( is_wp_error($user) ) {
+                        $user = wp_signon($creds, false);
+                        if (is_wp_error($user)) {
                             wc_add_notice($user->get_error_message(), 'error');
                         } else {
-							wp_set_current_user($user->ID); //Here is where we update the global user variables 
-							$secure_cookie = is_ssl() ? true : false;
-	                    	wp_set_auth_cookie( $user->ID, true, $secure_cookie );                     			                            
-                    	}
-                        
+                            wp_set_current_user($user->ID); //Here is where we update the global user variables 
+                            $secure_cookie = is_ssl() ? true : false;
+                            wp_set_auth_cookie($user->ID, true, $secure_cookie);
+                        }
                     } catch (Exception $e) {
                         wc_add_notice('<strong>' . __('Error', 'paypal-for-woocommerce') . ':</strong> ' . $e->getMessage(), 'error');
                     }
 
                     $this->customer_id = $user->ID;
-                    
-                         // As we are now logged in, checkout will need to refresh to show logged in data
+
+                    // As we are now logged in, checkout will need to refresh to show logged in data
                     WC()->session->set('reload_checkout', true);
 
                     // Also, recalculate cart totals to reveal any role-based discounts that were unavailable before registering
                     WC()->cart->calculate_totals();
-                   
-                     require_once("lib/NameParser.php");
-	                $parser = new FullNameParser();
-	                $split_name = $parser->split_full_name($result['SHIPTONAME']);
-	                $shipping_first_name = $split_name['fname'];
-	                $shipping_last_name = $split_name['lname'];
-	                $full_name = $split_name['fullname'];
+
+                    require_once("lib/NameParser.php");
+                    $parser = new FullNameParser();
+                    $split_name = $parser->split_full_name($result['SHIPTONAME']);
+                    $shipping_first_name = $split_name['fname'];
+                    $shipping_last_name = $split_name['lname'];
+                    $full_name = $split_name['fullname'];
 
                     // Add customer info from other billing fields
                     if (isset($result)) {
@@ -969,19 +971,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         update_user_meta($this->customer_id, 'shipping_postcode', isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
                         update_user_meta($this->customer_id, 'shipping_country', isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
                         update_user_meta($this->customer_id, 'shipping_state', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '' );
-                		$user_submit_form = maybe_unserialize(WC()->session->checkout_form);
-	                    if( (isset($user_submit_form) && !empty($user_submit_form) && is_array($user_submit_form) )) {
-	                    	update_user_meta($this->customer_id, 'billing_first_name', isset($user_submit_form['billing_first_name']) ?  $user_submit_form['billing_first_name'] : $result['FIRSTNAME']);
-                            update_user_meta($this->customer_id, 'billing_last_name', isset($user_submit_form['billing_last_name']) ?  $user_submit_form['billing_last_name'] : $result['LASTNAME']);
-                            update_user_meta($this->customer_id, 'billing_address_1', isset($user_submit_form['billing_address_1']) ?  $user_submit_form['billing_address_1'] : $result['SHIPTOSTREET']);
-                            update_user_meta($this->customer_id, 'billing_address_2', isset($user_submit_form['billing_address_2']) ?  $user_submit_form['billing_address_2'] : $result['SHIPTOSTREET2']);
-                            update_user_meta($this->customer_id, 'billing_city', isset($user_submit_form['billing_city']) ?  $user_submit_form['billing_city'] : $result['SHIPTOCITY']);
-                            update_user_meta($this->customer_id, 'billing_postcode', isset($user_submit_form['billing_postcode']) ?  $user_submit_form['billing_postcode'] : $result['SHIPTOZIP']);
-                            update_user_meta($this->customer_id, 'billing_country', isset($user_submit_form['billing_country']) ?  $user_submit_form['billing_country'] : $result['SHIPTOCOUNTRYCODE']);
-                            update_user_meta($this->customer_id, 'billing_state', isset($user_submit_form['billing_state']) ?  $user_submit_form['billing_state'] : $result['SHIPTOSTATE']);
-                            update_user_meta($this->customer_id, 'billing_phone', isset($user_submit_form['billing_phone']) ?  $user_submit_form['billing_phone'] : $result['PHONENUM']);
-                            update_user_meta($this->customer_id, 'billing_email', isset($user_submit_form['billing_email']) ?  $user_submit_form['billing_email'] : $result['EMAIL']);
-	                    } else {
+                        $user_submit_form = maybe_unserialize(WC()->session->checkout_form);
+                        if ((isset($user_submit_form) && !empty($user_submit_form) && is_array($user_submit_form))) {
+                            update_user_meta($this->customer_id, 'billing_first_name', isset($user_submit_form['billing_first_name']) ? $user_submit_form['billing_first_name'] : $result['FIRSTNAME']);
+                            update_user_meta($this->customer_id, 'billing_last_name', isset($user_submit_form['billing_last_name']) ? $user_submit_form['billing_last_name'] : $result['LASTNAME']);
+                            update_user_meta($this->customer_id, 'billing_address_1', isset($user_submit_form['billing_address_1']) ? $user_submit_form['billing_address_1'] : $result['SHIPTOSTREET']);
+                            update_user_meta($this->customer_id, 'billing_address_2', isset($user_submit_form['billing_address_2']) ? $user_submit_form['billing_address_2'] : $result['SHIPTOSTREET2']);
+                            update_user_meta($this->customer_id, 'billing_city', isset($user_submit_form['billing_city']) ? $user_submit_form['billing_city'] : $result['SHIPTOCITY']);
+                            update_user_meta($this->customer_id, 'billing_postcode', isset($user_submit_form['billing_postcode']) ? $user_submit_form['billing_postcode'] : $result['SHIPTOZIP']);
+                            update_user_meta($this->customer_id, 'billing_country', isset($user_submit_form['billing_country']) ? $user_submit_form['billing_country'] : $result['SHIPTOCOUNTRYCODE']);
+                            update_user_meta($this->customer_id, 'billing_state', isset($user_submit_form['billing_state']) ? $user_submit_form['billing_state'] : $result['SHIPTOSTATE']);
+                            update_user_meta($this->customer_id, 'billing_phone', isset($user_submit_form['billing_phone']) ? $user_submit_form['billing_phone'] : $result['PHONENUM']);
+                            update_user_meta($this->customer_id, 'billing_email', isset($user_submit_form['billing_email']) ? $user_submit_form['billing_email'] : $result['EMAIL']);
+                        } else {
                             update_user_meta($this->customer_id, 'billing_first_name', $shipping_first_name);
                             update_user_meta($this->customer_id, 'billing_last_name', $shipping_last_name);
                             update_user_meta($this->customer_id, 'billing_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
@@ -992,7 +994,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             update_user_meta($this->customer_id, 'billing_state', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '');
                             update_user_meta($this->customer_id, 'billing_phone', isset($result['PHONENUM']) ? $result['PHONENUM'] : '');
                             update_user_meta($this->customer_id, 'billing_email', isset($result['EMAIL']) ? $result['EMAIL'] : '');
-	                    }
+                        }
                     }
                 }
             }
@@ -1031,13 +1033,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $shipping_first_name = $split_name['fname'];
                 $shipping_last_name = $split_name['lname'];
                 $full_name = $split_name['fullname'];
-                
-               	$this->set_session('firstname', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : $shipping_first_name);
-                $this->set_session('lastname', isset($result['LASTNAME']) ?  $result['LASTNAME'] : $shipping_last_name);
+
+                $this->set_session('firstname', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : $shipping_first_name);
+                $this->set_session('lastname', isset($result['LASTNAME']) ? $result['LASTNAME'] : $shipping_last_name);
 
                 update_post_meta($order_id, '_payment_method', $this->id);
                 update_post_meta($order_id, '_payment_method_title', $this->title);
-                
+
                 if (is_user_logged_in()) {
                     $userLogined = wp_get_current_user();
                     update_post_meta($order_id, '_billing_email', $userLogined->user_email);
@@ -1045,49 +1047,49 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 } else {
                     update_post_meta($order_id, '_billing_email', $this->get_session('payeremail'));
                 }
-               
+
                 $checkout_form_data = maybe_unserialize($this->get_session('checkout_form'));
                 if (isset($checkout_form_data) && !empty($checkout_form_data)) {
                     foreach ($checkout_form_data as $key => $value) {
                         if (strpos($key, 'billing_') !== false && !empty($value) && !is_array($value)) {
-                        	if($checkout_form_data['ship_to_different_address'] == false) {
-                        		$shipping_key = str_replace('billing_', 'shipping_', $key);
-                        		update_user_meta($this->customer_id, $shipping_key, $value);
-                        		update_post_meta($order_id, '_'.$shipping_key, $value);
-                        	}
+                            if ($checkout_form_data['ship_to_different_address'] == false) {
+                                $shipping_key = str_replace('billing_', 'shipping_', $key);
+                                update_user_meta($this->customer_id, $shipping_key, $value);
+                                update_post_meta($order_id, '_' . $shipping_key, $value);
+                            }
                             update_user_meta($this->customer_id, $key, $value);
-                            update_post_meta($order_id, '_'.$key, $value);
+                            update_post_meta($order_id, '_' . $key, $value);
                         } elseif (WC()->cart->needs_shipping() && strpos($key, 'shipping_') !== false && !empty($value) && !is_array($value)) {
                             update_user_meta($this->customer_id, $key, $value);
-                            update_post_meta($order_id, '_'.$key, $value);
+                            update_post_meta($order_id, '_' . $key, $value);
                         }
                     }
                     do_action('woocommerce_checkout_update_user_meta', $this->customer_id, $checkout_form_data);
                 } else {
-                	update_post_meta($order_id, '_shipping_first_name', $this->get_session('firstname'));
-	                update_post_meta($order_id, '_shipping_last_name', $this->get_session('lastname'));
-	                update_post_meta($order_id, '_shipping_full_name', $full_name);
-	                update_post_meta($order_id, '_shipping_company', $this->get_session('company'));
-	                update_post_meta($order_id, '_billing_phone', $this->get_session('phonenum'));
-	                update_post_meta($order_id, '_shipping_address_1', $this->get_session('shiptostreet'));
-	                update_post_meta($order_id, '_shipping_address_2', $this->get_session('shiptostreet2'));
-	                update_post_meta($order_id, '_shipping_city', $this->get_session('shiptocity'));
-	                update_post_meta($order_id, '_shipping_postcode', $this->get_session('shiptozip'));
-	                update_post_meta($order_id, '_shipping_country', $this->get_session('shiptocountrycode'));
-	                update_post_meta($order_id, '_shipping_state', $this->get_state_code($this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
-	                update_post_meta($order_id, '_customer_user', get_current_user_id());
-	                if ($this->billing_address == 'yes') {
-	                	update_post_meta( $order_id, '_billing_first_name',  $this->get_session('firstname') );
-	                    update_post_meta( $order_id, '_billing_last_name',  $this->get_session('lastname') );
-	                    update_post_meta( $order_id, '_billing_full_name',  $full_name );
-	                    update_post_meta( $order_id, '_billing_company',   $this->get_session('company') );
-	                    update_post_meta( $order_id, '_billing_address_1',  $this->get_session('shiptostreet'));
-	                    update_post_meta( $order_id, '_billing_address_2',  $this->get_session('shiptostreet2'));
-	                    update_post_meta( $order_id, '_billing_city',    $this->get_session('shiptocity'));
-	                    update_post_meta( $order_id, '_billing_postcode',   $this->get_session('shiptozip'));
-	                    update_post_meta( $order_id, '_billing_country',   $this->get_session('shiptocountrycode'));
-	                    update_post_meta( $order_id, '_billing_state',   $this->get_state_code( $this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
-	                }
+                    update_post_meta($order_id, '_shipping_first_name', $this->get_session('firstname'));
+                    update_post_meta($order_id, '_shipping_last_name', $this->get_session('lastname'));
+                    update_post_meta($order_id, '_shipping_full_name', $full_name);
+                    update_post_meta($order_id, '_shipping_company', $this->get_session('company'));
+                    update_post_meta($order_id, '_billing_phone', $this->get_session('phonenum'));
+                    update_post_meta($order_id, '_shipping_address_1', $this->get_session('shiptostreet'));
+                    update_post_meta($order_id, '_shipping_address_2', $this->get_session('shiptostreet2'));
+                    update_post_meta($order_id, '_shipping_city', $this->get_session('shiptocity'));
+                    update_post_meta($order_id, '_shipping_postcode', $this->get_session('shiptozip'));
+                    update_post_meta($order_id, '_shipping_country', $this->get_session('shiptocountrycode'));
+                    update_post_meta($order_id, '_shipping_state', $this->get_state_code($this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
+                    update_post_meta($order_id, '_customer_user', get_current_user_id());
+                    if ($this->billing_address == 'yes') {
+                        update_post_meta($order_id, '_billing_first_name', $this->get_session('firstname'));
+                        update_post_meta($order_id, '_billing_last_name', $this->get_session('lastname'));
+                        update_post_meta($order_id, '_billing_full_name', $full_name);
+                        update_post_meta($order_id, '_billing_company', $this->get_session('company'));
+                        update_post_meta($order_id, '_billing_address_1', $this->get_session('shiptostreet'));
+                        update_post_meta($order_id, '_billing_address_2', $this->get_session('shiptostreet2'));
+                        update_post_meta($order_id, '_billing_city', $this->get_session('shiptocity'));
+                        update_post_meta($order_id, '_billing_postcode', $this->get_session('shiptozip'));
+                        update_post_meta($order_id, '_billing_country', $this->get_session('shiptocountrycode'));
+                        update_post_meta($order_id, '_billing_state', $this->get_state_code($this->get_session('shiptocountrycode'), $this->get_session('shiptostate')));
+                    }
                 }
 
                 $this->add_log('...Order ID: ' . $order_id);
@@ -1169,19 +1171,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     // Notice admin if has any issue from PayPal
                     $message = '';
 
-					if($this->error_email_notify)
-					{
-						$admin_email = get_option("admin_email");
-						$message .= __( "DoExpressCheckoutPayment API call failed." , "paypal-for-woocommerce" )."\n\n";
-						$message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $ErrorCode."\n";
-						$message .= __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode."\n";
-						$message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
-						$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
-                        $message .= __( 'Order ID: ' ).$order_id ."\n";
-                        $message .= __( 'Customer Name: ' ).$this->get_session('shiptoname')."\n";
-                        $message .= __( 'Customer Email: ' ).$this->get_session('payeremail')."\n";
+                    if ($this->error_email_notify) {
+                        $admin_email = get_option("admin_email");
+                        $message .= __("DoExpressCheckoutPayment API call failed.", "paypal-for-woocommerce") . "\n\n";
+                        $message .= __('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode . "\n";
+                        $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
+                        $message .= __('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg . "\n";
+                        $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
+                        $message .= __('Order ID: ') . $order_id . "\n";
+                        $message .= __('Customer Name: ') . $this->get_session('shiptoname') . "\n";
+                        $message .= __('Customer Email: ') . $this->get_session('payeremail') . "\n";
 
-                        $error_email_notify_mes = apply_filters( 'angelleye_ec_error_email_notify_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
+                        $error_email_notify_mes = apply_filters('angelleye_ec_error_email_notify_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
                         $subject = "PayPal Express Checkout Error Notification";
                         $error_email_notify_subject = apply_filters('angelleye_ec_error_email_notify_subject', $subject);
 
@@ -1215,7 +1216,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @returnURL (string) URL for PayPal to send the buyer to after review and continue from PayPal.
      * @cancelURL (string) URL for PayPal to send the buyer to if they cancel the payment.
      */
-    function CallSetExpressCheckout($paymentAmount, $returnURL, $cancelURL, $usePayPalCredit = false, $posted,$lineitems) {
+    function CallSetExpressCheckout($paymentAmount, $returnURL, $cancelURL, $usePayPalCredit = false, $posted, $lineitems) {
         /*
          * Display message to user if session has expired.
          */
@@ -1343,9 +1344,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $shipping = WC()->cart->shipping_total;
             $tax = WC()->cart->get_taxes_total();
         }
-        
-        if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
-        	$tax = wc_round_tax_total( WC()->cart->tax_total + WC()->cart->shipping_tax_total );
+
+        if ('yes' === get_option('woocommerce_calc_taxes') && 'yes' === get_option('woocommerce_prices_include_tax')) {
+            $tax = wc_round_tax_total(WC()->cart->tax_total + WC()->cart->shipping_tax_total);
         }
 
         $Payments = array();
@@ -1391,7 +1392,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $Payment['shiptozip'] = @$posted['shipping_postcode'];
                 $Payment['shiptocountrycode'] = @$posted['shipping_country'];
                 $Payment['shiptophonenum'] = @$posted['shipping_phone'];
-
             } else {
                 $Payment['shiptoname'] = $posted['billing_first_name'] . ' ' . $posted['billing_last_name'];
                 $Payment['shiptostreet'] = $posted['billing_address_1'];
@@ -1416,21 +1416,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $values['name'] = html_entity_decode($_product->get_title(), ENT_NOQUOTES, 'UTF-8');
 
 //////////////////////////////////////////***************************////////////////////////////////////
-            
-            
+
+
             if (in_array($values['name'], $lineitems)) {
-          		
-          		$arraykey = array_search($values['name'],$lineitems);
-          		$item_position = substr($arraykey, -1);
-          		
-          		$get_amountkey = 'amount_'.$item_position;
-          		$get_qtykey = 'quantity_'.$item_position;
-          		$switcher_amt = $lineitems[$get_amountkey];
-          		$switcher_qty = $lineitems[$get_qtykey];
-          	}
-            
-   //////////////////////////////////////////***************************////////////////////////////////////
-              /*
+
+                $arraykey = array_search($values['name'], $lineitems);
+                $item_position = substr($arraykey, -1);
+
+                $get_amountkey = 'amount_' . $item_position;
+                $get_qtykey = 'quantity_' . $item_position;
+                $switcher_amt = $lineitems[$get_amountkey];
+                $switcher_qty = $lineitems[$get_qtykey];
+            }
+
+            //////////////////////////////////////////***************************////////////////////////////////////
+            /*
              * Append variation data to name.
              */
             if ($_product->product_type == 'variation') {
@@ -1445,12 +1445,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $values['name'] .= " - " . str_replace(", \n", " - ", $meta);
                 }
             }
-           
-			$quantity = absint( $values['quantity'] );
+
+            $quantity = absint($values['quantity']);
             $Item = array(
                 'name' => $values['name'], // Item name. 127 char max.
                 'desc' => '', // Item description. 127 char max.
-                'amt' => round( $switcher_amt, 2 ), // Cost of item.
+                'amt' => round($switcher_amt, 2), // Cost of item.
                 'number' => $sku, // Item number.  127 char max.
                 'qty' => $switcher_qty, // Item qty on order.  Any positive integer.
                 'taxamt' => '', // Item sales tax
@@ -1471,7 +1471,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             array_push($PaymentOrderItems, $Item);
 
-            $total_items += round($switcher_amt, 2 ) * $switcher_qty;
+            $total_items += round($switcher_amt, 2) * $switcher_qty;
             $ctr++;
         }
 
@@ -1521,7 +1521,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 array_push($PaymentOrderItems, $Item);
                 $total_discount += number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
             }
-            
         }
 
         if (!$this->is_wc_version_greater_2_3()) {
@@ -1536,18 +1535,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     array_push($PaymentOrderItems, $Item);
                     $total_discount += number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
                 }
-                
             }
         }
-        
-       
-        
-        
-        
-        if( isset($total_discount) ) {
-        	$total_discount = round($total_discount, 2);
+
+
+
+
+
+        if (isset($total_discount)) {
+            $total_discount = round($total_discount, 2);
         }
-        
+
         if ($this->send_items) {
             /*
              * Now that all the order items are gathered, including discounts,
@@ -1613,15 +1611,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         // Rounding amendment
 
         if (trim(number_format(WC()->cart->total, 2, '.', '')) !== trim(number_format($total_items - $total_discount + $tax + $shipping, 2, '.', ''))) {
-        	$diffrence_amount = $this->get_diffrent(WC()->cart->total, $total_items - $total_discount + $tax + $shipping);
-            if($shipping > 0) {
-            	$PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
+            $diffrence_amount = $this->get_diffrent(WC()->cart->total, $total_items - $total_discount + $tax + $shipping);
+            if ($shipping > 0) {
+                $PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
             } elseif ($tax > 0) {
-            	$PayPalRequestData['Payments'][0]['taxamt'] = round($tax + $diffrence_amount, 2);
+                $PayPalRequestData['Payments'][0]['taxamt'] = round($tax + $diffrence_amount, 2);
             } else {
-            	$PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'], 2);
+                $PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'], 2);
             }
-            
         }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
@@ -1793,7 +1790,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $Payments = array();
         $final_order_total = $order->get_order_item_totals();
         $final_order_total_amt = strip_tags($final_order_total['order_total']['value']);
-        
+
         $Payment = array(
             'amt' => number_format($final_order_total_amt, 2, '.', ''), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
             'currencycode' => get_woocommerce_currency(), // A three-character currency code.  Default is USD.
@@ -1822,7 +1819,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'sellerregistrationdate' => '', // Date when the seller registered at the marketplace site.
             'softdescriptor' => ''     // A per transaction description of the payment that is passed to the buyer's credit card statement.
         );
-		
+
         $PaymentOrderItems = array();
         $ctr = $total_items = $total_discount = $total_tax = $shipping = 0;
         $ITEMAMT = 0;
@@ -1844,33 +1841,33 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $values['name'] .= " - " . str_replace(", \n", " - ", $meta);
                         }
                     }
-                    
-                    
-                    
-                    
-                    
+
+
+
+
+
 //////////////////////////////////////////***************************////////////////////////////////////
-            $lineitems = $_SESSION['line_item'];
-            
-            if (in_array($values['name'], $lineitems)) {
-          		
-          		$arraykey = array_search($values['name'],$lineitems);
-          		$item_position = substr($arraykey, -1);
-          		
-          		$get_amountkey = 'amount_'.$item_position;
-          		$get_qtykey = 'quantity_'.$item_position;
-          		$switcher_amt = $lineitems[$get_amountkey];
-          		$switcher_qty = $lineitems[$get_qtykey];
-          	}
-            
-   //////////////////////////////////////////***************************////////////////////////////////////
-                    
-                    
+                    $lineitems = $_SESSION['line_item'];
+
+                    if (in_array($values['name'], $lineitems)) {
+
+                        $arraykey = array_search($values['name'], $lineitems);
+                        $item_position = substr($arraykey, -1);
+
+                        $get_amountkey = 'amount_' . $item_position;
+                        $get_qtykey = 'quantity_' . $item_position;
+                        $switcher_amt = $lineitems[$get_amountkey];
+                        $switcher_qty = $lineitems[$get_qtykey];
+                    }
+
+                    //////////////////////////////////////////***************************////////////////////////////////////
+
+
 
                     $Item = array(
                         'name' => $values['name'], // Item name. 127 char max.
                         'desc' => '', // Item description. 127 char max.
-                        'amt' => round( $switcher_amt, 2 ), // Cost of item.
+                        'amt' => round($switcher_amt, 2), // Cost of item.
                         'number' => $sku, // Item number.  127 char max.
                         'qty' => $qty, // Item qty on order.  Any positive integer.
                         'taxamt' => '', // Item sales tax
@@ -1891,7 +1888,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     );
                     array_push($PaymentOrderItems, $Item);
 
-                    $ITEMAMT += round( $switcher_amt, 2 ) * $qty;
+                    $ITEMAMT += round($switcher_amt, 2) * $qty;
                 }
 
                 /**
@@ -1986,30 +1983,30 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $shipping = $order->get_total_shipping();
                 $tax = $order->get_total_tax();
             }
-            
-            if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
-            	$tax = $order->get_total_tax();
+
+            if ('yes' === get_option('woocommerce_calc_taxes') && 'yes' === get_option('woocommerce_prices_include_tax')) {
+                $tax = $order->get_total_tax();
             }
-            
-            if( $tax > 0) {
-        		$tax = number_format($tax, 2, '.', '');
-        	}
-        
-	        if( $shipping > 0) {
-	        	$shipping = number_format($shipping, 2, '.', '');
-	        }
-	        
-	        if( $total_discount ) {
-        		$total_discount = round($total_discount, 2);
-        	}
-        	
+
+            if ($tax > 0) {
+                $tax = number_format($tax, 2, '.', '');
+            }
+
+            if ($shipping > 0) {
+                $shipping = number_format($shipping, 2, '.', '');
+            }
+
+            if ($total_discount) {
+                $total_discount = round($total_discount, 2);
+            }
+
             if ($this->send_items) {
 
                 /*
                  * Now that we have all items and subtotals
                  * we can fill in necessary values.
                  */
-                
+
                 $Payment['itemamt'] = number_format($ITEMAMT + $total_discount, 2, '.', '');
             } else {
                 $PaymentOrderItems = array();
@@ -2050,17 +2047,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
 
         // Rounding amendment
-        
-         if (trim(number_format(WC()->cart->total, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''), 2, '.', ''))) {
-        	$diffrence_amount = $this->get_diffrent(WC()->cart->total, $Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''));
-            if($shipping > 0) {
-            	$PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
+
+        if (trim(number_format(WC()->cart->total, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''), 2, '.', ''))) {
+            $diffrence_amount = $this->get_diffrent(WC()->cart->total, $Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''));
+            if ($shipping > 0) {
+                $PayPalRequestData['Payments'][0]['shippingamt'] = round($shipping + $diffrence_amount, 2);
             } elseif ($tax > 0) {
-            	$PayPalRequestData['Payments'][0]['taxamt'] = round($tax + $diffrence_amount, 2);
+                $PayPalRequestData['Payments'][0]['taxamt'] = round($tax + $diffrence_amount, 2);
             } else {
-            	$PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'], 2);
+                $PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'], 2);
             }
-            
         }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
@@ -2083,10 +2079,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $this->remove_session('TOKEN');
-			if (isset($_SESSION['line_item'])){
-            	unset($_SESSION['line_item']);
-			}
-            
+            if (isset($_SESSION['line_item'])) {
+                unset($_SESSION['line_item']);
+            }
         }
 
         /*
@@ -2196,7 +2191,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             if ((empty($payment_gateways) || @$pp_settings['enabled'] == 'yes') && (count($payment_gateways) == $payment_gateways_count)) {
                 if (@$pp_pro['enabled'] == 'yes' || @$pp_payflow['enabled'] == 'yes') {
-                    $checkout_button_display_text = !empty($pp_settings['show_on_cart']) && $pp_settings['show_on_cart'] == 'yes' ? __('Pay with Credit Card', 'paypal-for-woocommerce') : __('Proceed to Checkout','paypal-for-woocommerce');
+                    $checkout_button_display_text = !empty($pp_settings['show_on_cart']) && $pp_settings['show_on_cart'] == 'yes' ? __('Pay with Credit Card', 'paypal-for-woocommerce') : __('Proceed to Checkout', 'paypal-for-woocommerce');
                     echo '<script type="text/javascript">
                                 jQuery(document).ready(function(){
                                     if (jQuery(".checkout-button").is("input")) {
@@ -2363,7 +2358,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
             $order->update_status('refunded');
-            if (ob_get_length()) ob_end_clean();
+            if (ob_get_length())
+                ob_end_clean();
             return true;
         } else {
             $ec_message = apply_filters('angelleye_ec_refund_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE0'], $PayPalResult);
@@ -2384,7 +2380,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         if ($posted['payment_method'] == 'paypal_express' && wc_notice_count('error') == 0) {
 
-            if (!is_user_logged_in() && (get_option( 'woocommerce_enable_guest_checkout' ) != 'yes' || (isset($posted['createaccount']) && $posted['createaccount'] == 1) )) {
+            if (!is_user_logged_in() && (get_option('woocommerce_enable_guest_checkout') != 'yes' || (isset($posted['createaccount']) && $posted['createaccount'] == 1) )) {
 
                 $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
                 $username = !empty($posted['account_username']) ? $posted['account_username'] : '';
@@ -2421,11 +2417,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             return;
         }
     }
-    
+
     function get_diffrent($amout_1, $amount_2) {
-   		$diff_amount = $amout_1 - $amount_2;
-    	return $diff_amount;
+        $diff_amount = $amout_1 - $amount_2;
+        return $diff_amount;
     }
+
     function cut_off($number) {
         $parts = explode(".", $number);
         $newnumber = $parts[0] . "." . $parts[1][0] . $parts[1][1];
@@ -2439,165 +2436,159 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public function get_wc_version() {
         return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
     }
+
     ////////////////////////////////////////////////////////////////////////
-    
-    
-    
-    
-    
-    
-    public function add_line_item( $item_name, $quantity = 1, $amount = 0, $item_number = '' ) {
-		$index = ( sizeof( $this->line_items ) / 4 ) + 1;
 
-		if ( ! $item_name || $amount < 0 || $index > 9 ) {
-			return false;
-		}
 
-		$this->line_items[ 'item_name_' . $index ]   = html_entity_decode( wc_trim_string( $item_name, 127 ), ENT_NOQUOTES, 'UTF-8' );
-		$this->line_items[ 'quantity_' . $index ]    = $quantity;
-		$this->line_items[ 'amount_' . $index ]      = $amount;
-		$this->line_items[ 'item_number_' . $index ] = $item_number;
-		$_SESSION['line_item'] = $this->line_items;
-		return true;
-	}
-	
-	
-	
-	public function prepare_line_items( $order ) {
-		$this->delete_line_items();
-		$calculated_total = 0;
 
-		// Products
-		foreach ( $order->get_items( array( 'line_item', 'fee' ) ) as $item ) {
-			if ( 'fee' === $item['type'] ) {
-				$line_item        = $this->add_line_item( $item['name'], 1, $item['line_total'] );
-				$calculated_total += $item['line_total'];
-			} else {
-				$product          = $order->get_product_from_item( $item );
-				$line_item        = $this->add_line_item( $this->get_order_item_name( $order, $item ), $item['qty'], $order->get_item_subtotal( $item, false ), $product->get_sku() );
-				$calculated_total += $order->get_item_subtotal( $item, false ) * $item['qty'];
-				
-			}
+    public function add_line_item($item_name, $quantity = 1, $amount = 0, $item_number = '') {
+        $index = ( sizeof($this->line_items) / 4 ) + 1;
 
-			if ( ! $line_item ) {
-				return false;
-			}
-		}
+        if (!$item_name || $amount < 0 || $index > 9) {
+            return false;
+        }
 
-		// Shipping Cost item - paypal only allows shipping per item, we want to send shipping for the order
-		if ( $order->get_total_shipping() > 0 && ! $this->add_line_item( sprintf( __( 'Shipping via %s', 'woocommerce' ), $order->get_shipping_method() ), 1, round( $order->get_total_shipping(), 2 ) ) ) {
-			return false;
-		}
+        $this->line_items['item_name_' . $index] = html_entity_decode(wc_trim_string($item_name, 127), ENT_NOQUOTES, 'UTF-8');
+        $this->line_items['quantity_' . $index] = $quantity;
+        $this->line_items['amount_' . $index] = $amount;
+        $this->line_items['item_number_' . $index] = $item_number;
+        $_SESSION['line_item'] = $this->line_items;
+        return true;
+    }
 
-		// Check for mismatched totals
-		if ( wc_format_decimal( $calculated_total + $order->get_total_tax() + round( $order->get_total_shipping(), 2 ) - round( $order->get_total_discount(), 2 ), 2 ) != wc_format_decimal( $order->get_total(), 2 ) ) {
-			return false;
-		}
+    public function prepare_line_items($order) {
+        $this->delete_line_items();
+        $calculated_total = 0;
 
-		return true;
-	}
-	
-	
-	
-	/**
-	 * Return all line items
-	 */
-	public function get_line_items() {
-		return $this->line_items;
-	}
+        // Products
+        foreach ($order->get_items(array('line_item', 'fee')) as $item) {
+            if ('fee' === $item['type']) {
+                $line_item = $this->add_line_item($item['name'], 1, $item['line_total']);
+                $calculated_total += $item['line_total'];
+            } else {
+                $product = $order->get_product_from_item($item);
+                $line_item = $this->add_line_item($this->get_order_item_name($order, $item), $item['qty'], $order->get_item_subtotal($item, false), $product->get_sku());
+                $calculated_total += $order->get_item_subtotal($item, false) * $item['qty'];
+            }
 
-	/**
-	 * Remove all line items
-	 */
-	public function delete_line_items() {
-		$this->line_items = array();
-	}
-	
-	public function get_order_item_name( $order, $item ) {
-		$item_name = $item['name'];
-		$item_meta = new WC_Order_Item_Meta( $item['item_meta'] );
+            if (!$line_item) {
+                return false;
+            }
+        }
 
-		if ( $meta = $item_meta->display( true, true ) ) {
-			$item_name .= ' ( ' . $meta . ' )';
-		}
+        // Shipping Cost item - paypal only allows shipping per item, we want to send shipping for the order
+        if ($order->get_total_shipping() > 0 && !$this->add_line_item(sprintf(__('Shipping via %s', 'woocommerce'), $order->get_shipping_method()), 1, round($order->get_total_shipping(), 2))) {
+            return false;
+        }
 
-		return $item_name;
-	}
+        // Check for mismatched totals
+        if (wc_format_decimal($calculated_total + $order->get_total_tax() + round($order->get_total_shipping(), 2) - round($order->get_total_discount(), 2), 2) != wc_format_decimal($order->get_total(), 2)) {
+            return false;
+        }
 
-    public function get_line_item_args( $order ) {
-		/**
-		 * Try passing a line item per product if supported
-		 */
-		if ( ( ! wc_tax_enabled() || ! wc_prices_include_tax() ) && $this->prepare_line_items( $order ) ) {
+        return true;
+    }
 
-			$line_item_args             = $this->get_line_items();
-			$line_item_args['tax_cart'] = $order->get_total_tax();
+    /**
+     * Return all line items
+     */
+    public function get_line_items() {
+        return $this->line_items;
+    }
 
-			if ( $order->get_total_discount() > 0 ) {
-				$line_item_args['discount_amount_cart'] = round( $order->get_total_discount(), 2 );
-			}
+    /**
+     * Remove all line items
+     */
+    public function delete_line_items() {
+        $this->line_items = array();
+    }
 
-		/**
-		 * Send order as a single item
-		 *
-		 * For shipping, we longer use shipping_1 because paypal ignores it if *any* shipping rules are within paypal, and paypal ignores anything over 5 digits (999.99 is the max)
-		 */
-		} 
+    public function get_order_item_name($order, $item) {
+        $item_name = $item['name'];
+        $item_meta = new WC_Order_Item_Meta($item['item_meta']);
 
-		return $line_item_args;
-	}
-	
-	public function get_shipping_args( $order ) {
-		$shipping_args = array();
+        if ($meta = $item_meta->display(true, true)) {
+            $item_name .= ' ( ' . $meta . ' )';
+        }
 
-		if ( 'yes' == $this->gateway->get_option( 'send_shipping' ) ) {
-			$shipping_args['address_override'] = $this->gateway->get_option( 'address_override' ) === 'yes' ? 1 : 0;
-			$shipping_args['no_shipping']      = 0;
+        return $item_name;
+    }
 
-			// If we are sending shipping, send shipping address instead of billing
-			$shipping_args['first_name']       = $order->shipping_first_name;
-			$shipping_args['last_name']        = $order->shipping_last_name;
-			$shipping_args['company']          = $order->shipping_company;
-			$shipping_args['address1']         = $order->shipping_address_1;
-			$shipping_args['address2']         = $order->shipping_address_2;
-			$shipping_args['city']             = $order->shipping_city;
-			$shipping_args['state']            = $this->get_paypal_state( $order->shipping_country, $order->shipping_state );
-			$shipping_args['country']          = $order->shipping_country;
-			$shipping_args['zip']              = $order->shipping_postcode;
-		} else {
-			$shipping_args['no_shipping']      = 1;
-		}
+    public function get_line_item_args($order) {
+        /**
+         * Try passing a line item per product if supported
+         */
+        if ((!wc_tax_enabled() || !wc_prices_include_tax() ) && $this->prepare_line_items($order)) {
 
-		return $shipping_args;
-	}
-	
-	
-	public function get_phone_number_args( $order ) {
-		if ( in_array( $order->billing_country, array( 'US','CA' ) ) ) {
-			$phone_number = str_replace( array( '(', '-', ' ', ')', '.' ), '', $order->billing_phone );
-			$phone_args   = array(
-				'night_phone_a' => substr( $phone_number, 0, 3 ),
-				'night_phone_b' => substr( $phone_number, 3, 3 ),
-				'night_phone_c' => substr( $phone_number, 6, 4 ),
-				'day_phone_a' 	=> substr( $phone_number, 0, 3 ),
-				'day_phone_b' 	=> substr( $phone_number, 3, 3 ),
-				'day_phone_c' 	=> substr( $phone_number, 6, 4 )
-			);
-		} else {
-			$phone_args = array(
-				'night_phone_b' => $order->billing_phone,
-				'day_phone_b' 	=> $order->billing_phone
-			);
-		}
-		return $phone_args;
-	}
-    public function get_order_item_names( $order ) {
-		$item_names = array();
+            $line_item_args = $this->get_line_items();
+            $line_item_args['tax_cart'] = $order->get_total_tax();
 
-		foreach ( $order->get_items() as $item ) {
-			$item_names[] = $item['name'] . ' x ' . $item['qty'];
-		}
+            if ($order->get_total_discount() > 0) {
+                $line_item_args['discount_amount_cart'] = round($order->get_total_discount(), 2);
+            }
 
-		return implode( ', ', $item_names );
-	}
+            /**
+             * Send order as a single item
+             *
+             * For shipping, we longer use shipping_1 because paypal ignores it if *any* shipping rules are within paypal, and paypal ignores anything over 5 digits (999.99 is the max)
+             */
+        }
+
+        return $line_item_args;
+    }
+
+    public function get_shipping_args($order) {
+        $shipping_args = array();
+
+        if ('yes' == $this->gateway->get_option('send_shipping')) {
+            $shipping_args['address_override'] = $this->gateway->get_option('address_override') === 'yes' ? 1 : 0;
+            $shipping_args['no_shipping'] = 0;
+
+            // If we are sending shipping, send shipping address instead of billing
+            $shipping_args['first_name'] = $order->shipping_first_name;
+            $shipping_args['last_name'] = $order->shipping_last_name;
+            $shipping_args['company'] = $order->shipping_company;
+            $shipping_args['address1'] = $order->shipping_address_1;
+            $shipping_args['address2'] = $order->shipping_address_2;
+            $shipping_args['city'] = $order->shipping_city;
+            $shipping_args['state'] = $this->get_paypal_state($order->shipping_country, $order->shipping_state);
+            $shipping_args['country'] = $order->shipping_country;
+            $shipping_args['zip'] = $order->shipping_postcode;
+        } else {
+            $shipping_args['no_shipping'] = 1;
+        }
+
+        return $shipping_args;
+    }
+
+    public function get_phone_number_args($order) {
+        if (in_array($order->billing_country, array('US', 'CA'))) {
+            $phone_number = str_replace(array('(', '-', ' ', ')', '.'), '', $order->billing_phone);
+            $phone_args = array(
+                'night_phone_a' => substr($phone_number, 0, 3),
+                'night_phone_b' => substr($phone_number, 3, 3),
+                'night_phone_c' => substr($phone_number, 6, 4),
+                'day_phone_a' => substr($phone_number, 0, 3),
+                'day_phone_b' => substr($phone_number, 3, 3),
+                'day_phone_c' => substr($phone_number, 6, 4)
+            );
+        } else {
+            $phone_args = array(
+                'night_phone_b' => $order->billing_phone,
+                'day_phone_b' => $order->billing_phone
+            );
+        }
+        return $phone_args;
+    }
+
+    public function get_order_item_names($order) {
+        $item_names = array();
+
+        foreach ($order->get_items() as $item) {
+            $item_names[] = $item['name'] . ' x ' . $item['qty'];
+        }
+
+        return implode(', ', $item_names);
+    }
+
 }
