@@ -246,7 +246,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
         <?php echo isset($this->method_description) ? wpautop($this->method_description) : ''; ?>
         <table class="form-table">
-        <?php $this->generate_settings_html(); ?>
+            <?php $this->generate_settings_html(); ?>
         </table>
         <?php
         $this->scriptAdminOption();
@@ -391,10 +391,15 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         $lineitems_prepare = $this->prepare_line_items($order);
         $lineitems = $_SESSION['line_item_ppf'];
         $order_obj_ppf = $order->get_order_item_totals();
+
+        $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
+
         $paymentAmount_amt_ppf = strip_tags($order_obj_ppf['order_total']['value']);
         $payment_ppf_ary = explode(';', $paymentAmount_amt_ppf);
+        $paymentAmount_amt_final_ppf = str_replace($current_currency, '', $paymentAmount_amt_ppf);
 
-        $paymentAmount_ppf = number_format($paymentAmount_amt_ppf, 2, '.', '');
+
+        $paymentAmount_ppf = number_format($paymentAmount_amt_final_ppf, 2, '.', '');
 
 
 
@@ -519,13 +524,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                         $Item['L_NUMBER' . $item_loop] = $sku;
                         $Item['L_NAME' . $item_loop] = $item['name'];
-                        $Item['L_COST' . $item_loop] = round($switcher_amt, 2);
+                        $Item['L_COST' . $item_loop] = round($item['line_subtotal'] / $item['qty'], 2);
                         $Item['L_QTY' . $item_loop] = $item['qty'];
                         if ($sku) {
                             $Item['L_SKU' . $item_loop] = $sku;
                         }
                         $OrderItems = array_merge($OrderItems, $Item);
-                        $ITEMAMT += round($switcher_amt, 2) * $item['qty'];
+                        $ITEMAMT += round($item['line_subtotal'] / $item['qty'], 2) * $item['qty'];
                         $item_loop++;
                     }
                 }
@@ -570,15 +575,30 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     }
                 }
 
+
+                /*                 * *****************************MD******************************** */
+
+                foreach ($order->get_tax_totals() as $code => $tax) {
+                    $tax_string_array[] = $tax->formatted_amount;
+                }
+
+                $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
+                $striped_amt = strip_tags($tax_string_array[0]);
+                $tot_tax = str_replace($current_currency, '', $striped_amt);
+
+                /*                 * *****************************MD******************************** */
+
+
                 if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                    $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
+                    //  $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
+                    $shipping = $order->get_total_shipping();
                     $tax = 0;
                 } else {
                     $shipping = $order->get_total_shipping();
-                    $tax = $order->get_total_tax();
+                    $tax = $tot_tax;
                 }
                 if ('yes' === get_option('woocommerce_calc_taxes') && 'yes' === get_option('woocommerce_prices_include_tax')) {
-                    $tax = $order->get_total_tax();
+                    $tax = $tot_tax;
                 }
 
                 //tax
@@ -640,7 +660,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 if ($shipping > 0) {
                     $PayPalRequestData['freightamt'] = round($shipping + $diffrence_amount, 2);
                 } elseif ($tax > 0) {
-                    $PayPalRequestData['taxamt'] = round($tax + $diffrence_amount, 2);
+                    $PayPalRequestData['taxamt'] = round($tot_tax + $diffrence_amount, 2);
                 } else {
                     $PayPalRequestData['ITEMAMT'] = round($PayPalRequestData['ITEMAMT'] + $diffrence_amount, 2);
                 }
@@ -787,15 +807,15 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 <input type="text" class="input-text" id="paypal_pro_payflow_card_csc" name="paypal_pro_payflow_card_csc" maxlength="4" size="4" pattern="[0-9]+" />
             </p>
             <div class="clear"></div>
-        <?php /* <p class="form-row form-row-wide">
-          <label for="paypal_pro_payflow_card_type"><?php _e( "Card type", 'paypal-for-woocommerce' ) ?></label>
-          <select id="paypal_pro_payflow_card_type" name="paypal_pro_payflow_card_type" class="woocommerce-select">
-          <?php foreach ( $available_cards as $card => $label ) : ?>
-          <option value="<?php echo $card ?>"><?php echo $label; ?></options>
-          <?php endforeach; ?>
-          <option value="other"><?php _e( 'Other', 'woocommerce' ); ?></options>
-          </select>
-          </p> */ ?>
+            <?php /* <p class="form-row form-row-wide">
+              <label for="paypal_pro_payflow_card_type"><?php _e( "Card type", 'paypal-for-woocommerce' ) ?></label>
+              <select id="paypal_pro_payflow_card_type" name="paypal_pro_payflow_card_type" class="woocommerce-select">
+              <?php foreach ( $available_cards as $card => $label ) : ?>
+              <option value="<?php echo $card ?>"><?php echo $label; ?></options>
+              <?php endforeach; ?>
+              <option value="other"><?php _e( 'Other', 'woocommerce' ); ?></options>
+              </select>
+              </p> */ ?>
         </fieldset>
         <?php
         wc_enqueue_js("
@@ -944,7 +964,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
     public function add_line_item($item_name, $quantity = 1, $amount = 0, $item_number = '') {
         $index = ( sizeof($this->line_items) / 4 ) + 1;
 
-        if (!$item_name || $amount < 0 || $index > 9) {
+        if (!$item_name || $amount < 0) {
             return false;
         }
 

@@ -291,7 +291,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 
         <?php echo isset($this->method_description) ? wpautop($this->method_description) : ''; ?>
         <table class="form-table">
-        <?php $this->generate_settings_html(); ?>
+            <?php $this->generate_settings_html(); ?>
         </table>
         <?php
         $this->scriptAdminOption();
@@ -395,22 +395,22 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 <label for="cc-expire-month"><?php _e("Expiration date", 'paypal-for-woocommerce') ?> <span class="required">*</span></label>
                 <select name="paypal_pro_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month">
                     <option value=""><?php _e('Month', 'paypal-for-woocommerce') ?></option>
-        <?php
-        $months = array();
-        for ($i = 1; $i <= 12; $i++) :
-            $timestamp = mktime(0, 0, 0, $i, 1);
-            $months[date('n', $timestamp)] = date_i18n(_x('F', 'Month Names', 'paypal-for-woocommerce'), $timestamp);
-        endfor;
-        foreach ($months as $num => $name)
-            printf('<option value="%u">%s</option>', $num, $name);
-        ?>
+                    <?php
+                    $months = array();
+                    for ($i = 1; $i <= 12; $i++) :
+                        $timestamp = mktime(0, 0, 0, $i, 1);
+                        $months[date('n', $timestamp)] = date_i18n(_x('F', 'Month Names', 'paypal-for-woocommerce'), $timestamp);
+                    endfor;
+                    foreach ($months as $num => $name)
+                        printf('<option value="%u">%s</option>', $num, $name);
+                    ?>
                 </select>
                 <select name="paypal_pro_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year">
                     <option value=""><?php _e('Year', 'paypal-for-woocommerce') ?></option>
-        <?php
-        for ($i = date('y'); $i <= date('y') + 15; $i++)
-            printf('<option value="%u">20%u</option>', $i, $i);
-        ?>
+                    <?php
+                    for ($i = date('y'); $i <= date('y') + 15; $i++)
+                        printf('<option value="%u">20%u</option>', $i, $i);
+                    ?>
                 </select>
             </p>
             <p class="form-row form-row-last">
@@ -752,12 +752,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $order = new WC_Order($order_id);
         $lineitems_prepare = $this->prepare_line_items($order);
         $lineitems = $_SESSION['line_item_ddp'];
+
         $order_obj_ddp = $order->get_order_item_totals();
+
+        $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
+
+
         $paymentAmount_amt_ddp = strip_tags($order_obj_ddp['order_total']['value']);
 
         $payment_ddp_ary = explode(';', $paymentAmount_amt_ddp);
 
-        $paymentAmount_ddp = number_format($paymentAmount_amt_ddp, 2, '.', '');
+        $paymentAmount_amt_final_ddp = str_replace($current_currency, '', $paymentAmount_amt_ddp);
+
+        $paymentAmount_ddp = number_format($paymentAmount_amt_final_ddp, 2, '.', '');
 
         /**
          * Generate PayPal request
@@ -825,60 +832,59 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $inc_tax = get_option('woocommerce_prices_include_tax') == 'yes' ? true : false;
             foreach ($order->get_items() as $item) {
                 $_product = $order->get_product_from_item($item);
-                if ($item['qty']) {
-                    $sku = $_product->get_sku();
-                    if ($_product->product_type == 'variation') {
-                        if (empty($sku)) {
-                            $sku = $_product->parent->get_sku();
-                        }
-
-                        //$this->log->add('paypal-pro', print_r($item['item_meta'], true));
-
-                        $item_meta = new WC_Order_Item_Meta($item['item_meta']);
-                        $meta = $item_meta->display(true, true);
-                        $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
-
-
-
-
-                        if (!empty($meta)) {
-                            $item['name'] .= " - " . str_replace(", \n", " - ", $meta);
-                        }
+                $qty = absint($item['qty']);
+                $sku = $_product->get_sku();
+                if ($_product->product_type == 'variation') {
+                    if (empty($sku)) {
+                        $sku = $_product->parent->get_sku();
                     }
 
-                    //////////////////////////////////////////***************************////////////////////////////////////
+                    //$this->log->add('paypal-pro', print_r($item['item_meta'], true));
+
+                    $item_meta = new WC_Order_Item_Meta($item['item_meta']);
+                    $meta = $item_meta->display(true, true);
+                    $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
 
 
-                    if (in_array($item['name'], $lineitems)) {
 
-                        $arraykey = array_search($item['name'], $lineitems);
-                        $item_position = substr($arraykey, -1);
 
-                        $get_amountkey = 'amount_' . $item_position;
-                        $get_qtykey = 'quantity_' . $item_position;
-                        $switcher_amt = $lineitems[$get_amountkey];
-                        $switcher_qty = $lineitems[$get_qtykey];
+                    if (!empty($meta)) {
+                        $item['name'] .= " - " . str_replace(", \n", " - ", $meta);
                     }
-
-                    //////////////////////////////////////////***************************////////////////////////////////////
-
-
-                    $Item = array(
-                        'l_name' => $item['name'], // Item Name.  127 char max.
-                        'l_desc' => '', // Item description.  127 char max.
-                        'l_amt' => round($switcher_amt, 2), // Cost of individual item.
-                        'l_number' => $sku, // Item Number.  127 char max.
-                        'l_qty' => $item['qty'], // Item quantity.  Must be any positive integer.  
-                        'l_taxamt' => '', // Item's sales tax amount.
-                        'l_ebayitemnumber' => '', // eBay auction number of item.
-                        'l_ebayitemauctiontxnid' => '', // eBay transaction ID of purchased item.
-                        'l_ebayitemorderid' => ''     // eBay order ID for the item.
-                    );
-                    array_push($OrderItems, $Item);
-
-                    $ITEMAMT += round($switcher_amt, 2) * $item['qty'];
-                    $item_loop++;
                 }
+
+                //////////////////////////////////////////***************************////////////////////////////////////
+
+
+                if (in_array($item['name'], $lineitems)) {
+
+                    $arraykey = array_search($item['name'], $lineitems);
+                    $item_position = substr($arraykey, -1);
+
+                    $get_amountkey = 'amount_' . $item_position;
+                    $get_qtykey = 'quantity_' . $item_position;
+                    $switcher_amt = $lineitems[$get_amountkey];
+                    $switcher_qty = $lineitems[$get_qtykey];
+                }
+
+                //////////////////////////////////////////***************************////////////////////////////////////
+
+
+                $Item = array(
+                    'l_name' => $item['name'], // Item Name.  127 char max.
+                    'l_desc' => '', // Item description.  127 char max.
+                    'l_amt' => round($item['line_subtotal'] / $item['qty'], 2), // Cost of individual item.
+                    'l_number' => $sku, // Item Number.  127 char max.
+                    'l_qty' => $item['qty'], // Item quantity.  Must be any positive integer.  
+                    'l_taxamt' => '', // Item's sales tax amount.
+                    'l_ebayitemnumber' => '', // eBay auction number of item.
+                    'l_ebayitemauctiontxnid' => '', // eBay transaction ID of purchased item.
+                    'l_ebayitemorderid' => ''     // eBay order ID for the item.
+                );
+                array_push($OrderItems, $Item);
+
+                $ITEMAMT += round($item['line_subtotal'] / $item['qty'], 2) * $item['qty'];
+                $item_loop++;
             }
 
             if (!$this->is_wc_version_greater_2_3()) {
@@ -903,7 +909,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 }
 
                 //Order Discount
-                if ($order->get_order_discount() > 0) {
+                if ($order->get_total_discount() > 0) {
                     foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
                         $Item = array(
                             'l_name' => 'Order Discount', // Item Name.  127 char max.
@@ -936,20 +942,38 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             /**
              * Get shipping and tax.
              */
+            /*             * *****************************MD******************************** */
+
+            foreach ($order->get_tax_totals() as $code => $tax) {
+                $tax_string_array[] = $tax->formatted_amount;
+            }
+
+            $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
+            $striped_amt = strip_tags($tax_string_array[0]);
+            $tot_tax = str_replace($current_currency, '', $striped_amt);
+
+            /*             * *****************************MD******************************** */
+
+
+
+
+
             if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
+                //$shipping = $order->get_total_shipping() + $order->get_shipping_tax();
+                $shipping = $order->get_total_shipping();
+
                 $tax = 0;
             } else {
                 $shipping = $order->get_total_shipping();
-                $tax = $order->get_total_tax();
+                $tax = $tot_tax; //$order->get_total_tax();
             }
 
             if ('yes' === get_option('woocommerce_calc_taxes') && 'yes' === get_option('woocommerce_prices_include_tax')) {
-                $tax = $order->get_total_tax();
+                $tax = $tot_tax; //$order->get_total_tax();
             }
 
             if ($tax > 0) {
-                $PaymentDetails['taxamt'] = number_format($tax, 2, '.', '');       // Required if you specify itemized cart tax details. Sum of tax for all items on the order.  Total sales tax. 
+                $PaymentDetails['taxamt'] = number_format($tot_tax, 2, '.', '');       // Required if you specify itemized cart tax details. Sum of tax for all items on the order.  Total sales tax. 
             }
 
             if ($shipping > 0) {
@@ -1032,8 +1056,18 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $this->log->add('paypal-pro', 'Do payment request ' . print_r($log, true));
         }
 
+
+        $final_order_total = $order->get_order_item_totals();
+        $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
+
+        $final_order_total_amt_strip = strip_tags($final_order_total['order_total']['value']);
+        $final_order_total_amt = str_replace($current_currency, '', $final_order_total_amt_strip);
+
+
+
+
         // Rounding amendment
-        if (trim(number_format($paymentAmount_ddp, 2, '.', '')) !== trim(number_format($ITEMAMT, 2, '.', '') + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''))) {
+        if (trim(number_format($paymentAmount_ddp, 2, '.', '')) !== trim(number_format($PaymentDetails['itemamt'], 2, '.', '') + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''))) {
 
             $diffrence_amount = $this->get_diffrent($paymentAmount_ddp, $ITEMAMT + $tax + number_format($shipping, 2, '.', ''));
             if ($shipping > 0) {
@@ -1275,7 +1309,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
     public function add_line_item($item_name, $quantity = 1, $amount = 0, $item_number = '') {
         $index = ( sizeof($this->line_items) / 4 ) + 1;
 
-        if (!$item_name || $amount < 0 || $index > 9) {
+        if (!$item_name || $amount < 0) {
             return false;
         }
 
