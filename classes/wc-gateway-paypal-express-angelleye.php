@@ -1127,6 +1127,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ($this->get_session('customer_notes') != '') {
                     $order->add_order_note(__('Customer Notes: ', 'paypal-for-woocommerce') . $this->get_session('customer_notes'));
                 }
+                if (isset($checkout_form_data) && !empty($checkout_form_data['order_comments'])) {
+                    // Update post 37
+                    $checkout_note = array(
+                        'ID' => $order_id,
+                        'post_excerpt' => $checkout_form_data['order_comments'],
+                    );
+                    wp_update_post($checkout_note);
+                }
+// Update the post into the database
+                wp_update_post($my_post);
 
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                     $this->add_log('Payment confirmed with PayPal successfully');

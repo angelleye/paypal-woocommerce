@@ -717,6 +717,21 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $avs_response_order_note .= sprintf(__('Postal Match: %s', 'paypal-for-woocommerce'), $avs_zip_response_code);
                 $order->add_order_note($avs_response_order_note);
 
+                /* Checkout Note */
+
+                if (isset($_POST) && !empty($_POST['order_comments'])) {
+                    // Update post 37
+                    $checkout_note = array(
+                        'ID' => $PayPalResult['ORDERID'],
+                        'post_excerpt' => $_POST['order_comments'],
+                    );
+                    wp_update_post($checkout_note);
+                }
+
+                ///////////////////////////////////////////////////////////////// 
+
+
+
                 /**
                  * Add order notes for CVV2 result
                  */
