@@ -3,7 +3,7 @@
  * 	Angell EYE PayPal PayFlow Class
  *	An open source PHP library written to easily work with PayPal's API's
  *
- *  Copyright � 2014  Andrew K. Angell
+ *  Copyright ï¿½ 2014  Andrew K. Angell
  *	Email:  andrew@angelleye.com
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  *
  * @package			Angell_EYE_PayPal_PayFlow_Class_Library
  * @author			Andrew K. Angell
- * @copyright       Copyright � 2014 Angell EYE, LLC
+ * @copyright       Copyright ï¿½ 2014 Angell EYE, LLC
  * @link			https://github.com/angelleye/PayPal-PHP-Library
  * @website			http://www.angelleye.com
  * @since			Version 1.52
@@ -40,8 +40,6 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 	 */
 	function __construct($DataArray)
 	{
-        $DataArray = apply_filters( 'angelleye_paypal_payflow_construct_params', $DataArray );
-
 		parent::__construct($DataArray);
 		
 		$this->APIVendor = isset($DataArray['APIVendor']) ? $DataArray['APIVendor'] : '';
@@ -58,6 +56,7 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 		}
 		
 		$this->NVPCredentials = 'BUTTONSOURCE['.strlen($this->APIButtonSource).']='.$this->APIButtonSource.'&VERBOSITY['.strlen($this->Verbosity).']='.$this->Verbosity.'&USER['.strlen($this->APIUsername).']='.$this->APIUsername.'&VENDOR['.strlen($this->APIVendor).']='.$this->APIVendor.'&PARTNER['.strlen($this->APIPartner).']='.$this->APIPartner.'&PWD['.strlen($this->APIPassword).']='.$this->APIPassword;
+		$this->NVPCredentials_masked = 'BUTTONSOURCE['.strlen($this->APIButtonSource).']='.$this->APIButtonSource.'&VERBOSITY['.strlen($this->Verbosity).']='.$this->Verbosity.'&USER['.strlen($this->APIUsername).']=*****&VENDOR['.strlen($this->APIVendor).']=*****&PARTNER['.strlen($this->APIPartner).']='.$this->APIPartner.'&PWD['.strlen($this->APIPassword).']='.'*****';
 		
 		$this->TransactionStateCodes = array(
 				'1' => 'Error',
@@ -162,22 +161,31 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 	function ProcessTransaction($DataArray)
 	{
 		$NVPRequest = $this->NVPCredentials;
-		
+		$NVPRequestmask = $this->NVPCredentials_masked;
+		$star='*****';
 		foreach($DataArray as $DataArrayVar => $DataArrayVal)
 		{
 			if($DataArrayVal != '')
 			{
 				$NVPRequest .= '&'.strtoupper($DataArrayVar).'['.strlen($DataArrayVal).']='.$DataArrayVal;
+				$NVPRequestmask .= '&'.strtoupper($DataArrayVar).'['.strlen($DataArrayVal).']='.$DataArrayVal;
+				
+				
 			}
 		}
 		
 		$NVPResponse = $this->CURLRequest($NVPRequest);
 		$NVPResponse = strstr($NVPResponse,"RESULT");
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
-		
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+				
+		$NVPResponseArray['RAWREQUEST'] = $NVPRequestmask;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 		
 		return $NVPResponseArray;
 	}
+	
+	
+	
+	
+	
 }

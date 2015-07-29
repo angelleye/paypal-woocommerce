@@ -3,7 +3,7 @@
  * 	Angell EYE PayPal NVP Class
  *	An open source PHP library written to easily work with PayPal's API's
  *	
- *  Copyright � 2014  Andrew K. Angell
+ *  Copyright ï¿½ 2014  Andrew K. Angell
  *	Email:  andrew@angelleye.com
  *  Facebook: angelleyeconsulting
  *  Twitter: angelleye
@@ -23,7 +23,7 @@
  *
  * @package			Angell_EYE_PayPal_Class_Library
  * @author			Andrew K. Angell
- * @copyright       Copyright � 2014 Angell EYE, LLC
+ * @copyright       Copyright ï¿½ 2014 Angell EYE, LLC
  * @link			https://github.com/angelleye/PayPal-PHP-Library
  * @website			http://www.angelleye.com
  * @since			Version 1.52
@@ -54,9 +54,7 @@ class Angelleye_PayPal
 	 * @return	void
 	 */
 	function __construct($DataArray)
-	{
-        $DataArray = apply_filters( 'angelleye_paypal_construct_params', $DataArray );
-
+	{		
 		if(isset($DataArray['Sandbox']))
 		{
 			$this->Sandbox = $DataArray['Sandbox'];
@@ -101,7 +99,7 @@ class Angelleye_PayPal
 		
 		$this->Countries = array(
 							'Afghanistan' => 'AF',
-							'ÌÉland Islands' => 'AX',
+							'ÃŒÃ‰land Islands' => 'AX',
 							'Albania' => 'AL',
 							'Algeria' => 'DZ',
 							'American Samoa' => 'AS',
@@ -1016,7 +1014,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
 		$NVPResponseArray['ERRORS'] = $Errors;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 									
 		return $NVPResponseArray;
@@ -1051,7 +1049,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 									
 		return $NVPResponseArray;	
@@ -1085,7 +1083,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 									
 		return $NVPResponseArray;	
@@ -1119,7 +1117,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 									
 		return $NVPResponseArray;	
@@ -1168,7 +1166,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 									
 		return $NVPResponseArray;
@@ -1202,7 +1200,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 									
 		return $NVPResponseArray;
@@ -1238,7 +1236,7 @@ class Angelleye_PayPal
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['ORDERITEMS'] = $OrderItems;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -1344,7 +1342,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 				
 		return $NVPResponseArray;
@@ -1481,7 +1479,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 				
 		return $NVPResponseArray;
@@ -1551,7 +1549,7 @@ class Angelleye_PayPal
 		$NVPResponseArray['ORDERITEMS'] = $OrderItems;
 		$NVPResponseArray['PAYMENTS'] = $Payments;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 				
 		return $NVPResponseArray;
@@ -1682,7 +1680,7 @@ class Angelleye_PayPal
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['PAYMENTS'] = $Payments;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 		
 		return $NVPResponseArray;
@@ -1757,7 +1755,7 @@ class Angelleye_PayPal
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['SEARCHRESULTS'] = $SearchResults;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 		
 		return $NVPResponseArray;
@@ -1824,7 +1822,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 		
 		return $NVPResponseArray;
@@ -1912,7 +1910,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 		
 		return $NVPResponseArray;
@@ -1962,7 +1960,7 @@ class Angelleye_PayPal
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['BALANCERESULTS'] = $BalanceResults;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 		
 		return $NVPResponseArray;
@@ -1989,7 +1987,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;	
@@ -2021,7 +2019,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2053,7 +2051,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2154,7 +2152,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;	
@@ -2186,7 +2184,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2218,7 +2216,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2250,7 +2248,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;	
@@ -2312,7 +2310,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;		
@@ -2363,7 +2361,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;	
@@ -2408,7 +2406,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2434,7 +2432,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 				
 		return $NVPResponseArray;
@@ -2466,7 +2464,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2505,7 +2503,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2537,7 +2535,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2580,7 +2578,7 @@ class Angelleye_PayPal
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REDIRECTURL'] = $RedirectURL;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2606,7 +2604,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2650,7 +2648,7 @@ class Angelleye_PayPal
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['Permissions'] = $Permissions;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;	
@@ -2713,7 +2711,7 @@ class Angelleye_PayPal
 		$NVPResponseArray['REDIRECTURL'] = $RedirectURL;
 		$NVPResponseArray['LOGOUTREDIRECTURL'] = $LogoutRedirectURL;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2739,7 +2737,7 @@ class Angelleye_PayPal
 		
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;
@@ -2795,7 +2793,7 @@ class Angelleye_PayPal
 		$NVPResponseArray['ERRORS'] = $Errors;
 		$NVPResponseArray['SEARCHRESULTS'] = $SearchResults;
 		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 								
 		return $NVPResponseArray;	
