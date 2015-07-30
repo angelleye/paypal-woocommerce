@@ -729,8 +729,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $paymentAmount_amt = strip_tags($order_obj['order_total']['value']);
 
                 $payment_exp_ary = explode(';', $paymentAmount_amt);
-                $paymentAmount_amt_final = str_replace($current_currency, '', $paymentAmount_amt);
-                $paymentAmount = number_format($paymentAmount_amt_final, 2, '.', '');
+                $paymentAmount_amt_final_ec = str_replace($current_currency, '', $paymentAmount_amt);
+                $paymentAmount_amt_final = str_replace(',', '', $paymentAmount_amt_final_ec);
+                $paymentAmount = round($paymentAmount_amt_final, 2);
 
 
                 $order->get_items();
@@ -1458,13 +1459,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $qty = absint($values['quantity']);
             $sku = $_product->get_sku();
             $values['name'] = html_entity_decode($_product->get_title(), ENT_NOQUOTES, 'UTF-8');
+            /* ------------------------------------------------------------------------------------------------- */
+            if (in_array($values['product_id'], $lineitems)) {
 
-//////////////////////////////////////////***************************////////////////////////////////////
-
-
-            if (in_array($values['name'], $lineitems)) {
-
-                $arraykey = array_search($values['name'], $lineitems);
+                $arraykey = array_search($values['product_id'], $lineitems);
                 $item_position = str_replace('item_name_', '', $arraykey);
 
                 $get_amountkey = 'amount_' . $item_position;
@@ -1472,8 +1470,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $switcher_amt = $lineitems[$get_amountkey];
                 $switcher_qty = $lineitems[$get_qtykey];
             }
-
-            //////////////////////////////////////////***************************////////////////////////////////////
+            /* ------------------------------------------------------------------------------------------------- */
             /*
              * Append variation data to name.
              */
@@ -1494,7 +1491,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $Item = array(
                 'name' => $values['name'], // Item name. 127 char max.
                 'desc' => '', // Item description. 127 char max.
-                'amt' => round($values['line_subtotal'] / $quantity, 2), // Cost of item.
+                'amt' => round($switcher_amt, 2), // Cost of item.
                 'number' => $sku, // Item number.  127 char max.
                 'qty' => $quantity, // Item qty on order.  Any positive integer.
                 'taxamt' => '', // Item sales tax
@@ -1515,7 +1512,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             array_push($PaymentOrderItems, $Item);
 
-            $total_items += round($values['line_subtotal'] / $quantity, 2) * $quantity;
+            $total_items += round($switcher_amt, 2) * $switcher_qty;
             $ctr++;
         }
 
@@ -1557,31 +1554,31 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         //if (WC()->cart->get_cart_discount_total() > 0) {
         if ($order->get_total_discount() > 0) {
 
-            foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
-                $Item = array(
-                    'name' => 'Cart Discount',
-                    'number' => $code,
-                    'qty' => '1',
-                    'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
-                );
-                array_push($PaymentOrderItems, $Item);
-                $total_discount += number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
-            }
+            //   foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
+            $Item = array(
+                'name' => 'Cart Discount',
+                'number' => 'Coupons',
+                'qty' => '1',
+                'amt' => '-' . number_format($order->get_total_discount(), 2, '.', '')
+            );
+            array_push($PaymentOrderItems, $Item);
+            $total_discount += number_format($order->get_total_discount(), 2, '.', '');
+            // }
         }
 
         if (!$this->is_wc_version_greater_2_3()) {
             //    if (WC()->cart->get_order_discount_total() > 0) {
             if ($order->get_total_discount() > 0) {
-                foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
-                    $Item = array(
-                        'name' => 'Order Discount',
-                        'number' => $code,
-                        'qty' => '1',
-                        'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
-                    );
-                    array_push($PaymentOrderItems, $Item);
-                    $total_discount += number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
-                }
+                //foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+                $Item = array(
+                    'name' => 'Order Discount',
+                    'number' => 'Coupons',
+                    'qty' => '1',
+                    'amt' => '-' . number_format($order->get_total_discount(), 2, '.', '')
+                );
+                array_push($PaymentOrderItems, $Item);
+                $total_discount += number_format($order->get_total_discount(), 2, '.', '');
+                // }
             }
         }
 
@@ -1850,7 +1847,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $final_order_total = $order->get_order_item_totals();
         $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
 
-        $final_order_total_amt_strip = strip_tags($final_order_total['order_total']['value']);
+        $final_order_total_amt_strip_ec = strip_tags($final_order_total['order_total']['value']);
+        $final_order_total_amt_strip = str_replace(',', '', $final_order_total_amt_strip_ec);
         $final_order_total_amt = str_replace($current_currency, '', $final_order_total_amt_strip);
 
 
@@ -1906,17 +1904,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
 
 
-
-
-
 //////////////////////////////////////////***************************////////////////////////////////////
 
                 $lineitems_prepare = $this->prepare_line_items($order);
                 $lineitems = $_SESSION['line_item'];
 
-                if (in_array($values['name'], $lineitems)) {
+                if (in_array($values['product_id'], $lineitems)) {
 
-                    $arraykey = array_search($values['name'], $lineitems);
+                    $arraykey = array_search($values['product_id'], $lineitems);
                     $item_position = str_replace('item_name_', '', $arraykey);
 
                     $get_amountkey = 'amount_' . $item_position;
@@ -1927,12 +1922,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 //////////////////////////////////////////***************************////////////////////////////////////
 
-
-
                 $Item = array(
                     'name' => $values['name'], // Item name. 127 char max.
                     'desc' => '', // Item description. 127 char max.
-                    'amt' => round($values['line_subtotal'] / $qty, 2), // Cost of item.
+                    'amt' => round($switcher_amt, 2), // Cost of item.
                     'number' => $sku, // Item number.  127 char max.
                     'qty' => $qty, // Item qty on order.  Any positive integer.
                     'taxamt' => '', // Item sales tax
@@ -1953,7 +1946,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 );
                 array_push($PaymentOrderItems, $Item);
 
-                $ITEMAMT +=round($values['line_subtotal'] / $qty, 2) * $qty;
+                $ITEMAMT +=round($switcher_amt, 2) * $switcher_qty;
             }
 
             /**
@@ -2014,15 +2007,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
 
                 if ($order->get_order_discount() > 0) {
-                    foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
-                        $Item = array(
-                            'name' => 'Order Discount',
-                            'number' => $code,
-                            'qty' => '1',
-                            'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
-                        );
-                        array_push($PaymentOrderItems, $Item);
-                    }
+                    //  foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+                    $Item = array(
+                        'name' => 'Order Discount',
+                        'number' => $code,
+                        'qty' => '1',
+                        'amt' => '-' . number_format($order->get_order_discount(), 2, '.', '')
+                    );
+                    array_push($PaymentOrderItems, $Item);
+                    //  }
                     $total_discount -= $order->get_order_discount();
                 }
             } else {
@@ -2051,10 +2044,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $striped_amt = strip_tags($tax_string_array[0]);
             $tot_tax = str_replace($current_currency, '', $striped_amt);
 
-            /*             * *****************************MD******************************** */
-
-
-
+            /*  *****************************MD******************************** */
 
             if (get_option('woocommerce_prices_include_tax') == 'yes') {
                 $shipping = $order->get_total_shipping(); //+ $order->get_shipping_tax();
@@ -2604,7 +2594,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $item_name .= ' ( ' . $meta . ' )';
         }
 
-        return $item_name;
+        return $item['product_id'];
     }
 
     public function get_line_item_args($order) {
