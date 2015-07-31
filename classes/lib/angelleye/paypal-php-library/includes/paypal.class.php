@@ -3,7 +3,7 @@
  * 	Angell EYE PayPal NVP Class
  *	An open source PHP library written to easily work with PayPal's API's
  *	
- *  Copyright ï¿½ 2014  Andrew K. Angell
+ *  Copyright © 2014  Andrew K. Angell
  *	Email:  andrew@angelleye.com
  *  Facebook: angelleyeconsulting
  *  Twitter: angelleye
@@ -23,7 +23,7 @@
  *
  * @package			Angell_EYE_PayPal_Class_Library
  * @author			Andrew K. Angell
- * @copyright       Copyright ï¿½ 2014 Angell EYE, LLC
+ * @copyright       Copyright © 2014 Angell EYE, LLC
  * @link			https://github.com/angelleye/PayPal-PHP-Library
  * @website			http://www.angelleye.com
  * @since			Version 1.52
@@ -99,7 +99,7 @@ class Angelleye_PayPal
 		
 		$this->Countries = array(
 							'Afghanistan' => 'AF',
-							'ÃŒÃ‰land Islands' => 'AX',
+							'Åland Islands' => 'AX',
 							'Albania' => 'AL',
 							'Algeria' => 'DZ',
 							'American Samoa' => 'AS',
