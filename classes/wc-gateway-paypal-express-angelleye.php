@@ -1450,6 +1450,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
 
         $PaymentOrderItems = array();
+        $order_items_own = array();
         $ctr = $total_items = $total_discount = $total_tax = $order_total = 0;
         foreach (WC()->cart->get_cart() as $cart_item_key => $values) {
             /*
@@ -1513,6 +1514,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             array_push($PaymentOrderItems, $Item);
 
             $total_items += round($switcher_amt, 2) * $switcher_qty;
+            $order_items_own[] = round($switcher_amt, 2) * $switcher_qty;
             $ctr++;
         }
 
@@ -1545,6 +1547,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             array_push($PaymentOrderItems, $Item);
 
             $total_items += $fee->amount * $Item['qty'];
+            $order_items_own[] = $fee->amount * $Item['qty'];
             $ctr++;
         }
 
@@ -1563,6 +1566,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             array_push($PaymentOrderItems, $Item);
             $total_discount += number_format($order->get_total_discount(), 2, '.', '');
+            $order_items_own[] = '-' . round($order->get_total_discount(), 2);
             // }
         }
 
@@ -1578,6 +1582,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 );
                 array_push($PaymentOrderItems, $Item);
                 $total_discount += number_format($order->get_total_discount(), 2, '.', '');
+                $order_items_own[] = '-' . round($order->get_total_discount(), 2);
+
                 // }
             }
         }
@@ -1667,8 +1673,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         /* rounding amount */
         $order_item_total = 0;
-        foreach ($PayPalRequestData['Payments'][0]['order_items'] as $keypayment => $valuepayment) {
-            $order_item_total = $order_item_total + $valuepayment['amt'];
+        foreach ($order_items_own as $keypayment => $valuepayment) {
+            $order_item_total = $order_item_total + $valuepayment;
         }
         if ($shipping <= 0 && $tax <= 0) {
             $diffrence_amount_rounded = $this->get_diffrent($paymentAmount, $order_item_total);
@@ -1844,6 +1850,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         );
 
         $Payments = array();
+        $order_items_own = array();
         $final_order_total = $order->get_order_item_totals();
         $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
 
@@ -1947,6 +1954,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 array_push($PaymentOrderItems, $Item);
 
                 $ITEMAMT +=round($switcher_amt, 2) * $switcher_qty;
+                $order_items_own[] = round($switcher_amt, 2) * $switcher_qty;
             }
 
             /**
@@ -1984,6 +1992,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ($Item['number'] != 'gift-wrap') {
                     array_push($PaymentOrderItems, $Item);
                     $ITEMAMT += $fee->amount * $Item['qty'];
+                    $order_items_own[] = $fee->amount * $Item['qty'];
                 }
 
                 $ctr++;
@@ -1993,30 +2002,32 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 /*
                  * Get discounts
                  */
-                if ($order->get_cart_discount() > 0) {
-                    foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
-                        $Item = array(
-                            'name' => 'Cart Discount',
-                            'number' => $code,
-                            'qty' => '1',
-                            'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
-                        );
-                        array_push($PaymentOrderItems, $Item);
-                    }
+                if ($order->get_order_discount() > 0) {
+                    // foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
+                    $Item = array(
+                        'name' => 'Cart Discount',
+                        'number' => 'Coupons',
+                        'qty' => '1',
+                        'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                    );
+                    array_push($PaymentOrderItems, $Item);
+                    //}
                     $total_discount -= $order->get_cart_discount();
+                    $order_items_own[] = $fee->amount * $Item['qty'];
                 }
 
                 if ($order->get_order_discount() > 0) {
                     //  foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
                     $Item = array(
                         'name' => 'Order Discount',
-                        'number' => $code,
+                        'number' => 'Coupons',
                         'qty' => '1',
                         'amt' => '-' . number_format($order->get_order_discount(), 2, '.', '')
                     );
                     array_push($PaymentOrderItems, $Item);
                     //  }
                     $total_discount -= $order->get_order_discount();
+                    $order_items_own[] = round($total_discount, 2);
                 }
             } else {
                 if ($order->get_total_discount() > 0) {
@@ -2027,6 +2038,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     );
                     array_push($PaymentOrderItems, $Item);
                     $total_discount -= $order->get_total_discount();
+                    $order_items_own[] = round($total_discount, 2);
                 }
             }
             //   } if(this->senditem)1876
@@ -2044,7 +2056,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $striped_amt = strip_tags($tax_string_array[0]);
             $tot_tax = str_replace($current_currency, '', $striped_amt);
 
-            /*  *****************************MD******************************** */
+            /*             * ****************************MD******************************** */
 
             if (get_option('woocommerce_prices_include_tax') == 'yes') {
                 $shipping = $order->get_total_shipping(); //+ $order->get_shipping_tax();
@@ -2133,8 +2145,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         /* rounding amount */
         $order_item_total = 0;
-        foreach ($PayPalRequestData['Payments'][0]['order_items'] as $keypayment => $valuepayment) {
-            $order_item_total = $order_item_total + $valuepayment['amt'];
+        foreach ($order_items_own as $keypayment => $valuepayment) {
+            $order_item_total = $order_item_total + $valuepayment;
         }
         if ($shipping <= 0 && $tax <= 0) {
             $diffrence_amount_rounded = $this->get_diffrent($final_order_total_amt, $order_item_total);

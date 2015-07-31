@@ -751,6 +751,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $order_id = WC()->checkout()->create_order();
         $order = new WC_Order($order_id);
         $lineitems_prepare = $this->prepare_line_items($order);
+
         $lineitems = $_SESSION['line_item_ddp'];
 
         $order_obj_ddp = $order->get_order_item_totals();
@@ -762,9 +763,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 
         $payment_ddp_ary = explode(';', $paymentAmount_amt_ddp);
 
-        $paymentAmount_amt_final_ddp = str_replace($current_currency, '', $paymentAmount_amt_ddp);
+        $paymentAmount_amt_final_dd = str_replace($current_currency, '', $paymentAmount_amt_ddp);
+        $paymentAmount_amt_final_ddp = str_replace(',', '', $paymentAmount_amt_final_dd);
 
-        $paymentAmount_ddp = number_format($paymentAmount_amt_final_ddp, 2, '.', '');
+        $paymentAmount_ddp = round($paymentAmount_amt_final_ddp, 2);
 
         /**
          * Generate PayPal request
@@ -826,6 +828,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 
 
         $OrderItems = array();
+        $order_items_own = array();
         $item_loop = 0;
         if (sizeof($order->get_items()) > 0) {
             $ITEMAMT = $TAXAMT = 0;
@@ -856,9 +859,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 //////////////////////////////////////////***************************////////////////////////////////////
 
 
-                if (in_array($item['name'], $lineitems)) {
+                if (in_array($item['product_id'], $lineitems)) {
 
-                    $arraykey = array_search($item['name'], $lineitems);
+                    $arraykey = array_search($item['product_id'], $lineitems);
                     $item_position = substr($arraykey, -1);
 
                     $get_amountkey = 'amount_' . $item_position;
@@ -873,9 +876,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 $Item = array(
                     'l_name' => $item['name'], // Item Name.  127 char max.
                     'l_desc' => '', // Item description.  127 char max.
-                    'l_amt' => round($item['line_subtotal'] / $item['qty'], 2), // Cost of individual item.
+                    'l_amt' => round($switcher_amt, 2), // Cost of individual item.
                     'l_number' => $sku, // Item Number.  127 char max.
-                    'l_qty' => $item['qty'], // Item quantity.  Must be any positive integer.  
+                    'l_qty' => $switcher_qty, // Item quantity.  Must be any positive integer.  
                     'l_taxamt' => '', // Item's sales tax amount.
                     'l_ebayitemnumber' => '', // eBay auction number of item.
                     'l_ebayitemauctiontxnid' => '', // eBay transaction ID of purchased item.
@@ -883,59 +886,65 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 );
                 array_push($OrderItems, $Item);
 
-                $ITEMAMT += round($item['line_subtotal'] / $item['qty'], 2) * $item['qty'];
+                $ITEMAMT += round($switcher_amt, 2) * $switcher_qty;
+                $order_items_own[] = round($switcher_amt, 2) * $switcher_qty;
                 $item_loop++;
             }
 
             if (!$this->is_wc_version_greater_2_3()) {
                 //Cart Discount
-                if ($order->get_cart_discount() > 0) {
-                    foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
-                        $Item = array(
-                            'l_name' => 'Cart Discount', // Item Name.  127 char max.
-                            'l_desc' => '', // Item description.  127 char max.
-                            'l_amt' => '-' . WC()->cart->coupon_discount_amounts[$code], // Cost of individual item.
-                            'l_number' => $code, // Item Number.  127 char max.
-                            'l_qty' => '1', // Item quantity.  Must be any positive integer.  
-                            'l_taxamt' => '', // Item's sales tax amount.
-                            'l_ebayitemnumber' => '', // eBay auction number of item.
-                            'l_ebayitemauctiontxnid' => '', // eBay transaction ID of purchased item.
-                            'l_ebayitemorderid' => ''     // eBay order ID for the item.
-                        );
-                        array_push($OrderItems, $Item);
-                    }
+                //if ($order->get_cart_discount() > 0) {
+                if ($order->get_total_discount() > 0) {
+                    //  foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
+                    $Item = array(
+                        'l_name' => 'Cart Discount', // Item Name.  127 char max.
+                        'l_desc' => '', // Item description.  127 char max.
+                        'l_amt' => '-' . round($order->get_total_discount(), 2), // Cost of individual item.
+                        'l_number' => 'Coupons', // Item Number.  127 char max.
+                        'l_qty' => '1', // Item quantity.  Must be any positive integer.  
+                        'l_taxamt' => '', // Item's sales tax amount.
+                        'l_ebayitemnumber' => '', // eBay auction number of item.
+                        'l_ebayitemauctiontxnid' => '', // eBay transaction ID of purchased item.
+                        'l_ebayitemorderid' => ''     // eBay order ID for the item.
+                    );
+                    array_push($OrderItems, $Item);
+                    $order_items_own[] = '-' . round($order->get_total_discount(), 2);
+                    // }
 
-                    $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
+                    $ITEMAMT = $ITEMAMT - $order->get_total_discount(); //$order->get_cart_discount();
                 }
 
                 //Order Discount
                 if ($order->get_total_discount() > 0) {
-                    foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
-                        $Item = array(
-                            'l_name' => 'Order Discount', // Item Name.  127 char max.
-                            'l_desc' => '', // Item description.  127 char max.
-                            'l_amt' => '-' . WC()->cart->coupon_discount_amounts[$code], // Cost of individual item.
-                            'l_number' => $code, // Item Number.  127 char max.
-                            'l_qty' => '1', // Item quantity.  Must be any positive integer.  
-                            'l_taxamt' => '', // Item's sales tax amount.
-                            'l_ebayitemnumber' => '', // eBay auction number of item.
-                            'l_ebayitemauctiontxnid' => '', // eBay transaction ID of purchased item.
-                            'l_ebayitemorderid' => ''     // eBay order ID for the item.
-                        );
-                        array_push($OrderItems, $Item);
-                    }
+                    //    foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+                    $Item = array(
+                        'l_name' => 'Order Discount', // Item Name.  127 char max.
+                        'l_desc' => '', // Item description.  127 char max.
+                        'l_amt' => '-' . $order->get_total_discount(), // Cost of individual item.
+                        'l_number' => 'Coupons', // Item Number.  127 char max.
+                        'l_qty' => '1', // Item quantity.  Must be any positive integer.  
+                        'l_taxamt' => '', // Item's sales tax amount.
+                        'l_ebayitemnumber' => '', // eBay auction number of item.
+                        'l_ebayitemauctiontxnid' => '', // eBay transaction ID of purchased item.
+                        'l_ebayitemorderid' => ''     // eBay order ID for the item.
+                    );
+                    array_push($OrderItems, $Item);
+                    $order_items_own[] = '-' . round($order->get_total_discount(), 2);
 
-                    $ITEMAMT = $ITEMAMT - $order->get_order_discount();
+                    //   }
+
+                    $ITEMAMT = $ITEMAMT - $order->get_total_discount(); //$order->get_order_discount();
                 }
             } else {
                 if ($order->get_total_discount() > 0) {
                     $Item = array(
                         'name' => 'Total Discount',
                         'qty' => 1,
-                        'amt' => - number_format($order->get_total_discount(), 2, '.', ''),
+                        'amt' => - round($order->get_total_discount(), 2),
                     );
                     array_push($OrderItems, $Item);
-                    $ITEMAMT -= number_format($order->get_total_discount(), 2, '.', '');
+                    $order_items_own[] = '-' . round($order->get_total_discount(), 2);
+                    $ITEMAMT -= round($order->get_total_discount(), 2);
                 }
             }
 
@@ -973,11 +982,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             }
 
             if ($tax > 0) {
-                $PaymentDetails['taxamt'] = number_format($tot_tax, 2, '.', '');       // Required if you specify itemized cart tax details. Sum of tax for all items on the order.  Total sales tax. 
+                $PaymentDetails['taxamt'] = round($tot_tax, 2);       // Required if you specify itemized cart tax details. Sum of tax for all items on the order.  Total sales tax. 
             }
 
             if ($shipping > 0) {
-                $PaymentDetails['shippingamt'] = number_format($shipping, 2, '.', '');     // Total shipping costs for the order.  If you specify shippingamt, you must also specify itemamt.
+                $PaymentDetails['shippingamt'] = round($shipping, 2);     // Total shipping costs for the order.  If you specify shippingamt, you must also specify itemamt.
             }
         }
 
@@ -1013,13 +1022,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             array_push($OrderItems, $Item);
 
             $ITEMAMT += $fee->amount * $Item['qty'];
+            $order_items_own[] = $fee->amount * $Item['qty'];
             $item_loop++;
         }
         if (!$this->send_items) {
             $OrderItems = array();
-            $PaymentDetails['itemamt'] = number_format($ITEMAMT, 2, '.', '');     // Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
+            $PaymentDetails['itemamt'] = $ITEMAMT;     // Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
         } else {
-            $PaymentDetails['itemamt'] = number_format($ITEMAMT, 2, '.', '');     // Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
+            $PaymentDetails['itemamt'] = $ITEMAMT;     // Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
         }
 
 
@@ -1066,6 +1076,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 
 
 
+
         // Rounding amendment
         if (trim(number_format($paymentAmount_ddp, 2, '.', '')) !== trim(number_format($PaymentDetails['itemamt'], 2, '.', '') + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''))) {
 
@@ -1078,6 +1089,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 $PayPalRequestData['PaymentDetails']['itemamt'] = number_format($PayPalRequestData['PaymentDetails']['itemamt'] + $diffrence_amount, 2);
             }
         }
+
+        /* rounding amount */
+        $order_item_total = 0;
+        foreach ($order_items_own as $keypayment => $valuepayment) {
+            $order_item_total = $order_item_total + $valuepayment;
+        }
+        if ($shipping <= 0 && $tax <= 0) {
+            $diffrence_amount_rounded = $this->get_diffrent($paymentAmount_ddp, $order_item_total);
+            $PayPalRequestData['PaymentDetails']['itemamt'] = round($PayPalRequestData['PaymentDetails']['itemamt'] - $diffrence_amount_rounded, 2);
+            $PayPalRequestData['PaymentDetails']['amt'] = round($PayPalRequestData['PaymentDetails']['amt'] - $diffrence_amount_rounded, 2);
+        }
+
+
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->DoDirectPayment($PayPalRequestData);
@@ -1389,7 +1413,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $item_name .= ' ( ' . $meta . ' )';
         }
 
-        return $item_name;
+        return $item['product_id'];
     }
 
     public function get_line_item_args($order) {
