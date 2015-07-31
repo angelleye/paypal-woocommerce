@@ -1100,6 +1100,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             //$order->add_order_note("PayPal Results: ".print_r($PayPalResult,true));
 
+            /* Checkout Note */
+
+            if (isset($_POST) && !empty($_POST['order_comments'])) {
+                // Update post 37
+                $checkout_note = array(
+                    'ID' => $PayPalResult['REQUESTDATA']['INVNUM'],
+                    'post_excerpt' => $_POST['order_comments'],
+                );
+                wp_update_post($checkout_note);
+            }
+
+            ///////////////////////////////////////////////////////////////// 
+
             /**
              * Add order notes for AVS result
              */

@@ -1136,6 +1136,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ($this->get_session('customer_notes') != '') {
                     $order->add_order_note(__('Customer Notes: ', 'paypal-for-woocommerce') . $this->get_session('customer_notes'));
                 }
+                if (isset($checkout_form_data) && !empty($checkout_form_data['order_comments'])) {
+                    // Update post 37
+                    $checkout_note = array(
+                        'ID' => $order_id,
+                        'post_excerpt' => $checkout_form_data['order_comments'],
+                    );
+                    wp_update_post($checkout_note);
+                }
+// Update the post into the database
+                wp_update_post($my_post);
 
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                     $this->add_log('Payment confirmed with PayPal successfully');
@@ -1667,6 +1677,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }
 
+        /* rounding amount */
+        $order_item_total = 0;
+        foreach ($PayPalRequestData['Payments'][0]['order_items'] as $keypayment => $valuepayment) {
+            $order_item_total = $order_item_total + $valuepayment['amt'];
+        }
+        if ($shipping <= 0 && $tax <= 0) {
+            $diffrence_amount_rounded = $this->get_diffrent($paymentAmount, $order_item_total);
+            $PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'] - $diffrence_amount_rounded, 2);
+            $PayPalRequestData['Payments'][0]['amt'] = round($PayPalRequestData['Payments'][0]['amt'] - $diffrence_amount_rounded, 2);
+        }
+
+
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->SetExpressCheckout($PayPalRequestData);
 
@@ -2126,6 +2148,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             } else {
                 $PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'] + $diffrence_amount, 2);
             }
+        }
+
+        /* rounding amount */
+        $order_item_total = 0;
+        foreach ($PayPalRequestData['Payments'][0]['order_items'] as $keypayment => $valuepayment) {
+            $order_item_total = $order_item_total + $valuepayment['amt'];
+        }
+        if ($shipping <= 0 && $tax <= 0) {
+            $diffrence_amount_rounded = $this->get_diffrent($final_order_total_amt, $order_item_total);
+            $PayPalRequestData['Payments'][0]['itemamt'] = round($PayPalRequestData['Payments'][0]['itemamt'] - $diffrence_amount_rounded, 2);
+            $PayPalRequestData['Payments'][0]['amt'] = round($PayPalRequestData['Payments'][0]['amt'] - $diffrence_amount_rounded, 2);
         }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
