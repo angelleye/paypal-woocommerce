@@ -941,7 +941,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                         'l_name' => 'Total Discount',
                         'l_desc' => '',
                         'l_amt' => - round($order->get_total_discount(), 2),
-                        'qty' => 1,
+                        'l_qty' => '1',
                         
                     );
                     array_push($OrderItems, $Item);
