@@ -718,9 +718,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 WC()->cart->calculate_totals();
 
-                $order_id = WC()->checkout()->create_order();
-                $order = new WC_Order($order_id);
-
+               $order_id = WC()->checkout()->create_order();
+               
+               $order = new WC_Order($order_id);
+               
+               
+                
+               
+			
                 if (isset($_SESSION['line_item'])) {
                     unset($_SESSION['line_item']);
                 }
@@ -1042,9 +1047,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log('Start Pay Action');
                 if (!defined('WOOCOMMERCE_CHECKOUT'))
                     define('WOOCOMMERCE_CHECKOUT', true);
-                WC()->cart->calculate_totals();
-                $order_id = WC()->checkout()->create_order();
+               		WC()->cart->calculate_totals();
 
+                	$resultarray = array()	;
+                	$resultarray = maybe_unserialize(WC()->session->result);
+             		$order_id = $resultarray['PAYMENTS'][0]['INVNUM'];	
+               
+				
                 /**
                  * Update meta data with session data
                  */
@@ -1058,7 +1067,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 $this->set_session('firstname', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : $shipping_first_name);
                 $this->set_session('lastname', isset($result['LASTNAME']) ? $result['LASTNAME'] : $shipping_last_name);
-
+				maybe_unserialize(WC()->session->result);
                 update_post_meta($order_id, '_payment_method', $this->id);
                 update_post_meta($order_id, '_payment_method_title', $this->title);
 
@@ -1194,6 +1203,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                    /* if (isset($this->get_session('customer_notes')) && !empty($this->get_session('customer_notes'))) {
 						$this->get_session('customer_notes') == '';
                     }*/
+                   
                     wp_redirect($this->get_return_url($order));
                     exit();
                 } else {
@@ -1431,7 +1441,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'taxamt' => number_format($tax, 2, '.', ''), // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => '', // Free-form field for your own use.  256 char max.
-            'invnum' => '', // Your own invoice or tracking number.  127 char max.
+            'invnum' => $invoice_number = $this->invoice_id_prefix . preg_replace("/[^0-9,.]/", "", $order->id), // Your own invoice or tracking number.  127 char max.
             'notifyurl' => '', // URL for receiving Instant Payment Notifications
             'shiptoname' => '', // Required if shipping is included.  Person's name associated with this address.  32 char max.
             'shiptostreet' => '', // Required if shipping is included.  First street address.  100 char max.
@@ -1892,7 +1902,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => '', // Free-form field for your own use.  256 char max.
-            'invnum' => $this->invoice_id_prefix . $invoice_number, // Your own invoice or tracking number.  127 char max.
+            'invnum' => $invoice_number = $this->invoice_id_prefix . preg_replace("/[^0-9,.]/", "", $this->confirm_order_id), // Your own invoice or tracking number.  127 char max.
             'notifyurl' => '', // URL for receiving Instant Payment Notifications
             'shiptoname' => $shipping_first_name . ' ' . $shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
             'shiptostreet' => $shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
