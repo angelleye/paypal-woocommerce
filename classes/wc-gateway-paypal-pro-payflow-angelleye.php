@@ -397,9 +397,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         $paymentAmount_amt_ppf = strip_tags($order_obj_ppf['order_total']['value']);
         $payment_ppf_ary = explode(';', $paymentAmount_amt_ppf);
         $paymentAmount_amt_final_ppf = str_replace($current_currency, '', $paymentAmount_amt_ppf);
+        $paymentAmount_amt_final_ppflow = str_replace(',', '', $paymentAmount_amt_final_ppf);
 
 
-        $paymentAmount_ppf = number_format($paymentAmount_amt_final_ppf, 2, '.', '');
+        $paymentAmount_ppf = number_format($paymentAmount_amt_final_ppflow, 2, '.', '');
 
 
 
@@ -484,6 +485,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             $item_loop = 0;
             $ITEMAMT = 0;
             $OrderItems = array();
+            $order_items_own = array();
             if (sizeof($order->get_items()) > 0) {
                 foreach ($order->get_items() as $item) {
                     $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
@@ -506,9 +508,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         ////////////////////////////////////////////////////////////////////////////////
 
 
-                        if (in_array($item['name'], $lineitems)) {
+                        if (in_array($item['product_id'], $lineitems)) {
 
-                            $arraykey = array_search($item['name'], $lineitems);
+                            $arraykey = array_search($item['product_id'], $lineitems);
                             $item_position = substr($arraykey, -1);
 
                             $get_amountkey = 'amount_' . $item_position;
@@ -524,54 +526,61 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                         $Item['L_NUMBER' . $item_loop] = $sku;
                         $Item['L_NAME' . $item_loop] = $item['name'];
-                        $Item['L_COST' . $item_loop] = round($item['line_subtotal'] / $item['qty'], 2);
-                        $Item['L_QTY' . $item_loop] = $item['qty'];
+                        $Item['L_COST' . $item_loop] = round($switcher_amt, 2);
+                        $Item['L_QTY' . $item_loop] = $switcher_qty;
                         if ($sku) {
                             $Item['L_SKU' . $item_loop] = $sku;
                         }
                         $OrderItems = array_merge($OrderItems, $Item);
-                        $ITEMAMT += round($item['line_subtotal'] / $item['qty'], 2) * $item['qty'];
+                        $order_items_own[] = round($switcher_amt, 2) * $switcher_qty;
+                        $ITEMAMT += round($switcher_amt, 2) * $switcher_qty;
                         $item_loop++;
                     }
                 }
 
                 if (!$this->is_wc_version_greater_2_3()) {
                     //Cart Discount
-                    if ($order->get_cart_discount() > 0) {
-                        foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
+                    //   if ($order->get_cart_discount() > 0) {
+                    if ($order->get_total_discount() > 0) {
+                        //	foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
 
-                            $Item['L_NUMBER' . $item_loop] = $code;
-                            $Item['L_NAME' . $item_loop] = 'Cart Discount';
-                            $Item['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
-                            $Item['L_QTY' . $item_loop] = 1;
-                            $OrderItems = array_merge($OrderItems, $Item);
-                            $item_loop++;
-                        }
-                        $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
+                        $Item['L_NUMBER' . $item_loop] = $code;
+                        $Item['L_NAME' . $item_loop] = 'Cart Discount';
+                        $Item['L_AMT' . $item_loop] = '-' . $order->get_total_discount();
+                        $Item['L_QTY' . $item_loop] = 1;
+                        $OrderItems = array_merge($OrderItems, $Item);
+                        $order_items_own[] = '-' . round($order->get_total_discount(), 2);
+                        $item_loop++;
+                        //  }
+                        $ITEMAMT = $ITEMAMT - $order->get_total_discount(); //$order->get_cart_discount();
                     }
 
                     //Order Discount
-                    if ($order->get_order_discount() > 0) {
-                        foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
-                            $Item['L_NUMBER' . $item_loop] = $code;
-                            $Item['L_NAME' . $item_loop] = 'Order Discount';
-                            $Item['L_AMT' . $item_loop] = '-' . WC()->cart->coupon_discount_amounts[$code];
-                            $Item['L_QTY' . $item_loop] = 1;
-                            $OrderItems = array_merge($OrderItems, $Item);
-                            $item_loop++;
-                        }
-                        $ITEMAMT = $ITEMAMT - $order->get_order_discount();
+                    // if ($order->get_order_discount() > 0) {
+                    if ($order->get_total_discount() > 0) {
+                        // foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+                        $Item['L_NUMBER' . $item_loop] = 'Coupons';
+                        $Item['L_NAME' . $item_loop] = 'Order Discount';
+                        $Item['L_AMT' . $item_loop] = '-' . $order->get_total_discount();
+                        $Item['L_QTY' . $item_loop] = 1;
+                        $OrderItems = array_merge($OrderItems, $Item);
+                        $order_items_own[] = '-' . round($order->get_total_discount(), 2);
+                        $item_loop++;
+                        // }
+                        $ITEMAMT = $ITEMAMT - $order->get_total_discount();
                     }
                 } else {
                     if ($order->get_total_discount() > 0) {
 
-                        $Item['L_NUMBER' . $item_loop] = $code;
+                        $Item['L_NUMBER' . $item_loop] = 'Coupons';
                         $Item['L_NAME' . $item_loop] = 'Order Discount';
                         $Item['L_COST' . $item_loop] = '-' . $order->get_total_discount();
                         $Item['L_QTY' . $item_loop] = 1;
+                        $order_items_own[] = $Item['L_COST' . $item_loop];
                         $OrderItems = array_merge($OrderItems, $Item);
                         $item_loop++;
                         $ITEMAMT -= $order->get_total_discount();
+                        $order_items_own[] = '-' . round($order->get_total_discount(), 2);
                     }
                 }
 
@@ -595,10 +604,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     $tax = 0;
                 } else {
                     $shipping = $order->get_total_shipping();
-                    $tax = $tot_tax;
+                    $tax = round($tot_tax, 2);
                 }
                 if ('yes' === get_option('woocommerce_calc_taxes') && 'yes' === get_option('woocommerce_prices_include_tax')) {
-                    $tax = $tot_tax;
+                    $tax = round($tot_tax, 2);
                 }
 
                 //tax
@@ -622,6 +631,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     $Item['L_AMT' . $item_loop] = number_format($fee->amount, 2, '.', '');
                     $Item['L_QTY' . $item_loop] = 1;
                     $OrderItems = array_merge($OrderItems, $Item);
+                    $order_items_own[] = $fee->amount;
                     $item_loop++;
 
                     $ITEMAMT += $fee->amount;
@@ -666,7 +676,18 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 }
             }
 
+            /* rounding amount */
+            $order_item_total = 0;
+            foreach ($order_items_own as $keypayment => $valuepayment) {
+                $order_item_total = $order_item_total + $valuepayment;
+            }
 
+
+            if ($shipping <= 0 && $tax <= 0) {
+                $diffrence_amount_rounded = $this->get_diffrent($paymentAmount_ppf, $order_item_total);
+                $PayPalRequestData['ITEMAMT'] = round($PayPalRequestData['ITEMAMT'] - $diffrence_amount_rounded, 2);
+                $PayPalRequestData['amt'] = round($PayPalRequestData['amt'] - $diffrence_amount_rounded, 2);
+            }
 
 
 
@@ -1050,7 +1071,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             $item_name .= ' ( ' . $meta . ' )';
         }
 
-        return $item_name;
+        return $item['product_id'];
     }
 
     public function get_line_item_args($order) {
