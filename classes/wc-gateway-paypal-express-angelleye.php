@@ -1044,7 +1044,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     define('WOOCOMMERCE_CHECKOUT', true);
                 WC()->cart->calculate_totals();
                 $order_id = WC()->checkout()->create_order();
-
+				
                 /**
                  * Update meta data with session data
                  */
@@ -1071,7 +1071,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
 
                 $checkout_form_data = maybe_unserialize($this->get_session('checkout_form'));
-                if ((isset($this->billing_address) && $this->billing_address =='yes' )|| (empty($checkout_form_data['billing_country']))) {
+                if ((isset($this->billing_address) && $this->billing_address =='yes' )&& (empty($checkout_form_data['billing_country']))) {
                 	$checkout_form_data = array();
                 }
                 if (isset($checkout_form_data) && !empty($checkout_form_data)) {
