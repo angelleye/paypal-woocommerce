@@ -1495,4 +1495,5 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         return implode(', ', $item_names);
     }
 
+    
 }
