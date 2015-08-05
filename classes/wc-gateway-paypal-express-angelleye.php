@@ -1126,6 +1126,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
 
                 $this->add_log('...Order ID: ' . $order_id);
+                
                 $order = new WC_Order($order_id);
                 do_action('woocommerce_ppe_do_payaction', $order);
                 $this->add_log('...Order Total: ' . $order->order_total);
@@ -1163,8 +1164,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     unset($checkout_form_data['order_comments']);
                 }
 // Update the post into the database
-                wp_update_post($my_post);
-
+				if (isset($my_post) && !empty($my_post)) {
+              	  wp_update_post($my_post);
+				}
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                     $this->add_log('Payment confirmed with PayPal successfully');
                     $result = apply_filters('woocommerce_payment_successful_result', $result);
@@ -1408,26 +1410,39 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
 
         $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
-        $striped_amt = strip_tags($tax_string_array[0]);
-        $tot_tax = str_replace($current_currency, '', $striped_amt);
+        if (isset($tax_string_array) && !empty($tax_string_array)) {
+      	  $striped_amt = strip_tags($tax_string_array[0]);
+       	  $tot_tax = str_replace($current_currency, '', $striped_amt);
+        }
 
         /*         * ************************ Tax amount MD*********************** */
 
 
 
         if (get_option('woocommerce_prices_include_tax') == 'yes') {
-            $shipping = $order->get_total_shipping(); //+ $order->order_shipping_tax;
+			$shipping = $order->get_total_shipping(); //+ $order->order_shipping_tax;
+			
             $tax = '0.00';
         } else {
-            $shipping = $order->get_total_shipping();
-            $tax = $tot_tax;
+            	$shipping = $order->get_total_shipping();
+			if (isset($tot_tax) && !empty($tot_tax)) {
+				 $tax = $tot_tax;
+			}
+           
         }
 
         if ('yes' === get_option('woocommerce_calc_taxes') && 'yes' === get_option('woocommerce_prices_include_tax')) {
             // $tax = wc_round_tax_total($tot_tax + WC()->cart->shipping_tax_total);
-            $tax = $tot_tax; // ($tot_tax + $order->order_shipping_tax);
+			if (isset($tot_tax) && !empty($tot_tax)) {
+           		 $tax = $tot_tax; // ($tot_tax + $order->order_shipping_tax);
+			}
         }
-
+        if (isset($tax) && !empty($tax)) {
+        	$tax = $tax;
+        }else {
+        	$tax = '0.00';
+        }
+		
         $Payments = array();
         $Payment = array(
             'amt' => number_format($paymentAmount, 2, '.', ''), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
@@ -1440,7 +1455,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'taxamt' => number_format($tax, 2, '.', ''), // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => '', // Free-form field for your own use.  256 char max.
-            'invnum' => $invoice_number = $this->invoice_id_prefix . preg_replace("/[^0-9,.]/", "", $order->id), // Your own invoice or tracking number.  127 char max.
+            'invnum' => preg_replace("/[^0-9]/", "",$order->id), // Your own invoice or tracking number.  127 char max.
             'notifyurl' => '', // URL for receiving Instant Payment Notifications
             'shiptoname' => '', // Required if shipping is included.  Person's name associated with this address.  32 char max.
             'shiptostreet' => '', // Required if shipping is included.  First street address.  100 char max.
@@ -1691,9 +1706,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 //'ShippingOptions' => $ShippingOptions,
                 //'BillingAgreements' => $BillingAgreements
         );
-
+		if (isset($tax) && !empty($tax)) {
+			$tax = $tax;
+		}
+		
         // Rounding amendment
-
+		
         if (trim(number_format($paymentAmount, 2, '.', '')) !== trim(number_format($total_items - $total_discount + $tax + $shipping, 2, '.', ''))) {
             $diffrence_amount = $this->get_diffrent($paymentAmount, $total_items - $total_discount + $tax + $shipping);
             if ($shipping > 0) {
@@ -1852,7 +1870,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if (!empty($this->confirm_order_id)) {
             $order = new WC_Order($this->confirm_order_id);
-            $invoice_number = preg_replace("/[^0-9,.]/", "", $order->get_order_number());
+            $invoice_number = preg_replace("/[^0-9]/", "",$order->get_order_number());
 
             if ($order->customer_note) {
                 $customer_notes = wptexturize($order->customer_note);
@@ -1885,7 +1903,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         $Payments = array();
         $order_items_own = array();
-        $final_order_total = $order->get_order_item_totals();
+       
+        	$final_order_total = $order->get_order_item_totals();
+   
         $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
 
         $final_order_total_amt_strip_ec = strip_tags($final_order_total['order_total']['value']);
@@ -1901,7 +1921,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => '', // Free-form field for your own use.  256 char max.
-            'invnum' => $invoice_number = $this->invoice_id_prefix . preg_replace("/[^0-9,.]/", "", $this->confirm_order_id), // Your own invoice or tracking number.  127 char max.
+            'invnum' => preg_replace("/[^0-9]/", "",$this->confirm_order_id), // Your own invoice or tracking number.  127 char max.
             'notifyurl' => '', // URL for receiving Instant Payment Notifications
             'shiptoname' => $shipping_first_name . ' ' . $shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
             'shiptostreet' => $shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
@@ -2087,24 +2107,37 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
 
             $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
-            $striped_amt = strip_tags($tax_string_array[0]);
-            $tot_tax = str_replace($current_currency, '', $striped_amt);
-
+			if (isset($tax_string_array) && !empty($tax_string_array)) {
+            	$striped_amt = strip_tags($tax_string_array[0]);
+           	    if (isset($tot_tax) && !empty($tot_tax)) {
+            		$tot_tax = str_replace($current_currency, '', $striped_amt);
+           	    }
+        	}
             /*             * ****************************MD******************************** */
 
             if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                $shipping = $order->get_total_shipping(); //+ $order->get_shipping_tax();
+            	$shipping = $order->get_total_shipping(); //+ $order->get_shipping_tax();
                 $tax = 0;
             } else {
                 $shipping = $order->get_total_shipping();
-                $tax = $tot_tax;
+            	
+            	if (isset($tot_tax) && !empty($tot_tax)) {
+                	$tax = $tot_tax;
+            	}else {
+            		$tax = 0;
+            	}
             }
 
             if ('yes' === get_option('woocommerce_calc_taxes') && 'yes' === get_option('woocommerce_prices_include_tax')) {
-                $tax = $tot_tax;
+				if (isset($tot_tax) && !empty($tot_tax)) {
+            		$tax = $tot_tax;
+				}else {
+					$tax = 0;
+				}
             }
 
             if ($tax > 0) {
+            	
                 $tax = number_format($tot_tax, 2, '.', '');
             }
 
@@ -2165,7 +2198,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
 
         // Rounding amendment
-
+		
+        if (isset($tax) && !empty ($tax)) {
+        	$tax = $tax;
+        }else {
+        	$tax ='0.00';
+        }
+         if (isset($shipping) && !empty ($shipping)) {
+        	$shipping = $shipping;
+        }else {
+        	$shipping ='0.00';
+        }
+        
+        
         if (trim(number_format($final_order_total_amt, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''), 2, '.', ''))) {
             $diffrence_amount = $this->get_diffrent($final_order_total_amt, $Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''));
             if ($shipping > 0) {
