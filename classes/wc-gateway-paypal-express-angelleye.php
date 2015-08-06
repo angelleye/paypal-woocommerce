@@ -832,7 +832,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         }
-        elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'revieworder') {
+        elseif ((isset($_GET['pp_action']) && $_GET['pp_action'] == 'revieworder')) {
             wc_clear_notices();
             // The customer has logged into PayPal and approved order.
             // Retrieve the shipping details and present the order for completion.
@@ -908,7 +908,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             else {
                 $this->add_log("...ERROR: GetShippingDetails returned empty result");
             }
-            if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes") {
+            if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && wc_get_page_id( 'terms' ) < 0) {
                 $url = add_query_arg(array('wc-api' => 'WC_Gateway_PayPal_Express_AngellEYE', 'pp_action' => 'payaction'), home_url());
                 wp_redirect($url);
                 exit();
@@ -1025,7 +1025,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         } elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'payaction') {
-            if (isset($_POST) || ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes")) {
+            if (isset($_POST) || ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes") ) {
 
                 // Update customer shipping and payment method to posted method
                 $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
@@ -2109,7 +2109,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
 			if (isset($tax_string_array) && !empty($tax_string_array)) {
             	$striped_amt = strip_tags($tax_string_array[0]);
-           	    if (isset($tot_tax) && !empty($tot_tax)) {
+           	    if (isset($striped_amt) && !empty($striped_amt)) {
             		$tot_tax = str_replace($current_currency, '', $striped_amt);
            	    }
         	}
