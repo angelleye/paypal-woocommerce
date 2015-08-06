@@ -199,14 +199,7 @@ jQuery(document).ready(function (){
     <div class="title">
         <h2><?php _e( 'Create A New Account', 'woocommerce' ); ?></h2>
     </div>
-    <?php
     
-    
-    
-    if ( empty( $_POST['terms'] ) && wc_get_page_id( 'terms' ) > 0 ) {
-				wc_add_notice( __( 'You must accept our Terms &amp; Conditions.', 'woocommerce' ), 'error' );
-			}
-			?>
     <form action="" method="post">
         <p class="form-row form-row-first">
             <label for="paypalexpress_order_review_username">Username:<span class="required">*</span></label>
