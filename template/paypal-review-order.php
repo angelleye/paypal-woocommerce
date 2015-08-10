@@ -6,10 +6,15 @@
 global $woocommerce;
 $checked = get_option('woocommerce_enable_guest_checkout');
 
+if (isset(WC()->session->result) && !empty(WC()->session->result)) {
+	$get_orderid = maybe_unserialize(WC()->session->result);
+}
+$currentorder_id = $get_orderid['INVNUM'];
+$is_terms_on = get_post_meta($currentorder_id,'paypal_for_woocommerce_terms_on',true);
 //Add hook to show login form or not
 $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']));
 
-if( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true )) {
+if( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && isset($is_terms_on) && empty($is_terms_on)) {
 	
 	$inputhtml = '<input type="button" class="button cls_place_order_own" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
 }else {
@@ -46,6 +51,16 @@ jQuery(document).ready(function (){
     #payment{
         display:none;
     }
+   .lbl_terms{    
+    float: left;
+    display: inline-block !important;
+    margin-right: 5px !important;
+   }
+   .terms_own 
+   {
+   	float: none;
+    margin-top: 8px !important;
+    display: inline-block !important; }
 </style>
 
 
@@ -225,11 +240,12 @@ jQuery(document).ready(function (){
         </p>
     </form>
 <?php else:
-    if ( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) ) : ?>
+    if ( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && isset($is_terms_on) && empty($is_terms_on)) : ?>
+    
 	<p class="form-row terms">
-				<label for="terms" class="checkbox"><?php printf( __( 'I&rsquo;ve read and accept the <a href="%s" target="_blank">terms &amp; conditions</a>', 'woocommerce' ), esc_url( wc_get_page_permalink( 'terms' ) ) ); ?></label>
+				<label for="terms" class="checkbox lbl_terms"><?php printf( __( 'I&rsquo;ve read and accept the <a href="%s" class="terms_chkbox" target="_blank">terms &amp; conditions</a>', 'woocommerce' ), esc_url( wc_get_page_permalink( 'terms' ) ) ); ?></label>
 				<input type="checkbox" class="input-checkbox terms_own" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
-			</p>
+	</p>
 		<?php endif;
 global $pp_settings;
 $cancel_url = isset( $pp_settings['cancel_page'] ) ? get_permalink( $pp_settings['cancel_page'] ) : $woocommerce->cart->get_cart_url();

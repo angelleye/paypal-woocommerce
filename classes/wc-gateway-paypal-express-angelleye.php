@@ -758,26 +758,32 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $cancelURL = apply_filters('angelleye_express_cancel_url', urlencode($cancelURL));
                 $resArray = $this->CallSetExpressCheckout($paymentAmount, $returnURL, $cancelURL, $usePayPalCredit, $posted, $lineitems, $order);
                 $ack = strtoupper($resArray["ACK"]);
-
+					
                 /**
                  * I've replaced the original redirect URL's here with
                  * what the PayPal class library returns so that options like
                  * "skip details" will work correctly with PayPal's review pages.
                  */
                 if ($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING") {
-
+					
                     $this->add_log('Redirecting to PayPal');
                     if (isset($_SESSION['line_item'])) {
                         unset($_SESSION['line_item']);
                     }
-
-
+					
+					
+                    if (isset($_POST['terms']) && $_POST['terms'] =='on') {
+                    	update_post_meta($order->id,'paypal_for_woocommerce_terms_on','yes');
+                    }
+                   
+                   $boolvar =  is_cart();
                     if (is_ajax()) {
                         $result = array(
                             //'redirect' => $this->PAYPAL_URL . $resArray["TOKEN"],
                             'redirect' => $resArray['REDIRECTURL'],
                             'result' => 'success'
                         );
+                         is_product();
 
                         echo '<!--WC_START-->' . json_encode($result) . '<!--WC_END-->';
                         exit;
@@ -908,8 +914,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             else {
                 $this->add_log("...ERROR: GetShippingDetails returned empty result");
             }
-            if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && wc_get_page_id( 'terms' ) < 0) {
+            if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && wc_get_page_id( 'terms' ) < 0 ) {
                 $url = add_query_arg(array('wc-api' => 'WC_Gateway_PayPal_Express_AngellEYE', 'pp_action' => 'payaction'), home_url());
+                wp_redirect($url);
+                exit();
+            }
+            
+            $is_terms_on = get_post_meta($result['INVNUM'],'paypal_for_woocommerce_terms_on',true);
+            if (($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "no") && (wc_get_page_id( 'terms' ) > 0  && isset($is_terms_on) && !empty($is_terms_on))) {
+               
+            	$url = add_query_arg(array('wc-api' => 'WC_Gateway_PayPal_Express_AngellEYE', 'pp_action' => 'payaction'), home_url());
                 wp_redirect($url);
                 exit();
             }
@@ -2256,6 +2270,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (isset($_SESSION['line_item'])) {
                 unset($_SESSION['line_item']);
             }
+            
+            
         }
 
         /*
