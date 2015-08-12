@@ -785,7 +785,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         );
                          is_product();
 
-                        echo '<!--WC_START-->' . json_encode($result) . '<!--WC_END-->';
+                        echo  json_encode($result);
                         exit;
                     } else {
                         //$this->RedirectToPayPal( $resArray["TOKEN"] );
@@ -1527,7 +1527,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (in_array($values['product_id'], $lineitems)) {
 
                 $arraykey = array_search($values['product_id'], $lineitems);
-                $item_position = str_replace('item_name_', '', $arraykey);
+                $item_position = str_replace('product_number_', '', $arraykey);
 
                 $get_amountkey = 'amount_' . $item_position;
                 $get_qtykey = 'quantity_' . $item_position;
@@ -1987,7 +1987,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (in_array($values['product_id'], $lineitems)) {
 
                     $arraykey = array_search($values['product_id'], $lineitems);
-                    $item_position = str_replace('item_name_', '', $arraykey);
+                    $item_position = str_replace('product_number_', '', $arraykey);
 
                     $get_amountkey = 'amount_' . $item_position;
                     $get_qtykey = 'quantity_' . $item_position;
@@ -2631,8 +2631,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
 
 
-    public function add_line_item($item_name, $quantity = 1, $amount = 0, $item_number = '') {
-        $index = ( sizeof($this->line_items) / 4 ) + 1;
+    public function add_line_item($item_name, $quantity = 1, $amount = 0, $item_number = '',$productid) {
+        $index = ( sizeof($this->line_items) / 5 ) + 1;
 
         if (!$item_name || $amount < 0) {
             return false;
@@ -2642,6 +2642,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->line_items['quantity_' . $index] = $quantity;
         $this->line_items['amount_' . $index] = $amount;
         $this->line_items['item_number_' . $index] = $item_number;
+        $this->line_items['product_number_' . $index] = $productid;
         $_SESSION['line_item'] = $this->line_items;
         return true;
     }
@@ -2657,7 +2658,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $calculated_total += $item['line_total'];
             } else {
                 $product = $order->get_product_from_item($item);
-                $line_item = $this->add_line_item($this->get_order_item_name($order, $item), $item['qty'], $order->get_item_subtotal($item, false), $product->get_sku());
+                $line_item = $this->add_line_item($item['name'], $item['qty'], $order->get_item_subtotal($item, false), $product->get_sku(),$product->id);
                 $calculated_total += $order->get_item_subtotal($item, false) * $item['qty'];
             }
 
@@ -2693,16 +2694,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->line_items = array();
     }
 
-    public function get_order_item_name($order, $item) {
-        $item_name = $item['name'];
-        $item_meta = new WC_Order_Item_Meta($item['item_meta']);
-
-        if ($meta = $item_meta->display(true, true)) {
-            $item_name .= ' ( ' . $meta . ' )';
-        }
-
-        return $item['product_id'];
-    }
+    /* get_order_item_name function removed for get_formatted_legacy notice */
+    
 
     public function get_line_item_args($order) {
         /**
