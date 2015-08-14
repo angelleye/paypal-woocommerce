@@ -2645,7 +2645,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
 
 
-    public function add_line_item($item_name, $quantity = 1, $amount = 0, $item_number = '',$productid) {
+    public function add_line_item_own($item_name, $quantity = 1, $amount = 0, $item_number = '',$productid = 0) {
         $index = ( sizeof($this->line_items) / 5 ) + 1;
 
         if (!$item_name || $amount < 0) {
@@ -2668,11 +2668,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         // Products
         foreach ($order->get_items(array('line_item', 'fee')) as $item) {
             if ('fee' === $item['type']) {
-                $line_item = $this->add_line_item($item['name'], 1, $item['line_total']);
+                $line_item = $this->add_line_item_own($item['name'], 1, $item['line_total']);
                 $calculated_total += $item['line_total'];
             } else {
                 $product = $order->get_product_from_item($item);
-                $line_item = $this->add_line_item($item['name'], $item['qty'], $order->get_item_subtotal($item, false), $product->get_sku(),$product->id);
+                if (isset($product->id) && !empty($product->id)) {
+                	$productid = $product->id;
+                }
+                $line_item = $this->add_line_item_own($item['name'], $item['qty'], $order->get_item_subtotal($item, false), $product->get_sku(),$productid);
                 $calculated_total += $order->get_item_subtotal($item, false) * $item['qty'];
             }
 
@@ -2681,10 +2684,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }
 
-        // Shipping Cost item - paypal only allows shipping per item, we want to send shipping for the order
-        if ($order->get_total_shipping() > 0 && !$this->add_line_item(sprintf(__('Shipping via %s', 'woocommerce'), $order->get_shipping_method()), 1, round($order->get_total_shipping(), 2))) {
-            return false;
-        }
+        
 
         // Check for mismatched totals
         if (wc_format_decimal($calculated_total + $order->get_total_tax() + round($order->get_total_shipping(), 2) - round($order->get_total_discount(), 2), 2) != wc_format_decimal($order->get_total(), 2)) {
