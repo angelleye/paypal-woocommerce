@@ -6,14 +6,17 @@
 global $woocommerce;
 $checked = get_option('woocommerce_enable_guest_checkout');
 
+
 if (isset(WC()->session->result) && !empty(WC()->session->result)) {
 	$get_orderid = maybe_unserialize(WC()->session->result);
 }
 $currentorder_id = $get_orderid['INVNUM'];
 $is_terms_on = get_post_meta($currentorder_id,'paypal_for_woocommerce_terms_on',true);
+$is_create_on = get_post_meta($currentorder_id,'paypal_for_woocommerce_create_act',true);
 //Add hook to show login form or not
 $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']));
-
+$show_act = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged_in() && $checked==="yes" && isset($_REQUEST['pp_action']) && isset($is_create_on) && empty($is_create_on));
+ 
 if( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && isset($is_terms_on) && empty($is_terms_on)) {
 	
 	$inputhtml = '<input type="button" class="button cls_place_order_own" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
@@ -44,6 +47,18 @@ jQuery(document).ready(function (){
         
         
     });
+  
+     jQuery(".chkcreate_act").click(function(){
+     	   var ischecked_act = jQuery('.chkcreate_act').is(':checked') ;
+     	   
+   		if (ischecked_act == false) {
+     		jQuery('.create_account_child').toggle();
+   		}else if(ischecked_act == true) {
+   				jQuery('.create_account_child').toggle();
+   		}
+     	
+     });
+     
             
     });
 </script>
@@ -247,6 +262,31 @@ jQuery(document).ready(function (){
 				<input type="checkbox" class="input-checkbox terms_own" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
 	</p>
 		<?php endif;
+		
+		
+	if ($show_act) {?>
+	
+	<div class="create-account" class="div_create_act" >
+	<p class="form-row form-row-wide create-account div_create_act_para" style="cursor:pointer;">
+				<input class="input-checkbox chkcreate_act" id="createaccount" type="checkbox" name="createaccount" value="1"> 
+				<label for="createaccount" style="cursor:pointer;" class="checkbox lbl_chkcreate_act">Create an account?</label>
+			</p>
+				<div class="create_account_child" style="display:none;">
+				<p>Create an account by entering the information below. If you are a returning customer please login at the top of the page.</p>
+
+				
+					<p class="form-row form-row validate-required woocommerce-validated" id="account_password_field">
+					<label for="account_password" class="">Account password <abbr class="required" title="required">*</abbr>
+					</label>
+					<input type="password" class="input-text" placeholder="Password" value="" name="create_act"/>
+					</p>
+				
+				<div class="clear"></div>
+</div>
+			</div>
+	
+		
+	<?}
 global $pp_settings;
 $cancel_url = isset( $pp_settings['cancel_page'] ) ? get_permalink( $pp_settings['cancel_page'] ) : $woocommerce->cart->get_cart_url();
 $cancel_url = apply_filters( 'angelleye_review_order_cance_url', $cancel_url );
