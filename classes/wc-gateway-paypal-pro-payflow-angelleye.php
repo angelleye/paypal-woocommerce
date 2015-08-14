@@ -1001,7 +1001,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    public function add_line_item($item_name, $quantity = 1, $amount = 0, $item_number = '',$productid) {
+    public function add_line_item($item_name, $quantity = 1, $amount = 0, $item_number = '',$productid = 0) {
         $index = ( sizeof($this->line_items) / 5 ) + 1;
 
         if (!$item_name || $amount < 0) {
@@ -1036,11 +1036,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 return false;
             }
         }
-
-        // Shipping Cost item - paypal only allows shipping per item, we want to send shipping for the order
-        if ($order->get_total_shipping() > 0 && !$this->add_line_item(sprintf(__('Shipping via %s', 'woocommerce'), $order->get_shipping_method()), 1, round($order->get_total_shipping(), 2))) {
-            return false;
-        }
+      
 
         // Check for mismatched totals
         if (wc_format_decimal($calculated_total + $order->get_total_tax() + round($order->get_total_shipping(), 2) - round($order->get_total_discount(), 2), 2) != wc_format_decimal($order->get_total(), 2)) {
