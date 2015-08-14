@@ -1039,12 +1039,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 // Update customer shipping and payment method to posted method
                 $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
 
-                if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
-                    foreach ($_POST['shipping_method'] as $i => $value)
+                if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method'])) {
+                    foreach ($_POST['shipping_method'] as $i => $value){
                         $chosen_shipping_methods[$i] = wc_clean($value);
-
+                    }
+				$selected_shipping_method = wc_clean($value);
                 WC()->session->set('chosen_shipping_methods', $chosen_shipping_methods);
-
+                }
                 if (WC()->cart->needs_shipping()) {
                     // Validate Shipping Methods
                     $packages = WC()->shipping->get_packages();
@@ -1213,6 +1214,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     /* if (isset($this->get_session('customer_notes')) && !empty($this->get_session('customer_notes'))) {
                       $this->get_session('customer_notes') == '';
                       } */
+                    
+                    global $wpdb,$table_prefix;
+				    $table_name = $table_prefix . "woocommerce_order_items";
+				    $get_exits_record = $wpdb->get_row("select count(*)as cnt from $table_name where order_id='{$order_id}' and order_item_type ='shipping'");
+				    $count_record = $get_exits_record->cnt;
+				    
+				    if (isset($count_record) && empty($count_record) && $count_record <=0) {
+                    $query = "INSERT INTO  {$table_name} (`order_item_id` ,`order_item_name` ,`order_item_type` ,`order_id`)
+								VALUES (NULL ,  '$selected_shipping_method',  'shipping',  '{$order_id}') ";
+                    $wpdb->query($query);
+				    }
+                    
+                    
 
                     wp_redirect($this->get_return_url($order));
                     exit();
