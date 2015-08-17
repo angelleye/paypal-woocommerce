@@ -87,7 +87,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'add_div_before_add_to_cart_button' ), 25);
             add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
             add_action( 'admin_init', array( $this, 'angelleye_check_version' ), 5 );
+           
         }
+    
 
         /**
          * Get WooCommerce Version Number
