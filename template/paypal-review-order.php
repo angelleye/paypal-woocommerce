@@ -276,7 +276,7 @@ jQuery(document).ready(function (){
 
 				
 					<p class="form-row form-row validate-required woocommerce-validated" id="account_password_field">
-					<label for="account_password" class="">Account password <abbr class="required" title="required">*</abbr>
+					<label for="account_password" class="">Account password
 					</label>
 					<input type="password" class="input-text" placeholder="Password" value="" name="create_act"/>
 					</p>
