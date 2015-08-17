@@ -1066,7 +1066,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					foreach ($_POST['shipping_method'] as $i => $value){
 						$chosen_shipping_methods[$i] = wc_clean($value);
 					}
-					$selected_shipping_method = wc_clean($value);
+					if (isset($value) && !empty($value)) {
+						$selected_shipping_method = wc_clean($value);
+					}
 					WC()->session->set('chosen_shipping_methods', $chosen_shipping_methods);
 				}
 				if (WC()->cart->needs_shipping()) {
@@ -1352,7 +1354,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					
 					
 					
-					
+					if (isset($resultarray['SHIPPINGAMT']) && !empty($resultarray['SHIPPINGAMT'])) {
 					
 					if (isset($count_record) && empty($count_record) && $count_record <=0) {
 						$query = "INSERT INTO  {$table_name} (`order_item_id` ,`order_item_name` ,`order_item_type` ,`order_id`)
@@ -1380,7 +1382,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 						
 						
 						$get_shippingtaxamt = $wpdb->get_row("select * from $table_name_meta where order_item_id='{$order_itemid}' and meta_key ='shipping_tax_amount'");
-						$get_shippingtaxamtkey_amt = round($get_shippingtaxamt->meta_value,2);
+						if (isset($get_shippingtaxamt->meta_value) && !empty($get_shippingtaxamt->meta_value)) {
+							$get_shippingtaxamtkey_amt = round($get_shippingtaxamt->meta_value,2);
+						}
 						
 						if (isset($get_shippingtaxamtkey_amt) && !empty($get_shippingtaxamtkey_amt)) {
 							$shippingtaxamt = 'a:1:{i:1;s:10:"'.$get_shippingtaxamtkey_amt.'";}';
@@ -1394,7 +1398,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					}
 					
 					
-					
+					}
 					
 
 
