@@ -1201,13 +1201,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
 
 
-
-
-
-
-
-
-
 				update_post_meta($order_id, '_payment_method', $this->id);
 				update_post_meta($order_id, '_payment_method_title', $this->title);
 
@@ -1352,57 +1345,50 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					$get_exits_record = $wpdb->get_row("select count(*)as cnt from $table_name where order_id='{$order_id}' and order_item_type ='shipping'");
 					$count_record = $get_exits_record->cnt;
 					
-					
-					
 					if (isset($resultarray['SHIPPINGAMT']) && !empty($resultarray['SHIPPINGAMT'])) {
 					
-					if (isset($count_record) && empty($count_record) && $count_record <=0) {
-						$query = "INSERT INTO  {$table_name} (`order_item_id` ,`order_item_name` ,`order_item_type` ,`order_id`)
-								VALUES (NULL ,  '$selected_shipping_method',  'shipping',  '{$order_id}') ";
-						$wpdb->query($query);
-						$shipping_amt = $resultarray['SHIPPINGAMT'];
-						
-						
-						$get_metadataid = $wpdb->get_row("select * from $table_name where order_id='{$order_id}' and order_item_type ='shipping'");
-						$order_itemid = $get_metadataid->order_item_id;
-						
-						$query_add_shipping_method = "INSERT INTO  {$table_name_meta} (`meta_id` ,`order_item_id` ,`meta_key` ,`meta_value`)
-								VALUES (NULL ,  '$order_itemid', 'method_id', '$selected_shipping_method') ";
-						$wpdb->query($query_add_shipping_method);
-
-						$query_add_shipping_cost = "INSERT INTO  {$table_name_meta} (`meta_id` ,`order_item_id` ,`meta_key` ,`meta_value`)
-								VALUES (NULL ,  '$order_itemid', 'cost', '$shipping_amt') ";
-						$wpdb->query($query_add_shipping_cost);
-						
-						
-						$shipping_post_meta = get_post_meta($order_id,'shipping_taxamt_own',true);
-						if (isset($shipping_post_meta) && !empty($shipping_post_meta)) {
-							wc_add_order_item_meta( $order_itemid, 'shipping_tax_amount', round( $shipping_post_meta,2 ) );
+						if (isset($count_record) && empty($count_record) && $count_record <=0) {
+							$query = "INSERT INTO  {$table_name} (`order_item_id` ,`order_item_name` ,`order_item_type` ,`order_id`)
+									VALUES (NULL ,  '$selected_shipping_method',  'shipping',  '{$order_id}') ";
+							$wpdb->query($query);
+							$shipping_amt = $resultarray['SHIPPINGAMT'];
+							
+							
+							$get_metadataid = $wpdb->get_row("select * from $table_name where order_id='{$order_id}' and order_item_type ='shipping'");
+							$order_itemid = $get_metadataid->order_item_id;
+							
+							$query_add_shipping_method = "INSERT INTO  {$table_name_meta} (`meta_id` ,`order_item_id` ,`meta_key` ,`meta_value`)
+									VALUES (NULL ,  '$order_itemid', 'method_id', '$selected_shipping_method') ";
+							$wpdb->query($query_add_shipping_method);
+	
+							$query_add_shipping_cost = "INSERT INTO  {$table_name_meta} (`meta_id` ,`order_item_id` ,`meta_key` ,`meta_value`)
+									VALUES (NULL ,  '$order_itemid', 'cost', '$shipping_amt') ";
+							$wpdb->query($query_add_shipping_cost);
+							
+							
+							$shipping_post_meta = get_post_meta($order_id,'shipping_taxamt_own',true);
+							if (isset($shipping_post_meta) && !empty($shipping_post_meta)) {
+								wc_add_order_item_meta( $order_itemid, 'shipping_tax_amount', round( $shipping_post_meta,2 ) );
+							}
+							
+							
+							$get_shippingtaxamt = $wpdb->get_row("select * from $table_name_meta where order_item_id='{$order_itemid}' and meta_key ='shipping_tax_amount'");
+							if (isset($get_shippingtaxamt->meta_value) && !empty($get_shippingtaxamt->meta_value)) {
+								$get_shippingtaxamtkey_amt = round($get_shippingtaxamt->meta_value,2);
+							}
+							
+							if (isset($get_shippingtaxamtkey_amt) && !empty($get_shippingtaxamtkey_amt)) {
+								$shippingtaxamt = 'a:1:{i:1;s:10:"'.$get_shippingtaxamtkey_amt.'";}';
+							} else {
+								$shippingtaxamt = 'a:1:{i:1;s:10:"0.00";}';
+							}
+	
+							$query_add_shipping_taxes = "INSERT INTO $table_name_meta (`meta_id`, `order_item_id`, `meta_key`, `meta_value`) VALUES (NULL, '$order_itemid', 'taxes', '" . mysql_real_escape_string($shippingtaxamt) . "');";
+							$wpdb->query($query_add_shipping_taxes);
+							
 						}
-						
-						
-						$get_shippingtaxamt = $wpdb->get_row("select * from $table_name_meta where order_item_id='{$order_itemid}' and meta_key ='shipping_tax_amount'");
-						if (isset($get_shippingtaxamt->meta_value) && !empty($get_shippingtaxamt->meta_value)) {
-							$get_shippingtaxamtkey_amt = round($get_shippingtaxamt->meta_value,2);
-						}
-						
-						if (isset($get_shippingtaxamtkey_amt) && !empty($get_shippingtaxamtkey_amt)) {
-							$shippingtaxamt = 'a:1:{i:1;s:10:"'.$get_shippingtaxamtkey_amt.'";}';
-						}else {
-							$shippingtaxamt = 'a:1:{i:1;s:10:"0.00";}';
-						}
-
-						$query_add_shipping_taxes = "INSERT INTO $table_name_meta (`meta_id`, `order_item_id`, `meta_key`, `meta_value`) VALUES (NULL, '$order_itemid', 'taxes', '" . mysql_real_escape_string($shippingtaxamt) . "');";
-						$wpdb->query($query_add_shipping_taxes);
-						
+					
 					}
-					
-					
-					}
-					
-
-
-
 					wp_redirect($this->get_return_url($order));
 					exit();
 				} else {
@@ -2731,7 +2717,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$this->add_log('Refund Information: ' . print_r($PayPalResult, true));
 		if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
 			$order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
-			$order->update_status('refunded');
+			//$order->update_status('refunded');
 			if (ob_get_length())
 			ob_end_clean();
 			return true;
