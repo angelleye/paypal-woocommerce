@@ -35,6 +35,12 @@ jQuery(document).ready(function (){
    		
    		if (ischecked == false) {
    			jQuery('.wp_notice_own').html('<div class="woocommerce-error">You must accept our Terms & Conditions.</div>');
+   		
+    		jQuery('html, body').animate({
+    			scrollTop: "0px"
+    		}, 800);
+   			
+   			
    			return false;
    		}else if (ischecked == true) {
    			jQuery('.wp_notice_own').html('');

@@ -496,7 +496,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                             if (empty($sku)) {
                                 $sku = $_product->parent->get_sku();
                             }
-                            $item_meta = new WC_Order_Item_Meta($item['item_meta']);
+                            
+                            //$item_meta = new WC_Order_Item_Meta($item['item_meta']);
+                            $item_meta = new WC_Order_Item_Meta($item,$_product);
+                            
                             $meta = $item_meta->display(true, true);
                             if (!empty($meta)) {
                                 $item['name'] .= " - " . str_replace(", \n", " - ", $meta);
