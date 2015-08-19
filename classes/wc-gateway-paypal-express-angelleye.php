@@ -1338,21 +1338,24 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					$table_name_meta = $table_prefix . "woocommerce_order_itemmeta";
 					$get_exits_record = $wpdb->get_row("select count(*)as cnt from $table_name where order_id='{$order_id}' and order_item_type ='shipping'");
 					$count_record = $get_exits_record->cnt;
+					if (isset($selected_shipping_method) && !empty($selected_shipping_method)) {
+						$selected_shipping_method_id = $selected_shipping_method;
+					}else {
+						$selected_shipping_method_id = '0.00';
+					}
 					
 					if (isset($resultarray['SHIPPINGAMT']) && !empty($resultarray['SHIPPINGAMT'])) {
 					
 						if (isset($count_record) && empty($count_record) && $count_record <=0) {
 							$query = "INSERT INTO  {$table_name} (`order_item_id` ,`order_item_name` ,`order_item_type` ,`order_id`)
-									VALUES (NULL ,  '$selected_shipping_method',  'shipping',  '{$order_id}') ";
+									VALUES (NULL ,  '$selected_shipping_method_id',  'shipping',  '{$order_id}') ";
 							$wpdb->query($query);
 							$shipping_amt = $resultarray['SHIPPINGAMT'];
-							
-							
 							$get_metadataid = $wpdb->get_row("select * from $table_name where order_id='{$order_id}' and order_item_type ='shipping'");
 							$order_itemid = $get_metadataid->order_item_id;
 							
 							$query_add_shipping_method = "INSERT INTO  {$table_name_meta} (`meta_id` ,`order_item_id` ,`meta_key` ,`meta_value`)
-									VALUES (NULL ,  '$order_itemid', 'method_id', '$selected_shipping_method') ";
+									VALUES (NULL ,  '$order_itemid', 'method_id', '$selected_shipping_method_id') ";
 							$wpdb->query($query_add_shipping_method);
 	
 							$query_add_shipping_cost = "INSERT INTO  {$table_name_meta} (`meta_id` ,`order_item_id` ,`meta_key` ,`meta_value`)

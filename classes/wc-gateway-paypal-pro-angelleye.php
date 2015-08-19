@@ -962,8 +962,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             }
 
             $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
-            $striped_amt = strip_tags($tax_string_array[0]);
-            $tot_tax = str_replace($current_currency, '', $striped_amt);
+
+			if (isset($tax_string_array) && !empty($tax_string_array)) {
+          		  $striped_amt = strip_tags($tax_string_array[0]);
+           		  $tot_tax = str_replace($current_currency, '', $striped_amt);
+			}
 
             /*             * *****************************MD******************************** */
 
@@ -978,12 +981,23 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 $tax = 0;
             } else {
                 $shipping = $order->get_total_shipping();
-                $tax = $tot_tax; //$order->get_total_tax();
+
+                if (isset($tot_tax) && !empty($tot_tax)) {
+               		 $tax = $tot_tax; //$order->get_total_tax();
+                }
             }
 
             if ('yes' === get_option('woocommerce_calc_taxes') && 'yes' === get_option('woocommerce_prices_include_tax')) {
-                $tax = $tot_tax; //$order->get_total_tax();
+                if (isset($tot_tax) && !empty($tot_tax)) {
+            		$tax = $tot_tax; //$order->get_total_tax();
+                }
             }
+            
+            if (isset($tax) && !empty($tax)) {
+				$tax = $tax;
+			}else {
+				$tax = '0.00';
+			}
 
             if ($tax > 0) {
                 $PaymentDetails['taxamt'] = round($tot_tax, 2);       // Required if you specify itemized cart tax details. Sum of tax for all items on the order.  Total sales tax. 

@@ -595,8 +595,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 }
 
                 $current_currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
-                $striped_amt = strip_tags($tax_string_array[0]);
-                $tot_tax = str_replace($current_currency, '', $striped_amt);
+                if (isset($tax_string_array) && !empty($tax_string_array)) {
+               		 $striped_amt = strip_tags($tax_string_array[0]);
+               		 $tot_tax = str_replace($current_currency, '', $striped_amt);
+                }
 
                 /*                 * *****************************MD******************************** */
 
@@ -607,10 +609,23 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     $tax = 0;
                 } else {
                     $shipping = $order->get_total_shipping();
-                    $tax = round($tot_tax, 2);
+					
+                    if (isset($tot_tax) && !empty($tot_tax)) {
+						$tax =  round($tot_tax, 2);
+					} else {
+						$tax = 0;
+					}
+                                      
+                   
                 }
                 if ('yes' === get_option('woocommerce_calc_taxes') && 'yes' === get_option('woocommerce_prices_include_tax')) {
-                    $tax = round($tot_tax, 2);
+				
+                	if (isset($tot_tax) && !empty($tot_tax)) {
+						$tax = round($tot_tax, 2);
+					} else {
+						$tax = 0;
+					}
+                	               	
                 }
 
                 //tax
