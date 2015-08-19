@@ -830,9 +830,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $OrderItems = array();
         $order_items_own = array();
         $item_loop = 0;
+        $counter = 1;
         if (sizeof($order->get_items()) > 0) {
             $ITEMAMT = $TAXAMT = 0;
             $inc_tax = get_option('woocommerce_prices_include_tax') == 'yes' ? true : false;
+            
             foreach ($order->get_items() as $item) {
                 $_product = $order->get_product_from_item($item);
                 $qty = absint($item['qty']);
@@ -866,10 +868,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                     $arraykey = array_search($item['product_id'], $lineitems);
                     $item_position = str_replace('product_number_', '', $arraykey);
 
-                    $get_amountkey = 'amount_' . $item_position;
-                    $get_qtykey = 'quantity_' . $item_position;
+                    $get_amountkey = 'amount_' . $counter;
+                    $get_qtykey = 'quantity_' . $counter;
                     $switcher_amt = $lineitems[$get_amountkey];
                     $switcher_qty = $lineitems[$get_qtykey];
+                    $counter = $counter + 1 ;
                 }
 
                 //////////////////////////////////////////***************************////////////////////////////////////

@@ -484,6 +484,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
             $item_loop = 0;
             $ITEMAMT = 0;
+            $counter = 1;
             $OrderItems = array();
             $order_items_own = array();
             if (sizeof($order->get_items()) > 0) {
@@ -516,10 +517,12 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                             $arraykey = array_search($item['product_id'], $lineitems);
                             $item_position = str_replace('product_number_', '', $arraykey);
 
-                            $get_amountkey = 'amount_' . $item_position;
-                            $get_qtykey = 'quantity_' . $item_position;
+                            $get_amountkey = 'amount_' . $counter;
+                            $get_qtykey = 'quantity_' . $counter;
                             $switcher_amt = $lineitems[$get_amountkey];
                             $switcher_qty = $lineitems[$get_qtykey];
+                            
+                            $counter = $counter + 1 ;
                         }
 
 

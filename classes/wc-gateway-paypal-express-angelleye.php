@@ -1681,6 +1681,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$PaymentOrderItems = array();
 		$order_items_own = array();
 		$ctr = $total_items = $total_discount = $total_tax = $order_total = 0;
+		$counter = 1;
 		foreach (WC()->cart->get_cart() as $cart_item_key => $values) {
 			/*
 			* Get product data from WooCommerce
@@ -1695,10 +1696,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				$arraykey = array_search($values['product_id'], $lineitems);
 				$item_position = str_replace('product_number_', '', $arraykey);
 
-				$get_amountkey = 'amount_' . $item_position;
-				$get_qtykey = 'quantity_' . $item_position;
+				$get_amountkey = 'amount_' . $counter;
+				$get_qtykey = 'quantity_' . $counter;
 				$switcher_amt = $lineitems[$get_amountkey];
 				$switcher_qty = $lineitems[$get_qtykey];
+				$counter = $counter +1;
 			}
 			/* ------------------------------------------------------------------------------------------------- */
 			/*
@@ -2125,6 +2127,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		$PaymentOrderItems = array();
 		$ctr = $total_items = $total_discount = $total_tax = $shipping = 0;
 		$ITEMAMT = 0;
+		$counter = 1;
+		
 		if (sizeof($order->get_items()) > 0) {
 			//   if ($this->send_items) {
 			foreach ($order->get_items() as $values) {
@@ -2156,10 +2160,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					$arraykey = array_search($values['product_id'], $lineitems);
 					$item_position = str_replace('product_number_', '', $arraykey);
 
-					$get_amountkey = 'amount_' . $item_position;
-					$get_qtykey = 'quantity_' . $item_position;
+					$get_amountkey = 'amount_' . $counter;
+					$get_qtykey = 'quantity_' . $counter;
 					$switcher_amt = $lineitems[$get_amountkey];
 					$switcher_qty = $lineitems[$get_qtykey];
+					$counter = $counter + 1;
 				}
 
 				//////////////////////////////////////////***************************////////////////////////////////////
