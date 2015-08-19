@@ -1341,7 +1341,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					if (isset($selected_shipping_method) && !empty($selected_shipping_method)) {
 						$selected_shipping_method_id = $selected_shipping_method;
 					}else {
-						$selected_shipping_method_id = '0.00';
+						$selected_shipping_method_id = '';
 					}
 					
 					if (isset($resultarray['SHIPPINGAMT']) && !empty($resultarray['SHIPPINGAMT'])) {
