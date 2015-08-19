@@ -101,13 +101,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      */
 	public function get_icon() {
 
-        $image_path = plugins_url() . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/paypal.png';
-        if ($this->show_paypal_credit == 'yes') {
-            $image_path = plugins_url() . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/paypal-credit.png';
-        }
-        $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
-        return apply_filters('woocommerce_gateway_icon', $icon, $this->id);
-    }
+		$image_path = plugins_url() . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/paypal.png';
+		if ($this->show_paypal_credit == 'yes') {
+			$image_path = plugins_url() . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/paypal-credit.png';
+		}
+		$icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+		return apply_filters('woocommerce_gateway_icon', $icon, $this->id);
+	}
 
 	/** Override this method so this gateway does not appear on checkout page
      *
@@ -724,7 +724,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				if (isset($_SESSION['line_item'])) {
 					unset($_SESSION['line_item']);
 				}
- 
+
 				$lineitems_prepare = $this->prepare_line_items($order);
 				$lineitems = $_SESSION['line_item'];
 				//$paymentAmount    = WC()->cart->get_total();
@@ -738,7 +738,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				$paymentAmount_amt_final_ec = str_replace($current_currency, '', $paymentAmount_amt);
 				$paymentAmount_amt_final = str_replace(',', '', $paymentAmount_amt_final_ec);
 				$paymentAmount = round($paymentAmount_amt_final, 2);
-				
+
 				if (isset($order->order_shipping_tax) && !empty($order->order_shipping_tax)) {
 					update_post_meta($order_id,'shipping_taxamt_own',$order->order_shipping_tax);
 				}
@@ -774,12 +774,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					if (isset($_POST['terms']) && $_POST['terms'] =='on') {
 						update_post_meta($order->id,'paypal_for_woocommerce_terms_on','yes');
 					}
-					
+
 					if (isset($_POST['billing_address_1']) && !empty($_POST['billing_address_1'])&& (empty($_POST['createaccount']))) {
 						update_post_meta($order->id,'paypal_for_woocommerce_create_act','yes');
 					}
-					
-					
+
+
 
 					$boolvar =  is_cart();
 					if (is_ajax()) {
@@ -1071,7 +1071,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
 				}
 
-				 
+
 				$this->add_log('Start Pay Action');
 				if (!defined('WOOCOMMERCE_CHECKOUT'))
 				define('WOOCOMMERCE_CHECKOUT', true);
@@ -1120,31 +1120,31 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					if (empty($create_user_name)) {
 						wc_add_notice(__('Username is required', 'paypal-for-woocommerce'), 'error');
 						wp_redirect(get_permalink(wc_get_page_id('cart')));
-								exit();
+						exit();
 					} elseif (username_exists($create_user_name)) {
 						wc_add_notice(__('This username is already registered.', 'paypal-for-woocommerce'), 'error');
 						wp_redirect(get_permalink(wc_get_page_id('cart')));
-								exit();
+						exit();
 					} elseif (empty($create_user_email)) {
 						wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
 						wp_redirect(get_permalink(wc_get_page_id('cart')));
-								exit();
+						exit();
 					} elseif (empty($_POST['create_act']) || empty($_POST['create_act'])) {
 						wc_add_notice(__('Password is required.', 'paypal-for-woocommerce'), 'error');
 						wp_redirect(get_permalink(wc_get_page_id('cart')));
-								exit();
-					
+						exit();
+
 					} elseif ($_POST['create_act'] != $_POST['create_act']) {
 						wc_add_notice(__('Passwords do not match.', 'paypal-for-woocommerce'), 'error');
 						wp_redirect(get_permalink(wc_get_page_id('cart')));
 						exit();
-					
+
 					} elseif (get_user_by('email', $create_user_email) != false) {
 						wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
 						wp_redirect(get_permalink(wc_get_page_id('cart')));
-								exit();
-	
-					
+						exit();
+
+
 					} else {
 
 						$username = !empty($create_user_name) ? $create_user_name : '';
@@ -1343,48 +1343,47 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					}else {
 						$selected_shipping_method_id = '';
 					}
-					
+
 					if (isset($resultarray['SHIPPINGAMT']) && !empty($resultarray['SHIPPINGAMT'])) {
-					
+
 						if (isset($count_record) && empty($count_record) && $count_record <=0) {
-							$query = "INSERT INTO  {$table_name} (`order_item_id` ,`order_item_name` ,`order_item_type` ,`order_id`)
-									VALUES (NULL ,  '$selected_shipping_method_id',  'shipping',  '{$order_id}') ";
-							$wpdb->query($query);
+
+							$wpdb->query( $wpdb->prepare( "INSERT INTO $table_name(order_item_name, order_item_type,order_id )VALUES (%s, %s, %s )", $selected_shipping_method_id, 'shipping', $order_id ) );
 							$shipping_amt = $resultarray['SHIPPINGAMT'];
 							$get_metadataid = $wpdb->get_row("select * from $table_name where order_id='{$order_id}' and order_item_type ='shipping'");
 							$order_itemid = $get_metadataid->order_item_id;
-							
-							$query_add_shipping_method = "INSERT INTO  {$table_name_meta} (`meta_id` ,`order_item_id` ,`meta_key` ,`meta_value`)
-									VALUES (NULL ,  '$order_itemid', 'method_id', '$selected_shipping_method_id') ";
-							$wpdb->query($query_add_shipping_method);
-	
-							$query_add_shipping_cost = "INSERT INTO  {$table_name_meta} (`meta_id` ,`order_item_id` ,`meta_key` ,`meta_value`)
-									VALUES (NULL ,  '$order_itemid', 'cost', '$shipping_amt') ";
-							$wpdb->query($query_add_shipping_cost);
-							
-							
+
+							wc_add_order_item_meta( $order_itemid, 'method_id', $selected_shipping_method_id );
+
+							wc_add_order_item_meta( $order_itemid, 'cost', wc_format_decimal( $shipping_amt ) );
+
+
+
+
+
 							$shipping_post_meta = get_post_meta($order_id,'shipping_taxamt_own',true);
 							if (isset($shipping_post_meta) && !empty($shipping_post_meta)) {
 								wc_add_order_item_meta( $order_itemid, 'shipping_tax_amount', round( $shipping_post_meta,2 ) );
 							}
-							
-							
+
+
 							$get_shippingtaxamt = $wpdb->get_row("select * from $table_name_meta where order_item_id='{$order_itemid}' and meta_key ='shipping_tax_amount'");
 							if (isset($get_shippingtaxamt->meta_value) && !empty($get_shippingtaxamt->meta_value)) {
 								$get_shippingtaxamtkey_amt = round($get_shippingtaxamt->meta_value,2);
 							}
-							
+
 							if (isset($get_shippingtaxamtkey_amt) && !empty($get_shippingtaxamtkey_amt)) {
 								$shippingtaxamt = 'a:1:{i:1;s:10:"'.$get_shippingtaxamtkey_amt.'";}';
 							} else {
 								$shippingtaxamt = 'a:1:{i:1;s:10:"0.00";}';
 							}
-	
-							$query_add_shipping_taxes = "INSERT INTO $table_name_meta (`meta_id`, `order_item_id`, `meta_key`, `meta_value`) VALUES (NULL, '$order_itemid', 'taxes', '" . mysql_real_escape_string($shippingtaxamt) . "');";
-							$wpdb->query($query_add_shipping_taxes);
-							
+
+							wc_add_order_item_meta( $order_itemid, 'taxes', $shippingtaxamt );
+
+
+
 						}
-					
+
 					}
 					wp_redirect($this->get_return_url($order));
 					exit();
@@ -2722,8 +2721,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				$order->update_status('refunded');
 				$order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
 			}
-					
-		
+
+
 			if (ob_get_length())
 			ob_end_clean();
 			return true;
