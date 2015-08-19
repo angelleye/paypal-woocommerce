@@ -73,14 +73,14 @@ jQuery(document).ready(function (){
         display:none;
     }
    .lbl_terms{    
-    float: left;
+    
     display: inline-block !important;
     margin-right: 5px !important;
    }
    .terms_own 
    {
    	float: none;
-    margin-top: 8px !important;
+    margin: 0px !important;
     display: inline-block !important; }
 </style>
 
