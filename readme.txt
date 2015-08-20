@@ -3,8 +3,8 @@ Contributors: angelleye
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
-Tested up to: 4.2.2
-Stable tag: 1.1.6.3.4
+Tested up to: 4.3
+Stable tag: 1.1.6.3.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -101,6 +101,23 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.1.6.3.5 - 08.20.2015 =
+* Fix - WooCommerce 2.4 Compatibility.
+* Fix - Resolves more cart total / calculation errors based on unique order totals.
+* Fix - Resolves a problem where an & character in product names could cause checkout to fail.
+* Fix - "WooCommerce Currency Switcher" plugin compatibility.
+* Fix - Resolves a bug when setting Website Payments Pro 3.0 to Authorization.
+* Fix - Resolves SSL warnings caused by graphics loading from http:// sources.
+* Fix - Resolves a bug in the way discounts were passed in Payments Pro 2.0 orders.
+* Tweak - Moves customer notes into WooCommerce order meta fields.
+* Tweak - Adds a filter for PayPal API credentials for the ability to override the plugin setting values.
+* Tweak - Adjusts logic around "Proceed to Checkout" button for better compatibility across themes.
+* Tweak - Adjusts the way shipping details are saved with PayPal Express Checkout orders.
+* Tweak - Masks API credentials in raw logs.
+* Tweak - If Terms and Conditions page is set, Express Checkout will now require it (even if skipping the WooCommerce checkout page.)
+* Tweak - If guest checkout is enabled in WooCommerce, Express Checkout will still provide the option to create an account (even if skipping the WooCommerce checkout page.)
+* Tweak - Cleans deprecated functions.
 
 = 1.1.6.3.4 - 06.29.2015 =
 * Fix - Resolves an issue causing some 3rd party plugins to conflict and keep plugin options from loading correctly.
