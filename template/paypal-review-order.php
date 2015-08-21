@@ -292,7 +292,7 @@ jQuery(document).ready(function (){
 			</div>
 	
 		
-	<?}
+	<?php }
 global $pp_settings;
 $cancel_url = isset( $pp_settings['cancel_page'] ) ? get_permalink( $pp_settings['cancel_page'] ) : $woocommerce->cart->get_cart_url();
 $cancel_url = apply_filters( 'angelleye_review_order_cance_url', $cancel_url );
