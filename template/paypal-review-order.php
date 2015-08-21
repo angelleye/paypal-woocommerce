@@ -32,8 +32,12 @@ jQuery(document).ready(function (){
  jQuery(".cls_place_order_own").click(function(){
      	
    		var ischecked = jQuery('.terms_own').is(':checked') ;
+   		var ischecked_crete_act = jQuery('.chkcreate_act').is(':checked');
+   		var txt_act_password = jQuery('.cls_txt_act_password').val();
+   		
    		
    		if (ischecked == false) {
+   			jQuery('.wp_notice_own').html('');
    			jQuery('.wp_notice_own').html('<div class="woocommerce-error">You must accept our Terms & Conditions.</div>');
    		
     		jQuery('html, body').animate({
@@ -42,7 +46,25 @@ jQuery(document).ready(function (){
    			
    			
    			return false;
-   		}else if (ischecked == true) {
+   		}else if (ischecked == true && ischecked_crete_act == true && txt_act_password =='') {
+   			jQuery('.wp_notice_own').html('');
+   			jQuery('.wp_notice_own').html('<div class="woocommerce-error">Account Password field is required.</div>');
+   		
+    		jQuery('html, body').animate({
+    			scrollTop: "0px"
+    		}, 800);
+   			
+   			
+   			return false;	
+   			
+   		}else if (ischecked == true && ischecked_crete_act == false && txt_act_password =='') {
+   			jQuery('.wp_notice_own').html('');
+   			 jQuery(this).attr('disabled','disabled').val('Processing'); 
+      
+        	jQuery(this).parents('form').submit(); 
+        	return true;
+   		}
+   		else if (ischecked == true && ischecked_crete_act == true && txt_act_password !='') {
    			jQuery('.wp_notice_own').html('');
    			 jQuery(this).attr('disabled','disabled').val('Processing'); 
       
@@ -284,7 +306,7 @@ jQuery(document).ready(function (){
 					<p class="form-row form-row validate-required woocommerce-validated" id="account_password_field">
 					<label for="account_password" class="">Account password
 					</label>
-					<input type="password" class="input-text" placeholder="Password" value="" name="create_act"/>
+					<input type="password" class="input-text cls_txt_act_password" placeholder="Password" value="" name="create_act"/>
 					</p>
 				
 				<div class="clear"></div>
