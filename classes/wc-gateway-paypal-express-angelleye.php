@@ -564,6 +564,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 									'type' => 'checkbox',
 									'default' => 'no'
 									),
+									'shipment_required' => array(
+										'title' => __('Shipping', 'paypal-for-woocommerce'),
+										'label' => __('Enable shipping address', 'paypal-for-woocommerce'),
+										'type' => 'checkbox',
+										'description' => 'This will show/hide the shipping address on Paypal. For digital and virtual products, it is helpful to hide shipping address.',
+										'default' => 'no'
+									),
 									'cancel_page' => array(
 									'title' => __('Cancel Page', 'paypal-for-woocommerce'),
 									'description' => __('Sets the page users will be returned to if they click the Cancel link on the PayPal checkout pages.'),
@@ -1504,6 +1511,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			$is_ordernote = "1";
 		}
 
+		if(shipment_required) {
+			$SHIPMENTREQUIRED = "1";
+		} else {
+			$SHIPMENTREQUIRED = "0";
+		}
+
 		$SECFields = array(
 		'token' => '', // A timestamped token, the value of which was returned by a previous SetExpressCheckout call.
 		'maxamt' => $maxAmount, // The expected maximum total amount the order will be, including S&H and sales tax.
@@ -1513,7 +1526,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		'callbacktimeout' => '', // An override for you to request more or less time to be able to process the callback request and response.  Acceptable range for override is 1-6 seconds.  If you specify greater than 6 PayPal will use default value of 3 seconds.
 		'callbackversion' => '', // The version of the Instant Update API you're using.  The default is the current version.
 		'reqconfirmshipping' => '', // The value 1 indicates that you require that the customer's shipping address is Confirmed with PayPal.  This overrides anything in the account profile.  Possible values are 1 or 0.
-		'noshipping' => '', // The value 1 indiciates that on the PayPal pages, no shipping address fields should be displayed.  Maybe 1 or 0.
+		'noshipping' => $SHIPMENTREQUIRED, // The value 1 indiciates that on the PayPal pages, no shipping address fields should be displayed.  Maybe 1 or 0.
 		'allownote' => $is_ordernote, // The value 1 indiciates that the customer may enter a note to the merchant on the PayPal page during checkout.  The note is returned in the GetExpresscheckoutDetails response and the DoExpressCheckoutPayment response.  Must be 1 or 0.
 		'addroverride' => '', // The value 1 indiciates that the PayPal pages should display the shipping address set by you in the SetExpressCheckout request, not the shipping address on file with PayPal.  This does not allow the customer to edit the address here.  Must be 1 or 0.
 		'localecode' => ($this->use_wp_locale_code == 'yes' && get_locale() != '') ? get_locale() : '', // Locale of pages displayed by PayPal during checkout.  Should be a 2 character country code.  You can retrive the country code by passing the country name into the class' GetCountryCode() function.
