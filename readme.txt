@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 4.3
-Stable tag: 1.1.6.3.5
+Stable tag: 1.1.6.3.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -101,6 +101,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.1.6.3.6 - 08.22.2015 =
+* Fix - Removes PHP short tag causing PHP failures on servers that do not have short tags enabled.
+* Fix - Resolves conflict with the password validation when creating a new account during Express Checkout review.
+* Tweak - Populates all available data to new customer record when account is created during Express Checkout review.
+* Tweak - CSS adjustments to the terms and conditions acceptance during Express Checkout review.
 
 = 1.1.6.3.5 - 08.20.2015 =
 * Fix - WooCommerce 2.4 Compatibility.
