@@ -17,26 +17,46 @@ $is_create_on = get_post_meta($currentorder_id,'paypal_for_woocommerce_create_ac
 $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']));
 $show_act = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged_in() && $checked==="yes" && isset($_REQUEST['pp_action']) && isset($is_create_on) && empty($is_create_on));
  
+if (is_user_logged_in()) {
+	$is_userloggedin = 1;
+}elseif (!is_user_logged_in()) {
+	$is_userloggedin = 0;
+}
+
+
 if( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && isset($is_terms_on) && empty($is_terms_on)) {
 	
 	$inputhtml = '<input type="button" class="button cls_place_order_own" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
+	$term_off =0;
+}
+else if (wc_get_page_id( 'terms' ) < 0 && $is_userloggedin == 0 && $checked == 'yes') {
+	$inputhtml = '<input type="button" class="button cls_place_order_own" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
+	$term_off =1;	
 }else {
 	
 	$inputhtml = '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
 
 }
 
+
+
 ?>
 <script type="text/javascript">
-jQuery(document).ready(function (){
- jQuery(".cls_place_order_own").click(function(){
+jQuery(window).bind("load", function() {
+
+	var txt_act_password1 = jQuery('.cls_txt_act_password').val();
+	
+	jQuery('.cls_txt_act_password').val('');
+ 	jQuery('body').on('click','.cls_place_order_own',function(){
      	
    		var ischecked = jQuery('.terms_own').is(':checked') ;
    		var ischecked_crete_act = jQuery('.chkcreate_act').is(':checked');
    		var txt_act_password = jQuery('.cls_txt_act_password').val();
+   		var is_userloggedin = jQuery('.isuserlogin').val();
+   		var term_off = jQuery('.term_off').val();
    		
-   		
-   		if (ischecked == false) {
+   		if (ischecked == false && term_off == 0 ) {
+   			
    			jQuery('.wp_notice_own').html('');
    			jQuery('.wp_notice_own').html('<div class="woocommerce-error">You must accept our Terms & Conditions.</div>');
    		
@@ -46,7 +66,28 @@ jQuery(document).ready(function (){
    			
    			
    			return false;
-   		}else if (ischecked == true && ischecked_crete_act == true && txt_act_password =='') {
+   		}else if (ischecked == true && is_userloggedin == 1) {
+   			
+   			jQuery('.wp_notice_own').html('');
+   			jQuery(this).attr('disabled','disabled').val('Processing'); 
+      
+        	jQuery(this).parents('form').submit(); 
+        	return true;
+   		}else if (ischecked_crete_act == true && txt_act_password == ""  && is_userloggedin == 0 && term_off == 1) {
+   			
+   			jQuery('.wp_notice_own').html('');
+   			jQuery('.wp_notice_own').html('<div class="woocommerce-error">Account Password field is required.</div>');
+   		
+    		jQuery('html, body').animate({
+    			scrollTop: "0px"
+    		}, 800);
+   			
+   			
+   			return false;	
+   		}
+   		
+   		else if (ischecked == true && ischecked_crete_act == true && txt_act_password == "") {
+   			
    			jQuery('.wp_notice_own').html('');
    			jQuery('.wp_notice_own').html('<div class="woocommerce-error">Account Password field is required.</div>');
    		
@@ -57,23 +98,37 @@ jQuery(document).ready(function (){
    			
    			return false;	
    			
-   		}else if (ischecked == true && ischecked_crete_act == false && txt_act_password =='') {
+   		}else if (ischecked == true && ischecked_crete_act == false && txt_act_password == "") {
+   			
    			jQuery('.wp_notice_own').html('');
-   			 jQuery(this).attr('disabled','disabled').val('Processing'); 
+   			jQuery(this).attr('disabled','disabled').val('Processing'); 
       
         	jQuery(this).parents('form').submit(); 
         	return true;
    		}
-   		else if (ischecked == true && ischecked_crete_act == true && txt_act_password !='') {
+   		else if (ischecked == true && ischecked_crete_act == true && txt_act_password != "") {
+   			
    			jQuery('.wp_notice_own').html('');
-   			 jQuery(this).attr('disabled','disabled').val('Processing'); 
+   			jQuery(this).attr('disabled','disabled').val('Processing'); 
       
         	jQuery(this).parents('form').submit(); 
         	return true;
    		}
-         
-        
-        
+   		else if (ischecked_crete_act == true && txt_act_password != ""  && is_userloggedin == 0 && term_off == 1) {
+   			 jQuery('.wp_notice_own').html('');
+   			 jQuery(this).attr('disabled','disabled').val('Processing'); 
+        	 jQuery(this).parents('form').submit(); 
+        	return true;
+   		}
+   		 if (ischecked_crete_act == false && txt_act_password == "" && is_userloggedin == '0' && term_off == '1') {
+   			
+   			jQuery('.wp_notice_own').html('');
+   		    jQuery(this).attr('disabled','disabled').val('Processing'); 
+      
+        	jQuery(this).parents('form').submit(); 
+        	return true;
+   		}
+   		
     });
   
      jQuery(".chkcreate_act").click(function(){
@@ -81,8 +136,12 @@ jQuery(document).ready(function (){
      	   
    		if (ischecked_act == false) {
      		jQuery('.create_account_child').toggle();
+     		jQuery('.cls_txt_act_password').val('');
+     		
    		}else if(ischecked_act == true) {
    				jQuery('.create_account_child').toggle();
+   				jQuery('.cls_txt_act_password').val('');
+   				
    		}
      	
      });
@@ -111,7 +170,8 @@ jQuery(document).ready(function (){
 <div class="wp_notice_own">
 
 </div>
-
+<input type="hidden" class="isuserlogin" value="<?php echo $is_userloggedin;?>"/>
+<input type="hidden" class="term_off" value="<?php echo $term_off;?>"/>
 <div id="paypalexpress_order_review">
         <?php woocommerce_order_review();?>
     
