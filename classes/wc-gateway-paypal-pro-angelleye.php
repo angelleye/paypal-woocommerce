@@ -1207,8 +1207,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
         if($PayPal->APICallSuccessful($PayPalResult['ACK']))
         {
-            $order->add_order_note( 'Refund Transaction ID:'. $PayPalResult['REFUNDTRANSACTIONID'] );
-            $order->update_status( 'refunded' );
+            $order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
+
+            $max_remaining_refund = wc_format_decimal( $order->get_total() - $order->get_total_refunded() );
+            if ( !$max_remaining_refund > 0 ) {
+                $order->update_status('refunded');
+            }
+
             if (ob_get_length()) ob_end_clean();
             return true;
         }else{
