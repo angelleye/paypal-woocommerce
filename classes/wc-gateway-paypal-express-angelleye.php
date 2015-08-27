@@ -742,7 +742,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             'result' => 'success'
                         );
 
-                        echo '<!--WC_START-->' . json_encode($result) . '<!--WC_END-->';
+                        echo json_encode($result);
                         exit;
                     } else {
                         //$this->RedirectToPayPal( $resArray["TOKEN"] );
