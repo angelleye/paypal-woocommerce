@@ -874,9 +874,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
              } else {
                     if ($order->get_total_discount() > 0) {
                         $Item = array(
-                            'name' => 'Total Discount',
-                            'qty' => 1,
-                            'amt' => - number_format($order->get_total_discount(), 2, '.', ''),
+                            'l_name' => 'Total Discount',
+                            'l_qty' => 1,
+                            'l_amt' => - number_format($order->get_total_discount(), 2, '.', ''),
                         );
                         array_push($OrderItems, $Item);
                         $ITEMAMT -= number_format($order->get_total_discount(), 2, '.', '');
