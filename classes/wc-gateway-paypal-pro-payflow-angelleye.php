@@ -633,7 +633,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			 */
 			if($this->debug)
 			{
-				$this->add_log(add_query_arg('key',$order->order_key,add_query_arg('order',$order->id,get_permalink(wc_get_page_id('thanks')))));
+				$this->add_log(add_query_arg('key', $order->order_key, add_query_arg('order', $order->id)));
 			}
 			
 			/**
