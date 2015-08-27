@@ -58,7 +58,8 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 		}
 		
 		$this->NVPCredentials = 'BUTTONSOURCE['.strlen($this->APIButtonSource).']='.$this->APIButtonSource.'&VERBOSITY['.strlen($this->Verbosity).']='.$this->Verbosity.'&USER['.strlen($this->APIUsername).']='.$this->APIUsername.'&VENDOR['.strlen($this->APIVendor).']='.$this->APIVendor.'&PARTNER['.strlen($this->APIPartner).']='.$this->APIPartner.'&PWD['.strlen($this->APIPassword).']='.$this->APIPassword;
-		
+		$this->NVPCredentials_masked = 'BUTTONSOURCE['.strlen($this->APIButtonSource).']='.$this->APIButtonSource.'&VERBOSITY['.strlen($this->Verbosity).']='.$this->Verbosity.'&USER['.strlen($this->APIUsername).']=*****&VENDOR['.strlen($this->APIVendor).']=*****&PARTNER['.strlen($this->APIPartner).']='.$this->APIPartner.'&PWD['.strlen($this->APIPassword).']='.'*****';
+
 		$this->TransactionStateCodes = array(
 				'1' => 'Error',
 				'6' => 'Settlement Pending',
@@ -162,20 +163,23 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 	function ProcessTransaction($DataArray)
 	{
 		$NVPRequest = $this->NVPCredentials;
+		$NVPRequestmask = $this->NVPCredentials_masked;
+		$star = '*****';
 		
 		foreach($DataArray as $DataArrayVar => $DataArrayVal)
 		{
 			if($DataArrayVal != '')
 			{
 				$NVPRequest .= '&'.strtoupper($DataArrayVar).'['.strlen($DataArrayVal).']='.$DataArrayVal;
+				$NVPRequestmask .= '&'.strtoupper($DataArrayVar).'['.strlen($DataArrayVal).']='.$DataArrayVal;
 			}
 		}
 		
 		$NVPResponse = $this->CURLRequest($NVPRequest);
 		$NVPResponse = strstr($NVPResponse,"RESULT");
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
-		
-		$NVPResponseArray['RAWREQUEST'] = $NVPRequest;
+
+		$NVPResponseArray['RAWREQUEST'] = $NVPRequestmask;
 		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
 		
 		return $NVPResponseArray;
