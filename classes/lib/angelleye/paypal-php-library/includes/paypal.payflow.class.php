@@ -40,6 +40,8 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 	 */
 	function __construct($DataArray)
 	{
+		$DataArray = apply_filters( 'angelleye_paypal_payflow_construct_params', $DataArray );
+
 		parent::__construct($DataArray);
 		
 		$this->APIVendor = isset($DataArray['APIVendor']) ? $DataArray['APIVendor'] : '';

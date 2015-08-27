@@ -54,7 +54,9 @@ class Angelleye_PayPal
 	 * @return	void
 	 */
 	function __construct($DataArray)
-	{		
+	{
+		$DataArray = apply_filters( 'angelleye_paypal_construct_params', $DataArray );
+
 		if(isset($DataArray['Sandbox']))
 		{
 			$this->Sandbox = $DataArray['Sandbox'];
