@@ -3,8 +3,8 @@ Contributors: angelleye
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
-Tested up to: 4.2.2
-Stable tag: 1.1.6.3.4
+Tested up to: 4.3
+Stable tag: 1.1.6.3.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -101,6 +101,36 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.1.6.3.7 - 08.27.2015 =
+* Rollback - Removes adjustments that were made in an attempt to resolve rare cart total errors with PayPal.
+* Rollback - Removes adjustments to code in an attempt to resolve issues with Currency Switcher plugins.
+* Rollback - Removes adjustments made related to shipping data returned from PayPal and order meta data.
+* Rollback - Removes WooCommerce terms and conditions acceptance from Express Checkout review page.
+* Rollback - Removes "create account" option from Express Checkout review page (unless the require account option is enabled.)
+
+= 1.1.6.3.6 - 08.22.2015 =
+* Fix - Removes PHP short tag causing PHP failures on servers that do not have short tags enabled.
+* Fix - Resolves conflict with the password validation when creating a new account during Express Checkout review.
+* Tweak - Populates all available data to new customer record when account is created during Express Checkout review.
+* Tweak - CSS adjustments to the terms and conditions acceptance during Express Checkout review.
+
+= 1.1.6.3.5 - 08.20.2015 =
+* Fix - WooCommerce 2.4 Compatibility.
+* Fix - Resolves more cart total / calculation errors based on unique order totals.
+* Fix - Resolves a problem where an & character in product names could cause checkout to fail.
+* Fix - "WooCommerce Currency Switcher" plugin compatibility.
+* Fix - Resolves a bug when setting Website Payments Pro 3.0 to Authorization.
+* Fix - Resolves SSL warnings caused by graphics loading from http:// sources.
+* Fix - Resolves a bug in the way discounts were passed in Payments Pro 2.0 orders.
+* Tweak - Moves customer notes into WooCommerce order meta fields.
+* Tweak - Adds a filter for PayPal API credentials for the ability to override the plugin setting values.
+* Tweak - Adjusts logic around "Proceed to Checkout" button for better compatibility across themes.
+* Tweak - Adjusts the way shipping details are saved with PayPal Express Checkout orders.
+* Tweak - Masks API credentials in raw logs.
+* Tweak - If Terms and Conditions page is set, Express Checkout will now require it (even if skipping the WooCommerce checkout page.)
+* Tweak - If guest checkout is enabled in WooCommerce, Express Checkout will still provide the option to create an account (even if skipping the WooCommerce checkout page.)
+* Tweak - Cleans deprecated functions.
 
 = 1.1.6.3.4 - 06.29.2015 =
 * Fix - Resolves an issue causing some 3rd party plugins to conflict and keep plugin options from loading correctly.
@@ -256,5 +286,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.1.6.3 =
-This update adds new features into the settings panel for PayPal payment gateway options.  Please make sure to review these after updating and save the settings page (even if you don't make changes.)
+= 1.1.6.3.7 =
+This is a roll-back update that removes previously added features which were causing problems for many users.  After updating, it is recommended that you go into the plugin settings for each payment gateway you are using and click the Save button even if you don't have to adjust any settings.
