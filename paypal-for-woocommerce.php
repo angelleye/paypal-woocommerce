@@ -271,7 +271,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
                 wp_localize_script( 'wc-checkout', 'wc_checkout_params', apply_filters( 'wc_checkout_params', array(
                     'ajax_url'                  => WC()->ajax_url(),
-                    'ajax_loader_url'           => apply_filters( 'woocommerce_ajax_loader_url', $assets_path . 'images/ajax-loader@2x.gif' ),
+                    'ajax_loader_url'           => apply_filters( 'woocommerce_ajax_loader_url', $assets_path . 'images/select2-spinner.gif' ),
                     'update_order_review_nonce' => wp_create_nonce( "update-order-review" ),
                     'apply_coupon_nonce'        => wp_create_nonce( "apply-coupon" ),
                     'option_guest_checkout'     => get_option( 'woocommerce_enable_guest_checkout' ),
@@ -539,7 +539,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     echo $paypal_credit_button_markup;
                 }
                 ?>
-                <div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php echo WC()->plugin_url(); ?>/assets/images/ajax-loader@2x.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>
+                <div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php echo WC()->plugin_url(); ?>/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>
                 <script type="text/javascript">
                     jQuery(document).ready(function($){
                         $(".paypal_checkout_button").click(function(){
@@ -559,7 +559,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         function add_div_after_add_to_cart_button(){
             ?>
-            <div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php echo WC()->plugin_url(); ?>/assets/images/ajax-loader@2x.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>
+            <div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php echo WC()->plugin_url(); ?>/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>
             </div>
             <?php
         }
