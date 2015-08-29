@@ -872,7 +872,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log("...ERROR: GetShippingDetails returned empty result");
             }
             if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes") {
-                $url = add_query_arg(array('wc-api' => 'WC_Gateway_PayPal_Express_AngellEYE', 'pp_action' => 'payaction'), home_url());
+                $url = add_query_arg(array( 'pp_action' => 'payaction'));
                 wp_redirect($url);
                 exit();
             }

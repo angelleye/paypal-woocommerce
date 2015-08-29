@@ -384,7 +384,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Review page for PayPal Express Checkout
          */
         function woocommerce_paypal_express_review_order_page_angelleye() {
-            if ( ! empty( $_GET['pp_action'] ) && $_GET['pp_action'] == 'revieworder' ) {
+            if ( ! empty( $_GET['pp_action'] ) && ($_GET['pp_action'] == 'revieworder' ||  $_GET['pp_action'] == 'payaction') ) {
                 $woocommerce_ppe = new WC_Gateway_PayPal_Express_AngellEYE();
                 $woocommerce_ppe->paypal_express_checkout();
             }
