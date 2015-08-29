@@ -16,7 +16,7 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
 </style>
 
 
-<form class="angelleye_checkout" method="POST" action="<?php echo add_query_arg( 'pp_action', 'payaction', add_query_arg( 'wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url( '/' ) ) );?>">
+<form class="angelleye_checkout" method="POST" action="<?php echo add_query_arg(array( 'pp_action' => 'payaction'));?>">
 
 <div id="paypalexpress_order_review">
         <?php woocommerce_order_review();?>
