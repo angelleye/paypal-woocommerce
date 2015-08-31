@@ -801,7 +801,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 
                         //$this->log->add('paypal-pro', print_r($item['item_meta'], true));
 
-                        $item_meta = new WC_Order_Item_Meta( $item['item_meta'] );
+                        $item_meta = new WC_Order_Item_Meta($item,$_product);
                         $meta = $item_meta->display(true, true);
                         $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
                         if (!empty($meta)) {

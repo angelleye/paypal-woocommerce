@@ -1812,7 +1812,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $sku = $_product->parent->get_sku();
                         }
 
-                        $item_meta = new WC_Order_Item_Meta($values['item_meta']);
+                        $item_meta = new WC_Order_Item_Meta($values,$_product);
                         $meta = $item_meta->display(true, true);
                         if (!empty($meta)) {
                             $values['name'] .= " - " . str_replace(", \n", " - ", $meta);
