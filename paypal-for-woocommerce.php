@@ -299,10 +299,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 wc_create_page(esc_sql(_x('review-order','page_slug','woocommerce')),'woocommerce_review_order_page_id',__('Checkout &rarr; Review Order','paypal-for-woocommerce'),'[woocommerce_review_order]',wc_get_page_id('checkout'));
 
                 // Log activation in Angell EYE database via web service.
-                $log_url = $_SERVER['HTTP_HOST'];
-                $log_plugin_id = 1;
-                $log_activation_status = 1;
-                wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
+                // @todo Need to turn this into an option people can enable by request.
+                //$log_url = $_SERVER['HTTP_HOST'];
+                //$log_plugin_id = 1;
+                //$log_activation_status = 1;
+                //wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
             }
         }
 
@@ -312,10 +313,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         function deactivate_paypal_for_woocommerce()
         {
             // Log activation in Angell EYE database via web service.
-            $log_url = $_SERVER['HTTP_HOST'];
-            $log_plugin_id = 1;
-            $log_activation_status = 0;
-            wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
+            // @todo Need to turn this into an option people can enable.
+            //$log_url = $_SERVER['HTTP_HOST'];
+            //$log_plugin_id = 1;
+            //$log_activation_status = 0;
+            //wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
         }
 
         /**
