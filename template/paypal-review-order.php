@@ -10,7 +10,10 @@ $checked = get_option('woocommerce_enable_guest_checkout');
 $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']));
 ### After PayPal payment method confirmation, user is redirected back to this page with token and Payer ID ###
 if (isset($_GET["token"]) && isset($_GET["PayerID"]) && isset($_GET["paymentId"])) {
-    $_SESSION['payment_args'] = array('token' => $_GET["token"], 'PayerID' => $_GET["PayerID"], 'paymentId' => $_GET["paymentId"]);
+    WC()->session->token = $_GET["token"];
+    WC()->session->PayerID = $_GET["PayerID"];
+    WC()->session->paymentId = $_GET["paymentId"];
+    WC()->session->orderId = $_GET["pp_action"];
     $frm_act = add_query_arg('pp_action', 'payaction', add_query_arg('wc-api', 'WC_Gateway_PayPal_Plus_AngellEYE', home_url('/')));
 } else {
     $frm_act = add_query_arg('pp_action', 'payaction', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')));
