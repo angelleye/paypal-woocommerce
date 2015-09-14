@@ -67,11 +67,11 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         if (!$this->is_available())
             $this->enabled = false;
 
-        define('CLIENT_ID', $this->rest_client_id); //your PayPal client ID
-        define('CLIENT_SECRET', $this->rest_secret_id); //PayPal Secret
+        if (!defined('CLIENT_ID')) define('CLIENT_ID', $this->rest_client_id); //your PayPal client ID
+        if (!defined('CLIENT_SECRET')) define('CLIENT_SECRET', $this->rest_secret_id); //PayPal Secret
 
-        define('CANCEL_URL', site_url()); //cancel URL
-        define('PP_CURRENCY', get_woocommerce_currency()); //Currency code
+        if (!defined('CANCEL_URL')) define('CANCEL_URL', site_url()); //cancel URL
+        if (!defined('PP_CURRENCY')) define('PP_CURRENCY', get_woocommerce_currency()); //Currency code
 
         include_once( 'lib/autoload.php' ); //include PayPal SDK
 
@@ -287,7 +287,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 "placeholder": "ppplus",
                 "useraction": "commit",
                 "onLoad" : "callback",
-                "mode": "sandbox"
+                "mode": "<?php echo strtolower($this->mode);?>"
             });
         </script>
 
@@ -577,6 +577,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             $transaction->setAmount($amount);
             $transaction->setDescription('');
             $transaction->setItemList($items);
+            $transaction->setInvoiceNumber($this->invoice_prefix.$order_id);
 
 
             $payment = new Payment();
