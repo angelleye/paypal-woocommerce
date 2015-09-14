@@ -603,7 +603,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
     public function executepay() {
 
-        if (! empty( $_GET['pp_action'] ) && $_GET['pp_action'] == 'payaction') {
+        if (! empty( $_GET['pp_action'] ) && $_GET['pp_action'] == 'executepay') {
 
             if (empty(WC()->session->token) || empty(WC()->session->PayerID) || empty(WC()->session->paymentId)) return;
 
@@ -628,15 +628,15 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                         $shipping_last_name = $split_name['lname'];
                         $full_name = $split_name['fullname'];
 
-                        update_post_meta($_GET['pp_action'], '_billing_first_name', $shipping_first_name);
-                        update_post_meta($_GET['pp_action'], '_billing_last_name', $shipping_last_name);
-                        update_post_meta($_GET['pp_action'], '_billing_full_name', $full_name);
-                        update_post_meta($_GET['pp_action'], '_billing_address_1', $payment->payer->payer_info->shipping_address->line1);
-                        update_post_meta($_GET['pp_action'], '_billing_address_2', $payment->payer->payer_info->shipping_address->line2);
-                        update_post_meta($_GET['pp_action'], '_billing_city', $payment->payer->payer_info->shipping_address->city);
-                        update_post_meta($_GET['pp_action'], '_billing_postcode', $payment->payer->payer_info->shipping_address->postal_code);
-                        update_post_meta($_GET['pp_action'], '_billing_country', $payment->payer->payer_info->shipping_address->country_code);
-                        update_post_meta($_GET['pp_action'], '_billing_state', $payment->payer->payer_info->shipping_address->state);
+                        update_post_meta(WC()->session->orderId, '_billing_first_name', $shipping_first_name);
+                        update_post_meta(WC()->session->orderId, '_billing_last_name', $shipping_last_name);
+                        update_post_meta(WC()->session->orderId, '_billing_full_name', $full_name);
+                        update_post_meta(WC()->session->orderId, '_billing_address_1', $payment->payer->payer_info->shipping_address->line1);
+                        update_post_meta(WC()->session->orderId, '_billing_address_2', $payment->payer->payer_info->shipping_address->line2);
+                        update_post_meta(WC()->session->orderId, '_billing_city', $payment->payer->payer_info->shipping_address->city);
+                        update_post_meta(WC()->session->orderId, '_billing_postcode', $payment->payer->payer_info->shipping_address->postal_code);
+                        update_post_meta(WC()->session->orderId, '_billing_country', $payment->payer->payer_info->shipping_address->country_code);
+                        update_post_meta(WC()->session->orderId, '_billing_state', $payment->payer->payer_info->shipping_address->state);
                     }
 
                     $order->add_order_note(__('PayPal Plus payment completed', 'paypal-for-woocommerce') );
