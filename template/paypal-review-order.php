@@ -16,7 +16,7 @@ if (isset($_GET["token"]) && isset($_GET["PayerID"]) && isset($_GET["paymentId"]
     WC()->session->orderId = $_GET["pp_action"];
     $frm_act = add_query_arg('pp_action', 'payaction', add_query_arg('wc-api', 'WC_Gateway_PayPal_Plus_AngellEYE', home_url('/')));
 } else {
-    $frm_act = add_query_arg('pp_action', 'payaction', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')));
+    $frm_act = add_query_arg(array( 'pp_action' => 'payaction'));
 }
 
 ?>
