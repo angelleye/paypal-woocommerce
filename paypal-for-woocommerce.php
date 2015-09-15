@@ -392,6 +392,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $woocommerce_ppe = new WC_Gateway_PayPal_Express_AngellEYE();
                 $woocommerce_ppe->paypal_express_checkout();
             }
+
+            if (isset($_GET["token"]) && isset($_GET["PayerID"]) && isset($_GET["paymentId"])) {
+                WC()->session->token = $_GET["token"];
+                WC()->session->PayerID = $_GET["PayerID"];
+                WC()->session->paymentId = $_GET["paymentId"];
+                WC()->session->orderId = $_GET["pp_action"];
+            }
         }
 
         /**

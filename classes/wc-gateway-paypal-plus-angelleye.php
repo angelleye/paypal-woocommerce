@@ -503,7 +503,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
     function getAuth() {
         $auth = new ApiContext(new OAuthTokenCredential(CLIENT_ID, CLIENT_SECRET));
-        $auth->setConfig(array('mode'=> $this->mode));
+        $auth->setConfig(array('mode'=> $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce'));
         return $auth;
     }
 
