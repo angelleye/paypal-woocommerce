@@ -64,6 +64,8 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
         add_action('woocommerce_api_' . strtolower(get_class()), array($this, 'executepay'), 12);
 
+        add_action('woocommerce_create_order', array($this, 'remove_old_order'));
+
         if (!$this->is_available())
             $this->enabled = false;
 
@@ -96,20 +98,6 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
         return;
     }
-
-    /**
-     * redirect_to - redirects to the url based on layout type
-     *
-     * @access public
-     * @return javascript code to redirect the parent to a page
-     */
-    public function redirect_to($redirect_url) {
-        // Clean
-        @ob_clean();
-        echo "<script>window.parent.location.href='" . $redirect_url . "';</script>";
-        exit;
-    }
-
 
     /**
      * Check if this gateway is enabled and available in the user's country
@@ -235,6 +223,9 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             echo wpautop(wptexturize($this->description));
     }
 
+    public function remove_old_order(){
+       if (@$_POST['payment_method'] == 'paypal_plus') unset(WC()->session->order_awaiting_payment);
+    }
     /**
      * Process the payment
      *
@@ -244,10 +235,10 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
     public function process_payment($order_id) {
         //create the order object
         $order = new WC_Order($order_id);
-
-        //Authorize
-
-
+        if (isset(WC()->session->token)) {
+            unset(WC()->session->paymentId);
+            unset(WC()->session->PayerID);
+        }
         //redirect to pay
         return array(
             'result' => 'success',
