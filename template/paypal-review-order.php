@@ -9,7 +9,7 @@ $checked = get_option('woocommerce_enable_guest_checkout');
 //Add hook to show login form or not
 $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']));
 ### After PayPal payment method confirmation, user is redirected back to this page with token and Payer ID ###
-var_dump(WC()->session->token);
+
 if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->session->paymentId)) {
     $frm_act = add_query_arg('pp_action', 'executepay', add_query_arg('wc-api', 'WC_Gateway_PayPal_Plus_AngellEYE', home_url('/')));
 } else {
