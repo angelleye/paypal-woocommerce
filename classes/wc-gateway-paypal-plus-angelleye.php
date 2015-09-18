@@ -224,8 +224,8 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function remove_old_order(){
-       if (@$_POST['payment_method'] == 'paypal_plus') {
-           $order = new WC_Order(order_awaiting_payment);
+       if (@$_POST['payment_method'] == 'paypal_plus' && isset(WC()->session->order_awaiting_payment)) {
+           $order = new WC_Order(WC()->session->order_awaiting_payment);
            $order->update_status('failed');
            unset(WC()->session->order_awaiting_payment);
        }
