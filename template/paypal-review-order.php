@@ -237,10 +237,11 @@ if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->
             {
                 float: none;
                 margin-top: 8px !important;
-                display: inline-block !important; }
+                display: inline-block !important;
+            }
         </style>
 
-        <p class="form-row terms">
+        <p class="terms">
             <label for="terms" class="checkbox lbl_terms"><?php printf( __( 'I&rsquo;ve read and accept the <a href="%s" class="terms_chkbox" target="_blank">terms &amp; conditions</a>', 'woocommerce' ), esc_url( wc_get_page_permalink( 'terms' ) ) ); ?></label>
             <input type="checkbox" class="input-checkbox terms_own" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
         </p>
