@@ -1041,7 +1041,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
                
                 $checkout_form_data = maybe_unserialize($this->get_session('checkout_form'));
-                if ((isset($this->billing_address) && $this->billing_address =='yes' )&& (empty($checkout_form_data['billing_country']))) {
+                if ((isset($this->billing_address) && $this->billing_address =='yes' ) || (empty($checkout_form_data['billing_country']))) {
                     $checkout_form_data = array();
                 }
                 if (isset($checkout_form_data) && !empty($checkout_form_data)) {
@@ -1107,7 +1107,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ($this->get_session('customer_notes') != '') {
                    $customer_notes = $this->get_session('customer_notes');
                 } else {
-                   $customer_notes = $checkout_form_data['order_comments'];
+                   if (isset($checkout_form_data['order_comments'])) $customer_notes = $checkout_form_data['order_comments'];
                 }
                 if (!empty($customer_notes)) {
                     // Update post 37
