@@ -871,10 +871,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             else {
                 $this->add_log("...ERROR: GetShippingDetails returned empty result");
             }
-            if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes") {
-                $url = add_query_arg(array( 'pp_action' => 'payaction'));
-                wp_redirect($url);
-                exit();
+            if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" ) {
+                //check terms enable
+                $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
+                if (!( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ))) {
+                    $url = add_query_arg(array( 'pp_action' => 'payaction'));
+                    wp_redirect($url);
+                    exit();
+                }
             }
 
             if (isset($_POST['createaccount'])) {

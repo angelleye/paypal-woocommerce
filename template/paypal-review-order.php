@@ -12,16 +12,20 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
 
 if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->session->paymentId)) {
     $frm_act = add_query_arg('pp_action', 'executepay', add_query_arg('wc-api', 'WC_Gateway_PayPal_Plus_AngellEYE', home_url('/')));
+    $is_paypal_express = false;
 } else {
     $frm_act = add_query_arg(array( 'pp_action' => 'payaction'));
+    $is_paypal_express = true;
 }
 
 ?>
 <form class="angelleye_checkout" method="POST" action="<?php echo $frm_act;?>">
+    <div class="wp_notice_own">
 
-<div id="paypalexpress_order_review">
-        <?php woocommerce_order_review();?>
-</div>
+    </div>
+    <div id="paypalexpress_order_review">
+            <?php woocommerce_order_review();?>
+    </div>
 
 <?php if ( WC()->cart->needs_shipping()  ) : ?>
 
@@ -188,12 +192,65 @@ if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->
         </p>
     </form>
 <?php else:
-global $pp_settings;
-$cancel_url = isset( $pp_settings['cancel_page'] ) ? get_permalink( $pp_settings['cancel_page'] ) : $woocommerce->cart->get_cart_url();
-$cancel_url = apply_filters( 'angelleye_review_order_cance_url', $cancel_url );
-echo '<div class="clear"></div>';
-echo '<p><a class="button angelleye_cancel" href="' . $cancel_url . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
-echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
+    global $pp_settings;
+    $cancel_url = isset( $pp_settings['cancel_page'] ) ? get_permalink( $pp_settings['cancel_page'] ) : $woocommerce->cart->get_cart_url();
+    $cancel_url = apply_filters( 'angelleye_review_order_cance_url', $cancel_url );
+    echo '<div class="clear"></div>';
+    $cancel_button = '<p><a class="button angelleye_cancel" href="' . $cancel_url . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
+
+    $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
+    if ($is_paypal_express && wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ) ){
+?>
+        <script type="text/javascript">
+            jQuery(document).ready(function (){
+                jQuery(".cls_place_order_own").click(function(){
+
+                    var ischecked = jQuery('.terms_own').is(':checked') ;
+
+                    if (ischecked == false) {
+                        jQuery('.wp_notice_own').html('<div class="woocommerce-error"><?php echo __( 'You must accept our Terms &amp; Conditions.', 'woocommerce' );?></div>');
+                        return false;
+                    }else if (ischecked == true) {
+                        jQuery('.wp_notice_own').html('');
+                        jQuery(this).attr('disabled','disabled').val('Processing');
+
+                        jQuery(this).parents('form').submit();
+                        return true;
+                    }
+
+
+
+                });
+
+            });
+        </script>
+        <style type="text/css">
+            #payment{
+                display:none;
+            }
+            .lbl_terms{
+                float: left;
+                display: inline-block !important;
+                margin-right: 5px !important;
+            }
+            .terms_own
+            {
+                float: none;
+                margin-top: 8px !important;
+                display: inline-block !important; }
+        </style>
+
+        <p class="form-row terms">
+            <label for="terms" class="checkbox lbl_terms"><?php printf( __( 'I&rsquo;ve read and accept the <a href="%s" class="terms_chkbox" target="_blank">terms &amp; conditions</a>', 'woocommerce' ), esc_url( wc_get_page_permalink( 'terms' ) ) ); ?></label>
+            <input type="checkbox" class="input-checkbox terms_own" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
+        </p>
+        <?php  echo $cancel_button;?>
+        <input type="button" class="button cls_place_order_own" value="<?php echo  __( 'Place Order','paypal-for-woocommerce');?>" /></p>
+<?php
+    } else {
+        echo $cancel_button;
+        echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
+    }
     ?>
     </form><!--close the checkout form-->
 <?php endif; ?>
