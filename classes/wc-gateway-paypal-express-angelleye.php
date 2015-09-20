@@ -1156,6 +1156,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                     //add hook
                     do_action('woocommerce_checkout_order_processed', $order_id);
+                    unset(WC()->session->checkout_form);
 
                     // Empty the Cart
                     WC()->cart->empty_cart();
