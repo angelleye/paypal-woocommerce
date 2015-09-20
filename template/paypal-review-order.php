@@ -5,11 +5,9 @@
 
 global $woocommerce;
 $checked = get_option('woocommerce_enable_guest_checkout');
+$checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
 
-//Add hook to show login form or not
-$show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged_in() && $checked==="no" && isset($_REQUEST['pp_action']));
 ### After PayPal payment method confirmation, user is redirected back to this page with token and Payer ID ###
-
 if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->session->paymentId)) {
     $frm_act = add_query_arg('pp_action', 'executepay', add_query_arg('wc-api', 'WC_Gateway_PayPal_Plus_AngellEYE', home_url('/')));
     $is_paypal_express = false;
@@ -17,12 +15,17 @@ if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->
     $frm_act = add_query_arg(array( 'pp_action' => 'payaction'));
     $is_paypal_express = true;
 }
+//Add hook to show login form or not
+$show_login = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_express && !is_user_logged_in() && $checked==="no" );
 
+//Add hook to show create account form
+$show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_express && !is_user_logged_in() && $checked==="yes" && empty($checkout_form_data['billing_address_1']));
+
+var_dump(WC()->session->wc_notices);
 ?>
 <form class="angelleye_checkout" method="POST" action="<?php echo $frm_act;?>">
-    <div class="wp_notice_own">
-
-    </div>
+    <div class="wp_notice_own"></div>
+    <?php wc_print_notices();?>
     <div id="paypalexpress_order_review">
             <?php woocommerce_order_review();?>
     </div>
@@ -119,6 +122,41 @@ if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->
         </div><!-- /.col-2 -->
     </div><!-- /.col2-set -->
 <?php endif; ?>
+<?php if ( $show_act ): ?>
+    <script type="text/javascript">
+        jQuery(document).ready(function(){
+            jQuery(".chkcreate_act").click(function(){
+                var ischecked_act = jQuery('.chkcreate_act').is(':checked') ;
+
+                if (ischecked_act == false) {
+                    jQuery('.create_account_child').toggle();
+                }else if(ischecked_act == true) {
+                    jQuery('.create_account_child').toggle();
+                }
+
+            });
+        });
+    </script>
+
+    <div class="create-account" class="div_create_act" >
+        <p class="form-row form-row-wide create-account div_create_act_para" style="cursor:pointer;">
+            <input class="input-checkbox chkcreate_act" id="createaccount" type="checkbox" name="createaccount" value="1">
+            <label for="createaccount" style="cursor:pointer;" class="checkbox lbl_chkcreate_act"><?php echo __('Create an account?', 'paypal-for-woocommerce');?></label>
+        </p>
+        <div class="create_account_child" style="display:none;">
+            <p><?php echo __('Create an account by entering the information below. If you are a returning customer please login at the top of the page.', 'paypal-for-woocommerce');?></p>
+
+
+            <p class="form-row form-row validate-required woocommerce-validated" id="account_password_field">
+                <label for="account_password" class=""><?php echo __('Account password', 'paypal-for-woocommerce');?><abbr class="required" title="required">*</abbr>
+                </label>
+                <input type="password" class="input-text" placeholder="Password" value="" name="create_act"/>
+            </p>
+
+            <div class="clear"></div>
+        </div>
+    </div>
+<?php endif;?>
 <?php if ( $show_login ):  ?>
 </form>
     <style type="text/css">
@@ -154,11 +192,11 @@ if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->
         }
 
         woocommerce_login_form(
-        array(
-        'message'  => 'Please login or create an account to complete your order.',
-        'redirect' => curPageURL(),
-        'hidden'   => true
-        )
+            array(
+            'message'  => 'Please login or create an account to complete your order.',
+            'redirect' => curPageURL(),
+            'hidden'   => true
+            )
         );
         $result = unserialize(WC()->session->RESULT);
         $email = (!empty($_POST['email']))?$_POST['email']:$result['EMAIL'];
@@ -198,7 +236,6 @@ if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->
     echo '<div class="clear"></div>';
     $cancel_button = '<p><a class="button angelleye_cancel" href="' . $cancel_url . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
 
-    $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
     if ($is_paypal_express && wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ) ){
 ?>
         <script type="text/javascript">

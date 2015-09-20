@@ -994,6 +994,69 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         } elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'payaction') {
             if (isset($_POST) || ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes")) {
+                $result = unserialize(WC()->session->RESULT);
+                /* create account start */
+                if (isset($_POST['create_act']) && !empty($_POST['create_act'])) {
+                    $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
+                    $create_user_email = $result['EMAIL'];
+                    $create_user_name = sanitize_user( current( explode( '@', $create_user_email ) ), true );
+
+                    // Ensure username is unique
+                    $append     = 1;
+                    $o_username = $create_user_name;
+                    while ( username_exists( $create_user_name ) ) {
+                        $create_user_name = $o_username . $append;
+                        $append ++;
+                    }
+
+                    //If have any issue, redirect to review-order page
+                    $create_acc_error = false;
+                    if (get_user_by('email', $create_user_email) != false) {
+                        wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
+                        $create_acc_error = true;
+                    } else {
+                        $username = !empty($create_user_name) ? $create_user_name : '';
+                        $password = !empty($_POST['create_act']) ? $_POST['create_act'] : '';
+                        $email = $create_user_email;
+                        try {
+
+                            //try to create user
+                            $new_customer = wc_create_new_customer(sanitize_email($email), wc_clean($username), $password);
+                            if (is_wp_error($new_customer)) {
+                                wc_add_notice($new_customer->get_error_message(), 'error');
+                                $create_acc_error = true;
+                            }
+                            if (apply_filters('paypal-for-woocommerce_registration_auth_new_customer', true, $new_customer)) {
+                                wc_set_customer_auth_cookie($new_customer);
+                            }
+
+                            //Log user in
+                            $creds = array(
+                                'user_login' => wc_clean($username),
+                                'user_password' => $password,
+                                'remember' => true,
+                            );
+                            $user = wp_signon($creds, false);
+                            if (is_wp_error($user)) {
+                                wc_add_notice($user->get_error_message(), 'error');
+                                $create_acc_error = true;
+                            } else {
+                                wp_set_current_user($user->ID); //Here is where we update the global user variables
+                                $secure_cookie = is_ssl() ? true : false;
+                                wp_set_auth_cookie($user->ID, true, $secure_cookie);
+                                $this->customer_id = $user->ID;
+                            }
+                        } catch (Exception $e) {
+                            wc_add_notice('<strong>' . __('Error', 'paypal-for-woocommerce') . ':</strong> ' . $e->getMessage(), 'error');
+                            $create_acc_error = true;
+                        }
+                    }
+                    if ($create_acc_error) {
+                        WC()->session->save_data();
+                        wp_redirect(add_query_arg(array( 'pp_action' => 'revieworder')));
+                        exit();
+                    }
+                }
 
                 // Update customer shipping and payment method to posted method
                 $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
