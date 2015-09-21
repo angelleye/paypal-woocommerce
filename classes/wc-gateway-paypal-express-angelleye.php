@@ -796,7 +796,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }
         elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'revieworder') {
-            wc_clear_notices();
             // The customer has logged into PayPal and approved order.
             // Retrieve the shipping details and present the order for completion.
             if (!defined('WOOCOMMERCE_CHECKOUT'))
@@ -887,7 +886,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     wc_add_notice(__('Username is required', 'paypal-for-woocommerce'), 'error');
                 } elseif (username_exists($_POST['username'])) {
                     wc_add_notice(__('This username is already registered.', 'paypal-for-woocommerce'), 'error');
-                } elseif (empty($_POST['email'])) {
+                } elseif (empty($_POST['email']) || !is_email($_POST['email'])) {
                     wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
                 } elseif (empty($_POST['password']) || empty($_POST['repassword'])) {
                     wc_add_notice(__('Password is required.', 'paypal-for-woocommerce'), 'error');
@@ -998,7 +997,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 /* create account start */
                 if (isset($_POST['create_act']) && !empty($_POST['create_act'])) {
                     $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
-                    $create_user_email = $result['EMAIL'];
+                    $create_user_email = $_POST['email'];
                     $create_user_name = sanitize_user( current( explode( '@', $create_user_email ) ), true );
 
                     // Ensure username is unique
@@ -1011,7 +1010,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                     //If have any issue, redirect to review-order page
                     $create_acc_error = false;
-                    if (get_user_by('email', $create_user_email) != false) {
+                    if (empty($_POST['email']) || !is_email($_POST['email'])) {
+                        wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
+                    } elseif (get_user_by('email', $create_user_email) != false) {
                         wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
                         $create_acc_error = true;
                     } else {
@@ -1052,7 +1053,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }
                     }
                     if ($create_acc_error) {
-                        WC()->session->save_data();
                         wp_redirect(add_query_arg(array( 'pp_action' => 'revieworder')));
                         exit();
                     }

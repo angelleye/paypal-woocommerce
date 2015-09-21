@@ -361,9 +361,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Outputs the pay page - payment gateways can hook in here to show payment forms etc
          **/
         function woocommerce_review_order_angelleye() {
-            global $woocommerce;
-            //$woocommerce->nocache();
-            wc_print_notices() ;
+
             echo "
 			<script>
 			jQuery(document).ready(function($) {

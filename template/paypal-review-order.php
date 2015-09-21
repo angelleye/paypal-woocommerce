@@ -14,6 +14,8 @@ if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->
 } else {
     $frm_act = add_query_arg(array( 'pp_action' => 'payaction'));
     $is_paypal_express = true;
+    $result = unserialize(WC()->session->RESULT);
+    $email = (!empty($_POST['email']))?$_POST['email']:$result['EMAIL'];
 }
 //Add hook to show login form or not
 $show_login = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_express && !is_user_logged_in() && $checked==="no" );
@@ -21,7 +23,6 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expr
 //Add hook to show create account form
 $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_express && !is_user_logged_in() && $checked==="yes" && empty($checkout_form_data['billing_address_1']));
 
-var_dump(WC()->session->wc_notices);
 ?>
 <form class="angelleye_checkout" method="POST" action="<?php echo $frm_act;?>">
     <div class="wp_notice_own"></div>
@@ -145,9 +146,11 @@ var_dump(WC()->session->wc_notices);
         </p>
         <div class="create_account_child" style="display:none;">
             <p><?php echo __('Create an account by entering the information below. If you are a returning customer please login at the top of the page.', 'paypal-for-woocommerce');?></p>
-
-
-            <p class="form-row form-row validate-required woocommerce-validated" id="account_password_field">
+            <p class="form-row validate-required">
+                <label for="paypalexpress_order_review_email">Email:<span class="required">*</span></label>
+                <input style="width: 100%;" type="email" name="email" id="paypalexpress_order_review_email" value="<?php echo $email; ?>" />
+            </p>
+            <p class="form-row validate-required woocommerce-validated form-row-last" id="account_password_field">
                 <label for="account_password" class=""><?php echo __('Account password', 'paypal-for-woocommerce');?><abbr class="required" title="required">*</abbr>
                 </label>
                 <input type="password" class="input-text" placeholder="Password" value="" name="create_act"/>
@@ -198,8 +201,6 @@ var_dump(WC()->session->wc_notices);
             'hidden'   => true
             )
         );
-        $result = unserialize(WC()->session->RESULT);
-        $email = (!empty($_POST['email']))?$_POST['email']:$result['EMAIL'];
         ?>
     </form>
     <div class="title">
