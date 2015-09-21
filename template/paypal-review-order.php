@@ -206,10 +206,10 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
     <div class="title">
         <h2><?php _e( 'Create A New Account', 'woocommerce' ); ?></h2>
     </div>
-    <form action="" method="post">
+    <form action="<?php echo add_query_arg(array( 'pp_action' => 'revieworder'));?>" method="post">
         <p class="form-row form-row-first">
             <label for="paypalexpress_order_review_username">Username:<span class="required">*</span></label>
-            <input style="width: 100%;" type="text" name="username" id="paypalexpress_order_review_username" value="" />
+            <input style="width: 100%;" type="text" name="username" id="paypalexpress_order_review_username" value="<?php echo @$_POST['username']; ?>" />
         </p>
         <p class="form-row form-row-last">
             <label for="paypalexpress_order_review_email">Email:<span class="required">*</span></label>
