@@ -993,9 +993,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         }
 		
         // Rounding amendment
-       if (trim(number_format(WC()->cart->total, 2, '.', '')) !== trim(number_format($ITEMAMT,2,'.','') + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''))) {
+       if (trim(number_format($order->get_total(), 2, '.', '')) !== trim(number_format($ITEMAMT,2,'.','') + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''))) {
             
-			$diffrence_amount = $this->get_diffrent(WC()->cart->total, $ITEMAMT + $tax + number_format($shipping, 2, '.', ''));
+			$diffrence_amount = $this->get_diffrent($order->get_total(), $ITEMAMT + $tax + number_format($shipping, 2, '.', ''));
             if($shipping > 0) {
 				$PayPalRequestData['PaymentDetails']['shippingamt'] = number_format($shipping + $diffrence_amount, 2, '.', '');
             } elseif ($tax > 0) {

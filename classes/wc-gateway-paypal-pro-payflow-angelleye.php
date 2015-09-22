@@ -597,8 +597,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			// Rounding amendment
 			
 	        // Rounding amendment
-	       if (trim(number_format(WC()->cart->total, 2, '.', '')) !== trim(number_format($ITEMAMT,2,'.','') + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''))) {
-				$diffrence_amount = $this->get_diffrent(WC()->cart->total, $ITEMAMT + $tax + number_format($shipping, 2, '.', ''));
+	       if (trim(number_format($order->get_total(), 2, '.', '')) !== trim(number_format($ITEMAMT,2,'.','') + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''))) {
+				$diffrence_amount = $this->get_diffrent($order->get_total(), $ITEMAMT + $tax + number_format($shipping, 2, '.', ''));
 	            if($shipping > 0) {
 					$PayPalRequestData['freightamt'] = round($shipping + $diffrence_amount, 2);
 	            } elseif ($tax > 0) {
