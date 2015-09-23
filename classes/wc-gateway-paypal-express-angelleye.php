@@ -1281,6 +1281,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $is_ordernote ="1";
         }
 
+
+        //prefill email
+        if (isset($posted['billing_email'])) {
+            $customer_email = $posted['billing_email'];
+        } elseif(is_user_logged_in()) {
+            global $current_user;
+            get_currentuserinfo();
+            $customer_email = $current_user->user_email;
+        } else {
+            $customer_email = '';
+        }
+
+
         $SECFields = array(
             'token' => '', // A timestamped token, the value of which was returned by a previous SetExpressCheckout call.
             'maxamt' => $maxAmount, // The expected maximum total amount the order will be, including S&H and sales tax.
@@ -1301,7 +1314,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'hdrbackcolor' => '', // Sets the background color for the header of the payment page.  Default is white.
             'payflowcolor' => '', // Sets the background color for the payment page.  Default is white.
             'skipdetails' => $this->skip_final_review == 'yes' ? '1' : '0', // This is a custom field not included in the PayPal documentation.  It's used to specify whether you want to skip the GetExpressCheckoutDetails part of checkout or not.  See PayPal docs for more info.
-            'email' => '', // Email address of the buyer as entered during checkout.  PayPal uses this value to pre-fill the PayPal sign-in page.  127 char max.
+            'email' => $customer_email, // Email address of the buyer as entered during checkout.  PayPal uses this value to pre-fill the PayPal sign-in page.  127 char max.
             'channeltype' => '', // Type of channel.  Must be Merchant (non-auction seller) or eBayItem (eBay auction)
             'giropaysuccessurl' => '', // The URL on the merchant site to redirect to after a successful giropay payment.  Only use this field if you are using giropay or bank transfer payment methods in Germany.
             'giropaycancelurl' => '', // The URL on the merchant site to redirect to after a canceled giropay payment.  Only use this field if you are using giropay or bank transfer methods in Germany.
