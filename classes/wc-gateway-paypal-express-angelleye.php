@@ -870,7 +870,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             else {
                 $this->add_log("...ERROR: GetShippingDetails returned empty result");
             }
-            if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" ) {
+            if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters( 'woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout'))) {
                 //check terms enable
                 $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
                 if (!( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ))) {
@@ -996,7 +996,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         } elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'payaction') {
-            if (isset($_POST) || ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes")) {
+            if (isset($_POST) || ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters( 'woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')))) {
                 $result = unserialize(WC()->session->RESULT);
                 /* create account start */
                 if (isset($_POST['create_act']) && !empty($_POST['create_act'])) {
