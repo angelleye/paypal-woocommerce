@@ -989,6 +989,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             update_user_meta($this->customer_id, 'billing_email', isset($result['EMAIL']) ? $result['EMAIL'] : '');
 	                    }
                     }
+
+                    //reload the page
+                    wp_redirect(add_query_arg(array( 'pp_action' => 'revieworder')));
+                    exit();
                 }
             }
         } elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'payaction') {
