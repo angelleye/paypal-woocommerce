@@ -640,6 +640,199 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 update_option('paypal_for_woocommerce_version', self::VERSION_PFW);
         	}
         }
+
+
+        public static function calculate($order, $send_items = false){
+
+            $PaymentOrderItems = array();
+            $ctr = $total_items = $total_discount = $total_tax = $shipping = 0;
+            $ITEMAMT = 0;
+            if (sizeof($order->get_items()) > 0) {
+                if ($send_items) {
+                    foreach ($order->get_items() as $values) {
+                        $_product = $order->get_product_from_item($values);
+                        $qty = absint($values['qty']);
+                        $sku = $_product->get_sku();
+                        $values['name'] = html_entity_decode($values['name'], ENT_NOQUOTES, 'UTF-8');
+                        if ($_product->product_type == 'variation') {
+                            if (empty($sku)) {
+                                $sku = $_product->parent->get_sku();
+                            }
+
+                            $item_meta = new WC_Order_Item_Meta($values,$_product);
+                            $meta = $item_meta->display(true, true);
+                            if (!empty($meta)) {
+                                $values['name'] .= " - " . str_replace(", \n", " - ", $meta);
+                            }
+                        }
+
+                        $Item = array(
+                            'name' => $values['name'], // Item name. 127 char max.
+                            'desc' => '', // Item description. 127 char max.
+                            'amt' => round( $values['line_subtotal'] / $qty, 2 ), // Cost of item.
+                            'number' => $sku, // Item number.  127 char max.
+                            'qty' => $qty, // Item qty on order.  Any positive integer.
+                        );
+                        array_push($PaymentOrderItems, $Item);
+                        $ITEMAMT += round( $values['line_subtotal'] / $qty, 2 ) * $qty;
+                    }
+
+                    /**
+                     * Add custom Woo cart fees as line items
+                     */
+                    foreach (WC()->cart->get_fees() as $fee) {
+                        $Item = array(
+                            'name' => $fee->name, // Item name. 127 char max.
+                            'desc' => '', // Item description. 127 char max.
+                            'amt' => number_format($fee->amount, 2, '.', ''), // Cost of item.
+                            'number' => $fee->id, // Item number. 127 char max.
+                            'qty' => 1, // Item qty on order. Any positive integer.
+                         );
+
+                        /**
+                         * The gift wrap amount actually has its own parameter in
+                         * DECP, so we don't want to include it as one of the line
+                         * items.
+                         */
+                        if ($Item['number'] != 'gift-wrap') {
+                            array_push($PaymentOrderItems, $Item);
+                            $ITEMAMT += $fee->amount * $Item['qty'];
+                        }
+
+                        $ctr++;
+                    }
+
+                    if (!AngellEYE_Gateway_Paypal::is_wc_version_greater_2_3()) {
+                        /*
+                         * Get discounts
+                         */
+                        if ($order->get_cart_discount() > 0) {
+                            foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
+                                $Item = array(
+                                    'name' => 'Cart Discount',
+                                    'number' => $code,
+                                    'qty' => '1',
+                                    'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                                );
+                                array_push($PaymentOrderItems, $Item);
+                            }
+                            $total_discount -= $order->get_cart_discount();
+                        }
+
+                        if ($order->get_order_discount() > 0) {
+                            foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+                                $Item = array(
+                                    'name' => 'Order Discount',
+                                    'number' => $code,
+                                    'qty' => '1',
+                                    'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                                );
+                                array_push($PaymentOrderItems, $Item);
+                            }
+                            $total_discount -= $order->get_order_discount();
+                        }
+                    } else {
+                        if ($order->get_total_discount() > 0) {
+                            $Item = array(
+                                'name' => 'Total Discount',
+                                'qty' => 1,
+                                'amt' => - number_format($order->get_total_discount(), 2, '.', ''),
+                            );
+                            array_push($PaymentOrderItems, $Item);
+                            $total_discount -= $order->get_total_discount();
+                        }
+                    }
+                }
+
+                /*
+                 * Set shipping and tax values.
+                 */
+                if (get_option('woocommerce_prices_include_tax') == 'yes') {
+                    $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
+                    $tax = 0;
+                } else {
+                    $shipping = $order->get_total_shipping();
+                    $tax = $order->get_total_tax();
+                }
+
+                if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
+                    $tax = $order->get_total_tax();
+                }
+
+                if( $tax > 0) {
+                    $tax = number_format($tax, 2, '.', '');
+                }
+
+                if( $shipping > 0) {
+                    $shipping = number_format($shipping, 2, '.', '');
+                }
+
+                if( $total_discount ) {
+                    $total_discount = round($total_discount, 2);
+                }
+
+                $Payment['itemamt'] = number_format($ITEMAMT + $total_discount, 2, '.', '');
+
+                /*
+                 * Set tax
+                 */
+                if ($tax > 0) {
+                    $Payment['taxamt'] = number_format($tax, 2, '.', '');       // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
+                } else {
+                    $Payment['taxamt'] = 0;
+                }
+
+                /*
+                 * Set shipping
+                 */
+                if ($shipping > 0) {
+                    $Payment['shippingamt'] = number_format($shipping, 2, '.', '');      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+                } else {
+                    $Payment['shippingamt'] = 0;
+                }
+            }
+
+            $Payment['order_items'] = $PaymentOrderItems;
+
+            // Rounding amendment
+
+            if (trim(number_format($order->get_total(), 2, '.', '')) !== trim(number_format($Payment['itemamt'] + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''), 2, '.', ''))) {
+                $diffrence_amount = AngellEYE_Gateway_Paypal::get_diffrent(WC()->cart->total, $Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''));
+                if($shipping > 0) {
+                    $Payment['shippingamt'] = round($shipping + $diffrence_amount, 2);
+                } elseif ($tax > 0) {
+                    $Payment['taxamt'] = round($tax + $diffrence_amount, 2);
+                } else {
+                    //make change to itemamt
+                    $Payment['itemamt'] = round($Payment['itemamt'] + $diffrence_amount, 2);
+                    //also make change to the first item
+                    if ($send_items) {
+                        $Payment['order_items'][0]['amt'] =  round($Payment['order_items'][0]['amt'] + $diffrence_amount, 2);
+                    }
+
+                }
+            }
+
+            return $Payment;
+        }
+
+        public static function get_diffrent($amout_1, $amount_2) {
+            $diff_amount = $amout_1 - $amount_2;
+            return $diff_amount;
+        }
+        public static function cut_off($number) {
+            $parts = explode(".", $number);
+            $newnumber = $parts[0] . "." . $parts[1][0] . $parts[1][1];
+            return $newnumber;
+        }
+
+        public static function is_wc_version_greater_2_3() {
+            return AngellEYE_Gateway_Paypal::get_wc_version() && version_compare(AngellEYE_Gateway_Paypal::get_wc_version(), '2.3', '>=');
+        }
+
+        public static function get_wc_version() {
+            return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
+        }
     }
 }
 new AngellEYE_Gateway_Paypal();

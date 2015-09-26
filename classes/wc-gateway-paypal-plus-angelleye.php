@@ -343,155 +343,27 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
     function get_order_details($order) {
         $OrderItems = array();
-        $item_loop = 0;
-        if ( sizeof( $order->get_items() ) > 0 ) {
-            $ITEMAMT = $TAXAMT = 0;
-            $inc_tax = get_option( 'woocommerce_prices_include_tax' ) == 'yes' ? true : false;
-            foreach ( $order->get_items() as $item ) {
-                $_product = $order->get_product_from_item($item);
-                if ( $item['qty'] ) {
-                    $sku = $_product->get_sku();
-                    if ($_product->product_type=='variation') {
-                        if (empty($sku)) {
-                            $sku = $_product->parent->get_sku();
-                        }
-                        $item_meta = new WC_Order_Item_Meta( $item['item_meta'] );
-                        $meta = $item_meta->display(true, true);
-                        $item['name'] = html_entity_decode($item['name'], ENT_NOQUOTES, 'UTF-8');
-                        if (!empty($meta)) {
-                            $item['name'] .= " - ".str_replace(", \n", " - ",$meta);
-                        }
-                    }
+        $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
+        if ($this->send_items) {
+            foreach ($PaymentData['order_items'] as $item) {
+                $Item	 = array(
+                    'name' => $item['name'], // Item Name.  127 char max.
+                    'price' => $item['amt'], 	// Cost of individual item.
+                    'currency' => get_woocommerce_currency(),
+                    'quantity' => $item['qty'], // Item quantity.  Must be any positive integer.
 
-                    $Item	 = array(
-                        'name' => $item['name'], // Item Name.  127 char max.
-                        'price' => round( $item['line_subtotal'] / $item['qty'], 2 ), 	// Cost of individual item.
-                        'currency' => get_woocommerce_currency(),
-                        'quantity' => $item['qty'], // Item quantity.  Must be any positive integer.
-
-                    );
-                    array_push($OrderItems, $Item);
-
-                    $ITEMAMT += round( $item['line_subtotal'] / $item['qty'], 2 ) * $item['qty'];
-                    $item_loop++;
-                }
-            }
-
-            if (!$this->is_wc_version_greater_2_3()) {
-                //Cart Discount
-                if($order->get_cart_discount()>0)
-                {
-                    foreach(WC()->cart->get_coupons('cart') as $code => $coupon)
-                    {
-                        $Item	 = array(
-                            'name' => 'Cart Discount', 						// Item Name.  127 char max.
-                            'price' => '-'.WC()->cart->coupon_discount_amounts[$code], // Cost of individual item.
-                            'currency' => get_woocommerce_currency(),
-                            'quantity' => 1, // Item quantity.  Must be any positive integer.
-                        );
-                        array_push($OrderItems, $Item);
-                    }
-
-                    $ITEMAMT = $ITEMAMT - $order->get_cart_discount();
-                }
-
-                //Order Discount
-                if($order->get_order_discount()>0)
-                {
-                    foreach(WC()->cart->get_coupons('order') as $code => $coupon)
-                    {
-                        $Item	 = array(
-                            'name' => 'Order Discount', 						// Item Name.  127 char max.
-                            'price' => '-'.WC()->cart->coupon_discount_amounts[$code], 							// Cost of individual item.
-                            'currency' => get_woocommerce_currency(),
-                            'quantity' => 1, // Item quantity.  Must be any positive integer.
-                        );
-                        array_push($OrderItems, $Item);
-                    }
-
-                    $ITEMAMT = $ITEMAMT - $order->get_order_discount();
-                }
-            } else {
-                if ($order->get_total_discount() > 0) {
-                    $Item = array(
-                        'name' => 'Total Discount',
-                        'price' => - number_format($order->get_total_discount(), 2, '.', ''),
-                        'currency' => get_woocommerce_currency(),
-                        'quantity' => 1, // Item quantity.  Must be any positive integer.
-                    );
-                    array_push($OrderItems, $Item);
-                    $ITEMAMT -= number_format($order->get_total_discount(), 2, '.', '');
-                }
-            }
-
-            /**
-             * Get shipping and tax.
-             */
-            if(get_option('woocommerce_prices_include_tax' ) == 'yes')
-            {
-                $shipping 		= $order->get_total_shipping() + $order->get_shipping_tax();
-                $tax			= 0;
-            }
-            else
-            {
-                $shipping 		= $order->get_total_shipping();
-                $tax 			= $order->get_total_tax();
-            }
-
-            if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
-                $tax = $order->get_total_tax();
-            }
-
-            if ($tax>0)
-            {
-                $PaymentDetails['taxamt'] = number_format($tax, 2, '.', ''); 						// Required if you specify itemized cart tax details. Sum of tax for all items on the order.  Total sales tax.
-            }
-
-            if($shipping > 0)
-            {
-                $PaymentDetails['shippingamt'] = number_format($shipping, 2, '.', '');					// Total shipping costs for the order.  If you specify shippingamt, you must also specify itemamt.
+                );
+                array_push($OrderItems, $Item);
             }
         }
 
-        /**
-         * Add custom Woo cart fees as line items
-         */
-
-        foreach ( WC()->cart->get_fees() as $fee )
-        {
-            $Item = array(
-                'name' => $fee->name, // Item name. 127 char max.
-                'price' => number_format($fee->amount,2,'.',''), // Cost of item.
-                'currency' => get_woocommerce_currency(),
-                'quantity' => 1, // Item quantity.  Must be any positive integer.
-            );
-
-
-            array_push($OrderItems, $Item);
-
-            $ITEMAMT += $fee->amount*$Item['qty'];
-            $item_loop++;
-        }
-        if( !$this->send_items ){
-            $OrderItems = array();
-            $PaymentDetails['itemamt'] = number_format($ITEMAMT,2,'.','');					// Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
-        }else{
-            $PaymentDetails['OrderItems'] = $OrderItems;
-            $PaymentDetails['itemamt'] = number_format($ITEMAMT,2,'.','');					// Required if you include itemized cart details. (L_AMTn, etc.)  Subtotal of items not including S&H, or tax.
-        }
-
-        // Rounding amendment
-        if (trim(number_format($order->get_total(), 2, '.', '')) !== trim(number_format($ITEMAMT,2,'.','') + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''))) {
-
-            $diffrence_amount = $this->get_diffrent($order->get_total(), $ITEMAMT + $tax + number_format($shipping, 2, '.', ''));
-            if($shipping > 0) {
-                $PaymentDetails['shippingamt'] = number_format($shipping + $diffrence_amount, 2, '.', '');
-            } elseif ($tax > 0) {
-                $PaymentDetails['taxamt'] = number_format($tax + $diffrence_amount, 2, '.', '');
-            } else {
-                $PaymentDetails['itemamt'] = number_format($PaymentDetails['itemamt'] + $diffrence_amount, 2);
-            }
-        }
+        /*
+        * Set tax, shipping, itemamt
+        */
+        $PaymentDetails['taxamt']      = $PaymentData['taxamt'];       // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
+        $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+        $PaymentDetails['itemamt']     = $PaymentData['itemamt'];      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+        $PaymentDetails['OrderItems'] = $OrderItems;
 
         return $PaymentDetails;
     }
