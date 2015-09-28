@@ -81,8 +81,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_after_mini_cart', array($this, 'mini_cart_button'));            
             add_action( 'woocommerce_add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
             add_action( 'woocommerce_after_single_variation', array($this, 'buy_now_button_js'));
-            add_action('admin_enqueue_scripts', array( $this , 'onetarek_wpmut_admin_scripts' ) );
-            add_action('admin_print_styles', array( $this , 'onetarek_wpmut_admin_styles' ) );
+            add_action( 'admin_enqueue_scripts', array( $this , 'admin_scripts' ) );
+            add_action( 'admin_print_styles', array( $this , 'admin_styles' ) );
             add_action( 'woocommerce_cart_calculate_fees', array($this, 'woocommerce_custom_surcharge') );
             add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'add_div_before_add_to_cart_button' ), 25);
             add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
@@ -127,14 +127,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
 
-        function onetarek_wpmut_admin_scripts()
+        function admin_scripts()
         {
             $dir = plugin_dir_path( __FILE__ );
             wp_enqueue_media();
             wp_enqueue_script( 'jquery');
         }
 
-        function onetarek_wpmut_admin_styles()
+        function admin_styles()
         {
             wp_enqueue_style('thickbox');
 
@@ -179,7 +179,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
             $user_id = $current_user->ID;
             /* If user clicks to ignore the notice, add that to their user meta */
-            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate');
+            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_ppplus_currency', 'ignore_ppplus_check');
             foreach ($notices as $notice)
                 if ( isset($_GET[$notice]) && '0' == $_GET[$notice] ) {
                     add_user_meta($user_id, $notice, 'true', true);
