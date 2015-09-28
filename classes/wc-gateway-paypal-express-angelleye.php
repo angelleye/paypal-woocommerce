@@ -812,187 +812,196 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->add_log("...Token:" . $this->get_session('TOKEN'));
             $this->add_log("...PayerID: " . $this->get_session('PayerID'));
 
-            $result = $this->CallGetShippingDetails($this->get_session('TOKEN'));
+            //if empty TOKEN redirect to cart page
+            if (!isset(WC()->session->TOKEN)) {
+                $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
+                $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
+                wc_add_notice($ec_confirm_message, "error");
+                wp_redirect(get_permalink(wc_get_page_id('cart')));
+            } else {
 
-            if (!empty($result)) {
-                $this->set_session('RESULT', serialize($result));
-                if (isset($result['SHIPTOCOUNTRYCODE'])) {
+                $result = $this->CallGetShippingDetails($this->get_session('TOKEN'));
+
+                if (!empty($result)) {
+                    $this->set_session('RESULT', serialize($result));
+                    if (isset($result['SHIPTOCOUNTRYCODE'])) {
+                        /**
+                         * Check if shiptocountry is in the allowed countries list
+                         */
+                        if (!array_key_exists($result['SHIPTOCOUNTRYCODE'], WC()->countries->get_allowed_countries())) {
+                            wc_add_notice(sprintf(__('We do not sell in your country, please try again with another address.', 'paypal-for-woocommerce')), 'error');
+                            wp_redirect(get_permalink(wc_get_page_id('cart')));
+                            exit;
+                        };
+                        WC()->customer->set_shipping_country($result['SHIPTOCOUNTRYCODE']);
+                    }
+
+                    if (isset($result['SHIPTONAME']))
+                        WC()->customer->shiptoname = $result['SHIPTONAME'];
+                    if (isset($result['SHIPTOSTREET']))
+                        WC()->customer->set_address($result['SHIPTOSTREET']);
+                    if (isset($result['SHIPTOCITY']))
+                        WC()->customer->set_city($result['SHIPTOCITY']);
+                    if (isset($result['SHIPTOCOUNTRYCODE']))
+                        WC()->customer->set_country($result['SHIPTOCOUNTRYCODE']);
+                    if (isset($result['SHIPTOSTATE']))
+                        WC()->customer->set_state($this->get_state_code($result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE']));
+                    if (isset($result['SHIPTOZIP']))
+                        WC()->customer->set_postcode($result['SHIPTOZIP']);
+                    if (isset($result['SHIPTOSTATE']))
+                        WC()->customer->set_shipping_state($this->get_state_code($result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE']));
+                    if (isset($result['SHIPTOZIP']))
+                        WC()->customer->set_shipping_postcode($result['SHIPTOZIP']);
+
                     /**
-                     * Check if shiptocountry is in the allowed countries list
+                     * Save GECD data in sessions for use in DECP
                      */
-                    if (!array_key_exists($result['SHIPTOCOUNTRYCODE'], WC()->countries->get_allowed_countries())) {
-                        wc_add_notice(sprintf(__('We do not sell in your country, please try again with another address.', 'paypal-for-woocommerce')), 'error');
-                        wp_redirect(get_permalink(wc_get_page_id('cart')));
-                        exit;
-                    };
-                    WC()->customer->set_shipping_country($result['SHIPTOCOUNTRYCODE']);
-                }
-
-                if (isset($result['SHIPTONAME']))
-                    WC()->customer->shiptoname = $result['SHIPTONAME'];
-                if (isset($result['SHIPTOSTREET']))
-                    WC()->customer->set_address($result['SHIPTOSTREET']);
-                if (isset($result['SHIPTOCITY']))
-                    WC()->customer->set_city($result['SHIPTOCITY']);
-                if (isset($result['SHIPTOCOUNTRYCODE']))
-                    WC()->customer->set_country($result['SHIPTOCOUNTRYCODE']);
-                if (isset($result['SHIPTOSTATE']))
-                    WC()->customer->set_state($this->get_state_code($result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE']));
-                if (isset($result['SHIPTOZIP']))
-                    WC()->customer->set_postcode($result['SHIPTOZIP']);
-                if (isset($result['SHIPTOSTATE']))
-                    WC()->customer->set_shipping_state($this->get_state_code($result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE']));
-                if (isset($result['SHIPTOZIP']))
-                    WC()->customer->set_shipping_postcode($result['SHIPTOZIP']);
-
-                /**
-                 * Save GECD data in sessions for use in DECP
-                 */
-                $this->set_session('company', isset($result['BUSINESS']) ? $result['BUSINESS'] : '');
-                $this->set_session('firstname', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
-                $this->set_session('lastname', isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
-                $this->set_session('shiptoname', isset($result['SHIPTONAME']) ? $result['SHIPTONAME'] : '');
-                $this->set_session('shiptostreet', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
-                $this->set_session('shiptostreet2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
-                $this->set_session('shiptocity', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '');
-                $this->set_session('shiptocountrycode', isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
-                $this->set_session('shiptostate', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '');
-                $this->set_session('shiptozip', isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
-                $this->set_session('payeremail', isset($result['EMAIL']) ? $result['EMAIL'] : '');
-                $this->set_session('giftmessage', isset($result['GIFTMESSAGE']) ? $result['GIFTMESSAGE'] : '');
-                $this->set_session('giftreceiptenable', isset($result['GIFTRECEIPTENABLE']) ? $result['GIFTRECEIPTENABLE'] : '');
-                $this->set_session('giftwrapname', isset($result['GIFTWRAPNAME']) ? $result['GIFTWRAPNAME'] : '');
-                $this->set_session('giftwrapamount', isset($result['GIFTWRAPAMOUNT']) ? $result['GIFTWRAPAMOUNT'] : '');
-                $this->set_session('customer_notes', isset($result['PAYMENTREQUEST_0_NOTETEXT']) ? $result['PAYMENTREQUEST_0_NOTETEXT'] : '');
-                $this->set_session('phonenum', isset($result['PHONENUM']) ? $result['PHONENUM'] : '');
-                WC()->cart->calculate_totals();
-            }
-            else {
-                $this->add_log("...ERROR: GetShippingDetails returned empty result");
-            }
-            if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters( 'woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout'))) {
-                //check terms enable
-                $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
-                if (!( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ))) {
-                    $url = add_query_arg(array( 'pp_action' => 'payaction'));
-                    wp_redirect($url);
-                    exit();
-                }
-            }
-
-            if (isset($_POST['createaccount'])) {
-                $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
-                if (empty($_POST['username'])) {
-                    wc_add_notice(__('Username is required', 'paypal-for-woocommerce'), 'error');
-                } elseif (username_exists($_POST['username'])) {
-                    wc_add_notice(__('This username is already registered.', 'paypal-for-woocommerce'), 'error');
-                } elseif (empty($_POST['email']) || !is_email($_POST['email'])) {
-                    wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
-                } elseif (empty($_POST['password']) || empty($_POST['repassword'])) {
-                    wc_add_notice(__('Password is required.', 'paypal-for-woocommerce'), 'error');
-                } elseif ($_POST['password'] != $_POST['repassword']) {
-                    wc_add_notice(__('Passwords do not match.', 'paypal-for-woocommerce'), 'error');
-                } elseif (get_user_by('email', $_POST['email']) != false) {
-                    wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
-                } else {
-
-                    $username = !empty($_POST['username']) ? $_POST['username'] : '';
-                    $password = !empty($_POST['password']) ? $_POST['password'] : '';
-                    $email = $_POST['email'];
-
-                    try {
-
-                        // Anti-spam trap
-                        if (!empty($_POST['email_2'])) {
-                            throw new Exception(__('Anti-spam field was filled in.', 'woocommerce'));
-                            wc_add_notice('<strong>' . __('Anti-spam field was filled in.', 'paypal-for-woocommerce') . ':</strong> ', 'error');
-                        }
-
-                        $new_customer = wc_create_new_customer(sanitize_email($email), wc_clean($username), $password);
-
-                        if (is_wp_error($new_customer)) {
-                            wc_add_notice($new_customer->get_error_message(), 'error');
-                        }
-
-                        if (apply_filters('paypal-for-woocommerce_registration_auth_new_customer', true, $new_customer)) {
-                            wc_set_customer_auth_cookie($new_customer);
-                        }
-                        
-                         $creds = array(
-                            'user_login' => wc_clean($username),
-                            'user_password' => $password,
-                            'remember' => true,
-                        );
-                        $user = wp_signon( $creds, false );
-                        if ( is_wp_error($user) ) {
-                            wc_add_notice($user->get_error_message(), 'error');
-                        } else {
-							wp_set_current_user($user->ID); //Here is where we update the global user variables 
-							$secure_cookie = is_ssl() ? true : false;
-	                    	wp_set_auth_cookie( $user->ID, true, $secure_cookie );                     			                            
-                    	}
-                        
-                    } catch (Exception $e) {
-                        wc_add_notice('<strong>' . __('Error', 'paypal-for-woocommerce') . ':</strong> ' . $e->getMessage(), 'error');
-                    }
-
-                    $this->customer_id = $user->ID;
-                    
-                         // As we are now logged in, checkout will need to refresh to show logged in data
-                    WC()->session->set('reload_checkout', true);
-
-                    // Also, recalculate cart totals to reveal any role-based discounts that were unavailable before registering
+                    $this->set_session('company', isset($result['BUSINESS']) ? $result['BUSINESS'] : '');
+                    $this->set_session('firstname', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
+                    $this->set_session('lastname', isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
+                    $this->set_session('shiptoname', isset($result['SHIPTONAME']) ? $result['SHIPTONAME'] : '');
+                    $this->set_session('shiptostreet', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
+                    $this->set_session('shiptostreet2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
+                    $this->set_session('shiptocity', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '');
+                    $this->set_session('shiptocountrycode', isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
+                    $this->set_session('shiptostate', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '');
+                    $this->set_session('shiptozip', isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
+                    $this->set_session('payeremail', isset($result['EMAIL']) ? $result['EMAIL'] : '');
+                    $this->set_session('giftmessage', isset($result['GIFTMESSAGE']) ? $result['GIFTMESSAGE'] : '');
+                    $this->set_session('giftreceiptenable', isset($result['GIFTRECEIPTENABLE']) ? $result['GIFTRECEIPTENABLE'] : '');
+                    $this->set_session('giftwrapname', isset($result['GIFTWRAPNAME']) ? $result['GIFTWRAPNAME'] : '');
+                    $this->set_session('giftwrapamount', isset($result['GIFTWRAPAMOUNT']) ? $result['GIFTWRAPAMOUNT'] : '');
+                    $this->set_session('customer_notes', isset($result['PAYMENTREQUEST_0_NOTETEXT']) ? $result['PAYMENTREQUEST_0_NOTETEXT'] : '');
+                    $this->set_session('phonenum', isset($result['PHONENUM']) ? $result['PHONENUM'] : '');
                     WC()->cart->calculate_totals();
-                   
-                     require_once("lib/NameParser.php");
-	                $parser = new FullNameParser();
-	                $split_name = $parser->split_full_name($result['SHIPTONAME']);
-	                $shipping_first_name = $split_name['fname'];
-	                $shipping_last_name = $split_name['lname'];
-	                $full_name = $split_name['fullname'];
-
-                    // Add customer info from other billing fields
-                    if (isset($result)) {
-                        update_user_meta($this->customer_id, 'first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
-                        update_user_meta($this->customer_id, 'last_name', isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
-                        update_user_meta($this->customer_id, 'shipping_first_name', $shipping_first_name);
-                        update_user_meta($this->customer_id, 'shipping_last_name', $shipping_last_name);
-                        update_user_meta($this->customer_id, 'shipping_company', isset($result['BUSINESS']) ? $result['BUSINESS'] : '' );
-                        update_user_meta($this->customer_id, 'shipping_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
-                        update_user_meta($this->customer_id, 'shipping_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
-                        update_user_meta($this->customer_id, 'shipping_city', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '' );
-                        update_user_meta($this->customer_id, 'shipping_postcode', isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
-                        update_user_meta($this->customer_id, 'shipping_country', isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
-                        update_user_meta($this->customer_id, 'shipping_state', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '' );
-                		$user_submit_form = maybe_unserialize(WC()->session->checkout_form);
-	                    if( (isset($user_submit_form) && !empty($user_submit_form) && is_array($user_submit_form) )) {
-	                    	update_user_meta($this->customer_id, 'billing_first_name', isset($user_submit_form['billing_first_name']) ?  $user_submit_form['billing_first_name'] : $result['FIRSTNAME']);
-                            update_user_meta($this->customer_id, 'billing_last_name', isset($user_submit_form['billing_last_name']) ?  $user_submit_form['billing_last_name'] : $result['LASTNAME']);
-                            update_user_meta($this->customer_id, 'billing_address_1', isset($user_submit_form['billing_address_1']) ?  $user_submit_form['billing_address_1'] : $result['SHIPTOSTREET']);
-                            update_user_meta($this->customer_id, 'billing_address_2', isset($user_submit_form['billing_address_2']) ?  $user_submit_form['billing_address_2'] : $result['SHIPTOSTREET2']);
-                            update_user_meta($this->customer_id, 'billing_city', isset($user_submit_form['billing_city']) ?  $user_submit_form['billing_city'] : $result['SHIPTOCITY']);
-                            update_user_meta($this->customer_id, 'billing_postcode', isset($user_submit_form['billing_postcode']) ?  $user_submit_form['billing_postcode'] : $result['SHIPTOZIP']);
-                            update_user_meta($this->customer_id, 'billing_country', isset($user_submit_form['billing_country']) ?  $user_submit_form['billing_country'] : $result['SHIPTOCOUNTRYCODE']);
-                            update_user_meta($this->customer_id, 'billing_state', isset($user_submit_form['billing_state']) ?  $user_submit_form['billing_state'] : $result['SHIPTOSTATE']);
-                            update_user_meta($this->customer_id, 'billing_phone', isset($user_submit_form['billing_phone']) ?  $user_submit_form['billing_phone'] : $result['PHONENUM']);
-                            update_user_meta($this->customer_id, 'billing_email', isset($user_submit_form['billing_email']) ?  $user_submit_form['billing_email'] : $result['EMAIL']);
-	                    } else {
-                            update_user_meta($this->customer_id, 'billing_first_name', $shipping_first_name);
-                            update_user_meta($this->customer_id, 'billing_last_name', $shipping_last_name);
-                            update_user_meta($this->customer_id, 'billing_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
-                            update_user_meta($this->customer_id, 'billing_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
-                            update_user_meta($this->customer_id, 'billing_city', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '');
-                            update_user_meta($this->customer_id, 'billing_postcode', isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
-                            update_user_meta($this->customer_id, 'billing_country', isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
-                            update_user_meta($this->customer_id, 'billing_state', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '');
-                            update_user_meta($this->customer_id, 'billing_phone', isset($result['PHONENUM']) ? $result['PHONENUM'] : '');
-                            update_user_meta($this->customer_id, 'billing_email', isset($result['EMAIL']) ? $result['EMAIL'] : '');
-	                    }
+                }
+                else {
+                    $this->add_log("...ERROR: GetShippingDetails returned empty result");
+                }
+                if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters( 'woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout'))) {
+                    //check terms enable
+                    $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
+                    if (!( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ))) {
+                        $url = add_query_arg(array( 'pp_action' => 'payaction'));
+                        wp_redirect($url);
+                        exit();
                     }
+                }
 
-                    //reload the page
-                    wp_redirect(add_query_arg(array( 'pp_action' => 'revieworder')));
-                    exit();
+                if (isset($_POST['createaccount'])) {
+                    $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
+                    if (empty($_POST['username'])) {
+                        wc_add_notice(__('Username is required', 'paypal-for-woocommerce'), 'error');
+                    } elseif (username_exists($_POST['username'])) {
+                        wc_add_notice(__('This username is already registered.', 'paypal-for-woocommerce'), 'error');
+                    } elseif (empty($_POST['email']) || !is_email($_POST['email'])) {
+                        wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
+                    } elseif (empty($_POST['password']) || empty($_POST['repassword'])) {
+                        wc_add_notice(__('Password is required.', 'paypal-for-woocommerce'), 'error');
+                    } elseif ($_POST['password'] != $_POST['repassword']) {
+                        wc_add_notice(__('Passwords do not match.', 'paypal-for-woocommerce'), 'error');
+                    } elseif (get_user_by('email', $_POST['email']) != false) {
+                        wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
+                    } else {
+
+                        $username = !empty($_POST['username']) ? $_POST['username'] : '';
+                        $password = !empty($_POST['password']) ? $_POST['password'] : '';
+                        $email = $_POST['email'];
+
+                        try {
+
+                            // Anti-spam trap
+                            if (!empty($_POST['email_2'])) {
+                                throw new Exception(__('Anti-spam field was filled in.', 'woocommerce'));
+                                wc_add_notice('<strong>' . __('Anti-spam field was filled in.', 'paypal-for-woocommerce') . ':</strong> ', 'error');
+                            }
+
+                            $new_customer = wc_create_new_customer(sanitize_email($email), wc_clean($username), $password);
+
+                            if (is_wp_error($new_customer)) {
+                                wc_add_notice($new_customer->get_error_message(), 'error');
+                            }
+
+                            if (apply_filters('paypal-for-woocommerce_registration_auth_new_customer', true, $new_customer)) {
+                                wc_set_customer_auth_cookie($new_customer);
+                            }
+
+                             $creds = array(
+                                'user_login' => wc_clean($username),
+                                'user_password' => $password,
+                                'remember' => true,
+                            );
+                            $user = wp_signon( $creds, false );
+                            if ( is_wp_error($user) ) {
+                                wc_add_notice($user->get_error_message(), 'error');
+                            } else {
+                                wp_set_current_user($user->ID); //Here is where we update the global user variables
+                                $secure_cookie = is_ssl() ? true : false;
+                                wp_set_auth_cookie( $user->ID, true, $secure_cookie );
+                            }
+
+                        } catch (Exception $e) {
+                            wc_add_notice('<strong>' . __('Error', 'paypal-for-woocommerce') . ':</strong> ' . $e->getMessage(), 'error');
+                        }
+
+                        $this->customer_id = $user->ID;
+
+                             // As we are now logged in, checkout will need to refresh to show logged in data
+                        WC()->session->set('reload_checkout', true);
+
+                        // Also, recalculate cart totals to reveal any role-based discounts that were unavailable before registering
+                        WC()->cart->calculate_totals();
+
+                         require_once("lib/NameParser.php");
+                        $parser = new FullNameParser();
+                        $split_name = $parser->split_full_name($result['SHIPTONAME']);
+                        $shipping_first_name = $split_name['fname'];
+                        $shipping_last_name = $split_name['lname'];
+                        $full_name = $split_name['fullname'];
+
+                        // Add customer info from other billing fields
+                        if (isset($result)) {
+                            update_user_meta($this->customer_id, 'first_name', isset($result['FIRSTNAME']) ? $result['FIRSTNAME'] : '');
+                            update_user_meta($this->customer_id, 'last_name', isset($result['LASTNAME']) ? $result['LASTNAME'] : '');
+                            update_user_meta($this->customer_id, 'shipping_first_name', $shipping_first_name);
+                            update_user_meta($this->customer_id, 'shipping_last_name', $shipping_last_name);
+                            update_user_meta($this->customer_id, 'shipping_company', isset($result['BUSINESS']) ? $result['BUSINESS'] : '' );
+                            update_user_meta($this->customer_id, 'shipping_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
+                            update_user_meta($this->customer_id, 'shipping_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
+                            update_user_meta($this->customer_id, 'shipping_city', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '' );
+                            update_user_meta($this->customer_id, 'shipping_postcode', isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
+                            update_user_meta($this->customer_id, 'shipping_country', isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
+                            update_user_meta($this->customer_id, 'shipping_state', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '' );
+                            $user_submit_form = maybe_unserialize(WC()->session->checkout_form);
+                            if( (isset($user_submit_form) && !empty($user_submit_form) && is_array($user_submit_form) )) {
+                                update_user_meta($this->customer_id, 'billing_first_name', isset($user_submit_form['billing_first_name']) ?  $user_submit_form['billing_first_name'] : $result['FIRSTNAME']);
+                                update_user_meta($this->customer_id, 'billing_last_name', isset($user_submit_form['billing_last_name']) ?  $user_submit_form['billing_last_name'] : $result['LASTNAME']);
+                                update_user_meta($this->customer_id, 'billing_address_1', isset($user_submit_form['billing_address_1']) ?  $user_submit_form['billing_address_1'] : $result['SHIPTOSTREET']);
+                                update_user_meta($this->customer_id, 'billing_address_2', isset($user_submit_form['billing_address_2']) ?  $user_submit_form['billing_address_2'] : $result['SHIPTOSTREET2']);
+                                update_user_meta($this->customer_id, 'billing_city', isset($user_submit_form['billing_city']) ?  $user_submit_form['billing_city'] : $result['SHIPTOCITY']);
+                                update_user_meta($this->customer_id, 'billing_postcode', isset($user_submit_form['billing_postcode']) ?  $user_submit_form['billing_postcode'] : $result['SHIPTOZIP']);
+                                update_user_meta($this->customer_id, 'billing_country', isset($user_submit_form['billing_country']) ?  $user_submit_form['billing_country'] : $result['SHIPTOCOUNTRYCODE']);
+                                update_user_meta($this->customer_id, 'billing_state', isset($user_submit_form['billing_state']) ?  $user_submit_form['billing_state'] : $result['SHIPTOSTATE']);
+                                update_user_meta($this->customer_id, 'billing_phone', isset($user_submit_form['billing_phone']) ?  $user_submit_form['billing_phone'] : $result['PHONENUM']);
+                                update_user_meta($this->customer_id, 'billing_email', isset($user_submit_form['billing_email']) ?  $user_submit_form['billing_email'] : $result['EMAIL']);
+                            } else {
+                                update_user_meta($this->customer_id, 'billing_first_name', $shipping_first_name);
+                                update_user_meta($this->customer_id, 'billing_last_name', $shipping_last_name);
+                                update_user_meta($this->customer_id, 'billing_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
+                                update_user_meta($this->customer_id, 'billing_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
+                                update_user_meta($this->customer_id, 'billing_city', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '');
+                                update_user_meta($this->customer_id, 'billing_postcode', isset($result['SHIPTOZIP']) ? $result['SHIPTOZIP'] : '');
+                                update_user_meta($this->customer_id, 'billing_country', isset($result['SHIPTOCOUNTRYCODE']) ? $result['SHIPTOCOUNTRYCODE'] : '');
+                                update_user_meta($this->customer_id, 'billing_state', isset($result['SHIPTOSTATE']) ? $result['SHIPTOSTATE'] : '');
+                                update_user_meta($this->customer_id, 'billing_phone', isset($result['PHONENUM']) ? $result['PHONENUM'] : '');
+                                update_user_meta($this->customer_id, 'billing_email', isset($result['EMAIL']) ? $result['EMAIL'] : '');
+                            }
+                        }
+
+                        //reload the page
+                        wp_redirect(add_query_arg(array( 'pp_action' => 'revieworder')));
+                        exit();
+                    }
                 }
             }
         } elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'payaction') {
@@ -1816,10 +1825,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         /*
          * Display message to user if session has expired.
          */
-        if (sizeof(WC()->cart->get_cart()) == 0) {
+        if (sizeof(WC()->cart->get_cart()) == 0 || !isset(WC()->session->TOKEN)) {
             $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
             $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
             wc_add_notice($ec_confirm_message, "error");
+            wp_redirect(get_permalink(wc_get_page_id('cart')));
         }
 
         /*
