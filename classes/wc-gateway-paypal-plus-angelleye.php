@@ -94,7 +94,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         $user_id = get_current_user_id();
         // Check required fields
         if ( ( !$this->rest_client_id || !$this->rest_secret_id )  && !get_user_meta($user_id, 'ignore_ppplus_check') &&  @$_GET['section']!='wc_gateway_paypal_plus_angelleye') {
-            echo '<div class="error"><p>' . sprintf(__('Paypal Plus error: Please enter your Rest API Cient ID and Secret ID <a href="%s">here</a> | <a href=%s>%s</a>', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout&section=' . strtolower('WC_Gateway_PayPal_Plus_AngellEYE')), '"'.esc_url(add_query_arg("ignore_ppplus_check",0)).'"',  __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+            echo '<div class="error"><p>' . sprintf(__('PayPal Plus Error: Please enter your REST API Cient ID and Secret ID into the <a href="%s">PayPal Plus settings panel</a>. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout&section=' . strtolower('WC_Gateway_PayPal_Plus_AngellEYE')), '"'.esc_url(add_query_arg("ignore_ppplus_check",0)).'"',  __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
         }
 
         return;
