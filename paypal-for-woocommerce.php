@@ -734,9 +734,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     } else {
                         if ($order->get_total_discount() > 0) {
                             $Item = array(
-                                'name' => 'Total Discount',
-                                'qty' => 1,
-                                'amt' => - number_format($order->get_total_discount(), 2, '.', ''),
+                                'name'      => 'Total Discount',
+                                'qty'       => 1,
+                                'amt'       => - number_format($order->get_total_discount(), 2, '.', ''),
+                                'number'    => implode(", ", $order->get_used_coupons())
                             );
                             array_push($PaymentOrderItems, $Item);
                             $total_discount -= $order->get_total_discount();
