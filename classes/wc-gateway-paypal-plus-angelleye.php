@@ -88,18 +88,13 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
      * @return void
      * */
     public function checks() {
-        if ($this->enabled == 'no') {
+        if (!$this->is_available()) {
             return;
         }
         $user_id = get_current_user_id();
         // Check required fields
         if ( ( !$this->rest_client_id || !$this->rest_secret_id )  && !get_user_meta($user_id, 'ignore_ppplus_check') &&  @$_GET['section']!='wc_gateway_paypal_plus_angelleye') {
             echo '<div class="error"><p>' . sprintf(__('Paypal Plus error: Please enter your Rest API Cient ID and Secret ID <a href="%s">here</a> | <a href=%s>%s</a>', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout&section=' . strtolower('WC_Gateway_PayPal_Plus_AngellEYE')), '"'.esc_url(add_query_arg("ignore_ppplus_check",0)).'"',  __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
-        }
-
-        //if user's currency is USD
-        if (!in_array(get_woocommerce_currency(), array('EUR', 'CAD'))  && !get_user_meta($user_id, 'ignore_ppplus_currency')) {
-            echo '<div class="error"><p>'. sprintf(__('PayPal Plus does not support your store currency (Supports: EUR, CAD). | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("ignore_ppplus_currency",0)).'"',  __("Hide this notice", 'paypal-for-woocommerce')).'</p></div>';
         }
 
         return;
@@ -112,7 +107,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
      */
     public function is_available() {
         //if enabled checkbox is checked
-        if ($this->enabled == 'yes')
+        if ($this->enabled == 'yes' && in_array(get_woocommerce_currency(), array('EUR', 'CAD')))
             return true;
         return false;
     }
@@ -130,7 +125,16 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         <p><?php _e('PayPal Payments Plus uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process.', 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
             <?php
+            //if user's currency is USD
+            if (!in_array(get_woocommerce_currency(), array('EUR', 'CAD'))) {
+                ?>
+                <div class="inline error"><p><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal Plus does not support your store currency (Supports: EUR, CAD).', 'paypal-for-woocommerce'); ?></p></div>
+                <?php
+                return;
+            } else {
+                // Generate the HTML For the settings form.
                 $this->generate_settings_html();
+            }
             ?>
         </table><!--/.form-table-->
     <?php
