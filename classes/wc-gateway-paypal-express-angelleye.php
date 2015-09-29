@@ -813,7 +813,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->add_log("...PayerID: " . $this->get_session('PayerID'));
 
             //if empty TOKEN redirect to cart page
-            if (!isset(WC()->session->TOKEN)) {
+            if (empty(WC()->session->TOKEN)) {
                 $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
                 $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
                 wc_add_notice($ec_confirm_message, "error");
@@ -1825,7 +1825,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         /*
          * Display message to user if session has expired.
          */
-        if (sizeof(WC()->cart->get_cart()) == 0 || !isset(WC()->session->TOKEN)) {
+        if (sizeof(WC()->cart->get_cart()) == 0 || empty(WC()->session->TOKEN)) {
             $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
             $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
             wc_add_notice($ec_confirm_message, "error");
