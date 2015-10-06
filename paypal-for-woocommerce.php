@@ -391,11 +391,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $woocommerce_ppe->paypal_express_checkout();
             }
 
-            if (isset($_GET["token"]) && isset($_GET["PayerID"]) && isset($_GET["paymentId"])) {
+            if (! empty( $_GET['pp_action'] ) && $_GET['pp_action'] == 'executepay' && isset($_GET["token"]) && isset($_GET["PayerID"]) && isset($_GET["paymentId"])) {
+                global $wp;
                 WC()->session->token = $_GET["token"];
                 WC()->session->PayerID = $_GET["PayerID"];
                 WC()->session->paymentId = $_GET["paymentId"];
-                WC()->session->orderId = $_GET["pp_action"];
+                WC()->session->orderId = WC()->session->ppp_order_id;
+                $woocommerce_ppp = new WC_Gateway_PayPal_Plus_AngellEYE();
+                $woocommerce_ppp->executepay();
             }
         }
 
@@ -646,35 +649,84 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $PaymentOrderItems = array();
             $ctr = $total_items = $total_discount = $total_tax = $shipping = 0;
             $ITEMAMT = 0;
-            if (sizeof($order->get_items()) > 0) {
-                if ($send_items) {
-                    foreach ($order->get_items() as $values) {
-                        $_product = $order->get_product_from_item($values);
-                        $qty = absint($values['qty']);
-                        $sku = $_product->get_sku();
-                        $values['name'] = html_entity_decode($values['name'], ENT_NOQUOTES, 'UTF-8');
-                        if ($_product->product_type == 'variation') {
-                            if (empty($sku)) {
-                                $sku = $_product->parent->get_sku();
-                            }
+            if ($order) {
+                $order_total = $order->get_total();
+                $items = $order->get_items();
+                /*
+                * Set shipping and tax values.
+                */
+                if (get_option('woocommerce_prices_include_tax') == 'yes') {
+                    $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
+                    $tax = 0;
+                } else {
+                    $shipping = $order->get_total_shipping();
+                    $tax = $order->get_total_tax();
+                }
 
-                            $item_meta = new WC_Order_Item_Meta($values,$_product);
-                            $meta = $item_meta->display(true, true);
-                            if (!empty($meta)) {
-                                $values['name'] .= " - " . str_replace(", \n", " - ", $meta);
-                            }
+                if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
+                    $tax = $order->get_total_tax();
+                }
+            }
+            else {
+                //if empty order we get data from cart
+                $order_total = WC()->cart->total;
+                $items = WC()->cart->get_cart();
+                /**
+                 * Get shipping and tax.
+                 */
+                if(get_option('woocommerce_prices_include_tax' ) == 'yes')
+                {
+                    $shipping 		= WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
+                    $tax			= 0;
+                }
+                else
+                {
+                    $shipping 		= WC()->cart->shipping_total;
+                    $tax 			= WC()->cart->get_taxes_total();
+                }
+
+                if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
+                    $tax = WC()->cart->get_taxes_total();
+                }
+            }
+
+            if ($send_items) {
+                foreach ($items as $item) {
+                    /*
+                     * Get product data from WooCommerce
+                     */
+                    if ($order) {
+                        $_product = $order->get_product_from_item($item);
+                        $qty = absint($item['qty']);
+                        $item_meta = new WC_Order_Item_Meta($item,$_product);
+                        $meta = $item_meta->display(true, true);
+                    } else {
+                        $_product = $item['data'];
+                        $qty = absint($item['quantity']);
+                        $meta = WC()->cart->get_item_data($item, true);
+                    }
+
+                    $sku = $_product->get_sku();
+                    $item['name'] = html_entity_decode($_product->get_title(), ENT_NOQUOTES, 'UTF-8');
+                    if ($_product->product_type == 'variation') {
+                        if (empty($sku)) {
+                            $sku = $_product->parent->get_sku();
                         }
 
-                        $Item = array(
-                            'name' => $values['name'], // Item name. 127 char max.
-                            'desc' => '', // Item description. 127 char max.
-                            'amt' => round( $values['line_subtotal'] / $qty, 2 ), // Cost of item.
-                            'number' => $sku, // Item number.  127 char max.
-                            'qty' => $qty, // Item qty on order.  Any positive integer.
-                        );
-                        array_push($PaymentOrderItems, $Item);
-                        $ITEMAMT += round( $values['line_subtotal'] / $qty, 2 ) * $qty;
+                        if (!empty($meta)) {
+                            $item['name'] .= " - " . str_replace(", \n", " - ", $meta);
+                        }
                     }
+
+                    $Item = array(
+                        'name' => $item['name'], // Item name. 127 char max.
+                        'desc' => '', // Item description. 127 char max.
+                        'amt' => round( $item['line_subtotal'] / $qty, 2 ), // Cost of item.
+                        'number' => $sku, // Item number.  127 char max.
+                        'qty' => $qty, // Item qty on order.  Any positive integer.
+                    );
+                    array_push($PaymentOrderItems, $Item);
+                    $ITEMAMT += round( $item['line_subtotal'] / $qty, 2 ) * $qty;
 
                     /**
                      * Add custom Woo cart fees as line items
@@ -686,7 +738,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                             'amt' => number_format($fee->amount, 2, '.', ''), // Cost of item.
                             'number' => $fee->id, // Item number. 127 char max.
                             'qty' => 1, // Item qty on order. Any positive integer.
-                         );
+                        );
 
                         /**
                          * The gift wrap amount actually has its own parameter in
@@ -700,11 +752,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
                         $ctr++;
                     }
+                }
 
+                //caculate discount
+                if ($order){
                     if (!AngellEYE_Gateway_Paypal::is_wc_version_greater_2_3()) {
-                        /*
-                         * Get discounts
-                         */
                         if ($order->get_cart_discount() > 0) {
                             foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
                                 $Item = array(
@@ -742,72 +794,92 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                             $total_discount -= $order->get_total_discount();
                         }
                     }
-                }
-
-                /*
-                 * Set shipping and tax values.
-                 */
-                if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                    $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
-                    $tax = 0;
                 } else {
-                    $shipping = $order->get_total_shipping();
-                    $tax = $order->get_total_tax();
-                }
+                    if (WC()->cart->get_cart_discount_total() > 0) {
+                        foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
+                            $Item = array(
+                                'name' => 'Cart Discount',
+                                'qty' => '1',
+                                'number'=> $code,
+                                'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                            );
+                            array_push($PaymentOrderItems, $Item);
+                            $total_discount -= number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
+                        }
 
-                if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
-                    $tax = $order->get_total_tax();
-                }
+                    }
 
-                if( $tax > 0) {
-                    $tax = number_format($tax, 2, '.', '');
-                }
+                    if (!AngellEYE_Gateway_Paypal::is_wc_version_greater_2_3()) {
+                        if (WC()->cart->get_order_discount_total() > 0) {
+                            foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
+                                $Item = array(
+                                    'name' => 'Order Discount',
+                                    'qty' => '1',
+                                    'number'=> $code,
+                                    'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                                );
+                                array_push($PaymentOrderItems, $Item);
+                                $total_discount -= number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
+                            }
 
-                if( $shipping > 0) {
-                    $shipping = number_format($shipping, 2, '.', '');
+                        }
+                    }
                 }
+            }
 
-                if( $total_discount ) {
-                    $total_discount = round($total_discount, 2);
-                }
+            if( $tax > 0) {
+                $tax = number_format($tax, 2, '.', '');
+            }
 
+            if( $shipping > 0) {
+                $shipping = number_format($shipping, 2, '.', '');
+            }
+
+            if( $total_discount ) {
+                $total_discount = round($total_discount, 2);
+            }
+
+            if (empty($ITEMAMT)) {
+                $Payment['itemamt'] = $order_total - $tax - $shipping;
+            } else {
                 $Payment['itemamt'] = number_format($ITEMAMT + $total_discount, 2, '.', '');
+            }
 
-                /*
-                 * Set tax
-                 */
-                if ($tax > 0) {
-                    $Payment['taxamt'] = number_format($tax, 2, '.', '');       // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
-                } else {
-                    $Payment['taxamt'] = 0;
-                }
 
-                /*
-                 * Set shipping
-                 */
-                if ($shipping > 0) {
-                    $Payment['shippingamt'] = number_format($shipping, 2, '.', '');      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
-                } else {
-                    $Payment['shippingamt'] = 0;
-                }
+            /*
+             * Set tax
+             */
+            if ($tax > 0) {
+                $Payment['taxamt'] = number_format($tax, 2, '.', '');       // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
+            } else {
+                $Payment['taxamt'] = 0;
+            }
+
+            /*
+             * Set shipping
+             */
+            if ($shipping > 0) {
+                $Payment['shippingamt'] = number_format($shipping, 2, '.', '');      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+            } else {
+                $Payment['shippingamt'] = 0;
             }
 
             $Payment['order_items'] = $PaymentOrderItems;
 
             // Rounding amendment
 
-            if (trim(number_format($order->get_total(), 2, '.', '')) !== trim(number_format($Payment['itemamt'] + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''), 2, '.', ''))) {
-                $diffrence_amount = AngellEYE_Gateway_Paypal::get_diffrent(WC()->cart->total, $Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''));
+            if (trim(number_format($order_total, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''), 2, '.', ''))) {
+                $diffrence_amount = AngellEYE_Gateway_Paypal::get_diffrent($order_total, $Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''));
                 if($shipping > 0) {
-                    $Payment['shippingamt'] = round($shipping + $diffrence_amount, 2);
+                    $Payment['shippingamt'] = number_format($shipping + $diffrence_amount, 2, '.', '');
                 } elseif ($tax > 0) {
-                    $Payment['taxamt'] = round($tax + $diffrence_amount, 2);
+                    $Payment['taxamt'] = number_format($tax + $diffrence_amount, 2, '.', '');
                 } else {
                     //make change to itemamt
-                    $Payment['itemamt'] = round($Payment['itemamt'] + $diffrence_amount, 2);
+                    $Payment['itemamt'] = number_format($Payment['itemamt'] + $diffrence_amount, 2, '.', '');
                     //also make change to the first item
                     if ($send_items) {
-                        $Payment['order_items'][0]['amt'] =  round($Payment['order_items'][0]['amt'] + $diffrence_amount, 2);
+                        $Payment['order_items'][0]['amt'] =  number_format($Payment['order_items'][0]['amt'] + $diffrence_amount, 2, '.', '');
                     }
 
                 }
