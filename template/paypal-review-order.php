@@ -8,20 +8,16 @@ $checked = get_option('woocommerce_enable_guest_checkout');
 $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
 $hide_button = false;
 ### After PayPal payment method confirmation, user is redirected back to this page with token and Payer ID ###
-if (isset(WC()->session->token) && isset(WC()->session->PayerID) && isset(WC()->session->paymentId)) {
-    $frm_act = add_query_arg('pp_action', 'executepay', add_query_arg('wc-api', 'WC_Gateway_PayPal_Plus_AngellEYE', home_url('/')));
-    $is_paypal_express = false;
-} else {
-    $frm_act = add_query_arg(array( 'pp_action' => 'payaction'));
-    $is_paypal_express = true;
-    $result = unserialize(WC()->session->RESULT);
-    $email = (!empty($_POST['email']))?$_POST['email']:$result['EMAIL'];
-    if (!isset(WC()->session->TOKEN)) {
-        $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
-        $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
-        wc_add_notice($ec_confirm_message, "error");
-        $hide_button = true;
-    }
+
+$frm_act = add_query_arg(array( 'pp_action' => 'payaction'));
+$is_paypal_express = true;
+$result = unserialize(WC()->session->RESULT);
+$email = (!empty($_POST['email']))?$_POST['email']:$result['EMAIL'];
+if (!isset(WC()->session->TOKEN)) {
+    $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
+    $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
+    wc_add_notice($ec_confirm_message, "error");
+    $hide_button = true;
 }
 //Add hook to show login form or not
 $show_login = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_express && !is_user_logged_in() && $checked==="no" );
