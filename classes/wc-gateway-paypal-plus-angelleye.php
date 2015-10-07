@@ -38,8 +38,14 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         $this->title = $this->settings['title'];
         $this->description = $this->settings['description'];
         $this->mode = $this->settings['testmode']=='yes'? "SANDBOX":"LIVE";
-        $this->rest_client_id = $this->settings['rest_client_id'];
-        $this->rest_secret_id = $this->settings['rest_secret_id'];
+        if ($this->mode == "LIVE") {
+            $this->rest_client_id = @$this->settings['rest_client_id'];
+            $this->rest_secret_id = @$this->settings['rest_secret_id'];
+        } else {
+            $this->rest_client_id = @$this->settings['rest_client_id_sandbox'];
+            $this->rest_secret_id = @$this->settings['rest_secret_id_sandbox'];
+        }
+
         $this->debug = $this->settings['debug'];
         $this->invoice_prefix = $this->settings['invoice_prefix'];
         $this->send_items = 'yes';
@@ -57,11 +63,6 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
         add_action('woocommerce_receipt_paypal_plus', array($this, 'receipt_page')); // Payment form hook
         add_action('woocommerce_review_order_before_payment', array($this, 'render_iframe')); // Payment form hook
-        //add_action('');
-
-        //add_action('woocommerce_api_' . strtolower(get_class()), array($this, 'executepay'), 12);
-
-        //add_action('woocommerce_create_order', array($this, 'remove_old_order'));
 
         if (!$this->is_available())
             $this->enabled = false;
@@ -164,14 +165,26 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'default' => __('PayPal Plus description', 'paypal-for-woocommerce')
             ),
+            'rest_client_id_sandbox' => array(
+                'title' => __('Sandbox Client ID', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => 'Enter your Sandbox PayPal Rest API Client ID',
+                'default' => ''
+            ),
+            'rest_secret_id_sandbox' => array(
+                'title' => __('Sandbox Secret ID', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => __('Enter your Sandbox PayPal Rest API Secret ID.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
             'rest_client_id' => array(
-                'title' => __('Client ID', 'paypal-for-woocommerce'),
+                'title' => __('Live Client ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => 'Enter your PayPal Rest API Client ID',
                 'default' => ''
             ),
             'rest_secret_id' => array(
-                'title' => __('Secret ID', 'paypal-for-woocommerce'),
+                'title' => __('Live Secret ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('Enter your PayPal Rest API Secret ID.', 'paypal-for-woocommerce'),
                 'default' => ''
@@ -417,9 +430,11 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 return $payment->links[1]->href;
             }
         }  catch (PayPal\Exception\PayPalConnectionException $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ".$ex->getData(), 'woocommerce'));
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'));
+            $this->add_log($ex->getData());
         } catch (Exception $ex) {
-            wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . $ex->getMessage() . '"', 'error');
+            wc_add_notice(__('Error processing checkout. Please try again. ', 'woocommerce') , 'error');
+            $this->add_log($ex->getMessage());
         }
     }
 
@@ -492,9 +507,8 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         </script>
     <?php
         }  catch (PayPal\Exception\PayPalConnectionException $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again.".$ex->getData(), 'woocommerce'));
-            $this->add_log($ex->getCode()); // Prints the Error Code
-            $this->add_log($ex->getData()); // Prints the Error Message
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'));
+            $this->add_log($ex->getData());
         } catch (Exception $ex) {
             $this->add_log($ex->getMessage()); // Prints the Error Code
             wc_add_notice(__("Error processing checkout. Please try again.", 'woocommerce'));
@@ -545,8 +559,12 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 wp_redirect($this->get_return_url($order));
 
             }
+        }  catch (PayPal\Exception\PayPalConnectionException $ex) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'));
+            $this->add_log($ex->getData());
         } catch (Exception $ex) {
-            wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . $ex->getMessage() . '"', 'error');
+            $this->add_log($ex->getMessage()); // Prints the Error Code
+            wc_add_notice(__("Error processing checkout. Please try again.", 'woocommerce'));
         }
     }
 
