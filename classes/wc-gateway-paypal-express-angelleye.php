@@ -17,6 +17,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'products',
             'refunds'
         );
+
+        if (substr(get_option("woocommerce_default_country"),0,2) != 'US') {
+            $this->not_us= true;
+        } else {
+            $this->not_us = false;
+        }
+
         // Load the form fields
         $this->init_form_fields();
         // Load the settings.
@@ -56,7 +63,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'yes' ? true : false;
         $this->customer_id = get_current_user_id();
 
-        if (substr(get_option("woocommerce_default_country"),0,2) != 'US') {
+        if ($this->not_us){
             $this->show_paypal_credit = 'no';
         }
 
@@ -355,7 +362,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Show the PayPal Credit button next to the Express Checkout button.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
-                'description' => __('Only available in the U.S', 'paypal-for-woocommerce')
+                'description' => ($this->not_us) ? __('Only available in the U.S', 'paypal-for-woocommerce'):""
             ),
             'use_wp_locale_code' => array(
                 'title' => __('Use WordPress Locale Code', 'paypal-for-woocommerce'),
