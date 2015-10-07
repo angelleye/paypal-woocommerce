@@ -65,7 +65,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_review_order_before_payment', array($this, 'render_iframe')); // Payment form hook
 
         if (!$this->is_available())
-            $this->enabled = false;
+            $this->enabled = "no";
 
         if (!defined('CLIENT_ID')) define('CLIENT_ID', $this->rest_client_id); //your PayPal client ID
         if (!defined('CLIENT_SECRET')) define('CLIENT_SECRET', $this->rest_secret_id); //PayPal Secret
@@ -86,7 +86,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
      * @return void
      * */
     public function checks() {
-        if ($this->enabled == 'no' || @$_GET['section']=='wc_gateway_paypal_plus_angelleye') {
+        if ($this->enabled != 'yes' || @$_GET['section']=='wc_gateway_paypal_plus_angelleye') {
             return;
         }
         // Check required fields
@@ -152,7 +152,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('Enable PayPal Plus', 'paypal-for-woocommerce'),
-                'default' => 'yes'
+                'default' => 'no'
             ),
             'title' => array(
                 'title' => __('Title', 'paypal-for-woocommerce'),
