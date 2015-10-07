@@ -56,6 +56,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'yes' ? true : false;
         $this->customer_id = get_current_user_id();
 
+        if (substr(get_option("woocommerce_default_country"),0,2) != 'US') {
+            $this->show_paypal_credit = 'no';
+        }
+
         /*
           ' Define the PayPal Redirect URLs.
           ' 	This is the URL that the buyer is first sent to do authorize payment with their paypal account
@@ -350,7 +354,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Enable PayPal Credit', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('Show the PayPal Credit button next to the Express Checkout button.', 'paypal-for-woocommerce'),
-                'default' => 'yes'
+                'default' => 'yes',
+                'description' => __('Only available in the U.S', 'paypal-for-woocommerce')
             ),
             'use_wp_locale_code' => array(
                 'title' => __('Use WordPress Locale Code', 'paypal-for-woocommerce'),
