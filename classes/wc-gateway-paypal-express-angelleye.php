@@ -362,7 +362,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Show the PayPal Credit button next to the Express Checkout button.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
-                'description' => ($this->not_us) ? __('Only available in the U.S', 'paypal-for-woocommerce'):""
+                'description' => ($this->not_us) ? __('Currently disabled because PayPal Credit is only available for U.S. merchants.', 'paypal-for-woocommerce'):""
             ),
             'use_wp_locale_code' => array(
                 'title' => __('Use WordPress Locale Code', 'paypal-for-woocommerce'),
