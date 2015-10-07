@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 4.3
-Stable tag: 1.1.6.3.7
+Stable tag: 1.1.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -101,6 +101,20 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.1.7 - 10.07.2015 =
+* Feature - Adds PayPal Plus (Germany)
+* Feature - WP-Affiliate Compatibility
+* Fix - Resolves a number of general bugs.
+* Fix - Resolves issues that stem from the "Default Customer Address" setting when set to "Geolocate (with page caching support)".
+* Fix - Resolves conflict with currency switcher plugins.
+* Fix - Resolves a bug where shipping info was sometimes not saved with order meta data.
+* Tweak - Moves order notes from general notes section to the meta data field for customer notes.
+* Tweak - Enforces Terms and Conditions on the Express Checkout review page.
+* Tweak - Adds the option to create an account from the Express Checkout review page (even if guest checkout is enabled).
+* Tweak - Pre-populate email address on Express Checkout login screen if entered in the WooCommerce checkout page.
+* Tweak - Adds logic to avoid invalid token erros with Express Checkout.
+* Tweak - Disables PayPal Credit when the base country in WooCommerce is not the U.S.
 
 = 1.1.6.3.7 - 08.27.2015 =
 * Rollback - Removes adjustments that were made in an attempt to resolve rare cart total errors with PayPal.
@@ -283,8 +297,3 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - PayPal Express Checkout
 * Feature - PayPal Website Payments Pro 3.0 (DoDirectPayment)
 * Feature - PayPal Payments Pro 2.0 (PayPal Manager / PayFlow)
-
-== Upgrade Notice ==
-
-= 1.1.6.3.7 =
-This is a roll-back update that removes previously added features which were causing problems for many users.  After updating, it is recommended that you go into the plugin settings for each payment gateway you are using and click the Save button even if you don't have to adjust any settings.
