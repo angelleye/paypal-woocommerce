@@ -422,7 +422,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             $payment->setTransactions(array($transaction));
 
             $payment->create($this->getAuth());
-
+            $this->add_log(print_r($payment, true));
             //if payment method was PayPal, we need to redirect user to PayPal approval URL
             if ($payment->state == "created" && $payment->payer->payment_method == "paypal") {
                 WC()->session->paymentId = $payment->id; //set payment id for later use, we need this to execute payment
@@ -476,6 +476,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         $patchRequest->setPatches(array( $patchAdd, $patchReplace ));
         try {
             $result = $payment->update($patchRequest, $this->getAuth());
+            $this->add_log(print_r($payment, true));
             if ($result==true)
 
 
@@ -524,7 +525,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         try {
             $payment = Payment::get(WC()->session->paymentId, $this->getAuth());
             $payment->execute($execution, $this->getAuth());
-
+            $this->add_log(print_r($payment, true));
             if ($payment->state == "approved") { //if state = approved continue..
                 global $wpdb;
                 $this->log->add('paypal_plus', sprintf(__('Response: %s', 'paypal-for-woocommerce'), print_r($payment,true)));
