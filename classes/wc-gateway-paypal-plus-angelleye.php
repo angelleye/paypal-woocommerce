@@ -119,7 +119,8 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
     public function admin_options() {
         ?>
         <h3><?php _e('PayPal Plus', 'paypal-for-woocommerce'); ?></h3>
-        <p><?php _e('PayPal Payments Plus uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process.', 'paypal-for-woocommerce'); ?></p>
+        <p><?php _e('PayPal PLUS is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame.', 'paypal-for-woocommerce'); ?></p>
+        <p><?php _e('NOTE: This is currently considered BETA but has been tested thoroughly in the sandbox without issue.', 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
             <?php
             //if user's currency is USD
