@@ -19,6 +19,7 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
  * PayPal Express Checkout / PayPal Credit
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayPal Manager / PayFlow Gateway)
+ * PayPal Plus (Germany)
  
 [youtube https://www.youtube.com/watch?v=svq9ovWGp7I]
 
