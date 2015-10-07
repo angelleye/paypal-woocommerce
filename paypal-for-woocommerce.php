@@ -66,7 +66,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'plugins_loaded', array($this, 'init'));
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
-            add_action( 'wp_enqueue_scripts', array($this, 'woocommerce_paypal_express_init_styles'), 12 );
+            add_action( 'wp_enqueue_scripts', array($this, 'frontend_scripts'), 12 );
             add_action( 'admin_notices', array($this, 'admin_notices') );
             add_action( 'admin_init', array($this, 'set_ignore_tag'));
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
@@ -125,19 +125,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if (isset($_REQUEST['pp_action']) && ($_REQUEST['pp_action']=='revieworder' || $_REQUEST['pp_action']=='payaction') && WC()->session->giftwrapamount){
                 $cart->add_fee( __('Gift Wrap', 'paypal-for-woocommerce'), WC()->session->giftwrapamount );
             }
-        }
-
-        function admin_scripts()
-        {
-            $dir = plugin_dir_path( __FILE__ );
-            wp_enqueue_media();
-            wp_enqueue_script( 'jquery');
-        }
-
-        function admin_styles()
-        {
-            wp_enqueue_style('thickbox');
-
         }
 
         /**
@@ -244,17 +231,54 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         /**
-         * woocommerce_paypal_express_init_styles function.
+         * Admin Script
+         */
+        function admin_scripts()
+        {
+            $dir = plugin_dir_path( __FILE__ );
+            wp_enqueue_media();
+            wp_enqueue_script( 'jquery');
+            // Localize the script with new data
+            wp_register_script( 'angelleye_admin', plugins_url( '/assets/js/angelleye-admin.js' , __FILE__ ), array( 'jquery' ));
+            $translation_array = array(
+                'is_ssl' => AngellEYE_Gateway_Paypal::is_ssl()? "yes":"no",
+                'choose_image' => __('Choose Image', 'paypal-for-woocommerce'),
+                'shop_based_us' => (substr(get_option("woocommerce_default_country"),0,2) == 'US')? "yes":"no"
+
+            );
+            wp_localize_script( 'angelleye_admin', 'angelleye_admin', $translation_array );
+            wp_enqueue_script( 'angelleye_admin');
+        }
+
+        /**
+         * Admin Style
+         */
+        function admin_styles()
+        {
+            wp_enqueue_style('thickbox');
+
+        }
+
+        /**
+         * frontend_scripts function.
          *
          * @access public
          * @return void
          */
-        function woocommerce_paypal_express_init_styles() {
+        function frontend_scripts() {
             global $pp_settings;
-            wp_register_script( 'angelleye_button', plugins_url( '/assets/js/angelleye-button.js' , __FILE__ ), array( 'jquery' ), WC_VERSION, true );
+            wp_register_script( 'angelleye_frontend', plugins_url( '/assets/js/angelleye-frontend.js' , __FILE__ ), array( 'jquery' ), WC_VERSION, true );
+            $translation_array = array(
+                'is_cart' => is_cart()? "yes":"no",
+                'is_checkout' => is_checkout()? "yes":"no",
+                'three_digits'  => __('3 digits usually found on the signature strip.', 'paypal-for-woocommerce'),
+                'four_digits'  => __('4 digits usually found on the front of the card.', 'paypal-for-woocommerce')
+            );
+            wp_localize_script( 'angelleye_frontend', 'angelleye_frontend', $translation_array );
+            wp_enqueue_script('angelleye_frontend');
+
             if ( ! is_admin() && is_cart()){
                 wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/cart.css' , __FILE__ ) );
-                wp_enqueue_script('angelleye_button');
             }
 
             if ( ! is_admin() && is_checkout() && @$pp_settings['enabled']=='yes' && @$pp_settings['show_on_checkout']=='yes' )
@@ -904,6 +928,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
         public static function get_wc_version() {
             return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
+        }
+
+        /**
+         * Check if site is SSL ready
+         *
+         */
+        static public function is_ssl() {
+            if (is_ssl() || get_option('woocommerce_force_ssl_checkout') == 'yes' || class_exists('WordPressHTTPS'))
+                return true;
+            return false;
         }
     }
 }

@@ -430,7 +430,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 return $payment->links[1]->href;
             }
         }  catch (PayPal\Exception\PayPalConnectionException $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'));
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'), 'error');
             $this->add_log($ex->getData());
         } catch (Exception $ex) {
             wc_add_notice(__('Error processing checkout. Please try again. ', 'woocommerce') , 'error');
@@ -507,11 +507,11 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         </script>
     <?php
         }  catch (PayPal\Exception\PayPalConnectionException $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'));
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'), 'error');
             $this->add_log($ex->getData());
         } catch (Exception $ex) {
             $this->add_log($ex->getMessage()); // Prints the Error Code
-            wc_add_notice(__("Error processing checkout. Please try again.", 'woocommerce'));
+            wc_add_notice(__("Error processing checkout. Please try again.", 'woocommerce'), 'error');
         }
     }
 
@@ -560,11 +560,11 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
             }
         }  catch (PayPal\Exception\PayPalConnectionException $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'));
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'), 'error');
             $this->add_log($ex->getData());
         } catch (Exception $ex) {
             $this->add_log($ex->getMessage()); // Prints the Error Code
-            wc_add_notice(__("Error processing checkout. Please try again.", 'woocommerce'));
+            wc_add_notice(__("Error processing checkout. Please try again.", 'woocommerce'), 'error');
         }
     }
 

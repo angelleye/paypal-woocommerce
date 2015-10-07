@@ -107,115 +107,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         return apply_filters('woocommerce_gateway_icon', $icon, $this->id);
     }
 
-    /**
-     * Override this method so this gateway does not appear on checkout page
-     *
-     * @since 1.0.0
-     */
-    public function admin_options() {
-        ?>
-
-        <h3><?php echo isset($this->method_title) ? $this->method_title : __('Settings', 'paypal-for-woocommerce'); ?></h3>
-        <?php echo isset($this->method_description) ? wpautop($this->method_description) : ''; ?>
-        <table class="form-table">
-            <?php $this->generate_settings_html(); ?>
-        </table>
-        <?php
-        $this->scriptAdminOption();
-    }
-
-    public function scriptAdminOption() {
-        ?>
-        <script type="text/javascript">
-            jQuery(document).ready(function ($) {
-                $("#woocommerce_paypal_express_customer_service_number").attr("maxlength", "16");
-                if ($("#woocommerce_paypal_express_checkout_with_pp_button_type").val() == "customimage") {
-                    jQuery('.form-table tr td #woocommerce_paypal_express_pp_button_type_my_custom').each(function (i, el) {
-                        jQuery(el).closest('tr').show();
-                    });
-                } else {
-                    jQuery('.form-table tr td #woocommerce_paypal_express_pp_button_type_my_custom').each(function (i, el) {
-                        jQuery(el).closest('tr').hide();
-                    });
-                }
-                if ($("#woocommerce_paypal_express_checkout_with_pp_button_type").val() == "textbutton") {
-                    jQuery('.form-table tr td #woocommerce_paypal_express_pp_button_type_text_button').each(function (i, el) {
-                        jQuery(el).closest('tr').show();
-                    });
-                } else {
-                    jQuery('.form-table tr td #woocommerce_paypal_express_pp_button_type_text_button').each(function (i, el) {
-                        jQuery(el).closest('tr').hide();
-                    });
-                }
-                $("#woocommerce_paypal_express_checkout_with_pp_button_type").change(function () {
-                    if ($(this).val() == "customimage") {
-                        jQuery('.form-table tr td #woocommerce_paypal_express_pp_button_type_my_custom').each(function (i, el) {
-                            jQuery(el).closest('tr').show();
-                        });
-                        jQuery('.form-table tr td #woocommerce_paypal_express_pp_button_type_text_button').each(function (i, el) {
-                            jQuery(el).closest('tr').hide();
-                        });
-                    } else if ($(this).val() == "textbutton") {
-                        jQuery('.form-table tr td #woocommerce_paypal_express_pp_button_type_text_button').each(function (i, el) {
-                            jQuery(el).closest('tr').show();
-                        });
-                        jQuery('.form-table tr td #woocommerce_paypal_express_pp_button_type_my_custom').each(function (i, el) {
-                            jQuery(el).closest('tr').hide();
-                        });
-                    } else {
-                        jQuery('.form-table tr td #woocommerce_paypal_express_pp_button_type_my_custom').each(function (i, el) {
-                            jQuery(el).closest('tr').hide();
-                        });
-                        jQuery('.form-table tr td #woocommerce_paypal_express_pp_button_type_text_button').each(function (i, el) {
-                            jQuery(el).closest('tr').hide();
-                        });
-                    }
-                });
-                jQuery("#woocommerce_paypal_express_pp_button_type_my_custom").css({float: "left"});
-                jQuery("#woocommerce_paypal_express_pp_button_type_my_custom").after('<a href="#" id="upload" class="button_upload button">Upload</a>');
-        <?php if ($this->is_ssl()) { ?>
-                    jQuery("#woocommerce_paypal_express_checkout_logo").after('<a href="#" id="checkout_logo" class="button_upload button">Upload</a>');
-                    jQuery("#woocommerce_paypal_express_checkout_logo_hdrimg").after('<a href="#" id="checkout_logo_hdrimg" class="button_upload button">Upload</a>');
-            <?php
-        }
-        ?>
-                var custom_uploader;
-                $('.button_upload').click(function (e) {
-                    var BTthis = jQuery(this);
-                    e.preventDefault();
-                    //If the uploader object has already been created, reopen the dialog
-                    /*if (custom_uploader) {
-                     custom_uploader.open();
-                     return;
-                     }*/
-                    //Extend the wp.media object
-                    custom_uploader = wp.media.frames.file_frame = wp.media({
-                        title: '<?php _e('Choose Image', 'paypal-for-woocommerce'); ?>',
-                        button: {
-                            text: '<?php _e('Choose Image', 'paypal-for-woocommerce'); ?>'
-                        },
-                        multiple: false
-                    });
-                    //When a file is selected, grab the URL and set it as the text field's value
-                    custom_uploader.on('select', function () {
-                        var attachment = custom_uploader.state().get('selection').first().toJSON();
-                        var pre_input = BTthis.prev();
-                        var url = attachment.url;
-                        if (BTthis.attr('id') != 'upload') {
-                            if (attachment.url.indexOf('http:') > -1) {
-                                url = url.replace('http', 'https');
-                            }
-                        }
-                        pre_input.val(url);
-                    });
-                    //Open the uploader dialog
-                    custom_uploader.open();
-                });
-            });
-        </script>
-        <?php
-    }
-
     public function get_confirm_order($order) {
         $this->confirm_order_id = $order->id;
     }
@@ -237,15 +128,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
-    /**
-     * Check if site is SSL ready
-     *
-     */
-    function is_ssl() {
-        if (is_ssl() || get_option('woocommerce_force_ssl_checkout') == 'yes' || class_exists('WordPressHTTPS'))
-            return true;
-        return false;
-    }
+
 
     /**
      * Initialize Gateway Settings Form Fields
@@ -253,7 +136,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     function init_form_fields() {
 
         $require_ssl = '';
-        if (!$this->is_ssl()) {
+        if (!AngellEYE_Gateway_Paypal::is_ssl()) {
             $require_ssl = __('This image requires an SSL host.  Please upload your image to <a target="_blank" href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce');
         }
 
