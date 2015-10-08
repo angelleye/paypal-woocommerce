@@ -461,11 +461,13 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                     }
                 }'));
 
-        //add shipping info
-        $patchAdd =  new \PayPal\Api\Patch();
-        $patchAdd->setOp('add')
-            ->setPath('/transactions/0/item_list/shipping_address')
-            ->setValue(json_decode('{
+        $patchRequest = new \PayPal\Api\PatchRequest();
+        if ($order->needs_shipping_address() && !empty($order->shipping_country)) {
+            //add shipping info
+            $patchAdd =  new \PayPal\Api\Patch();
+            $patchAdd->setOp('add')
+                ->setPath('/transactions/0/item_list/shipping_address')
+                ->setValue(json_decode('{
                     "recipient_name": "'.$order->shipping_first_name.' '.$order->shipping_last_name.'",
                     "line1": "'.$order->shipping_address_1.'",
                     "city": "'.$order->shipping_city.'",
@@ -473,8 +475,12 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                     "postal_code": "'.$order->shipping_postcode.'",
                     "country_code": "'.$order->shipping_country.'"
                 }'));
-        $patchRequest = new \PayPal\Api\PatchRequest();
-        $patchRequest->setPatches(array( $patchAdd, $patchReplace ));
+
+            $patchRequest->setPatches(array( $patchAdd, $patchReplace ));
+        } else {
+            $patchRequest->setPatches(array( $patchReplace ));
+        }
+
         try {
             $result = $payment->update($patchRequest, $this->getAuth());
             $this->add_log(print_r($payment, true));
