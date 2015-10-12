@@ -90,6 +90,19 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'add_div_before_add_to_cart_button' ), 25);
             add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
             add_action( 'admin_init', array( $this, 'angelleye_check_version' ), 5 );
+            add_action( 'woocommerce_cart_calculate_fees',  array( $this, 'woocommerce_custom_surcharge2' ));
+        }
+
+        function woocommerce_custom_surcharge2() {
+            global $woocommerce;
+
+            if ( is_admin() && ! defined( 'DOING_AJAX' ) )
+                return;
+
+            $percentage = 0.01;
+            $surcharge = ( $woocommerce->cart->cart_contents_total + $woocommerce->cart->shipping_total ) * $percentage;
+            $woocommerce->cart->add_fee( 'Surcharge', $surcharge, true, '' );
+
         }
 
         /**
@@ -757,31 +770,31 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     );
                     array_push($PaymentOrderItems, $Item);
                     $ITEMAMT += round( $item['line_subtotal'] / $qty, 2 ) * $qty;
+                }
+
+                /**
+                 * Add custom Woo cart fees as line items
+                 */
+                foreach (WC()->cart->get_fees() as $fee) {
+                    $Item = array(
+                        'name' => $fee->name, // Item name. 127 char max.
+                        'desc' => '', // Item description. 127 char max.
+                        'amt' => number_format($fee->amount, 2, '.', ''), // Cost of item.
+                        'number' => $fee->id, // Item number. 127 char max.
+                        'qty' => 1, // Item qty on order. Any positive integer.
+                    );
 
                     /**
-                     * Add custom Woo cart fees as line items
+                     * The gift wrap amount actually has its own parameter in
+                     * DECP, so we don't want to include it as one of the line
+                     * items.
                      */
-                    foreach (WC()->cart->get_fees() as $fee) {
-                        $Item = array(
-                            'name' => $fee->name, // Item name. 127 char max.
-                            'desc' => '', // Item description. 127 char max.
-                            'amt' => number_format($fee->amount, 2, '.', ''), // Cost of item.
-                            'number' => $fee->id, // Item number. 127 char max.
-                            'qty' => 1, // Item qty on order. Any positive integer.
-                        );
-
-                        /**
-                         * The gift wrap amount actually has its own parameter in
-                         * DECP, so we don't want to include it as one of the line
-                         * items.
-                         */
-                        if ($Item['number'] != 'gift-wrap') {
-                            array_push($PaymentOrderItems, $Item);
-                            $ITEMAMT += $fee->amount * $Item['qty'];
-                        }
-
-                        $ctr++;
+                    if ($Item['number'] != 'gift-wrap') {
+                        array_push($PaymentOrderItems, $Item);
+                        $ITEMAMT += $fee->amount * $Item['qty'];
                     }
+
+                    $ctr++;
                 }
 
                 //caculate discount
