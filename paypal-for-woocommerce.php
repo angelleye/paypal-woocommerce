@@ -90,19 +90,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'add_div_before_add_to_cart_button' ), 25);
             add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
             add_action( 'admin_init', array( $this, 'angelleye_check_version' ), 5 );
-            add_action( 'woocommerce_cart_calculate_fees',  array( $this, 'woocommerce_custom_surcharge2' ));
-        }
-
-        function woocommerce_custom_surcharge2() {
-            global $woocommerce;
-
-            if ( is_admin() && ! defined( 'DOING_AJAX' ) )
-                return;
-
-            $percentage = 0.01;
-            $surcharge = ( $woocommerce->cart->cart_contents_total + $woocommerce->cart->shipping_total ) * $percentage;
-            $woocommerce->cart->add_fee( 'Surcharge', $surcharge, true, '' );
-
         }
 
         /**
@@ -791,7 +778,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                      */
                     if ($Item['number'] != 'gift-wrap') {
                         array_push($PaymentOrderItems, $Item);
-                        $ITEMAMT += $fee->amount * $Item['qty'];
+                        $ITEMAMT += round($fee->amount, 2);
                     }
 
                     $ctr++;
@@ -870,6 +857,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
             }
 
+
+
             if( $tax > 0) {
                 $tax = number_format($tax, 2, '.', '');
             }
@@ -910,9 +899,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $Payment['order_items'] = $PaymentOrderItems;
 
             // Rounding amendment
-
-            if (trim(number_format($order_total, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + number_format($tax, 2, '.', '') + number_format($shipping, 2, '.', ''), 2, '.', ''))) {
-                $diffrence_amount = AngellEYE_Gateway_Paypal::get_diffrent($order_total, $Payment['itemamt'] + $tax + number_format($shipping, 2, '.', ''));
+            if (trim(number_format($order_total, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + $tax + $shipping, 2, '.', ''))) {
+                $diffrence_amount = AngellEYE_Gateway_Paypal::get_diffrent($order_total, $Payment['itemamt'] + $tax + $shipping);
                 if($shipping > 0) {
                     $Payment['shippingamt'] = number_format($shipping + $diffrence_amount, 2, '.', '');
                 } elseif ($tax > 0) {
@@ -922,7 +910,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $Payment['itemamt'] = number_format($Payment['itemamt'] + $diffrence_amount, 2, '.', '');
                     //also make change to the first item
                     if ($send_items) {
-                        $Payment['order_items'][0]['amt'] =  number_format($Payment['order_items'][0]['amt'] + $diffrence_amount, 2, '.', '');
+                        $Payment['order_items'][0]['amt'] =  number_format($Payment['order_items'][0]['amt'] + $diffrence_amount / $Payment['order_items'][0]['qty'], 2, '.', '');
                     }
 
                 }
