@@ -359,7 +359,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'freightamt'=>'', 			//
 					'taxamt'=>'', 				//
 					'taxexempt'=>'', 			// 
-					'comment1'=>$order->customer_note ? wptexturize($order->customer_note) : '', 			// Merchant-defined value for reporting and auditing purposes.  128 char max
+					'comment1'=>$order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '', 			// Merchant-defined value for reporting and auditing purposes.  128 char max
 					'comment2'=>'', 			// Merchant-defined value for reporting and auditing purposes.  128 char max
 					'cvv2'=>$card_csc, 				// A code printed on the back of the card (or front for Amex)
 					'recurring'=>'', 			// Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring. 
