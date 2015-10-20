@@ -248,8 +248,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         }
-        //$result = execute_payment($_SESSION["payment_id"], $_GET["PayerID"]);
-        //Log
+
         ?>
         <script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js"type="text/javascript"></script>
 
@@ -262,6 +261,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 "placeholder": "ppplus",
                 "useraction": "commit",
                 "buttonLocation": "outside",
+                "country": <?php if(get_locale()!= '') echo '"',substr(get_locale(), -2),'"';?>,
                 "mode": "<?php echo strtolower($this->mode);?>",
                 "thirdPartyPaymentMethods": <?php echo json_encode($third_party);?>,
                 "onLoad":setPayment,
