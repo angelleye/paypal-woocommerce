@@ -943,7 +943,16 @@ class Angelleye_PayPal
 		{
 			$api_result_array['USER'] = '*****';
 			$api_result_array['PWD'] = '*****';
-			$api_result_array['SIGNATURE'] = '*****';	
+			$api_result_array['SIGNATURE'] = '*****';
+            if (array_key_exists('ACCT', $api_result_array)) {
+                $api_result_array['ACCT'] = '*****';
+            }
+            if (array_key_exists('CVV2', $api_result_array)) {
+                $api_result_array['CVV2'] = '*****';
+            }
+            if (array_key_exists('EXPDATE', $api_result_array)) {
+                $api_result_array['EXPDATE'] = '*****';
+            }
 		}
 		
 		$api_result = '';
@@ -1796,6 +1805,7 @@ class Angelleye_PayPal
 		
 		// Payer Name Fields
 		$PayerName = isset($DataArray['PayerName']) ? $DataArray['PayerName'] : array();
+        $PayerNameNVP = '';
 		foreach($PayerName as $PayerNameVar => $PayerNameVal)
 		{
 			$PayerNameNVP .= $PayerNameVal != '' ? '&' . strtoupper($PayerNameVar) . '=' . urlencode($PayerNameVal) : '';
