@@ -365,7 +365,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $methods[] = 'WC_Gateway_PayPal_Pro_AngellEYE';
             $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
             $methods[] = 'WC_Gateway_PayPal_Express_AngellEYE';
-            $methods[] = 'WC_Gateway_PayPal_Plus_AngellEYE';
+            if (version_compare(phpversion(), '5.3.0', '>=')) {
+                $methods[] = 'WC_Gateway_PayPal_Plus_AngellEYE';
+            }
 
             return $methods;
         }
@@ -421,7 +423,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $woocommerce_ppe->paypal_express_checkout();
             }
 
-            if (! empty( $_GET['pp_action'] ) && $_GET['pp_action'] == 'executepay' && isset($_GET["token"]) && isset($_GET["PayerID"]) && isset($_GET["paymentId"])) {
+
+            if (version_compare(phpversion(), '5.3.0', '>=') && ! empty( $_GET['pp_action'] ) && $_GET['pp_action'] == 'executepay' && isset($_GET["token"]) && isset($_GET["PayerID"]) && isset($_GET["paymentId"])) {
                 global $wp;
                 WC()->session->token = $_GET["token"];
                 WC()->session->PayerID = $_GET["PayerID"];
