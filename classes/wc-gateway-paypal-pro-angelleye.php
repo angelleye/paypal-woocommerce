@@ -706,7 +706,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 								'shipdiscamt' => '0.00', 					// Shipping discount for the order, specified as a negative number.
 								'handlingamt' => '0.00', 					// Total handling costs for the order.  If you specify handlingamt, you must also specify itemamt.
 								'desc' => '', 							// Description of the order the customer is purchasing.  127 char max.
-								'custom' => $order->customer_note ? wptexturize($order->customer_note) : '', 						// Free-form field for your own use.  256 char max.
+								'custom' => $order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '', 						// Free-form field for your own use.  256 char max.
 								'invnum' => $invoice_number = $this->invoice_id_prefix . preg_replace("/[^0-9,.]/", "", $order->id), // Your own invoice or tracking number
 								'notifyurl' => '', 						// URL for receiving Instant Payment Notifications.  This overrides what your profile is set to use.
 								'recurring' => ''						// Flag to indicate a recurring transaction.  Value should be Y for recurring, or anything other than Y if it's not recurring.  To pass Y here, you must have an established billing agreement with the buyer.
