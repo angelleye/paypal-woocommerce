@@ -283,7 +283,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 var current_cookie = jQuery.parseJSON(jQuery.cookie("paypalplus_session"));
 
                 select_position = name_array.indexOf(current_cookie.paymentMethod);
-                console.log(select_position);
+
                 if (select_position!=-1) {
                     jQuery('#payment_method_'+key_array[select_position]).attr("checked","checked");
                 } else {
