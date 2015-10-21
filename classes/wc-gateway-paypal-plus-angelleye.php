@@ -50,6 +50,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         $this->invoice_prefix = $this->settings['invoice_prefix'];
         $this->send_items = 'yes';
         $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
+        $this->cancel_url = isset($this->settings['cancel_url']) ? $this->settings['cancel_url'] : site_url();
 
         // Enable Logs if user configures to debug
         if ($this->debug == 'yes')
@@ -70,7 +71,6 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         if (!defined('CLIENT_ID')) define('CLIENT_ID', $this->rest_client_id); //your PayPal client ID
         if (!defined('CLIENT_SECRET')) define('CLIENT_SECRET', $this->rest_secret_id); //PayPal Secret
 
-        if (!defined('CANCEL_URL')) define('CANCEL_URL', site_url()); //cancel URL
         if (!defined('PP_CURRENCY')) define('PP_CURRENCY', get_woocommerce_currency()); //Currency code
 
         include_once( 'lib/autoload.php' ); //include PayPal SDK
@@ -210,6 +210,12 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'woocommerce'),
                 'default' => 'WC-PPADV',
                 'desc_tip' => true,
+            ),
+            'cancel_url' => array(
+                'title' => __('Cancel URL', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Please enter an URL for customers to return when they cancel the order in PayPal.', 'woocommerce'),
+                'default' => site_url(),
             ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
@@ -390,7 +396,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
             $redirectUrls = new RedirectUrls();
             $redirectUrls->setReturnUrl(add_query_arg(array('pp_action'=>'executepay'),home_url()));
-            $redirectUrls->setCancelUrl(CANCEL_URL);
+            $redirectUrls->setCancelUrl($this->cancel_url);
 
 
             $payer = new Payer();
