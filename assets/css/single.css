@@ -6,3 +6,6 @@
 .single_variation_wrap_angelleye{
     border: none;
 }
+#paypal_ec_paypal_credit_button, #paypal_ec_button, .paypal_ec_textbutton {
+    position: relative;
+}

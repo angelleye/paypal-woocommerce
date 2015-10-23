@@ -66,9 +66,15 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
     width: 620px;
 }
 */
+#paypal_ec_button, #paypal_ec_paypal_credit_button, .paypal_ec_textbutton {
+    position: relative;
+}
 #paypal_ec_button {
     float: left;
     width: 150px;
+}
+.paypal_ec_textbutton{
+    float: left;
 }
 #paypal_ec_paypal_credit_button {
     float: left;
