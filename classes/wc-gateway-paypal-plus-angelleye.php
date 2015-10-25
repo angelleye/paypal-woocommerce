@@ -261,7 +261,10 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 "placeholder": "ppplus",
                 "useraction": "commit",
                 "buttonLocation": "outside",
-                "country": <?php if(get_locale()!= '') echo '"',substr(get_locale(), -2),'"';?>,
+                <?php if(get_locale()!= ''):?>
+                "country":  <?php echo '"',substr(get_locale(), -2),'"';?>,
+                "language": <?php echo '"',get_locale(),'"';?>,
+                <?php endif;?>
                 "mode": "<?php echo strtolower($this->mode);?>",
                 "thirdPartyPaymentMethods": <?php echo json_encode($third_party);?>,
                 "onLoad":setPayment,
