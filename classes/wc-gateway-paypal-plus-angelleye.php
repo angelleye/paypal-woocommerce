@@ -242,6 +242,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         //define the redirection url
         $location = $this->get_approvalurl();
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+        $js_array = array();
         if ( ! empty( $available_gateways ) ) {
             foreach ( $available_gateways as $gateway ) {
                 if ($gateway->id != $this->id) {
@@ -272,7 +273,9 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 "language": <?php echo '"',get_locale(),'"';?>,
                 <?php endif;?>
                 "mode": "<?php echo strtolower($this->mode);?>",
+            <?php if (isset($third_party)): //check if we have third party payment ?>
                 "thirdPartyPaymentMethods": <?php echo json_encode($third_party);?>,
+            <?php endif; ?>
                 "onLoad":setPayment,
                 "disableContinue": 'place_order',
                 "enableContinue": setPayment,
@@ -295,7 +298,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 } else {
                     jQuery('#payment_method_paypal_plus').attr("checked","checked");
                 }
-                jQuery('#place_order').disable(false);
+                jQuery('#place_order').prop( "disabled", false);
             }
         </script>
         <style type="text/css">
