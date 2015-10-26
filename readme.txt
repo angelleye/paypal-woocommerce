@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 4.3
-Stable tag: 1.1.7.4
+Stable tag: 1.1.7.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -102,6 +102,15 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.1.7.5 - 10.26.2015 =
+* Fix - Resolves a broken setting for the cancel URL.
+* Fix - Resolves some PHP warnings that were displayed with PayPal Plus.
+* Fix - Resolves a problem where billing and shipping names are sometimes mixed up on orders.
+* Tweak - Adjusts order notes in the PayPal payment request to avoid "too many character" warnings and correctly handles special characters.
+* Tweak - Adjusts PayPal Plus to use country / language based on WooCommerce store settings.
+* Tweak - Masks sensitive data in API logs.
+* Tweak - Adjusts the PayPal Express and PayPal Credit buttons so they are independent from each other.
 
 = 1.1.7.4 - 10.11.2015 =
 * Fix - Resolves an issue with custom fees included on a cart/order.
