@@ -18,12 +18,15 @@
 .paypal_box_button div a img {
     border: none;
 }
+#paypal_ec_paypal_credit_button, #paypal_ec_button, .paypal_ec_textbutton {
+    position: relative;
+}
 #paypal_ec_paypal_credit_button a {
     display: block;
     text-align: center;
     width: 100%;
 }
-#paypal_ec_button {
+#paypal_ec_button, .paypal_ec_textbutton {
     margin-bottom: 3px;
 }
 .woocommerce .cart-collaterals .cart_totals, .woocommerce-page .cart-collaterals .cart_totals {

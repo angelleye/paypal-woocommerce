@@ -1,15 +1,18 @@
 jQuery(document).ready(function ($){
-    if (angelleye_frontend.is_cart == "yes"){
-        $("#paypal_ec_button_product input").click(function(){
+    if (angelleye_frontend.is_product == "yes"){
+        jQuery("#paypal_ec_button_product input").click(function(){
             var angelleye_action = $(this).data('action');
             $('form.cart').attr( 'action', angelleye_action );
             $(this).attr('disabled', 'disabled');
             $('form.cart').submit();
-            $(".angelleyeOverlay").show();
+            jQuery(this).parent().parent().parent().find(".angelleyeOverlay").show();
+            //jQuery(".angelleyeOverlay").show();
             return false;
         });
+    }
+    if (angelleye_frontend.is_cart == "yes"){
         $(".paypal_checkout_button").click(function(){
-            $(".angelleyeOverlay").show();
+            $(this).parent().find(".angelleyeOverlay").show();
             return true;
         });
     }
@@ -31,5 +34,10 @@ jQuery(document).ready(function ($){
             }
         });
         jQuery('select#paypal_pro_card_type').change();
+
+        jQuery(".paypal_checkout_button").click(function(){
+            jQuery(this).parent().find(".angelleyeOverlay").show();
+            return true;
+        });
     }
 });
