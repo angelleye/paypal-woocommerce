@@ -92,7 +92,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         	} else {
 
         		$billing_address = array(
-        		'first_name' 	=> WC()->customer->shiptoname,
+        		'first_name' 	=> WC()->customer->firstname. ' '. WC()->customer->lastname,
         		'company'		=> WC()->customer->company,
         		'address_1'		=> WC()->customer->get_address(),
         		'address_2'		=> "",

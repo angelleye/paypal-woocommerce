@@ -731,6 +731,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         WC()->customer->set_shipping_country($result['SHIPTOCOUNTRYCODE']);
                     }
 
+                    if (isset($result['FIRSTNAME']))
+                        WC()->customer->firstname = $result['FIRSTNAME'];
+                    if (isset($result['LASTNAME']))
+                        WC()->customer->lastname = $result['LASTNAME'];
                     if (isset($result['SHIPTONAME']))
                         WC()->customer->shiptoname = $result['SHIPTONAME'];
                     if (isset($result['SHIPTOSTREET']))
@@ -880,8 +884,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 update_user_meta($this->customer_id, 'billing_phone', isset($user_submit_form['billing_phone']) ?  $user_submit_form['billing_phone'] : $result['PHONENUM']);
                                 update_user_meta($this->customer_id, 'billing_email', isset($user_submit_form['billing_email']) ?  $user_submit_form['billing_email'] : $result['EMAIL']);
                             } else {
-                                update_user_meta($this->customer_id, 'billing_first_name', $shipping_first_name);
-                                update_user_meta($this->customer_id, 'billing_last_name', $shipping_last_name);
+                                update_user_meta($this->customer_id, 'billing_first_name', $result['FIRSTNAME']);
+                                update_user_meta($this->customer_id, 'billing_last_name', $result['LASTNAME']);
                                 update_user_meta($this->customer_id, 'billing_address_1', isset($result['SHIPTOSTREET']) ? $result['SHIPTOSTREET'] : '');
                                 update_user_meta($this->customer_id, 'billing_address_2', isset($result['SHIPTOSTREET2']) ? $result['SHIPTOSTREET2'] : '');
                                 update_user_meta($this->customer_id, 'billing_city', isset($result['SHIPTOCITY']) ? $result['SHIPTOCITY'] : '');
@@ -1036,8 +1040,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                     do_action('woocommerce_checkout_update_user_meta', $this->customer_id, $checkout_form_data);
                 } else {
-                	update_post_meta($order_id, '_shipping_first_name', $this->get_session('firstname'));
-	                update_post_meta($order_id, '_shipping_last_name', $this->get_session('lastname'));
+                	update_post_meta($order_id, '_shipping_first_name', $shipping_first_name);
+	                update_post_meta($order_id, '_shipping_last_name', $shipping_last_name);
 	                update_post_meta($order_id, '_shipping_full_name', $full_name);
 	                update_post_meta($order_id, '_shipping_company', $this->get_session('company'));
 	                update_post_meta($order_id, '_billing_phone', $this->get_session('phonenum'));
