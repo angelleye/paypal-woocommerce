@@ -916,7 +916,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (isset($_POST) || ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters( 'woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')))) {
                 $result = unserialize(WC()->session->RESULT);
                 /* create account start */
-                if (isset($_POST['create_act']) && !empty($_POST['create_act'])) {
+                if (isset($_POST['createaccount']) && !empty($_POST['createaccount'])) {
                     $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
                     $create_user_email = $_POST['email'];
                     $create_user_name = sanitize_user( current( explode( '@', $create_user_email ) ), true );
@@ -935,6 +935,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
                     } elseif (get_user_by('email', $create_user_email) != false) {
                         wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
+                        $create_acc_error = true;
+                    } elseif (empty($_POST['create_act'])) {
+                        wc_add_notice(__('Password is required.', 'paypal-for-woocommerce'), 'error');
                         $create_acc_error = true;
                     } else {
                         $username = !empty($create_user_name) ? $create_user_name : '';
