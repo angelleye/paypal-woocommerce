@@ -26,15 +26,24 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expr
 $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_express && !is_user_logged_in() && $checked==="yes" && empty($checkout_form_data['billing_address_1']));
 
 ?>
+
+<?php do_action( 'angelleye_review_order_before_checkout_form' );?>
+
 <form class="angelleye_checkout" method="POST" action="<?php echo $frm_act;?>">
     <div class="wp_notice_own"></div>
     <?php wc_print_notices();?>
+
+    <?php do_action( 'angelleye_review_order_before_cart_contents' );?>
+
     <div id="paypalexpress_order_review">
             <?php woocommerce_order_review();?>
     </div>
 
+    <?php do_action( 'angelleye_review_order_after_cart_contents' );?>
+
 <?php if ( WC()->cart->needs_shipping()  ) : ?>
 
+    <?php do_action( 'angelleye_review_order_before_customer_details' );?>
 
     <div class="title">
         <h2><?php _e( 'Customer details', 'woocommerce' ); ?></h2>
@@ -124,6 +133,9 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         	<?php endif; endif; ?>
         </div><!-- /.col-2 -->
     </div><!-- /.col2-set -->
+
+    <?php do_action( 'angelleye_review_order_after_customer_details' );?>
+
 <?php endif; ?>
 <?php if ( $show_act ): ?>
     <script type="text/javascript">
@@ -140,6 +152,8 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
             });
         });
     </script>
+
+    <?php do_action( 'angelleye_review_order_before_create_account' );?>
 
     <div class="create-account" class="div_create_act" >
         <p class="form-row form-row-wide create-account div_create_act_para" style="cursor:pointer;">
@@ -161,6 +175,9 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
             <div class="clear"></div>
         </div>
     </div>
+
+    <?php do_action( 'angelleye_review_order_after_create_account' );?>
+
 <?php endif;?>
 <?php if ( $show_login ):  ?>
 </form>
@@ -179,6 +196,9 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
             display: block !important;
         }
     </style>
+
+    <?php do_action( 'angelleye_review_order_before_login_create_account' );?>
+
     <div class="title">
         <h2><?php _e( 'Login', 'woocommerce' ); ?></h2>
     </div>
@@ -232,6 +252,9 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
             <input type="hidden" name="address" value="<?php echo WC()->customer->get_address(); ?>">
         </p>
     </form>
+
+    <?php do_action( 'angelleye_review_order_after_login_create_account' );?>
+
 <?php elseif (!$hide_button):
     global $pp_settings;
     $cancel_url = isset( $pp_settings['cancel_page'] ) ? get_permalink( $pp_settings['cancel_page'] ) : $woocommerce->cart->get_cart_url();
@@ -241,6 +264,8 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 
     if ($is_paypal_express && wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ) ){
 ?>
+        <?php do_action( 'angelleye_review_order_before_place_order' );?>
+
         <script type="text/javascript">
             jQuery(document).ready(function (){
                 jQuery(".cls_place_order_own").click(function(){
@@ -287,12 +312,22 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         </p>
         <?php  echo $cancel_button;?>
         <input type="button" class="button cls_place_order_own" value="<?php echo  __( 'Place Order','paypal-for-woocommerce');?>" /></p>
+
+        <?php do_action( 'angelleye_review_order_after_place_order' );?>
+
 <?php
     } else {
+
+        do_action( 'angelleye_review_order_before_place_order' );
+
         echo $cancel_button;
         echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
+
+        do_action( 'angelleye_review_order_after_place_order' );
     }
     ?>
     </form><!--close the checkout form-->
 <?php endif; ?>
 <div class="clear"></div>
+
+<?php do_action( 'angelleye_review_order_after_checkout_form' );?>
