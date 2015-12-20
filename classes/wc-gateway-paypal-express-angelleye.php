@@ -245,6 +245,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __('Enable logging <code>/wp-content/uploads/wc-logs/paypal_express-{tag}.log</code>', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
+            
+            'billing_agreement_express' => array(
+                'title' => __('Billing Agreement', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable billing agreement', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
+            
+            
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -1468,25 +1477,36 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'l_shippingoptionamount' => ''      // Shipping option amount.  Required if specifying the Callback URL.
         );
         array_push($ShippingOptions, $Option);
-
+		global $pp_settings, $pp_pro, $pp_payflow;
         $BillingAgreements = array();
+		
         $Item = array(
-            'l_billingtype' => '', // Required.  Type of billing agreement.  For recurring payments it must be RecurringPayments.  You can specify up to ten billing agreements.  For reference transactions, this field must be either:  MerchantInitiatedBilling, or MerchantInitiatedBillingSingleSource
+            'l_billingtype' => 'MerchantInitiatedBilling', // Required.  Type of billing agreement.  For recurring payments it must be RecurringPayments.  You can specify up to ten billing agreements.  For reference transactions, this field must be either:  MerchantInitiatedBilling, or MerchantInitiatedBillingSingleSource
             'l_billingagreementdescription' => '', // Required for recurring payments.  Description of goods or services associated with the billing agreement.
-            'l_paymenttype' => '', // Specifies the type of PayPal payment you require for the billing agreement.  Any or IntantOnly
+            'l_paymenttype' => 'Any', // Specifies the type of PayPal payment you require for the billing agreement.  Any or IntantOnly
             'l_billingagreementcustom' => ''     // Custom annotation field for your own use.  256 char max.
         );
 
         array_push($BillingAgreements, $Item);
-
-        $PayPalRequestData = array(
+		if (isset($pp_settings['billing_agreement_express']) && ($pp_settings['billing_agreement_express'] == 'yes')) {
+	        $PayPalRequestData = array(
+	            'SECFields' => $SECFields,
+	            'SurveyChoices' => $SurveyChoices,
+	            'Payments' => $Payments,
+	                //'BuyerDetails' => $BuyerDetails,
+	                //'ShippingOptions' => $ShippingOptions,
+	                'BillingAgreements' => $BillingAgreements,
+	        );
+		} else {
+			$PayPalRequestData = array(
             'SECFields' => $SECFields,
             'SurveyChoices' => $SurveyChoices,
             'Payments' => $Payments,
                 //'BuyerDetails' => $BuyerDetails,
                 //'ShippingOptions' => $ShippingOptions,
-                //'BillingAgreements' => $BillingAgreements
-        );
+               // 'BillingAgreements' => $BillingAgreements,
+        	);
+		}
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->SetExpressCheckout($PayPalRequestData);
