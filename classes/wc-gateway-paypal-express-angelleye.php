@@ -1057,7 +1057,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             update_post_meta($order_id, '_'.$key, $value);
                         }
                     }
+                    //Set POST data from SESSION
+                    $_POST = $checkout_form_data;
                     do_action('woocommerce_checkout_update_user_meta', $this->customer_id, $checkout_form_data);
+                    do_action( 'woocommerce_checkout_update_order_meta', $order_id, $checkout_form_data );
                 } else {
                 	update_post_meta($order_id, '_shipping_first_name', $shipping_first_name);
 	                update_post_meta($order_id, '_shipping_last_name', $shipping_last_name);
