@@ -961,10 +961,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Check if site is SSL ready
          *
          */
-        static public function is_ssl() {
+        static public function is_ssl()
+        {
             if (is_ssl() || get_option('woocommerce_force_ssl_checkout') == 'yes' || class_exists('WordPressHTTPS'))
                 return true;
             return false;
+        }
 
         public function angelleye_admin_menu_own(){
         	$this->plugin_screen_hook_suffix = add_submenu_page(
