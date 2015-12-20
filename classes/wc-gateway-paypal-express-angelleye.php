@@ -1032,16 +1032,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 update_post_meta($order_id, '_payment_method', $this->id);
                 update_post_meta($order_id, '_payment_method_title', $this->title);
-                
+               
+                $checkout_form_data = maybe_unserialize($this->get_session('checkout_form'));
+
                 if (is_user_logged_in()) {
                     $userLogined = wp_get_current_user();
                     update_post_meta($order_id, '_billing_email', $userLogined->user_email);
                     update_post_meta($order_id, '_customer_user', $userLogined->ID);
                 } else {
-                    update_post_meta($order_id, '_billing_email', $this->get_session('payeremail'));
+                    if (isset($checkout_form_data['billing_email'])) {
+                        update_post_meta($order_id, '_billing_email', $checkout_form_data['billing_email']);
+                    }
+                    else{
+                        update_post_meta($order_id, '_billing_email', $this->get_session('payeremail'));
+                    }
                 }
-               
-                $checkout_form_data = maybe_unserialize($this->get_session('checkout_form'));
+
+                //save PayPal email
+                update_post_meta($order_id, 'paypal_email', $this->get_session('payeremail'));
+
                 if ((isset($this->billing_address) && $this->billing_address =='yes' ) || (empty($checkout_form_data['billing_country']))) {
                     $checkout_form_data = array();
                 }
