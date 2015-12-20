@@ -415,7 +415,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     if ($_item['number']) {
                         $Item['L_SKU' . $item_loop] = $_item['number'];
                     }
-                    array_push($OrderItems, $Item);
+                    $OrderItems = array_merge($OrderItems, $Item);
+                    $item_loop++;
                 }
             }
 
@@ -426,7 +427,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             $PayPalRequestData['freightamt']   = $PaymentData['shippingamt'];
             $PayPalRequestData['ITEMAMT']      = $PaymentData['itemamt'];
 
-            $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
+            if( $this->send_items ) {
+                $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
+            }
         
 			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
 			
