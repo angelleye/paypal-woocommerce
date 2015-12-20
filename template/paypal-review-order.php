@@ -204,22 +204,11 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
     </div>
     <form name="" action="" method="post">
         <?php
-        function curPageURL() {
-        	$pageURL = 'http';
-        	if (@$_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
-        	$pageURL .= "://";
-        	if ($_SERVER["SERVER_PORT"] != "80") {
-        		$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-        	} else {
-        		$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-        	}
-        	return $pageURL;
-        }
 
         woocommerce_login_form(
             array(
             'message'  => 'Please login or create an account to complete your order.',
-            'redirect' => curPageURL(),
+            'redirect' => AngellEYE_Gateway_Paypal::curPageURL(),
             'hidden'   => true
             )
         );
