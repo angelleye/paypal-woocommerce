@@ -90,6 +90,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'add_div_before_add_to_cart_button' ), 25);
             add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
             add_action( 'admin_init', array( $this, 'angelleye_check_version' ), 5 );
+            add_action( 'admin_init', array( $this, 'update_wc_paypal_plug_not_support_currency_nag' ) );
         }
 
         /**
@@ -970,6 +971,22 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
             }
             return $pageURL;
+        }
+        
+        /**
+         * hide paypal plus notice
+         * @global type $current_user
+         * @return type
+         */
+        public function update_wc_paypal_plug_not_support_currency_nag() {
+            global $current_user;
+            get_currentuserinfo();
+            if ( isset( $_GET['_wpnonce'] ) && ! wp_verify_nonce( $_GET['_wpnonce'], 'wc_paypal_plus_not_support_currency_nag_hide' ) ) {
+                    return;
+            }
+            if ( isset( $_GET['wc_paypal_plus_not_support_currency_nag'] ) && '1' === $_GET['wc_paypal_plus_not_support_currency_nag'] ) {
+                    add_user_meta( $current_user->ID, '_wc_paypal_plus_not_support_currency_nag', '1', true );
+            }
         }
     }
 }
