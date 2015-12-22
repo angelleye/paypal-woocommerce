@@ -91,6 +91,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
             add_action( 'admin_init', array( $this, 'angelleye_check_version' ), 5 );
             add_action( 'admin_init', array( $this, 'update_wc_paypal_plug_not_support_currency_nag' ) );
+            add_filter( 'woocommerce_add_to_cart_redirect', array($this, 'angelleye_woocommerce_add_to_cart_redirect'), 1000, 1);
         }
 
         /**
@@ -986,6 +987,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
             if ( isset( $_GET['wc_paypal_plus_not_support_currency_nag'] ) && '1' === $_GET['wc_paypal_plus_not_support_currency_nag'] ) {
                     add_user_meta( $current_user->ID, '_wc_paypal_plus_not_support_currency_nag', '1', true );
+            }
+        }
+        
+        public function angelleye_woocommerce_add_to_cart_redirect($url) {	
+            if( isset($_REQUEST['express_checkout']) && $_REQUEST['express_checkout'] == '1' ) {
+                return add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')));
+            } else {
+                return $url;
             }
         }
     }
