@@ -90,6 +90,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'add_div_before_add_to_cart_button' ), 25);
             add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_div_after_add_to_cart_button' ), 35);
             add_action( 'admin_init', array( $this, 'angelleye_check_version' ), 5 );
+            add_filter( 'woocommerce_add_to_cart_redirect', array($this, 'angelleye_woocommerce_add_to_cart_redirect'), 1000, 1);
         }
 
         /**
@@ -970,6 +971,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
             }
             return $pageURL;
+        }
+        
+        public function angelleye_woocommerce_add_to_cart_redirect($url) {	
+            if( isset($_REQUEST['express_checkout']) && $_REQUEST['express_checkout'] == '1' ) {
+                return add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')));
+            } else {
+                return $url;
+            }
         }
     }
 }
