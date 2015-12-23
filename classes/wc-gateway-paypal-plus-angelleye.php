@@ -93,7 +93,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         get_currentuserinfo();
            
         if ( ($this->enabled === "yes" && $this->rest_client_id && $this->rest_secret_id ) && (! in_array( get_option( 'woocommerce_currency' ), $this->allowed_currencies ) && ! get_user_meta( $current_user->ID, '_wc_paypal_plus_not_support_currency_nag' ) )) {
-           echo '<div class="error"><p>' . sprintf( __( 'Gateway Disabled: PayPal Plus does not support your store currency (Supports: EUR, CAD).', 'woocommerce-gateway-paypal-pro') . ' <a href="%s">' . __( 'Hide Notice', 'woocommerce' ) . '</a>', wp_nonce_url( add_query_arg( 'wc_paypal_plus_not_support_currency_nag', '1' ), 'wc_paypal_plus_not_support_currency_nag_hide' ) ) . '</p></div>';
+           echo '<div class="error"><p>' . sprintf( __( 'Gateway Disabled: PayPal Plus does not support your store currency (Supports: EUR, CAD).', 'paypal-for-woocommerce') . ' <a href="%s">' . __( 'Hide Notice', 'woocommerce' ) . '</a>', wp_nonce_url( add_query_arg( 'wc_paypal_plus_not_support_currency_nag', '1' ), 'wc_paypal_plus_not_support_currency_nag_hide' ) ) . '</p></div>';
          }
          
         if ($this->enabled != 'yes' || @$_GET['section']=='wc_gateway_paypal_plus_angelleye') {
