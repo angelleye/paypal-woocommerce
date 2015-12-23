@@ -690,7 +690,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         /*
 		 * Check if the PayPal_PayFlow class has already been established.
 		 */
-        if(!class_exists('PayPal_PayFlow' ))
+        if(!class_exists('Angelleye_PayPal_PayFlow' ))
         {
             require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
             require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
