@@ -732,9 +732,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         }
 
         //fix: itemamt = 0, make shipping or tax as order item
-        if ($PaymentData['itemamt'] == 0) {
+        if ($PaymentData['itemamt'] == 0 && $PaymentData['shippingamt'] > 0) {
             $OrderItems = array();
-            if ($PaymentData['shippingamt']) {
+            
                 $Item	 = array(
                     'l_name'    => __( apply_filters('angelleye_paypal_pro_shipping_text', 'Shipping'), 'paypal-for-woocommerce' ), 						// Item Name.  127 char max.
                     'l_desc'    => '', 						// Item description.  127 char max.
@@ -747,9 +747,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                     'l_ebayitemorderid' => '' 				// eBay order ID for the item.
                 );
                 array_push($OrderItems, $Item);
-            }
+          
 
-            if ($PaymentData['taxamt']) {
+            if ($PaymentData['taxamt'] > 0) {
                 $Item	 = array(
                     'l_name'    => __( apply_filters('angelleye_paypal_pro_tax_text', 'Tax'), 'paypal-for-woocommerce' ), 						// Item Name.  127 char max.
                     'l_desc'    => '', 						// Item description.  127 char max.
