@@ -415,7 +415,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     if ($_item['number']) {
                         $Item['L_SKU' . $item_loop] = $_item['number'];
                     }
-                    array_push($OrderItems, $Item);
+                    $OrderItems = array_merge($OrderItems, $Item);
+                    $item_loop++;
                 }
             }
 
@@ -426,7 +427,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             $PayPalRequestData['freightamt']   = $PaymentData['shippingamt'];
             $PayPalRequestData['ITEMAMT']      = $PaymentData['itemamt'];
 
-            $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
+            if( $this->send_items ) {
+                $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
+            }
         
 			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
 			
@@ -687,7 +690,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         /*
 		 * Check if the PayPal_PayFlow class has already been established.
 		 */
-        if(!class_exists('PayPal_PayFlow' ))
+        if(!class_exists('Angelleye_PayPal_PayFlow' ))
         {
             require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
             require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');

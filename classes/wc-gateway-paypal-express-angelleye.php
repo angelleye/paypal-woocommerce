@@ -926,7 +926,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (isset($_POST) || ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters( 'woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')))) {
                 $result = unserialize(WC()->session->RESULT);
                 /* create account start */
-                if (isset($_POST['create_act']) && !empty($_POST['create_act'])) {
+                if (isset($_POST['createaccount']) && !empty($_POST['createaccount'])) {
                     $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
                     $create_user_email = $_POST['email'];
                     $create_user_name = sanitize_user( current( explode( '@', $create_user_email ) ), true );
@@ -945,6 +945,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         wc_add_notice(__('Please provide a valid email address.', 'paypal-for-woocommerce'), 'error');
                     } elseif (get_user_by('email', $create_user_email) != false) {
                         wc_add_notice(__('This email address is already registered.', 'paypal-for-woocommerce'), 'error');
+                        $create_acc_error = true;
+                    } elseif (empty($_POST['create_act'])) {
+                        wc_add_notice(__('Password is required.', 'paypal-for-woocommerce'), 'error');
                         $create_acc_error = true;
                     } else {
                         $username = !empty($create_user_name) ? $create_user_name : '';
@@ -1029,16 +1032,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 update_post_meta($order_id, '_payment_method', $this->id);
                 update_post_meta($order_id, '_payment_method_title', $this->title);
-                
+               
+                $checkout_form_data = maybe_unserialize($this->get_session('checkout_form'));
+
                 if (is_user_logged_in()) {
                     $userLogined = wp_get_current_user();
                     update_post_meta($order_id, '_billing_email', $userLogined->user_email);
                     update_post_meta($order_id, '_customer_user', $userLogined->ID);
                 } else {
-                    update_post_meta($order_id, '_billing_email', $this->get_session('payeremail'));
+                    if (isset($checkout_form_data['billing_email'])) {
+                        update_post_meta($order_id, '_billing_email', $checkout_form_data['billing_email']);
+                    }
+                    else{
+                        update_post_meta($order_id, '_billing_email', $this->get_session('payeremail'));
+                    }
                 }
-               
-                $checkout_form_data = maybe_unserialize($this->get_session('checkout_form'));
+
+                //save PayPal email
+                update_post_meta($order_id, 'paypal_email', $this->get_session('payeremail'));
+
                 if ((isset($this->billing_address) && $this->billing_address =='yes' ) || (empty($checkout_form_data['billing_country']))) {
                     $checkout_form_data = array();
                 }
@@ -1057,7 +1069,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             update_post_meta($order_id, '_'.$key, $value);
                         }
                     }
+                    //Set POST data from SESSION
+                    $_POST = $checkout_form_data;
                     do_action('woocommerce_checkout_update_user_meta', $this->customer_id, $checkout_form_data);
+                    do_action( 'woocommerce_checkout_update_order_meta', $order_id, $checkout_form_data );
                 } else {
                 	update_post_meta($order_id, '_shipping_first_name', $shipping_first_name);
 	                update_post_meta($order_id, '_shipping_last_name', $shipping_last_name);
