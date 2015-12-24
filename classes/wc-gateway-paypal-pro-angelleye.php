@@ -731,12 +731,48 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             }
         }
 
-        /**
-         * Shipping/tax/item amount
-         */
-        $PaymentDetails['taxamt']       = $PaymentData['taxamt'];
-        $PaymentDetails['shippingamt']  = $PaymentData['shippingamt'];
-        $PaymentDetails['itemamt']      = $PaymentData['itemamt'];
+        //fix: itemamt = 0, make shipping or tax as order item
+        if ($PaymentData['itemamt'] == 0 && $PaymentData['shippingamt'] > 0) {
+            $OrderItems = array();
+            
+                $Item	 = array(
+                    'l_name'    => __( apply_filters('angelleye_paypal_pro_shipping_text', 'Shipping'), 'paypal-for-woocommerce' ), 						// Item Name.  127 char max.
+                    'l_desc'    => '', 						// Item description.  127 char max.
+                    'l_amt'     => $PaymentData['shippingamt'], 							// Cost of individual item.
+                    'l_number'  => '', 						// Item Number.  127 char max.
+                    'l_qty'     => 1, 							// Item quantity.  Must be any positive integer.
+                    'l_taxamt'  => '', 						// Item's sales tax amount.
+                    'l_ebayitemnumber' => '', 				// eBay auction number of item.
+                    'l_ebayitemauctiontxnid' => '', 		// eBay transaction ID of purchased item.
+                    'l_ebayitemorderid' => '' 				// eBay order ID for the item.
+                );
+                array_push($OrderItems, $Item);
+          
+
+            if ($PaymentData['taxamt'] > 0) {
+                $Item	 = array(
+                    'l_name'    => __( apply_filters('angelleye_paypal_pro_tax_text', 'Tax'), 'paypal-for-woocommerce' ), 						// Item Name.  127 char max.
+                    'l_desc'    => '', 						// Item description.  127 char max.
+                    'l_amt'     => $PaymentData['taxamt'], 							// Cost of individual item.
+                    'l_number'  => '', 						// Item Number.  127 char max.
+                    'l_qty'     => 1, 							// Item quantity.  Must be any positive integer.
+                    'l_taxamt'  => '', 						// Item's sales tax amount.
+                    'l_ebayitemnumber' => '', 				// eBay auction number of item.
+                    'l_ebayitemauctiontxnid' => '', 		// eBay transaction ID of purchased item.
+                    'l_ebayitemorderid' => '' 				// eBay order ID for the item.
+                );
+                array_push($OrderItems, $Item);
+            }
+
+            $PaymentDetails['itemamt'] = number_format( $order->get_total(), 2, '.', '' );
+        } else {
+            /**
+             * Shipping/tax/item amount
+             */
+            $PaymentDetails['taxamt']       = $PaymentData['taxamt'];
+            $PaymentDetails['shippingamt']  = $PaymentData['shippingamt'];
+            $PaymentDetails['itemamt']      = $PaymentData['itemamt'];
+        }
 		
 		/**
 		 * 3D Secure Params
