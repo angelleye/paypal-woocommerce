@@ -17,12 +17,13 @@
     <?php if ($active_tab == 'general_settings') { ?>
 
         <?php
-        $tool_subtab = $_GET['gateway'] ? $_GET['gateway'] : 'express_checkout';
+        $tool_subtab = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
         ?>
         <h2 class="nav-tab-wrapper">
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=express_checkout" class="nav-tab <?php echo $tool_subtab == 'express_checkout' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Express Checkout', $this->plugin_slug); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=payflow" class="nav-tab <?php echo $tool_subtab == 'payflow' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Payments Pro (PayFlow)', $this->plugin_slug); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=dodirectpayment" class="nav-tab <?php echo $tool_subtab == 'dodirectpayment' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Website Payments Pro (DoDirectPayment)', $this->plugin_slug); ?></a>
+            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_plus" class="nav-tab <?php echo $tool_subtab == 'paypal_plus' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Plus', $this->plugin_slug); ?></a>
         </h2>
 
         <?php
@@ -53,6 +54,17 @@
             <div class="wrap">
                 <p><?php _e('PayPal’s Website Payments Pro 3.0 is the original Pro package that PayPal offered. It works on the DoDirectPayment API and is being slowly deprecated since the launch of Payments Pro 2.0 that works on the PayFlow API. You need to be sure that your account is setup for this version of Pro before configuring this payment gateway or you will end up with errors when people attempt to pay you via credit card.', $this->plugin_slug); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal_pro_angelleye'); ?>"><?php _e('PayPal Website Payments Pro (DoDirectPayment) Setting', $this->plugin_slug); ?></a>
+            </div>
+            <?php
+        }
+        ?>
+    
+        <?php
+        if ((isset($_GET['tab']) && isset($_GET['gateway'])) && ($_GET['tab'] == 'general_settings' && $_GET['gateway'] == 'paypal_plus')) {
+            ?>
+            <div class="wrap">
+                <p><?php _e('PayPal PLUS is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame.', $this->plugin_slug); ?></p>
+                <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal_plus_angelleye'); ?>"><?php _e('PayPal Plus Setting', $this->plugin_slug); ?></a>
             </div>
             <?php
         }
