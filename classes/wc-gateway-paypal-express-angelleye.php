@@ -758,6 +758,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         WC()->customer->shiptoname = $result['SHIPTONAME'];
                     if (isset($result['SHIPTOSTREET']))
                         WC()->customer->set_address($result['SHIPTOSTREET']);
+                    if (isset($result['SHIPTOSTREET']))
+                        WC()->customer->set_address_2($result['SHIPTOSTREET2']);
                     if (isset($result['SHIPTOCITY']))
                         WC()->customer->set_city($result['SHIPTOCITY']);
                     if (isset($result['SHIPTOCOUNTRYCODE']))

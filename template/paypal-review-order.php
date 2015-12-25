@@ -64,7 +64,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
                     'first_name' 	=> WC()->customer->shiptoname,
                     'company'		=> WC()->customer->company,
                     'address_1'		=> WC()->customer->get_address(),
-                    'address_2'		=> "",
+                    'address_2'		=> WC()->customer->get_address_2(),
                     'city'			=> WC()->customer->get_city(),
                     'state'			=> WC()->customer->get_state(),
                     'postcode'		=> WC()->customer->get_postcode(),
@@ -104,7 +104,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         		'first_name' 	=> WC()->customer->firstname. ' '. WC()->customer->lastname,
         		'company'		=> WC()->customer->company,
         		'address_1'		=> WC()->customer->get_address(),
-        		'address_2'		=> "",
+        		'address_2'		=> WC()->customer->get_address_2(),
         		'city'			=> WC()->customer->get_city(),
         		'state'			=> WC()->customer->get_state(),
         		'postcode'		=> WC()->customer->get_postcode(),
@@ -114,7 +114,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 
         	if( isset($billing_address) && !empty($billing_address) ) :
         		?>
-        	<div class="col-1">
+        	
 
 	            <div class="title">
 	                <h3><?php _e( 'Billing Address', 'woocommerce' ); ?></h3>
@@ -129,7 +129,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 	                </p>
 	            </div>
 
-        </div><!-- /.col-1 -->
+       
         	<?php endif; endif; ?>
         </div><!-- /.col-2 -->
     </div><!-- /.col2-set -->
