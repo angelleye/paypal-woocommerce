@@ -27,7 +27,9 @@ if (!defined('ABSPATH'))
 {
     exit();
 }
-
+if (!defined('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR')) {
+    define('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR', dirname(__FILE__));
+}
 /**
  * Set global parameters
  */
@@ -971,16 +973,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         public function angelleye_admin_menu_own(){
-        	$this->plugin_screen_hook_suffix = add_submenu_page(
-			'options-general.php', 
-			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),
-			__( 'PayPal for WooCommerce', 'paypal-for-woocommerce' ),
-			'manage_options',
-			'paypal-for-woocommerce',
-			array( $this, 'display_plugin_admin_page'));	
-        }
-        
-         public function angelleye_admin_menu_own(){
         	$this->plugin_screen_hook_suffix = add_submenu_page(
 			'options-general.php', 
 			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),

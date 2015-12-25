@@ -3,7 +3,7 @@
 class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     /**
-     * __construct function.
+     * __construct function. 
      *
      * @access public
      * @return void
@@ -796,7 +796,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 else {
                     $this->add_log("...ERROR: GetShippingDetails returned empty result");
                 }
-                if ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters( 'woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout'))) {
+                if(($this->skip_final_review == 'yes' && ((get_option('woocommerce_enable_guest_checkout') === "yes" || apply_filters('woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')) == "yes" ) || is_user_logged_in())) || is_user_logged_in() && isset(WC()->session->checkout_form) ) {
                     //check terms enable
                     $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
                     if (!( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ))) {
@@ -923,7 +923,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         } elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'payaction') {
-            if (isset($_POST) || ($this->skip_final_review == 'yes' && get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters( 'woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')))) {
+            if( isset($_POST) || (($this->skip_final_review == 'yes' && ((get_option('woocommerce_enable_guest_checkout') === "yes" || apply_filters('woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')) == "yes" ) || is_user_logged_in())) || is_user_logged_in() && isset(WC()->session->checkout_form) )) {
                 $result = unserialize(WC()->session->RESULT);
                 /* create account start */
                 if (isset($_POST['createaccount']) && !empty($_POST['createaccount'])) {
@@ -1253,7 +1253,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          * Check if the PayPal class has already been established.
          */
         if (!class_exists('Angelleye_PayPal')) {
-            require_once( 'lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
 
         /*
@@ -1410,6 +1410,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if (!empty($posted) && WC()->cart->needs_shipping()) {
             $SECFields['addroverride'] = 1;
+            $SECFields['addressoverride'] = 1;
             if (@$posted['ship_to_different_address']) {
                 $Payment['shiptoname'] = $posted['shipping_first_name'] . ' ' . $posted['shipping_last_name'];
                 $Payment['shiptostreet'] = $posted['shipping_address_1'];
@@ -1430,6 +1431,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $Payment['shiptocountrycode'] = @$posted['billing_country'];
                 $Payment['shiptophonenum'] = @$posted['billing_phone'];
             }
+        } elseif (is_user_logged_in() && WC()->cart->needs_shipping()) {
+            $Payment['shiptostreet'] = WC()->customer->get_shipping_address();
+            $Payment['shiptostreet2'] = WC()->customer->get_shipping_address_2();
+            $Payment['shiptocity'] = WC()->customer->get_shipping_city();
+            $Payment['shiptostate'] = WC()->customer->get_shipping_state();
+            $Payment['shiptozip'] = WC()->customer->get_shipping_postcode();
+            $Payment['shiptocountrycode'] = WC()->customer->get_shipping_country();
         }
 
         $PaymentData = AngellEYE_Gateway_Paypal::calculate(null, true);
@@ -1575,7 +1583,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          * Check if the PayPal class has already been established.
          */
         if (!class_exists('Angelleye_PayPal')) {
-            require_once( 'lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
 
         /*
@@ -1641,7 +1649,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          * Check if the PayPal class has already been established.
          */
         if (!class_exists('Angelleye_PayPal')) {
-            require_once( 'lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
 
         /*
@@ -2031,7 +2039,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          * Check if the PayPal class has already been established.
          */
         if (!class_exists('Angelleye_PayPal')) {
-            require_once( 'lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
 
         /*
