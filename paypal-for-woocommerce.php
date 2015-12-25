@@ -42,9 +42,15 @@ if (substr(get_option("woocommerce_default_country"),0,2) != 'US') {
 }
 $pp_pro     = get_option('woocommerce_paypal_pro_settings');
 $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
+
+
 if(!class_exists('AngellEYE_Gateway_Paypal')){
     class AngellEYE_Gateway_Paypal
     {
+    	
+    	protected $plugin_screen_hook_suffix = null;
+    	protected $plugin_slug = 'paypal-for-woocommerce';
+    	
         /**
          * General class constructor where we'll setup our actions, hooks, and shortcodes.
          *
@@ -92,6 +98,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'admin_init', array( $this, 'angelleye_check_version' ), 5 );
             add_filter( 'woocommerce_add_to_cart_redirect', array($this, 'angelleye_woocommerce_add_to_cart_redirect'), 1000, 1);
             add_action( 'admin_init', array( $this, 'update_wc_paypal_plug_not_support_currency_nag' ) );
+            add_action( 'admin_menu', array( $this, 'angelleye_admin_menu_own' ) );
         }
 
         /**
@@ -956,7 +963,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Check if site is SSL ready
          *
          */
-        static public function is_ssl() {
+        static public function is_ssl()
+        {
             if (is_ssl() || get_option('woocommerce_force_ssl_checkout') == 'yes' || class_exists('WordPressHTTPS'))
                 return true;
             return false;
@@ -997,6 +1005,20 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if ( isset( $_GET['wc_paypal_plus_not_support_currency_nag'] ) && '1' === $_GET['wc_paypal_plus_not_support_currency_nag'] ) {
                     add_user_meta( $current_user->ID, '_wc_paypal_plus_not_support_currency_nag', '1', true );
             }
+        }
+        
+        public function angelleye_admin_menu_own(){
+        	$this->plugin_screen_hook_suffix = add_submenu_page(
+			'options-general.php', 
+			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),
+			__( 'PayPal for WooCommerce', 'paypal-for-woocommerce' ),
+			'manage_options',
+			'paypal-for-woocommerce',
+			array( $this, 'display_plugin_admin_page'));	
+        }
+        
+        public function display_plugin_admin_page(){
+        	include_once( 'template/admin.php' );
         }
     }
 }
