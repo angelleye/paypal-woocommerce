@@ -1021,20 +1021,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     add_user_meta( $current_user->ID, '_wc_paypal_plus_not_support_currency_nag', '1', true );
             }
         }
-        
-        public function angelleye_admin_menu_own(){
-        	$this->plugin_screen_hook_suffix = add_submenu_page(
-			'options-general.php', 
-			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),
-			__( 'PayPal for WooCommerce', 'paypal-for-woocommerce' ),
-			'manage_options',
-			'paypal-for-woocommerce',
-			array( $this, 'display_plugin_admin_page'));	
-        }
-        
-        public function display_plugin_admin_page(){
-        	include_once( 'template/admin.php' );
-            }
-        }
+    }
 }
 new AngellEYE_Gateway_Paypal();
