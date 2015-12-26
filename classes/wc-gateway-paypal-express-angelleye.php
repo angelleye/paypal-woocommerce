@@ -637,7 +637,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $review_order_page_url = get_permalink($page_id);
                 }
                 $returnURL = urlencode(add_query_arg('pp_action', 'revieworder', $review_order_page_url));
-                $cancelURL = isset($this->settings['cancel_page']) ? get_the_permalink($this->settings['cancel_page']) : WC()->cart->get_cart_url();
+                $cancelURL = isset($this->settings['cancel_page']) ? get_permalink($this->settings['cancel_page']) : WC()->cart->get_cart_url();
                 $cancelURL = apply_filters('angelleye_express_cancel_url', urlencode($cancelURL));
                 $resArray = $this->CallSetExpressCheckout($paymentAmount, $returnURL, $cancelURL, $usePayPalCredit, $posted);
                 $ack = strtoupper($resArray["ACK"]);
