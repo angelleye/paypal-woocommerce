@@ -1410,7 +1410,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if (!empty($posted) && WC()->cart->needs_shipping()) {
             $SECFields['addroverride'] = 1;
-            $SECFields['addressoverride'] = 1;
             if (@$posted['ship_to_different_address']) {
                 $Payment['shiptoname'] = $posted['shipping_first_name'] . ' ' . $posted['shipping_last_name'];
                 $Payment['shiptostreet'] = $posted['shipping_address_1'];
