@@ -1138,7 +1138,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                     $this->add_log('Payment confirmed with PayPal successfully');
-                    $result = apply_filters('woocommerce_payment_successful_result', $result);
+                    $result = apply_filters('woocommerce_payment_successful_result', $result, $order_id);
 
                     /**
                      * Gift Wrap Notes
