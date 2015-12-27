@@ -101,6 +101,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_add_to_cart_redirect', array($this, 'angelleye_woocommerce_add_to_cart_redirect'), 1000, 1);
             add_action( 'admin_init', array( $this, 'update_wc_paypal_plug_not_support_currency_nag' ) );
             add_action( 'admin_menu', array( $this, 'angelleye_admin_menu_own' ) );
+            add_action( 'product_type_options', array( $this, 'angelleye_product_type_options_own' ), 10, 1);
+            add_action( 'woocommerce_process_product_meta', array( $this, 'angelleye_woocommerce_process_product_meta_own' ), 10, 1 );
         }
 
         /**
@@ -1021,6 +1023,55 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     add_user_meta( $current_user->ID, '_wc_paypal_plus_not_support_currency_nag', '1', true );
             }
         }
+        /*
+         *  Express Checkout - Digital / Virtual Goods - NOSHIPPING #174 
+         */
+        public static function angelleye_paypal_for_woocommerce_needs_shipping($SECFields) {
+            if(!empty(WC()->cart->get_cart())) {
+                
+                foreach (WC()->cart->get_cart() as $key => $value) {
+                
+                    $_product = $value['data'];
+                    if (isset($_product->id) && !empty($_product->id) ) {
+                        $_no_shipping_required = get_post_meta($_product->id, '_no_shipping_required', true);
+                        if( $_no_shipping_required == 'yes' ) {
+                            $SECFields['noshipping'] = 1;
+                        } else {
+                            $SECFields['noshipping'] = 0;
+                            return $SECFields;
+                        }
+                    }
+                }
+                
+                
+                
+            } else {
+                $SECFields['noshipping'] = 0;
+            }
+            return $SECFields;
+            
+        }
+        
+         function angelleye_product_type_options_own($product_type){
+            if( isset($product_type) && !empty($product_type) ) {
+                $product_type['no_shipping_required'] = array(
+                        'id'            => '_no_shipping_required',
+                        'wrapper_class' => '',
+                        'label'         => __( 'No shipping required', 'woocommerce' ),
+                        'description'   => __( 'No shipping required.', 'woocommerce' ),
+                        'default'       => 'no'
+                );
+                return $product_type;
+            } else {
+                    return $product_type;
+            }
+        }
+        
+        function angelleye_woocommerce_process_product_meta_own( $post_id ){
+            $no_shipping_required = isset( $_POST['_no_shipping_required'] ) ? 'yes' : 'no';
+            update_post_meta( $post_id, '_no_shipping_required', $no_shipping_required );
+        }
+        
     }
 }
 new AngellEYE_Gateway_Paypal();
