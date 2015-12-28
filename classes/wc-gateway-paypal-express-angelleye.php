@@ -1528,6 +1528,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->SetExpressCheckout($PayPalRequestData);
+        
+        /**
+         *  cURL Error Handling #146 
+         *  @since    1.1.8
+         */
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'SetExpressCheckout', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
 
         /*
          * Log API result
@@ -1595,6 +1602,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          * Call GetExpressCheckoutDetails
          */
         $PayPalResult = $PayPal->GetExpressCheckoutDetails($token);
+        
+         /**
+         *  cURL Error Handling #146 
+         *  @since    1.1.8
+         */
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'GetExpressCheckoutDetails', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
 
         /*
          * Log API result
@@ -1781,6 +1795,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->DoExpressCheckoutPayment($PayPalRequestData);
 
+        /**
+         *  cURL Error Handling #146 
+         *  @since    1.1.8
+         */
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
+        
         /*
          * Log API result
          */
@@ -2077,6 +2098,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->add_log('Refund Request: ' . print_r($PayPalRequestData, true));
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->RefundTransaction($PayPalRequestData);
+        
+         /**
+         *  cURL Error Handling #146 
+         *  @since    1.1.8
+         */
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'RefundTransaction', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
+        
         $this->add_log('Refund Information: ' . print_r($PayPalResult, true));
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
 

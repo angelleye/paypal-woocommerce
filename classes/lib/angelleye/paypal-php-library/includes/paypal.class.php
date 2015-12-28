@@ -611,8 +611,17 @@ class Angelleye_PayPal
 			curl_setopt($curl, CURLOPT_SSLCERT, $this->PathToCertKeyPEM);
 		}
 		
-		$Response = curl_exec($curl);		
+                $Response = curl_exec($curl);
+                $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                if ($Response === false || $httpCode != 200) {
+                    $curl_error = curl_error($curl);
+                    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                    $Response = array( 'CURL_ERROR' =>curl_error($curl) );
+                } 
+                
 		curl_close($curl);
+                
 		return $Response;	
 	}
 	

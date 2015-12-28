@@ -432,6 +432,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             }
         
 			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+                        
+                        /**
+                        *  cURL Error Handling #146 
+                        *  @since    1.1.8
+                        */
+
+                        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
 			
 			/**
 			 * Log results
@@ -716,6 +723,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         );
         $this->add_log('Refund Request: '.print_r( $PayPalRequestData, true ) );
         $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+        
+         /**
+         *  cURL Error Handling #146 
+         *  @since    1.1.8
+         */
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
+        
         $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
         add_action( 'angelleye_after_refund', $PayPalResult, $order, $amount, $reason );
         if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)){

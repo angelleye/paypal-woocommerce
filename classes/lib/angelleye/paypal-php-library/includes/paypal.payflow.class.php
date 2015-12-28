@@ -117,24 +117,22 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 		// in case of network issues.  The idea here is since you are posting via HTTPS there
 		// could be general network issues, so try a few times before you tell customer there
 		// is an issue.
-		$i=1;
-		while ($i++ <= 3)
-		{
-			$Response = curl_exec($curl);
-			$headers = curl_getinfo($curl);
-				
-			if ($headers['http_code'] != 200) {
-				sleep(5);  // Let's wait 5 seconds to see if its a temporary network issue.
-			}
-			else if ($headers['http_code'] == 200)
-			{
-				// we got a good response, drop out of loop.
-				break;
-			}
-		}
-	
-		curl_close($curl);
-	
+                if(curl_exec($curl) === false) {
+                    return array( 'CURL_ERROR' =>curl_error($curl) );
+                } else {
+                    $i=1;
+                    while ($i++ <= 3) {
+                        $Response = curl_exec($curl);
+                        $headers = curl_getinfo($curl);
+                        if ($headers['http_code'] != 200) {
+                            sleep(5);  // Let's wait 5 seconds to see if its a temporary network issue.
+                        } else if ($headers['http_code'] == 200) {
+                            // we got a good response, drop out of loop.
+                            break;
+                        }
+                    }
+                }
+                curl_close($curl);
 		return $Response;
 	}
 	
@@ -176,6 +174,9 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 		}
 		
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPResponse = strstr($NVPResponse,"RESULT");
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 
