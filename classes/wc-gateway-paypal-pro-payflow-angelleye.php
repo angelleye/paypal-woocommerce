@@ -431,7 +431,6 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
         
-            mail('kcppdevelopers@gmail.com', 'ProcessTransaction', print_r($PayPalRequestData, true));
 			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
 			
 			/**
