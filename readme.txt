@@ -103,6 +103,30 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.1.8 - =
+* Feature - Adds an option to include a billing agreement with Express Checkout, which enables the use of future reference transactions. ([#168](https://github.com/angelleye/paypal-woocommerce/issues/168))
+* Feature - Adds a product-level option for digital/virtual products to enable/disable shipping requirements in Express Checkout ([#174](https://github.com/angelleye/paypal-woocommerce/issues/174))
+* Feature - Adds a bulk edit tool to enable/disable shipping at the product level for multiple products at once. ([#175](https://github.com/angelleye/paypal-woocommerce/issues/175))
+* Tweak - Applies the "shipping override" feature in Express Checkout when the WooCommerce checkout page is used to ensure that address is held all the way through checkout. ([#211](https://github.com/angelleye/paypal-woocommerce/issues/211), [#215](https://github.com/angelleye/paypal-woocommerce/issues/215))
+* Tweak - Adds a settings panel specific to the plugin. ([#214](https://github.com/angelleye/paypal-woocommerce/issues/214))
+* Tweak - Adds additional validation to PayFlow credit card transactions. ([#220](https://github.com/angelleye/paypal-woocommerce/issues/220))
+* Feature - Adds hooks to insert custom fields for data collection to the Express Checkout order review page. ([#338](https://github.com/angelleye/paypal-woocommerce/issues/338))
+* Tweak - Improved cURL error handling. ([#146](https://github.com/angelleye/paypal-woocommerce/issues/146))
+* Tweak - Adds validation to the "create account" option on the Express Checkout review page. ([#346](https://github.com/angelleye/paypal-woocommerce/issues/346))
+* Tweak - Adds hooks to ensure data is saved correctly when custom fields are in use on the WooCommerce checkout page. ([#17](https://github.com/angelleye/paypal-woocommerce/issues/347))
+* Tweak - Ensure that the email address entered on the WooCommerce checkout page is carried all the way through Express Checkout and not replaced by a PayPal login email. ([#350](https://github.com/angelleye/paypal-woocommerce/issues/350))
+* Tweak - Handle scenarios where a discount code zeroes out the subtotal of an order, but shipping still needs to be paid. ([#352](https://github.com/angelleye/paypal-woocommerce/issues/352))
+* Tweak - Updates deprecated function. ([#354](https://github.com/angelleye/paypal-woocommerce/issues/354))
+* Tweak - Adjustment to ensure the PayPal Express Checkout button on product pages redirects to PayPal instead of the cart on all themes. ([#357](https://github.com/angelleye/paypal-woocommerce/issues/357))
+* Tweak - Adds address line 2 to the Express Checkout review page when applicable. ([#371](https://github.com/angelleye/paypal-woocommerce/issues/371))
+* Fix - Resolves potential function name conflict with themes. ([#349](https://github.com/angelleye/paypal-woocommerce/issues/349))
+* Fix - Adjusts PayFlow request to ensure line items are passed correctly when enabled. ([#351](https://github.com/angelleye/paypal-woocommerce/issues/351))
+* Fix - Updates successful order hook to include order ID param. ([#358](https://github.com/angelleye/paypal-woocommerce/issues/358))
+* Fix - Adjustment to ensure order notes entered on WooCommerce checkout page are saved with Express Checkout orders. ([#363](https://github.com/angelleye/paypal-woocommerce/issues/363))
+* Fix - Resolves potential configuration bugs with PayPal Plus integration. ([#368](https://github.com/angelleye/paypal-woocommerce/issues/368))
+* Tweak - Allows for pricing with more than 2 decimals. ([#17]())
+* Tweak - Allows for pricing with more than 2 decimals. ([#17]())
+
 = 1.1.7.5 - 10.26.2015 =
 * Fix - Resolves a broken setting for the cancel URL.
 * Fix - Resolves some PHP warnings that were displayed with PayPal Plus.
