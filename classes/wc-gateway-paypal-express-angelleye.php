@@ -60,7 +60,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->skip_final_review = isset($this->settings['skip_final_review']) ? $this->settings['skip_final_review'] : '';
         $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
         $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
-        $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'yes' ? true : false;
+        $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
         $this->customer_id = get_current_user_id();
 
         if ($this->not_us){
@@ -872,7 +872,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         // Also, recalculate cart totals to reveal any role-based discounts that were unavailable before registering
                         WC()->cart->calculate_totals();
 
-                        require_once("lib/NameParser.php");
+                        require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/NameParser.php' );
                         $parser = new FullNameParser();
                        	if( isset($result['SHIPTONAME']) && !empty($result['SHIPTONAME'])) {
                             $split_name = $parser->split_full_name($result['SHIPTONAME']);
@@ -1024,7 +1024,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                  * Update meta data with session data
                  */
                 // Parse SHIPTONAME to fist and last name
-                require_once("lib/NameParser.php");
+                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/NameParser.php' );
                 $parser = new FullNameParser();
                $shiptoname_from_session = $this->get_session('shiptoname');
                 if( isset($shiptoname_from_session) && !empty($shiptoname_from_session) ) {
@@ -1300,12 +1300,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $maxAmount = '';
         }
 
-        if (isset($_POST['order_comments']) && !empty($_POST['order_comments'])) {
-            $is_ordernote = "0";
-        }else {
-            $is_ordernote ="1";
-        }
-
 
         //prefill email
         if (isset($posted['billing_email'])) {
@@ -1329,7 +1323,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'callbackversion' => '', // The version of the Instant Update API you're using.  The default is the current version.
             'reqconfirmshipping' => '', // The value 1 indicates that you require that the customer's shipping address is Confirmed with PayPal.  This overrides anything in the account profile.  Possible values are 1 or 0.
             'noshipping' => '', // The value 1 indiciates that on the PayPal pages, no shipping address fields should be displayed.  Maybe 1 or 0.
-            'allownote' => $is_ordernote, // The value 1 indiciates that the customer may enter a note to the merchant on the PayPal page during checkout.  The note is returned in the GetExpresscheckoutDetails response and the DoExpressCheckoutPayment response.  Must be 1 or 0.
+            'allownote' => 1, // The value 1 indiciates that the customer may enter a note to the merchant on the PayPal page during checkout.  The note is returned in the GetExpresscheckoutDetails response and the DoExpressCheckoutPayment response.  Must be 1 or 0.
             'addroverride' => '', // The value 1 indiciates that the PayPal pages should display the shipping address set by you in the SetExpressCheckout request, not the shipping address on file with PayPal.  This does not allow the customer to edit the address here.  Must be 1 or 0.
             'localecode' => ($this->use_wp_locale_code == 'yes' && get_locale() != '') ? get_locale() : '', // Locale of pages displayed by PayPal during checkout.  Should be a 2 character country code.  You can retrive the country code by passing the country name into the class' GetCountryCode() function.
             'pagestyle' => '', // Sets the Custom Payment Page Style for payment pages associated with this button/link.
@@ -1414,7 +1408,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptozip' => '', // Required if shipping is included.  Postal code of shipping address.  20 char max.
             'shiptocountrycode' => '', // Required if shipping is included.  Country code of shipping address.  2 char max.
             'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
-            'notetext' => '', // Note to the merchant.  255 char max.
+            'notetext' => isset($posted['order_comments']) ? $posted['order_comments'] : '', // Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', // The payment method type.  Specify the value InstantPaymentOnly.
             'paymentaction' => $this->payment_action == 'Authorization' ? 'Authorization' : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
             'paymentrequestid' => '', // A unique identifier of the specific payment request, which is required for parallel payments.
@@ -1551,6 +1545,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->SetExpressCheckout($PayPalRequestData);
+        
+        /**
+         *  cURL Error Handling #146 
+         *  @since    1.1.8
+         */
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'SetExpressCheckout', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
 
         /*
          * Log API result
@@ -1618,6 +1619,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          * Call GetExpressCheckoutDetails
          */
         $PayPalResult = $PayPal->GetExpressCheckoutDetails($token);
+        
+         /**
+         *  cURL Error Handling #146 
+         *  @since    1.1.8
+         */
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'GetExpressCheckoutDetails', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
 
         /*
          * Log API result
@@ -1804,6 +1812,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->DoExpressCheckoutPayment($PayPalRequestData);
 
+        /**
+         *  cURL Error Handling #146 
+         *  @since    1.1.8
+         */
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
+        
         /*
          * Log API result
          */
@@ -2100,6 +2115,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->add_log('Refund Request: ' . print_r($PayPalRequestData, true));
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->RefundTransaction($PayPalRequestData);
+        
+         /**
+         *  cURL Error Handling #146 
+         *  @since    1.1.8
+         */
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'RefundTransaction', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
+        
         $this->add_log('Refund Information: ' . print_r($PayPalResult, true));
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
 

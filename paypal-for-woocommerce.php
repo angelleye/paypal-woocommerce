@@ -1023,6 +1023,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     add_user_meta( $current_user->ID, '_wc_paypal_plus_not_support_currency_nag', '1', true );
             }
         }
+
         /*
          *  Express Checkout - Digital / Virtual Goods - NOSHIPPING #174 
          */
@@ -1072,6 +1073,18 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             update_post_meta( $post_id, '_no_shipping_required', $no_shipping_required );
         }
         
+        public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true) {
+            if( isset( $PayPalResult['CURL_ERROR'] ) ){
+                if($error_email_notify == true) {
+                    $admin_email = get_option("admin_email");
+                    $message = __( $methos_name . " call failed." , "paypal-for-woocommerce" )."\n\n";
+                    $message .= __( 'Error Code: 0' ,'paypal-for-woocommerce' ) . "\n";
+                    $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $PayPalResult['CURL_ERROR'];
+                    wp_mail($admin_email, $gateway . " Error Notification",$message);
+                }
+                throw new Exception($PayPalResult['CURL_ERROR']);
+            }
+        }
     }
 }
 new AngellEYE_Gateway_Paypal();

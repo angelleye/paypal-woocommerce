@@ -80,7 +80,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->liability_shift 		= isset( $this->settings['liability_shift'] ) && $this->settings['liability_shift'] == 'yes' ? true : false;
         $this->debug				= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
         $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
-        $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'yes' ? true : false;
+        $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'no' ? false : true;
         // 3DS
         if ( $this->enable_3dsecure ) {
             $this->centinel_pid		= $this->settings['centinel_pid'];
@@ -813,6 +813,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         
 		// Pass data into class for processing with PayPal and load the response array into $PayPalResult
 		$PayPalResult = $PayPal->DoDirectPayment($PayPalRequestData);
+                
+                /**
+                *  cURL Error Handling #146 
+                *  @since    1.1.8
+                */
+        
+                AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoDirectPayment', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
 		
 		if($this->debug)
 		{
@@ -1020,6 +1027,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->add_log('Refund Request: '.print_r( $PayPalRequestData, true ) );
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->RefundTransaction($PayPalRequestData);
+        
+        /**
+        *  cURL Error Handling #146 
+        *  @since    1.1.8
+        */
+
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'RefundTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
+                
         $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
         if($PayPal->APICallSuccessful($PayPalResult['ACK']))
         {

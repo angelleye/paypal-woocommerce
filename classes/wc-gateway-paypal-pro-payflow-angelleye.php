@@ -44,7 +44,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		$this->debug		   		= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
 		$this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
 		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
-        $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'yes' ? true : false;
+        $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'no' ? false : true;
         $this->payment_action       = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
 
         //fix ssl for image icon
@@ -432,6 +432,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             }
         
 			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+                        
+                        /**
+                        *  cURL Error Handling #146 
+                        *  @since    1.1.8
+                        */
+
+                        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
 			
 			/**
 			 * Log results
@@ -716,6 +723,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         );
         $this->add_log('Refund Request: '.print_r( $PayPalRequestData, true ) );
         $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+        
+         /**
+         *  cURL Error Handling #146 
+         *  @since    1.1.8
+         */
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
+        
         $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
         add_action( 'angelleye_after_refund', $PayPalResult, $order, $amount, $reason );
         if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)){
@@ -734,5 +749,49 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             return new WP_Error( 'paypal-error', $fc_refund_error );
         }
         return false;
+    }
+    
+    /**
+     * Validate the payment form
+     * PayFlow - Empty Card Data Validation Problem #220 
+     * @since    1.1.7.6
+     */
+    public function validate_fields() {
+
+        $card_number = !empty($_POST['paypal_pro_payflow_card_number']) ? str_replace(array(' ', '-'), '', wc_clean($_POST['paypal_pro_payflow_card_number'])) : '';
+        $card_csc = !empty($_POST['paypal_pro_payflow_card_csc']) ? wc_clean($_POST['paypal_pro_payflow_card_csc']) : '';
+        $card_exp = !empty($_POST['paypal_pro_payflow_card_expiration']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration']) : '';
+
+        $card_exp_month = substr($card_exp, 0, 2);
+        $card_exp_year = substr($card_exp, 2, 2);
+
+        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_csc, $card_exp);
+
+        // Check card security code
+
+        if (!ctype_digit($card_csc)) {
+            wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'), "error");
+            return false;
+        }
+
+        // Check card expiration data
+
+        if (!ctype_digit($card_exp_month) || !ctype_digit($card_exp_year) || $card_exp_month > 12 || $card_exp_month < 1 || $card_exp_year < date('y') || $card_exp_year > date('y') + 20) {
+            wc_add_notice(__('Card expiration date is invalid', 'paypal-for-woocommerce'), "error");
+            return false;
+        }
+
+        // Check card number
+
+        $card_number = str_replace(array(' ', '-'), '', $card_number);
+
+        if (empty($card_number) || !ctype_digit($card_number)) {
+            wc_add_notice(__('Card number is invalid', 'paypal-for-woocommerce'), "error");
+            return false;
+        }
+
+        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_csc, $card_exp);
+
+        return true;
     }
 }
