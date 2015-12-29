@@ -103,6 +103,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'admin_menu', array( $this, 'angelleye_admin_menu_own' ) );
             add_action( 'product_type_options', array( $this, 'angelleye_product_type_options_own' ), 10, 1);
             add_action( 'woocommerce_process_product_meta', array( $this, 'angelleye_woocommerce_process_product_meta_own' ), 10, 1 );
+            add_action('admin_footer-edit.php', array( $this, 'angelleye_bulk_admin_footer'), 11);
+            add_action('load-edit.php', array( $this, 'angelleye_bulk_action' ), 11 );
+            add_action('admin_notices', array( $this, 'angelleye_bulk_admin_notices' ) );
+            add_filter( 'bulk_actions-edit-product', array( $this, 'my_custom_bulk_actions' ), 11 );
         }
 
         /**
@@ -1084,6 +1088,149 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
                 throw new Exception($PayPalResult['CURL_ERROR']);
             }
+        }
+        
+        /**
+         * PayPal for WooCommerce bulk action for enable/disable shipping address
+         * Express Checkout - Digital / Virtual Goods - NOSHIPPING Global #175 
+         * @since    1.1.8
+         */
+        public function angelleye_bulk_admin_footer() {
+            global $post_type;
+            if($post_type == 'product') {
+            ?>
+            <script type="text/javascript">
+                jQuery(document).ready(function() {
+                    jQuery('<option>').val('enable_shipping_address_for_all_products').text('<?php _e('Enable Shipping Address for All Products')?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('enable_shipping_address_for_all_products').text('<?php _e('Enable Shipping Address for All Products')?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('disable_shipping_address_for_all_products').text('<?php _e('Disable Shipping Address for All Products')?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('disable_shipping_address_for_all_products').text('<?php _e('Disable Shipping Address for All Products')?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('enable_shipping_address_for_downloadable_products').text('<?php _e('Enable Shipping Address for Downloadable Products')?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('enable_shipping_address_for_downloadable_products').text('<?php _e('Enable Shipping Address for Downloadable Products')?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('disable_shipping_address_for_downloadable_products').text('<?php _e('Disable Shipping Address for Downloadable Products')?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('disable_shipping_address_for_downloadable_products').text('<?php _e('Disable Shipping Address for Downloadable Products')?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('enable_shipping_address_for_virtual_products').text('<?php _e('Enable Shipping Address for Virtual Products')?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('enable_shipping_address_for_virtual_products').text('<?php _e('Enable Shipping Address for Virtual Products')?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('disable_shipping_address_for_virtual_products').text('<?php _e('Disable Shipping Address for Virtual Products')?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('disable_shipping_address_for_virtual_products').text('<?php _e('Disable Shipping Address for Virtual Products')?>').appendTo("select[name='action2']");
+              });
+            </script>
+            <?php
+            }
+        }
+        
+        /**
+         * Express Checkout - Digital / Virtual Goods - NOSHIPPING Global #175 
+         * @global type $post_type
+         * @global type $pagenow
+         * @since    1.1.8
+         */
+        public function angelleye_bulk_admin_notices() {
+        	global $post_type, $pagenow;
+                $enable_disable_shipping_action = array('enable_shipping_address_for_all_products', 'disable_shipping_address_for_all_products', 'enable_shipping_address_for_downloadable_products', 'disable_shipping_address_for_downloadable_products', 'enable_shipping_address_for_virtual_products', 'disable_shipping_address_for_virtual_products');
+                foreach ($enable_disable_shipping_action as $enable_disable_shipping_action_key => $enable_disable_shipping_action_value) {
+                    if($pagenow == 'edit.php' && $post_type == 'product' && isset($_REQUEST[$enable_disable_shipping_action_value])) {
+                        $message = sprintf( __( 'Shipping Address enabled for %s products.', $this->plugin_slug ), number_format_i18n( $_REQUEST[$enable_disable_shipping_action_value] ) );
+                        echo '<div class="updated"><p>'.$message.'</p></div>';
+                        break;
+                    }
+                }
+        }
+        
+        /**
+         * Express Checkout - Digital / Virtual Goods - NOSHIPPING Global #175 
+         * @return type
+         * @since    1.1.8
+         */
+        public function angelleye_bulk_action() {
+        	$wp_list_table = _get_list_table('WP_Posts_List_Table');
+	        $action = $wp_list_table->current_action();
+	        $post_ids = (isset($_REQUEST['post']) ) ? $_REQUEST['post'] : FALSE;
+	        if($post_ids) {
+	            switch ($action) {
+	                case 'enable_shipping_address_for_all_products':
+	                    $updated_count = 0;
+	                    foreach ($post_ids as $post_id) {
+	                        update_post_meta( $post_id, '_no_shipping_required', 'true');
+	                        $updated_count++;
+	                    }
+	                    $sendback = add_query_arg(array('enable_shipping_address_for_all_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
+	                    $sendback = esc_url_raw($sendback);
+	                    break;
+	                case 'disable_shipping_address_for_all_products':
+	                    $updated_count = 0;
+	                    foreach ($post_ids as $post_id) {
+	                        update_post_meta( $post_id, '_no_shipping_required', 'false');
+	                        $updated_count++;
+	                    }
+	                    $sendback = add_query_arg(array('disable_shipping_address_for_all_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
+	                    $sendback = esc_url_raw($sendback);
+	                    break;
+	                case 'enable_shipping_address_for_downloadable_products':
+	                    $updated_count = 0;
+	                    foreach ($post_ids as $post_id) {
+	                    	$product = get_product( $post_id );
+                                if( $product->is_type( 'downloadable' ) ){
+                                    update_post_meta( $post_id, '_no_shipping_required', 'true');
+                                    $updated_count++;
+                                }
+	                    }
+	                    $sendback = add_query_arg(array('enable_shipping_address_for_downloadable_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
+	                    $sendback = esc_url_raw($sendback);
+	                    break;
+	                case 'disable_shipping_address_for_downloadable_products':
+	                    $updated_count = 0;
+	                    foreach ($post_ids as $post_id) {
+	                    	$product = get_product( $post_id );
+                                if( $product->is_type( 'downloadable' ) ){
+                                    update_post_meta( $post_id, '_no_shipping_required', 'false');
+                                    $updated_count++;
+                                }
+	                    }
+	                    $sendback = add_query_arg(array('disable_shipping_address_for_downloadable_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
+	                    $sendback = esc_url_raw($sendback);
+	                    break;
+	                case 'enable_shipping_address_for_virtual_products':
+	                    $updated_count = 0;
+	                    foreach ($post_ids as $post_id) {
+	                    	$product = get_product( $post_id );
+                                if( $product->is_type( 'virtual' ) ){
+                                    update_post_meta( $post_id, '_no_shipping_required', 'true');
+                                    $updated_count++;
+                                }
+	                    }
+	                    $sendback = add_query_arg(array('enable_shipping_address_for_virtual_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
+	                    $sendback = esc_url_raw($sendback);
+	                    break;
+	                case 'disable_shipping_address_for_virtual_products':
+	                   $updated_count = 0;
+	                    foreach ($post_ids as $post_id) {
+	                    	$product = get_product( $post_id );
+                                if( $product->is_type( 'virtual' ) ){
+                                    update_post_meta( $post_id, '_no_shipping_required', 'false');
+                                    $updated_count++;
+                                }
+	                    }
+	                    $sendback = add_query_arg(array('disable_shipping_address_for_virtual_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
+	                    $sendback = esc_url_raw($sendback);
+	                    break;
+	                default:
+	                    return;
+	            }
+	            wp_redirect($sendback);
+	            exit();
+	        }
+        }
+        
+        /**
+         * Express Checkout - Digital / Virtual Goods - NOSHIPPING Global #175 
+         * @param type $actions
+         * @return type
+         * @since    1.1.8
+         */
+        public function my_custom_bulk_actions($actions) {
+            unset($actions['edit']);
+            return $actions;
         }
     }
 }
