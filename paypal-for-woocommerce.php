@@ -107,6 +107,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('load-edit.php', array( $this, 'angelleye_bulk_action' ), 11 );
             add_action('admin_notices', array( $this, 'angelleye_bulk_admin_notices' ) );
             add_filter( 'bulk_actions-edit-product', array( $this, 'my_custom_bulk_actions' ), 11 );
+            add_filter( 'woocommerce_add_to_cart_sold_individually_quantity', array( $this, 'angelleye_woocommerce_add_to_cart_sold_individually_quantity' ), 10, 5 );
         }
 
         /**
@@ -1235,6 +1236,34 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public function my_custom_bulk_actions($actions) {
             unset($actions['edit']);
             return $actions;
+        }
+        
+        /**
+         * Express Checkout - Adjust button on product details page. #208 
+         * @param type $qtyone
+         * @param type $quantity
+         * @param type $product_id
+         * @param type $variation_id
+         * @param type $cart_item_data
+         * @return type
+         * @since    1.1.8
+         */
+        public function angelleye_woocommerce_add_to_cart_sold_individually_quantity($qtyone, $quantity, $product_id, $variation_id, $cart_item_data) {
+            if( (isset($_REQUEST['express_checkout']) && $_REQUEST['express_checkout'] == 1) && (isset($_REQUEST['add-to-cart']) && !empty($_REQUEST['add-to-cart'])) ) {
+                if (sizeof(WC()->cart->get_cart()) != 0) {
+                    foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+                        $_product = $values['data'];
+                        if( $product_id == $_product->id || $variation_id == $_product->id) {
+                            wp_redirect(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
+                            exit();
+                        }
+                    }
+                } else {
+                   return $qtyone; 
+                }
+            } else {
+                return $qtyone;
+            }
         }
     }
 }
