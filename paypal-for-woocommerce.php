@@ -1034,9 +1034,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         public static function angelleye_paypal_for_woocommerce_needs_shipping($SECFields) {
             if(!empty(WC()->cart->get_cart())) {
-                
                 foreach (WC()->cart->get_cart() as $key => $value) {
-                
                     $_product = $value['data'];
                     if (isset($_product->id) && !empty($_product->id) ) {
                         $_no_shipping_required = get_post_meta($_product->id, '_no_shipping_required', true);
@@ -1048,14 +1046,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         }
                     }
                 }
-                
-                
-                
             } else {
                 $SECFields['noshipping'] = 0;
             }
             return $SECFields;
-            
         }
         
          function angelleye_product_type_options_own($product_type){
@@ -1063,8 +1057,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $product_type['no_shipping_required'] = array(
                         'id'            => '_no_shipping_required',
                         'wrapper_class' => '',
-                        'label'         => __( 'No shipping required', 'woocommerce' ),
-                        'description'   => __( 'No shipping required.', 'woocommerce' ),
+                        'label'         => __( 'No shipping required', 'paypal-for-woocommerce' ),
+                        'description'   => __( 'No shipping required.', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
                 return $product_type;
@@ -1087,7 +1081,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $PayPalResult['CURL_ERROR'];
                     wp_mail($admin_email, $gateway . " Error Notification",$message);
                 }
-                throw new Exception($PayPalResult['CURL_ERROR']);
+                $display_error = "There was a communication issue with PayPal's server. Please try again.";
+                throw new Exception( __( $display_error, 'paypal-for-woocommerce' ));
             }
         }
         
@@ -1102,18 +1097,18 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             ?>
             <script type="text/javascript">
                 jQuery(document).ready(function() {
-                    jQuery('<option>').val('enable_shipping_address_for_all_products').text('<?php _e('Enable Shipping Address for All Products')?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('enable_shipping_address_for_all_products').text('<?php _e('Enable Shipping Address for All Products')?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('disable_shipping_address_for_all_products').text('<?php _e('Disable Shipping Address for All Products')?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('disable_shipping_address_for_all_products').text('<?php _e('Disable Shipping Address for All Products')?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('enable_shipping_address_for_downloadable_products').text('<?php _e('Enable Shipping Address for Downloadable Products')?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('enable_shipping_address_for_downloadable_products').text('<?php _e('Enable Shipping Address for Downloadable Products')?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('disable_shipping_address_for_downloadable_products').text('<?php _e('Disable Shipping Address for Downloadable Products')?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('disable_shipping_address_for_downloadable_products').text('<?php _e('Disable Shipping Address for Downloadable Products')?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('enable_shipping_address_for_virtual_products').text('<?php _e('Enable Shipping Address for Virtual Products')?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('enable_shipping_address_for_virtual_products').text('<?php _e('Enable Shipping Address for Virtual Products')?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('disable_shipping_address_for_virtual_products').text('<?php _e('Disable Shipping Address for Virtual Products')?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('disable_shipping_address_for_virtual_products').text('<?php _e('Disable Shipping Address for Virtual Products')?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('enable_shipping_address_for_all_products').text('<?php _e('Enable Shipping Address for All Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('enable_shipping_address_for_all_products').text('<?php _e('Enable Shipping Address for All Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('disable_shipping_address_for_all_products').text('<?php _e('Disable Shipping Address for All Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('disable_shipping_address_for_all_products').text('<?php _e('Disable Shipping Address for All Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('enable_shipping_address_for_downloadable_products').text('<?php _e('Enable Shipping Address for Downloadable Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('enable_shipping_address_for_downloadable_products').text('<?php _e('Enable Shipping Address for Downloadable Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('disable_shipping_address_for_downloadable_products').text('<?php _e('Disable Shipping Address for Downloadable Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('disable_shipping_address_for_downloadable_products').text('<?php _e('Disable Shipping Address for Downloadable Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('enable_shipping_address_for_virtual_products').text('<?php _e('Enable Shipping Address for Virtual Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('enable_shipping_address_for_virtual_products').text('<?php _e('Enable Shipping Address for Virtual Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('disable_shipping_address_for_virtual_products').text('<?php _e('Disable Shipping Address for Virtual Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('disable_shipping_address_for_virtual_products').text('<?php _e('Disable Shipping Address for Virtual Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
               });
             </script>
             <?php
@@ -1132,9 +1127,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 foreach ($enable_disable_shipping_action as $enable_disable_shipping_action_key => $enable_disable_shipping_action_value) {
                     if($pagenow == 'edit.php' && $post_type == 'product' && isset($_REQUEST[$enable_disable_shipping_action_value])) {
                         if ( strpos($enable_disable_shipping_action_value, 'enable' ) !== false ) {
-                            $message = sprintf( __( 'Shipping Address enabled for %s products.', $this->plugin_slug ), number_format_i18n( $_REQUEST[$enable_disable_shipping_action_value] ) );
+                            $message = sprintf( __( 'Shipping Address enabled for %s products.', 'paypal-for-woocommerce' ), number_format_i18n( $_REQUEST[$enable_disable_shipping_action_value] ) );
                         } else {
-                            $message = sprintf( __( 'Shipping Address disabled for %s products.', $this->plugin_slug ), number_format_i18n( $_REQUEST[$enable_disable_shipping_action_value] ) );
+                            $message = sprintf( __( 'Shipping Address disabled for %s products.', 'paypal-for-woocommerce' ), number_format_i18n( $_REQUEST[$enable_disable_shipping_action_value] ) );
                         }
                         echo '<div class="updated"><p>'.$message.'</p></div>';
                         break;
