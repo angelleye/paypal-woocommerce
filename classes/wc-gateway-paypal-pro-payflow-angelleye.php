@@ -438,7 +438,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         *  @since    1.1.8
                         */
 
-                        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
+                        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
 			
 			/**
 			 * Log results
@@ -729,7 +729,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
          *  @since    1.1.8
          */
         
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
         
         $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
         add_action( 'angelleye_after_refund', $PayPalResult, $order, $amount, $reason );

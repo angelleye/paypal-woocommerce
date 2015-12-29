@@ -1027,6 +1027,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $DCFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1062,6 +1065,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $DAFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1096,6 +1102,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $DRFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1130,6 +1139,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $DVFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1179,6 +1191,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $MPFieldsNVP . $MPItemsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1213,6 +1228,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $RTFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1355,6 +1373,9 @@ class Angelleye_PayPal
 		// Now that we have each chunk we need to go ahead and append them all together for our entire NVP string
 		$NVPRequest = $this->NVPCredentials . $DPFieldsNVP . $CCDetailsNVP . $PayerInfoNVP . $PayerNameNVP . $BillingAddressNVP . $PaymentDetailsNVP . $OrderItemsNVP . $ShippingAddressNVP . $Secure3DNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1478,6 +1499,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $SECFieldsNVP . $SurveyChoicesNVP . $ShippingOptionsNVP . $BillingAgreementsNVP . $PaymentsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1558,6 +1582,9 @@ class Angelleye_PayPal
 			
 		$NVPRequest = $this->NVPCredentials . $GECDFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1636,6 +1663,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $DECPFieldsNVP . $PaymentsNVP . $UserSelectedOptionsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1735,6 +1765,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $TSFieldsNVP . $PayerNameNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1836,6 +1869,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $DNRCFieldsNVP . $CCDetailsNVP . $PayerNameNVP . $PayerInfoNVP . $BillingAddressNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1924,6 +1960,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $DRTFieldsNVP . $ShippingAddressNVP . $OrderItemsNVP . $CCDetailsNVP . $PayerInfoNVP . $BillingAddressNVP . $PaymentDetailsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -1957,6 +1996,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $GBFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2001,6 +2043,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $GPFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2033,6 +2078,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $AVFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2065,6 +2113,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $MPTSFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2166,6 +2217,9 @@ class Angelleye_PayPal
 			
 		$NVPRequest = $this->NVPCredentials . $CRPPFieldsNVP . $OrderItemsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2198,6 +2252,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $GRPPDFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2230,6 +2287,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $MRPPSFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2262,6 +2322,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $BOAFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2324,6 +2387,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $URPPFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2375,6 +2441,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $CBAFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2420,6 +2489,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $SCBAFieldsNVP . $BillingAgreementsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2446,6 +2518,9 @@ class Angelleye_PayPal
 			
 		$NVPRequest = $this->NVPCredentials . $GBACDFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2478,6 +2553,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $BAUFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2517,6 +2595,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $SMCFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2549,6 +2630,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $DMCPFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2589,6 +2673,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $SetAuthFlowParamFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2618,6 +2705,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $GetAuthDetailsFieldsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2645,6 +2735,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $GetAccessPermissionsDetailsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2711,6 +2804,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $SetAccessPermissionsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2751,6 +2847,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $UpdateAcccessPermissionsNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
@@ -2786,6 +2885,9 @@ class Angelleye_PayPal
 		
 		$NVPRequest = $this->NVPCredentials . $BMButtonSearchNVP;
 		$NVPResponse = $this->CURLRequest($NVPRequest);
+                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
+                    return $NVPResponse;
+                }
 		$NVPRequestArray = $this->NVPToArray($NVPRequest);
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 		
