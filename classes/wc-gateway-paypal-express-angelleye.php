@@ -1328,7 +1328,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'localecode' => ($this->use_wp_locale_code == 'yes' && get_locale() != '') ? get_locale() : '', // Locale of pages displayed by PayPal during checkout.  Should be a 2 character country code.  You can retrive the country code by passing the country name into the class' GetCountryCode() function.
             'pagestyle' => '', // Sets the Custom Payment Page Style for payment pages associated with this button/link.
             'hdrimg' => $this->checkout_logo_hdrimg, // URL for the image displayed as the header during checkout.  Max size of 750x90.  Should be stored on an https:// server or you'll get a warning message in the browser.
-            'logourl' => $this->checkout_logo,
+            'logoimg' => $this->checkout_logo,
             'hdrbordercolor' => '', // Sets the border color around the header of the payment page.  The border is a 2-pixel permiter around the header space.  Default is black.
             'hdrbackcolor' => '', // Sets the background color for the header of the payment page.  Default is white.
             'payflowcolor' => '', // Sets the background color for the payment page.  Default is white.
