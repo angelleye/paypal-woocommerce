@@ -126,7 +126,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Updates successful order hook to include order ID param. ([#358](https://github.com/angelleye/paypal-woocommerce/issues/358))
 * Fix - Adjustment to ensure order notes entered on WooCommerce checkout page are saved with Express Checkout orders. ([#363](https://github.com/angelleye/paypal-woocommerce/issues/363))
 * Fix - Resolves potential configuration bugs with PayPal Plus integration. ([#368](https://github.com/angelleye/paypal-woocommerce/issues/368))
-* Tweak - Allows for pricing with more than 2 decimals. ([#17]())
+* Fix - Adjusts incorrect parameter name for the Express Checkout logo. ([#373](https://github.com/angelleye/paypal-woocommerce/issues/373))
 * Tweak - Allows for pricing with more than 2 decimals. ([#17]())
 * Tweak - Allows for pricing with more than 2 decimals. ([#17]())
 * Tweak - Allows for pricing with more than 2 decimals. ([#17]())
