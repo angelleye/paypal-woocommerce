@@ -591,10 +591,13 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
                 $order->add_order_note(__('PayPal Plus payment completed', 'paypal-for-woocommerce') );
                 $order->payment_complete($payment->id);
-
+                
                 //add hook
                 do_action('woocommerce_checkout_order_processed', WC()->session->orderId);
-
+                
+                // Remove cart
+                WC()->cart->empty_cart();
+                
                 wp_redirect($this->get_return_url($order));
 
             }
