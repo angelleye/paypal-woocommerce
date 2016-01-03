@@ -1162,8 +1162,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $giftwrap_note .= $this->get_session('giftmessage') != '' ? '<br />Message: ' . $this->get_session('giftmessage') : '';
                         $giftwrap_note .= '<br />' . __('Use Gift Receipt?: ', 'paypal-for-woocommerce');
                         $giftwrap_note .= strtolower($this->get_session('giftreceiptenable')) == 'true' ? 'Yes' : 'No';
-                        //$giftwrap_note .= '<br />Fee: ' . woocommerce_price(number_format($this->get_session('giftwrapamount'),2));
-                        $order->add_order_note($giftwrap_note);
+
+                        update_post_meta($order_id, 'Gift Wrap Note', $giftwrap_note);
+                        update_post_meta($order_id, 'giftwrapamount', $this->get_session('giftwrapamount'));
+                        if ($this->get_session('giftwrapname') != '' )
+                            update_post_meta($order_id, 'giftwrapname', $this->get_session('giftwrapname'));
+                        if ($this->get_session('giftmessage') != '' )
+                            update_post_meta($order_id, 'giftmessage', $this->get_session('giftmessage'));
+                        $giftreceiptenable = strtolower($this->get_session('giftreceiptenable')) == 'true' ? 'true' : 'false';
+                        update_post_meta($order_id, 'giftreceiptenable', $giftreceiptenable);
                     }
 
                     $order->add_order_note(__('PayPal Express payment completed', 'paypal-for-woocommerce') .
