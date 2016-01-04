@@ -458,13 +458,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Javascript code to move it in to button add to cart wrap
          */
         function buy_now_button_js() {
-            global $pp_settings;
+            global $pp_settings, $product;
+            $button_dynamic_class = "single_variation_wrap_angelleye_" . $product->id;
             if (@$pp_settings['enabled']=='yes' && @$pp_settings['show_on_product_page']=='yes')
             {
                 ?>
                 <script type="text/javascript">
                     jQuery(document).ready(function(){
-                        jQuery('input.single_variation_wrap_angelleye').appendTo(".variations_button");
+                       if( jQuery('input[name="product_id"][value="<?php echo absint( $product->id ); ?>"]').parents('.variations_button').children(".single_variation_wrap_angelleye").length == 0) {
+                           jQuery('input.single_variation_wrap_angelleye_<?php echo absint( $product->id ); ?>').appendTo(jQuery('input[name="product_id"][value="<?php echo absint( $product->id ); ?>"]').parents('.variations_button'));
+                        }
+                        
                     });
                 </script>
             <?php
@@ -475,13 +479,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Display Paypal Express Checkout on product page
          */
         function buy_now_button() {
-            global $pp_settings, $post;
+            global $pp_settings, $post, $product;
             if (@$pp_settings['enabled']=='yes' && @$pp_settings['show_on_product_page']=='yes')
             {
                 ?>
                 <div class="angelleye_button_single">
                 <?php
                 $_product = wc_get_product($post->ID);
+                $button_dynamic_class = 'single_variation_wrap_angelleye_' . $product->id;
                 $hide = '';
                 if($_product->product_type == 'variation' ||
                     $_product->is_type('external') ||
@@ -502,7 +507,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         }
                         $add_to_cart_action = esc_url(add_query_arg( 'express_checkout', '1'));
                         echo '<div id="paypal_ec_button_product">';
-                        echo '<input data-action="'.$add_to_cart_action.'" type="submit" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye paypal_checkout_button button alt" name="express_checkout"  onclick="',"jQuery('form.cart').attr('action','",$add_to_cart_action,"');jQuery('form.cart').submit();",'" value="' .$button_text .'"/>';
+                        echo '<input data-action="'.$add_to_cart_action.'" type="submit" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye paypal_checkout_button button alt '.$button_dynamic_class.'" name="express_checkout"  onclick="',"jQuery('form.cart').attr('action','",$add_to_cart_action,"');jQuery('form.cart').submit();",'" value="' .$button_text .'"/>';
                         echo '</div>';
                         echo '<div class="clear"></div>';
                         break;
@@ -510,7 +515,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         $add_to_cart_action = esc_url(add_query_arg( 'express_checkout', '1'));
                         $button_img =  "https://www.paypal.com/".WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code()."/i/btn/btn_xpressCheckout.gif";
                         echo '<div id="paypal_ec_button_product">';
-                        echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+                        echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye '.$button_dynamic_class.'" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
                         echo '</div>';
                         echo '<div class="clear"></div>';
                         break;
@@ -518,7 +523,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         $add_to_cart_action = esc_url(add_query_arg( 'express_checkout', '1'));
                         $button_img = $pp_settings['pp_button_type_my_custom'];
                         echo '<div id="paypal_ec_button_product">';
-                        echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+                        echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="float:left;margin-left:10px;',$hide,'" class="single_variation_wrap_angelleye '.$button_dynamic_class.'" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
                         echo '</div>';
                         echo '<div class="clear"></div>';
                         break;
