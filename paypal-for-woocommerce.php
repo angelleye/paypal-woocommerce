@@ -708,7 +708,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public static function calculate($order, $send_items = false){
 
             $PaymentOrderItems = array();
-            $ctr = $total_items = $total_discount = $total_tax = $shipping = 0;
+            $ctr = $giftwrapamount = $total_items = $total_discount = $total_tax = $shipping = 0;
             $ITEMAMT = 0;
             if ($order) {
                 $order_total = $order->get_total();
@@ -810,6 +810,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     if ($Item['number'] != 'gift-wrap') {
                         array_push($PaymentOrderItems, $Item);
                         $ITEMAMT += round($fee->amount, 2);
+                    } else {
+                        $giftwrapamount = round($fee->amount, 2);
                     }
 
                     $ctr++;
@@ -903,9 +905,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
 
             if (empty($ITEMAMT)) {
-                $Payment['itemamt'] = $order_total - $tax - $shipping;
+                $cart_fees = WC()->cart->get_fees();
+                if( isset($cart_fees[0]->id) && $cart_fees[0]->id == 'gift-wrap' ) {
+                    $giftwrapamount = isset($cart_fees[0]->amount)  ? $cart_fees[0]->amount : 0;
+                } else {
+                    $giftwrapamount = 0;
+                }
+                $Payment['itemamt'] = $order_total - $tax - $shipping - $giftwrapamount;
             } else {
-                $Payment['itemamt'] = number_format($ITEMAMT + $total_discount, 2, '.', '');
+                $Payment['itemamt'] = number_format($ITEMAMT - $total_discount, 2, '.', '');
             }
 
 
@@ -930,7 +938,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $Payment['order_items'] = $PaymentOrderItems;
 
             // Rounding amendment
-            if (trim(number_format($order_total, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + $tax + $shipping, 2, '.', ''))) {
+            if (trim(number_format($order_total, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + $giftwrapamount + $tax + $shipping, 2, '.', ''))) {
                 $diffrence_amount = AngellEYE_Gateway_Paypal::get_diffrent($order_total, $Payment['itemamt'] + $tax + $shipping);
                 if($shipping > 0) {
                     $Payment['shippingamt'] = number_format($shipping + $diffrence_amount, 2, '.', '');
