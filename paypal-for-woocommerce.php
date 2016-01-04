@@ -913,7 +913,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
                 $Payment['itemamt'] = $order_total - $tax - $shipping - $giftwrapamount;
             } else {
-                $Payment['itemamt'] = number_format($ITEMAMT - $total_discount, 2, '.', '');
+                $Payment['itemamt'] = number_format($ITEMAMT + $total_discount, 2, '.', '');
             }
 
 
