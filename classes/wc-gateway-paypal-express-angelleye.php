@@ -1203,7 +1203,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
                     $ErrorLongMsg = urldecode($result["L_LONGMESSAGE0"]);
                     $ErrorSeverityCode = urldecode($result["L_SEVERITYCODE0"]);
-                    $this->add_log('SetExpressCheckout API call failed. ');
+                    $this->add_log('DoExpressCheckoutPayment API call failed. ');
                     $this->add_log('Detailed Error Message: ' . $ErrorLongMsg);
                     $this->add_log('Short Error Message: ' . $ErrorShortMsg);
                     $this->add_log('Error Code: ' . $ErrorCode);
