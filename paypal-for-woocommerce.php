@@ -1035,7 +1035,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          *  Express Checkout - Digital / Virtual Goods - NOSHIPPING #174 
          */
         public static function angelleye_paypal_for_woocommerce_needs_shipping($SECFields) {
-            if(!empty(WC()->cart->get_cart())) {
+            if (sizeof(WC()->cart->get_cart()) != 0) {
                 foreach (WC()->cart->get_cart() as $key => $value) {
                     $_product = $value['data'];
                     if (isset($_product->id) && !empty($_product->id) ) {
