@@ -37,7 +37,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         // Define user set variables
         $this->title = $this->settings['title'];
         $this->description = $this->settings['description'];
-        $this->mode = $this->settings['testmode']=='yes'? "SANDBOX":"LIVE";
+        $this->mode = $this->settings['testmode'] == 'yes' ? "SANDBOX" : "LIVE";
         if ($this->mode == "LIVE") {
             $this->rest_client_id = @$this->settings['rest_client_id'];
             $this->rest_secret_id = @$this->settings['rest_secret_id'];
@@ -51,28 +51,32 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         $this->send_items = 'yes';
         $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
         $this->cancel_url = isset($this->settings['cancel_url']) ? $this->settings['cancel_url'] : site_url();
-        $this->allowed_currencies   = apply_filters( 'woocommerce_paypal_plus_allowed_currencies', array('EUR', 'CAD'));
-        $this->enabled         = $this->settings['enabled'];
+        $this->allowed_currencies = apply_filters('woocommerce_paypal_plus_allowed_currencies', array('EUR', 'CAD'));
+        $this->enabled = $this->settings['enabled'];
         // Enable Logs if user configures to debug
         if ($this->debug == 'yes')
             $this->log = new WC_Logger();
         // Hooks
-        if ( is_admin() ) {
+        if (is_admin()) {
             add_action('admin_notices', array($this, 'checks')); //checks for availability of the plugin
         }
         /* 1.6.6 */
-        add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
+        add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         /* 2.0.0 */
-        add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
         add_action('woocommerce_receipt_paypal_plus', array($this, 'receipt_page')); // Payment form hook
         add_action('woocommerce_review_order_before_payment', array($this, 'render_iframe')); // Payment form hook
-    
+        add_action('woocommerce_api_wc_gateway_paypal_plus_angelleye', array($this, 'executepay'));
 
-        if (!defined('CLIENT_ID')) define('CLIENT_ID', $this->rest_client_id); //your PayPal client ID
-        if (!defined('CLIENT_SECRET')) define('CLIENT_SECRET', $this->rest_secret_id); //PayPal Secret
 
-        if (!defined('PP_CURRENCY')) define('PP_CURRENCY', get_woocommerce_currency()); //Currency code
+        if (!defined('CLIENT_ID'))
+            define('CLIENT_ID', $this->rest_client_id); //your PayPal client ID
+        if (!defined('CLIENT_SECRET'))
+            define('CLIENT_SECRET', $this->rest_secret_id); //PayPal Secret
+
+        if (!defined('PP_CURRENCY'))
+            define('PP_CURRENCY', get_woocommerce_currency()); //Currency code
 
         include_once( 'lib/autoload.php' ); //include PayPal SDK
 
@@ -87,16 +91,16 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
      * @return void
      * */
     public function checks() {
-        
+
         global $current_user;
 
         get_currentuserinfo();
-           
-        if ( ($this->enabled === "yes" && $this->rest_client_id && $this->rest_secret_id ) && (! in_array( get_option( 'woocommerce_currency' ), $this->allowed_currencies ) && ! get_user_meta( $current_user->ID, '_wc_paypal_plus_not_support_currency_nag' ) )) {
-           echo '<div class="error"><p>' . sprintf( __( 'Gateway Disabled: PayPal Plus does not support your store currency (Supports: EUR, CAD).', 'paypal-for-woocommerce') . ' <a href="%s">' . __( 'Hide Notice', 'woocommerce' ) . '</a>', wp_nonce_url( add_query_arg( 'wc_paypal_plus_not_support_currency_nag', '1' ), 'wc_paypal_plus_not_support_currency_nag_hide' ) ) . '</p></div>';
-         }
-         
-        if ($this->enabled != 'yes' || @$_GET['section']=='wc_gateway_paypal_plus_angelleye') {
+
+        if (($this->enabled === "yes" && $this->rest_client_id && $this->rest_secret_id ) && (!in_array(get_option('woocommerce_currency'), $this->allowed_currencies) && !get_user_meta($current_user->ID, '_wc_paypal_plus_not_support_currency_nag') )) {
+            echo '<div class="error"><p>' . sprintf(__('Gateway Disabled: PayPal Plus does not support your store currency (Supports: EUR, CAD).', 'paypal-for-woocommerce') . ' <a href="%s">' . __('Hide Notice', 'woocommerce') . '</a>', wp_nonce_url(add_query_arg('wc_paypal_plus_not_support_currency_nag', '1'), 'wc_paypal_plus_not_support_currency_nag_hide')) . '</p></div>';
+        }
+
+        if ($this->enabled != 'yes' || @$_GET['section'] == 'wc_gateway_paypal_plus_angelleye') {
             return;
         }
         // Check required fields
@@ -113,15 +117,15 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
      */
     public function is_available() {
         //if enabled checkbox is checked
-        if ( $this->enabled === "yes" ) {
+        if ($this->enabled === "yes") {
             // Currency check
-            if ( ! in_array( get_option( 'woocommerce_currency' ), $this->allowed_currencies ) ) {
-                    return false;
+            if (!in_array(get_option('woocommerce_currency'), $this->allowed_currencies)) {
+                return false;
             }
-            
+
             // Required fields check
-            if ( ! $this->rest_client_id || ! $this->rest_secret_id ) {
-                    return false;
+            if (!$this->rest_client_id || !$this->rest_secret_id) {
+                return false;
             }
             return true;
         }
@@ -143,7 +147,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         <table class="form-table">
             <?php
             //if user's currency is USD
-            if ( ! in_array( get_option( 'woocommerce_currency' ), $this->allowed_currencies ) ) {
+            if (!in_array(get_option('woocommerce_currency'), $this->allowed_currencies)) {
                 ?>
                 <div class="inline error"><p><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal Plus does not support your store currency (Supports: EUR, CAD).', 'paypal-for-woocommerce'); ?></p></div>
                 <?php
@@ -154,7 +158,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             }
             ?>
         </table><!--/.form-table-->
-    <?php
+        <?php
     }
 
 // End admin_options()
@@ -164,7 +168,6 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
      * @access public
      * @return void
      */
-
     public function init_form_fields() {
         $this->form_fields = array(
             'enabled' => array(
@@ -253,17 +256,17 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
      * @access public
      * @return void
      * */
-
     public function render_iframe() {
-        if (!$this->is_available()) return;
+        if (!$this->is_available())
+            return;
 
         //display the form in IFRAME, if it is layout C, otherwise redirect to paypal site
         //define the redirection url
         $location = $this->get_approvalurl();
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
         $js_array = array();
-        if ( ! empty( $available_gateways ) ) {
-            foreach ( $available_gateways as $gateway ) {
+        if (!empty($available_gateways)) {
+            foreach ($available_gateways as $gateway) {
                 if ($gateway->id != $this->id) {
                     $third_party[] = array(
                         'methodName' => $gateway->get_title(),
@@ -274,56 +277,55 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         }
-
         ?>
         <script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js"type="text/javascript"></script>
 
-        <div id="ppplus"><?php echo __('Loading payment gates ...', 'paypal-for-woocommerce');?> </div>
+        <div id="ppplus"><?php echo __('Loading payment gates ...', 'paypal-for-woocommerce'); ?> </div>
 
         <script type="application/javascript">
 
             var ppp = PAYPAL.apps.PPP({
-                "approvalUrl": "<?php echo $location; ?>",
-                "placeholder": "ppplus",
-                "useraction": "commit",
-                "buttonLocation": "outside",
-                <?php if(get_locale()!= ''):?>
-                "country":  <?php echo '"',substr(get_locale(), -2),'"';?>,
-                "language": <?php echo '"',get_locale(),'"';?>,
-                <?php endif;?>
-                "mode": "<?php echo strtolower($this->mode);?>",
-            <?php if (isset($third_party)): //check if we have third party payment ?>
-                "thirdPartyPaymentMethods": <?php echo json_encode($third_party);?>,
+            "approvalUrl": "<?php echo $location; ?>",
+            "placeholder": "ppplus",
+            "useraction": "commit",
+            "buttonLocation": "outside",
+            <?php if (get_locale() != ''): ?>
+                "country":  <?php echo '"', substr(get_locale(), -2), '"'; ?>,
+                "language": <?php echo '"', get_locale(), '"'; ?>,
             <?php endif; ?>
-                "onLoad":setPayment,
-                "disableContinue": 'place_order',
-                "enableContinue": setPayment,
-                "styles": {
-                    psp:{
-                        "font-size": "13px"
-                    }
-                }
+            "mode": "<?php echo strtolower($this->mode); ?>",
+            <?php if (isset($third_party)): //check if we have third party payment  ?>
+                "thirdPartyPaymentMethods": <?php echo json_encode($third_party); ?>,
+            <?php endif; ?>
+            "onLoad":setPayment,
+            "disableContinue": 'place_order',
+            "enableContinue": setPayment,
+            "styles": {
+            psp:{
+            "font-size": "13px"
+            }
+            }
             });
 
             function setPayment() {
-                var key_array = <?php echo '["' . implode('", "', array_keys($js_array) ) . '"]';?>;
-                var name_array = <?php echo '["' . implode('", "', $js_array ) . '"]';?>;
-                var current_cookie = jQuery.parseJSON(jQuery.cookie("paypalplus_session"));
+            var key_array = <?php echo '["' . implode('", "', array_keys($js_array)) . '"]'; ?>;
+            var name_array = <?php echo '["' . implode('", "', $js_array) . '"]'; ?>;
+            var current_cookie = jQuery.parseJSON(jQuery.cookie("paypalplus_session"));
 
-                select_position = name_array.indexOf(current_cookie.paymentMethod);
+            select_position = name_array.indexOf(current_cookie.paymentMethod);
 
-                if (select_position!=-1) {
-                    jQuery('#payment_method_'+key_array[select_position]).attr("checked","checked");
-                } else {
-                    jQuery('#payment_method_paypal_plus').attr("checked","checked");
-                }
-                jQuery('#place_order').prop( "disabled", false);
+            if (select_position!=-1) {
+            jQuery('#payment_method_'+key_array[select_position]).attr("checked","checked");
+            } else {
+            jQuery('#payment_method_paypal_plus').attr("checked","checked");
+            }
+            jQuery('#place_order').prop( "disabled", false);
             }
         </script>
         <style type="text/css">
             .payment_methods  {display:none}
         </style>
-    <?php
+        <?php
     }
 
     /**
@@ -398,29 +400,28 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
     function getAuth() {
         $auth = new ApiContext(new OAuthTokenCredential(CLIENT_ID, CLIENT_SECRET));
-        $auth->setConfig(array('mode'=> $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce'));
+        $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce'));
         return $auth;
     }
 
     function get_approvalurl() {
-
+        global $woocommerce;
         try { // try a payment request
-
             $PaymentData = AngellEYE_Gateway_Paypal::calculate(null, $this->send_items);
             $OrderItems = array();
-            if ($this->send_items){
+            if ($this->send_items) {
                 foreach ($PaymentData['order_items'] as $item) {
                     $_item = new Item();
                     $_item->setName($item['name'])
-                        ->setCurrency(get_woocommerce_currency())
-                        ->setQuantity($item['qty'])
-                        ->setPrice($item['amt']);
+                            ->setCurrency(get_woocommerce_currency())
+                            ->setQuantity($item['qty'])
+                            ->setPrice($item['amt']);
                     array_push($OrderItems, $_item);
                 }
             }
 
             $redirectUrls = new RedirectUrls();
-            $redirectUrls->setReturnUrl(add_query_arg(array('pp_action'=>'executepay'),home_url()));
+            $redirectUrls->setReturnUrl($this->relay_response_url);
             $redirectUrls->setCancelUrl($this->cancel_url);
 
 
@@ -429,13 +430,15 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
             $details = new Details();
 
-            if (isset($PaymentData['shippingamt'])) $details->setShipping($PaymentData['shippingamt']);
-            if (isset($PaymentData['taxamt'])) $details->setTax($PaymentData['taxamt']);
+            if (isset($PaymentData['shippingamt']))
+                $details->setShipping($PaymentData['shippingamt']);
+            if (isset($PaymentData['taxamt']))
+                $details->setTax($PaymentData['taxamt']);
             $details->setSubtotal($PaymentData['itemamt']);
 
             $amount = new Amount();
             $amount->setCurrency(PP_CURRENCY);
-            $amount->setTotal( WC()->cart->total);
+            $amount->setTotal(WC()->cart->total);
             $amount->setDetails($details);
 
             $items = new ItemList();
@@ -461,152 +464,183 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
                 return $payment->links[1]->href;
             }
-        }  catch (PayPal\Exception\PayPalConnectionException $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'), 'error');
+        } catch (PayPal\Exception\PayPalConnectionException $ex) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
             $this->add_log($ex->getData());
+            wp_redirect($woocommerce->cart->get_cart_url());
+            exit;
         } catch (Exception $ex) {
-            wc_add_notice(__('Error processing checkout. Please try again. ', 'woocommerce') , 'error');
-            $this->add_log($ex->getMessage());
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log($ex->getData());
+            wp_redirect($woocommerce->cart->get_cart_url());
+            exit;
         }
     }
 
-    function receipt_page($order_id){
-
-        $order = new WC_Order( $order_id );
+    function receipt_page($order_id) {
+        global $woocommerce;
+        $order = new WC_Order($order_id);
         WC()->session->ppp_order_id = $order_id;
-        $PaymentData = AngellEYE_Gateway_Paypal::calculate($order,true);
+        $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, true);
 
         $payment = new Payment();
         $payment->setId(WC()->session->paymentId);
 
         $patchReplace = new \PayPal\Api\Patch();
         $patchReplace->setOp('replace')
-            ->setPath('/transactions/0/amount')
-            ->setValue(json_decode('{
-                    "total": "'.number_format($order->get_total(), 2, '.', '').'",
-                    "currency": "'.get_woocommerce_currency().'",
+                ->setPath('/transactions/0/amount')
+                ->setValue(json_decode('{
+                    "total": "' . number_format($order->get_total(), 2, '.', '') . '",
+                    "currency": "' . get_woocommerce_currency() . '",
                     "details": {
-                        "subtotal": "'.$PaymentData['itemamt'].'",
-                        "shipping": "'.$PaymentData['shippingamt'].'",
-                        "tax":"'.$PaymentData['taxamt'].'"
+                        "subtotal": "' . $PaymentData['itemamt'] . '",
+                        "shipping": "' . $PaymentData['shippingamt'] . '",
+                        "tax":"' . $PaymentData['taxamt'] . '"
                     }
                 }'));
 
         $patchRequest = new \PayPal\Api\PatchRequest();
         if ($order->needs_shipping_address() && !empty($order->shipping_country)) {
             //add shipping info
-            $patchAdd =  new \PayPal\Api\Patch();
+            $patchAdd = new \PayPal\Api\Patch();
             $patchAdd->setOp('add')
-                ->setPath('/transactions/0/item_list/shipping_address')
-                ->setValue(json_decode('{
-                    "recipient_name": "'.$order->shipping_first_name.' '.$order->shipping_last_name.'",
-                    "line1": "'.$order->shipping_address_1.'",
-                    "city": "'.$order->shipping_city.'",
-                    "state": "'.$order->shipping_state.'",
-                    "postal_code": "'.$order->shipping_postcode.'",
-                    "country_code": "'.$order->shipping_country.'"
+                    ->setPath('/transactions/0/item_list/shipping_address')
+                    ->setValue(json_decode('{
+                    "recipient_name": "' . $order->shipping_first_name . ' ' . $order->shipping_last_name . '",
+                    "line1": "' . $order->shipping_address_1 . '",
+                    "city": "' . $order->shipping_city . '",
+                    "state": "' . $order->shipping_state . '",
+                    "postal_code": "' . $order->shipping_postcode . '",
+                    "country_code": "' . $order->shipping_country . '"
                 }'));
 
-            $patchRequest->setPatches(array( $patchAdd, $patchReplace ));
+            $patchRequest->setPatches(array($patchAdd, $patchReplace));
         } else {
-            $patchRequest->setPatches(array( $patchReplace ));
+            $patchRequest->setPatches(array($patchReplace));
         }
 
         try {
             $result = $payment->update($patchRequest, $this->getAuth());
             $this->add_log(print_r($payment, true));
-            if ($result==true)
-
-
-        ?>
-        <script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js"type="text/javascript"></script>
-        <script>
-            jQuery(document).ready(function(){
-                jQuery.blockUI({
-                    message: "<?php echo esc_js( __( 'Thank you for your order. We are now redirecting you to PayPal to make payment.', 'paypal-for-woocommerce' ) )?>",
-                    baseZ: 99999,
-                    overlayCSS:
-                    {
-                        background: "#fff",
-                        opacity: 0.6
-                    },
-                    css: {
-                        padding:        "20px",
-                        zindex:         "9999999",
-                        textAlign:      "center",
-                        color:          "#555",
-                        border:         "3px solid #aaa",
-                        backgroundColor:"#fff",
-                        cursor:         "wait",
-                        lineHeight:		"24px"
-                    }
+            if ($result == true)
+                
+                ?>
+                <script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js"type="text/javascript"></script>
+                <script>
+                    jQuery(document).ready(function () {
+                        jQuery.blockUI({
+                            message: "<?php echo esc_js(__('Thank you for your order. We are now redirecting you to PayPal to make payment.', 'paypal-for-woocommerce')) ?>",
+                        baseZ: 99999,
+                        overlayCSS:
+                                {
+                                    background: "#fff",
+                                    opacity: 0.6
+                                },
+                        css: {
+                            padding: "20px",
+                            zindex: "9999999",
+                            textAlign: "center",
+                            color: "#555",
+                            border: "3px solid #aaa",
+                            backgroundColor: "#fff",
+                            cursor: "wait",
+                            lineHeight: "24px"
+                        }
+                    });
+                    PAYPAL.apps.PPP.doCheckout();
                 });
-                PAYPAL.apps.PPP.doCheckout();
-            });
-        </script>
-    <?php
-        }  catch (PayPal\Exception\PayPalConnectionException $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'), 'error');
+            </script>
+            <?php
+        } catch (PayPal\Exception\PayPalConnectionException $ex) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
             $this->add_log($ex->getData());
+            wp_redirect($woocommerce->cart->get_cart_url());
+            exit;
         } catch (Exception $ex) {
-            $this->add_log($ex->getMessage()); // Prints the Error Code
-            wc_add_notice(__("Error processing checkout. Please try again.", 'woocommerce'), 'error');
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log($ex->getData());
+            wp_redirect($woocommerce->cart->get_cart_url());
+            exit;
         }
     }
 
     public function executepay() {
-        if (empty(WC()->session->token) || empty(WC()->session->PayerID) || empty(WC()->session->paymentId)) return;
 
-        $execution = new PaymentExecution();
-        $execution->setPayerId(WC()->session->PayerID);
+        if (isset($_GET["token"]) && !empty($_GET["token"]) && isset($_GET["PayerID"]) && !empty($_GET["PayerID"])) {
 
-        try {
-            $payment = Payment::get(WC()->session->paymentId, $this->getAuth());
-            $payment->execute($execution, $this->getAuth());
-            $this->add_log(print_r($payment, true));
-            if ($payment->state == "approved") { //if state = approved continue..
-                global $wpdb;
-                $this->log->add('paypal_plus', sprintf(__('Response: %s', 'paypal-for-woocommerce'), print_r($payment,true)));
+            global $woocommerce;
 
-                $order = new WC_Order(WC()->session->orderId);
+            WC()->session->token = $_GET["token"];
 
-                if ($this->billing_address == 'yes') {
-                    require_once("lib/NameParser.php");
-                    $parser = new FullNameParser();
-                    $split_name = $parser->split_full_name($payment->payer->payer_info->shipping_address->recipient_name);
-                    $shipping_first_name = $split_name['fname'];
-                    $shipping_last_name = $split_name['lname'];
-                    $full_name = $split_name['fullname'];
+            WC()->session->paymentId = $_GET["paymentId"];
+            WC()->session->PayerID = $_GET["PayerID"];
 
-                    update_post_meta(WC()->session->orderId, '_billing_first_name', $shipping_first_name);
-                    update_post_meta(WC()->session->orderId, '_billing_last_name', $shipping_last_name);
-                    update_post_meta(WC()->session->orderId, '_billing_full_name', $full_name);
-                    update_post_meta(WC()->session->orderId, '_billing_address_1', $payment->payer->payer_info->shipping_address->line1);
-                    update_post_meta(WC()->session->orderId, '_billing_address_2', $payment->payer->payer_info->shipping_address->line2);
-                    update_post_meta(WC()->session->orderId, '_billing_city', $payment->payer->payer_info->shipping_address->city);
-                    update_post_meta(WC()->session->orderId, '_billing_postcode', $payment->payer->payer_info->shipping_address->postal_code);
-                    update_post_meta(WC()->session->orderId, '_billing_country', $payment->payer->payer_info->shipping_address->country_code);
-                    update_post_meta(WC()->session->orderId, '_billing_state', $payment->payer->payer_info->shipping_address->state);
+            $execution = new PaymentExecution();
+            $execution->setPayerId(WC()->session->PayerID);
+
+            try {
+                $payment = Payment::get(WC()->session->paymentId, $this->getAuth());
+                $payment->execute($execution, $this->getAuth());
+                $this->add_log(print_r($payment, true));
+                if ($payment->state == "approved") { //if state = approved continue..
+                    
+                    global $wpdb;
+                    
+                    $this->log->add('paypal_plus', sprintf(__('Response: %s', 'paypal-for-woocommerce'), print_r($payment, true)));
+
+                    $order = new WC_Order(WC()->session->ppp_order_id);
+
+                    if ($this->billing_address == 'yes') {
+                        require_once("lib/NameParser.php");
+                        $parser = new FullNameParser();
+                        $split_name = $parser->split_full_name($payment->payer->payer_info->shipping_address->recipient_name);
+                        $shipping_first_name = $split_name['fname'];
+                        $shipping_last_name = $split_name['lname'];
+                        $full_name = $split_name['fullname'];
+
+                        update_post_meta($order->id, '_billing_first_name', $shipping_first_name);
+                        update_post_meta($order->id, '_billing_last_name', $shipping_last_name);
+                        update_post_meta($order->id, '_billing_full_name', $full_name);
+                        update_post_meta($order->id, '_billing_address_1', $payment->payer->payer_info->shipping_address->line1);
+                        update_post_meta($order->id, '_billing_address_2', $payment->payer->payer_info->shipping_address->line2);
+                        update_post_meta($order->id, '_billing_city', $payment->payer->payer_info->shipping_address->city);
+                        update_post_meta($order->id, '_billing_postcode', $payment->payer->payer_info->shipping_address->postal_code);
+                        update_post_meta($order->id, '_billing_country', $payment->payer->payer_info->shipping_address->country_code);
+                        update_post_meta($order->id, '_billing_state', $payment->payer->payer_info->shipping_address->state);
+                    }
+
+                    $order->add_order_note(__('PayPal Plus payment completed', 'paypal-for-woocommerce'));
+                    $order->payment_complete($payment->id);
+
+                    //add hook
+                    do_action('woocommerce_checkout_order_processed', $order->id);
+
+                    // Remove cart
+                    WC()->cart->empty_cart();
+
+                    if (method_exists($order, 'get_checkout_order_received_url')) {
+                        $redirect = $order->get_checkout_order_received_url();
+                    } else {
+                        $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order->id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                    }
+                    wp_redirect($redirect);
+                } else {
+                    wc_add_notice(__('Error Payment state:' . $payment->state, 'paypal-for-woocommerce'), 'error');
+                    $this->add_log(__('Error Payment state:' . $payment->state, 'paypal-for-woocommerce'));
+                    wp_redirect($woocommerce->cart->get_cart_url());
+                    exit;
                 }
-
-                $order->add_order_note(__('PayPal Plus payment completed', 'paypal-for-woocommerce') );
-                $order->payment_complete($payment->id);
-                
-                //add hook
-                do_action('woocommerce_checkout_order_processed', WC()->session->orderId);
-                
-                // Remove cart
-                WC()->cart->empty_cart();
-                
-                wp_redirect($this->get_return_url($order));
-
+            } catch (PayPal\Exception\PayPalConnectionException $ex) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->add_log($ex->getData());
+                wp_redirect($woocommerce->cart->get_cart_url());
+                exit;
+            } catch (Exception $ex) {
+                $this->add_log($ex->getMessage()); // Prints the Error Code
+                wc_add_notice(__("Error processing checkout. Please try again.", 'paypal-for-woocommerce'), 'error');
+                wp_redirect($woocommerce->cart->get_cart_url());
+                exit;
             }
-        }  catch (PayPal\Exception\PayPalConnectionException $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ", 'woocommerce'), 'error');
-            $this->add_log($ex->getData());
-        } catch (Exception $ex) {
-            $this->add_log($ex->getMessage()); // Prints the Error Code
-            wc_add_notice(__("Error processing checkout. Please try again.", 'woocommerce'), 'error');
         }
     }
 

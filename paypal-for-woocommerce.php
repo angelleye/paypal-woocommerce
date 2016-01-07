@@ -441,17 +441,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $woocommerce_ppe = new WC_Gateway_PayPal_Express_AngellEYE();
                 $woocommerce_ppe->paypal_express_checkout();
             }
-
-
-            if (version_compare(phpversion(), '5.3.0', '>=') && ! empty( $_GET['pp_action'] ) && $_GET['pp_action'] == 'executepay' && isset($_GET["token"]) && isset($_GET["PayerID"]) && isset($_GET["paymentId"])) {
-                global $wp;
-                WC()->session->token = $_GET["token"];
-                WC()->session->PayerID = $_GET["PayerID"];
-                WC()->session->paymentId = $_GET["paymentId"];
-                WC()->session->orderId = WC()->session->ppp_order_id;
-                $woocommerce_ppp = new WC_Gateway_PayPal_Plus_AngellEYE();
-                $woocommerce_ppp->executepay();
-            }
         }
 
         /**
