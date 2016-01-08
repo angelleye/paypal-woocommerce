@@ -900,6 +900,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 				$message = __( "DoDirectPayment API call failed." , "paypal-for-woocommerce" )."\n\n";
 				$message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $error_code."\n";
 				$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $long_message ."\n";
+                                $message .= __( 'User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
                 $message .= __( 'Order ID: ' ).$order->id ."\n";
                 $message .= __( 'Customer Name: ' ).$order->billing_first_name.' '.$order->billing_last_name."\n";
                 $message .= __( 'Customer Email: ' ).$order->billing_email."\n";
