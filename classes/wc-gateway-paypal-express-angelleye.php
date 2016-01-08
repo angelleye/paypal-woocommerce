@@ -686,9 +686,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $message .= __('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg . "\n";
                         $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
 
-                        $error_email_notify_mes = apply_filters('angelleye_ec_error_email_notify_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
+                        $error_email_notify_mes = apply_filters( 'ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
                         $subject = "PayPal Express Checkout Error Notification";
-                        $error_email_notify_subject = apply_filters('angelleye_ec_error_email_notify_subject', $subject);
+                        $error_email_notify_subject = apply_filters( 'ae_ppec_error_email_subject', $subject );
 
                         wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
                     }
@@ -700,7 +700,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     } else {
                         $error_display_type_message = sprintf(__('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce'));
                     }
-                    $error_display_type_message = apply_filters('angelleye_ec_display_type_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg);
+                    $error_display_type_message = apply_filters( 'ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg );
                     wc_add_notice($error_display_type_message, 'error');
                     if (!is_ajax()) {
                         wp_redirect(get_permalink(wc_get_page_id('cart')));
@@ -1227,9 +1227,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $message .= __( 'Customer Name: ' ).$this->get_session('shiptoname')."\n";
                         $message .= __( 'Customer Email: ' ).$this->get_session('payeremail')."\n";
 
-                        $error_email_notify_mes = apply_filters( 'angelleye_ec_error_email_notify_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
+                        $error_email_notify_mes = apply_filters( 'ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
                         $subject = "PayPal Express Checkout Error Notification";
-                        $error_email_notify_subject = apply_filters('angelleye_ec_error_email_notify_subject', $subject);
+                        $error_email_notify_subject = apply_filters( 'ae_ppec_error_email_subject', $subject );
 
                         wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
                     }
@@ -1241,7 +1241,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     } else {
                         $error_display_type_message = sprintf(__('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce'));
                     }
-                    $error_display_type_message = apply_filters('angelleye_ec_display_type_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg);
+                    $error_display_type_message = apply_filters( 'ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg );
                     wc_add_notice($error_display_type_message, 'error');
 
                     wp_redirect(get_permalink(wc_get_page_id('cart')));
@@ -2142,7 +2142,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (ob_get_length()) ob_end_clean();
             return true;
         } else {
-            $ec_message = apply_filters('angelleye_ec_refund_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE0'], $PayPalResult);
+            $ec_message = apply_filters( 'ae_ppec_refund_error_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE0'], $PayPalResult );
             return new WP_Error('ec_refund-error', $ec_message);
         }
     }

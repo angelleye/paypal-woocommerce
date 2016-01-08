@@ -454,7 +454,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			 */
 			if(empty($PayPalResult['RAWRESPONSE']))
 			{
-                $fc_empty_response = apply_filters( 'angelleye_fc_empty_response', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult );
+                $fc_empty_response = apply_filters( 'ae_pppf_paypal_response_empty_message', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult );
                 throw new Exception( $fc_empty_response );
 			}
 			
@@ -540,7 +540,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				{
                     $fc_error_display_type = __( 'Payment error:', 'paypal-for-woocommerce' ) . ' There was a problem processing your payment.  Please try another method.';
 				}
-                $fc_error_display_type = apply_filters( 'angelleye_fc_dp_error_display_type', $fc_error_display_type, $PayPalResult['RESULT'], $PayPalResult['RESPMSG'], $PayPalResult );
+                $fc_error_display_type = apply_filters( 'ae_pppf_error_user_display_message', $fc_error_display_type, $PayPalResult['RESULT'], $PayPalResult['RESPMSG'], $PayPalResult );
                 wc_add_notice( $fc_error_display_type, "error" );
 				
 				// Notice admin if has any issue from PayPal
@@ -554,8 +554,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     $message .= __( 'Order ID: ' ).$order->id ."\n";
                     $message .= __( 'Customer Name: ' ).$order->billing_first_name.' '.$order->billing_last_name."\n";
                     $message .= __( 'Customer Email: ' ).$order->billing_email."\n";
-	                $message = apply_filters( 'angelleye_fc_error_email_notify_msg', $message );
-	                $subject = apply_filters( 'angelleye_fc_error_email_notify_subject', "PayPal Pro Error Notification" );
+	                $message = apply_filters( 'ae_pppf_error_email_message', $message );
+	                $subject = apply_filters( 'ae_pppf_error_email_subject', "PayPal Pro Error Notification" );
 					wp_mail( $admin_email, $subject, $message );
 				}
 				
@@ -745,7 +745,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             if (ob_get_length()) ob_end_clean();
             return true;
         }else{
-            $fc_refund_error = apply_filters( 'angelleye_fc_refund_error', $PayPalResult['RESPMSG'], $PayPalResult );
+            $fc_refund_error = apply_filters( 'ae_pppf_refund_error_message', $PayPalResult['RESPMSG'], $PayPalResult );
             return new WP_Error( 'paypal-error', $fc_refund_error );
         }
         return false;

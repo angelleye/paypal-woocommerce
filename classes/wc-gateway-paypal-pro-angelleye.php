@@ -832,7 +832,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		
 		if(empty($PayPalResult['RAWRESPONSE']))
 		{
-            $pc_empty_response = apply_filters( 'angelleye_pc_empty_response', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult );
+            $pc_empty_response = apply_filters( 'ae_ppddp_paypal_response_empty_message', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult );
             throw new Exception( $pc_empty_response );
 		}
 		
@@ -904,8 +904,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 $message .= __( 'Customer Name: ' ).$order->billing_first_name.' '.$order->billing_last_name."\n";
                 $message .= __( 'Customer Email: ' ).$order->billing_email."\n";
 
-                $pc_error_email_message = apply_filters( 'angelleye_pc_error_email_notify_message', $message, $error_code, $long_message );
-                $pc_error_email_subject = apply_filters( 'angelleye_pc_error_email_notify_subject', "PayPal Pro Error Notification", $error_code, $long_message );
+                $pc_error_email_message = apply_filters( 'ae_ppddp_error_email_message', $message, $error_code, $long_message );
+                $pc_error_email_subject = apply_filters( 'ae_ppddp_error_email_subject', "PayPal Pro Error Notification", $error_code, $long_message );
 
 				wp_mail($admin_email, $pc_error_email_subject, $pc_error_email_message);
 			}
@@ -930,8 +930,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 $pc_display_type_notice = __('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message;
 			}
 
-            $pc_display_type_error = apply_filters( 'angelleye_pc_display_type_error', $pc_display_type_error, $error_code, $long_message );
-            $pc_display_type_notice = apply_filters( 'angelleye_pc_display_type_notice', $pc_display_type_notice, $error_code, $long_message );
+            $pc_display_type_error = apply_filters( 'ae_ppddp_error_exception', $pc_display_type_error, $error_code, $long_message );
+            $pc_display_type_notice = apply_filters( 'ae_ppddp_error_user_display_message', $pc_display_type_notice, $error_code, $long_message );
             wc_add_notice( $pc_display_type_notice , "error" );
             throw new Exception( $pc_display_type_error );
 
@@ -1048,7 +1048,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             if (ob_get_length()) ob_end_clean();
             return true;
         }else{
-            $pc_message = apply_filters( 'angelleye_pc_refund_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE'], $PayPalResult );
+            $pc_message = apply_filters( 'ae_ppddp_refund_error_message', $PayPalResult['L_LONGMESSAGE0'], $PayPalResult['L_ERRORCODE'], $PayPalResult );
             return new WP_Error( 'ec_refund-error', $pc_message );
         }
 
