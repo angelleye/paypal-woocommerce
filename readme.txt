@@ -103,7 +103,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.1.8 - =
+= 1.1.8 - 01.10.2016 =
 * Feature - Adds an option to include a billing agreement with Express Checkout, which enables the use of future reference transactions. ([#168](https://github.com/angelleye/paypal-woocommerce/issues/168))
 * Feature - Adds a product-level option for digital/virtual products to enable/disable shipping requirements in Express Checkout ([#174](https://github.com/angelleye/paypal-woocommerce/issues/174))
 * Feature - Adds a bulk edit tool to enable/disable shipping at the product level for multiple products at once. ([#175](https://github.com/angelleye/paypal-woocommerce/issues/175))
@@ -121,22 +121,17 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adds address line 2 to the Express Checkout review page when applicable. ([#371](https://github.com/angelleye/paypal-woocommerce/issues/371))
 * Tweak - Adjusts Express Checkout button on product page to handle items "sold individually" correctly. ([#208](https://github.com/angelleye/paypal-woocommerce/issues/208))
 * Tweak - Better error handling for scenarios where the PayPal response is blank for some reason. ([#274](https://github.com/angelleye/paypal-woocommerce/issues/274))
+* Tweak - Updates PayPal API version to 124.0. ([#375](https://github.com/angelleye/paypal-woocommerce/issues/375))
+* Tweak - PayPal Plus bug fixes and code improvements. ([#377](https://github.com/angelleye/paypal-woocommerce/issues/377))
+* Tweak - Adds user IP address to PayPal API error admin email notifications. ([#378](https://github.com/angelleye/paypal-woocommerce/issues/378))
+* Tweak - Clears items from cart after PayPal Plus order is completed. ([#374](https://github.com/angelleye/paypal-woocommerce/issues/374))
 * Fix - Resolves potential function name conflict with themes. ([#349](https://github.com/angelleye/paypal-woocommerce/issues/349))
 * Fix - Adjusts PayFlow request to ensure line items are passed correctly when enabled. ([#351](https://github.com/angelleye/paypal-woocommerce/issues/351))
 * Fix - Updates successful order hook to include order ID param. ([#358](https://github.com/angelleye/paypal-woocommerce/issues/358))
 * Fix - Adjustment to ensure order notes entered on WooCommerce checkout page are saved with Express Checkout orders. ([#363](https://github.com/angelleye/paypal-woocommerce/issues/363))
 * Fix - Resolves potential configuration bugs with PayPal Plus integration. ([#368](https://github.com/angelleye/paypal-woocommerce/issues/368))
 * Fix - Adjusts incorrect parameter name for the Express Checkout logo. ([#373](https://github.com/angelleye/paypal-woocommerce/issues/373))
-* Tweak - Clears items from cart after PayPal Plus order is completed. ([#374](https://github.com/angelleye/paypal-woocommerce/issues/374))
 * Fix - Resolves issues with gift wrap options. ([#341](https://github.com/angelleye/paypal-woocommerce/issues/341))
-* Tweak - Updates PayPal API version to 124.0. ([#375](https://github.com/angelleye/paypal-woocommerce/issues/375))
-* Tweak - PayPal Plus bug fixes and code improvements. ([#377](https://github.com/angelleye/paypal-woocommerce/issues/377))
-* Tweak - Adds user IP address to PayPal API error admin email notifications. ([#378](https://github.com/angelleye/paypal-woocommerce/issues/378))
-* Tweak - Allows for pricing with more than 2 decimals. ([#17]())
-* Tweak - Allows for pricing with more than 2 decimals. ([#17]())
-* Tweak - Allows for pricing with more than 2 decimals. ([#17]())
-* Tweak - Allows for pricing with more than 2 decimals. ([#17]())
-* Tweak - Allows for pricing with more than 2 decimals. ([#17]())
 
 = 1.1.7.5 - 10.26.2015 =
 * Fix - Resolves a broken setting for the cancel URL.
