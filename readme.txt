@@ -349,3 +349,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - PayPal Express Checkout
 * Feature - PayPal Website Payments Pro 3.0 (DoDirectPayment)
 * Feature - PayPal Payments Pro 2.0 (PayPal Manager / PayFlow)
+
+== Upgrade Notice ==
+
+= 1.1.8 =
+After updating, make sure to clear any caching / CDN plugins you may be using.  Also, go into the plugin's gateway settings, review everything, and click Save even if you do not make any changes..
