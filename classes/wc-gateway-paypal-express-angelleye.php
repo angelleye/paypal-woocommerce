@@ -247,15 +247,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no'
             ),
             
-            'billing_agreement_express' => array(
-                'title' => __('Billing Agreement', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('Enable billing agreement.', 'paypal-for-woocommerce'),
-                'default' => 'no',
-                'description' => __('Include a billing agreement in the PayPal payment so that you may run reference transactions for this buyer in the future.','paypal-for-woocommerce'),
-            ),
-            
-            
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
