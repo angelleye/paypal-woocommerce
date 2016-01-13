@@ -1061,6 +1061,25 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         /*
+         *   Billing Agreement Adjustments #382 
+         */
+        public static function angelleye_paypal_for_woocommerce_paypal_billing_agreement($PayPalRequestData) {
+            if (sizeof(WC()->cart->get_cart()) != 0) {
+                foreach (WC()->cart->get_cart() as $key => $value) {
+                    $_product = $value['data'];
+                    if (isset($_product->id) && !empty($_product->id) ) {
+                        $_paypal_billing_agreement = get_post_meta($_product->id, '_paypal_billing_agreement', true);
+                        if( $_paypal_billing_agreement == 'yes' ) {
+                            //$PayPalRequestData
+                        } 
+                    }
+                }
+            } 
+            return $PayPalRequestData;
+        }
+        
+        
+        /*
          *  Express Checkout - Digital / Virtual Goods - NOSHIPPING #174 
          */
         public static function angelleye_paypal_for_woocommerce_needs_shipping($SECFields) {
@@ -1083,13 +1102,21 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             return $SECFields;
         }
         
-         function angelleye_product_type_options_own($product_type){
+        
+        function angelleye_product_type_options_own($product_type){
             if( isset($product_type) && !empty($product_type) ) {
                 $product_type['no_shipping_required'] = array(
                         'id'            => '_no_shipping_required',
                         'wrapper_class' => '',
                         'label'         => __( 'No shipping required', 'paypal-for-woocommerce' ),
                         'description'   => __( 'No shipping required.', 'paypal-for-woocommerce' ),
+                        'default'       => 'no'
+                );
+                $product_type['paypal_billing_agreement'] = array(
+                        'id'            => '_paypal_billing_agreement',
+                        'wrapper_class' => '',
+                        'label'         => __( 'Enable PayPal Billing Agreement', 'paypal-for-woocommerce' ),
+                        'description'   => __( 'Enable PayPal Billing Agreement.', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
                 return $product_type;
@@ -1101,6 +1128,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         function angelleye_woocommerce_process_product_meta_own( $post_id ){
             $no_shipping_required = isset( $_POST['_no_shipping_required'] ) ? 'yes' : 'no';
             update_post_meta( $post_id, '_no_shipping_required', $no_shipping_required );
+            $_paypal_billing_agreement = isset( $_POST['_paypal_billing_agreement'] ) ? 'yes' : 'no';
+            update_post_meta( $post_id, '_paypal_billing_agreement', $_paypal_billing_agreement );
         }
         
         public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true) {
@@ -1181,8 +1210,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $errors = TRUE;
                 }
 
-
-                $pfw_bulk_action_type = ($pfw_bulk_action_type == 'enable') ? 'yes' : 'no';
+                $is_enable_value = explode("_", $pfw_bulk_action_type);
+                $is_enable = (isset($is_enable_value[0]) && $is_enable_value[0] == 'enable') ? 'yes' : 'no';
+                
+                if( $pfw_bulk_action_type == 'enable_no_shipping' || $pfw_bulk_action_type == 'disable_no_shipping' ) {
+                    $action_key = "_no_shipping_required";
+                    
+                } elseif ($pfw_bulk_action_type == 'enable_paypal_billing_agreement' || $pfw_bulk_action_type == 'disable_paypal_billing_agreement') {
+                    $action_key = "_paypal_billing_agreement";
+                }
 
                 // All Products
                 if ($pfw_bulk_action_target_type == 'all') {
@@ -1297,7 +1333,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         foreach ($products->posts as $target) {
                             $target_product_id = ( $target->post_parent != '0' ) ? $target->post_parent : $target->ID;
                             if (get_post_type($target_product_id) == 'product' && !in_array($target_product_id, $processed_product_id)) {
-                                if (!update_post_meta($target_product_id, '_no_shipping_required', $pfw_bulk_action_type)) {
+                                if (!update_post_meta($target_product_id, $action_key, $is_enable)) {
 
                                 } else {
                                     $processed_product_id[$target_product_id] = $target_product_id;

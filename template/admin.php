@@ -61,14 +61,16 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                 <form id="woocommerce_paypal-for-woocommerce_options_form_bulk_tool_shipping" autocomplete="off" action="<?php echo admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=tools'); ?>" method="post">
                     <a name="pfw-t1"></a>
                     <h3><?php echo __('Bulk Edit Tool for Products', $this->plugin_slug); ?></h3>
-                    <div><?php echo __('Select from the options below to enable / disable shipping address on multiple products at once.', $this->plugin_slug); ?></div>
+                    <div><?php echo __('Select from the options below to enable / disable No shipping required or PayPal Billing Agreement on multiple products at once.', $this->plugin_slug); ?></div>
                     <div class="angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section pfw-bulk-action-type">
                         <label for="pfw-bulk-action-type"><?php echo __('Action', $this->plugin_slug); ?></label>
                         <div>
                             <select name="pfw_bulk_action_type" id="pfw-bulk-action-type" required="required">
                                 <option value=""><?php echo __('- Select option', $this->plugin_slug); ?></option>
-                                <option value="enable"><?php echo __('Enable No shipping required', $this->plugin_slug); ?></option>
-                                <option value="disable"><?php echo __('Disable No shipping required', $this->plugin_slug); ?></option>
+                                <option value="enable_no_shipping"><?php echo __('Enable No shipping required', $this->plugin_slug); ?></option>
+                                <option value="disable_no_shipping"><?php echo __('Disable No shipping required', $this->plugin_slug); ?></option>
+                                <option value="enable_paypal_billing_agreement"><?php echo __('Enable PayPal Billing Agreement', $this->plugin_slug); ?></option>
+                                <option value="disable_paypal_billing_agreement"><?php echo __('Disable PayPal Billing Agreement', $this->plugin_slug); ?></option>
                             </select>
                         </div>
                     </div>
