@@ -103,11 +103,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'admin_menu', array( $this, 'angelleye_admin_menu_own' ) );
             add_action( 'product_type_options', array( $this, 'angelleye_product_type_options_own' ), 10, 1);
             add_action( 'woocommerce_process_product_meta', array( $this, 'angelleye_woocommerce_process_product_meta_own' ), 10, 1 );
-            add_action('admin_footer-edit.php', array( $this, 'angelleye_bulk_admin_footer'), 11);
-            add_action('load-edit.php', array( $this, 'angelleye_bulk_action' ), 11 );
-            add_action('admin_notices', array( $this, 'angelleye_bulk_admin_notices' ) );
-            add_filter( 'bulk_actions-edit-product', array( $this, 'my_custom_bulk_actions' ), 11 );
             add_filter( 'woocommerce_add_to_cart_sold_individually_quantity', array( $this, 'angelleye_woocommerce_add_to_cart_sold_individually_quantity' ), 10, 5 );
+            add_action('admin_enqueue_scripts', array( $this, 'angelleye_woocommerce_admin_enqueue_scripts' ) );
+            add_action( 'wp_ajax_pfw_ed_shipping_bulk_tool', array( $this, 'angelleye_woocommerce_pfw_ed_shipping_bulk_tool' ) );
         }
 
         /**
@@ -227,6 +225,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
             if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) && !get_user_meta($user_id, 'ignore_pp_woo') && !is_plugin_active_for_network( 'woocommerce/woocommerce.php' )) {
                 echo '<div class="error"><p>' . sprintf( __("WooCommerce PayPal Payments requires WooCommerce plugin to work normally. Please activate it or install it from <a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>here</a>. | <a href=%s>%s</a>", 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("ignore_pp_woo",0)).'"', __("Hide this notice", 'paypal-for-woocommerce') ) . '</p></div>';
+            }
+            
+            $screen = get_current_screen();
+            
+            if( $screen->id == "settings_page_paypal-for-woocommerce" ) {
+                $processed = (isset($_GET['processed']) ) ? $_GET['processed'] : FALSE;
+                if($processed) {
+                    echo '<div class="updated">';
+                    echo '<p>'. sprintf( __('Action completed; %s records processed. ', $this->plugin_slug), ($processed == 'zero') ? 0 : $processed);
+                    echo '</div>';
+                }
             }
         }
 
@@ -992,7 +1001,27 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function display_plugin_admin_page(){
-        	include_once( 'template/admin.php' );
+            // WooCommerce product categories
+            $taxonomy     = 'product_cat';
+            $orderby      = 'name';
+            $show_count   = 0;      // 1 for yes, 0 for no
+            $pad_counts   = 0;      // 1 for yes, 0 for no
+            $hierarchical = 1;      // 1 for yes, 0 for no
+            $title        = '';
+            $empty        = 0;
+
+            $args = array(
+            'taxonomy'     => $taxonomy,
+            'orderby'      => $orderby,
+            'show_count'   => $show_count,
+            'pad_counts'   => $pad_counts,
+            'hierarchical' => $hierarchical,
+            'title_li'     => $title,
+            'hide_empty'   => $empty
+            );
+
+            $product_cats = get_categories( $args );
+            include_once( 'template/admin.php' );
         }
         
         static public function curPageURL() {
@@ -1088,152 +1117,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
         
-        /**
-         * PayPal for WooCommerce bulk action for enable/disable shipping address
-         * Express Checkout - Digital / Virtual Goods - NOSHIPPING Global #175 
-         * @since    1.1.8
-         */
-        public function angelleye_bulk_admin_footer() {
-            global $post_type;
-            if($post_type == 'product') {
-            ?>
-            <script type="text/javascript">
-                jQuery(document).ready(function() {
-                    jQuery('<option>').val('enable_shipping_address_for_all_products').text('<?php _e('Enable Shipping Address for All Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('enable_shipping_address_for_all_products').text('<?php _e('Enable Shipping Address for All Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('disable_shipping_address_for_all_products').text('<?php _e('Disable Shipping Address for All Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('disable_shipping_address_for_all_products').text('<?php _e('Disable Shipping Address for All Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('enable_shipping_address_for_downloadable_products').text('<?php _e('Enable Shipping Address for Downloadable Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('enable_shipping_address_for_downloadable_products').text('<?php _e('Enable Shipping Address for Downloadable Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('disable_shipping_address_for_downloadable_products').text('<?php _e('Disable Shipping Address for Downloadable Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('disable_shipping_address_for_downloadable_products').text('<?php _e('Disable Shipping Address for Downloadable Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('enable_shipping_address_for_virtual_products').text('<?php _e('Enable Shipping Address for Virtual Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('enable_shipping_address_for_virtual_products').text('<?php _e('Enable Shipping Address for Virtual Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('disable_shipping_address_for_virtual_products').text('<?php _e('Disable Shipping Address for Virtual Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('disable_shipping_address_for_virtual_products').text('<?php _e('Disable Shipping Address for Virtual Products', 'paypal-for-woocommerce'); ?>').appendTo("select[name='action2']");
-              });
-            </script>
-            <?php
-            }
-        }
-        
-        /**
-         * Express Checkout - Digital / Virtual Goods - NOSHIPPING Global #175 
-         * @global type $post_type
-         * @global type $pagenow
-         * @since    1.1.8
-         */
-        public function angelleye_bulk_admin_notices() {
-        	global $post_type, $pagenow;
-                $enable_disable_shipping_action = array('enable_shipping_address_for_all_products', 'disable_shipping_address_for_all_products', 'enable_shipping_address_for_downloadable_products', 'disable_shipping_address_for_downloadable_products', 'enable_shipping_address_for_virtual_products', 'disable_shipping_address_for_virtual_products');
-                foreach ($enable_disable_shipping_action as $enable_disable_shipping_action_key => $enable_disable_shipping_action_value) {
-                    if($pagenow == 'edit.php' && $post_type == 'product' && isset($_REQUEST[$enable_disable_shipping_action_value])) {
-                        if ( strpos($enable_disable_shipping_action_value, 'enable' ) !== false ) {
-                            $message = sprintf( __( 'Shipping Address enabled for %s products.', 'paypal-for-woocommerce' ), number_format_i18n( $_REQUEST[$enable_disable_shipping_action_value] ) );
-                        } else {
-                            $message = sprintf( __( 'Shipping Address disabled for %s products.', 'paypal-for-woocommerce' ), number_format_i18n( $_REQUEST[$enable_disable_shipping_action_value] ) );
-                        }
-                        echo '<div class="updated"><p>'.$message.'</p></div>';
-                        break;
-                    }
-                }
-        }
-        
-        /**
-         * Express Checkout - Digital / Virtual Goods - NOSHIPPING Global #175 
-         * @return type
-         * @since    1.1.8
-         */
-        public function angelleye_bulk_action() {
-        	$wp_list_table = _get_list_table('WP_Posts_List_Table');
-	        $action = $wp_list_table->current_action();
-	        $post_ids = (isset($_REQUEST['post']) ) ? $_REQUEST['post'] : FALSE;
-	        if($post_ids) {
-	            switch ($action) {
-	                case 'enable_shipping_address_for_all_products':
-	                    $updated_count = 0;
-	                    foreach ($post_ids as $post_id) {
-	                        update_post_meta( $post_id, '_no_shipping_required', 'yes');
-	                        $updated_count++;
-	                    }
-	                    $sendback = add_query_arg(array('enable_shipping_address_for_all_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
-	                    $sendback = esc_url_raw($sendback);
-	                    break;
-	                case 'disable_shipping_address_for_all_products':
-	                    $updated_count = 0;
-	                    foreach ($post_ids as $post_id) {
-	                        update_post_meta( $post_id, '_no_shipping_required', 'no');
-	                        $updated_count++;
-	                    }
-	                    $sendback = add_query_arg(array('disable_shipping_address_for_all_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
-	                    $sendback = esc_url_raw($sendback);
-	                    break;
-	                case 'enable_shipping_address_for_downloadable_products':
-	                    $updated_count = 0;
-	                    foreach ($post_ids as $post_id) {
-	                    	$product = get_product( $post_id );
-                                if( $product->is_type( 'downloadable' ) ){
-                                    update_post_meta( $post_id, '_no_shipping_required', 'yes');
-                                    $updated_count++;
-                                }
-	                    }
-	                    $sendback = add_query_arg(array('enable_shipping_address_for_downloadable_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
-	                    $sendback = esc_url_raw($sendback);
-	                    break;
-	                case 'disable_shipping_address_for_downloadable_products':
-	                    $updated_count = 0;
-	                    foreach ($post_ids as $post_id) {
-	                    	$product = get_product( $post_id );
-                                if( $product->is_type( 'downloadable' ) ){
-                                    update_post_meta( $post_id, '_no_shipping_required', 'no');
-                                    $updated_count++;
-                                }
-	                    }
-	                    $sendback = add_query_arg(array('disable_shipping_address_for_downloadable_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
-	                    $sendback = esc_url_raw($sendback);
-	                    break;
-	                case 'enable_shipping_address_for_virtual_products':
-	                    $updated_count = 0;
-	                    foreach ($post_ids as $post_id) {
-	                    	$product = get_product( $post_id );
-                                if( $product->is_type( 'virtual' ) ){
-                                    update_post_meta( $post_id, '_no_shipping_required', 'yes');
-                                    $updated_count++;
-                                }
-	                    }
-	                    $sendback = add_query_arg(array('enable_shipping_address_for_virtual_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
-	                    $sendback = esc_url_raw($sendback);
-	                    break;
-	                case 'disable_shipping_address_for_virtual_products':
-	                   $updated_count = 0;
-	                    foreach ($post_ids as $post_id) {
-	                    	$product = get_product( $post_id );
-                                if( $product->is_type( 'virtual' ) ){
-                                    update_post_meta( $post_id, '_no_shipping_required', 'no');
-                                    $updated_count++;
-                                }
-	                    }
-	                    $sendback = add_query_arg(array('disable_shipping_address_for_virtual_products' => $updated_count, 'ids' => join(',', $post_ids)), 'edit.php?post_type=product');
-	                    $sendback = esc_url_raw($sendback);
-	                    break;
-	                default:
-	                    return;
-	            }
-	            wp_redirect($sendback);
-	            exit();
-	        }
-        }
-        
-        /**
-         * Express Checkout - Digital / Virtual Goods - NOSHIPPING Global #175 
-         * @param type $actions
-         * @return type
-         * @since    1.1.8
-         */
-        public function my_custom_bulk_actions($actions) {
-            unset($actions['edit']);
-            return $actions;
-        }
         
         /**
          * Express Checkout - Adjust button on product details page. #208 
@@ -1262,6 +1145,184 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 return $qtyone;
             }
         }
+        
+        public function angelleye_woocommerce_admin_enqueue_scripts() {
+            wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/admin.css' , __FILE__ ) );
+        }
+        
+        public function angelleye_woocommerce_pfw_ed_shipping_bulk_tool() {
+    
+            if (is_admin() && (defined('DOING_AJAX') || DOING_AJAX)) {
+
+                global $wpdb;
+
+                $processed_product_id = array();
+                $errors = FALSE;
+                $products = FALSE;
+                $product_ids = FALSE;
+                $update_count = 0;
+                $where_args['meta_query'] = array();
+                $where_args = array(
+                    'post_type' => array('product', 'product_variation'),
+                    'posts_per_page' => -1,
+                    'post_status' => 'publish',
+                    'fields' => 'id=>parent',
+                );
+
+                $pfw_bulk_action_type = ( isset($_POST["actionType"]) ) ? $_POST['actionType'] : FALSE;
+                $pfw_bulk_action_target_type = ( isset($_POST["actionTargetType"]) ) ? $_POST['actionTargetType'] : FALSE;
+                $pfw_bulk_action_target_where_type = ( isset($_POST["actionTargetWhereType"]) ) ? $_POST['actionTargetWhereType'] : FALSE;
+                $pfw_bulk_action_target_where_category = ( isset($_POST["actionTargetWhereCategory"]) ) ? $_POST['actionTargetWhereCategory'] : FALSE;
+                $pfw_bulk_action_target_where_product_type = ( isset($_POST["actionTargetWhereProductType"]) ) ? $_POST['actionTargetWhereProductType'] : FALSE;
+                $pfw_bulk_action_target_where_price_value = ( isset($_POST["actionTargetWherePriceValue"]) ) ? $_POST['actionTargetWherePriceValue'] : FALSE;
+                $pfw_bulk_action_target_where_stock_value = ( isset($_POST["actionTargetWhereStockValue"]) ) ? $_POST['actionTargetWhereStockValue'] : FALSE;
+
+                if (!$pfw_bulk_action_type || !$pfw_bulk_action_target_type) {
+                    $errors = TRUE;
+                }
+
+
+                $pfw_bulk_action_type = ($pfw_bulk_action_type == 'enable') ? 'yes' : 'no';
+
+                // All Products
+                if ($pfw_bulk_action_target_type == 'all') {
+
+                    $products = new WP_Query($where_args);
+
+                } elseif ($pfw_bulk_action_target_type == 'featured') {
+                    // Featured products
+                    array_push($where_args['meta_query'], array(
+                        'key' => '_featured',
+                        'value' => 'yes'
+                            )
+                    );
+                    $products = new WP_Query($where_args);
+
+                } elseif ($pfw_bulk_action_target_type == 'where' && $pfw_bulk_action_target_where_type) {
+
+                    // Where - By Category
+                    if ($pfw_bulk_action_target_where_type == 'category' && $pfw_bulk_action_target_where_category) {
+                        $where_args['product_cat'] = $pfw_bulk_action_target_where_category;
+                        $products = new WP_Query($where_args);
+                    } elseif ($pfw_bulk_action_target_where_type == 'product_type' && $pfw_bulk_action_target_where_product_type) {
+                        // Where - By Product type
+                        $where_args['product_type'] = $pfw_bulk_action_target_where_product_type;
+                        $products = new WP_Query($where_args);
+                    } elseif ($pfw_bulk_action_target_where_type == 'price_greater') {
+                        array_push($where_args['meta_query'], array(
+                            'key' => '_price',
+                            'value' => str_replace(",", "", number_format($pfw_bulk_action_target_where_price_value, 2)),
+                            'compare' => '>',
+                            'type' => 'DECIMAL(10,2)'
+                                )
+                        );
+                        $products = new WP_Query($where_args);
+                    } elseif ($pfw_bulk_action_target_where_type == 'price_less') {
+                        // Where - By Price - less than
+                        array_push($where_args['meta_query'], array(
+                            'key' => '_price',
+                            'value' => str_replace(",", "", number_format($pfw_bulk_action_target_where_price_value, 2)),
+                            'compare' => '<',
+                            'type' => 'DECIMAL(10,2)'
+                                )
+                        );
+                        $products = new WP_Query($where_args);
+                    } elseif ($pfw_bulk_action_target_where_type == 'stock_greater') {
+                        // Where - By Stock - greater than
+                        array_push($where_args['meta_query'], array(
+                            'key' => '_manage_stock',
+                            'value' => 'yes'
+                                )
+                        );
+                        array_push($where_args['meta_query'], array(
+                            'key' => '_stock',
+                            'value' => str_replace(",", "", number_format($pfw_bulk_action_target_where_stock_value, 0)),
+                            'compare' => '>',
+                            'type' => 'NUMERIC'
+                                )
+                        );
+                        $products = new WP_Query($where_args);
+                    } elseif ($pfw_bulk_action_target_where_type == 'stock_less') {
+                        // Where - By Stock - less than
+                        array_push($where_args['meta_query'], array(
+                            'key' => '_manage_stock',
+                            'value' => 'yes'
+                                )
+                        );
+                        array_push($where_args['meta_query'], array(
+                            'key' => '_stock',
+                            'value' => str_replace(",", "", number_format($pfw_bulk_action_target_where_stock_value, 0)),
+                            'compare' => '<',
+                            'type' => 'NUMERIC'
+                                )
+                        );
+                        $products = new WP_Query($where_args);
+                    } elseif ($pfw_bulk_action_target_where_type == 'instock') {
+                        // Where - Stock status 'instock'
+                        array_push($where_args['meta_query'], array(
+                            'key' => '_stock_status',
+                            'value' => 'instock'
+                                )
+                        );
+                        $products = new WP_Query($where_args);
+                    } elseif ($pfw_bulk_action_target_where_type == 'outofstock') {
+                        // Where - Stock status 'outofstock'
+                        array_push($where_args['meta_query'], array(
+                            'key' => '_stock_status',
+                            'value' => 'outofstock'
+                                )
+                        );
+                        $products = new WP_Query($where_args);
+                    } elseif ($pfw_bulk_action_target_where_type == 'sold_individually') {
+                        // Where - Sold Individually
+                        array_push($where_args['meta_query'], array(
+                            'key' => '_sold_individually',
+                            'value' => 'yes'
+                                )
+                        );
+                        $products = new WP_Query($where_args);
+                    }
+                } else {
+                    $errors = TRUE;
+                }
+
+                // Update posts
+                if (!$errors && $products) {
+                    if (count($products->posts) < 1) {
+                        $errors = TRUE;
+                        $update_count = 'zero';
+                        $redirect_url = admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=tools&processed=' . $update_count);
+                        echo $redirect_url;
+                    } else {
+                        foreach ($products->posts as $target) {
+                            $target_product_id = ( $target->post_parent != '0' ) ? $target->post_parent : $target->ID;
+                            if (get_post_type($target_product_id) == 'product' && !in_array($target_product_id, $processed_product_id)) {
+                                if (!update_post_meta($target_product_id, '_no_shipping_required', $pfw_bulk_action_type)) {
+
+                                } else {
+                                    $processed_product_id[$target_product_id] = $target_product_id;
+                                }
+                            }
+                        }
+                        $update_count = count($processed_product_id);
+                    }
+                }
+
+                // return
+                if (!$errors) {
+                    if ($update_count == 0) {
+                        $update_count = 'zero';
+                    }
+                    $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=tabs&processed=' . $update_count);
+                    echo $redirect_url;
+                } else {
+                    //echo 'failed';
+                }
+                die(); // this is required to return a proper result
+            }
+        }
+        
+     
     }
 }
 new AngellEYE_Gateway_Paypal();

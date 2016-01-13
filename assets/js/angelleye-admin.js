@@ -90,4 +90,139 @@ jQuery(document).ready(function ($) {
         //Open the uploader dialog
         custom_uploader.open();
     });
+    
+     // change target type -- toggle where input
+            $('#pfw-bulk-action-target-type').change(function(){
+
+                $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-category').hide();
+                $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-product-type').hide();
+                $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-price-value').hide();
+                $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-stock-value').hide();
+                $('#pfw-bulk-action-target-where-category').removeAttr('required');
+                $('#pfw-bulk-action-target-where-product-type').removeAttr('required');
+                $('#pfw-bulk-action-target-where-price-value').removeAttr('required');
+                $('#pfw-bulk-action-target-where-stock-value').removeAttr('required');
+
+                if(  $(this).val() == 'where' )
+                {
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-type').show();
+                    $('#pfw-bulk-action-target-where-type').attr('required', 'required');
+                }
+                else
+                {
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-type').hide();
+                    $('#pfw-bulk-action-target-where-type').removeAttr('required');
+                }
+            });
+
+            // change target where type -- toggle categories/value inputs
+            $('#pfw-bulk-action-target-where-type').change(function(){
+                if(  $(this).val() == 'category' )
+                {
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-category').show();
+                    $('#pfw-bulk-action-target-where-category').attr('required', 'required');
+
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-product-type').hide();
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-price-value').hide();
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-stock-value').hide();
+                    $('#pfw-bulk-action-target-where-product-type').removeAttr('required');
+                    $('#pfw-bulk-action-target-where-price-value').removeAttr('required');
+                    $('#pfw-bulk-action-target-where-stock-value').removeAttr('required');
+                }
+                else if(  $(this).val() == 'product_type' )
+                {
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-product-type').show();
+                    $('#pfw-bulk-action-target-where-product-type').attr('required', 'required');
+
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-category').hide();
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-price-value').hide();
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-stock-value').hide();
+                    $('#pfw-bulk-action-target-where-category').removeAttr('required');
+                    $('#pfw-bulk-action-target-where-price-value').removeAttr('required');
+                    $('#pfw-bulk-action-target-where-stock-value').removeAttr('required');
+                }
+                else
+                {
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-category').hide();
+                    $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-product-type').hide();
+                    $('#pfw-bulk-action-target-where-category').removeAttr('required');
+                    $('#pfw-bulk-action-target-where-product-type').removeAttr('required');
+
+                    if(  $(this).val() == 'price_greater' || $(this).val() == 'price_less' )
+                    {
+                        $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-price-value').show();
+                        $('#pfw-bulk-action-target-where-price-value').attr('required', 'required');
+
+                        $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-stock-value').hide();
+                        $('#pfw-bulk-action-target-where-stock-value').removeAttr('required');
+                    }
+                    else if(  $(this).val() == 'stock_greater' || $(this).val() == 'stock_less' )
+                    {
+                        $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-price-value').hide();
+                        $('#pfw-bulk-action-target-where-price-value').removeAttr('required');
+
+                        $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-stock-value').show();
+                        $('#pfw-bulk-action-target-where-stock-value').attr('required', 'required');
+                    }
+                    else
+                    {
+                        $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-price-value').hide();
+                        $('#pfw-bulk-action-target-where-price-value').removeAttr('required');
+
+                        $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-stock-value').hide();
+                        $('#pfw-bulk-action-target-where-stock-value').removeAttr('required');
+                    }
+                }
+            });
+
+            // AJAX - Bulk enable/disable tool
+            $('#woocommerce_paypal-for-woocommerce_options_form_bulk_tool_shipping').submit(function()
+            {
+                // show processing status
+                $('#bulk-enable-tool-submit').attr('disabled', 'disabled');
+                $('#bulk-enable-tool-submit').removeClass('button-primary');
+                $('#bulk-enable-tool-submit').html('<i class="ofwc-spinner"></i> Processing, please wait...');
+                $('#bulk-enable-tool-submit i.spinner').show();
+
+                var actionType = $('#pfw-bulk-action-type').val();
+                var actionTargetType = $('#pfw-bulk-action-target-type').val();
+                var actionTargetWhereType = $('#pfw-bulk-action-target-where-type').val();
+                var actionTargetWhereCategory = $('#pfw-bulk-action-target-where-category').val();
+                var actionTargetWhereProductType = $('#pfw-bulk-action-target-where-product-type').val();
+                var actionTargetWherePriceValue = $('#pfw-bulk-action-target-where-price-value').val();
+                var actionTargetWhereStockValue = $('#pfw-bulk-action-target-where-stock-value').val();
+
+                var data = {
+                    'action': 'pfw_ed_shipping_bulk_tool',
+                    'actionType': actionType,
+                    'actionTargetType': actionTargetType,
+                    'actionTargetWhereType': actionTargetWhereType,
+                    'actionTargetWhereCategory': actionTargetWhereCategory,
+                    'actionTargetWhereProductType': actionTargetWhereProductType,
+                    'actionTargetWherePriceValue': actionTargetWherePriceValue,
+                    'actionTargetWhereStockValue': actionTargetWhereStockValue,
+                };
+
+                // post it
+                $.post(ajaxurl, data, function(response) {
+                    if ( 'failed' !== response )
+                    {
+                        var redirectUrl = response;
+
+                        /** Debug **/
+                        //console.log(redirectUrl);
+                        //return false;
+
+                        top.location.replace(redirectUrl);
+                        return true;
+                    }
+                    else
+                    {
+                        alert('Error updating records.');
+                        return false;
+                    }
+                });
+                /*End Post*/
+                return false;
+            });
 });
