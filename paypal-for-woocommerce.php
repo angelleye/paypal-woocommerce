@@ -1200,14 +1200,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $products = FALSE;
                 $product_ids = FALSE;
                 $update_count = 0;
-                $where_args['meta_query'] = array();
                 $where_args = array(
                     'post_type' => array('product', 'product_variation'),
                     'posts_per_page' => -1,
                     'post_status' => 'publish',
                     'fields' => 'id=>parent',
                 );
-
+                $where_args['meta_query'] = array();
                 $pfw_bulk_action_type = ( isset($_POST["actionType"]) ) ? $_POST['actionType'] : FALSE;
                 $pfw_bulk_action_target_type = ( isset($_POST["actionTargetType"]) ) ? $_POST['actionTargetType'] : FALSE;
                 $pfw_bulk_action_target_where_type = ( isset($_POST["actionTargetWhereType"]) ) ? $_POST['actionTargetWhereType'] : FALSE;
