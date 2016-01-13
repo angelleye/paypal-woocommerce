@@ -1070,7 +1070,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     if (isset($_product->id) && !empty($_product->id) ) {
                         $_paypal_billing_agreement = get_post_meta($_product->id, '_paypal_billing_agreement', true);
                         if( $_paypal_billing_agreement == 'yes' ) {
-                            //$PayPalRequestData
+                            $BillingAgreements = array();
+                            $Item = array(
+                                'l_billingtype' => '', // Required.  Type of billing agreement.  For recurring payments it must be RecurringPayments.  You can specify up to ten billing agreements.  For reference transactions, this field must be either:  MerchantInitiatedBilling, or MerchantInitiatedBillingSingleSource
+                                'l_billingtype' => 'MerchantInitiatedBilling', // Required.  Type of billing agreement.  For recurring payments it must be RecurringPayments.  You can specify up to ten billing agreements.  For reference transactions, this field must be either:  MerchantInitiatedBilling, or MerchantInitiatedBillingSingleSource
+                                'l_billingagreementdescription' => '', // Required for recurring payments.  Description of goods or services associated with the billing agreement.
+                                'l_paymenttype' => '', // Specifies the type of PayPal payment you require for the billing agreement.  Any or IntantOnly
+                                'l_paymenttype' => 'Any', // Specifies the type of PayPal payment you require for the billing agreement.  Any or IntantOnly
+                                'l_billingagreementcustom' => ''     // Custom annotation field for your own use.  256 char max.
+                            );
+                             array_push($BillingAgreements, $Item);
+                            $PayPalRequestData['BillingAgreements'] = $BillingAgreements;
                         } 
                     }
                 }

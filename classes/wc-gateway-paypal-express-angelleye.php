@@ -1530,26 +1530,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'l_billingagreementcustom' => ''     // Custom annotation field for your own use.  256 char max.
         );
 
-        array_push($BillingAgreements, $Item);
-		if (isset($pp_settings['billing_agreement_express']) && ($pp_settings['billing_agreement_express'] == 'yes')) {
-	        $PayPalRequestData = array(
-	            'SECFields' => $SECFields,
-	            'SurveyChoices' => $SurveyChoices,
-	            'Payments' => $Payments,
-	                //'BuyerDetails' => $BuyerDetails,
-	                //'ShippingOptions' => $ShippingOptions,
-	                'BillingAgreements' => $BillingAgreements,
-	        );
-		} else {
-			$PayPalRequestData = array(
+        
+        $PayPalRequestData = array(
             'SECFields' => $SECFields,
             'SurveyChoices' => $SurveyChoices,
             'Payments' => $Payments,
-                //'BuyerDetails' => $BuyerDetails,
-                //'ShippingOptions' => $ShippingOptions,
-               // 'BillingAgreements' => $BillingAgreements,
-        	);
-		}
+
+       	);
+	
+       $PayPalRequestData = AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_paypal_billing_agreement($PayPalRequestData);
+
+        
+			
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->SetExpressCheckout($PayPalRequestData);
