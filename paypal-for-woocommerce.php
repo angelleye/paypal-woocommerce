@@ -33,7 +33,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR')) {
 /**
  * Set global parameters
  */
-global $woocommerce, $pp_settings, $pp_pro, $pp_payflow, $wp_version;
+global $woocommerce, $pp_settings, $pp_pro, $pp_payflow, $wp_version, $paypal_plus;
 
 /**
  * Get Settings
@@ -44,6 +44,7 @@ if (substr(get_option("woocommerce_default_country"),0,2) != 'US') {
 }
 $pp_pro     = get_option('woocommerce_paypal_pro_settings');
 $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
+$paypal_plus = get_option('woocommerce_paypal_plus_settings');
 
 
 if(!class_exists('AngellEYE_Gateway_Paypal')){
@@ -77,7 +78,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'plugins_loaded', array($this, 'init'));
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
-            add_action( 'wp_enqueue_scripts', array($this, 'frontend_scripts'), 12 );
+            add_action( 'wp_enqueue_scripts', array($this, 'frontend_scripts'), 100 );
             add_action( 'admin_notices', array($this, 'admin_notices') );
             add_action( 'admin_init', array($this, 'set_ignore_tag'));
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
@@ -299,7 +300,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * @return void
          */
         function frontend_scripts() {
-            global $pp_settings;
+            global $pp_settings, $paypal_plus;
             wp_register_script( 'angelleye_frontend', plugins_url( '/assets/js/angelleye-frontend.js' , __FILE__ ), array( 'jquery' ), WC_VERSION, true );
             $translation_array = array(
                 'is_product' => is_product()? "yes" : "no",
@@ -337,6 +338,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     'checkout_url'              => esc_url(add_query_arg( 'action', 'woocommerce_checkout', WC()->ajax_url() )),
                     'is_checkout'               => 1
                 ) ) );
+            }
+            
+            if ( is_checkout() ) {
+                if ( wp_script_is( 'storefront-sticky-payment', 'enqueued' ) && ( isset($paypal_plus['enabled']) && $paypal_plus['enabled'] == 'yes' ) ) {
+                    wp_dequeue_script( 'storefront-sticky-payment' );
+                }
             }
         }
 
