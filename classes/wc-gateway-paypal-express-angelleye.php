@@ -1009,6 +1009,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (!defined('WOOCOMMERCE_CHECKOUT'))
                     define('WOOCOMMERCE_CHECKOUT', true);
                 WC()->cart->calculate_totals();
+                
+                if (sizeof(WC()->cart->get_cart()) == 0 || empty(WC()->session->TOKEN)) {
+                    $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
+                    $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
+                    wc_add_notice($ec_confirm_message, "error");
+                    wp_redirect(get_permalink(wc_get_page_id('cart')));
+                    exit();
+                } 
+                
+                $paid_order_id = $this->angelleye_prevent_duplicate_payment_request(WC()->session->TOKEN);
+                
+                if( $paid_order_id ) {
+                    $ms = sprintf(__('Sorry, A successful transaction has already been completed for this token. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
+                    $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
+                    wc_add_notice($ec_confirm_message, "error");
+                    wp_redirect(get_permalink(wc_get_page_id('cart')));
+                    exit();
+                } 
+                
                 $order_id = WC()->checkout()->create_order();
 
                 do_action( 'woocommerce_checkout_order_processed', $order_id, array() );
@@ -1162,7 +1181,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $giftreceiptenable = strtolower($this->get_session('giftreceiptenable')) == 'true' ? 'true' : 'false';
                         update_post_meta($order_id, 'giftreceiptenable', $giftreceiptenable);
                     }
-
+                
+                    update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
+                    
+                    $this->remove_session('TOKEN');
                     $order->add_order_note(__('PayPal Express payment completed', 'paypal-for-woocommerce') .
                             ' ( Response Code: ' . $result['ACK'] . ", " .
                             ' TransactionID: ' . $result['PAYMENTINFO_0_TRANSACTIONID'] . ' )');
@@ -1511,16 +1533,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'l_shippingoptionamount' => ''      // Shipping option amount.  Required if specifying the Callback URL.
         );
         array_push($ShippingOptions, $Option);
-		global $pp_settings, $pp_pro, $pp_payflow;
-        $BillingAgreements = array();
-		
-        $Item = array(
-            'l_billingtype' => 'MerchantInitiatedBilling', // Required.  Type of billing agreement.  For recurring payments it must be RecurringPayments.  You can specify up to ten billing agreements.  For reference transactions, this field must be either:  MerchantInitiatedBilling, or MerchantInitiatedBillingSingleSource
-            'l_billingagreementdescription' => '', // Required for recurring payments.  Description of goods or services associated with the billing agreement.
-            'l_paymenttype' => 'Any', // Specifies the type of PayPal payment you require for the billing agreement.  Any or IntantOnly
-            'l_billingagreementcustom' => ''     // Custom annotation field for your own use.  256 char max.
-        );
-
+	global $pp_settings, $pp_pro, $pp_payflow;
         
         $PayPalRequestData = array(
             'SECFields' => $SECFields,
@@ -1530,9 +1543,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
        	);
 	
        $PayPalRequestData = AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_paypal_billing_agreement($PayPalRequestData);
-
-        
-			
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->SetExpressCheckout($PayPalRequestData);
@@ -1586,6 +1596,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
             $ec_cgsd_message = apply_filters('angelleye_get_shipping_ec_message', $ms);
             wc_add_notice($ec_cgsd_message, "error");
+            wp_redirect(get_permalink(wc_get_page_id('cart')));
+            exit();
         }
 
         /*
@@ -1826,7 +1838,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          * Error handling
          */
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
-            $this->remove_session('TOKEN');
+           // $this->remove_session('TOKEN');
         }
 
         /*
@@ -2188,5 +2200,32 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      */
     function get_user_ip() {
         return (isset($_SERVER['HTTP_X_FORWARD_FOR']) && !empty($_SERVER['HTTP_X_FORWARD_FOR'])) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
+    }
+    
+    public function angelleye_prevent_duplicate_payment_request($token) {
+        if( isset($token) && !empty($token) ) {
+            $args = array(
+                'post_type' => 'shop_order',
+                'post_status' => 'any',
+                'meta_query' => array(
+                    array(
+                        'key' => '_express_checkout_token',
+                        'value' => $token,
+                        'compare' => '='
+                    )
+                )
+            );
+
+            $posts = get_posts($args);
+            if ( ! empty( $posts ) && ( isset($posts[0]->ID) && !empty($posts[0]->ID) ) ) {
+                $this->add_log('...Prevented Duplicate Request: A successful transaction has already been completed for this token, Order ID: ' . print_r($posts[0]->ID, true));
+                return $posts[0]->ID;
+            } else {
+                return false;
+            }
+            
+        } else {
+            return false;
+        }
     }
 }
