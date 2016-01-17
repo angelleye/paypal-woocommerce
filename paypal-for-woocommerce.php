@@ -792,12 +792,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $Item = array(
                         'name' => $item['name'], // Item name. 127 char max.
                         'desc' => '', // Item description. 127 char max.
-                        'amt' => round( $item['line_subtotal'] / $qty, 2 ), // Cost of item.
+                        'amt' => self::round( $item['line_subtotal'] / $qty), // Cost of item.
                         'number' => $sku, // Item number.  127 char max.
                         'qty' => $qty, // Item qty on order.  Any positive integer.
                     );
                     array_push($PaymentOrderItems, $Item);
-                    $ITEMAMT += round( $item['line_subtotal'] / $qty, 2 ) * $qty;
+                    $ITEMAMT += self::round( $item['line_subtotal'] / $qty ) * $qty;
                 }
 
                 /**
@@ -807,7 +807,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $Item = array(
                         'name' => $fee->name, // Item name. 127 char max.
                         'desc' => '', // Item description. 127 char max.
-                        'amt' => number_format($fee->amount, 2, '.', ''), // Cost of item.
+                        'amt' => self::number_format($fee->amount, 2, '.', ''), // Cost of item.
                         'number' => $fee->id, // Item number. 127 char max.
                         'qty' => 1, // Item qty on order. Any positive integer.
                     );
@@ -819,9 +819,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                      */
                     if ($Item['number'] != 'gift-wrap') {
                         array_push($PaymentOrderItems, $Item);
-                        $ITEMAMT += round($fee->amount, 2);
+                        $ITEMAMT += self::round($fee->amount);
                     } else {
-                        $giftwrapamount = round($fee->amount, 2);
+                        $giftwrapamount = self::round($fee->amount);
                     }
 
                     $ctr++;
@@ -836,7 +836,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                     'name' => 'Cart Discount',
                                     'number' => $code,
                                     'qty' => '1',
-                                    'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                                    'amt' => '-' . self::number_format(WC()->cart->coupon_discount_amounts[$code])
                                 );
                                 array_push($PaymentOrderItems, $Item);
                             }
@@ -849,7 +849,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                     'name' => 'Order Discount',
                                     'number' => $code,
                                     'qty' => '1',
-                                    'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                                    'amt' => '-' . self::number_format(WC()->cart->coupon_discount_amounts[$code])
                                 );
                                 array_push($PaymentOrderItems, $Item);
                             }
@@ -860,7 +860,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                             $Item = array(
                                 'name'      => 'Total Discount',
                                 'qty'       => 1,
-                                'amt'       => - number_format($order->get_total_discount(), 2, '.', ''),
+                                'amt'       => - self::number_format($order->get_total_discount()),
                                 'number'    => implode(", ", $order->get_used_coupons())
                             );
                             array_push($PaymentOrderItems, $Item);
@@ -874,10 +874,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                 'name' => 'Cart Discount',
                                 'qty' => '1',
                                 'number'=> $code,
-                                'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                                'amt' => '-' . self::number_format(WC()->cart->coupon_discount_amounts[$code])
                             );
                             array_push($PaymentOrderItems, $Item);
-                            $total_discount -= number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
+                            $total_discount -= self::number_format(WC()->cart->coupon_discount_amounts[$code]);
                         }
 
                     }
@@ -889,10 +889,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                     'name' => 'Order Discount',
                                     'qty' => '1',
                                     'number'=> $code,
-                                    'amt' => '-' . number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '')
+                                    'amt' => '-' . self::number_format(WC()->cart->coupon_discount_amounts[$code])
                                 );
                                 array_push($PaymentOrderItems, $Item);
-                                $total_discount -= number_format(WC()->cart->coupon_discount_amounts[$code], 2, '.', '');
+                                $total_discount -= self::number_format(WC()->cart->coupon_discount_amounts[$code]);
                             }
 
                         }
@@ -903,15 +903,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
 
             if( $tax > 0) {
-                $tax = number_format($tax, 2, '.', '');
+                $tax = self::number_format($tax);
             }
 
             if( $shipping > 0) {
-                $shipping = number_format($shipping, 2, '.', '');
+                $shipping = self::number_format($shipping);
             }
 
             if( $total_discount ) {
-                $total_discount = round($total_discount, 2);
+                $total_discount = self::round($total_discount);
             }
 
             if (empty($ITEMAMT)) {
@@ -923,7 +923,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
                 $Payment['itemamt'] = $order_total - $tax - $shipping - $giftwrapamount;
             } else {
-                $Payment['itemamt'] = number_format($ITEMAMT + $total_discount, 2, '.', '');
+                $Payment['itemamt'] = self::number_format($ITEMAMT + $total_discount);
             }
 
 
@@ -931,7 +931,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
              * Set tax
              */
             if ($tax > 0) {
-                $Payment['taxamt'] = number_format($tax, 2, '.', '');       // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
+                $Payment['taxamt'] = self::number_format($tax);       // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
             } else {
                 $Payment['taxamt'] = 0;
             }
@@ -940,7 +940,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
              * Set shipping
              */
             if ($shipping > 0) {
-                $Payment['shippingamt'] = number_format($shipping, 2, '.', '');      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+                $Payment['shippingamt'] = self::number_format($shipping);      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
             } else {
                 $Payment['shippingamt'] = 0;
             }
@@ -948,18 +948,18 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $Payment['order_items'] = $PaymentOrderItems;
 
             // Rounding amendment
-            if (trim(number_format($order_total, 2, '.', '')) !== trim(number_format($Payment['itemamt'] + $giftwrapamount + $tax + $shipping, 2, '.', ''))) {
+            if (trim(self::number_format($order_total)) !== trim(self::number_format($Payment['itemamt'] + $giftwrapamount + $tax + $shipping))) {
                 $diffrence_amount = AngellEYE_Gateway_Paypal::get_diffrent($order_total, $Payment['itemamt'] + $tax + $shipping);
                 if($shipping > 0) {
-                    $Payment['shippingamt'] = number_format($shipping + $diffrence_amount, 2, '.', '');
+                    $Payment['shippingamt'] = self::number_format($shipping + $diffrence_amount);
                 } elseif ($tax > 0) {
-                    $Payment['taxamt'] = number_format($tax + $diffrence_amount, 2, '.', '');
+                    $Payment['taxamt'] = self::number_format($tax + $diffrence_amount);
                 } else {
                     //make change to itemamt
-                    $Payment['itemamt'] = number_format($Payment['itemamt'] + $diffrence_amount, 2, '.', '');
+                    $Payment['itemamt'] = self::number_format($Payment['itemamt'] + $diffrence_amount);
                     //also make change to the first item
                     if ($send_items) {
-                        $Payment['order_items'][0]['amt'] =  number_format($Payment['order_items'][0]['amt'] + $diffrence_amount / $Payment['order_items'][0]['qty'], 2, '.', '');
+                        $Payment['order_items'][0]['amt'] = self::number_format($Payment['order_items'][0]['amt'] + $diffrence_amount / $Payment['order_items'][0]['qty']);
                     }
 
                 }
@@ -1390,6 +1390,55 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 die(); // this is required to return a proper result
             }
         }
+        
+        /**
+         * @since    1.1.8.1
+         * Non-decimal currency bug..?? #384 
+         * Check if currency has decimals
+         * @param type $currency
+         * @return boolean
+         */
+        public static function currency_has_decimals( $currency ) {
+		if ( in_array( $currency, array( 'HUF', 'JPY', 'TWD' ) ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+        /**
+         * @since    1.1.8.1
+         * Non-decimal currency bug..?? #384 
+         * Round prices
+         * @param type $price
+         * @return type
+         */
+	public static function round( $price ) {
+		$precision = 2;
+
+		if ( !self::currency_has_decimals( get_woocommerce_currency() ) ) {
+			$precision = 0;
+		}
+
+		return round( $price, $precision );
+	}
+
+        /**
+         * @since    1.1.8.1
+         * Non-decimal currency bug..?? #384 
+         * Round prices
+         * @param type $price
+         * @return type
+         */
+	public static function number_format( $price ) {
+		$decimals = 2;
+
+		if ( !self::currency_has_decimals( get_woocommerce_currency() ) ) {
+			$decimals = 0;
+		}
+
+		return number_format( $price, $decimals, '.', '' );
+	}
         
      
     }

@@ -700,7 +700,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 								);
 							
 		$PaymentDetails = array(
-								'amt' => number_format( $order->get_total(), 2, '.', '' ), 							// Required.  Total amount of order, including shipping, handling, and tax.  
+								'amt' => AngellEYE_Gateway_Paypal::number_format( $order->get_total() ), 							// Required.  Total amount of order, including shipping, handling, and tax.  
 								'currencycode' => get_woocommerce_currency(), 					// Required.  Three-letter currency code.  Default is USD.
 								'insuranceamt' => '', 					// Total shipping insurance costs for this order.  
 								'shipdiscamt' => '0.00', 					// Shipping discount for the order, specified as a negative number.
@@ -764,7 +764,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 array_push($OrderItems, $Item);
             }
 
-            $PaymentDetails['itemamt'] = number_format( $order->get_total(), 2, '.', '' );
+            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format( $order->get_total() );
         } else {
             /**
              * Shipping/tax/item amount
@@ -1011,7 +1011,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             'payerid' => '', 								// Encrypted PayPal customer account ID number.  Note:  Either transaction ID or payer ID must be specified.  127 char max
             'invoiceid' => '', 								// Your own invoice tracking number.
             'refundtype' => $order->get_total() == $amount ? 'Full' : 'Partial', 							// Required.  Type of refund.  Must be Full, Partial, or Other.
-            'amt' => number_format( $amount, 2, '.', '' ), 									// Refund Amt.  Required if refund type is Partial.
+            'amt' => AngellEYE_Gateway_Paypal::number_format( $amount ), 									// Refund Amt.  Required if refund type is Partial.
             'currencycode' => $order->get_order_currency(), 							// Three-letter currency code.  Required for Partial Refunds.  Do not use for full refunds.
             'note' => $reason,  									// Custom memo about the refund.  255 char max.
             'retryuntil' => '', 							// Maximum time until you must retry the refund.  Note:  this field does not apply to point-of-sale transactions.
