@@ -1249,6 +1249,21 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                             )
                     );
                     $products = new WP_Query($where_args);
+                } elseif($pfw_bulk_action_target_type == 'downloadable_or_virtual') {
+                    // downloadable or virtual products.
+                    array_push($where_args['meta_query'], array(
+                        'relation' => 'OR',
+                        array( 
+                            'key'           => '_downloadable',
+                            'value'         => 'yes'
+                        ),
+                        array( 
+                            'key'           => '_virtual',
+                            'value'         => 'yes'
+                        )
+                    ));
+                    
+                    $products = new WP_Query($where_args);
 
                 } elseif ($pfw_bulk_action_target_type == 'where' && $pfw_bulk_action_target_where_type) {
 

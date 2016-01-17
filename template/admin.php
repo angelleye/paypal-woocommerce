@@ -81,6 +81,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                                 <option value=""><?php echo __('- Select option', $this->plugin_slug); ?></option>
                                 <option value="all"><?php echo __('All products', $this->plugin_slug); ?></option>
                                 <option value="featured"><?php echo __('Featured products', $this->plugin_slug); ?></option>
+                                <option value="downloadable_or_virtual"><?php echo __('downloadable or virtual', $this->plugin_slug); ?></option>
                                 <option value="where"><?php echo __('Where...', $this->plugin_slug); ?></option>
                             </select>
                         </div>
