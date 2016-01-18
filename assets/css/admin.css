@@ -33,3 +33,9 @@ and open the template in the editor.
     line-height: 24px;
     margin: 0 0 0 4px !important;
 }
+#plugin-icon-paypal-for-woocommerce {
+    background-image: url("//ps.w.org/paypal-for-woocommerce/assets/icon-128x128.png?rev=1145851");
+    background-size: 128px 128px;
+    height: 128px;
+    width: 128px;
+}

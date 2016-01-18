@@ -184,13 +184,19 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     wp_die( "<strong>".$plugin_data['Name']."</strong> requires <strong>WooCommerce</strong> plugin to work normally. Please activate it or install it from <a href=\"http://wordpress.org/plugins/woocommerce/\" target=\"_blank\">here</a>.<br /><br />Back to the WordPress <a href='".get_admin_url(null, 'plugins.php')."'>Plugins page</a>." );
                 }
             }
+            
             $user_id = $current_user->ID;
+            
             /* If user clicks to ignore the notice, add that to their user meta */
             $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_ppplus_check');
-            foreach ($notices as $notice)
+            
+            foreach ($notices as $notice) {
                 if ( isset($_GET[$notice]) && '0' == $_GET[$notice] ) {
                     add_user_meta($user_id, $notice, 'true', true);
+                    $set_ignore_tag_url =  remove_query_arg( $notice );
+                    wp_redirect($set_ignore_tag_url);
                 }
+            }
         }
 
         function admin_notices() {
@@ -557,13 +563,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Donate function
          */
         function donate_message() {
-            if (@$_GET['page']=='wc-settings' && @$_GET['tab']=='checkout' && in_array( @$_GET['section'], array('wc_gateway_paypal_express_angelleye', 'wc_gateway_paypal_pro_angelleye', 'wc_gateway_paypal_pro_payflow_angelleye')) && !get_user_meta(get_current_user_id(), 'ignore_pp_donate') ) {
+            if (@$_GET['page']=='wc-settings' && @$_GET['tab']=='checkout' && in_array( @$_GET['section'], array('wc_gateway_paypal_express_angelleye', 'wc_gateway_paypal_pro_angelleye', 'wc_gateway_paypal_pro_payflow_angelleye', 'wc_gateway_paypal_plus_angelleye')) && !get_user_meta(get_current_user_id(), 'ignore_pp_donate') ) {
                 ?>
-                <div class="updated donation">
-                    <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA"><img style="float:left;margin-right:10px;" src="https://www.angelleye.com/images/paypal-for-woocommerce/donate-button.png" border="0" alt="PayPal - The safer, easier way to pay online!"></a>
-                    <p>We are learning why it is difficult to provide, support, and maintain free software. Every little bit helps and is greatly appreciated. </p>
+                <div class="updated welcome-panel notice" id="paypal-for-woocommerce-donation">
+                    <div style="float:left; margin: 19px 16px 19px 0;" id="plugin-icon-paypal-for-woocommerce" ></div>
+                    <h3>PayPal for WooCommerce</h3>
+                    <p class="donation_text">We are learning why it is difficult to provide, support, and maintain free software. Every little bit helps and is greatly appreciated.</p>
                     <p>Developers, join us on <a href="https://github.com/angelleye/paypal-woocommerce" target="_blank">GitHub</a>. Pull Requests are welcomed!</p>
-                    <a style="float:right;" href="<?php echo esc_url(add_query_arg("ignore_pp_donate",0));?>">x <?php echo __("Hide", 'paypal-for-woocommerce');?></a>
+                    <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA"><img style="float:left;margin-right:10px;" src="https://www.angelleye.com/images/paypal-for-woocommerce/donate-button.png" border="0" alt="PayPal - The safer, easier way to pay online!"></a>
+                    <a class="welcome-panel-close" href="<?php echo esc_url( add_query_arg( array( 'ignore_pp_donate' => '0' ) ) ); ?>"><?php _e( 'Dismiss' ); ?></a>
                     <div style="clear:both"></div>
                 </div>
             <?php
