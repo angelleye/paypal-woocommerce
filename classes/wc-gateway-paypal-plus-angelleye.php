@@ -490,7 +490,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         $patchReplace->setOp('replace')
                 ->setPath('/transactions/0/amount')
                 ->setValue(json_decode('{
-                    "total": "' . number_format($order->get_total(), 2, '.', '') . '",
+                    "total": "' . AngellEYE_Gateway_Paypal::number_format($order->get_total()) . '",
                     "currency": "' . get_woocommerce_currency() . '",
                     "details": {
                         "subtotal": "' . $PaymentData['itemamt'] . '",

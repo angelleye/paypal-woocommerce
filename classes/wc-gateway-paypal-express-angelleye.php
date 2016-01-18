@@ -618,7 +618,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 WC()->cart->calculate_totals();
                 //$paymentAmount    = WC()->cart->get_total();
-                $paymentAmount = number_format(WC()->cart->total, 2, '.', '');
+                $paymentAmount = AngellEYE_Gateway_Paypal::number_format(WC()->cart->total);
 
                 //Check if review order page is exist, otherwise re-create it on the fly
                 $review_order_page_url = get_permalink(wc_get_page_id('review_order'));
@@ -1316,7 +1316,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($this->gift_wrap_enabled == 'yes') {
             $maxAmount = $paymentAmount * 2;
             $maxAmount = $maxAmount + $this->gift_wrap_amount;
-            $maxAmount = number_format($maxAmount, 2, '.', '');
+            $maxAmount = AngellEYE_Gateway_Paypal::number_format($maxAmount);
         } else {
             $maxAmount = '';
         }
@@ -1409,7 +1409,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         $Payments = array();
         $Payment = array(
-            'amt' => number_format(WC()->cart->total, 2, '.', ''), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
+            'amt' => AngellEYE_Gateway_Paypal::number_format(WC()->cart->total), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
             'currencycode' => get_woocommerce_currency(), // A three-character currency code.  Default is USD.
             'shippingamt' => '', // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
             'shippingdiscamt' => '', // Shipping discount for this order, specified as a negative number.
@@ -1729,7 +1729,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         $Payments = array();
         $Payment = array(
-            'amt' => number_format($FinalPaymentAmt, 2, '.', ''), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
+            'amt' => AngellEYE_Gateway_Paypal::number_format($FinalPaymentAmt), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
             'currencycode' => get_woocommerce_currency(), // A three-character currency code.  Default is USD.
             'shippingdiscamt' => '', // Total shipping discount for this order, specified as a negative number.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays the string 'Yes' and the insurance amount.  If true, the total shipping insurance for this order must be a positive number.
@@ -2101,7 +2101,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'payerid' => '', // Encrypted PayPal customer account ID number.  Note:  Either transaction ID or payer ID must be specified.  127 char max
             'invoiceid' => '', // Your own invoice tracking number.
             'refundtype' => $order->get_total() == $amount ? 'Full' : 'Partial', // Required.  Type of refund.  Must be Full, Partial, or Other.
-            'amt' => number_format($amount, 2, '.', ''), // Refund Amt.  Required if refund type is Partial.
+            'amt' => AngellEYE_Gateway_Paypal::number_format($amount), // Refund Amt.  Required if refund type is Partial.
             'currencycode' => $order->get_order_currency(), // Three-letter currency code.  Required for Partial Refunds.  Do not use for full refunds.
             'note' => $reason, // Custom memo about the refund.  255 char max.
             'retryuntil' => '', // Maximum time until you must retry the refund.  Note:  this field does not apply to point-of-sale transactions.
