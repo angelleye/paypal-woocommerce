@@ -1151,15 +1151,29 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true) {
             if( isset( $PayPalResult['CURL_ERROR'] ) ){
-                if($error_email_notify == true) {
-                    $admin_email = get_option("admin_email");
-                    $message = __( $methos_name . " call failed." , "paypal-for-woocommerce" )."\n\n";
-                    $message .= __( 'Error Code: 0' ,'paypal-for-woocommerce' ) . "\n";
-                    $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $PayPalResult['CURL_ERROR'];
-                    wp_mail($admin_email, $gateway . " Error Notification",$message);
+                try {
+                        if($error_email_notify == true) {
+                            $admin_email = get_option("admin_email");
+                            $message = __( $methos_name . " call failed." , "paypal-for-woocommerce" )."\n\n";
+                            $message .= __( 'Error Code: 0' ,'paypal-for-woocommerce' ) . "\n";
+                            $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $PayPalResult['CURL_ERROR'];
+                            wp_mail($admin_email, $gateway . " Error Notification",$message);
+                        }
+                        
+                        $display_error = "There was a communication issue with PayPal's server. Please try again.";
+                        
+                        throw new Exception( __( $display_error, 'woocommerce' ) );
+                        
+                        wp_redirect(get_permalink(wc_get_page_id('cart')));
+                        exit;
+                        
+                } catch ( Exception $e ) {
+                    if ( ! empty( $e ) ) {
+                        wc_add_notice( $e->getMessage(), 'error' );
+                        wp_redirect(get_permalink(wc_get_page_id('cart')));
+                        exit;
+                    }
                 }
-                $display_error = "There was a communication issue with PayPal's server. Please try again.";
-                throw new Exception( __( $display_error, 'paypal-for-woocommerce' ));
             }
         }
         
