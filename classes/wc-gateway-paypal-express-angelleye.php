@@ -1078,7 +1078,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 
                 //Set POST data from SESSION
                 $checkout_form_post_data = maybe_unserialize($this->get_session('checkout_form_post_data'));
-                $_POST = $checkout_form_post_data;
+                if( isset($checkout_form_post_data) && !empty($checkout_form_post_data) ) {
+                    $_POST = $checkout_form_post_data;
+                }
                 do_action('woocommerce_checkout_update_user_meta', $this->customer_id, $checkout_form_data);
                 do_action( 'woocommerce_checkout_update_order_meta', $order_id, $checkout_form_data );
 

@@ -135,8 +135,8 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
     </div><!-- /.col2-set -->
 
     <?php do_action( 'angelleye_review_order_after_customer_details' );?>
-
 <?php endif; ?>
+    <?php do_action( 'woocommerce_after_order_notes', WC()->checkout() ); ?>
 <?php if ( $show_act ): ?>
     <script type="text/javascript">
         jQuery(document).ready(function(){
