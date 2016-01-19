@@ -95,7 +95,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
-
+        
         if ($this->enabled == 'yes' && ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both'))
             add_action('woocommerce_before_checkout_form', array($this, 'checkout_message'), 5);
         add_action('woocommerce_ppe_do_payaction', array($this, 'get_confirm_order'));
@@ -935,7 +935,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $create_user_name = $o_username . $append;
                         $append ++;
                     }
-
                     //If have any issue, redirect to review-order page
                     $create_acc_error = false;
                     if (empty($_POST['email']) || !is_email($_POST['email'])) {
@@ -1076,6 +1075,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 //save PayPal email
                 update_post_meta($order_id, 'paypal_email', $this->get_session('payeremail'));
+                
+                //Set POST data from SESSION
+                $checkout_form_post_data = maybe_unserialize($this->get_session('checkout_form_post_data'));
+                $_POST = $checkout_form_post_data;
+                do_action('woocommerce_checkout_update_user_meta', $this->customer_id, $checkout_form_data);
+                do_action( 'woocommerce_checkout_update_order_meta', $order_id, $checkout_form_data );
 
                 if ((isset($this->billing_address) && $this->billing_address =='yes' ) || (empty($checkout_form_data['billing_country']))) {
                     $checkout_form_data = array();
@@ -1083,7 +1088,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (isset($checkout_form_data) && !empty($checkout_form_data)) {
                     foreach ($checkout_form_data as $key => $value) {
                         if (strpos($key, 'billing_') !== false && !empty($value) && !is_array($value)) {
-                        	if($checkout_form_data['ship_to_different_address'] == false) {
+                        	if( isset($checkout_form_data['ship_to_different_address']) && $checkout_form_data['ship_to_different_address'] == false) {
                         		$shipping_key = str_replace('billing_', 'shipping_', $key);
                         		update_user_meta($this->customer_id, $shipping_key, $value);
                         		update_post_meta($order_id, '_'.$shipping_key, $value);
@@ -1095,10 +1100,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             update_post_meta($order_id, '_'.$key, $value);
                         }
                     }
-                    //Set POST data from SESSION
-                    $_POST = $checkout_form_data;
-                    do_action('woocommerce_checkout_update_user_meta', $this->customer_id, $checkout_form_data);
-                    do_action( 'woocommerce_checkout_update_order_meta', $order_id, $checkout_form_data );
                 } else {
                 	update_post_meta($order_id, '_shipping_first_name', isset($shipping_first_name) ? $shipping_first_name : '');
 	                update_post_meta($order_id, '_shipping_last_name', isset($shipping_last_name) ? $shipping_last_name : '');
@@ -1202,6 +1203,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     //add hook
                     do_action('woocommerce_checkout_order_processed', $order_id);
                     unset(WC()->session->checkout_form);
+                    unset(WC()->session->checkout_form_post_data);
 
                     // Empty the Cart
                     WC()->cart->empty_cart();

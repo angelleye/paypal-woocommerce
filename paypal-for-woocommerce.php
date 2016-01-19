@@ -107,6 +107,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_add_to_cart_sold_individually_quantity', array( $this, 'angelleye_woocommerce_add_to_cart_sold_individually_quantity' ), 10, 5 );
             add_action('admin_enqueue_scripts', array( $this, 'angelleye_woocommerce_admin_enqueue_scripts' ) );
             add_action( 'wp_ajax_pfw_ed_shipping_bulk_tool', array( $this, 'angelleye_woocommerce_pfw_ed_shipping_bulk_tool' ) );
+            add_action( 'woocommerce_checkout_process', array( $this, 'angelleye_paypal_express_checkout_process_checkout_fields' ) );
         }
 
         /**
@@ -1462,6 +1463,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 		return number_format( $price, $decimals, '.', '' );
 	}
         
+        public function angelleye_paypal_express_checkout_process_checkout_fields() {
+            $this->set_session('checkout_form_post_data', serialize($_POST));
+        }
+        
+        private function set_session($key, $value) {
+            WC()->session->$key = $value;
+        }
      
     }
 }
