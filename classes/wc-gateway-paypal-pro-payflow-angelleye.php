@@ -64,8 +64,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
             'refunds'
         );
 
-		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
-
 		/* 1.6.6 */
 		add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
 
@@ -77,19 +75,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
             $this->log = new WC_Logger();
         $this->log->add( 'paypal_payflow', $message );
     }
-	/**
-	 * payment_scripts function.
-	 *
-	 * @access public
-	 */
-	function payment_scripts() {
-
-		if ( ! is_checkout() )
-			return;
-
-		wp_enqueue_style( 'wc-paypal-pro', plugins_url( 'assets/css/checkout.css', dirname( __FILE__ ) ) );
-		wp_enqueue_script( 'card-type-detection', plugins_url( 'assets/js/card-type-detection.min.js', dirname( __FILE__ ) ), 'jquery', '1.0.0', true );
-	}
+	
 	/**
      * Initialise Gateway Settings Form Fields
      */
