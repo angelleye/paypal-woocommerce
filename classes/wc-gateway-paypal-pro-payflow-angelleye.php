@@ -597,7 +597,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				<span id="paypal_pro_payflow_card_type_image"></span>
 			</p>
 			<p class="form-row form-row-first validate-required">
-				<label for="paypal_pro_payflow_card_expiration"><?php _e( "Expiry date <small>(MMYY)</small>", "wc_paypal_pro" ) ?></label>
+				<label for="paypal_pro_payflow_card_expiration"><?php _e( "Expiration Date <small>(MMYY)</small>", "wc_paypal_pro" ) ?></label>
 				<input type="text" class="input-text" placeholder="MMYY" name="paypal_pro_payflow_card_expiration" id="paypal_pro_payflow_card_expiration" size="4" maxlength="4" max="1299" min="0100" pattern="[0-9]+" />
 			</p>
 			<p class="form-row form-row-last validate-required">
