@@ -20,7 +20,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->testurl				= 'https://api-3t.sandbox.paypal.com/nvp';
         $this->liveurl_3ds			= 'https://paypal.cardinalcommerce.com/maps/txns.asp';
         $this->testurl_3ds			= 'https://centineltest.cardinalcommerce.com/maps/txns.asp';
-        $this->avaiable_card_types 	= apply_filters( 'woocommerce_paypal_pro_avaiable_card_types', array(
+        $this->available_card_types 	= apply_filters( 'woocommerce_paypal_pro_available_card_types', array(
             'GB' => array(
                 'Visa' 			=> 'Visa',
                 'MasterCard' 	=> 'MasterCard',
@@ -109,7 +109,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         }
         // Maestro
         if ( ! $this->enable_3dsecure ) {
-            unset( $this->avaiable_card_types['GB']['Maestro'] );
+            unset( $this->available_card_types['GB']['Maestro'] );
         }
         // Logs
         if ( $this->debug )
@@ -289,7 +289,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'AUD', 'CAD', 'CZK', 'DKK', 'EUR', 'HUF', 'JPY', 'NOK', 'NZD', 'PLN', 'GBP', 'SGD', 'SEK', 'CHF', 'USD' ) ) ) ) return false;
             // Required fields check
             if (!$this->api_username || !$this->api_password || !$this->api_signature) return false;
-            return isset($this->avaiable_card_types[WC()->countries->get_base_country()]);
+            return isset($this->available_card_types[WC()->countries->get_base_country()]);
         endif;
         return false;
     }
@@ -306,98 +306,124 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
     /**
      * Payment form on checkout page
      */
-    function payment_fields() {
-        $available_cards = $this->avaiable_card_types[WC()->countries->get_base_country()];
+    public function payment_fields() {
+     
         do_action( 'before_angelleye_pc_payment_fields', $this );
-        ?>
-        <?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE/SANDBOX ENABLED', 'paypal-for-woocommerce'); ?></p><?php endif; ?>
-        <?php if ($this->description) : ?><p><?php echo $this->description; ?></p><?php endif; ?>
-        <fieldset>
-            <p class="form-row form-row-first">
-                <label for="paypal_pro_cart_number"><?php _e("Credit Card number", 'paypal-for-woocommerce') ?> <span class="required">*</span></label>
-                <input type="text" class="input-text" name="paypal_pro_card_number" />
-            </p>
-            <p class="form-row form-row-last">
-                <label for="paypal_pro_cart_type"><?php _e("Card type", 'paypal-for-woocommerce') ?> <span class="required">*</span></label>
-                <select id="paypal_pro_card_type" name="paypal_pro_card_type" class="woocommerce-select">
-                    <?php foreach ($available_cards as $card => $label) : ?>
-                    <option value="<?php echo $card ?>"><?php echo $label; ?></option>
-                        <?php endforeach; ?>
-                </select>
-            </p>
-            <div class="clear"></div>
-            <p class="form-row form-row-first">
-                <label for="cc-expire-month"><?php _e("Expiration date", 'paypal-for-woocommerce') ?> <span class="required">*</span></label>
-                <select name="paypal_pro_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month">
-                    <option value=""><?php _e('Month', 'paypal-for-woocommerce') ?></option>
-                    <?php
-                    $months = array();
-                    for ($i = 1; $i <= 12; $i++) :
-                        $timestamp = mktime(0, 0, 0, $i, 1);
-                        $months[date('n', $timestamp)] = date_i18n( _x( 'F', 'Month Names', 'paypal-for-woocommerce' ), $timestamp );
-                    endfor;
-                    foreach ($months as $num => $name) printf('<option value="%u">%s</option>', $num, $name);
-                    ?>
-                </select>
-                <select name="paypal_pro_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year">
-                    <option value=""><?php _e('Year', 'paypal-for-woocommerce') ?></option>
-                    <?php
-                    for ($i = date('y'); $i <= date('y') + 15; $i++) printf('<option value="%u">20%u</option>', $i, $i);
-                    ?>
-                </select>
-            </p>
-            <p class="form-row form-row-last">
-                <label for="paypal_pro_card_csc"><?php _e("Card security code", 'paypal-for-woocommerce') ?> <span class="required">*</span></label>
-                <input type="text" class="input-text" id="paypal_pro_card_csc" name="paypal_pro_card_csc" maxlength="4" style="width:4em;" />
-                <span class="help paypal_pro_card_csc_description"></span>
-            </p>
-            <div class="clear"></div>
-        </fieldset>
-    <?php
+        
+        if ( $this->description ) {
+            echo '<p>' . wp_kses_post( $this->description ) . ( $this->testmode ? ' ' . __( 'TEST/SANDBOX MODE ENABLED. In test mode, you can use the card number 4007000000027 with any CVC and a valid expiration date.  Note that you will get a faster processing result if you use a card from your developer\'s account.', 'woocommerce-gateway-paypal-pro' ) : '' ) . '</p>';
+	}
+
+        $fields = array();
+
+        if ( isset( $this->available_card_types[ WC()->countries->get_base_country() ]['Maestro'] ) ) {
+                $fields = array(
+                        'card-number-field' => '<p class="form-row form-row-first">
+                                <label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Card Number', 'woocommerce' ) . ' <span class="required">*</span></label>
+                                <input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
+                        </p>',
+                        'card-expiry-field' => '<p class="form-row form-row-last">
+                                <label for="' . esc_attr( $this->id ) . '-card-expiry">' . __( 'Expiry (MM/YY)', 'woocommerce' ) . ' <span class="required">*</span></label>
+                                <input id="' . esc_attr( $this->id ) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . esc_attr__( 'MM / YY', 'woocommerce' ) . '" name="' . $this->id . '-card-expiry' . '" />
+                        </p>',
+                        'card-cvc-field' => '<p class="form-row form-row-first">
+                                <label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card Code', 'woocommerce' ) . ' <span class="required">*</span></label>
+                                <input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__( 'CVC', 'woocommerce' ) . '" name="' . $this->id . '-card-cvc' . '" />
+                        </p>',
+                        'card-startdate-field' => '<p class="form-row form-row-last">
+                                <label for="' . esc_attr( $this->id ) . '-card-startdate">' . __( 'Start Date (MM/YY)', 'woocommerce-gateway-paypal-pro' ) . '</label>
+                                <input id="' . esc_attr( $this->id ) . '-card-startdate" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . __( 'MM / YY', 'woocommerce-gateway-paypal-pro' ) . '" name="' . $this->id . '-card-startdate' . '" />
+                        </p>'
+                );
+        }
+
+        $this->credit_card_form( array(), $fields );
+        
         do_action( 'after_angelleye_pc_payment_fields', $this );
+        
     }
+    
+    
     /**
-     * Validate the payment form
+     * Format and get posted details
+     * @return object
      */
-    function validate_fields() {
-        $card_type 			= isset($_POST['paypal_pro_card_type']) ? wc_clean($_POST['paypal_pro_card_type']) : '';
-        $card_number 		= isset($_POST['paypal_pro_card_number']) ? wc_clean($_POST['paypal_pro_card_number']) : '';
-        $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? wc_clean($_POST['paypal_pro_card_csc']) : '';
-        $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? wc_clean($_POST['paypal_pro_card_expiration_month']) : '';
-        $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? wc_clean($_POST['paypal_pro_card_expiration_year']) : '';
+    private function get_posted_card() {
+            $card_number    = isset( $_POST['paypal_pro-card-number'] ) ? wc_clean( $_POST['paypal_pro-card-number'] ) : '';
+            $card_cvc       = isset( $_POST['paypal_pro-card-cvc'] ) ? wc_clean( $_POST['paypal_pro-card-cvc'] ) : '';
+            $card_expiry    = isset( $_POST['paypal_pro-card-expiry'] ) ? wc_clean( $_POST['paypal_pro-card-expiry'] ) : '';
 
-        do_action( 'before_angelleye_pro_checkout_validate_fields', $card_type, $card_number, $card_csc, $card_exp_month, $card_exp_year );
+            // Format values
+            $card_number    = str_replace( array( ' ', '-' ), '', $card_number );
+            $card_expiry    = array_map( 'trim', explode( '/', $card_expiry ) );
+            $card_exp_month = str_pad( $card_expiry[0], 2, "0", STR_PAD_LEFT );
+            $card_exp_year  = isset( $card_expiry[1] ) ? $card_expiry[1] : '';
 
-        // Check card security code
-        if (!ctype_digit($card_csc)) :
-            wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'), "error");
-            return false;
-        endif;
-        if ((strlen($card_csc) != 3 && in_array($card_type, array('Visa', 'MasterCard', 'Discover'))) || (strlen($card_csc) != 4 && $card_type == 'AmEx')) :
-            wc_add_notice(__('Card security code is invalid (wrong length)', 'paypal-for-woocommerce'), "error");
-            return false;
-        endif;
-        // Check card expiration data
-        if (
-            !ctype_digit($card_exp_month) ||
-            !ctype_digit($card_exp_year) ||
-            $card_exp_month > 12 ||
-            $card_exp_month < 1 ||
-            $card_exp_year < date('y') ||
-            $card_exp_year > date('y') + 20
-        ) :
-            wc_add_notice(__('Card expiration date is invalid', 'paypal-for-woocommerce'), "error");
-            return false;
-        endif;
-        // Check card number
-        $card_number = str_replace(array(' ', '-'), '', $card_number);
-        if (empty($card_number) || !ctype_digit($card_number)) :
-            wc_add_notice(__('Card number is invalid', 'paypal-for-woocommerce'), "error");
-            return false;
-        endif;
-        do_action( 'after_angelleye_pro_checkout_validate_fields', $card_type, $card_number, $card_csc, $card_exp_month, $card_exp_year );
-        return true;
+            if ( isset( $_POST['paypal_pro-card-start'] ) ) {
+                    $card_start       = wc_clean( $_POST['paypal_pro-card-start'] );
+                    $card_start       = array_map( 'trim', explode( '/', $card_start ) );
+                    $card_start_month = str_pad( $card_start[0], 2, "0", STR_PAD_LEFT );
+                    $card_start_year  = $card_start[1];
+            } else {
+                    $card_start_month = '';
+                    $card_start_year  = '';
+            }
+
+            if ( strlen( $card_exp_year ) == 2 ) {
+                    $card_exp_year += 2000;
+            }
+
+            if ( strlen( $card_start_year ) == 2 ) {
+                    $card_start_year += 2000;
+            }
+
+            return (object) array(
+                    'number'      => $card_number,
+                    'type'        => '',
+                    'cvc'         => $card_cvc,
+                    'exp_month'   => $card_exp_month,
+                    'exp_year'    => $card_exp_year,
+                    'start_month' => $card_start_month,
+                    'start_year'  => $card_start_year
+            );
     }
+
+    public function validate_fields() {
+        try {
+                $card = $this->get_posted_card();
+                do_action( 'before_angelleye_pro_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year );
+                if ( empty( $card->exp_month ) || empty( $card->exp_year ) ) {
+                        throw new Exception( __( 'Card expiration date is invalid', 'woocommerce-gateway-paypal-pro' ) );
+                }
+
+                // Validate values
+                if ( ! ctype_digit( $card->cvc ) ) {
+                        throw new Exception( __( 'Card security code is invalid (only digits are allowed)', 'woocommerce-gateway-paypal-pro' ) );
+                }
+
+                if (
+                        ! ctype_digit( $card->exp_month ) ||
+                        ! ctype_digit( $card->exp_year ) ||
+                        $card->exp_month > 12 ||
+                        $card->exp_month < 1 ||
+                        $card->exp_year < date( 'y' )
+                ) {
+                        throw new Exception( __( 'Card expiration date is invalid', 'woocommerce-gateway-paypal-pro' ) );
+                }
+
+                if ( empty( $card->number ) || ! ctype_digit( $card->number ) ) {
+                        throw new Exception( __( 'Card number is invalid', 'woocommerce-gateway-paypal-pro' ) );
+                }
+                do_action( 'after_angelleye_pro_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year );
+                return true;
+
+        } catch( Exception $e ) {
+                wc_add_notice( $e->getMessage(), 'error' );
+                return false;
+        }
+    }    
+        
+    
     /**
      * Process the payment
      */
@@ -407,20 +433,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $order = new WC_Order( $order_id );
         if ( $this->debug )
             $this->log->add( 'paypal-pro', 'Processing order #' . $order_id );
-        $card_type 			= isset($_POST['paypal_pro_card_type']) ? wc_clean($_POST['paypal_pro_card_type']) : '';
-        $card_number 		= isset($_POST['paypal_pro_card_number']) ? wc_clean($_POST['paypal_pro_card_number']) : '';
-        $card_csc 			= isset($_POST['paypal_pro_card_csc']) ? wc_clean($_POST['paypal_pro_card_csc']) : '';
-        $card_exp_month		= isset($_POST['paypal_pro_card_expiration_month']) ? wc_clean($_POST['paypal_pro_card_expiration_month']) : '';
-        $card_exp_year 		= isset($_POST['paypal_pro_card_expiration_year']) ? wc_clean($_POST['paypal_pro_card_expiration_year']) : '';
-        // Format card expiration data
-        $card_exp_month = (int) $card_exp_month;
-        if ($card_exp_month < 10) :
-            $card_exp_month = '0'.$card_exp_month;
-        endif;
-        $card_exp_year = (int) $card_exp_year;
-        $card_exp_year += 2000;
-        // Format card number
-        $card_number = str_replace(array(' ', '-'), '', $card_number);
+             
+        $card  = $this->get_posted_card();
+        
+        
         /**
          * 3D Secure Handling
          */
@@ -453,9 +469,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 }
             }
             // Payer Authentication specific fields
-            $centinelClient->add('CardNumber', $card_number);
-            $centinelClient->add('CardExpMonth', $card_exp_month);
-            $centinelClient->add('CardExpYear', $card_exp_year);
+            $centinelClient->add('CardNumber', $card->number);
+            $centinelClient->add('CardExpMonth', $card->exp_month);
+            $centinelClient->add('CardExpYear', $card->exp_year);
             // Send request
             $centinelClient->sendHttp($this->centinel_url, "5000", "15000");
             // Save response in session
@@ -489,11 +505,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                         <input type="hidden" name="PaReq" value="<?php echo $_SESSION["Centinel_Payload"]; ?>">
                         <input type="hidden" name="TermUrl" value="<?php echo $_SESSION['Centinel_TermUrl']; ?>">
                         <input type="hidden" name="MD" value="<?php echo urlencode(serialize(array(
-                            'card' 				=> $card_number,
-                            'type' 				=> $card_type,
-                            'csc'				=> $card_csc,
-                            'card_exp_month' 	=> $card_exp_month,
-                            'card_exp_year' 	=> $card_exp_year
+                            'card' 				=> $card->number,
+                            'type' 				=> $card->type,
+                            'csc'				=> $card->cvc,
+                            'card_exp_month' 	=> $card->exp_month,
+                            'card_exp_year' 	=> $card->exp_year
                         ))); ?>">
                         <noscript>
                             <div class="woocommerce_message"><?php _e('Processing your Payer Authentication Transaction', 'paypal-for-woocommerce'); ?> - <?php _e('Please click Submit to continue the processing of your transaction.', 'paypal-for-woocommerce'); ?>  <input type="submit" class="button" id="3ds_submit" value="Submit" /></div>
@@ -512,7 +528,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                     return;
                 } else {
                     // Customer not-enrolled, so just carry on with PayPal process
-                    return $this->do_payment( $order, $card_number, $card_type, $card_exp_month, $card_exp_year, $card_csc, '', $_SESSION['Centinel_Enrolled'], '', $_SESSION["Centinel_EciFlag"], '' );
+                    return $this->do_payment( $order, $card->number, $card->type, $card->exp_month, $card->exp_year, $card->cvc, '', $_SESSION['Centinel_Enrolled'], '', $_SESSION["Centinel_EciFlag"], '' );
                 }
             } else {
                 $pc_3d_secure_authentication = apply_filters( 'angelleye_pc_process_payment_authentication', __('Error in 3D secure authentication: ', 'paypal-for-woocommerce') . $_SESSION['Centinel_ErrorNo'], $_SESSION['Centinel_ErrorNo'] );
@@ -521,7 +537,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             }
         }
         // Do payment with paypal
-        return $this->do_payment( $order, $card_number, $card_type, $card_exp_month, $card_exp_year, $card_csc );
+        return $this->do_payment( $order, $card->number, $card->type, $card->exp_month, $card->exp_year, $card->cvc );
     }
     function authorise_3dsecure() {
         if ( ! session_id() )

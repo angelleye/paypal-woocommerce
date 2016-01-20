@@ -268,12 +268,29 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
 		$order = new WC_Order( $order_id );
 
-		$card_number = ! empty( $_POST['paypal_pro_payflow_card_number']) ? str_replace( array( ' ', '-' ), '', wc_clean( $_POST['paypal_pro_payflow_card_number'] ) ) : '';
-		$card_csc    = ! empty( $_POST['paypal_pro_payflow_card_csc']) ? wc_clean( $_POST['paypal_pro_payflow_card_csc'] ) : '';
-		$card_exp    = ! empty( $_POST['paypal_pro_payflow_card_expiration']) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration'] ) : '';
+//		$card_number = ! empty( $_POST['paypal_pro_payflow_card_number']) ? str_replace( array( ' ', '-' ), '', wc_clean( $_POST['paypal_pro_payflow_card_number'] ) ) : '';
+//		$card_csc    = ! empty( $_POST['paypal_pro_payflow_card_csc']) ? wc_clean( $_POST['paypal_pro_payflow_card_csc'] ) : '';
+//		$card_exp    = ! empty( $_POST['paypal_pro_payflow_card_expiration']) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration'] ) : '';
+//                
+                
+                $card_number    = isset( $_POST['paypal_pro_payflow-card-number'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-number'] ) : '';
+                $card_cvc       = isset( $_POST['paypal_pro_payflow-card-cvc'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-cvc'] ) : '';
+                $card_expiry    = isset( $_POST['paypal_pro_payflow-card-expiry'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-expiry'] ) : '';
+
+                // Format values
+                $card_number    = str_replace( array( ' ', '-' ), '', $card_number );
+                $card_expiry    = array_map( 'trim', explode( '/', $card_expiry ) );
+                $card_exp_month = str_pad( $card_expiry[0], 2, "0", STR_PAD_LEFT );
+                $card_exp_year  = $card_expiry[1];
+
+                if ( strlen( $card_exp_year ) == 4 ) {
+                        $card_exp_year = $card_exp_year - 2000;
+                }
+                        
+                        
 
 		// Do payment with paypal
-		return $this->do_payment( $order, $card_number, $card_exp, $card_csc );
+		return $this->do_payment( $order, $card_number, $card_exp_month . $card_exp_year, $card_cvc );
 	}
 
 	/**
@@ -572,87 +589,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         }	
 	}
 
-	/**
-     * Payment form on checkout page
-     */
-	function payment_fields() {
-        do_action( 'angelleye_before_fc_payment_fields', $this );
-		if ( $this->description ) {
-			echo '<p>';
-			if ( $this->testmode == 'yes' )
-				echo __('TEST MODE/SANDBOX ENABLED', 'paypal-for-woocommerce') . ' ';
-			echo $this->description;
-			echo '</p>';
-		}
-		?>
-        <style type="text/css">
-            #paypal_pro_payflow_card_type_image {
-                background: url(<?php echo $this->icon; ?>) no-repeat 32px 0;
+        
+        public function payment_fields() {
+            do_action( 'angelleye_before_fc_payment_fields', $this );
+            if ( $this->description ) {
+                echo '<p>' . $this->description . ( $this->testmode ? ' ' . __( 'TEST/SANDBOX MODE ENABLED. In test mode, you can use the card number 4111111111111111 with any CVC and a valid expiration date.', 'woocommerce-gateway-paypal-pro' ) : '' ) . '</p>';
             }
-        </style>
-		<fieldset class="paypal_pro_credit_card_form">
-			<p class="form-row form-row-wide validate-required paypal_pro_payflow_card_number_wrap">
-				<label for="paypal_pro_payflow_card_number"><?php _e( "Card number", "wc_paypal_pro" ) ?></label>
-				<input type="text" class="input-text" name="paypal_pro_payflow_card_number" id="paypal_pro_payflow_card_number" pattern="[0-9]{12,19}" />
-				<span id="paypal_pro_payflow_card_type_image"></span>
-			</p>
-			<p class="form-row form-row-first validate-required">
-				<label for="paypal_pro_payflow_card_expiration"><?php _e( "Expiration Date <small>(MMYY)</small>", "wc_paypal_pro" ) ?></label>
-				<input type="text" class="input-text" placeholder="MMYY" name="paypal_pro_payflow_card_expiration" id="paypal_pro_payflow_card_expiration" size="4" maxlength="4" max="1299" min="0100" pattern="[0-9]+" />
-			</p>
-			<p class="form-row form-row-last validate-required">
-				<label for="paypal_pro_payflow_card_csc"><?php _e( "Card security code", "wc_paypal_pro" ) ?></label>
-				<input type="text" class="input-text" id="paypal_pro_payflow_card_csc" name="paypal_pro_payflow_card_csc" maxlength="4" size="4" pattern="[0-9]+" />
-			</p>
-			<div class="clear"></div>
-			<?php /*<p class="form-row form-row-wide">
-				<label for="paypal_pro_payflow_card_type"><?php _e( "Card type", 'paypal-for-woocommerce' ) ?></label>
-				<select id="paypal_pro_payflow_card_type" name="paypal_pro_payflow_card_type" class="woocommerce-select">
-					<?php foreach ( $available_cards as $card => $label ) : ?>
-								<option value="<?php echo $card ?>"><?php echo $label; ?></options>
-					<?php endforeach; ?>
-					<option value="other"><?php _e( 'Other', 'woocommerce' ); ?></options>
-				</select>
-			</p>*/ ?>
-		</fieldset>
-		<?php
-
-        wc_enqueue_js( "
-			/*jQuery('body').bind('updated_checkout', function() {
-				jQuery('#paypal_pro_payflow_card_type').parent().hide(); // Use JS detection if JS enabled
-			});*/
-
-			jQuery('form.checkout, #order_review').on( 'keyup change blur', '#paypal_pro_payflow_card_number', function() {
-				var csc = jQuery('#paypal_pro_payflow_card_csc').parent();
-				var card_number = jQuery('#paypal_pro_payflow_card_number').val();
-
-				jQuery('#paypal_pro_payflow_card_type_image').attr('class', '');
-
-				if ( is_valid_card( card_number ) ) {
-
-					var card_type = get_card_type( card_number );
-
-					if ( card_type ) {
-						jQuery('#paypal_pro_payflow_card_type_image').addClass( card_type );
-
-						if ( card_type == 'visa' || card_type == 'amex' || card_type == 'discover' || card_type == 'mastercard' || card_type == 'jcb' ) {
-							csc.show();
-						} else {
-							csc.hide();
-						}
-
-						//jQuery('#paypal_pro_payflow_card_type').val(card_type);
-					} else {
-						//jQuery('#paypal_pro_payflow_card_type').val('other');
-					}
-
-					jQuery('#paypal_pro_payflow_card_number').parent().addClass('woocommerce-validated').removeClass('woocommerce-invalid');
-				} else {
-					jQuery('#paypal_pro_payflow_card_number').parent().removeClass('woocommerce-validated').addClass('woocommerce-invalid');
-				}
-			}).change();
-		" );
-        do_action( 'angelleye_after_fc_payment_fields', $this );
+            $this->credit_card_form();
+            do_action( 'angelleye_after_fc_payment_fields', $this );
 	}
 
 
@@ -759,18 +703,25 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
      */
     public function validate_fields() {
 
-        $card_number = !empty($_POST['paypal_pro_payflow_card_number']) ? str_replace(array(' ', '-'), '', wc_clean($_POST['paypal_pro_payflow_card_number'])) : '';
-        $card_csc = !empty($_POST['paypal_pro_payflow_card_csc']) ? wc_clean($_POST['paypal_pro_payflow_card_csc']) : '';
-        $card_exp = !empty($_POST['paypal_pro_payflow_card_expiration']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration']) : '';
+        $card_number    = isset( $_POST['paypal_pro_payflow-card-number'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-number'] ) : '';
+        $card_cvc       = isset( $_POST['paypal_pro_payflow-card-cvc'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-cvc'] ) : '';
+        $card_expiry    = isset( $_POST['paypal_pro_payflow-card-expiry'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-expiry'] ) : '';
 
-        $card_exp_month = substr($card_exp, 0, 2);
-        $card_exp_year = substr($card_exp, 2, 2);
+        // Format values
+        $card_number    = str_replace( array( ' ', '-' ), '', $card_number );
+        $card_expiry    = array_map( 'trim', explode( '/', $card_expiry ) );
+        $card_exp_month = str_pad( $card_expiry[0], 2, "0", STR_PAD_LEFT );
+        $card_exp_year  = $card_expiry[1];
 
-        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_csc, $card_exp);
+        if ( strlen( $card_exp_year ) == 4 ) {
+                $card_exp_year = $card_exp_year - 2000;
+        }
+
+        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_expiry);
 
         // Check card security code
 
-        if (!ctype_digit($card_csc)) {
+        if (!ctype_digit($card_cvc)) {
             wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'), "error");
             return false;
         }
@@ -784,14 +735,12 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
         // Check card number
 
-        $card_number = str_replace(array(' ', '-'), '', $card_number);
-
         if (empty($card_number) || !ctype_digit($card_number)) {
             wc_add_notice(__('Card number is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         }
 
-        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_csc, $card_exp);
+        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_expiry);
 
         return true;
     }
