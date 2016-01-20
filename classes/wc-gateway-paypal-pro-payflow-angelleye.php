@@ -581,7 +581,23 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             if ( $this->description ) {
                 echo '<p>' . $this->description . ( $this->testmode ? ' ' . __( 'TEST/SANDBOX MODE ENABLED. In test mode, you can use the card number 4111111111111111 with any CVC and a valid expiration date.', 'woocommerce-gateway-paypal-pro' ) : '' ) . '</p>';
             }
-            $this->credit_card_form();
+            
+            $default_fields = array(
+			'card-number-field' => '<p class="form-row form-row-wide">
+				<label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Credit Card number', 'woocommerce' ) . ' <span class="required">*</span></label>
+				<input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
+			</p>',
+			'card-expiry-field' => '<p class="form-row form-row-first">
+				<label for="' . esc_attr( $this->id ) . '-card-expiry">' . __( 'Expiration date (MM/YY)', 'woocommerce' ) . ' <span class="required">*</span></label>
+				<input id="' . esc_attr( $this->id ) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . esc_attr__( 'MM / YY', 'woocommerce' ) . '" name="' .  $this->id . '-card-expiry' . '" />
+			</p>',
+			'card-cvc-field' => '<p class="form-row form-row-last">
+				<label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card security code', 'woocommerce' ) . ' <span class="required">*</span></label>
+				<input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__( 'CVC', 'woocommerce' ) . '" name="' .  $this->id . '-card-cvc' . '" />
+			</p>'
+		);
+            
+            $this->credit_card_form( array(), $default_fields );
             do_action( 'angelleye_after_fc_payment_fields', $this );
 	}
 
