@@ -322,12 +322,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                                 <label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Credit Card number', 'woocommerce' ) . ' <span class="required">*</span></label>
                                 <input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
                         </p>',
-                        'card-expiry-field' => '<p class="form-row form-row-last">
-                                <label for="' . esc_attr( $this->id ) . '-card-expiry">' . __( 'Expiration date (MM/YY)', 'woocommerce' ) . ' <span class="required">*</span></label>
-                                <input id="' . esc_attr( $this->id ) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . esc_attr__( 'MM / YY', 'woocommerce' ) . '" name="' . $this->id . '-card-expiry' . '" />
-                        </p>',
+                        'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox(),
                         'card-cvc-field' => '<p class="form-row form-row-first">
-                                <label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card security code', 'woocommerce' ) . ' <span class="required">*</span></label>
+                                <label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card Code', 'woocommerce' ) . ' <span class="required">*</span></label>
                                 <input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__( 'CVC', 'woocommerce' ) . '" name="' . $this->id . '-card-cvc' . '" />
                         </p>',
                         'card-startdate-field' => '<p class="form-row form-row-last">
@@ -341,12 +338,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 				<label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Credit Card number', 'woocommerce' ) . ' <span class="required">*</span></label>
 				<input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' .  $this->id . '-card-number' . '" />
 			</p>',
-			'card-expiry-field' => '<p class="form-row form-row-first">
-				<label for="' . esc_attr( $this->id ) . '-card-expiry">' . __( 'Expiration date (MM/YY)', 'woocommerce' ) . ' <span class="required">*</span></label>
-				<input id="' . esc_attr( $this->id ) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . esc_attr__( 'MM / YY', 'woocommerce' ) . '" name="' . $this->id . '-card-expiry' . '" />
-			</p>',
+			'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox(),
 			'card-cvc-field' => '<p class="form-row form-row-last">
-				<label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card security code', 'woocommerce' ) . ' <span class="required">*</span></label>
+				<label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card Code', 'woocommerce' ) . ' <span class="required">*</span></label>
 				<input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__( 'CVC', 'woocommerce' ) . '" name="' . $this->id . '-card-cvc' . '" />
 			</p>'
 		);
@@ -359,6 +353,33 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
     }
     
     
+    public function paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox() {
+        $form_html = "";
+        $form_html .= '<p class="form-row form-row-first">';
+        $form_html .= '<label for="cc-expire-month">' . __("Expiration date", 'paypal-for-woocommerce') . '<span class="required">*</span></label>';
+        $form_html .= '<select name="paypal_pro_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month mr5">';
+        $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
+        $months = array();
+        for ($i = 1; $i <= 12; $i++) :
+            $timestamp = mktime(0, 0, 0, $i, 1);
+            $months[date('n', $timestamp)] = date_i18n(_x('F', 'Month Names', 'paypal-for-woocommerce'), $timestamp);
+        endfor;
+        foreach ($months as $num => $name) {
+            $form_html .= '<option value=' . $num . '>' . $name . '</option>';
+        }
+        $form_html .= '</select>';
+        $form_html .= '<select name="paypal_pro_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year ml5">';
+        $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
+        for ($i = date('y'); $i <= date('y') + 15; $i++) {
+            $form_html .= '<option value=' . $i . '>20' . $i . '</option>';
+        }
+        $form_html .= '</select>';
+        $form_html .= '</p>';
+        return $form_html;
+    }
+
+    
+
     /**
      * Format and get posted details
      * @return object
@@ -366,14 +387,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
     private function get_posted_card() {
             $card_number    = isset( $_POST['paypal_pro-card-number'] ) ? wc_clean( $_POST['paypal_pro-card-number'] ) : '';
             $card_cvc       = isset( $_POST['paypal_pro-card-cvc'] ) ? wc_clean( $_POST['paypal_pro-card-cvc'] ) : '';
-            $card_expiry    = isset( $_POST['paypal_pro-card-expiry'] ) ? wc_clean( $_POST['paypal_pro-card-expiry'] ) : '';
+            $card_exp_month    = isset( $_POST['paypal_pro_card_expiration_month'] ) ? wc_clean( $_POST['paypal_pro_card_expiration_month'] ) : '';
+            $card_exp_year    = isset( $_POST['paypal_pro_card_expiration_year'] ) ? wc_clean( $_POST['paypal_pro_card_expiration_year'] ) : '';
 
             // Format values
             $card_number    = str_replace( array( ' ', '-' ), '', $card_number );
-            $card_expiry    = array_map( 'trim', explode( '/', $card_expiry ) );
-            $card_exp_month = str_pad( $card_expiry[0], 2, "0", STR_PAD_LEFT );
-            $card_exp_year  = isset( $card_expiry[1] ) ? $card_expiry[1] : '';
-
+           
             if ( isset( $_POST['paypal_pro-card-start'] ) ) {
                     $card_start       = wc_clean( $_POST['paypal_pro-card-start'] );
                     $card_start       = array_map( 'trim', explode( '/', $card_start ) );

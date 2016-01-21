@@ -62,3 +62,29 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
 	width:50%;
 	margin: 0 0 0 20px;
 }
+.woocommerce #payment .form-row select , .woocommerce-page #payment .form-row select {
+    border-color: #bbb3b9 #c7c1c6 #c7c1c6;
+    color: #888;
+    font-size: 16px;
+    outline: 0 none;
+    line-height: 1;
+    min-width: 103px;
+   
+}
+.woocommerce-select.woocommerce-cc-month.mr5 {
+    margin-right: 5px;
+}
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 480px) {
+      .woocommerce #payment .form-row select, .woocommerce-page #payment .form-row select {
+           width: 100% !important;
+      }
+      .woocommerce-select.woocommerce-cc-month.mr5 {
+          margin-right: 0px;
+      }
+      .woocommerce-select.woocommerce-cc-year.ml5 {
+            margin-left: 0px;
+            margin-top: 12px;
+      }
+  }

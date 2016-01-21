@@ -323,8 +323,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/cart.css' , __FILE__ ) );
             }
 
-            if ( ! is_admin() && is_checkout() && @$pp_settings['enabled']=='yes' && @$pp_settings['show_on_checkout']=='yes' )
+            if ( ! is_admin() && is_checkout() ) {
                 wp_enqueue_style( 'ppe_checkout', plugins_url( 'assets/css/checkout.css' , __FILE__ ) );
+            }
             if ( ! is_admin() && is_single() && @$pp_settings['enabled']=='yes' && @$pp_settings['show_on_product_page']=='yes'){
                 wp_enqueue_style( 'ppe_single', plugins_url( 'assets/css/single.css' , __FILE__ ) );
                 wp_enqueue_script('angelleye_button');
