@@ -1135,7 +1135,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $product_type['no_shipping_required'] = array(
                         'id'            => '_no_shipping_required',
                         'wrapper_class' => '',
-                        'label'         => __( 'No shipping required', 'paypal-for-woocommerce' ),
+                        'label'         => __( 'No Shipping Required', 'paypal-for-woocommerce' ),
                         'description'   => __( 'Disables shipping requirements in the PayPal checkout flow.', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
