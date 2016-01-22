@@ -103,6 +103,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.1.9.1 - 01.22.2016 =
+* Fix - Removes the sandbox / test mode message that was displaying even when in live mode.
+
 = 1.1.9 - 01.22.2016 =
 * Feature - Hear About Us plugin compatibility. ([#392](https://github.com/angelleye/paypal-woocommerce/issues/392))
 * Feature - Moves bulk update for enable/disable shipping requirements to a separate tool specific to the plugin. ([#381](https://github.com/angelleye/paypal-woocommerce/issues/381))
