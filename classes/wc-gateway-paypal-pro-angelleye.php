@@ -312,7 +312,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         
         if ( $this->description ) {
             echo '<p>' . wp_kses_post( $this->description );
-            if($this->testmode)
+            if($this->testmode == "yes")
             {
                 echo '<p>';
                 _e('NOTICE: SANDBOX (TEST) MODE ENABLED.', 'paypal-for-woocommerce');
