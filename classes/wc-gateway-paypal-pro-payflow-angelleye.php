@@ -267,9 +267,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 if ( strlen( $card_exp_year ) == 4 ) {
                         $card_exp_year = $card_exp_year - 2000;
                 }
-                        
-                        
-
+                
+                $card_exp_month = (int) $card_exp_month;
+                if ($card_exp_month < 10) {
+                    $card_exp_month = '0'.$card_exp_month;
+                }
 		// Do payment with paypal
 		return $this->do_payment( $order, $card_number, $card_exp_month . $card_exp_year, $card_cvc );
 	}
