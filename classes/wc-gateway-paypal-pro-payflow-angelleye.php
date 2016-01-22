@@ -574,17 +574,25 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         public function payment_fields() {
             do_action( 'angelleye_before_fc_payment_fields', $this );
             if ( $this->description ) {
-                echo '<p>' . $this->description . ( $this->testmode ? ' ' . __( 'TEST/SANDBOX MODE ENABLED. In test mode, you can use the card number 4111111111111111 with any CVC and a valid expiration date.', 'woocommerce-gateway-paypal-pro' ) : '' ) . '</p>';
+				echo '<p>' . wp_kses_post( $this->description );
+				if($this->testmode)
+				{
+					echo '<p>';
+					_e('NOTICE: SANDBOX (TEST) MODE ENABLED.', 'paypal-for-woocommerce');
+					echo '<br />';
+					_e('For testing purposes you can use the card number 4111111111111111 with any CVC and a valid expiration date.', 'paypal-for-woocommerce');
+					echo '</p>';
+				}
             }
             
             $default_fields = array(
 			'card-number-field' => '<p class="form-row form-row-wide">
-				<label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Credit Card number', 'woocommerce' ) . ' <span class="required">*</span></label>
+				<label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Credit Card Number', 'woocommerce' ) . ' <span class="required">*</span></label>
 				<input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
 			</p>',
 			'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox(),
 			'card-cvc-field' => '<p class="form-row form-row-last">
-				<label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card Code', 'woocommerce' ) . ' <span class="required">*</span></label>
+				<label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card Security Code', 'woocommerce' ) . ' <span class="required">*</span></label>
 				<input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__( 'CVC', 'woocommerce' ) . '" name="' .  $this->id . '-card-cvc' . '" />
 			</p>'
 		);
@@ -596,7 +604,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {
             $form_html = "";
             $form_html .= '<p class="form-row form-row-first">';
-            $form_html .= '<label for="cc-expire-month">' . __("Expiration date", 'paypal-for-woocommerce') . '<span class="required">*</span></label>';
+            $form_html .= '<label for="cc-expire-month">' . __("Expiration Date", 'paypal-for-woocommerce') . '<span class="required">*</span></label>';
             $form_html .= '<select name="paypal_pro_payflow_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month mr5">';
             $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
             $months = array();
