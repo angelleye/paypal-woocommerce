@@ -1135,15 +1135,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $product_type['no_shipping_required'] = array(
                         'id'            => '_no_shipping_required',
                         'wrapper_class' => '',
-                        'label'         => __( 'No shipping required', 'paypal-for-woocommerce' ),
-                        'description'   => __( 'No shipping required.', 'paypal-for-woocommerce' ),
+                        'label'         => __( 'No Shipping Required', 'paypal-for-woocommerce' ),
+                        'description'   => __( 'Disables shipping requirements in the PayPal checkout flow.', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
                 $product_type['paypal_billing_agreement'] = array(
                         'id'            => '_paypal_billing_agreement',
                         'wrapper_class' => '',
                         'label'         => __( 'Enable PayPal Billing Agreement', 'paypal-for-woocommerce' ),
-                        'description'   => __( 'Enable PayPal Billing Agreement.', 'paypal-for-woocommerce' ),
+                        'description'   => __( 'Adds a billing agreement to the product.  The user must agree to the billing agreement on the PayPal checkout pages, and then you can process future payments for the buyer using reference transactions..', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
                 return $product_type;

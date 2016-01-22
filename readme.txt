@@ -103,6 +103,17 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.1.9 - 01.22.2016 =
+* Feature - Hear About Us plugin compatibility. ([#392](https://github.com/angelleye/paypal-woocommerce/issues/392))
+* Feature - Moves bulk update for enable/disable shipping requirements to a separate tool specific to the plugin. ([#381](https://github.com/angelleye/paypal-woocommerce/issues/381))
+* Tweak - Description ([#146](https://github.com/angelleye/paypal-woocommerce/issues/146))
+* Tweak - Moves the Billing Agreement option to the product level. ([#382](https://github.com/angelleye/paypal-woocommerce/issues/382))
+* Tweak - Better error handling for session token problems. ([#386](https://github.com/angelleye/paypal-woocommerce/issues/386))
+* Tweak - Adds more logic to the bulk product options editor. ([#391](https://github.com/angelleye/paypal-woocommerce/issues/391))
+* Tweak - Updates credit card form for PayPal Payments Pro to use built in WooCommerce forms. ([#395](https://github.com/angelleye/paypal-woocommerce/issues/395))
+* Fix - Resolves a bug when processing payments for non-decimal currencies. ([#384](https://github.com/angelleye/paypal-woocommerce/issues/384))
+* Fix - Resolves CSS conflict with Storefront theme. ([#388](https://github.com/angelleye/paypal-woocommerce/issues/388))
+
 = 1.1.8 - 01.11.2016 =
 * Feature - Adds an option to include a billing agreement with Express Checkout, which enables the use of future reference transactions. ([#168](https://github.com/angelleye/paypal-woocommerce/issues/168))
 * Feature - Adds a product-level option for digital/virtual products to enable/disable shipping requirements in Express Checkout ([#174](https://github.com/angelleye/paypal-woocommerce/issues/174))
