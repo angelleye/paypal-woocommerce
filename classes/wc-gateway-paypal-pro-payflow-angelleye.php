@@ -577,7 +577,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             do_action( 'angelleye_before_fc_payment_fields', $this );
             if ( $this->description ) {
 				echo '<p>' . wp_kses_post( $this->description );
-				if($this->testmode)
+				if($this->testmode == "yes")
 				{
 					echo '<p>';
 					_e('NOTICE: SANDBOX (TEST) MODE ENABLED.', 'paypal-for-woocommerce');
