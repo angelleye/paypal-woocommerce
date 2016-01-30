@@ -492,7 +492,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             if ( !class_exists( 'CentinelClient' )) include_once( 'lib/CentinelClient.php' );
             $this->clear_centinel_session();
             $this->centinel_client = new CentinelClient;
-             $this->centinel_client->add("MsgType", "cmpi_lookup");
+            $this->centinel_client->add("MsgType", "cmpi_lookup");
             $this->centinel_client->add("Version", "1.7");
             $this->centinel_client->add("ProcessorId", $this->centinel_pid);
             $this->centinel_client->add("MerchantId", $this->centinel_mid);
@@ -561,37 +561,24 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 wc_add_notice( apply_filters( 'angelleye_pc_process_payment_authentication', __('Error in 3D secure authentication: ', 'woocommerce-gateway-paypal-pro') . $this->get_centinel_value("ErrorDesc") ), 'error');
                 return;
             }
-            
-            
           
-                if ('Y' === $this->get_centinel_value("Enrolled")) {
-                     $this->log('Doing 3dsecure payment authorization');
-                    $this->log('ASCUrl: ' . $this->get_centinel_value("ACSUrl"));
-                    $this->log('PaReq: ' . $this->get_centinel_value("Payload"));
-       
-                    return array(
-                        'result' => 'success',
-                        'redirect' => add_query_arg(array('acs' => $order_id), WC()->api_request_url('WC_Gateway_PayPal_Pro_AngellEYE', is_ssl()))
-                    );
-                } elseif ($this->liability_shift && 'N' !== $this->get_centinel_value("Enrolled")) {
-                    wc_add_notice( apply_filters( 'angelleye_pc_process_payment_authentication_unavailable', __('Authentication unavailable. Please try a different payment method or card.', 'woocommerce-gateway-paypal-pro') ) , 'error');
-                    return;
-                } else {
-                    // Customer not-enrolled, so just carry on with PayPal process
-         
+            if ('Y' === $this->get_centinel_value("Enrolled")) {
+                 $this->log('Doing 3dsecure payment authorization');
+                $this->log('ASCUrl: ' . $this->get_centinel_value("ACSUrl"));
+                $this->log('PaReq: ' . $this->get_centinel_value("Payload"));
 
-                    $centinel = new stdClass();
-                    $centinel->paresstatus = $this->get_centinel_value("PAResStatus");
-                    $centinel->xid = $this->get_centinel_value("Xid");
-                    $centinel->cavv = $this->get_centinel_value("Cavv");
-                    $centinel->eciflag = $this->get_centinel_value("EciFlag");
-                    $centinel->enrolled = WC()->session->get('Centinel_Enrolled');
-                    return $this->do_payment( $order, $card->number, $card->type, $card->exp_month, $card->exp_year, $card->cvc, '', $centinel->enrolled, '', $centinel->eciflag, '', $card->start_month, $card->start_year );
-                }
+                return array(
+                    'result' => 'success',
+                    'redirect' => add_query_arg(array('acs' => $order_id), WC()->api_request_url('WC_Gateway_PayPal_Pro_AngellEYE', is_ssl()))
+                );
+            } elseif ($this->liability_shift && 'N' !== $this->get_centinel_value("Enrolled")) {
+                wc_add_notice( apply_filters( 'angelleye_pc_process_payment_authentication_unavailable', __('Authentication unavailable. Please try a different payment method or card.', 'woocommerce-gateway-paypal-pro') ) , 'error');
+                return;
+            } 
            
         }
         // Do payment with paypal
-        return $this->do_payment( $order, $card->number, $card->type, $card->exp_month, $card->exp_year, $card->cvc );
+        return $this->do_payment( $order, $card->number, $card->type, $card->exp_month, $card->exp_year, $card->cvc, '', '', '', '', '', $card->start_month, $card->start_year );
     }
     
     
@@ -611,7 +598,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 <body>
                     <form name="frmLaunchACS" id="3ds_submit_form" method="POST" action="<?php echo esc_url($acsurl); ?>">
                         <input type="hidden" name="PaReq" value="<?php echo esc_attr($payload); ?>">
-                        <input type="hidden" name="TermUrl" value="<?php echo esc_attr(WC()->api_request_url('WC_Gateway_PayPal_Pro', true)); ?>">
+                        <input type="hidden" name="TermUrl" value="<?php echo esc_attr(WC()->api_request_url('WC_Gateway_PayPal_Pro', is_ssl())); ?>">
                         <input type="hidden" name="MD" value="<?php echo absint($order_id); ?>">
                         <noscript>
                         <input type="submit" class="button" id="3ds_submit" value="Submit" />
@@ -893,7 +880,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         if($this->enable_3dsecure)
 		{
 			$Secure3D = array(
-						  'authstatus3d' => $centinelPAResStatus, 
+						  'authstatus3ds' => $centinelPAResStatus, 
 						  'mpivendor3ds' => $centinelEnrolled, 
 						  'cavv' => $centinelCavv, 
 						  'eci3ds' => $centinelEciFlag, 
