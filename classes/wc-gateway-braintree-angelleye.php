@@ -65,8 +65,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
      */
     public function admin_options() {
         ?>
-        <h3><?php _e('Braintree', 'woocommerce'); ?></h3>
-        <p><?php _e($this->method_description, 'woocommerce'); ?></p>
+        <h3><?php _e('Braintree', 'paypal-for-woocommerce'); ?></h3>
+        <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
             <?php $this->generate_settings_html(); ?>
             <script type="text/javascript">
@@ -96,7 +96,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         if (version_compare(phpversion(), '5.2.1', '<')) {
             echo '<div class="error"><p>' . sprintf(__('Braintree Error: Braintree requires PHP 5.2.1 and above. You are using version %s.', 'woocommerce'), phpversion()) . '</p></div>';
         } elseif ('no' == get_option('woocommerce_force_ssl_checkout') && !class_exists('WordPressHTTPS')) {
-            echo '<div class="error"><p>' . sprintf(__('Braintree is enabled, but the <a href="%s">force SSL option</a> is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - Braintree will only work in sandbox mode.', 'woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout')) . '</p></div>';
+            echo '<div class="error"><p>' . sprintf(__('Braintree is enabled, but the <a href="%s">force SSL option</a> is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - Braintree will only work in sandbox mode.', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout')) . '</p></div>';
         }
     }
 
@@ -123,16 +123,16 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         try {
             $card = $this->get_posted_card();
             if (empty($card->exp_month) || empty($card->exp_year)) {
-                throw new Exception(__('Card expiration date is invalid', 'woocommerce-gateway-paypal-pro'));
+                throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
             }
             if (!ctype_digit($card->cvc)) {
-                throw new Exception(__('Card security code is invalid (only digits are allowed)', 'woocommerce-gateway-paypal-pro'));
+                throw new Exception(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'));
             }
             if (!ctype_digit($card->exp_month) || !ctype_digit($card->exp_year) || $card->exp_month > 12 || $card->exp_month < 1 || $card->exp_year < date('y')) {
-                throw new Exception(__('Card expiration date is invalid', 'woocommerce-gateway-paypal-pro'));
+                throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
             }
             if (empty($card->number) || !ctype_digit($card->number)) {
-                throw new Exception(__('Card number is invalid', 'woocommerce-gateway-paypal-pro'));
+                throw new Exception(__('Card number is invalid', 'paypal-for-woocommerce'));
             }
             return true;
         } catch (Exception $e) {
@@ -147,72 +147,72 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
     public function init_form_fields() {
         $this->form_fields = array(
             'enabled' => array(
-                'title' => __('Enable/Disable', 'woocommerce'),
-                'label' => __('Enable Braintree Payment Gateway', 'woocommerce'),
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'label' => __('Enable Braintree Payment Gateway', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => '',
                 'default' => 'no'
             ),
             'title' => array(
-                'title' => __('Title', 'woocommerce'),
+                'title' => __('Title', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('This controls the title which the user sees during checkout.', 'woocommerce'),
-                'default' => __('Braintree Credit card', 'woocommerce'),
+                'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
+                'default' => __('Braintree Credit card', 'paypal-for-woocommerce'),
                 'desc_tip' => true
             ),
             'description' => array(
-                'title' => __('Description', 'woocommerce'),
+                'title' => __('Description', 'paypal-for-woocommerce'),
                 'type' => 'textarea',
-                'description' => __('This controls the description which the user sees during checkout.', 'woocommerce'),
+                'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'default' => 'Pay securely with your credit card.',
                 'desc_tip' => true
             ),
             'sandbox' => array(
-                'title' => __('Sandbox', 'woocommerce'),
-                'label' => __('Enable Sandbox Mode', 'woocommerce'),
+                'title' => __('Sandbox', 'paypal-for-woocommerce'),
+                'label' => __('Enable Sandbox Mode', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('Place the payment gateway in sandbox mode using sandbox API keys (real payments will not be taken).', 'woocommerce'),
+                'description' => __('Place the payment gateway in sandbox mode using sandbox API keys (real payments will not be taken).', 'paypal-for-woocommerce'),
                 'default' => 'yes'
             ),
             'sandbox_merchant_id' => array(
-                'title' => __('Sandbox Merchant ID', 'woocommerce'),
+                'title' => __('Sandbox Merchant ID', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Get your API keys from your Braintree account.', 'woocommerce'),
+                'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
             'sandbox_public_key' => array(
-                'title' => __('Sandbox Public Key', 'woocommerce'),
+                'title' => __('Sandbox Public Key', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Get your API keys from your Braintree account.', 'woocommerce'),
+                'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
             'sandbox_private_key' => array(
-                'title' => __('Sandbox Private Key', 'woocommerce'),
+                'title' => __('Sandbox Private Key', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Get your API keys from your Braintree account.', 'woocommerce'),
+                'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
             'merchant_id' => array(
-                'title' => __('Live Merchant ID', 'woocommerce'),
+                'title' => __('Live Merchant ID', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Get your API keys from your Braintree account.', 'woocommerce'),
+                'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
             'public_key' => array(
-                'title' => __('Live Public Key', 'woocommerce'),
+                'title' => __('Live Public Key', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Get your API keys from your Braintree account.', 'woocommerce'),
+                'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
             'private_key' => array(
-                'title' => __('Live Private Key', 'woocommerce'),
+                'title' => __('Live Private Key', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Get your API keys from your Braintree account.', 'woocommerce'),
+                'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
@@ -222,9 +222,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
 
     public function add_card_types_form_fields($form_fields) {
         $form_fields['card_types'] = array(
-            'title' => _x('Accepted Card Types', 'Supports card types', 'woocommerce'),
+            'title' => _x('Accepted Card Types', 'Supports card types', 'paypal-for-woocommerce'),
             'type' => 'multiselect',
-            'desc_tip' => _x('Select which card types you accept.', 'Supports card types', 'woocommerce'),
+            'desc_tip' => _x('Select which card types you accept.', 'Supports card types', 'paypal-for-woocommerce'),
             'default' => array_keys($this->get_available_card_types()),
             'class' => 'wc-enhanced-select chosen_select',
             'css' => 'width: 350px;',
@@ -330,14 +330,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         $result = Braintree_Transaction::sale($request_data);
         if ($result->success) {
             $order->payment_complete($result->transaction->id);
-            $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'woocommerce'), $this->title, $result->transaction->id));
+            $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result->transaction->id));
             WC()->cart->empty_cart();
             return array(
                 'result' => 'success',
                 'redirect' => $this->get_return_url($order)
             );
         } else if ($result->transaction) {
-            $order->add_order_note(sprintf(__('%s payment declined.<br />Error: %s<br />Code: %s', 'woocommerce'), $this->title, $result->message, $result->transaction->processorResponseCode));
+            $order->add_order_note(sprintf(__('%s payment declined.<br />Error: %s<br />Code: %s', 'paypal-for-woocommerce'), $this->title, $result->message, $result->transaction->processorResponseCode));
         } else {
             foreach (($result->errors->deepAll()) as $error) {
                 wc_add_notice("Validation error - " . $error->message, 'error');
