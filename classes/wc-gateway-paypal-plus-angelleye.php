@@ -308,18 +308,18 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             });
 
             function setPayment() {
-            var key_array = <?php echo '["' . implode('", "', array_keys($js_array)) . '"]'; ?>;
-            var name_array = <?php echo '["' . implode('", "', $js_array) . '"]'; ?>;
-            var current_cookie = jQuery.parseJSON(jQuery.cookie("paypalplus_session"));
+                var key_array = <?php echo '["' . implode('", "', array_keys($js_array)) . '"]'; ?>;
+                var name_array = <?php echo '["' . implode('", "', $js_array) . '"]'; ?>;
+                var current_cookie = jQuery.parseJSON(jQuery.cookie("paypalplus_session"));
 
-            select_position = name_array.indexOf(current_cookie.paymentMethod);
+                select_position = ( current_cookie != null ? name_array.indexOf(current_cookie.paymentMethod) : 0 )
 
-            if (select_position!=-1) {
-            jQuery('#payment_method_'+key_array[select_position]).attr("checked","checked");
-            } else {
-            jQuery('#payment_method_paypal_plus').attr("checked","checked");
-            }
-            jQuery('#place_order').prop( "disabled", false);
+                if (select_position != 0) {
+                    jQuery('#payment_method_'+key_array[select_position]).attr("checked","checked");
+                } else {
+                    jQuery('#payment_method_paypal_plus').attr("checked","checked");
+                }
+                jQuery('#place_order').prop( "disabled", false);
             }
         </script>
         <style type="text/css">
