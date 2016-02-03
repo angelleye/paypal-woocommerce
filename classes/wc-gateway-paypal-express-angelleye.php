@@ -893,7 +893,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 update_user_meta($this->customer_id, 'billing_last_name', isset($user_submit_form['billing_last_name']) ?  $user_submit_form['billing_last_name'] : $result['LASTNAME']);
                                 update_user_meta($this->customer_id, 'billing_address_1', isset($user_submit_form['billing_address_1']) ?  $user_submit_form['billing_address_1'] : $result['SHIPTOSTREET']);
                                 update_user_meta($this->customer_id, 'billing_address_2', isset($user_submit_form['billing_address_2']) ?  $user_submit_form['billing_address_2'] : $result['SHIPTOSTREET2']);
-                                update_user_meta($this->customer_id, 'billing_city', isset($user_submit_form['billing_city']) ?  $user_submit_form['billing_city'] : $result['SHIPTOCITY']);
+                                update_user_meta($this->customer_id, 'billing_city', isset($user_submit_form['billing_city']) ?  wc_clean( stripslashes( $user_submit_form['billing_city'] ) ) : $result['SHIPTOCITY']);
                                 update_user_meta($this->customer_id, 'billing_postcode', isset($user_submit_form['billing_postcode']) ?  $user_submit_form['billing_postcode'] : $result['SHIPTOZIP']);
                                 update_user_meta($this->customer_id, 'billing_country', isset($user_submit_form['billing_country']) ?  $user_submit_form['billing_country'] : $result['SHIPTOCOUNTRYCODE']);
                                 update_user_meta($this->customer_id, 'billing_state', isset($user_submit_form['billing_state']) ?  $user_submit_form['billing_state'] : $result['SHIPTOSTATE']);
@@ -1449,7 +1449,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $Payment['shiptoname'] = $posted['shipping_first_name'] . ' ' . $posted['shipping_last_name'];
                 $Payment['shiptostreet'] = $posted['shipping_address_1'];
                 $Payment['shiptostreet2'] = @$posted['shipping_address_2'];
-                $Payment['shiptocity'] = @$posted['shipping_city'];
+                $Payment['shiptocity'] = wc_clean( stripslashes( @$posted['shipping_city'] ) );
                 $Payment['shiptostate'] = @$posted['shipping_state'];
                 $Payment['shiptozip'] = @$posted['shipping_postcode'];
                 $Payment['shiptocountrycode'] = @$posted['shipping_country'];
@@ -1459,7 +1459,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $Payment['shiptoname'] = $posted['billing_first_name'] . ' ' . $posted['billing_last_name'];
                 $Payment['shiptostreet'] = $posted['billing_address_1'];
                 $Payment['shiptostreet2'] = @$posted['billing_address_2'];
-                $Payment['shiptocity'] = @$posted['billing_city'];
+                $Payment['shiptocity'] = wc_clean( stripslashes( @$posted['billing_city'] ) );
                 $Payment['shiptostate'] = @$posted['billing_state'];
                 $Payment['shiptozip'] = @$posted['billing_postcode'];
                 $Payment['shiptocountrycode'] = @$posted['billing_country'];
@@ -1745,7 +1745,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptoname' => $shipping_first_name . ' ' . $shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
             'shiptostreet' => $shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
             'shiptostreet2' => $shipping_address_2, // Second street address.  100 char max.
-            'shiptocity' => $shipping_city, // Required if shipping is included.  Name of city.  40 char max.
+            'shiptocity' => wc_clean( stripslashes( $shipping_city ) ), // Required if shipping is included.  Name of city.  40 char max.
             'shiptostate' => $shipping_state, // Required if shipping is included.  Name of state or province.  40 char max.
             'shiptozip' => $shipping_postcode, // Required if shipping is included.  Postal code of shipping address.  20 char max.
             'shiptocountrycode' => $shipping_country, // Required if shipping is included.  Country code of shipping address.  2 char max.
