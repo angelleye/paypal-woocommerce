@@ -374,4 +374,32 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         return extension_loaded('mbstring');
     }
 
+    public function process_refund($order_id, $amount = null, $reason = '') {
+        $order = wc_get_order($order_id);
+        if (!$order || !$order->get_transaction_id()) {
+            return false;
+        }
+        require_once( 'lib/Braintree/Braintree.php' );
+        Braintree_Configuration::environment($this->environment);
+        Braintree_Configuration::merchantId($this->merchant_id);
+        Braintree_Configuration::publicKey($this->public_key);
+        Braintree_Configuration::privateKey($this->private_key);
+        $result = Braintree_Transaction::refund($order->get_transaction_id(), $amount);
+        if ($result->success) {
+            $order->add_order_note('Transaction type:' . $result->transaction->type);
+            $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
+            if (!$max_remaining_refund > 0) {
+                $order->update_status('refunded');
+            }
+            if (ob_get_length())
+                ob_end_clean();
+            return true;
+        } else {
+            $error = '';
+            foreach (($result->errors->deepAll()) as $error) {
+               return new WP_Error('ec_refund-error', $error->message);
+            }
+        }
+    }
+
 }
