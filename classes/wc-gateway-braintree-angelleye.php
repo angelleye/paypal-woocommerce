@@ -379,15 +379,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         if (!$order || !$order->get_transaction_id()) {
             return false;
         }
-        
+
         require_once( 'lib/Braintree/Braintree.php' );
         Braintree_Configuration::environment($this->environment);
         Braintree_Configuration::merchantId($this->merchant_id);
         Braintree_Configuration::publicKey($this->public_key);
         Braintree_Configuration::privateKey($this->private_key);
-        
+
         $transaction = Braintree_Transaction::find($order->get_transaction_id());
-        
+
         if (isset($transaction->_attributes['status']) && $transaction->_attributes['status'] == 'submitted_for_settlement') {
             if ($amount == $order->get_total()) {
                 $result = Braintree_Transaction::void($order->get_transaction_id());
