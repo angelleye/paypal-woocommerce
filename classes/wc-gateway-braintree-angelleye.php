@@ -70,7 +70,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         <table class="form-table">
             <?php $this->generate_settings_html(); ?>
             <script type="text/javascript">
-                jQuery('#woocommerce_braintree_sandbox').change(function () {
+                jQuery('#woocommerce_braintree_sandbox').change(function() {
                     var sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id').closest('tr'),
                             production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id').closest('tr');
 
@@ -379,25 +379,50 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         if (!$order || !$order->get_transaction_id()) {
             return false;
         }
+        
         require_once( 'lib/Braintree/Braintree.php' );
         Braintree_Configuration::environment($this->environment);
         Braintree_Configuration::merchantId($this->merchant_id);
         Braintree_Configuration::publicKey($this->public_key);
         Braintree_Configuration::privateKey($this->private_key);
-        $result = Braintree_Transaction::refund($order->get_transaction_id(), $amount);
-        if ($result->success) {
-            $order->add_order_note('Transaction type:' . $result->transaction->type);
-            $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
-            if (!$max_remaining_refund > 0) {
-                $order->update_status('refunded');
+        
+        $transaction = Braintree_Transaction::find($order->get_transaction_id());
+        
+        if (isset($transaction->_attributes['status']) && $transaction->_attributes['status'] == 'submitted_for_settlement') {
+            if ($amount == $order->get_total()) {
+                $result = Braintree_Transaction::void($order->get_transaction_id());
+                if ($result->success) {
+                    $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
+                    if (!$max_remaining_refund > 0) {
+                        $order->update_status('refunded');
+                    }
+                    if (ob_get_length())
+                        ob_end_clean();
+                    return true;
+                } else {
+                    $error = '';
+                    foreach (($result->errors->deepAll()) as $error) {
+                        return new WP_Error('ec_refund-error', $error->message);
+                    }
+                }
+            } else {
+                return new WP_Error('braintree_refund-error', __('Oops, you cannot partially void this order. Please use the full order amount.', 'paypal-for-woocommerce'));
             }
-            if (ob_get_length())
-                ob_end_clean();
-            return true;
-        } else {
-            $error = '';
-            foreach (($result->errors->deepAll()) as $error) {
-               return new WP_Error('ec_refund-error', $error->message);
+        } elseif (isset($transaction->_attributes['status']) && ($transaction->_attributes['status'] == 'settled' || $transaction->_attributes['status'] == 'settling')) {
+            $result = Braintree_Transaction::refund($order->get_transaction_id(), $amount);
+            if ($result->success) {
+                $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
+                if (!$max_remaining_refund > 0) {
+                    $order->update_status('refunded');
+                }
+                if (ob_get_length())
+                    ob_end_clean();
+                return true;
+            } else {
+                $error = '';
+                foreach (($result->errors->deepAll()) as $error) {
+                    return new WP_Error('ec_refund-error', $error->message);
+                }
             }
         }
     }
