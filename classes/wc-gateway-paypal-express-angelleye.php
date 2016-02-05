@@ -599,6 +599,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      */
     function paypal_express_checkout($posted = null) {
         if (!empty($posted) || ( isset($_GET['pp_action']) && $_GET['pp_action'] == 'expresscheckout' )) {
+            $this->angelleye_check_cart_items();
             if (sizeof(WC()->cart->get_cart()) > 0) {
 
                 // The customer has initiated the Express Checkout process with the button on the cart page
@@ -1008,7 +1009,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (!defined('WOOCOMMERCE_CHECKOUT'))
                     define('WOOCOMMERCE_CHECKOUT', true);
                 WC()->cart->calculate_totals();
-                
+                $this->angelleye_check_cart_items();
                 if (sizeof(WC()->cart->get_cart()) == 0 || empty(WC()->session->TOKEN)) {
                     $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
                     $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
@@ -1284,6 +1285,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         /*
          * Display message to user if session has expired.
          */
+        $this->angelleye_check_cart_items();
         if (sizeof(WC()->cart->get_cart()) == 0) {
             $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
             $set_ec_message = apply_filters('angelleye_set_ec_message', $ms);
@@ -1596,6 +1598,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         /*
          * Display message to user if session has expired.
          */
+        $this->angelleye_check_cart_items();
         if (sizeof(WC()->cart->get_cart()) == 0) {
             $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
             $ec_cgsd_message = apply_filters('angelleye_get_shipping_ec_message', $ms);
@@ -1900,11 +1903,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     function get_state_code($country, $state) {
         // If not US address, then convert state to abbreviation
         if ($country != 'US') {
-            $local_states = WC()->countries->states[WC()->customer->get_country()];
-            if (!empty($local_states) && in_array($state, $local_states)) {
-                foreach ($local_states as $key => $val) {
-                    if ($val == $state) {
-                        $state = $key;
+            if( isset(WC()->countries->states[WC()->customer->get_country()]) && !empty(WC()->countries->states[WC()->customer->get_country()]) ) {
+                $local_states = WC()->countries->states[WC()->customer->get_country()];
+                if (!empty($local_states) && in_array($state, $local_states)) {
+                    foreach ($local_states as $key => $val) {
+                        if ($val == $state) {
+                            $state = $key;
+                        }
                     }
                 }
             }
@@ -2230,6 +2235,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             
         } else {
             return false;
+        }
+    }
+    
+    public function angelleye_check_cart_items() {
+        if( WC()->cart->check_cart_items() == false) {
+            wp_redirect(get_permalink(wc_get_page_id('cart')));
+            exit();
         }
     }
 }
