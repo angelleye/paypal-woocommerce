@@ -58,7 +58,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         $this->public_key = $this->sandbox == 'no' ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
         $this->enable_braintree_drop_in = $this->get_option('enable_braintree_drop_in') === "yes" ? true : false;
         if ($this->enable_braintree_drop_in) {
-            $this->order_button_text = __('Enter payment details', 'woocommerce-gateway-paypal-pro');
+            $this->order_button_text = __('Enter payment details', 'paypal-for-woocommerce');
         }
 
         add_action('admin_notices', array($this, 'checks'));
@@ -105,6 +105,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         } elseif ('no' == get_option('woocommerce_force_ssl_checkout') && !class_exists('WordPressHTTPS')) {
             echo '<div class="error"><p>' . sprintf(__('Braintree is enabled, but the <a href="%s">force SSL option</a> is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - Braintree will only work in sandbox mode.', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout')) . '</p></div>';
         }
+        $this->add_dependencies_admin_notices();
     }
 
     /**
@@ -414,16 +415,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         }
         $this->angelleye_braintree_lib();
         $transaction = Braintree_Transaction::find($order->get_transaction_id());
-        if (isset($transaction->_attributes['status']) && $transaction->_attributes['status'] == 'submitted_for_settlement') {
+        if (isset($transaction->status) && $transaction->status == 'submitted_for_settlement') {
             if ($amount == $order->get_total()) {
                 $result = Braintree_Transaction::void($order->get_transaction_id());
                 if ($result->success) {
-                    $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
-                    if (!$max_remaining_refund > 0) {
-                        $order->update_status('refunded');
-                    }
-                    if (ob_get_length())
-                        ob_end_clean();
+                    $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
                     return true;
                 } else {
                     $error = '';
@@ -434,15 +430,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             } else {
                 return new WP_Error('braintree_refund-error', __('Oops, you cannot partially void this order. Please use the full order amount.', 'paypal-for-woocommerce'));
             }
-        } elseif (isset($transaction->_attributes['status']) && ($transaction->_attributes['status'] == 'settled' || $transaction->_attributes['status'] == 'settling')) {
+        } elseif (isset($transaction->status) && ($transaction->status == 'settled' || $transaction->status == 'settling')) {
             $result = Braintree_Transaction::refund($order->get_transaction_id(), $amount);
             if ($result->success) {
-                $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
-                if (!$max_remaining_refund > 0) {
-                    $order->update_status('refunded');
-                }
-                if (ob_get_length())
-                    ob_end_clean();
+                $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
                 return true;
             } else {
                 $error = '';
@@ -461,7 +452,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             $this->angelleye_braintree_lib();
             $this->home_url = is_ssl() ? home_url('/', 'https') : home_url('/'); //set the urls (cancel or return) based on SSL
             $this->relay_response_url = add_query_arg(array('wc-api' => 'WC_Gateway_Braintree_AngellEYE', 'order_id' => $order_id), $this->home_url);
-            echo wpautop(__('Enter your payment details below and click "Confirm and pay" to securely pay for your order.', 'woocommerce-gateway-paypal-pro'));
+            echo wpautop(__('Enter your payment details below and click "Confirm and pay" to securely pay for your order.', 'paypal-for-woocommerce'));
             ?>
             <form method="POST" action="<?php echo $this->relay_response_url; ?>">
                 <div id="payment">
@@ -470,7 +461,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                         <p><?php echo $this->description; ?></p>
                         <fieldset>
                             <div id="payment-form"></div>
-                            <input type="submit" value="<?php _e('Confirm and pay', 'woocommerce-gateway-paypal-pro'); ?>" class="submit buy button" style="float:right;"/>
+                            <input type="submit" value="<?php _e('Confirm and pay', 'paypal-for-woocommerce'); ?>" class="submit buy button" style="float:right;"/>
                         </fieldset>
                     </div>
                 </div>
@@ -511,6 +502,32 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         Braintree_Configuration::merchantId($this->merchant_id);
         Braintree_Configuration::publicKey($this->public_key);
         Braintree_Configuration::privateKey($this->private_key);
+    }
+
+    public function add_dependencies_admin_notices() {
+        $missing_extensions = $this->get_missing_dependencies();
+        if (count($missing_extensions) > 0) {
+            $message = sprintf(
+                    _n(
+                            '%s requires the %s PHP extension to function.  Contact your host or server administrator to configure and install the missing extension.', '%s requires the following PHP extensions to function: %s.  Contact your host or server administrator to configure and install the missing extensions.', count($missing_extensions), 'paypal-for-woocommerce'
+                    ), "PayPal For WooCoomerce - Braintree", '<strong>' . implode(', ', $missing_extensions) . '</strong>'
+            );
+            echo '<div class="error"><p>' . $message . '</p></div>';
+        }
+    }
+
+    public function get_missing_dependencies() {
+        $missing_extensions = array();
+        foreach ($this->get_dependencies() as $ext) {
+            if (!extension_loaded($ext)) {
+                $missing_extensions[] = $ext;
+            }
+        }
+        return $missing_extensions;
+    }
+
+    public function get_dependencies() {
+        return array('curl', 'dom', 'hash', 'openssl', 'SimpleXML', 'xmlwriter');
     }
 
 }
