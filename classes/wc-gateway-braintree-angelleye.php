@@ -60,11 +60,12 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         if ($this->enable_braintree_drop_in) {
             $this->order_button_text = __('Enter payment details', 'paypal-for-woocommerce');
         }
-
+        $this->debug = isset($this->settings['debug']) && $this->settings['debug'] == 'yes' ? true : false;
         add_action('admin_notices', array($this, 'checks'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
         add_action('woocommerce_api_wc_gateway_braintree_angelleye', array($this, 'return_handler'));
+        $this->response = '';
     }
 
     /**
@@ -77,7 +78,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         <table class="form-table">
             <?php $this->generate_settings_html(); ?>
             <script type="text/javascript">
-                jQuery('#woocommerce_braintree_sandbox').change(function() {
+                jQuery('#woocommerce_braintree_sandbox').change(function () {
                     var sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id').closest('tr'),
                             production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id').closest('tr');
 
@@ -233,6 +234,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true
             ),
+            'debug' => array(
+                'title' => __('Debug Log', 'woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable logging', 'woocommerce'),
+                'default' => 'no',
+                'description' => __('Log PayPal/Braintree events inside <code>/wp-content/uploads/wc-logs/braintree-{tag}.log</code>'
+                )
+            )
         );
         //$this->form_fields = $this->add_card_types_form_fields($this->form_fields);
     }
@@ -321,64 +330,90 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function angelleye_do_payment($order, $payment_method_nonce = null) {
-        $request_data = array();
-        $this->angelleye_braintree_lib();
-        $card = $this->get_posted_card();
-        $request_data['billing'] = array(
-            'firstName' => $order->billing_first_name,
-            'lastName' => $order->billing_last_name,
-            'company' => $order->billing_company,
-            'streetAddress' => $order->billing_address_1,
-            'extendedAddress' => $order->billing_address_2,
-            'locality' => $order->billing_city,
-            'region' => $order->billing_state,
-            'postalCode' => $order->billing_postcode,
-            'countryCodeAlpha2' => $order->billing_country,
-        );
-        $request_data['shipping'] = array(
-            'firstName' => $order->shipping_first_name,
-            'lastName' => $order->shipping_last_name,
-            'company' => $order->shipping_company,
-            'streetAddress' => $order->shipping_address_1,
-            'extendedAddress' => $order->shipping_address_2,
-            'locality' => $order->shipping_city,
-            'region' => $order->shipping_state,
-            'postalCode' => $order->shipping_postcode,
-            'countryCodeAlpha2' => $order->shipping_country,
-        );
-        if (is_null($payment_method_nonce)) {
-            $request_data['creditCard'] = array(
-                'number' => $card->number,
-                'cardholderName' => $card->number,
-                'expirationDate' => $card->exp_month . '/' . $card->exp_year,
-                'cvv' => $card->cvc,
-                'cardholderName' => $order->billing_first_name . ' ' . $order->billing_last_name
+        try {
+            $request_data = array();
+            $this->angelleye_braintree_lib();
+            $card = $this->get_posted_card();
+            $request_data['billing'] = array(
+                'firstName' => $order->billing_first_name,
+                'lastName' => $order->billing_last_name,
+                'company' => $order->billing_company,
+                'streetAddress' => $order->billing_address_1,
+                'extendedAddress' => $order->billing_address_2,
+                'locality' => $order->billing_city,
+                'region' => $order->billing_state,
+                'postalCode' => $order->billing_postcode,
+                'countryCodeAlpha2' => $order->billing_country,
             );
-        } else {
-            $request_data['paymentMethodNonce'] = $payment_method_nonce;
-        }
-        $request_data['customer'] = array(
-            'firstName' => $order->billing_first_name,
-            'lastName' => $order->billing_last_name,
-            'company' => $order->billing_company,
-            'phone' => $this->str_truncate(preg_replace('/[^\d-().]/', '', $order->billing_phone), 14, ''),
-            'email' => $order->billing_email,
-        );
-        $request_data['amount'] = number_format($order->get_total(), 2, '.', '');
-        $request_data['orderId'] = $order->get_order_number();
-        $request_data['options'] = $this->get_braintree_options();
-        $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
-        $result = Braintree_Transaction::sale($request_data);
-        if ($result->success) {
-            $order->payment_complete($result->transaction->id);
-            $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result->transaction->id));
-            WC()->cart->empty_cart();
-        } else if ($result->transaction) {
-            $order->add_order_note(sprintf(__('%s payment declined.<br />Error: %s<br />Code: %s', 'paypal-for-woocommerce'), $this->title, $result->message, $result->transaction->processorResponseCode));
-        } else {
-            foreach (($result->errors->deepAll()) as $error) {
-                wc_add_notice("Validation error - " . $error->message, 'error');
+            $request_data['shipping'] = array(
+                'firstName' => $order->shipping_first_name,
+                'lastName' => $order->shipping_last_name,
+                'company' => $order->shipping_company,
+                'streetAddress' => $order->shipping_address_1,
+                'extendedAddress' => $order->shipping_address_2,
+                'locality' => $order->shipping_city,
+                'region' => $order->shipping_state,
+                'postalCode' => $order->shipping_postcode,
+                'countryCodeAlpha2' => $order->shipping_country,
+            );
+            if (is_null($payment_method_nonce)) {
+                $request_data['creditCard'] = array(
+                    'number' => $card->number,
+                    'expirationDate' => $card->exp_month . '/' . $card->exp_year,
+                    'cvv' => $card->cvc,
+                    'cardholderName' => $order->billing_first_name . ' ' . $order->billing_last_name
+                );
+            } else {
+                $request_data['paymentMethodNonce'] = $payment_method_nonce;
             }
+            $request_data['customer'] = array(
+                'firstName' => $order->billing_first_name,
+                'lastName' => $order->billing_last_name,
+                'company' => $order->billing_company,
+                'phone' => $this->str_truncate(preg_replace('/[^\d-().]/', '', $order->billing_phone), 14, ''),
+                'email' => $order->billing_email,
+            );
+            $request_data['amount'] = number_format($order->get_total(), 2, '.', '');
+            $request_data['orderId'] = $order->get_order_number();
+            $request_data['options'] = $this->get_braintree_options();
+            $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
+            if ($this->debug) {
+                $this->add_log('Begin Braintree_Transaction::sale request');
+                $this->add_log('Order: ' . print_r($order->get_order_number(), true));
+                $log = $request_data;
+                if (is_null($payment_method_nonce)) {
+                    $log['creditCard'] = array(
+                        'number' => '**** **** **** ****',
+                        'expirationDate' => '**' . '/' . '****',
+                        'cvv' => '***'
+                    );
+                } else {
+                    $log['paymentMethodNonce'] = '*********************';
+                }
+                $this->add_log('Braintree_Transaction::sale Reuest Data ' . print_r($log, true));
+            }
+            $this->response = Braintree_Transaction::sale($request_data);
+            $this->add_log('Braintree_Transaction::sale Response code: ' . print_r($this->get_status_code(), true));
+            $this->add_log('Braintree_Transaction::sale Response message: ' . print_r($this->get_status_message(), true));
+            if ($this->response->success) {
+                $order->payment_complete($this->response->transaction->id);
+
+                $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $this->response->transaction->id));
+                WC()->cart->empty_cart();
+            } else if ($this->response->transaction) {
+                $order->add_order_note(sprintf(__('%s payment declined.<br />Code: %s', 'paypal-for-woocommerce'), $this->title, $this->response->transaction->processorResponseCode));
+            } else {
+                if ($this->has_validation_errors()) {
+                    $this->add_log('Braintree_Transaction::sale Response: ' . print_r($this->response, true));
+                    wc_add_notice('Braintree Error ' . $this->get_message(), 'error');
+                    wp_redirect($order->get_checkout_payment_url(true));
+                    exit;
+                }
+            }
+        } catch (Exception $ex) {
+            wc_add_notice($ex->getMessage(), 'error');
+            wp_redirect($order->get_checkout_payment_url(true));
+            exit;
         }
     }
 
@@ -449,6 +484,12 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
     public function receipt_page($order_id) {
         if ($this->enable_braintree_drop_in) {
             $this->angelleye_braintree_lib();
+            $this->add_log('Begin Braintree_ClientToken::generate Request');
+            $clientToken = Braintree_ClientToken::generate();
+            //$clientToken = 'fake-consumed-nonce';
+            if (isset($clientToken) && !empty($clientToken)) {
+                $this->add_log('Braintree_ClientToken::generate Response: ' . '**************************************************************');
+            }
             $this->home_url = is_ssl() ? home_url('/', 'https') : home_url('/'); //set the urls (cancel or return) based on SSL
             $this->relay_response_url = add_query_arg(array('wc-api' => 'WC_Gateway_Braintree_AngellEYE', 'order_id' => $order_id), $this->home_url);
             echo wpautop(__('Enter your payment details below and click "Confirm and pay" to securely pay for your order.', 'paypal-for-woocommerce'));
@@ -471,10 +512,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             </form>
             <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
             <script>
-                var clientToken = "<?php echo($clientToken = Braintree_ClientToken::generate()); ?>";
-                braintree.setup(clientToken, "dropin", {
-                    container: "payment-form"
-                });
+                    var clientToken = "<?php echo($clientToken); ?>";
+                    braintree.setup(clientToken, "dropin", {
+                        container: "payment-form"
+                    });
             </script>
             <?php
         }
@@ -531,6 +572,191 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
 
     public function get_dependencies() {
         return array('curl', 'dom', 'hash', 'openssl', 'SimpleXML', 'xmlwriter');
+    }
+
+    public function add_log($message) {
+        if ($this->debug == 'yes') {
+            if (empty($this->log))
+                $this->log = new WC_Logger();
+            $this->log->add('braintree', $message);
+        }
+    }
+
+    public function get_status_code() {
+        if ($this->response->success) {
+            return $this->get_success_status_info('code');
+        } else {
+            return $this->get_failure_status_info('code');
+        }
+    }
+
+    public function get_status_message() {
+        if ($this->response->success) {
+            return $this->get_success_status_info('message');
+        } else {
+            return $this->get_failure_status_info('message');
+        }
+    }
+
+    public function get_success_status_info($type) {
+        $transaction = !empty($this->response->transaction) ? $this->response->transaction : $this->response->creditCardVerification;
+        if (isset($transaction->processorSettlementResponseCode)) {
+            $status = array(
+                'code' => $transaction->processorSettlementResponseCode,
+                'message' => $transaction->processorSettlementResponseText,
+            );
+        } else {
+            $status = array(
+                'code' => $transaction->processorResponseCode,
+                'message' => $transaction->processorResponseText,
+            );
+        }
+        return isset($status[$type]) ? $status[$type] : null;
+    }
+
+    public function get_failure_status_info($type) {
+        if ($this->has_validation_errors()) {
+            $errors = $this->get_validation_errors();
+            return implode(', ', ( 'code' === $type ? array_keys($errors) : array_values($errors)));
+        }
+        $transaction = !empty($this->response->transaction) ? $this->response->transaction : $this->response->creditCardVerification;
+        switch ($transaction->status) {
+            case 'gateway_rejected':
+                $status = array(
+                    'code' => $transaction->gatewayRejectionReason,
+                    'message' => $this->response->message,
+                );
+                break;
+            case 'processor_declined':
+                $status = array(
+                    'code' => $transaction->processorResponseCode,
+                    'message' => $transaction->processorResponseText . (!empty($transaction->additionalProcessorResponse) ? ' (' . $transaction->additionalProcessorResponse . ')' : '' ),
+                );
+                break;
+            case 'settlement_declined':
+                $status = array(
+                    'code' => $transaction->processorSettlementResponseCode,
+                    'message' => $transaction->processorSettlementResponseText,
+                );
+                break;
+            default:
+                $status = array(
+                    'code' => $transaction->status,
+                    'message' => $this->response->message,
+                );
+        }
+        return isset($status[$type]) ? $status[$type] : null;
+    }
+
+    public function has_validation_errors() {
+        return isset($this->response->errors) && $this->response->errors->deepSize();
+    }
+
+    public function get_validation_errors() {
+        $errors = array();
+        if ($this->has_validation_errors()) {
+            foreach ($this->response->errors->deepAll() as $error) {
+                $errors[$error->code] = $error->message;
+            }
+        }
+        return $errors;
+    }
+
+    public function get_user_message($message_id) {
+        $message = null;
+        switch ($message_id) {
+            case 'error': $message = __('An error occurred, please try again or try an alternate form of payment', 'paypal-for-woocommerce');
+                break;
+            case 'decline': $message = __('We cannot process your order with the payment information that you provided. Please use a different payment account or an alternate payment method.', 'paypal-for-woocommerce');
+                break;
+            case 'held_for_review': $message = __('This order is being placed on hold for review. Please contact us to complete the transaction.', 'paypal-for-woocommerce');
+                break;
+            case 'held_for_incorrect_csc': $message = __('This order is being placed on hold for review due to an incorrect card verification number.  You may contact the store to complete the transaction.', 'paypal-for-woocommerce');
+                break;
+            case 'csc_invalid': $message = __('The card verification number is invalid, please try again.', 'paypal-for-woocommerce');
+                break;
+            case 'csc_missing': $message = __('Please enter your card verification number and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'card_type_not_accepted': $message = __('That card type is not accepted, please use an alternate card or other form of payment.', 'paypal-for-woocommerce');
+                break;
+            case 'card_type_invalid': $message = __('The card type is invalid or does not correlate with the credit card number.  Please try again or use an alternate card or other form of payment.', 'paypal-for-woocommerce');
+                break;
+            case 'card_type_missing': $message = __('Please select the card type and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'card_number_type_invalid': $message = __('The card type is invalid or does not correlate with the credit card number.  Please try again or use an alternate card or other form of payment.', 'paypal-for-woocommerce');
+                break;
+            case 'card_number_invalid': $message = __('The card number is invalid, please re-enter and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'card_number_missing': $message = __('Please enter your card number and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'card_expiry_invalid': $message = __('The card expiration date is invalid, please re-enter and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'card_expiry_month_invalid': $message = __('The card expiration month is invalid, please re-enter and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'card_expiry_year_invalid': $message = __('The card expiration year is invalid, please re-enter and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'card_expiry_missing': $message = __('Please enter your card expiration date and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'bank_aba_invalid': $message_id = __('The bank routing number is invalid, please re-enter and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'bank_account_number_invalid': $message_id = __('The bank account number is invalid, please re-enter and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'card_expired': $message = __('The provided card is expired, please use an alternate card or other form of payment.', 'paypal-for-woocommerce');
+                break;
+            case 'card_declined': $message = __('The provided card was declined, please use an alternate card or other form of payment.', 'paypal-for-woocommerce');
+                break;
+            case 'insufficient_funds': $message = __('Insufficient funds in account, please use an alternate card or other form of payment.', 'paypal-for-woocommerce');
+                break;
+            case 'card_inactive': $message = __('The card is inactivate or not authorized for card-not-present transactions, please use an alternate card or other form of payment.', 'paypal-for-woocommerce');
+                break;
+            case 'credit_limit_reached': $message = __('The credit limit for the card has been reached, please use an alternate card or other form of payment.', 'paypal-for-woocommerce');
+                break;
+            case 'csc_mismatch': $message = __('The card verification number does not match. Please re-enter and try again.', 'paypal-for-woocommerce');
+                break;
+            case 'avs_mismatch': $message = __('The provided address does not match the billing address for cardholder. Please verify the address and try again.', 'paypal-for-woocommerce');
+                break;
+        }
+        return apply_filters('wc_payment_gateway_transaction_response_user_message', $message, $message_id, $this);
+    }
+
+    public function get_message() {
+        $messages = array();
+        $message_id = array();
+        $decline_codes = array(
+            'cvv' => 'csc_mismatch',
+            'avs' => 'avs_mismatch',
+            '2000' => 'card_declined',
+            '2001' => 'insufficient_funds',
+            '2002' => 'credit_limit_reached',
+            '2003' => 'card_declined',
+            '2004' => 'card_expired',
+            '2005' => 'card_number_invalid',
+            '2006' => 'card_expiry_invalid',
+            '2007' => 'card_type_invalid',
+            '2008' => 'card_number_invalid',
+            '2010' => 'csc_mismatch',
+            '2012' => 'card_declined',
+            '2013' => 'card_declined',
+            '2014' => 'card_declined',
+            '2016' => 'error',
+            '2017' => 'card_declined',
+            '2018' => 'card_declined',
+            '2023' => 'card_type_not_accepted',
+            '2024' => 'card_type_not_accepted',
+            '2038' => 'card_declined',
+            '2046' => 'card_declined',
+            '2056' => 'credit_limit_reached',
+            '2059' => 'avs_mismatch',
+            '2060' => 'avs_mismatch',
+            '2075' => 'paypal_closed',
+        );
+        $response_codes = $this->get_validation_errors();
+        if (isset($response_codes) && !empty($response_codes) && is_array($response_codes)) {
+            foreach ($response_codes as $key => $value) {
+                $messages[] = isset($decline_codes[$key]) ? $this->get_user_message($key) : $value;
+            }
+        }
+        return implode(' ', $messages);
     }
 
 }
