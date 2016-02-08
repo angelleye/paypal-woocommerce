@@ -269,11 +269,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
      */
     public function payment_fields() {
         if ($this->description) {
-            echo '<p>' . $this->description . '</p>';
+            echo wpautop(wptexturize($this->description));
         }
         if (!$this->enable_braintree_drop_in) {
-            $fields = array();
-            $this->credit_card_form(array(), $fields);
+            $this->credit_card_form();
         }
     }
 
@@ -458,7 +457,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 <div id="payment">
                     <label style="padding:10px 0 0 10px;display:block;"><?php echo $this->title . ' ' . '<div style="vertical-align:middle;display:inline-block;margin:2px 0 0 .5em;">' . $this->get_icon() . '</div>'; ?></label>
                     <div class="payment_box">
-                        <p><?php echo $this->description; ?></p>
+                        <?php
+                        if ($this->description) {
+                            echo wpautop(wptexturize($this->description));
+                        }
+                        ?>
                         <fieldset>
                             <div id="payment-form"></div>
                             <input type="submit" value="<?php _e('Confirm and pay', 'paypal-for-woocommerce'); ?>" class="submit buy button" style="float:right;"/>
