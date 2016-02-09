@@ -178,13 +178,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'Pay securely with your credit card.',
                 'desc_tip' => true
             ),
-            'sandbox' => array(
-                'title' => __('Sandbox', 'paypal-for-woocommerce'),
-                'label' => __('Enable Sandbox Mode', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Place the payment gateway in sandbox mode using sandbox API keys (real payments will not be taken).', 'paypal-for-woocommerce'),
-                'default' => 'yes'
-            ),
             'enable_braintree_drop_in' => array(
                 'title' => __('Enable Drop-in Payment UI', 'paypal-for-woocommerce'),
                 'label' => __('Enable Drop-in Payment UI', 'paypal-for-woocommerce'),
@@ -192,44 +185,51 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Rather than showing a credit card form on your checkout, this shows the form on it\'s own page, thus making the process more secure and more PCI friendly.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
+            'sandbox' => array(
+                'title' => __('Sandbox', 'paypal-for-woocommerce'),
+                'label' => __('Enable Sandbox Mode', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Place the payment gateway in sandbox mode using sandbox API keys (real payments will not be taken).', 'paypal-for-woocommerce'),
+                'default' => 'yes'
+            ),
             'sandbox_merchant_id' => array(
                 'title' => __('Sandbox Merchant ID', 'paypal-for-woocommerce'),
-                'type' => 'text',
+                'type' => 'password',
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
             'sandbox_public_key' => array(
                 'title' => __('Sandbox Public Key', 'paypal-for-woocommerce'),
-                'type' => 'text',
+                'type' => 'password',
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
             'sandbox_private_key' => array(
                 'title' => __('Sandbox Private Key', 'paypal-for-woocommerce'),
-                'type' => 'text',
+                'type' => 'password',
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
             'merchant_id' => array(
                 'title' => __('Live Merchant ID', 'paypal-for-woocommerce'),
-                'type' => 'text',
+                'type' => 'password',
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
             'public_key' => array(
                 'title' => __('Live Public Key', 'paypal-for-woocommerce'),
-                'type' => 'text',
+                'type' => 'password',
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
             'private_key' => array(
                 'title' => __('Live Private Key', 'paypal-for-woocommerce'),
-                'type' => 'text',
+                'type' => 'password',
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
