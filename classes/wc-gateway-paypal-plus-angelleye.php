@@ -256,10 +256,9 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
      * @access public
      * @return void
      * */
-    public function render_iframe() {
+        public function render_iframe() {
         if (!$this->is_available())
             return;
-
         //display the form in IFRAME, if it is layout C, otherwise redirect to paypal site
         //define the redirection url
         $location = $this->get_approvalurl();
@@ -283,7 +282,6 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         <div id="ppplus"><?php echo __('Loading payment gates ...', 'paypal-for-woocommerce'); ?> </div>
 
         <script type="application/javascript">
-
             var ppp = PAYPAL.apps.PPP({
             "approvalUrl": "<?php echo $location; ?>",
             "placeholder": "ppplus",
@@ -306,20 +304,17 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             }
             }
             });
-
             function setPayment() {
-            var key_array = <?php echo '["' . implode('", "', array_keys($js_array)) . '"]'; ?>;
-            var name_array = <?php echo '["' . implode('", "', $js_array) . '"]'; ?>;
-            var current_cookie = jQuery.parseJSON(jQuery.cookie("paypalplus_session"));
-
-            select_position = name_array.indexOf(current_cookie.paymentMethod);
-
-            if (select_position!=-1) {
-            jQuery('#payment_method_'+key_array[select_position]).attr("checked","checked");
-            } else {
-            jQuery('#payment_method_paypal_plus').attr("checked","checked");
-            }
-            jQuery('#place_order').prop( "disabled", false);
+                var key_array = <?php echo '["' . implode('", "', array_keys($js_array)) . '"]'; ?>;
+                var name_array = <?php echo '["' . implode('", "', $js_array) . '"]'; ?>;
+                var current_cookie = jQuery.parseJSON(jQuery.cookie("paypalplus_session_v2"));
+                select_position = ( current_cookie != null ? name_array.indexOf(current_cookie.paymentMethod) : 0 )
+                if (select_position!=-1) {
+                    jQuery('#payment_method_'+key_array[select_position]).attr("checked","checked");
+                } else {
+                    jQuery('#payment_method_paypal_plus').attr("checked","checked");
+                }
+                jQuery('#place_order').prop( "disabled", false);
             }
         </script>
         <style type="text/css">
@@ -398,13 +393,13 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         return $newnumber;
     }
 
-    function getAuth() {
+    public function getAuth() {
         $auth = new ApiContext(new OAuthTokenCredential(CLIENT_ID, CLIENT_SECRET));
         $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce'));
         return $auth;
     }
 
-    function get_approvalurl() {
+    public function get_approvalurl() {
         global $woocommerce;
         try { // try a payment request
             $PaymentData = AngellEYE_Gateway_Paypal::calculate(null, $this->send_items);
