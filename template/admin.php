@@ -22,6 +22,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=payflow" class="nav-tab <?php echo $gateway == 'payflow' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Payments Pro (PayFlow)', $this->plugin_slug); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=dodirectpayment" class="nav-tab <?php echo $gateway == 'dodirectpayment' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Website Payments Pro (DoDirectPayment)', $this->plugin_slug); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_plus" class="nav-tab <?php echo $gateway == 'paypal_plus' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Plus', $this->plugin_slug); ?></a>
+            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=wc_gateway_braintree_angelleye" class="nav-tab <?php echo $gateway == 'wc_gateway_braintree_angelleye' ? 'nav-tab-active' : ''; ?>"><?php echo __('Braintree', $this->plugin_slug); ?></a>
         </h2>
 
     <?php
@@ -51,6 +52,13 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
             <div class="wrap">
                 <p><?php _e('PayPal PLUS is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame.', $this->plugin_slug); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal_plus_angelleye'); ?>"><?php _e('PayPal Plus Setting', $this->plugin_slug); ?></a>
+            </div>
+        <?php
+    } elseif ($gateway == 'wc_gateway_braintree_angelleye') {
+        ?>
+            <div class="wrap">
+                <p><?php _e('Braintree Payment Gateway authorizes credit card payments and processes them securely with your merchant account..', $this->plugin_slug); ?></p>
+                <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_braintree_angelleye'); ?>"><?php _e('Braintree Setting', $this->plugin_slug); ?></a>
             </div>
         <?php
     }

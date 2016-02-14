@@ -108,6 +108,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('admin_enqueue_scripts', array( $this, 'angelleye_woocommerce_admin_enqueue_scripts' ) );
             add_action( 'wp_ajax_pfw_ed_shipping_bulk_tool', array( $this, 'angelleye_woocommerce_pfw_ed_shipping_bulk_tool' ) );
             add_action( 'woocommerce_checkout_process', array( $this, 'angelleye_paypal_express_checkout_process_checkout_fields' ) );
+            
         }
 
         /**
