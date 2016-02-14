@@ -12,6 +12,8 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\Details;
 use PayPal\Api\ExecutePayment;
 use PayPal\Api\Item;
+use PayPal\Api\Refund;
+use PayPal\Api\Sale;
 
 class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
@@ -443,7 +445,6 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             $transaction->setAmount($amount);
             $transaction->setDescription('');
             $transaction->setItemList($items);
-            //$transaction->setInvoiceNumber($this->invoice_prefix.$order_id);
 
             $payment = new Payment();
             $payment->setRedirectUrls($redirectUrls);
@@ -508,10 +509,9 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                     "postal_code": "' . $order->shipping_postcode . '",
                     "country_code": "' . $order->shipping_country . '"
                 }'));
-
             $patchRequest->setPatches(array($patchAdd, $patchReplace));
         } else {
-            $patchRequest->setPatches(array($patchReplace));
+             $patchRequest->setPatches(array($patchReplace));
         }
 
         try {
@@ -572,10 +572,11 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
             $execution = new PaymentExecution();
             $execution->setPayerId(WC()->session->PayerID);
-
+      
             try {
                 $payment = Payment::get(WC()->session->paymentId, $this->getAuth());
                 $payment->execute($execution, $this->getAuth());
+               
                 $this->add_log(print_r($payment, true));
                 if ($payment->state == "approved") { //if state = approved continue..
                     
@@ -603,9 +604,12 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                         update_post_meta($order->id, '_billing_country', $payment->payer->payer_info->shipping_address->country_code);
                         update_post_meta($order->id, '_billing_state', $payment->payer->payer_info->shipping_address->state);
                     }
-
+                    $transactions = $payment->getTransactions();
+                    $relatedResources = $transactions[0]->getRelatedResources();
+                    $sale = $relatedResources[0]->getSale();
+                    $saleId = $sale->getId();
                     $order->add_order_note(__('PayPal Plus payment completed', 'paypal-for-woocommerce'));
-                    $order->payment_complete($payment->id);
+                    $order->payment_complete($saleId);
 
                     //add hook
                     do_action('woocommerce_checkout_order_processed', $order->id);
@@ -638,5 +642,62 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             }
         }
     }
+    
+    public function process_refund($order_id, $amount = null, $reason = '') {
+        $order = wc_get_order($order_id);
+        $this->add_log('Begin Refund');
+        $this->add_log('Order: ' . print_r($order, true));
+        $this->add_log('Transaction ID: ' . print_r($order->get_transaction_id(), true));
+        if (!$order || !$order->get_transaction_id() || !$this->rest_client_id || !$this->rest_secret_id) {
+            return false;
+        }
+       
+        
+        if ($reason) {
+            if (255 < strlen($reason)) {
+                $reason = substr($reason, 0, 252) . '...';
+            }
 
+            $reason = html_entity_decode($reason, ENT_NOQUOTES, 'UTF-8');
+        }
+      
+        $sale = Sale::get($order->get_transaction_id(), $this->getAuth());
+        $amt = new Amount();
+        $amt->setCurrency($order->get_order_currency());
+        $amt->setTotal(AngellEYE_Gateway_Paypal::number_format($amount));
+
+        $refund = new Refund();
+        $refund->setAmount($amt);
+        
+        try {
+            $this->add_log('Refund Request: ' . print_r($refund, true));
+            $refundedSale = $sale->refund($refund, $this->getAuth());
+            if($refundedSale->state == 'completed') {
+                $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
+                if( isset($reason) && !empty($reason) ) {
+                    $order->add_order_note('Reason for Refund :' . $reason);
+                }
+                $max_remaining_refund = wc_format_decimal( $order->get_total() - $order->get_total_refunded() );
+                if ( !$max_remaining_refund > 0 ) {
+                    $order->update_status('refunded');
+                }
+                if (ob_get_length()) ob_end_clean();
+                return true;
+            } 
+        }        
+        catch (PayPal\Exception\PayPalConnectionException $ex) {
+            $this->add_log($ex->getData());
+            $error_data = json_decode($ex->getData());
+            if(is_object($error_data) && !empty($error_data)) {
+                $error_message = ($error_data->message) ? $error_data->message : $error_data->information_link;
+                return new WP_Error('paypal_plus_refund-error', $error_message);
+            } else {
+                return new WP_Error('paypal_plus_refund-error', $ex->getData());
+            }
+            
+        } catch (Exception $ex) {
+            $this->add_log($ex->getMessage());
+            return new WP_Error('paypal_plus_refund-error', $ex->getMessage());
+        }
+    }
 }
