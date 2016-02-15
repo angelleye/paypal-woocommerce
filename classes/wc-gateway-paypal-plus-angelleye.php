@@ -496,6 +496,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 }'));
 
         $patchRequest = new \PayPal\Api\PatchRequest();
+        $invoice_number = preg_replace("/[^0-9,.]/", "", $order_id);
         if ($order->needs_shipping_address() && !empty($order->shipping_country)) {
             //add shipping info
             $patchAdd = new \PayPal\Api\Patch();
@@ -509,9 +510,13 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                     "postal_code": "' . $order->shipping_postcode . '",
                     "country_code": "' . $order->shipping_country . '"
                 }'));
-            $patchRequest->setPatches(array($patchAdd, $patchReplace));
+            $patchAddone = new \PayPal\Api\Patch();
+            $patchAddone->setOp('add')->setPath('/transactions/0/invoice_number')->setValue($this->invoice_prefix.$invoice_number);
+            $patchRequest->setPatches(array($patchAdd, $patchReplace, $patchAddone));
         } else {
-             $patchRequest->setPatches(array($patchReplace));
+            $patchAdd = new \PayPal\Api\Patch();
+            $patchAdd->setOp('add')->setPath('/transactions/0/invoice_number')->setValue($this->invoice_prefix.$invoice_number);
+            $patchRequest->setPatches(array($patchAdd, $patchReplace));
         }
 
         try {
