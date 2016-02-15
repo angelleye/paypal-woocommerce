@@ -341,7 +341,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
                 wp_localize_script( 'wc-checkout', 'wc_checkout_params', apply_filters( 'wc_checkout_params', array(
                     'ajax_url'                  => WC()->ajax_url(),
-                    'ajax_loader_url'           => apply_filters( 'woocommerce_ajax_loader_url', $assets_path . 'images/select2-spinner.gif' ),
                     'update_order_review_nonce' => wp_create_nonce( "update-order-review" ),
                     'apply_coupon_nonce'        => wp_create_nonce( "apply-coupon" ),
                     'option_guest_checkout'     => get_option( 'woocommerce_enable_guest_checkout' ),

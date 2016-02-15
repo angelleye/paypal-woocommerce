@@ -42,7 +42,7 @@ jQuery(function($) {
 			var s_address_2	= address_2;
 		}
 
-		$('#order_methods, #order_review').block({message: null, overlayCSS: {background: '#fff url(' + wc_checkout_params.ajax_loader_url + ') no-repeat center', backgroundSize: '16px 16px', opacity: 0.6}});
+		$('#order_methods, #order_review').block({message: null,overlayCSS: {background: '#fff',opacity: 0.6}});
 
 		var data = {
 			action: 			'woocommerce_update_order_review',
