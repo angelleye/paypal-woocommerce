@@ -55,6 +55,9 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         $this->cancel_url = isset($this->settings['cancel_url']) ? $this->settings['cancel_url'] : site_url();
         $this->allowed_currencies = apply_filters('woocommerce_paypal_plus_allowed_currencies', array('EUR', 'CAD'));
         $this->enabled = $this->settings['enabled'];
+        $this->landing_page = isset($this->settings['landing_page']) ? $this->settings['landing_page'] : 'Login';
+        $this->brand_name = isset($this->settings['brand_name']) ? $this->settings['brand_name'] : get_bloginfo('name');
+        $this->checkout_logo = isset($this->settings['checkout_logo']) ? $this->settings['checkout_logo'] : '';
         // Enable Logs if user configures to debug
         if ($this->debug == 'yes')
             $this->log = new WC_Logger();
@@ -171,6 +174,10 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
      * @return void
      */
     public function init_form_fields() {
+         $require_ssl = '';
+        if (!AngellEYE_Gateway_Paypal::is_ssl()) {
+            $require_ssl = __('This image requires an SSL host.  Please upload your image to <a target="_blank" href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce');
+        }
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -240,6 +247,26 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'text',
                 'description' => __('Please enter an URL for customers to return when they cancel the order in PayPal.', 'woocommerce'),
                 'default' => site_url(),
+            ),
+            'landing_page' => array(
+                'title' => __('Landing Page', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'description' => __('Type of PayPal page to be displayed when a user lands on the PayPal site for checkout. When set to `Billing`, the Non-PayPal account landing page is used. When set to `Login`, the PayPal account login landing page is used.', 'paypal-for-woocommerce'),
+                'options' => array('login' => __('Login', 'paypal-for-woocommerce'),
+                    'billing' => __('Billing', 'paypal-for-woocommerce')),
+                'default' => 'login',
+            ),
+            'brand_name' => array(
+                'title' => __('Brand Name', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('A label that overrides the business name in the PayPal account on the PayPal pages.', 'paypal-for-woocommerce'),
+                'default' => __(get_bloginfo('name'), 'paypal-for-woocommerce')
+            ),
+            'checkout_logo' => array(
+                'title' => __('PayPal Checkout Logo (190x90px)', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('This controls what users see as the logo on PayPal review pages. ', 'paypal-for-woocommerce') . $require_ssl,
+                'default' => ''
             ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
@@ -445,14 +472,24 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             $transaction->setAmount($amount);
             $transaction->setDescription('');
             $transaction->setItemList($items);
-
+            
             $payment = new Payment();
+            if (empty(WC()->session->experience_profile_id)) {
+                WC()->session->experience_profile_id = $this->create_web_experience_profile();
+                if(!empty(WC()->session->experience_profile_id)) {
+                    $payment->setExperienceProfileId(WC()->session->experience_profile_id);
+                }
+            } else {
+                $payment->setExperienceProfileId(WC()->session->experience_profile_id);
+            }
+            
             $payment->setRedirectUrls($redirectUrls);
             $payment->setIntent("sale");
             $payment->setPayer($payer);
             $payment->setTransactions(array($transaction));
 
             $payment->create($this->getAuth());
+            
             $this->add_log(print_r($payment, true));
             //if payment method was PayPal, we need to redirect user to PayPal approval URL
             if ($payment->state == "created" && $payment->payer->payment_method == "paypal") {
@@ -621,6 +658,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
 
                     // Remove cart
                     WC()->cart->empty_cart();
+                    unset(WC()->session->experience_profile_id);
 
                     if (method_exists($order, 'get_checkout_order_received_url')) {
                         $redirect = $order->get_checkout_order_received_url();
@@ -705,4 +743,64 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             return new WP_Error('paypal_plus_refund-error', $ex->getMessage());
         }
     }
+    
+    public function create_web_experience_profile() {
+        $addroverride = '';
+        if(WC()->cart->needs_shipping()) {
+            $addroverride = 1;
+        }
+        $no_shipping = 0;
+        if($this->angelleye_paypal_plus_needs_shipping()) {
+            $no_shipping = 1;
+        } 
+        $default  = wc_get_base_location();
+        $country  = $default['country'];
+        
+        
+        
+        $flowConfig = new \PayPal\Api\FlowConfig();
+        
+        $flowConfig->setLandingPageType($this->landing_page);
+        
+        $presentation = new \PayPal\Api\Presentation();
+        
+        $presentation->setLogoImage($this->checkout_logo)
+                ->setBrandName($this->brand_name)
+                ->setLocaleCode($country);
+        
+        $inputFields = new \PayPal\Api\InputFields();
+        
+        $inputFields->setAllowNote(true)
+                ->setNoShipping($no_shipping)
+                ->setAddressOverride($addroverride);
+        
+        $webProfile = new \PayPal\Api\WebProfile();
+        
+        $webProfile->setName($this->brand_name . uniqid())
+                ->setFlowConfig($flowConfig)
+                ->setPresentation($presentation)
+                ->setInputFields($inputFields);
+        try {
+            $createProfileResponse = $webProfile->create($this->getAuth());
+            return $createProfileResponse->getId();
+        } catch (\PayPal\Exception\PayPalConnectionException $ex) {
+            
+        }
+    }
+    
+    public function angelleye_paypal_plus_needs_shipping() {
+            if (sizeof(WC()->cart->get_cart()) != 0) {
+                foreach (WC()->cart->get_cart() as $key => $value) {
+                    $_product = $value['data'];
+                    if (isset($_product->id) && !empty($_product->id) ) {
+                        $_no_shipping_required = get_post_meta($_product->id, '_no_shipping_required', true);
+                        if( $_no_shipping_required == 'yes' ) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+            } 
+        }
 }
