@@ -225,4 +225,13 @@ jQuery(document).ready(function ($) {
                 /*End Post*/
                 return false;
             });
+            
+            jQuery('.angelleye_enable_notifyurl').change(function () {
+                    var express_notifyurl = jQuery('.angelleye_notifyurl').closest('tr');
+                    if (jQuery(this).is(':checked')) {
+                        express_notifyurl.show();
+                    } else {
+                        express_notifyurl.hide();
+                    }
+                }).change();
 });

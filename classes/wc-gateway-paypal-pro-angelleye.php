@@ -81,6 +81,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->debug				= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
         $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
         $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'no' ? false : true;
+        $this->enable_notifyurl = isset($this->settings['enable_notifyurl']) && $this->settings['enable_notifyurl'] == 'no' ? false : true;
+        $this->notifyurl = '';
+        if($this->enable_notifyurl) {
+            $this->notifyurl = isset($this->settings['notifyurl']) ? $this->settings['notifyurl'] : '';
+        }
         // 3DS
         if ( $this->enable_3dsecure ) {
             $this->centinel_pid		= $this->settings['centinel_pid'];
@@ -264,6 +269,20 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'description' => __( 'Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce' ),
                 'default' => 'yes'
+            ),
+             'enable_notifyurl' => array(
+                'title' => __('Enable PayPal IPN', 'paypal-for-woocommerce'),
+                'label' => __('Enable Instant Payment Notification.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => 'angelleye_enable_notifyurl'
+            ),
+            'notifyurl' => array(
+                'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
+                'class' => 'angelleye_notifyurl'
             ),
             'debug' => array(
                 'title' => __( 'Debug Log', 'woocommerce' ),
@@ -766,7 +785,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 								'desc' => '', 							// Description of the order the customer is purchasing.  127 char max.
 								'custom' => $order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '', 						// Free-form field for your own use.  256 char max.
 								'invnum' => $invoice_number = $this->invoice_id_prefix . preg_replace("/[^0-9,.]/", "", $order->id), // Your own invoice or tracking number
-								'notifyurl' => '', 						// URL for receiving Instant Payment Notifications.  This overrides what your profile is set to use.
+								'notifyurl' => $this->notifyurl, 						// URL for receiving Instant Payment Notifications.  This overrides what your profile is set to use.
 								'recurring' => ''						// Flag to indicate a recurring transaction.  Value should be Y for recurring, or anything other than Y if it's not recurring.  To pass Y here, you must have an established billing agreement with the buyer.
 							);
 
