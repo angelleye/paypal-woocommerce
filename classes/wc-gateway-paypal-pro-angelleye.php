@@ -84,7 +84,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         $this->enable_notifyurl = isset($this->settings['enable_notifyurl']) && $this->settings['enable_notifyurl'] == 'no' ? false : true;
         $this->notifyurl = '';
         if($this->enable_notifyurl) {
-            $this->notifyurl = isset($this->settings['notifyurl']) ? $this->settings['notifyurl'] : '';
+            $this->notifyurl = isset($this->settings['notifyurl']) ? str_replace('&amp;', '&', $this->settings['notifyurl']) : '';
         }
         // 3DS
         if ( $this->enable_3dsecure ) {
