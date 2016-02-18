@@ -455,6 +455,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => array(
                     'Sale' => 'Sale',
                     'Authorization' => 'Authorization',
+                    'Order' => 'Order'
                 ),
                 'default' => 'Sale'
             ),
