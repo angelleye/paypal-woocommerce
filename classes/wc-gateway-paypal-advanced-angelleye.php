@@ -625,6 +625,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 // Generate the HTML For the settings form.
                 $this->generate_settings_html();
             }
+            wp_enqueue_script('wp-color-picker');
+            wp_enqueue_style( 'wp-color-picker' );
             ?>
         </table><!--/.form-table-->
         <script type="text/javascript">
