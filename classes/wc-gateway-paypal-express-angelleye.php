@@ -1214,18 +1214,32 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             ' ( Response Code: ' . $result['ACK'] . ", " .
                             ' TransactionID: ' . $result['PAYMENTINFO_0_TRANSACTIONID'] . ' )');
                     $REVIEW_RESULT = unserialize($this->get_session('RESULT'));
-                    $payerstatus_note = __('Payer Status: ', 'paypal-for-woocommerce');
-                    $payerstatus_note .= ucfirst($REVIEW_RESULT['PAYERSTATUS']);
-                    $order->add_order_note($payerstatus_note);
-                    $addressstatus_note = __('Address Status: ', 'paypal-for-woocommerce');
-                    if( isset($REVIEW_RESULT['ADDRESSSTATUS']) && !empty($REVIEW_RESULT['ADDRESSSTATUS']) ) {
-                    	$addressstatus_note .= ucfirst($REVIEW_RESULT['ADDRESSSTATUS']);
+                    
+                    if( isset($REVIEW_RESULT['PAYERSTATUS']) && !empty($REVIEW_RESULT['PAYERSTATUS']) ) {
+                        $payerstatus_note = __('Payer Status: ', 'paypal-for-woocommerce');
+                        $payerstatus_note .= ucfirst($REVIEW_RESULT['PAYERSTATUS']);
+                        $order->add_order_note($payerstatus_note);
                     }
-                    $order->add_order_note($addressstatus_note);
-                    $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
+                    if( isset($REVIEW_RESULT['ADDRESSSTATUS']) && !empty($REVIEW_RESULT['ADDRESSSTATUS']) ) {
+                        $addressstatus_note = __('Address Status: ', 'paypal-for-woocommerce');
+                    	$addressstatus_note .= ucfirst($REVIEW_RESULT['ADDRESSSTATUS']);
+                        $order->add_order_note($addressstatus_note);
+                    }
+                    
+                    $payment_order_meta = array('_transaction_id' => $result['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->payment_action);
+                    AngellEYE_Gateway_Paypal::angelleye_add_order_meta($order_id, $payment_order_meta);
+                    
+                    
+                    if( $this->payment_action == "Sale" ) {
+                        $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
+                        do_action('woocommerce_checkout_order_processed', $order_id);
+                    } else {
+                        $order->update_status( 'on-hold' );
+                        $order->add_order_note('Payment Action: ' . $this->payment_action);
+                    }
 
                     //add hook
-                    do_action('woocommerce_checkout_order_processed', $order_id);
+                    
                     unset(WC()->session->checkout_form);
                     unset(WC()->session->checkout_form_post_data);
 

@@ -108,6 +108,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('admin_enqueue_scripts', array( $this, 'angelleye_woocommerce_admin_enqueue_scripts' ) );
             add_action( 'wp_ajax_pfw_ed_shipping_bulk_tool', array( $this, 'angelleye_woocommerce_pfw_ed_shipping_bulk_tool' ) );
             add_action( 'woocommerce_checkout_process', array( $this, 'angelleye_paypal_express_checkout_process_checkout_fields' ) );
+            add_filter( 'woocommerce_order_actions', array( $this, 'angelleye_woocommerce_order_actions' ) );
             
         }
 
@@ -1473,7 +1474,53 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         private function set_session($key, $value) {
             WC()->session->$key = $value;
         }
-     
+        
+        public function angelleye_woocommerce_order_actions($order_actions = array()) {
+            global $post;
+            $paypal_payment_action = array();
+            $payment_method = get_post_meta($post->id, '_payment_method', true);
+            $payment_action = get_post_meta($post->id, '_payment_action', true);
+            if( (isset($payment_method) && !empty($payment_method)) &&  (isset($payment_action) && !empty($payment_action))) {
+                switch ($payment_method) { 
+                    case 'paypal_express': { 
+                            switch ($payment_action) { 
+                                case 'Order': 
+                                $paypal_payment_action = array('Order' => array('DoAuthorization', 'DoCapture', 'DoVoid'));  
+                                break;
+                                case 'Authorization': 
+                                $paypal_payment_action = array('Authorization' => array('DoCapture', 'DoReauthorization', 'DoVoid'));  
+                                break;
+                            } 
+                        } 
+                    case 'paypal_pro': { 
+                        switch ($payment_action) { 
+                            case 'Order': { 
+                                $paypal_payment_action = array('Order' => array('DoAuthorization', 'DoCapture', 'DoVoid'));  
+                                break;
+                            
+                            } 
+                        } 
+                    } 
+                } 
+            }
+            
+            if( isset($paypal_payment_action) && !empty($paypal_payment_action)) {
+                
+            }
+            
+            return $order_actions;
+        }
+        
+        /**
+         * $_transaction_id, $payment_action, $gateway_name
+         * @param type $order_id
+         */
+        public function angelleye_add_order_meta($order_id, $payment_order_meta) {
+            foreach ($payment_order_meta as $key => $value) {
+               update_post_meta($order_id, $key, $value);  
+            }
+        }
+    
     }
 }
 new AngellEYE_Gateway_Paypal();
