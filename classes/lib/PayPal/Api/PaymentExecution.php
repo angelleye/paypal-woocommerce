@@ -11,16 +11,17 @@ use PayPal\Common\PayPalModel;
  *
  * @package PayPal\Api
  *
- * @property string payer_id
+ * @property string                    payer_id
+ * @property string                    carrier_account_id
  * @property \PayPal\Api\Transaction[] transactions
  */
 class PaymentExecution extends PayPalModel
 {
     /**
-     * PayPal assigned Payer ID returned in the approval return url.
+     * The ID of the Payer, passed in the `return_url` by PayPal.
      *
      * @param string $payer_id
-     * 
+     *
      * @return $this
      */
     public function setPayerId($payer_id)
@@ -30,7 +31,7 @@ class PaymentExecution extends PayPalModel
     }
 
     /**
-     * PayPal assigned Payer ID returned in the approval return url.
+     * The ID of the Payer, passed in the `return_url` by PayPal.
      *
      * @return string
      */
@@ -40,10 +41,33 @@ class PaymentExecution extends PayPalModel
     }
 
     /**
-     * Transaction information to be used at the time of execute payment. Only amount and shipping_address can be updated in execute payment
+     * Carrier account id for a carrier billing payment. For a carrier billing payment, payer_id is not applicable.
+     *
+     * @param string $carrier_account_id
+     *
+     * @return $this
+     */
+    public function setCarrierAccountId($carrier_account_id)
+    {
+        $this->carrier_account_id = $carrier_account_id;
+        return $this;
+    }
+
+    /**
+     * Carrier account id for a carrier billing payment. For a carrier billing payment, payer_id is not applicable.
+     *
+     * @return string
+     */
+    public function getCarrierAccountId()
+    {
+        return $this->carrier_account_id;
+    }
+
+    /**
+     * Transactional details including the amount and item details.
      *
      * @param \PayPal\Api\Transaction[] $transactions
-     * 
+     *
      * @return $this
      */
     public function setTransactions($transactions)
@@ -53,7 +77,7 @@ class PaymentExecution extends PayPalModel
     }
 
     /**
-     * Transaction information to be used at the time of execute payment. Only amount and shipping_address can be updated in execute payment
+     * Transactional details including the amount and item details.
      *
      * @return \PayPal\Api\Transaction[]
      */

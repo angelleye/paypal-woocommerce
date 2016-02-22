@@ -122,7 +122,6 @@ class PayPalModel
      */
     public function __set($key, $value)
     {
-        ModelAccessorValidator::validate($this, $this->convertToCamelCase($key));
         if (!is_array($value) && $value === null) {
             $this->__unset($key);
         } else {
@@ -249,9 +248,9 @@ class PayPalModel
 
     private function assignValue($key, $value)
     {
-        // If we find the getter setter, use that, otherwise use magic method.
-        if (ModelAccessorValidator::validate($this, $this->convertToCamelCase($key))) {
-            $setter = "set" . $this->convertToCamelCase($key);
+        $setter = 'set'. $this->convertToCamelCase($key);
+        // If we find the setter, use that, otherwise use magic method.
+        if (method_exists($this, $setter)) {
             $this->$setter($value);
         } else {
             $this->__set($key, $value);

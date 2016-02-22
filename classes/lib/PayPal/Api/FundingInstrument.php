@@ -7,28 +7,21 @@ use PayPal\Common\PayPalModel;
 /**
  * Class FundingInstrument
  *
- * A resource representing a Payer's funding instrument.
+ * A resource representing a Payer's funding instrument. An instance of this schema is valid if and only if it is valid against exactly one of these supported properties
  *
  * @package PayPal\Api
  *
- * @property \PayPal\Api\CreditCard credit_card
- * @property \PayPal\Api\ExtendedBankAccount bank_account
+ * @property \PayPal\Api\CreditCard      credit_card
  * @property \PayPal\Api\CreditCardToken credit_card_token
- * @property \PayPal\Api\Incentive incentive
- * @property \PayPal\Api\PaymentCard payment_card
- * @property \PayPal\Api\PaymentCardToken payment_card_token
- * @property \PayPal\Api\BankToken bank_account_token
- * @property \PayPal\Api\Credit credit
- * @property \PayPal\Api\CarrierAccountToken carrier_account_token
- *
+ * @property \PayPal\Api\Billing         billing
  */
 class FundingInstrument extends PayPalModel
 {
     /**
-     * Credit Card information.
+     * Credit Card instrument.
      *
      * @param \PayPal\Api\CreditCard $credit_card
-     * 
+     *
      * @return $this
      */
     public function setCreditCard($credit_card)
@@ -38,7 +31,7 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Credit Card information.
+     * Credit Card instrument.
      *
      * @return \PayPal\Api\CreditCard
      */
@@ -48,10 +41,10 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Credit Card information.
+     * PayPal vaulted credit Card instrument.
      *
      * @param \PayPal\Api\CreditCardToken $credit_card_token
-     * 
+     *
      * @return $this
      */
     public function setCreditCardToken($credit_card_token)
@@ -61,7 +54,7 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Credit Card information.
+     * PayPal vaulted credit Card instrument.
      *
      * @return \PayPal\Api\CreditCardToken
      */
@@ -73,8 +66,9 @@ class FundingInstrument extends PayPalModel
     /**
      * Payment Card information.
      *
+     * @deprecated Not publicly available
      * @param \PayPal\Api\PaymentCard $payment_card
-     * 
+     *
      * @return $this
      */
     public function setPaymentCard($payment_card)
@@ -86,6 +80,7 @@ class FundingInstrument extends PayPalModel
     /**
      * Payment Card information.
      *
+     * @deprecated Not publicly available
      * @return \PayPal\Api\PaymentCard
      */
     public function getPaymentCard()
@@ -94,33 +89,11 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Payment card token information.
-     *
-     * @param \PayPal\Api\PaymentCardToken $payment_card_token
-     * 
-     * @return $this
-     */
-    public function setPaymentCardToken($payment_card_token)
-    {
-        $this->payment_card_token = $payment_card_token;
-        return $this;
-    }
-
-    /**
-     * Payment card token information.
-     *
-     * @return \PayPal\Api\PaymentCardToken
-     */
-    public function getPaymentCardToken()
-    {
-        return $this->payment_card_token;
-    }
-
-    /**
      * Bank Account information.
      *
+     * @deprecated Not publicly available
      * @param \PayPal\Api\ExtendedBankAccount $bank_account
-     * 
+     *
      * @return $this
      */
     public function setBankAccount($bank_account)
@@ -132,6 +105,7 @@ class FundingInstrument extends PayPalModel
     /**
      * Bank Account information.
      *
+     * @deprecated Not publicly available
      * @return \PayPal\Api\ExtendedBankAccount
      */
     public function getBankAccount()
@@ -140,10 +114,11 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Bank Account information.
+     * Vaulted bank account instrument.
      *
+     * @deprecated Not publicly available
      * @param \PayPal\Api\BankToken $bank_account_token
-     * 
+     *
      * @return $this
      */
     public function setBankAccountToken($bank_account_token)
@@ -153,8 +128,9 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Bank Account information.
+     * Vaulted bank account instrument.
      *
+     * @deprecated Not publicly available
      * @return \PayPal\Api\BankToken
      */
     public function getBankAccountToken()
@@ -163,10 +139,11 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Credit funding information.
+     * PayPal credit funding instrument.
      *
+     * @deprecated Not publicly available
      * @param \PayPal\Api\Credit $credit
-     * 
+     *
      * @return $this
      */
     public function setCredit($credit)
@@ -176,8 +153,9 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Credit funding information.
+     * PayPal credit funding instrument.
      *
+     * @deprecated Not publicly available
      * @return \PayPal\Api\Credit
      */
     public function getCredit()
@@ -186,8 +164,9 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Incentive funding information.
+     * Incentive funding instrument.
      *
+     * @deprecated Not publicly available
      * @param \PayPal\Api\Incentive $incentive
      *
      * @return $this
@@ -199,8 +178,9 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Incentive funding information.
+     * Incentive funding instrument.
      *
+     * @deprecated Not publicly available
      * @return \PayPal\Api\Incentive
      */
     public function getIncentive()
@@ -209,8 +189,34 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Carrier account token information.
+     * External funding instrument.
      *
+     * @deprecated Not publicly available
+     * @param \PayPal\Api\ExternalFunding $external_funding
+     *
+     * @return $this
+     */
+    public function setExternalFunding($external_funding)
+    {
+        $this->external_funding = $external_funding;
+        return $this;
+    }
+
+    /**
+     * External funding instrument.
+     *
+     * @deprecated Not publicly available
+     * @return \PayPal\Api\ExternalFunding
+     */
+    public function getExternalFunding()
+    {
+        return $this->external_funding;
+    }
+
+    /**
+     * Carrier account token instrument.
+     *
+     * @deprecated Not publicly available
      * @param \PayPal\Api\CarrierAccountToken $carrier_account_token
      *
      * @return $this
@@ -222,13 +228,112 @@ class FundingInstrument extends PayPalModel
     }
 
     /**
-     * Carrier account token information.
+     * Carrier account token instrument.
      *
+     * @deprecated Not publicly available
      * @return \PayPal\Api\CarrierAccountToken
      */
     public function getCarrierAccountToken()
     {
         return $this->carrier_account_token;
+    }
+
+    /**
+     * Carrier account instrument
+     *
+     * @deprecated Not publicly available
+     * @param \PayPal\Api\CarrierAccount $carrier_account
+     *
+     * @return $this
+     */
+    public function setCarrierAccount($carrier_account)
+    {
+        $this->carrier_account = $carrier_account;
+        return $this;
+    }
+
+    /**
+     * Carrier account instrument
+     *
+     * @deprecated Not publicly available
+     * @return \PayPal\Api\CarrierAccount
+     */
+    public function getCarrierAccount()
+    {
+        return $this->carrier_account;
+    }
+
+    /**
+     * Private Label Card funding instrument. These are store cards provided by merchants to drive business with value to customer with convenience and rewards.
+     *
+     * @deprecated Not publicly available
+     * @param \PayPal\Api\PrivateLabelCard $private_label_card
+     *
+     * @return $this
+     */
+    public function setPrivateLabelCard($private_label_card)
+    {
+        $this->private_label_card = $private_label_card;
+        return $this;
+    }
+
+    /**
+     * Private Label Card funding instrument. These are store cards provided by merchants to drive business with value to customer with convenience and rewards.
+     *
+     * @deprecated Not publicly available
+     * @return \PayPal\Api\PrivateLabelCard
+     */
+    public function getPrivateLabelCard()
+    {
+        return $this->private_label_card;
+    }
+
+    /**
+     * Billing instrument that references pre-approval information for the payment
+     *
+     * @param \PayPal\Api\Billing $billing
+     *
+     * @return $this
+     */
+    public function setBilling($billing)
+    {
+        $this->billing = $billing;
+        return $this;
+    }
+
+    /**
+     * Billing instrument that references pre-approval information for the payment
+     *
+     * @return \PayPal\Api\Billing
+     */
+    public function getBilling()
+    {
+        return $this->billing;
+    }
+
+    /**
+     * Alternate Payment  information - Mostly regional payment providers. For e.g iDEAL in Netherlands
+     *
+     * @deprecated Not publicly available
+     * @param \PayPal\Api\AlternatePayment $alternate_payment
+     *
+     * @return $this
+     */
+    public function setAlternatePayment($alternate_payment)
+    {
+        $this->alternate_payment = $alternate_payment;
+        return $this;
+    }
+
+    /**
+     * Alternate Payment  information - Mostly regional payment providers. For e.g iDEAL in Netherlands
+     *
+     * @deprecated Not publicly available
+     * @return \PayPal\Api\AlternatePayment
+     */
+    public function getAlternatePayment()
+    {
+        return $this->alternate_payment;
     }
 
 }
