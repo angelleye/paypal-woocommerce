@@ -1227,7 +1227,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                     
                     $payment_order_meta = array('_transaction_id' => $result['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->payment_action);
-                    AngellEYE_Gateway_Paypal::angelleye_add_order_meta($order_id, $payment_order_meta);
+                    AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                     
                     
                     if( $this->payment_action == "Sale" ) {
@@ -1997,7 +1997,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 jQuery(document).ready(function(){
                                     if (jQuery(".checkout-button").is("input")) {
                                         jQuery(".checkout-button").val("' . $checkout_button_display_text . '");
-+                                    } else jQuery(".checkout-button").html("<span>' . $checkout_button_display_text . '</span>");
+                                    } else {
+                                        jQuery(".checkout-button").html("<span>' . $checkout_button_display_text . '</span>");
+                                    }
                                 });
                               </script>';
                 } elseif (empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart'] == 'yes') {
