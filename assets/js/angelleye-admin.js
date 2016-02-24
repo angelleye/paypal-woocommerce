@@ -52,6 +52,7 @@ jQuery(document).ready(function ($) {
     if (angelleye_admin.is_ssl=="yes") {
         jQuery("#woocommerce_paypal_express_checkout_logo").after('<a href="#" id="checkout_logo" class="button_upload button">Upload</a>');
         jQuery("#woocommerce_paypal_express_checkout_logo_hdrimg").after('<a href="#" id="checkout_logo_hdrimg" class="button_upload button">Upload</a>');
+        jQuery("#woocommerce_paypal_plus_checkout_logo").after('<a href="#" id="checkout_logo" class="button_upload button">Upload</a>');
     }
     //PayPal Pro
     jQuery("#woocommerce_paypal_pro_card_icon").css({float: "left"});
@@ -225,4 +226,13 @@ jQuery(document).ready(function ($) {
                 /*End Post*/
                 return false;
             });
+            
+            jQuery('.angelleye_enable_notifyurl').change(function () {
+                    var express_notifyurl = jQuery('.angelleye_notifyurl').closest('tr');
+                    if (jQuery(this).is(':checked')) {
+                        express_notifyurl.show();
+                    } else {
+                        express_notifyurl.hide();
+                    }
+                }).change();
 });

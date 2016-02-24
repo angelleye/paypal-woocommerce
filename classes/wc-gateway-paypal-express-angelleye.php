@@ -63,6 +63,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
         $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
         $this->customer_id = get_current_user_id();
+        $this->enable_notifyurl = isset($this->settings['enable_notifyurl']) && $this->settings['enable_notifyurl'] == 'no' ? false : true;
+        $this->notifyurl = '';
+        if($this->enable_notifyurl) {
+            $this->notifyurl = isset($this->settings['notifyurl']) ? str_replace('&amp;', '&', $this->settings['notifyurl']) : '';
+        }
 
         if ($this->not_us){
             $this->show_paypal_credit = 'no';
@@ -473,6 +478,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
                 'default' => 'yes'
             ),
+            'enable_notifyurl' => array(
+                'title' => __('Enable PayPal IPN', 'paypal-for-woocommerce'),
+                'label' => __('Enable Instant Payment Notification.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => 'angelleye_enable_notifyurl'
+            ),
+            'notifyurl' => array(
+                'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
+                'class' => 'angelleye_notifyurl'
+            ),
+            
                 /* 'Locale' => array(
                   'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                   'type' => 'select',
@@ -1744,7 +1764,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => '', // Free-form field for your own use.  256 char max.
             'invnum' => $this->invoice_id_prefix . $invoice_number, // Your own invoice or tracking number.  127 char max.
-            'notifyurl' => '', // URL for receiving Instant Payment Notifications
+            'notifyurl' => $this->notifyurl, // URL for receiving Instant Payment Notifications
             'shiptoname' => $shipping_first_name . ' ' . $shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
             'shiptostreet' => $shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
             'shiptostreet2' => $shipping_address_2, // Second street address.  100 char max.
