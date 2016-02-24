@@ -292,7 +292,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             );
             wp_localize_script( 'angelleye_admin', 'angelleye_admin', $translation_array );
             wp_enqueue_script( 'angelleye_admin');
-            wp_enqueue_style( 'wp-color-picker' );
         }
 
         /**
