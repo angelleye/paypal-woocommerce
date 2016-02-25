@@ -750,7 +750,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 		 * Generate PayPal request
 		 */
 		$DPFields = array(
-							'paymentaction' => $this->payment_action == 'Authorization' ? 'Authorization' : 'Sale', 						// How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
+							'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', 						// How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
 							'ipaddress' => $this->get_user_ip(), 							// Required.  IP address of the payer's browser.
 							'returnfmfdetails' => '' 					// Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
 						);
@@ -966,8 +966,16 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 			$cvv2_response_order_note .= $cvv2_response_message != '' ? ' - ' . $cvv2_response_message : '';
 			$order->add_order_note($cvv2_response_order_note);
 
+                        $payment_order_meta = array('_transaction_id' => $PayPalResult['TRANSACTIONID'], '_payment_action' => $this->payment_action);
+                        AngellEYE_Utility::angelleye_add_order_meta($order->id, $payment_order_meta);
+                    
 			// Payment complete
-			$order->payment_complete($PayPalResult['TRANSACTIONID']);
+                        if( $this->payment_action == "Sale" ) {
+                            $order->payment_complete($PayPalResult['TRANSACTIONID']);
+                        } else {
+                            $order->update_status( 'on-hold' );
+                            $order->add_order_note('Payment Action: ' . $this->payment_action);
+                        }
 			
 			// Remove cart
 			WC()->cart->empty_cart();

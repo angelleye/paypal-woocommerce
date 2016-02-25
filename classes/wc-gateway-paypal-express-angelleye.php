@@ -455,6 +455,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => array(
                     'Sale' => 'Sale',
                     'Authorization' => 'Authorization',
+                    'Order' => 'Order'
                 ),
                 'default' => 'Sale'
             ),
@@ -1213,18 +1214,32 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             ' ( Response Code: ' . $result['ACK'] . ", " .
                             ' TransactionID: ' . $result['PAYMENTINFO_0_TRANSACTIONID'] . ' )');
                     $REVIEW_RESULT = unserialize($this->get_session('RESULT'));
-                    $payerstatus_note = __('Payer Status: ', 'paypal-for-woocommerce');
-                    $payerstatus_note .= ucfirst($REVIEW_RESULT['PAYERSTATUS']);
-                    $order->add_order_note($payerstatus_note);
-                    $addressstatus_note = __('Address Status: ', 'paypal-for-woocommerce');
-                    if( isset($REVIEW_RESULT['ADDRESSSTATUS']) && !empty($REVIEW_RESULT['ADDRESSSTATUS']) ) {
-                    	$addressstatus_note .= ucfirst($REVIEW_RESULT['ADDRESSSTATUS']);
+                    
+                    if( isset($REVIEW_RESULT['PAYERSTATUS']) && !empty($REVIEW_RESULT['PAYERSTATUS']) ) {
+                        $payerstatus_note = __('Payer Status: ', 'paypal-for-woocommerce');
+                        $payerstatus_note .= ucfirst($REVIEW_RESULT['PAYERSTATUS']);
+                        $order->add_order_note($payerstatus_note);
                     }
-                    $order->add_order_note($addressstatus_note);
-                    $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
+                    if( isset($REVIEW_RESULT['ADDRESSSTATUS']) && !empty($REVIEW_RESULT['ADDRESSSTATUS']) ) {
+                        $addressstatus_note = __('Address Status: ', 'paypal-for-woocommerce');
+                    	$addressstatus_note .= ucfirst($REVIEW_RESULT['ADDRESSSTATUS']);
+                        $order->add_order_note($addressstatus_note);
+                    }
+                    
+                    $payment_order_meta = array('_transaction_id' => $result['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->payment_action);
+                    AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
+                    
+                    
+                    if( $this->payment_action == "Sale" ) {
+                        $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
+                        do_action('woocommerce_checkout_order_processed', $order_id);
+                    } else {
+                        $order->update_status( 'on-hold' );
+                        $order->add_order_note('Payment Action: ' . $this->payment_action);
+                    }
 
                     //add hook
-                    do_action('woocommerce_checkout_order_processed', $order_id);
+                    
                     unset(WC()->session->checkout_form);
                     unset(WC()->session->checkout_form_post_data);
 
@@ -1457,7 +1472,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
             'notetext' => isset($posted['order_comments']) ? $posted['order_comments'] : '', // Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', // The payment method type.  Specify the value InstantPaymentOnly.
-            'paymentaction' => $this->payment_action == 'Authorization' ? 'Authorization' : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
+            'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
             'paymentrequestid' => '', // A unique identifier of the specific payment request, which is required for parallel payments.
             'sellerpaypalaccountid' => ''   // A unique identifier for the merchant.  For parallel payments, this field is required and must contain the Payer ID or the email address of the merchant.
         );
@@ -1775,7 +1790,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
             'notetext' => $this->get_session('customer_notes'), // Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', // The payment method type.  Specify the value InstantPaymentOnly.
-            'paymentaction' => $this->payment_action == 'Authorization' ? 'Authorization' : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
+            'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
             'paymentrequestid' => '', // A unique identifier of the specific payment request, which is required for parallel payments.
             'sellerpaypalaccountid' => '', // A unique identifier for the merchant.  For parallel payments, this field is required and must contain the Payer ID or the email address of the merchant.
             'sellerid' => '', // The unique non-changing identifer for the seller at the marketplace site.  This ID is not displayed.
@@ -1982,7 +1997,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 jQuery(document).ready(function(){
                                     if (jQuery(".checkout-button").is("input")) {
                                         jQuery(".checkout-button").val("' . $checkout_button_display_text . '");
-+                                    } else jQuery(".checkout-button").html("<span>' . $checkout_button_display_text . '</span>");
+                                    } else {
+                                        jQuery(".checkout-button").html("<span>' . $checkout_button_display_text . '</span>");
+                                    }
                                 });
                               </script>';
                 } elseif (empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart'] == 'yes') {
