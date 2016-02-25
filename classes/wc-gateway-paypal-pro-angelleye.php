@@ -86,6 +86,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         if($this->enable_notifyurl) {
             $this->notifyurl = isset($this->settings['notifyurl']) ? str_replace('&amp;', '&', $this->settings['notifyurl']) : '';
         }
+        $this->enable_cardholder_first_last_name = isset($this->settings['enable_cardholder_first_last_name']) && $this->settings['enable_cardholder_first_last_name'] == 'yes' ? true : false;
         // 3DS
         if ( $this->enable_3dsecure ) {
             $this->centinel_pid		= $this->settings['centinel_pid'];
@@ -125,6 +126,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
         add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
         /* 2.0.0 */
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+        
+        if($this->enable_cardholder_first_last_name) {
+            add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
+        }
     }
     /**
      * Initialise Gateway Settings Form Fields
@@ -283,6 +288,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'text',
                 'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
                 'class' => 'angelleye_notifyurl'
+            ),
+            'enable_cardholder_first_last_name' => array(
+                'title' => __('Enable Cardholder first and last name', 'paypal-for-woocommerce'),
+                'label' => __('Enable Cardholder first and last name', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Display cardholder first and last name in credit card form.', 'paypal-for-woocommerce'),
+                'default' => 'no'
             ),
             'debug' => array(
                 'title' => __( 'Debug Log', 'woocommerce' ),
@@ -729,6 +741,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $GLOBALS['wp_rewrite'] = new WP_Rewrite();	
 		}
 		
+                $firstname    = isset( $_POST['paypal_pro-card-cardholder-first'] ) &&  !empty($_POST['paypal_pro-card-cardholder-first']) ? wc_clean( $_POST['paypal_pro-card-cardholder-first'] ) : $order->billing_first_name;
+                $lastname    = isset( $_POST['paypal_pro-card-cardholder-last'] ) && !empty($_POST['paypal_pro-card-cardholder-last']) ? wc_clean( $_POST['paypal_pro-card-cardholder-last'] ) : $order->billing_last_name;
+                
 		$card_exp = $card_exp_month . $card_exp_year;
 		
 		/**
@@ -751,8 +766,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
 						
 		$PayerInfo = array(
 							'email' => $order->billing_email, 								// Email address of payer.
-							'firstname' => $order->billing_first_name, 							// Required.  Payer's first name.
-							'lastname' => $order->billing_last_name 							// Required.  Payer's last name.
+							'firstname' => $firstname, 							// Required.  Payer's first name.
+							'lastname' => $lastname 							// Required.  Payer's last name.
 						);
 						
 		$BillingAddress = array(
@@ -1130,6 +1145,23 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             return new WP_Error( 'ec_refund-error', $pc_message );
         }
 
+    }
+    
+    public function angelleye_woocommerce_credit_card_form_start($current_id) {
+        if($this->enable_cardholder_first_last_name) {
+            $fields['card-cardholder-first']  = '<p class="form-row form-row-first">
+                    <label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Cardholder first name', 'paypal-for-woocommerce' ) . '</label>
+                    <input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__( 'First name', 'paypal-for-woocommerce' ) . '" name="' . $current_id . '-card-cardholder-first' . '" />
+            </p>';
+            $fields['card-cardholder-last']  = '<p class="form-row form-row-last">
+                    <label for="' . esc_attr( $this->id ) . '-card-startdate">' . __( 'Cardholder last name', 'paypal-for-woocommerce' ) . '</label>
+                    <input id="' . esc_attr( $this->id ) . '-card-startdate" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __( 'Last name', 'paypal-for-woocommerce' ) . '" name="' . $current_id . '-card-cardholder-last' . '" />
+            </p>';
+            
+            foreach ( $fields as $field ) {
+                    echo $field;
+            }
+        }
     }
 
 }
