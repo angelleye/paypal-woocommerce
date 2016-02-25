@@ -741,8 +741,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $GLOBALS['wp_rewrite'] = new WP_Rewrite();	
 		}
 		
-                $firstname    = isset( $_POST['paypal_pro-card-cardholder-first'] ) ? wc_clean( $_POST['paypal_pro-card-cardholder-first'] ) : $order->billing_first_name;
-                $lastname    = isset( $_POST['paypal_pro-card-cardholder-last'] ) ? wc_clean( $_POST['paypal_pro-card-cardholder-last'] ) : $order->billing_last_name;
+                $firstname    = isset( $_POST['paypal_pro-card-cardholder-first'] ) &&  !empty($_POST['paypal_pro-card-cardholder-first']) ? wc_clean( $_POST['paypal_pro-card-cardholder-first'] ) : $order->billing_first_name;
+                $lastname    = isset( $_POST['paypal_pro-card-cardholder-last'] ) && !empty($_POST['paypal_pro-card-cardholder-last']) ? wc_clean( $_POST['paypal_pro-card-cardholder-last'] ) : $order->billing_last_name;
                 
 		$card_exp = $card_exp_month . $card_exp_year;
 		
