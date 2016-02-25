@@ -1472,7 +1472,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
             'notetext' => isset($posted['order_comments']) ? $posted['order_comments'] : '', // Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', // The payment method type.  Specify the value InstantPaymentOnly.
-            'paymentaction' => $this->payment_action == 'Authorization' ? 'Authorization' : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
+            'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
             'paymentrequestid' => '', // A unique identifier of the specific payment request, which is required for parallel payments.
             'sellerpaypalaccountid' => ''   // A unique identifier for the merchant.  For parallel payments, this field is required and must contain the Payer ID or the email address of the merchant.
         );
@@ -1790,7 +1790,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
             'notetext' => $this->get_session('customer_notes'), // Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', // The payment method type.  Specify the value InstantPaymentOnly.
-            'paymentaction' => $this->payment_action == 'Authorization' ? 'Authorization' : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
+            'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
             'paymentrequestid' => '', // A unique identifier of the specific payment request, which is required for parallel payments.
             'sellerpaypalaccountid' => '', // A unique identifier for the merchant.  For parallel payments, this field is required and must contain the Payer ID or the email address of the merchant.
             'sellerid' => '', // The unique non-changing identifer for the seller at the marketplace site.  This ID is not displayed.

@@ -170,7 +170,7 @@ class AngellEYE_Utility {
 
     public function pfw_do_capture($order, $transaction_id = null, $capture_total = null) {
         $this->add_ec_angelleye_paypal_php_library();
-        $this->ec_add_log('pfw_do_capture function call');
+        $this->ec_add_log('DoCapture API call');
         $DataArray = array(
             'AUTHORIZATIONID' => $transaction_id,
             'AMT' => $capture_total,
@@ -183,6 +183,7 @@ class AngellEYE_Utility {
             'DCFields' => $DataArray
         );
         $do_capture_result = $this->paypal->DoCapture($PayPalRequest);
+        $this->angelleye_write_request_response_api_log($do_capture_result);
         $ack = strtoupper($do_capture_result["ACK"]);
         if ($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING") {
             $order->add_order_note(__('PayPal DoCapture', 'paypal-for-woocommerce') .
@@ -257,7 +258,7 @@ class AngellEYE_Utility {
 
     public function call_do_void($order) {
         $this->add_ec_angelleye_paypal_php_library();
-        $this->ec_add_log('call_do_void function call');
+        $this->ec_add_log('DoVoid API call');
         $transaction_id = get_post_meta($order->id, '_transaction_id', true);
         if (isset($transaction_id) && !empty($transaction_id)) {
             $DVFields = array(
@@ -267,6 +268,7 @@ class AngellEYE_Utility {
             );
             $PayPalRequestData = array('DVFields' => $DVFields);
             $do_void_result = $this->paypal->DoVoid($PayPalRequestData);
+            $this->angelleye_write_request_response_api_log($do_void_result);
             $ack = strtoupper($do_void_result["ACK"]);
             if ($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING") {
                 $order->add_order_note(__('PayPal DoVoid', 'paypal-for-woocommerce') .
@@ -317,7 +319,7 @@ class AngellEYE_Utility {
 
     public function call_do_reauthorization($order) {
         $this->add_ec_angelleye_paypal_php_library();
-        $this->ec_add_log('call_do_reauthorization function call');
+        $this->ec_add_log('DoReauthorization API call');
         $transaction_id = get_post_meta($order->id, '_transaction_id', true);
         if (isset($transaction_id) && !empty($transaction_id)) {
             $DRFields = array(
@@ -328,6 +330,7 @@ class AngellEYE_Utility {
             );
             $PayPalRequestData = array('DRFields' => $DRFields);
             $do_reauthorization_result = $this->paypal->DoReauthorization($PayPalRequestData);
+            $this->angelleye_write_request_response_api_log($do_reauthorization_result);
             $ack = strtoupper($do_reauthorization_result["ACK"]);
             if ($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING") {
                 $order->add_order_note(__('PayPal DoReauthorization', 'paypal-for-woocommerce') .
@@ -398,7 +401,7 @@ class AngellEYE_Utility {
 
     public function call_do_authorization($order) {
         $this->add_ec_angelleye_paypal_php_library();
-        $this->ec_add_log('call_do_reauthorization function call');
+        $this->ec_add_log('DoAuthorization API call');
         $transaction_id = get_post_meta($order->id, '_transaction_id', true);
         if (isset($transaction_id) && !empty($transaction_id)) {
             $DRFields = array(
@@ -409,6 +412,7 @@ class AngellEYE_Utility {
             );
             $PayPalRequestData = array('DAFields' => $DRFields);
             $do_reauthorization_result = $this->paypal->DoAuthorization($PayPalRequestData);
+            $this->angelleye_write_request_response_api_log($do_reauthorization_result);
             $ack = strtoupper($do_reauthorization_result["ACK"]);
             if ($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING") {
                 $order->add_order_note(__('PayPal DoReauthorization', 'paypal-for-woocommerce') .
@@ -439,7 +443,7 @@ class AngellEYE_Utility {
         }
     }
 
-    function ec_add_log($message) {
+    public function ec_add_log($message) {
         if ($this->ec_debug == 'yes') {
             if (empty($this->log))
                 $this->log = new WC_Logger();
@@ -504,6 +508,13 @@ class AngellEYE_Utility {
             return $boolean;
         }
         
+    }
+    
+    public function angelleye_write_request_response_api_log($PayPalResult) {
+        $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+        $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+        $this->ec_add_log('Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
+        $this->ec_add_log('Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
     }
 
 }
