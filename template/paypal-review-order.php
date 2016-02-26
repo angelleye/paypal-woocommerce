@@ -310,8 +310,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         do_action( 'angelleye_review_order_before_place_order' );
 
         echo $cancel_button;
-        echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
-
+        echo sprintf( '<input type="submit" class="button" onclick=" jQuery(this).attr(\'disabled\', \'disabled\').val(\'%1$s\'); jQuery(this).parents(\'form\').submit(); return false;" value="' . esc_attr__( 'Place Order', 'paypal-for-woocommerce' ) . '"/ ></p>' , esc_attr__( 'Processing', 'paypal-for-woocommerce' ) );
         do_action( 'angelleye_review_order_after_place_order' );
     }
     ?>
