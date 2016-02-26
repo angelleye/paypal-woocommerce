@@ -74,6 +74,13 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
 .woocommerce-select.woocommerce-cc-month.mr5 {
     margin-right: 5px;
 }
+.woocommerce-checkout #payment div.payment_box .wc-credit-card-form-cardholder, 
+#add_payment_method #payment div.payment_box .wc-credit-card-form-cardholder {
+background-position: right center;
+    background-repeat: no-repeat;
+    font-size: 1.5em;
+    padding: 8px;
+}
 @media only screen 
   and (min-device-width: 320px) 
   and (max-device-width: 480px) {
