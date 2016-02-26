@@ -85,7 +85,7 @@ class AngellEYE_Utility {
                 case 'paypal_express': {
                         switch ($payment_action) {
                             case ($payment_action == 'Order'):
-                                $paypal_payment_action = array('DoCapture', 'DoVoid');
+                                $paypal_payment_action = array('DoCapture', 'DoVoid', 'DoAuthorization');
                                 break;
                             case ($payment_action == 'Authorization' || $payment_action == 'DoReauthorization'):
                                 $paypal_payment_action = array('DoCapture', 'DoReauthorization', 'DoVoid');
@@ -307,10 +307,6 @@ class AngellEYE_Utility {
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
-        // ensure the authorization is still valid for capture
-        if ($this->has_authorization_expired($order->id)) {
-            return;
-        }
         $this->payment_method = get_post_meta($order->id, '_payment_method', true);
         remove_action('woocommerce_order_action_wc_paypal_express_doreauthorization', array($this, 'angelleye_wc_paypal_express_doreauthorization'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
@@ -370,10 +366,6 @@ class AngellEYE_Utility {
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
-        // ensure the authorization is still valid for capture
-        if ($this->has_authorization_expired($order->id)) {
-            return;
-        }
         $this->payment_method = get_post_meta($order->id, '_payment_method', true);
         remove_action('woocommerce_order_action_wc_paypal_pro_doreauthorization', array($this, 'angelleye_wc_paypal_pro_doreauthorization'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
@@ -389,10 +381,6 @@ class AngellEYE_Utility {
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
-        // ensure the authorization is still valid for capture
-        if ($this->has_authorization_expired($order->id)) {
-            return;
-        }
         $this->payment_method = get_post_meta($order->id, '_payment_method', true);
         remove_action('woocommerce_order_action_wc_paypal_express_doauthorization', array($this, 'angelleye_wc_paypal_express_doauthorization'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
@@ -407,38 +395,36 @@ class AngellEYE_Utility {
             $DRFields = array(
                 'TRANSACTIONID' => $transaction_id, // Required. The value of a previously authorized transaction ID returned by PayPal.
                 'AMT' => $order->order_total, // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
-                'CURRENCYCODE' => get_woocommerce_currency(), // Three-character currency code.
-                'TRANSACTIONENTITY' => 'Order'
+                'CURRENCYCODE' => get_woocommerce_currency()
             );
             $PayPalRequestData = array('DAFields' => $DRFields);
-            $do_reauthorization_result = $this->paypal->DoAuthorization($PayPalRequestData);
-            $this->angelleye_write_request_response_api_log($do_reauthorization_result);
-            $ack = strtoupper($do_reauthorization_result["ACK"]);
+            $do_authorization_result = $this->paypal->DoAuthorization($PayPalRequestData);
+            $this->angelleye_write_request_response_api_log($do_authorization_result);
+            $ack = strtoupper($do_authorization_result["ACK"]);
             if ($ack == "SUCCESS" || $ack == "SUCCESSWITHWARNING") {
                 $order->add_order_note(__('PayPal DoReauthorization', 'paypal-for-woocommerce') .
-                        ' ( Response Code: ' . $do_reauthorization_result["ACK"] . ", " .
-                        ' DoReauthorization AUTHORIZATIONID: ' . $do_reauthorization_result['AUTHORIZATIONID'] . ' )'
+                        ' ( Response Code: ' . $do_authorization_result["ACK"] . ", " .
+                        ' DoReauthorization AUTHORIZATIONID: ' . $do_authorization_result['TRANSACTIONID'] . ' )'
                 );
-                $payment_order_meta = array('_transaction_id' => $do_reauthorization_result['AUTHORIZATIONID'], '_payment_action' => 'DoReauthorization');
+                $payment_order_meta = array('_transaction_id' => $do_authorization_result['TRANSACTIONID'], '_payment_action' => 'DoAuthorization');
                 self::angelleye_add_order_meta($order->id, $payment_order_meta);
-                $order->update_status('on-hold');
             } else {
-                $ErrorCode = urldecode($do_reauthorization_result["L_ERRORCODE0"]);
-                $ErrorShortMsg = urldecode($do_reauthorization_result["L_SHORTMESSAGE0"]);
-                $ErrorLongMsg = urldecode($do_reauthorization_result["L_LONGMESSAGE0"]);
-                $ErrorSeverityCode = urldecode($do_reauthorization_result["L_SEVERITYCODE0"]);
-                $this->ec_add_log(__('PayPal DoReauthorization API call failed. ', $this->plugin_name));
+                $ErrorCode = urldecode($do_authorization_result["L_ERRORCODE0"]);
+                $ErrorShortMsg = urldecode($do_authorization_result["L_SHORTMESSAGE0"]);
+                $ErrorLongMsg = urldecode($do_authorization_result["L_LONGMESSAGE0"]);
+                $ErrorSeverityCode = urldecode($do_authorization_result["L_SEVERITYCODE0"]);
+                $this->ec_add_log(__('PayPal DoAuthorization API call failed. ', $this->plugin_name));
                 $this->ec_add_log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
                 $this->ec_add_log(__('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg);
                 $this->ec_add_log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
                 $this->ec_add_log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
-                $order->add_order_note(__('PayPal DoReauthorization API call failed. ', $this->plugin_name) .
+                $order->add_order_note(__('PayPal DoAuthorization API call failed. ', $this->plugin_name) .
                         ' ( Detailed Error Message: ' . $ErrorLongMsg . ", " .
                         ' Short Error Message: ' . $ErrorShortMsg . ' )' .
                         ' Error Code: ' . $ErrorCode . ' )' .
                         ' Error Severity Code: ' . $ErrorSeverityCode . ' )'
                 );
-                $this->call_error_email_notifications($subject = 'DoReauthorization failed', $method_name = 'DoReauthorization', $resArray = $do_reauthorization_result);
+                $this->call_error_email_notifications($subject = 'DoAuthorization failed', $method_name = 'DoAuthorization', $resArray = $do_authorization_result);
             }
         }
     }
