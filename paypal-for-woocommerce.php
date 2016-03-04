@@ -269,6 +269,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             require_once('classes/wc-gateway-braintree-angelleye.php');
             require_once('classes/wc-gateway-paypal-express-angelleye.php');
             require_once('classes/wc-gateway-paypal-advanced-angelleye.php');
+            require_once('classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
 
             if (version_compare(phpversion(), '5.3.0', '>=')) {
                 require_once('classes/wc-gateway-paypal-plus-angelleye.php');
@@ -413,9 +414,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $methods[] = 'WC_Gateway_PayPal_Express_AngellEYE';
             $methods[] = 'WC_Gateway_Braintree_AngellEYE';
             $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
+            $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE';
             if (version_compare(phpversion(), '5.3.0', '>=')) {
                 $methods[] = 'WC_Gateway_PayPal_Plus_AngellEYE';
             }
+            
 
             return $methods;
         }

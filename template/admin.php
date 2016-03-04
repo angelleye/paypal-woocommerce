@@ -24,6 +24,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_plus" class="nav-tab <?php echo $gateway == 'paypal_plus' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Plus', $this->plugin_slug); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=wc_gateway_braintree_angelleye" class="nav-tab <?php echo $gateway == 'wc_gateway_braintree_angelleye' ? 'nav-tab-active' : ''; ?>"><?php echo __('Braintree', $this->plugin_slug); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=wc_gateway_paypal_advanced_angelleye" class="nav-tab <?php echo $gateway == 'wc_gateway_paypal_advanced_angelleye' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Advanced', $this->plugin_slug); ?></a>
+            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_credit_card_rest" class="nav-tab <?php echo $gateway == 'paypal_credit_card_rest' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Credit Card (REST)', $this->plugin_slug); ?></a>
         </h2>
 
     <?php
@@ -67,6 +68,13 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
             <div class="wrap">
                 <p><?php _e('PayPal Payments Advanced uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process.', $this->plugin_slug); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal_advanced_angelleye'); ?>"><?php _e('PayPal Advanced Setting', $this->plugin_slug); ?></a>
+            </div>
+        <?php
+    } elseif ($gateway == 'paypal_credit_card_rest') {
+        ?>
+            <div class="wrap">
+                <p><?php _e('The Payments API provides an easy and secure way to accept online and mobile payments. You can take advantage of all the great benefits of PayPal while enabling customers to make payments with only a few clicks.', $this->plugin_slug); ?></p>
+                <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal_credit_card_rest_angelleye'); ?>"><?php _e('PayPal Credit Card (REST) Setting', $this->plugin_slug); ?></a>
             </div>
         <?php
     }

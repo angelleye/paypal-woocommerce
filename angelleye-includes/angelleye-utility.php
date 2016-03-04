@@ -33,7 +33,7 @@ class AngellEYE_Utility {
         if (!class_exists('Angelleye_PayPal')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
-        if ($this->payment_method = 'paypal_express') {
+        if ($this->payment_method == 'paypal_express') {
             $gateway_obj = new WC_Gateway_PayPal_Express_AngellEYE();
         } else {
             $gateway_obj = new WC_Gateway_PayPal_Pro_AngellEYE();
@@ -501,6 +501,74 @@ class AngellEYE_Utility {
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
         $this->ec_add_log('Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
         $this->ec_add_log('Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
+    }
+    
+    public static function angelleye_paypal_credit_card_rest_setting_fields() {
+        return array(
+            'enabled' => array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable PayPal Credit Card (REST)', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
+            'title' => array(
+                'title' => __('Title', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
+                'default' => __('PayPal Credit Card (REST)', 'paypal-for-woocommerce')
+            ),
+            'description' => array(
+                'title' => __('Description', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
+                'default' => __('PayPal Credit Card (REST) description', 'paypal-for-woocommerce')
+            ),
+            'testmode' => array(
+                'title' => __('Test Mode', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable PayPal Sandbox/Test Mode', 'paypal-for-woocommerce'),
+                'default' => 'yes',
+                'description' => sprintf(__('Place the payment gateway in development mode. Sign up for a developer account <a href="%s" target="_blank">here</a>', 'paypal-for-woocommerce'), 'https://developer.paypal.com/'),
+            ),
+            'rest_client_id_sandbox' => array(
+                'title' => __('Sandbox Client ID', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => 'Enter your Sandbox PayPal Rest API Client ID',
+                'default' => ''
+            ),
+            'rest_secret_id_sandbox' => array(
+                'title' => __('Sandbox Secret ID', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => __('Enter your Sandbox PayPal Rest API Secret ID.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'rest_client_id' => array(
+                'title' => __('Live Client ID', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => 'Enter your PayPal Rest API Client ID',
+                'default' => ''
+            ),
+            'rest_secret_id' => array(
+                'title' => __('Live Secret ID', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => __('Enter your PayPal Rest API Secret ID.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'invoice_prefix' => array(
+                'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'woocommerce'),
+                'default' => 'WC-PCCR',
+                'desc_tip' => true,
+            ),
+            'debug' => array(
+                'title' => __('Debug Log', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable logging', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'description' => __('Log PayPal events, such as Secured Token requests, inside <code>woocommerce/logs/paypal_credit_card_rest.txt</code>', 'paypal-for-woocommerce'),
+            )
+        );
     }
 
 }
