@@ -9,8 +9,6 @@ namespace PayPal\Api;
  *
  * @package PayPal\Api
  *
- * @property string purchase_unit_reference_id
- * @property Transaction transactions
  */
 class Transaction extends TransactionBase
 {

@@ -67,12 +67,6 @@ class PayPalHttpConnection
      * Executes an HTTP request
      *
      * @param string $data query string OR POST content as a string
-     * @throws PayPalConnectionException
-     */
-    /**
-     * Executes an HTTP request
-     *
-     * @param string $data query string OR POST content as a string
      * @return mixed
      * @throws PayPalConnectionException
      */

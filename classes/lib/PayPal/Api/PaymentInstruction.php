@@ -4,23 +4,22 @@ namespace PayPal\Api;
 
 use PayPal\Common\PayPalResourceModel;
 use PayPal\Rest\ApiContext;
-use PayPal\Transport\PayPalRestCall;
 use PayPal\Validation\ArgumentValidator;
 
 /**
  * Class PaymentInstruction
  *
- * Object used to represent payment instruction.
+ * Contain details of how and when the payment should be made to PayPal in cases of manual bank transfer.
  *
  * @package PayPal\Api
  *
- * @property string reference_number
- * @property string instruction_type
+ * @property string                                  reference_number
+ * @property string                                  instruction_type
  * @property \PayPal\Api\RecipientBankingInstruction recipient_banking_instruction
- * @property \PayPal\Api\Currency amount
- * @property string payment_due_date
- * @property string note
- * @property \PayPal\Api\Links[] links
+ * @property \PayPal\Api\Currency                    amount
+ * @property string                                  payment_due_date
+ * @property string                                  note
+ * @property \PayPal\Api\Links[]                     links
  */
 class PaymentInstruction extends PayPalResourceModel
 {
@@ -28,7 +27,7 @@ class PaymentInstruction extends PayPalResourceModel
      * ID of payment instruction
      *
      * @param string $reference_number
-     * 
+     *
      * @return $this
      */
     public function setReferenceNumber($reference_number)
@@ -46,12 +45,13 @@ class PaymentInstruction extends PayPalResourceModel
     {
         return $this->reference_number;
     }
+
     /**
      * Type of payment instruction
      * Valid Values: ["MANUAL_BANK_TRANSFER", "PAY_UPON_INVOICE"]
      *
      * @param string $instruction_type
-     * 
+     *
      * @return $this
      */
     public function setInstructionType($instruction_type)
@@ -74,7 +74,7 @@ class PaymentInstruction extends PayPalResourceModel
      * Recipient bank Details.
      *
      * @param \PayPal\Api\RecipientBankingInstruction $recipient_banking_instruction
-     * 
+     *
      * @return $this
      */
     public function setRecipientBankingInstruction($recipient_banking_instruction)
@@ -97,7 +97,7 @@ class PaymentInstruction extends PayPalResourceModel
      * Amount to be transferred
      *
      * @param \PayPal\Api\Currency $amount
-     * 
+     *
      * @return $this
      */
     public function setAmount($amount)
@@ -120,7 +120,7 @@ class PaymentInstruction extends PayPalResourceModel
      * Date by which payment should be received
      *
      * @param string $payment_due_date
-     * 
+     *
      * @return $this
      */
     public function setPaymentDueDate($payment_due_date)
@@ -143,7 +143,7 @@ class PaymentInstruction extends PayPalResourceModel
      * Additional text regarding payment handling
      *
      * @param string $note
-     * 
+     *
      * @return $this
      */
     public function setNote($note)
@@ -165,9 +165,9 @@ class PaymentInstruction extends PayPalResourceModel
     /**
      * Retrieve a payment instruction by passing the payment_id in the request URI. Use this request if you are implementing a solution that includes delayed payment like Pay Upon Invoice (PUI).
      *
-     * @param string $paymentId
-     * @param ApiContext $apiContext is the APIContext for this call. It can be used to pass dynamic configuration and credentials.
-     * @param PayPalRestCall $restCall is the Rest Call Service that is used to make rest calls
+     * @param string         $paymentId
+     * @param ApiContext     $apiContext is the APIContext for this call. It can be used to pass dynamic configuration and credentials.
+     * @param PayPalRestCall $restCall   is the Rest Call Service that is used to make rest calls
      * @return PaymentInstruction
      */
     public static function get($paymentId, $apiContext = null, $restCall = null)

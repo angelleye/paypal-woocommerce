@@ -70,11 +70,6 @@ class PayPalLoggingManager
      */
     public function __construct()
     {
-        // To suppress the warning during the date() invocation in logs, we would default the timezone to GMT.
-        if (!ini_get('date.timezone')) {
-            date_default_timezone_set('GMT');
-        }
-
         $config = PayPalConfigManager::getInstance()->getConfigHashmap();
 
         $this->isLoggingEnabled = (array_key_exists('log.LogEnabled', $config) && $config['log.LogEnabled'] == '1');

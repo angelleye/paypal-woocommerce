@@ -11,13 +11,13 @@ namespace PayPal\Api;
  *
  * @property string phone
  */
-class Address extends BaseAddress 
+class Address extends BaseAddress
 {
     /**
      * Phone number in E.123 format.
      *
      * @param string $phone
-     * 
+     *
      * @return $this
      */
     public function setPhone($phone)
