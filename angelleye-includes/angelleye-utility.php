@@ -33,7 +33,7 @@ class AngellEYE_Utility {
         if (!class_exists('Angelleye_PayPal')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
-        if ($this->payment_method = 'paypal_express') {
+        if ($this->payment_method == 'paypal_express') {
             $gateway_obj = new WC_Gateway_PayPal_Express_AngellEYE();
         } else {
             $gateway_obj = new WC_Gateway_PayPal_Pro_AngellEYE();
