@@ -72,6 +72,9 @@ class RestHandler implements IPayPalHandler
             (isset($options['path']) ? $options['path'] : '')
         );
 
+        // Overwrite Expect Header to disable 100 Continue Issue
+        $httpConfig->addHeader("Expect", null);
+
         if (!array_key_exists("User-Agent", $httpConfig->getHeaders())) {
             $httpConfig->addHeader("User-Agent", PayPalUserAgent::getValue(PayPalConstants::SDK_NAME, PayPalConstants::SDK_VERSION));
         }
