@@ -1,6 +1,9 @@
-
 .angelleye_cart_button a.paypal_checkout_button {
     clear: both;
     float: left;
     border: none; padding: 0;
+}
+.angelleye_cart_button a.paypal_checkout_button.img {
+    border: none; padding: 0;
+    box-shadow: none;
 }
