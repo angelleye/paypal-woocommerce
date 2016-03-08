@@ -65,7 +65,7 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
 .woocommerce #payment .form-row select , .woocommerce-page #payment .form-row select {
     border-color: #bbb3b9 #c7c1c6 #c7c1c6;
     color: #888;
-    font-size: 16px;
+    font-size: 17px;
     outline: 0 none;
     line-height: 1;
     min-width: 103px;

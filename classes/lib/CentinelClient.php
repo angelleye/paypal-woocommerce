@@ -38,7 +38,7 @@
 
 
 		function getValue($name) {
-			return $this->response[$name];
+			return isset( $this->response[$name] ) ? $this->response[$name] : '';
 		}
 	   
 
