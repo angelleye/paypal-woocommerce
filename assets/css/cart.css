@@ -1,44 +1,6 @@
-.cart .paypal_checkout_button img {
-    vertical-align: middle;
-}
-.paypal_box_button {
-    /* clear: both;*/
-    float: left;
-    margin-left:4%;
-    margin-bottom:10px;
 
-}
-.woocommerce #content table.cart .paypal_box_button img, .woocommerce table.cart .paypal_box_button img, .woocommerce-page #content table.cart .paypal_box_button img, .woocommerce-page table.cart .paypal_box_button img {
-    width: 150px;
-    border-radius: 0px;
-    box-shadow: none;
-    padding: 0px;
-    display: inline;
-}
-.paypal_box_button div a img {
-    border: none;
-}
-#paypal_ec_paypal_credit_button, #paypal_ec_button, .paypal_ec_textbutton {
-    position: relative;
-}
-#paypal_ec_paypal_credit_button a {
-    display: block;
-    text-align: center;
-    width: 100%;
-}
-#paypal_ec_button, .paypal_ec_textbutton {
-    margin-bottom: 3px;
-}
-.woocommerce .cart-collaterals .cart_totals, .woocommerce-page .cart-collaterals .cart_totals {
-    width:100%;
-}
-.wc-proceed-to-checkout {
+.angelleye_cart_button a.paypal_checkout_button {
+    clear: both;
     float: left;
+    border: none; padding: 0;
 }
-.cart_totals .clear {display:none !important;}
-.woocommerce-cart .wc-proceed-to-checkout {
-    padding: 1em 0;
-
-    font-size: 15px;
-}
-.woocommerce-cart .cart-collaterals .cart_totals table {width:80%;}

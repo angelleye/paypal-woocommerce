@@ -6,8 +6,7 @@ jQuery(document).ready(function ($){
             $(this).attr('disabled', 'disabled');
             $('form.cart').submit();
             jQuery(this).parent().parent().parent().find(".angelleyeOverlay").show();
-            //jQuery(".angelleyeOverlay").show();
-            return false;
+             return false;
         });
     }
     if (angelleye_frontend.is_cart == "yes"){
