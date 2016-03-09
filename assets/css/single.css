@@ -9,3 +9,7 @@
 #paypal_ec_paypal_credit_button, #paypal_ec_button, .paypal_ec_textbutton {
     position: relative;
 }
+.single_variation_wrap_angelleye:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
