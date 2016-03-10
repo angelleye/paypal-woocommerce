@@ -161,4 +161,9 @@ jQuery(function($) {
 		$('body').trigger('update_checkout');
 	})
 
+	// Let themes/plugins override our event handlers
+	// NOTE: The jQuery .on() function attached to listen to the event below MUST
+	// be included somewhere on the page itself...so it gets registered before we load
+	// asyncronous JavaScript resources. Otherwise your function listening might not fire.
+	$('form.angelleye_checkout').trigger('angelleye_paypal_form_checkout_js_loaded');
 });
