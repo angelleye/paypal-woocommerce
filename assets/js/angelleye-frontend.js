@@ -1,12 +1,17 @@
 jQuery(document).ready(function ($){
     if (angelleye_frontend.is_product == "yes"){
-        jQuery("#paypal_ec_button_product input").click(function(){
+        jQuery("#paypal_ec_button_product input, input.single_variation_wrap_angelleye").click(function(){
+            $( '.cart' ).block({
+            message: null,
+            overlayCSS: {
+            background: '#fff',
+            opacity: 0.6
+            }
+            });
             var angelleye_action = $(this).data('action');
             $('form.cart').attr( 'action', angelleye_action );
             $(this).attr('disabled', 'disabled');
             $('form.cart').submit();
-            jQuery(this).parent().parent().parent().find(".angelleyeOverlay").show();
-            //jQuery(".angelleyeOverlay").show();
             return false;
         });
     }
