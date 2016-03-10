@@ -108,8 +108,22 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('admin_enqueue_scripts', array( $this, 'angelleye_woocommerce_admin_enqueue_scripts' ) );
             add_action( 'wp_ajax_pfw_ed_shipping_bulk_tool', array( $this, 'angelleye_woocommerce_pfw_ed_shipping_bulk_tool' ) );
             add_action( 'woocommerce_checkout_process', array( $this, 'angelleye_paypal_express_checkout_process_checkout_fields' ) );
+            add_filter('body_class', array($this, 'add_body_classes'));
             require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
+        }
+
+        /*
+         * Adds class name to HTML body to enable easy conditional CSS styling
+         * @access public
+         * @param array $classes
+         * @return array
+         */
+        public function add_body_classes($classes) {
+          global $pp_settings;
+          if(@$pp_settings['enabled'] == 'yes')
+            $classes[] = 'has_paypal_express_checkout';
+          return $classes;
         }
 
         /**
