@@ -1192,6 +1192,55 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
         
+        /*
+         * Check payment gateway settings to cancel order based on transaction's seller protection response
+         * @param WC_Payment_Gateway $Payment_Gateway
+         * @param array $PayPalResult
+         * @return bool
+         */
+        public static function angelleye_woocommerce_sellerprotection_should_cancel_order(&$Payment_Gateway,&$PayPalResult) {
+          // Following check should not be needed, but in case something goes wrong, we know what happened.
+          if(in_array('WC_Payment_Gateway',class_parents($Payment_Gateway)) === false) {
+            error_log('FATAL ERROR! Payment gateway provided to angelleye_woocommerce_sellerprotection_should_cancel_order() is not of WC_Payment_Gateway.');
+            return false;
+          }
+          // TODO: Add $order_cancellations setting to all applicable Angell EYE payment gateways
+          // If there is no setting available, this will become a NULL, which will default in the following case switch.
+          // NOTE: All gateways that use this function need to correctly add a note to the order which will explain WHY
+          // it wias cancelled (i.e. seller protection protection requirements failed)
+          $order_cancellation_setting = @$Payment_Gateway->order_cancellations;
+          // TODO: (?) Add some function that will take the returned (and verified) PayPal transaction details and return the applicable
+          // seller protection value based on the payment gateway/API call. **The following line is only for PayPal Express!**
+          $txn_protection_eligibility_response = isset($PayPalResult['PAYMENTINFO_0_PROTECTIONELIGIBILITY'])?$PayPalResult['PAYMENTINFO_0_PROTECTIONELIGIBILITY']:'ERROR!';
+          // TODO: (?) Same goes for the transaction ID. **The following line is only for PayPal Express!**
+          $txn_id = isset($PayPalResult['PAYMENTINFO_0_TRANSACTIONID'])?$PayPalResult['PAYMENTINFO_0_TRANSACTIONID']:'ERROR!';
+          switch($order_cancellation_setting) {
+            // If transaction does not have ANY seller protection
+            case 'no_seller_protection':
+              if($txn_protection_eligibility_response != 'Eligible' && $txn_protection_eligibility_response != 'PartiallyEligible') {
+                $Payment_Gateway->add_log('Transaction '.$txn_id.' is BAD. Setting: no_seller_protection, Response: '.$txn_protection_eligibility_response);
+                return true;
+              }
+              $Payment_Gateway->add_log('Transaction '.$txn_id.' is OK. Setting: no_seller_protection, Response: '.$txn_protection_eligibility_response);
+              return false;
+            // If transaction is not protected for unauthorized payments
+            case 'no_unauthorized_payment_protection':
+              if($txn_protection_eligibility_response != 'Eligible') {
+                $Payment_Gateway->add_log('Transaction '.$txn_id.' is BAD. Setting: no_unauthorized_payment_protection, Response: '.$txn_protection_eligibility_response);
+                return true;
+              }
+              $Payment_Gateway->add_log('Transaction '.$txn_id.' is OK. Setting: no_unauthorized_payment_protection, Response: '.$txn_protection_eligibility_response);
+              return false;
+            // If we have disabled this check/feature
+            case 'disabled':
+              $Payment_Gateway->add_log('Transaction '.$txn_id.' is OK. Setting: disabled, Response: '.$txn_protection_eligibility_response);
+              return false;
+            // Catch all other invalid values
+            default:
+              $Payment_Gateway->add_log('ERROR! order_cancellations setting for '.$Payment_Gateway->method_title.' is not valid!');
+              return true;
+          }
+        }
         
         /**
          * Express Checkout - Adjust button on product details page. #208 
