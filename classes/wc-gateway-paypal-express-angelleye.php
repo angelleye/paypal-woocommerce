@@ -62,6 +62,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
         $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
         $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
+        $this->order_cancellations = isset($this->settings['order_cancellations']) ? $this->settings['order_cancellations'] : 'no_unauthorized_payment_protection';
         $this->customer_id = get_current_user_id();
         $this->enable_notifyurl = isset($this->settings['enable_notifyurl']) && $this->settings['enable_notifyurl'] == 'no' ? false : true;
         $this->notifyurl = '';
@@ -493,6 +494,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
                 'class' => 'angelleye_notifyurl'
             ),
+            'order_cancellations' => array(
+                'title' => __('Cancel/Refund orders that: ', 'paypal-for-woocommerce'),
+                'label' => '',
+                'description' => __('Allows you to cancel and refund orders that do not meet PayPal\'s Seller Protection criteria', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'options' => array(
+                    'no_seller_protection' => __('Do *not* have PayPal Seller Protection', 'paypal-for-woocommerce'),
+                    'no_unauthorized_payment_protection' => __('Do *not* have PayPal Unauthorized Payment Protection', 'paypal-for-woocommerce'),
+                    'disabled' => __('Do not cancel any orders', 'paypal-for-woocommerce'),
+                ),
+                'default' => 'no_unauthorized_payment_protection'
+             ),
             
                 /* 'Locale' => array(
                   'title' => __( 'Locale', 'paypal-for-woocommerce' ),
@@ -1186,6 +1199,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
 
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+                  /**
+                   * Check for Seller Protection Settings
+                   */
+                  if(AngellEYE_Gateway_Paypal::angelleye_woocommerce_sellerprotection_should_cancel_order($this,$result)) {
+                    $this->add_log('Order '.$order_id.' ('.$result['PAYMENTINFO_0_TRANSACTIONID'].') did not meet our Seller Protection requirements. Cancelling and refunding order.');
+                    $order->add_order_note(__('Transaction did not meet our Seller Protection requirements. Cancelling and refunding order.', 'paypal-for-woocommerce'));
+                    $admin_email = get_option("admin_email");
+                    wp_mail($admin_email, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce').$order_id);
+                    // Payment was succesfull, add transaction ID to our order so we can refund it
+                    update_post_meta($order_id, '_transaction_id', $result['PAYMENTINFO_0_TRANSACTIONID']);
+                    // Also add the express token
+                    update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
+                    // Process the refund
+                    $this->process_refund($order_id,$order->order_total,__('There was a problem processing your order. Please contact customer support.', 'paypal-for-woocommerce'));
+                    $order->cancel_order();
+                    wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
+                    wp_redirect(get_permalink(wc_get_page_id('cart')));
+                    exit();
+                  }
                     $this->add_log('Payment confirmed with PayPal successfully');
                     $result = apply_filters('woocommerce_payment_successful_result', $result, $order_id);
 
