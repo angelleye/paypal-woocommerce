@@ -12,12 +12,7 @@ jQuery(document).ready(function ($){
             $('form.cart').attr( 'action', angelleye_action );
             $(this).attr('disabled', 'disabled');
             $('form.cart').submit();
-<<<<<<< HEAD
-            jQuery(this).parent().parent().parent().find(".angelleyeOverlay").show();
-             return false;
-=======
             return false;
->>>>>>> f0d20a8494892625ea54af43de0fdc615d4a9fe6
         });
     }
     if (angelleye_frontend.is_cart == "yes"){
