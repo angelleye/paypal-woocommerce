@@ -502,5 +502,24 @@ class AngellEYE_Utility {
         $this->ec_add_log('Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
         $this->ec_add_log('Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
     }
+    
+    public static function card_type_from_account_number($account_number) {
+        $types = array(
+            'visa' => '/^4/',
+            'mc' => '/^5[1-5]/',
+            'amex' => '/^3[47]/',
+            'discover' => '/^(6011|65|64[4-9]|622)/',
+            'diners' => '/^(36|38|30[0-5])/',
+            'jcb' => '/^35/',
+            'maestro' => '/^(5018|5020|5038|6304|6759|676[1-3])/',
+            'laser' => '/^(6706|6771|6709)/',
+        );
+        foreach ($types as $type => $pattern) {
+            if (1 === preg_match($pattern, $account_number)) {
+                return $type;
+            }
+        }
+        return null;
+    }
 
 }

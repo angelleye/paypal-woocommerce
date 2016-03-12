@@ -488,7 +488,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                         throw new Exception( __( 'Card number is invalid', 'paypal-for-woocommerce' ) );
                 }
                 
-                $card_type = $this->card_type_from_account_number($card->number);
+                $card_type = AngellEYE_Utility::card_type_from_account_number($card->number);
                 
                 if($card_type == 'amex' && (get_woocommerce_currency() != 'USD' || get_woocommerce_currency() != 'AUD')) {
                     throw new Exception( __( 'Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce' ) );
@@ -1178,24 +1178,4 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             }
         }
     }
-    
-    public function card_type_from_account_number($account_number) {
-        $types = array(
-            'visa' => '/^4/',
-            'mc' => '/^5[1-5]/',
-            'amex' => '/^3[47]/',
-            'discover' => '/^(6011|65|64[4-9]|622)/',
-            'diners' => '/^(36|38|30[0-5])/',
-            'jcb' => '/^35/',
-            'maestro' => '/^(5018|5020|5038|6304|6759|676[1-3])/',
-            'laser' => '/^(6706|6771|6709)/',
-        );
-        foreach ($types as $type => $pattern) {
-            if (1 === preg_match($pattern, $account_number)) {
-                return $type;
-            }
-        }
-        return null;
-    }
-
 }
