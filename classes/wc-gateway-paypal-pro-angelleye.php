@@ -490,7 +490,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 
                 $card_type = $this->card_type_from_account_number($card->number);
                 
-                if($card_type == 'amex' && get_woocommerce_currency() == 'CAD') {
+                if($card_type == 'amex' && (get_woocommerce_currency() != 'USD' || get_woocommerce_currency() != 'AUD')) {
                     throw new Exception( __( 'Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce' ) );
                 }
                 
