@@ -23,7 +23,7 @@
 		// Initialize the XML parser. 
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
-		function XMLParser() {
+		function __construct() {
 		  $this->xml_parser = xml_parser_create();
 		}
    

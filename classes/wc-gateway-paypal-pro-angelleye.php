@@ -535,9 +535,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             $this->centinel_client->add('TransactionMode', 'S');
             $this->centinel_client->add('ProductCode', 'PHY');
             $this->centinel_client->add('CardNumber', $card->number);
+            WC()->session->set('CardNumber', $card->number);
             $this->centinel_client->add('CardExpMonth', $card->exp_month);
+            WC()->session->set('CardExpMonth', $card->exp_month);
             $this->centinel_client->add('CardExpYear', $card->exp_year);
+            WC()->session->set('CardExpYear', $card->exp_year);
             $this->centinel_client->add('CardCode', $card->cvc);
+            WC()->session->set('CardCode', $card->cvc);
             $this->centinel_client->add('BillingFirstName', $order->billing_first_name);
             $this->centinel_client->add('BillingLastName', $order->billing_last_name);
             $this->centinel_client->add('BillingAddress1', $order->billing_address_1);
@@ -629,7 +633,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 <body>
                     <form name="frmLaunchACS" id="3ds_submit_form" method="POST" action="<?php echo esc_url($acsurl); ?>">
                         <input type="hidden" name="PaReq" value="<?php echo esc_attr($payload); ?>">
-                        <input type="hidden" name="TermUrl" value="<?php echo esc_attr(WC()->api_request_url('WC_Gateway_PayPal_Pro', is_ssl())); ?>">
+                        <input type="hidden" name="TermUrl" value="<?php echo esc_attr(WC()->api_request_url('WC_Gateway_PayPal_Pro_AngellEYE', is_ssl())); ?>">
                         <input type="hidden" name="MD" value="<?php echo absint($order_id); ?>">
                         <noscript>
                         <input type="submit" class="button" id="3ds_submit" value="Submit" />
@@ -676,7 +680,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 $this->centinel_client->add("ProcessorId", $this->centinel_pid);
                 $this->centinel_client->add("MerchantId", $this->centinel_mid);
                 $this->centinel_client->add("TransactionPwd", $this->centinel_pwd);
-                $this->centinel_client->add("TransactionType", 'CC');
+                $this->centinel_client->add("TransactionType", 'C');
                 $this->centinel_client->add('TransactionId', WC()->session->get('Centinel_TransactionId'));
                 $this->centinel_client->add('PAResPayload', $pares);
                 $this->centinel_client->sendHttp($this->centinel_url, "5000", "15000");
@@ -727,6 +731,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             }
         } catch (Exception $e) {
             wc_add_notice($e->getMessage(), 'error');
+            wp_redirect($order->get_checkout_payment_url(true));
+            exit;
         }
     }
     /**
@@ -1225,6 +1231,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
     */
     public function get_centinel_value( $key ) {
         $value = $this->centinel_client->getValue( $key );
+        if( empty($value)) {
+            $value = WC()->session->get( $key );
+        }
         $value = wc_clean( $value );
         return $value;
     }
