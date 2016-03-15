@@ -367,8 +367,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                                 <input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__( 'CVC', 'woocommerce' ) . '" name="' . $this->id . '-card-cvc' . '" />
                         </p>',
                         'card-startdate-field' => '<p class="form-row form-row-last">
-                                <label for="' . esc_attr( $this->id ) . '-card-startdate">' . __( 'Start Date (MM/YY)', 'woocommerce-gateway-paypal-pro' ) . '</label>
-                                <input id="' . esc_attr( $this->id ) . '-card-startdate" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . __( 'MM / YY', 'woocommerce-gateway-paypal-pro' ) . '" name="' . $this->id . '-card-startdate' . '" />
+                                <label for="' . esc_attr( $this->id ) . '-card-startdate">' . __( 'Start Date (MM/YY)', 'paypal-for-woocommerce' ) . '</label>
+                                <input id="' . esc_attr( $this->id ) . '-card-startdate" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . __( 'MM / YY', 'paypal-for-woocommerce' ) . '" name="' . $this->id . '-card-startdate' . '" />
                         </p>'
                 );
         } else {
@@ -466,12 +466,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                 $card = $this->get_posted_card();
                 do_action( 'before_angelleye_pro_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year );
                 if ( empty( $card->exp_month ) || empty( $card->exp_year ) ) {
-                        throw new Exception( __( 'Card expiration date is invalid', 'woocommerce-gateway-paypal-pro' ) );
+                        throw new Exception( __( 'Card expiration date is invalid', 'paypal-for-woocommerce' ) );
                 }
 
                 // Validate values
                 if ( ! ctype_digit( $card->cvc ) ) {
-                        throw new Exception( __( 'Card security code is invalid (only digits are allowed)', 'woocommerce-gateway-paypal-pro' ) );
+                        throw new Exception( __( 'Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce' ) );
                 }
 
                 if (
@@ -481,12 +481,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
                         $card->exp_month < 1 ||
                         $card->exp_year < date( 'y' )
                 ) {
-                        throw new Exception( __( 'Card expiration date is invalid', 'woocommerce-gateway-paypal-pro' ) );
+                        throw new Exception( __( 'Card expiration date is invalid', 'paypal-for-woocommerce' ) );
                 }
 
                 if ( empty( $card->number ) || ! ctype_digit( $card->number ) ) {
-                        throw new Exception( __( 'Card number is invalid', 'woocommerce-gateway-paypal-pro' ) );
+                        throw new Exception( __( 'Card number is invalid', 'paypal-for-woocommerce' ) );
                 }
+                
+                $card_type = AngellEYE_Utility::card_type_from_account_number($card->number);
+                
+                if($card_type == 'amex' && (get_woocommerce_currency() != 'USD' || get_woocommerce_currency() != 'AUD')) {
+                    throw new Exception( __( 'Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce' ) );
+                }
+                
                 do_action( 'after_angelleye_pro_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year );
                 return true;
 
@@ -1171,5 +1178,4 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway {
             }
         }
     }
-
 }

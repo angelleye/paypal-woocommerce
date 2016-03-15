@@ -263,6 +263,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 // Format values
                 $card_number    = str_replace( array( ' ', '-' ), '', $card_number );
                
+                $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
+                
+                if($card_type == 'amex' && (get_woocommerce_currency() != 'USD' || get_woocommerce_currency() != 'AUD')) {
+                    throw new Exception( __( 'Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce' ) );
+                }
 
                 if ( strlen( $card_exp_year ) == 4 ) {
                         $card_exp_year = $card_exp_year - 2000;
