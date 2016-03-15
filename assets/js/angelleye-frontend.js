@@ -1,12 +1,17 @@
 jQuery(document).ready(function ($){
     if (angelleye_frontend.is_product == "yes"){
-        jQuery("#paypal_ec_button_product input").click(function(){
+        jQuery("#paypal_ec_button_product input, input.single_variation_wrap_angelleye").click(function(){
+            $( '.cart' ).block({
+            message: null,
+            overlayCSS: {
+            background: '#fff',
+            opacity: 0.6
+            }
+            });
             var angelleye_action = $(this).data('action');
             $('form.cart').attr( 'action', angelleye_action );
             $(this).attr('disabled', 'disabled');
             $('form.cart').submit();
-            jQuery(this).parent().parent().parent().find(".angelleyeOverlay").show();
-            //jQuery(".angelleyeOverlay").show();
             return false;
         });
     }
@@ -40,4 +45,9 @@ jQuery(document).ready(function ($){
             return true;
         });
     }
+		// Let themes/plugins override our event handlers
+		// NOTE: The jQuery .on() function attached to listen to the event below MUST
+		// be included somewhere on the page itself...so it gets registered before we load
+		// asyncronous JavaScript resources. Otherwise your function listening might not fire.
+		$(".paypal_checkout_button").trigger('angelleye_paypal_checkout_button_js_loaded');
 });

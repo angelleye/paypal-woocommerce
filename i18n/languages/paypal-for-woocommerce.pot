@@ -728,6 +728,55 @@ msgstr ""
 msgid "Pay with Credit Card"
 msgstr ""
 
+#: classes/wc-gateway-paypal-express-angelleye.php:498
+msgid "Cancel/Refund orders that: "
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:500
+msgid ""
+"Allows you to cancel and refund orders that do not meet PayPal's "
+"Seller Protection criteria"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:503
+msgid "Do *not* have PayPal Seller Protection"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:504
+msgid "Do *not* have PayPal Unauthorized Payment Protection"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:505
+msgid "Do not cancel any orders"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1207
+msgid ""
+"Transaction did not meet our Seller Protection requirements. Cancelling and "
+"refunding order."
+""
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1209
+msgid ""
+"PayPal Express Checkout payment declined due to our Seller Protection "
+"Settings"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1209
+msgid "Order #"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1215
+msgid "There was a problem processing your order. Please contact customer support."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1217
+msgid ""
+"Thank you for your recent order. Unfortunately it has been cancelled and refunded. "
+"Please contact our customer support team."
+msgstr ""
+
 #: classes/wc-gateway-paypal-plus-angelleye.php:26
 #: classes/wc-gateway-paypal-plus-angelleye.php:121
 #: classes/wc-gateway-paypal-plus-angelleye.php:161

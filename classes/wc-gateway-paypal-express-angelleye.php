@@ -62,6 +62,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
         $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
         $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
+        $this->order_cancellations = isset($this->settings['order_cancellations']) ? $this->settings['order_cancellations'] : 'no_unauthorized_payment_protection';
         $this->customer_id = get_current_user_id();
         $this->enable_notifyurl = isset($this->settings['enable_notifyurl']) && $this->settings['enable_notifyurl'] == 'no' ? false : true;
         $this->notifyurl = '';
@@ -493,6 +494,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
                 'class' => 'angelleye_notifyurl'
             ),
+            'order_cancellations' => array(
+                'title' => __('Cancel/Refund orders that: ', 'paypal-for-woocommerce'),
+                'label' => '',
+                'description' => __('Allows you to cancel and refund orders that do not meet PayPal\'s Seller Protection criteria', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'options' => array(
+                    'no_seller_protection' => __('Do *not* have PayPal Seller Protection', 'paypal-for-woocommerce'),
+                    'no_unauthorized_payment_protection' => __('Do *not* have PayPal Unauthorized Payment Protection', 'paypal-for-woocommerce'),
+                    'disabled' => __('Do not cancel any orders', 'paypal-for-woocommerce'),
+                ),
+                'default' => 'no_unauthorized_payment_protection'
+             ),
             
                 /* 'Locale' => array(
                   'title' => __( 'Locale', 'paypal-for-woocommerce' ),
@@ -1186,6 +1199,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
 
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+                  /**
+                   * Check for Seller Protection Settings
+                   */
+                  if(AngellEYE_Gateway_Paypal::angelleye_woocommerce_sellerprotection_should_cancel_order($this,$result)) {
+                    $this->add_log('Order '.$order_id.' ('.$result['PAYMENTINFO_0_TRANSACTIONID'].') did not meet our Seller Protection requirements. Cancelling and refunding order.');
+                    $order->add_order_note(__('Transaction did not meet our Seller Protection requirements. Cancelling and refunding order.', 'paypal-for-woocommerce'));
+                    $admin_email = get_option("admin_email");
+                    wp_mail($admin_email, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce').$order_id);
+                    // Payment was succesfull, add transaction ID to our order so we can refund it
+                    update_post_meta($order_id, '_transaction_id', $result['PAYMENTINFO_0_TRANSACTIONID']);
+                    // Also add the express token
+                    update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
+                    // Process the refund
+                    $this->process_refund($order_id,$order->order_total,__('There was a problem processing your order. Please contact customer support.', 'paypal-for-woocommerce'));
+                    $order->cancel_order();
+                    wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
+                    wp_redirect(get_permalink(wc_get_page_id('cart')));
+                    exit();
+                  }
                     $this->add_log('Payment confirmed with PayPal successfully');
                     $result = apply_filters('woocommerce_payment_successful_result', $result, $order_id);
 
@@ -2019,23 +2051,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * Displays the PayPal Express button.
      */
     static function woocommerce_paypal_express_checkout_button_angelleye() {
-        global $pp_settings, $pp_pro, $pp_payflow;
-        $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
-        // Pay with Credit Card
-        unset($payment_gateways['paypal_pro']);
-        unset($payment_gateways['paypal_pro_payflow']);
-
-        echo '<div class="clear"></div>';
-
-        /**
-         * Show the paypal express checkout button in cart page when express checkout is enabled and cart total > 0
-         * If show_on_cart is empty so it's value default to yes
-         */
+        global $pp_settings;
         if (@$pp_settings['enabled'] == 'yes' && (empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart'] == 'yes') && 0 < WC()->cart->total) {
-            echo '<div class="paypal_box_button" style="position: relative;">';
-            if (empty($pp_settings['checkout_with_pp_button_type']))
+            if (empty($pp_settings['checkout_with_pp_button_type'])) {
                 $pp_settings['checkout_with_pp_button_type'] = 'paypalimage';
-            $angelleyeOverlay = '<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url('. WC()->plugin_url() .'/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>';
+            }
+            $angelleyeOverlay = '<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px;  width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url('. WC()->plugin_url() .'/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>';
             switch ($pp_settings['checkout_with_pp_button_type']) {
                 case "textbutton":
                     if (!empty($pp_settings['pp_button_type_text_button'])) {
@@ -2043,27 +2064,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     } else {
                         $button_text = __('Proceed to Checkout', 'woocommerce');
                     }
-                    echo '<div class="paypal_ec_textbutton">';
-                    echo '<a class="paypal_checkout_button button alt" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">' . $button_text . '</a>';
+                    echo '<a style="margin-bottom:1em; border: none; " class="paypal_checkout_button button alt" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">' . $button_text . '</a>';
                     echo $angelleyeOverlay;
-                    echo '</div>';
                     break;
                 case "paypalimage":
-                    echo '<div id="paypal_ec_button">';
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo "<img src='https://www.paypal.com/" . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . "/i/btn/btn_xpressCheckout.gif' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                    echo '<img src="https://www.paypal.com/' . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . '/i/btn/btn_xpressCheckout.gif" width="145" height="42" style="width: 145px; height: 42px; margin: 3px 0 0 0; border: none; padding: 0;" align="top" alt="' . __( 'Pay with PayPal', 'paypal-for-woocommerce' ) . '" />';
                     echo "</a>";
                     echo $angelleyeOverlay;
-                    echo '</div>';
                     break;
                 case "customimage":
                     $button_img = $pp_settings['pp_button_type_my_custom'];
-                    echo '<div id="paypal_ec_button">';
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo "<img src='{$button_img}' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                    echo '<img src="'.$button_img.'" style="margin: 3px 0 0 0; border: none; padding: 0;" align="top" alt="' . __( 'Pay with PayPal', 'paypal-for-woocommerce' ) . '" />';
                     echo "</a>";
                     echo $angelleyeOverlay;
-                    echo '</div>';
                     break;
             }
 
@@ -2071,20 +2086,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
              * Displays the PayPal Credit checkout button if enabled in EC settings.
              */
             if (isset($pp_settings['show_paypal_credit']) && $pp_settings['show_paypal_credit'] == 'yes') {
-                // PayPal Credit button
-                $paypal_credit_button_markup = '<div id="paypal_ec_paypal_credit_button">';
-                $paypal_credit_button_markup .= '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))))) . '" >';
-                $paypal_credit_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' alt='Check out with PayPal Credit'/>";
+                $paypal_credit_button_markup = '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))))) . '" >';
+                $paypal_credit_button_markup .= '<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png" width="148" height="26" style="width: 148px; height: 26px; border: none; padding: 0; margin: 0;" align="top" alt="' . __( 'Check out with PayPal Credit', 'paypal-for-woocommerce' ) . '" />';
                 $paypal_credit_button_markup .= '</a>';
                 $paypal_credit_button_markup .= $angelleyeOverlay;
-                $paypal_credit_button_markup .= '</div>';
-
                 echo $paypal_credit_button_markup;
             }
-            ?>
-            <!--<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php /*echo WC()->plugin_url(); */?>/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>-->
-            <?php
-            echo "<div class='clear'></div></div>";
         }
     }
 
@@ -2192,7 +2199,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     function top_cart_button() {
         if (!empty($this->settings['button_position']) && ($this->settings['button_position'] == 'top' || $this->settings['button_position'] == 'both')) {
+            echo '<div class="wc-proceed-to-checkout angelleye_cart_button">';
             $this->woocommerce_paypal_express_checkout_button_angelleye();
+            echo '</div>';
         }
     }
 
