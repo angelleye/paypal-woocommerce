@@ -1883,7 +1883,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $PayPalRequestData = array(
             'DECPFields' => $DECPFields,
             'Payments' => $Payments,
-            'UserSelectedOptions' => $UserSelectedOptions
+            //'UserSelectedOptions' => $UserSelectedOptions
         );
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
