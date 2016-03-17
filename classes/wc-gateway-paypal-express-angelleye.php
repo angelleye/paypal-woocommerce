@@ -1681,6 +1681,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
 
+        
+        
         $this->add_log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
         $this->add_log('Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
 
@@ -1838,7 +1840,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $Payment['itemamt']     = $PaymentData['itemamt'];      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
 
         $Payment['order_items'] = $PaymentOrderItems;
-        array_push($Payments, $Payment);
+       
 
         $UserSelectedOptions = array(
             'shippingcalculationmode' => '', // Describes how the options that were presented to the user were determined.  values are:  API - Callback   or   API - Flatrate.
@@ -1847,11 +1849,41 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'shippingoptionamount' => '', // The shipping amount that was chosen by the buyer.
             'shippingoptionname' => '', // Is true if the buyer chose the default shipping option...??  Maybe this is supposed to show the name..??
         );
-
+        
+        $REVIEW_RESULT = unserialize($this->get_session('RESULT'));
+      
+        $PaymentRedeemedOffers = array();
+        
+        if( (isset($REVIEW_RESULT) && !empty($REVIEW_RESULT)) && isset($REVIEW_RESULT['WALLETTYPE0'])) {
+           $i = 0;
+           while(isset($REVIEW_RESULT['WALLETTYPE' . $i])) {
+                $RedeemedOffer = array(
+                    'redeemedoffername' => $REVIEW_RESULT['WALLETDESCRIPTION' . $i], 						    // The name of the buyer's wallet item offer redeemed in this transaction, such as, a merchant coupon or a loyalty program card.
+                    'redeemedofferdescription' => '',                    // Description of the offer redeemed in this transaction, such as, a merchant coupon or a loyalty program.
+                    'redeemedofferamount' => '',                         // Amount of the offer redeemed in this transaction
+                    'redeemedoffertype' => $REVIEW_RESULT['WALLETTYPE' . $i],                           // The type of the offer redeemed in this transaction
+                    'redeemedofferid' => $REVIEW_RESULT['WALLETID' . $i],                             // Unique ID of the offer redeemed in this transaction or the buyer's loyalty card account number.
+                    'redeemedofferpointsaccrued' => '',                  // The number of loyalty points accrued in this transaction.
+                    'cummulativepointsname' => '',          // The name of the loyalty points program in which the buyer earned points in this transaction.
+                    'cummulativepointsdescription' => '',   // Description of the loyalty points program.
+                    'cummulativepointstype' => '',          // Type of discount or loyalty program.  Values:  LOYALTY_CARD
+                    'cummulativepointsid' => '',            // Unique ID of the buyer's loyalty points account.
+                    'cummulativepointsaccrued' => '',       // The cummulative number of loyalty points the buyer has accrued.
+                );
+                
+               $i = $i + 1;
+               array_push($PaymentRedeemedOffers, $RedeemedOffer);
+           }
+           $Payment['redeemed_offers'] = $PaymentRedeemedOffers;
+           array_push($Payments, $Payment);
+        } else {
+             array_push($Payments, $Payment);
+        }
+        
         $PayPalRequestData = array(
             'DECPFields' => $DECPFields,
             'Payments' => $Payments,
-            //'UserSelectedOptions' => $UserSelectedOptions
+            'UserSelectedOptions' => $UserSelectedOptions
         );
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
@@ -1960,7 +1992,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @param mixed $value
      * @return void
      */
-    private function set_session($key, $value) {
+    public function set_session($key, $value) {
         WC()->session->$key = $value;
     }
 
@@ -1971,11 +2003,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @param mixed $key
      * @return void
      */
-    private function get_session($key) {
+    public function get_session($key) {
         return WC()->session->$key;
     }
 
-    private function remove_session($key) {
+    public function remove_session($key) {
         WC()->session->$key = "";
     }
 

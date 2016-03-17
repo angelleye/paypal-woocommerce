@@ -1611,131 +1611,137 @@ class Angelleye_PayPal
 	 * @param	array	call config data
 	 * @return	array
 	 */
-	function DoExpressCheckoutPayment($DataArray)
-	{
-		$DECPFieldsNVP = '&METHOD=DoExpressCheckoutPayment';
-		$PaymentsNVP = '';
-		$UserSelectedOptionsNVP = '';
-		
-		// DoExpressCheckoutPayment Fields
-		$DECPFields = isset($DataArray['DECPFields']) ? $DataArray['DECPFields'] : array();
-		foreach($DECPFields as $DECPFieldsVar => $DECPFieldsVal)
-		{
-			$DECPFieldsNVP .= $DECPFieldsVal != '' ? '&' . strtoupper($DECPFieldsVar) . '=' . urlencode($DECPFieldsVal) : '';
-		}
-		
-		// Payment Details Type Fields
-		$Payments = isset($DataArray['Payments']) ? $DataArray['Payments'] : array();
-		$n = 0;
-		foreach($Payments as $PaymentsVar => $PaymentsVal)
-		{
-			$CurrentPayment = $Payments[$PaymentsVar];
-			foreach($CurrentPayment as $CurrentPaymentVar => $CurrentPaymentVal)
-			{
-				if(strtoupper($CurrentPaymentVar) != 'ORDER_ITEMS')
-				{
-					$PaymentsNVP .= $CurrentPaymentVal != '' ? '&PAYMENTREQUEST_' . $n . '_' . strtoupper($CurrentPaymentVar) . '=' . urlencode($CurrentPaymentVal) : '';
-				}
-				else
-				{
-					$PaymentOrderItems = $CurrentPayment['order_items'];
-					$n_item = 0;
-					foreach($PaymentOrderItems as $OrderItemsVar => $OrderItemsVal)
-					{
-						$CurrentItem = $PaymentOrderItems[$OrderItemsVar];
-						foreach($CurrentItem as $CurrentItemVar => $CurrentItemVal)
-						{
-							$PaymentsNVP .= $CurrentItemVal != '' ? '&L_PAYMENTREQUEST_' . $n . '_' . strtoupper($CurrentItemVar) . $n_item . '=' . urlencode($CurrentItemVal) : '';
-						}
-						$n_item++;
-					}	
-				}
-			}
-			$n++;
-		}	
-		
-		// User Selected Options
-		$UserSelectedOptions = isset($DataArray['UserSelectedOptions']) ? $DataArray['UserSelectedOptions'] : array();
-		foreach($UserSelectedOptions as $UserSelectedOptionVar => $UserSelectedOptionVal)
-		{
-			$UserSelectedOptionsNVP .= $UserSelectedOptionVal != '' ? '&' . strtoupper($UserSelectedOptionVar) . '=' . urlencode($UserSelectedOptionVal) : '';
-		}
-		
-		$NVPRequest = $this->NVPCredentials . $DECPFieldsNVP . $PaymentsNVP . $UserSelectedOptionsNVP;
-		$NVPResponse = $this->CURLRequest($NVPRequest);
-                if( isset( $NVPResponse ) && is_array( $NVPResponse ) && !empty( $NVPResponse['CURL_ERROR'] ) ){
-                    return $NVPResponse;
+        
+    
+        function DoExpressCheckoutPayment($DataArray) {
+            $DECPFieldsNVP = '&METHOD=DoExpressCheckoutPayment';
+            $PaymentsNVP = '';
+            $UserSelectedOptionsNVP = '';
+
+            // DoExpressCheckoutPayment Fields
+            $DECPFields = isset($DataArray['DECPFields']) ? $DataArray['DECPFields'] : array();
+            foreach ($DECPFields as $DECPFieldsVar => $DECPFieldsVal) {
+                $DECPFieldsNVP .= $DECPFieldsVal != '' ? '&' . strtoupper($DECPFieldsVar) . '=' . urlencode($DECPFieldsVal) : '';
+            }
+
+            // Payment Details Type Fields
+            $Payments = isset($DataArray['Payments']) ? $DataArray['Payments'] : array();
+            $n = 0;
+            foreach ($Payments as $PaymentsVar => $PaymentsVal) {
+                $CurrentPayment = $Payments[$PaymentsVar];
+                foreach ($CurrentPayment as $CurrentPaymentVar => $CurrentPaymentVal) {
+                    if (strtoupper($CurrentPaymentVar) == 'ORDER_ITEMS') {
+                        $PaymentOrderItems = $CurrentPayment['order_items'];
+                        $n_item = 0;
+                        foreach ($PaymentOrderItems as $OrderItemsVar => $OrderItemsVal) {
+                            $CurrentItem = $PaymentOrderItems[$OrderItemsVar];
+                            foreach ($CurrentItem as $CurrentItemVar => $CurrentItemVal) {
+                                $PaymentsNVP .= $CurrentItemVal != '' ? '&L_PAYMENTREQUEST_' . $n . '_' . strtoupper($CurrentItemVar) . $n_item . '=' . urlencode($CurrentItemVal) : '';
+                            }
+                            $n_item++;
+                        }
+                    } elseif (strtoupper($CurrentPaymentVar) == 'REDEEMED_OFFERS') {
+                        $RedeemedOffers = $CurrentPayment['redeemed_offers'];
+                        $n_item = 0;
+                        foreach ($RedeemedOffers as $RedeemedOfferVar => $RedeemedOfferVal) {
+                            $CurrentRedeemedOffer = $RedeemedOffers[$RedeemedOfferVar];
+                            foreach ($CurrentRedeemedOffer as $CurrentRedeemedOfferVar => $CurrentRedeemedOfferVal) {
+                                $PaymentsNVP .= $CurrentRedeemedOfferVal != '' ? '&L_PAYMENTREQUEST_' . $n . '_' . strtoupper($CurrentRedeemedOfferVar) . $n_item . '=' . urlencode($CurrentRedeemedOfferVal) : '';
+                            }
+                            $n_item++;
+                        }
+                    } elseif (strtoupper($CurrentPaymentVar) == 'MERCHANT_DATA_VARS') {
+                        $MerchantDataVars = $CurrentPayment['merchant_data_vars'];
+                        $n_item = 0;
+                        foreach ($MerchantDataVars as $MerchantDataVarsVar => $MerchantDataVarsVal) {
+                            $CurrentMerchantDataVar = $MerchantDataVars[$MerchantDataVarsVar];
+                            foreach ($CurrentMerchantDataVar as $CurrentMerchantDataVarVar => $CurrentMerchantDataVarVal) {
+                                $PaymentsNVP .= $CurrentMerchantDataVarVal != '' ? '&L_PAYMENTREQUEST_' . $n . '_' . strtoupper($CurrentMerchantDataVarVar) . $n_item . '=' . urlencode($CurrentMerchantDataVarVal) : '';
+                            }
+                            $n_item++;
+                        }
+                    } else {
+                        $PaymentsNVP .= $CurrentPaymentVal != '' ? '&PAYMENTREQUEST_' . $n . '_' . strtoupper($CurrentPaymentVar) . '=' . urlencode($CurrentPaymentVal) : '';
+                    }
                 }
-		$NVPRequestArray = $this->NVPToArray($NVPRequest);
-		$NVPResponseArray = $this->NVPToArray($NVPResponse);
-		
-		$Errors = $this->GetErrors($NVPResponseArray);
-		
-		// Loop through all possible payments and parse out data accordingly.
-		// This is to handle parallel payments.
-		$n = 0;
-		$Payments = array();
-		while(isset($NVPResponseArray['PAYMENTINFO_' . $n . '_AMT']))
-		{
-			$Payment = array(
-								'TRANSACTIONID' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_TRANSACTIONID']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_TRANSACTIONID'] : '', 
-								'TRANSACTIONTYPE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_TRANSACTIONTYPE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_TRANSACTIONTYPE'] : '', 
-								'PAYMENTTYPE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_PAYMENTTYPE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_PAYMENTTYPE'] : '', 
-								'ORDERTIME' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_ORDERTIME']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_ORDERTIME'] : '', 
-								'AMT' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_AMT']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_AMT'] : '', 
-								'FEEAMT' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_FEEAMT']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_FEEAMT'] : '', 
-								'SETTLEAMT' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_SETTLEAMT']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_SETTLEAMT'] : '', 
-								'TAXAMT' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_TAXAMT']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_TAXAMT'] : '', 
-								'EXCHANGERATE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_EXCHANGERATE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_EXCHANGERATE'] : '', 
-								'CURRENCYCODE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_CURRENCYCODE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_CURRENCYCODE'] : '', 
-								'PAYMENTSTATUS' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_PAYMENTSTATUS']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_PAYMENTSTATUS'] : '', 
-								'PENDINGREASON' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_PENDINGREASON']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_PENDINGREASON'] : '', 
-								'REASONCODE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_REASONCODE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_REASONCODE'] : '', 
-								'PROTECTIONELIGIBILITY' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_PROTECTIONELIGIBILITY']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_PROTECTIONELIGIBILITY'] : '', 
-								'ERRORCODE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_ERRORCODE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_ERRORCODE'] : ''
-								);
-			
-			// Pull out FMF info for current payment.													
-			$FMFilters = array();
-			$n_filters = 0;
-			while(isset($NVPResponseArray['L_PAYMENTINFO_' . $n . '_FMFFILTERID' . $n_filters]))
-			{
-				$FMFilter = array(
-								'ID' => isset($NVPResponseArray['L_PAYMENTINFO_' . $n . '_FMFFILTERID' . $n_filters]) ? $NVPResponseArray['L_PAYMENTINFO_' . $n . '_FMFFILTERID' . $n_filters] : '', 
-								'NAME' => isset($NVPResponseArray['L_PAYMENTINFO_' . $n . '_FMFFILTERNAME' . $n_filters]) ? $NVPResponseArray['L_PAYMENTINFO_' . $n . '_FMFFILTERNAME' . $n_filters] : ''
-								);
-				$n_filters++;
-			}
-			$Payment['FMFILTERS'] = $FMFilters;
-			
-			// Pull error info for current payment.
-			$PaymentErrors = array();
-			while(isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_ERRORCODE']))
-			{
-				$Error = array(
-								'ERRORCODE' => isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_ERRORCODE']) ? $NVPResponseArray['PAYMENTREQUEST_' . $n . '_ERRORCODE'] : '', 
-								'SHORTMESSAGE' => isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_SHORTMESSAGE']) ? $NVPResponseArray['PAYMENTREQUEST_' . $n . '_SHORTMESSAGE'] : '', 
-								'LONGMESSAGE' => isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_LONGMESSAGE']) ? $NVPResponseArray['PAYMENTREQUEST_' . $n . '_LONGMESSAGE'] : '', 
-								'SEVERITYCODE' => isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_SEVERITYCODE']) ? $NVPResponseArray['PAYMENTREQUEST_' . $n . '_SEVERITYCODE'] : '', 
-								'ACK' => isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_ACK']) ? $NVPResponseArray['PAYMENTREQUEST_' . $n . '_ACK'] : ''								
-								);
-				array_push($PaymentErrors, $Error);
-			}
-			$Payment['ERRORS'] = $PaymentErrors;
-			
-			array_push($Payments, $Payment);
-			$n++;	
-		}
-		
-		$NVPResponseArray['ERRORS'] = $Errors;
-		$NVPResponseArray['PAYMENTS'] = $Payments;
-		$NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
-		$NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);
-		$NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
-		
-		return $NVPResponseArray;
-	
-	}
+                $n++;
+            }
+
+            // User Selected Options
+            $UserSelectedOptions = isset($DataArray['UserSelectedOptions']) ? $DataArray['UserSelectedOptions'] : array();
+            foreach ($UserSelectedOptions as $UserSelectedOptionVar => $UserSelectedOptionVal) {
+                $UserSelectedOptionsNVP .= $UserSelectedOptionVal != '' ? '&' . strtoupper($UserSelectedOptionVar) . '=' . urlencode($UserSelectedOptionVal) : '';
+            }
+
+            $NVPRequest = $this->NVPCredentials . $DECPFieldsNVP . $PaymentsNVP . $UserSelectedOptionsNVP;
+            $NVPResponse = $this->CURLRequest($NVPRequest);
+            $NVPRequestArray = $this->NVPToArray($NVPRequest);
+            $NVPResponseArray = $this->NVPToArray($NVPResponse);
+
+            $Errors = $this->GetErrors($NVPResponseArray);
+
+            // Loop through all possible payments and parse out data accordingly.
+            // This is to handle parallel payments.
+            $n = 0;
+            $Payments = array();
+            while (isset($NVPResponseArray['PAYMENTINFO_' . $n . '_AMT'])) {
+                $Payment = array(
+                    'TRANSACTIONID' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_TRANSACTIONID']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_TRANSACTIONID'] : '',
+                    'TRANSACTIONTYPE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_TRANSACTIONTYPE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_TRANSACTIONTYPE'] : '',
+                    'PAYMENTTYPE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_PAYMENTTYPE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_PAYMENTTYPE'] : '',
+                    'ORDERTIME' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_ORDERTIME']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_ORDERTIME'] : '',
+                    'AMT' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_AMT']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_AMT'] : '',
+                    'FEEAMT' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_FEEAMT']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_FEEAMT'] : '',
+                    'SETTLEAMT' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_SETTLEAMT']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_SETTLEAMT'] : '',
+                    'TAXAMT' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_TAXAMT']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_TAXAMT'] : '',
+                    'EXCHANGERATE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_EXCHANGERATE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_EXCHANGERATE'] : '',
+                    'CURRENCYCODE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_CURRENCYCODE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_CURRENCYCODE'] : '',
+                    'PAYMENTSTATUS' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_PAYMENTSTATUS']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_PAYMENTSTATUS'] : '',
+                    'PENDINGREASON' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_PENDINGREASON']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_PENDINGREASON'] : '',
+                    'REASONCODE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_REASONCODE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_REASONCODE'] : '',
+                    'PROTECTIONELIGIBILITY' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_PROTECTIONELIGIBILITY']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_PROTECTIONELIGIBILITY'] : '',
+                    'ERRORCODE' => isset($NVPResponseArray['PAYMENTINFO_' . $n . '_ERRORCODE']) ? $NVPResponseArray['PAYMENTINFO_' . $n . '_ERRORCODE'] : ''
+                );
+
+                // Pull out FMF info for current payment.													
+                $FMFilters = array();
+                $n_filters = 0;
+                while (isset($NVPResponseArray['L_PAYMENTINFO_' . $n . '_FMFFILTERID' . $n_filters])) {
+                    $FMFilter = array(
+                        'ID' => isset($NVPResponseArray['L_PAYMENTINFO_' . $n . '_FMFFILTERID' . $n_filters]) ? $NVPResponseArray['L_PAYMENTINFO_' . $n . '_FMFFILTERID' . $n_filters] : '',
+                        'NAME' => isset($NVPResponseArray['L_PAYMENTINFO_' . $n . '_FMFFILTERNAME' . $n_filters]) ? $NVPResponseArray['L_PAYMENTINFO_' . $n . '_FMFFILTERNAME' . $n_filters] : ''
+                    );
+                    $n_filters++;
+                }
+                $Payment['FMFILTERS'] = $FMFilters;
+
+                // Pull error info for current payment.
+                $PaymentErrors = array();
+                while (isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_ERRORCODE'])) {
+                    $Error = array(
+                        'ERRORCODE' => isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_ERRORCODE']) ? $NVPResponseArray['PAYMENTREQUEST_' . $n . '_ERRORCODE'] : '',
+                        'SHORTMESSAGE' => isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_SHORTMESSAGE']) ? $NVPResponseArray['PAYMENTREQUEST_' . $n . '_SHORTMESSAGE'] : '',
+                        'LONGMESSAGE' => isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_LONGMESSAGE']) ? $NVPResponseArray['PAYMENTREQUEST_' . $n . '_LONGMESSAGE'] : '',
+                        'SEVERITYCODE' => isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_SEVERITYCODE']) ? $NVPResponseArray['PAYMENTREQUEST_' . $n . '_SEVERITYCODE'] : '',
+                        'ACK' => isset($NVPResponseArray['PAYMENTREQUEST_' . $n . '_ACK']) ? $NVPResponseArray['PAYMENTREQUEST_' . $n . '_ACK'] : ''
+                    );
+                    array_push($PaymentErrors, $Error);
+                }
+                $Payment['ERRORS'] = $PaymentErrors;
+
+                array_push($Payments, $Payment);
+                $n++;
+            }
+
+            $NVPResponseArray['ERRORS'] = $Errors;
+            $NVPResponseArray['PAYMENTS'] = $Payments;
+            $NVPResponseArray['REQUESTDATA'] = $NVPRequestArray;
+            $NVPResponseArray['RAWREQUEST'] = $this->MaskAPIResult($NVPRequest);
+            $NVPResponseArray['RAWRESPONSE'] = $NVPResponse;
+
+            return $NVPResponseArray;
+        }
+
 
 	/**
 	 * Search PayPal for transactions in  your account history.
