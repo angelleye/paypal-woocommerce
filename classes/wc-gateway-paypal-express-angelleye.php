@@ -106,6 +106,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_ppe_do_payaction', array($this, 'get_confirm_order'));
         add_action('woocommerce_after_checkout_validation', array($this, 'regular_checkout'));
         add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'));
+        
+        if(class_exists('WC_EU_VAT_Number')) {
+            add_action( 'angelleye_wc_eu_vat_number', array('WC_EU_VAT_Number', 'process_checkout'), 10);
+        }
+        
     }
 
     /**
@@ -1049,6 +1054,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     exit();
                 } 
                 
+                if( isset(WC()->session->checkout_form) && !empty(WC()->session->checkout_form)) {
+                    WC()->checkout()->posted = maybe_unserialize(WC()->session->checkout_form);
+                }
                 $order_id = WC()->checkout()->create_order();
 
                 do_action( 'woocommerce_checkout_order_processed', $order_id, array() );
@@ -1099,11 +1107,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 update_post_meta($order_id, 'paypal_email', $this->get_session('payeremail'));
                 
                 //Set POST data from SESSION
-                $checkout_form_post_data = maybe_unserialize($this->get_session('checkout_form_post_data'));
+                $checkout_form_post_data = maybe_unserialize($this->get_session('post_data'));
                 if( isset($checkout_form_post_data) && !empty($checkout_form_post_data) ) {
                     $_POST = $checkout_form_post_data;
                 }
-                do_action('woocommerce_checkout_update_user_meta', $this->customer_id, $checkout_form_data);
+                do_action( 'angelleye_wc_eu_vat_number', $order_id, $call_third_party = true );
                 do_action( 'woocommerce_checkout_update_order_meta', $order_id, $checkout_form_data );
 
                 if ((isset($this->billing_address) && $this->billing_address =='yes' ) || (empty($checkout_form_data['billing_country']))) {
@@ -2235,7 +2243,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     wp_update_user(apply_filters('woocommerce_checkout_customer_userdata', $userdata, $this));
                 }
             }
+            do_action( 'woocommerce_checkout_update_user_meta', $this->customer_id, $this->posted );
             $this->set_session('checkout_form', serialize($posted));
+            if( isset($_POST) && !empty($_POST)) {
+                $this->set_session('post_data', serialize($_POST));
+            }
             $this->paypal_express_checkout($posted);
             return;
         }
@@ -2280,5 +2292,5 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             wp_redirect(get_permalink(wc_get_page_id('cart')));
             exit();
         }
-    }
+    } 
 }
