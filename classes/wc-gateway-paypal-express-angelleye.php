@@ -115,10 +115,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @return string
      */
     public function get_icon() {
-
+        global $pp_settings;
         $image_path = plugins_url() . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/paypal.png';
         if ($this->show_paypal_credit == 'yes') {
             $image_path = plugins_url() . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/paypal-credit.png';
+        }
+        if( isset( $pp_settings['checkout_with_pp_button_type'] ) && !empty( $pp_settings['checkout_with_pp_button_type'] = 'customimage' ) ) {
+            if( isset($pp_settings['pp_button_type_my_custom']) && !empty($pp_settings['pp_button_type_my_custom'])) {
+                $image_path = $pp_settings['pp_button_type_my_custom'];
+            }
         }
         $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
         return apply_filters('woocommerce_gateway_icon', $icon, $this->id);

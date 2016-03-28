@@ -81,6 +81,11 @@ background-position: right center;
     font-size: 1.5em;
     padding: 8px;
 }
+#add_payment_method #payment .payment_method_paypal_express img, .woocommerce-checkout #payment .payment_method_paypal_express img {
+    max-height: 52px;
+    vertical-align: middle;
+    max-width: 330px;
+}
 @media only screen 
   and (min-device-width: 320px) 
   and (max-device-width: 480px) {
