@@ -1057,6 +1057,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if( isset(WC()->session->checkout_form) && !empty(WC()->session->checkout_form)) {
                     WC()->checkout()->posted = maybe_unserialize(WC()->session->checkout_form);
                 }
+                //Set POST data from SESSION
+                $checkout_form_post_data = maybe_unserialize($this->get_session('post_data'));
+                if( isset($checkout_form_post_data) && !empty($checkout_form_post_data) ) {
+                    $_POST = $checkout_form_post_data;
+                }
                 $order_id = WC()->checkout()->create_order();
 
                 do_action( 'woocommerce_checkout_order_processed', $order_id, array() );
@@ -1105,12 +1110,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                 //save PayPal email
                 update_post_meta($order_id, 'paypal_email', $this->get_session('payeremail'));
-                
-                //Set POST data from SESSION
-                $checkout_form_post_data = maybe_unserialize($this->get_session('post_data'));
-                if( isset($checkout_form_post_data) && !empty($checkout_form_post_data) ) {
-                    $_POST = $checkout_form_post_data;
-                }
                 do_action( 'angelleye_wc_eu_vat_number', $order_id, $call_third_party = true );
                 do_action( 'woocommerce_checkout_update_order_meta', $order_id, $checkout_form_data );
 
