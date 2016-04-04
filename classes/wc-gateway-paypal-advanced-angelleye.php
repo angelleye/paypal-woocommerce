@@ -578,7 +578,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         //if enabled checkbox is checked
         if ($this->enabled == 'yes') {
-            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_pro_allowed_currencies', array('USD', 'CAD')))) {
+            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_advanced_allowed_currencies', array('USD', 'CAD')))) {
                 return false;
             }
             if (!$this->user || !$this->loginid ) {
