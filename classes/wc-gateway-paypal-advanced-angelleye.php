@@ -62,32 +62,13 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $this->log = new WC_Logger();
 
         // Hooks
-        add_action('admin_notices', array($this, 'checks'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('woocommerce_receipt_paypal_advanced', array($this, 'receipt_page'));
         add_action('woocommerce_api_wc_gateway_paypal_advanced_angelleye', array($this, 'relay_response'));
 
-        if (!$this->is_available())
+        if (!$this->is_available()) {
             $this->enabled = false;
-    }
-
-    /**
-     * Check if required fields for configuring the gateway are filled up by the administrator
-     * @access public
-     * @return void
-     * */
-    public function checks() {
-        if ($this->enabled == 'no') {
-            return;
         }
-        if (!$this->loginid) {
-            echo '<div class="error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Merchant Login <a href="%s">here</a>', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout&section=' . strtolower('WC_Gateway_PayPal_Advanced_AngellEYE'))) . '</p></div>';
-        } elseif (!$this->resellerid) {
-            echo '<div class="error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Partner <a href="%s">here</a>', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout&section=' . strtolower('WC_Gateway_PayPal_Advanced_AngellEYE'))) . '</p></div>';
-        } elseif (!$this->password) {
-            echo '<div class="error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Password <a href="%s">here</a>', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout&section=' . strtolower('WC_Gateway_PayPal_Advanced_AngellEYE'))) . '</p></div>';
-        }
-        return;
     }
 
     /**
@@ -131,7 +112,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'ORIGID' => $_POST['PNREF'],
             'TENDER' => 'C',
             'TRXTYPE' => 'I',
-            'BUTTONSOURCE' => 'WooThemes_Cart'
+            'BUTTONSOURCE' => 'AngellEYE_SP_WooCommerce'
         );
 
         $postData = ''; //stores the post data string
@@ -596,10 +577,17 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     public function is_available() {
 
         //if enabled checkbox is checked
-        if ($this->enabled == 'yes')
+        if ($this->enabled == 'yes') {
+            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_pro_allowed_currencies', array('USD', 'CAD')))) {
+                return false;
+            }
+            if (!$this->user || !$this->loginid ) {
+                return false;
+            }
             return true;
-
-        return false;
+        } else {
+            return false;
+        }
     }
 
     /**
