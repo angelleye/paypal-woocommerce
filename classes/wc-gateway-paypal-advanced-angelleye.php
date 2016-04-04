@@ -652,7 +652,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('Enable PayPal Advanced', 'paypal-for-woocommerce'),
-                'default' => 'yes'
+                'default' => 'no'
             ),
             'title' => array(
                 'title' => __('Title', 'paypal-for-woocommerce'),
