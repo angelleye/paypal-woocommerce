@@ -390,7 +390,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => __(get_bloginfo('name'), 'paypal-for-woocommerce')
             ),
             'checkout_logo' => array(
-                'title' => __('PayPal Checkout Logo (190x90px)', 'paypal-for-woocommerce'),
+                'title' => __('PayPal Checkout Logo (190x60px)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls what users see as the logo on PayPal review pages. ', 'paypal-for-woocommerce') . $require_ssl,
                 'default' => ''

@@ -381,7 +381,7 @@ msgid ""
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:380
-msgid "PayPal Checkout Logo (190x90px)"
+msgid "PayPal Checkout Logo (190x60px)"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:382
