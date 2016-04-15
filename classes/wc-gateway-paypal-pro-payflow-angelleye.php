@@ -750,7 +750,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $card_exp_year = $card_exp_year - 2000;
         }
 
-        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_expiry);
+        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_exp_month, $card_exp_year);
 
         // Check card security code
 
@@ -773,7 +773,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             return false;
         }
 
-        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_expiry);
+        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_exp_month, $card_exp_year);
 
         return true;
     }

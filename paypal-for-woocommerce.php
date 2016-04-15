@@ -1053,8 +1053,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * @return type
          */
         public function update_wc_paypal_plug_not_support_currency_nag() {
-            global $current_user;
-            get_currentuserinfo();
+            $current_user = wp_get_current_user();
             if ( isset( $_GET['_wpnonce'] ) && ! wp_verify_nonce( $_GET['_wpnonce'], 'wc_paypal_plus_not_support_currency_nag_hide' ) ) {
                     return;
             }
