@@ -62,13 +62,13 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $this->log = new WC_Logger();
 
         // Hooks
-        add_action('admin_notices', array($this, 'checks'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('woocommerce_receipt_paypal_advanced', array($this, 'receipt_page'));
         add_action('woocommerce_api_wc_gateway_paypal_advanced_angelleye', array($this, 'relay_response'));
 
-        if (!$this->is_available())
+        if (!$this->is_available()) {
             $this->enabled = false;
+        }
     }
 
     /**
@@ -77,15 +77,15 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @return void
      * */
     public function checks() {
-        if ($this->enabled == 'no') {
+        if ($this->enabled == false) {
             return;
         }
         if (!$this->loginid) {
-            echo '<div class="error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Merchant Login <a href="%s">here</a>', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout&section=' . strtolower('WC_Gateway_PayPal_Advanced_AngellEYE'))) . '</p></div>';
+            echo '<div class="inline error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Merchant Login.', 'paypal-for-woocommerce')) . '</p></div>';
         } elseif (!$this->resellerid) {
-            echo '<div class="error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Partner <a href="%s">here</a>', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout&section=' . strtolower('WC_Gateway_PayPal_Advanced_AngellEYE'))) . '</p></div>';
+            echo '<div class="inline error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Partner.', 'paypal-for-woocommerce')) . '</p></div>';
         } elseif (!$this->password) {
-            echo '<div class="error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Password <a href="%s">here</a>', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout&section=' . strtolower('WC_Gateway_PayPal_Advanced_AngellEYE'))) . '</p></div>';
+            echo '<div class="inline error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Password.', 'paypal-for-woocommerce')) . '</p></div>';
         }
         return;
     }
@@ -616,6 +616,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         <table class="form-table">
             <?php
             //if user's currency is USD
+            
             if (!in_array(get_woocommerce_currency(), array('USD', 'CAD'))) {
                 ?>
                 <div class="inline error"><p><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal does not support your store currency.', 'paypal-for-woocommerce'); ?></p></div>
@@ -623,8 +624,10 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 return;
             } else {
                 // Generate the HTML For the settings form.
+                $this->checks();
                 $this->generate_settings_html();
             }
+           
             wp_enqueue_script('wp-color-picker');
             wp_enqueue_style( 'wp-color-picker' );
             ?>
