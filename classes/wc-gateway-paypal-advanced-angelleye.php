@@ -72,6 +72,24 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     }
 
     /**
+     * Check if required fields for configuring the gateway are filled up by the administrator
+     * @access public
+     * @return void
+     * */
+    public function checks() {
+        if (!$this->is_valid_currency()) {
+            return;
+        }
+        if (!$this->loginid) {
+            echo '<div class="inline error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Merchant Login.', 'paypal-for-woocommerce')) . '</p></div>';
+        } elseif (!$this->resellerid) {
+            echo '<div class="inline error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Partner.', 'paypal-for-woocommerce')) . '</p></div>';
+        } elseif (!$this->password) {
+            echo '<div class="inline error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Password.', 'paypal-for-woocommerce')) . '</p></div>';
+        }
+    }
+
+    /**
      * redirect_to - redirects to the url based on layout type
      *
      * @access public
@@ -589,6 +607,10 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             return false;
         }
     }
+    
+    public function is_valid_currency() {
+        return in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paypal_advanced_supported_currencies', array('USD', 'CAD') ) );
+    }
 
     /**
      * Admin Panel Options
@@ -604,6 +626,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         <table class="form-table">
             <?php
             //if user's currency is USD
+            
             if (!in_array(get_woocommerce_currency(), array('USD', 'CAD'))) {
                 ?>
                 <div class="inline error"><p><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal does not support your store currency.', 'paypal-for-woocommerce'); ?></p></div>
@@ -611,8 +634,10 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 return;
             } else {
                 // Generate the HTML For the settings form.
+                $this->checks();
                 $this->generate_settings_html();
             }
+           
             wp_enqueue_script('wp-color-picker');
             wp_enqueue_style( 'wp-color-picker' );
             ?>
