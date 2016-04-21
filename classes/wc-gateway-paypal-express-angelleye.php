@@ -826,7 +826,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $this->set_session('giftwrapamount', isset($result['GIFTWRAPAMOUNT']) ? $result['GIFTWRAPAMOUNT'] : '');
                     $this->set_session('customer_notes', isset($result['PAYMENTREQUEST_0_NOTETEXT']) ? $result['PAYMENTREQUEST_0_NOTETEXT'] : '');
                     $this->set_session('phonenum', isset($result['PHONENUM']) ? $result['PHONENUM'] : '');
-                    WC()->cart->calculate_totals();
                 }
                 else {
                     $this->add_log("...ERROR: GetShippingDetails returned empty result");
@@ -1047,7 +1046,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log('Start Pay Action');
                 if (!defined('WOOCOMMERCE_CHECKOUT'))
                     define('WOOCOMMERCE_CHECKOUT', true);
-                WC()->cart->calculate_totals();
                 $this->angelleye_check_cart_items();
                 if (sizeof(WC()->cart->get_cart()) == 0 || empty(WC()->session->TOKEN)) {
                     $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
