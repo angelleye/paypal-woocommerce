@@ -353,6 +353,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			/**
 			 * PayPal PayFlow Gateway Request Params
 			 */
+                        
+                        $customer_note = $order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '';
+                        
 			$PayPalRequestData = array(
 					'tender'=>'C', 				// Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
 					'trxtype'=> $this->payment_action == 'Authorization' ? 'A' : 'S', 				// Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
@@ -364,7 +367,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'freightamt'=>'', 			//
 					'taxamt'=>'', 				//
 					'taxexempt'=>'', 			// 
-					'comment1'=>$order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '', 			// Merchant-defined value for reporting and auditing purposes.  128 char max
+					'comment1'=> apply_filters( 'ae_pppf_custom_parameter', $customer_note , $order ), 			// Merchant-defined value for reporting and auditing purposes.  128 char max
 					'comment2'=>'', 			// Merchant-defined value for reporting and auditing purposes.  128 char max
 					'cvv2'=>$card_csc, 				// A code printed on the back of the card (or front for Amex)
 					'recurring'=>'', 			// Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring. 
