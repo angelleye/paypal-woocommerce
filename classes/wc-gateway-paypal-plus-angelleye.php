@@ -284,7 +284,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
      * @return void
      * */
         public function render_iframe() {
-        if (!$this->is_available())
+        if (!$this->is_available() || WC()->cart->total <= 0)
             return;
         //display the form in IFRAME, if it is layout C, otherwise redirect to paypal site
         //define the redirection url
