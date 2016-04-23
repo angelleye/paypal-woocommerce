@@ -514,7 +514,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'no_unauthorized_payment_protection' => __('Do *not* have PayPal Unauthorized Payment Protection', 'paypal-for-woocommerce'),
                     'disabled' => __('Do not cancel any orders', 'paypal-for-woocommerce'),
                 ),
-                'default' => 'no_unauthorized_payment_protection'
+                'default' => 'disabled'
              ),
             
                 /* 'Locale' => array(
@@ -1500,7 +1500,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
             'taxamt' => '', // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
             'desc' => '', // Description of items on the order.  127 char max.
-            'custom' => apply_filters( 'ae_ppec_custom_parameter', '', $order ), // Free-form field for your own use.  256 char max.
+            'custom' => apply_filters( 'ae_ppec_custom_parameter', '', $posted ), // Free-form field for your own use.  256 char max.
             'invnum' => '', // Your own invoice or tracking number.  127 char max.
             'notifyurl' => '', // URL for receiving Instant Payment Notifications
             'shiptoname' => '', // Required if shipping is included.  Person's name associated with this address.  32 char max.
@@ -2285,7 +2285,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     wp_update_user(apply_filters('woocommerce_checkout_customer_userdata', $userdata, $this));
                 }
             }
-            do_action( 'woocommerce_checkout_update_user_meta', $this->customer_id, $this->posted );
+            do_action( 'woocommerce_checkout_update_user_meta', $this->customer_id, $posted );
             $this->set_session('checkout_form', serialize($posted));
             if( isset($_POST) && !empty($_POST)) {
                 $this->set_session('post_data', serialize($_POST));

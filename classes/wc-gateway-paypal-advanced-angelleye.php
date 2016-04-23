@@ -65,10 +65,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('woocommerce_receipt_paypal_advanced', array($this, 'receipt_page'));
         add_action('woocommerce_api_wc_gateway_paypal_advanced_angelleye', array($this, 'relay_response'));
-
-        if (!$this->is_available()) {
-            $this->enabled = false;
-        }
+        $this->enabled = isset($this->settings['enabled']) && $this->settings['enabled'] == 'yes' ? true : false;
     }
 
     /**
@@ -77,7 +74,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @return void
      * */
     public function checks() {
-        if (!$this->is_valid_currency()) {
+        if (!$this->is_valid_currency() || $this->enabled == false) {
             return;
         }
         if (!$this->loginid) {
