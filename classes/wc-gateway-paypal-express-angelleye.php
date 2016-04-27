@@ -1209,25 +1209,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
 
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
-                  /**
-                   * Check for Seller Protection Settings
-                   */
-                  if(AngellEYE_Gateway_Paypal::angelleye_woocommerce_sellerprotection_should_cancel_order($this,$result)) {
-                    $this->add_log('Order '.$order_id.' ('.$result['PAYMENTINFO_0_TRANSACTIONID'].') did not meet our Seller Protection requirements. Cancelling and refunding order.');
-                    $order->add_order_note(__('Transaction did not meet our Seller Protection requirements. Cancelling and refunding order.', 'paypal-for-woocommerce'));
-                    $admin_email = get_option("admin_email");
-                    wp_mail($admin_email, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce').$order_id);
-                    // Payment was succesfull, add transaction ID to our order so we can refund it
-                    update_post_meta($order_id, '_transaction_id', $result['PAYMENTINFO_0_TRANSACTIONID']);
-                    // Also add the express token
-                    update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
-                    // Process the refund
-                    $this->process_refund($order_id,$order->order_total,__('There was a problem processing your order. Please contact customer support.', 'paypal-for-woocommerce'));
-                    $order->cancel_order();
-                    wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
-                    wp_redirect(get_permalink(wc_get_page_id('cart')));
-                    exit();
-                  }
+                    /**
+                     * Check for Seller Protection Settings
+                     */
+                    if(AngellEYE_Gateway_Paypal::angelleye_woocommerce_sellerprotection_should_cancel_order($this,$result)) {
+                        $this->add_log('Order '.$order_id.' ('.$result['PAYMENTINFO_0_TRANSACTIONID'].') did not meet our Seller Protection requirements. Cancelling and refunding order.');
+                        $order->add_order_note(__('Transaction did not meet our Seller Protection requirements. Cancelling and refunding order.', 'paypal-for-woocommerce'));
+                        $admin_email = get_option("admin_email");
+                        wp_mail($admin_email, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce').$order_id);
+                        // Payment was succesfull, add transaction ID to our order so we can refund it
+                        update_post_meta($order_id, '_transaction_id', $result['PAYMENTINFO_0_TRANSACTIONID']);
+                        // Also add the express token
+                        update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
+                        // Process the refund
+                        $this->process_refund($order_id,$order->order_total,__('There was a problem processing your order. Please contact customer support.', 'paypal-for-woocommerce'));
+                        $order->cancel_order();
+                        wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
+                        wp_redirect(get_permalink(wc_get_page_id('cart')));
+                        exit();
+                    }
                     $this->add_log('Payment confirmed with PayPal successfully');
                     $result = apply_filters('woocommerce_payment_successful_result', $result, $order_id);
 
@@ -1248,15 +1248,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $giftreceiptenable = strtolower($this->get_session('giftreceiptenable')) == 'true' ? 'true' : 'false';
                         update_post_meta($order_id, 'giftreceiptenable', $giftreceiptenable);
                     }
-                
+
                     update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
-                    
+
                     $this->remove_session('TOKEN');
                     $order->add_order_note(__('PayPal Express payment completed', 'paypal-for-woocommerce') .
                             ' ( Response Code: ' . $result['ACK'] . ", " .
                             ' TransactionID: ' . $result['PAYMENTINFO_0_TRANSACTIONID'] . ' )');
                     $REVIEW_RESULT = unserialize($this->get_session('RESULT'));
-                    
+
                     if( isset($REVIEW_RESULT['PAYERSTATUS']) && !empty($REVIEW_RESULT['PAYERSTATUS']) ) {
                         $payerstatus_note = __('Payer Status: ', 'paypal-for-woocommerce');
                         $payerstatus_note .= ucfirst($REVIEW_RESULT['PAYERSTATUS']);
@@ -1264,24 +1264,87 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                     if( isset($REVIEW_RESULT['ADDRESSSTATUS']) && !empty($REVIEW_RESULT['ADDRESSSTATUS']) ) {
                         $addressstatus_note = __('Address Status: ', 'paypal-for-woocommerce');
-                    	$addressstatus_note .= ucfirst($REVIEW_RESULT['ADDRESSSTATUS']);
+                        $addressstatus_note .= ucfirst($REVIEW_RESULT['ADDRESSSTATUS']);
                         $order->add_order_note($addressstatus_note);
                     }
-                    
+
                     $payment_order_meta = array('_transaction_id' => $result['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->payment_action);
                     AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
-                    
-                    
-                    if( $this->payment_action == "Sale" ) {
-                        $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
-                        do_action('woocommerce_checkout_order_processed', $order_id);
-                    } else {
-                        $order->update_status( 'on-hold' );
-                        $order->add_order_note('Payment Action: ' . $this->payment_action);
-                    }
 
-                    //add hook
-                    
+                    switch( strtolower( $result['PAYMENTINFO_0_PAYMENTSTATUS'] ) ) :
+			case 'completed' :
+
+                                if ( $order->status == 'completed' ) {
+					break;
+				}
+
+				if ( ! in_array( strtolower( $result['PAYMENTINFO_0_TRANSACTIONTYPE'] ), array( 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money' ) ) ) {
+					break;
+				}
+
+                                $order->add_order_note( __( 'Payment Completed via Express Checkout', 'paypal-for-woocommerce' ) );
+                                $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
+                                do_action('woocommerce_checkout_order_processed', $order_id);
+
+				break;
+			case 'pending' :
+
+                            if ( ! in_array( strtolower( $result['PAYMENTINFO_0_TRANSACTIONTYPE'] ), array( 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money' ) ) ) {
+					break;
+				}
+
+				switch( strtolower( $result['PAYMENTINFO_0_PENDINGREASON'] ) ) {
+					case 'address':
+						$pending_reason = __( 'Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile.', 'paypal-for-woocommerce' );
+						break;
+					case 'authorization':
+						$pending_reason = __( 'Authorization: The payment is pending because it has been authorized but not settled. You must capture the funds first.', 'paypal-for-woocommerce' );
+						break;
+					case 'echeck':
+						$pending_reason = __( 'eCheck: The payment is pending because it was made by an eCheck that has not yet cleared.', 'paypal-for-woocommerce' );
+						break;
+					case 'intl':
+						$pending_reason = __( 'intl: The payment is pending because you hold a non-U.S. account and do not have a withdrawal mechanism. You must manually accept or deny this payment from your Account Overview.', 'paypal-for-woocommerce' );
+						break;
+					case 'multicurrency':
+					case 'multi-currency':
+						$pending_reason = __( 'Multi-currency: You do not have a balance in the currency sent, and you do not have your Payment Receiving Preferences set to automatically convert and accept this payment. You must manually accept or deny this payment.', 'paypal-for-woocommerce' );
+						break;
+					case 'order':
+						$pending_reason = __( 'Order: The payment is pending because it is part of an order that has been authorized but not settled.', 'paypal-for-woocommerce' );
+						break;
+					case 'paymentreview':
+						$pending_reason = __( 'Payment Review: The payment is pending while it is being reviewed by PayPal for risk.', 'paypal-for-woocommerce' );
+						break;
+					case 'unilateral':
+						$pending_reason = __( 'Unilateral: The payment is pending because it was made to an email address that is not yet registered or confirmed.', 'paypal-for-woocommerce' );
+						break;
+					case 'verify':
+						$pending_reason = __( 'Verify: The payment is pending because you are not yet verified. You must verify your account before you can accept this payment.', 'paypal-for-woocommerce' );
+						break;
+					case 'other':
+						$pending_reason = __( 'Other: For more information, contact PayPal customer service.', 'paypal-for-woocommerce' );
+						break;
+					case 'none':
+					default:
+						$pending_reason = __( 'No pending reason provided.', 'paypal-for-woocommerce' );
+						break;
+				}
+				$order->add_order_note( sprintf( __( 'Payment via Express Checkout Pending. PayPal reason: %s.', 'paypal-for-woocommerce' ), $pending_reason ) );
+				$order->update_status( 'on-hold' );
+				break;
+			case 'denied' :
+			case 'expired' :
+			case 'failed' :
+			case 'voided' :
+				// Order failed
+				$order->update_status( 'failed', sprintf( __( 'Payment %s via Express Checkout.', 'paypal-for-woocommerce' ), strtolower( $result['PAYMENTINFO_0_PAYMENTSTATUS'] ) ) );
+				break;
+			default:
+				break;
+
+                    endswitch;
+
                     unset(WC()->session->checkout_form);
                     unset(WC()->session->checkout_form_post_data);
 
@@ -1948,13 +2011,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         $this->add_log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
         $this->add_log('Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
-
-        /*
-         * Error handling
-         */
-        if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
-           // $this->remove_session('TOKEN');
-        }
 
         /*
          * Return the class library result array.
