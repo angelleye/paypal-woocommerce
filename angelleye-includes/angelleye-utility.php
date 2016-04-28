@@ -19,7 +19,7 @@ class AngellEYE_Utility {
     private $ec_debug;
     private $payment_method;
     private $error_email_notify;
-
+ 
     public function __construct($plugin_name, $version) {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
@@ -589,6 +589,28 @@ class AngellEYE_Utility {
             }
         }
         return null;
+    }
+    
+    public static function is_express_checkout_credentials_is_set() {
+        $pp_settings = get_option( 'woocommerce_paypal_express_settings' );
+        $testmode = $pp_settings['testmode']; 
+        $enabled = $pp_settings['enabled']; 
+        if ($testmode == 'yes') {
+            $api_username = $pp_settings['sandbox_api_username'];
+            $api_password = $pp_settings['sandbox_api_password'];
+            $api_signature = $pp_settings['sandbox_api_signature'];
+        } else {
+            $api_username = $pp_settings['api_username'];
+            $api_password = $pp_settings['api_password'];
+            $api_signature = $pp_settings['api_signature']; 
+        }
+        if ('yes' != $enabled) {
+            return false;
+        }
+        if (!$api_username || !$api_password || !$api_signature) {
+            return false;
+        }
+        return true;
     }
 
 }

@@ -267,9 +267,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             load_plugin_textdomain('paypal-for-woocommerce', false, dirname(plugin_basename(__FILE__)). '/i18n/languages/');
             add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
             //remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_paypal_express_checkout_button', 12 );
-            if( isset($pp_settings['button_position']) && ($pp_settings['button_position'] == 'bottom' || $pp_settings['button_position'] == 'both')){
-                add_action( 'woocommerce_proceed_to_checkout', array( 'WC_Gateway_PayPal_Express_AngellEYE', 'woocommerce_paypal_express_checkout_button_angelleye'), 22 );
+            if(AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
+                if( isset($pp_settings['button_position']) && ($pp_settings['button_position'] == 'bottom' || $pp_settings['button_position'] == 'both')){
+                    add_action( 'woocommerce_proceed_to_checkout', array( 'WC_Gateway_PayPal_Express_AngellEYE', 'woocommerce_paypal_express_checkout_button_angelleye'), 22 );
+                }
             }
+            
             add_action( 'woocommerce_before_cart', array( 'WC_Gateway_PayPal_Express_AngellEYE', 'woocommerce_before_cart'), 12 );
             remove_action( 'init', 'woocommerce_paypal_express_review_order_page') ;
             remove_shortcode( 'woocommerce_review_order');
@@ -491,6 +494,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         function buy_now_button() {
             global $pp_settings, $post, $product;
+            if(!AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
+                return false;
+            }
             if (@$pp_settings['enabled']=='yes' && @$pp_settings['show_on_product_page']=='yes')
             {
                 ?>
@@ -567,6 +573,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         function mini_cart_button(){
             global $pp_settings, $pp_pro, $pp_payflow;
+            if(!AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
+                return false;
+            }
             if( @$pp_settings['enabled']=='yes' && (empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart']=='yes') && WC()->cart->cart_contents_count > 0) {
                 echo '<div class="paypal_box_button">';
                 if (empty($pp_settings['checkout_with_pp_button_type'])) $pp_settings['checkout_with_pp_button_type'] = 'paypalimage';

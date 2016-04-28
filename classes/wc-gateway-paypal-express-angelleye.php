@@ -139,12 +139,26 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->confirm_order_id = $order->id;
     }
 
+    public function is_express_checkout_credentials_is_set() {
+        if ('yes' != $this->enabled) {
+            return false;
+        }
+        if (!$this->api_username || !$this->api_password || !$this->api_signature) {
+            return false;
+        }
+        return true;
+    }
+    
     function is_available() {
-        if ($this->enabled == 'yes' && ( $this->show_on_checkout == 'regular' || $this->show_on_checkout == 'both'))
+        if(!$this->is_express_checkout_credentials_is_set()) {
+            return false;
+        }
+        if( $this->show_on_checkout == 'regular' || $this->show_on_checkout == 'both') {
             return true;
+        }
         return false;
     }
-
+    
     /**
      * Use WooCommerce logger if debug is enabled.
      */
@@ -551,6 +565,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     function checkout_message() {
         global $pp_settings;
 
+        if(!$this->is_express_checkout_credentials_is_set()) {
+                return false;
+        }
         if (WC()->cart->total > 0) {
             wp_enqueue_script('angelleye_button');
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
@@ -2295,10 +2312,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     function top_cart_button() {
-        if (!empty($this->settings['button_position']) && ($this->settings['button_position'] == 'top' || $this->settings['button_position'] == 'both')) {
-            echo '<div class="wc-proceed-to-checkout angelleye_cart_button">';
-            $this->woocommerce_paypal_express_checkout_button_angelleye();
-            echo '</div>';
+        if($this->is_express_checkout_credentials_is_set()) {
+            if (!empty($this->settings['button_position']) && ($this->settings['button_position'] == 'top' || $this->settings['button_position'] == 'both')) {
+                echo '<div class="wc-proceed-to-checkout angelleye_cart_button">';
+                $this->woocommerce_paypal_express_checkout_button_angelleye();
+                echo '</div>';
+            }
         }
     }
 
