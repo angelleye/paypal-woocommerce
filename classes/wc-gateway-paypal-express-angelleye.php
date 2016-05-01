@@ -1228,7 +1228,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
 
 
-                if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+                if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning' && !isset($result['L_ERRORCODE0'])) {
                     /**
                      * Check for Seller Protection Settings
                      */
