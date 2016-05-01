@@ -218,8 +218,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Enable logging', 'woocommerce'),
                 'default' => 'no',
-                'description' => __('Log PayPal/Braintree events inside <code>/wp-content/uploads/wc-logs/braintree-{tag}.log</code>'
-                )
+                'description' => sprintf( __( 'Log PayPal/Braintree events, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'braintree' ) )
             )
         );
     }

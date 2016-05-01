@@ -782,7 +782,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
-                'description' => __('Log PayPal events, helpful in debugging when issue with transactions with the gateway', 'paypal-for-woocommerce'),
+                'description' => sprintf( __( 'Log PayPal events, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'paypal_advanced' ) )
             )
         );
     }
