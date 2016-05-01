@@ -311,8 +311,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
                 'type' => 'checkbox',
                 'label' => __('Enable logging', 'woocommerce'),
                 'default' => 'no',
-                'description' => __('Log PayPal events inside <code>/wp-content/uploads/wc-logs/paypal-pro-{tag}.log</code>'
-                )
+                'description' => sprintf( __( 'Log PayPal events, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'paypal-pro' ) )
             )
         );
         $this->form_fields = apply_filters('angelleye_pc_form_fields', $this->form_fields);

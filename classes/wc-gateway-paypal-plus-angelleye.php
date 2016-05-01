@@ -271,7 +271,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
-                'description' => __('Log PayPal events, such as Secured Token requests, inside <code>woocommerce/logs/paypal_plus.txt</code>', 'paypal-for-woocommerce'),
+                'description' => sprintf( __( 'Log PayPal events, such as Secured Token requests, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'paypal_plus' ) )
             )
         );
     }

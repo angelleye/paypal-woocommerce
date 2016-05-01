@@ -567,7 +567,7 @@ class AngellEYE_Utility {
                 'type' => 'checkbox',
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
-                'description' => __('Log PayPal events, such as Secured Token requests, inside <code>woocommerce/logs/paypal_credit_card_rest.txt</code>', 'paypal-for-woocommerce'),
+                'description' => sprintf( __( 'Log PayPal events, such as Secured Token requests, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'paypal_credit_card_rest' ) ),
             )
         );
     }
