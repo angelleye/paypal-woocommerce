@@ -1228,7 +1228,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
 
 
-                if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning' && !isset($result['L_ERRORCODE0'])) {
+                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                     /**
                      * Check for Seller Protection Settings
                      */
@@ -1248,7 +1248,47 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         wp_redirect(get_permalink(wc_get_page_id('cart')));
                         exit();
                     }
-                    $this->add_log('Payment confirmed with PayPal successfully');
+                    
+                    $SuccessWithWarning_order_note = '';
+                    
+                    if($result['ACK'] == 'SuccessWithWarning') {
+                        
+                        $ErrorCode = urldecode($result["L_ERRORCODE0"]);
+                        $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
+                        $ErrorLongMsg = urldecode($result["L_LONGMESSAGE0"]);
+                        $ErrorSeverityCode = urldecode($result["L_SEVERITYCODE0"]);
+                        
+                        $this->add_log('DoExpressCheckoutPayment API call SuccessWithWarning. ');
+                        $this->add_log('Detailed Error Message: ' . $ErrorLongMsg);
+                        $this->add_log('Short Error Message: ' . $ErrorShortMsg);
+                        $this->add_log('Error Code: ' . $ErrorCode);
+                        $this->add_log('Error Severity Code: ' . $ErrorSeverityCode);
+                        
+                        if($this->error_email_notify) {
+                            $admin_email = get_option("admin_email");
+                            $message = '';
+                            $message .= __( "DoExpressCheckoutPayment API call SuccessWithWarning." , "paypal-for-woocommerce" )."\n\n";
+                            $message .= __( 'Error Code: ' ,'paypal-for-woocommerce' ) . $ErrorCode."\n";
+                            $message .= __( 'Error Severity Code: ' , 'paypal-for-woocommerce' ) . $ErrorSeverityCode."\n";
+                            $message .= __( 'Short Error Message: ' , 'paypal-for-woocommerce' ) . $ErrorShortMsg ."\n";
+                            $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $ErrorLongMsg ."\n";
+                            $message .= __( 'User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+                            $message .= __( 'Order ID: ' ).$order_id ."\n";
+                            $message .= __( 'Customer Name: ' ).$this->get_session('shiptoname')."\n";
+                            $message .= __( 'Customer Email: ' ).$this->get_session('payeremail')."\n";
+
+                            $error_email_notify_mes = apply_filters( 'ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
+                            $subject = "PayPal Express Checkout Error Notification";
+                            $error_email_notify_subject = apply_filters( 'ae_ppec_error_email_subject', $subject );
+
+                            wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
+                        }
+                        
+                        $SuccessWithWarning_order_note = ' Error Code: ' . $ErrorCode . ", " . ' Error Severity Code: ' . $ErrorSeverityCode . ", " . ' Short Error Message: ' . $ErrorShortMsg . ", " . ' Detailed Error Message: ' . $ErrorLongMsg . ", ";
+                        
+                    } else {
+                        $this->add_log('Payment confirmed with PayPal successfully');
+                    }
                     $result = apply_filters('woocommerce_payment_successful_result', $result, $order_id);
 
                     /**
@@ -1273,7 +1313,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                     $this->remove_session('TOKEN');
                     $order->add_order_note(__('PayPal Express payment completed', 'paypal-for-woocommerce') .
-                            ' ( Response Code: ' . $result['ACK'] . ", " .
+                            ' ( Response Code: ' . $result['ACK'] . ", " . $SuccessWithWarning_order_note .
                             ' TransactionID: ' . $result['PAYMENTINFO_0_TRANSACTIONID'] . ' )');
                     $REVIEW_RESULT = unserialize($this->get_session('RESULT'));
 
@@ -1375,8 +1415,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     exit();
                 } else {
                     $this->add_log('...Error confirming order ' . $order_id . ' with PayPal');
-                    $this->add_log('...response:' . print_r($result, true));
-
                     // Display a user friendly Error on the page and log details
                     $ErrorCode = urldecode($result["L_ERRORCODE0"]);
                     $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
@@ -2010,6 +2048,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             //'UserSelectedOptions' => $UserSelectedOptions
         );
 
+        $paid_order_id = $this->angelleye_prevent_duplicate_payment_request(WC()->session->TOKEN);
+                
+        if( $paid_order_id ) {
+            $ms = sprintf(__('Sorry, A successful transaction has already been completed for this token. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
+            $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
+            wc_add_notice($ec_confirm_message, "error");
+            wp_redirect(get_permalink(wc_get_page_id('cart')));
+            exit();
+        }
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->DoExpressCheckoutPayment($PayPalRequestData);
 
