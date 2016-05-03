@@ -307,9 +307,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
                 'default' => 'no'
             ),
             'debug' => array(
-                'title' => __('Debug Log', 'woocommerce'),
+                'title' => __('Debug Log', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Enable logging', 'woocommerce'),
+                'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'description' => sprintf( __( 'Log PayPal events, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'paypal-pro' ) )
             )
@@ -373,13 +373,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             $class = 'form-row form-row-last';
             $fields = array(
                 'card-number-field' => '<p class="form-row form-row-first">
-                                <label for="' . esc_attr($this->id) . '-card-number">' . __('Credit Card Number', 'woocommerce') . ' <span class="required">*</span></label>
+                                <label for="' . esc_attr($this->id) . '-card-number">' . __('Credit Card Number', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
                                 <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
                         </p>',
                 'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class),
                 'card-cvc-field' => '<p class="form-row form-row-first">
-                                <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'woocommerce') . ' <span class="required">*</span></label>
-                                <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('CVC', 'woocommerce') . '" name="' . $this->id . '-card-cvc' . '" />
+                                <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
+                                <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-cvc' . '" />
                         </p>',
                 'card-startdate-field' => '<p class="form-row form-row-last">
                                 <label for="' . esc_attr($this->id) . '-card-startdate">' . __('Start Date (MM/YY)', 'paypal-for-woocommerce') . '</label>
@@ -389,13 +389,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
         } else {
             $fields = array(
                 'card-number-field' => '<p class="form-row form-row-wide">
-				<label for="' . esc_attr($this->id) . '-card-number">' . __('Credit Card Number', 'woocommerce') . ' <span class="required">*</span></label>
+				<label for="' . esc_attr($this->id) . '-card-number">' . __('Credit Card Number', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
 				<input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
 			</p>',
                 'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class),
                 'card-cvc-field' => '<p class="form-row form-row-last">
-				<label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'woocommerce') . ' <span class="required">*</span></label>
-				<input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('CVC', 'woocommerce') . '" name="' . $this->id . '-card-cvc' . '" />
+				<label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
+				<input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-cvc' . '" />
 			</p>'
             );
         }

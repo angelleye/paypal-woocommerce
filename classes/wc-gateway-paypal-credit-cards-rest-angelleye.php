@@ -74,7 +74,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
                 }).change();
             </script><?php
             } else {
-                ?><div class="inline error"><p><strong><?php _e('Gateway Disabled', 'woocommerce'); ?></strong>: <?php _e('PayPal does not support your store currency.', 'woocommerce'); ?></p></div> <?php
+                ?><div class="inline error"><p><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal does not support your store currency.', 'paypal-for-woocommerce'); ?></p></div> <?php
         }
     }
 
@@ -88,7 +88,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
             return;
         }
         if (version_compare(phpversion(), '5.2.1', '<')) {
-            echo '<div class="error"><p>' . sprintf(__('PayPal Credit Card (REST):  PayPal Credit Card (REST) requires PHP 5.2.1 and above. You are using version %s.', 'woocommerce'), phpversion()) . '</p></div>';
+            echo '<div class="error"><p>' . sprintf(__('PayPal Credit Card (REST):  PayPal Credit Card (REST) requires PHP 5.2.1 and above. You are using version %s.', 'paypal-for-woocommerce'), phpversion()) . '</p></div>';
         }
         $this->paypal_rest_api->add_dependencies_admin_notices();
     }

@@ -100,7 +100,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         $current_user = wp_get_current_user();
 
         if (($this->enabled === "yes" && $this->rest_client_id && $this->rest_secret_id ) && (!in_array(get_option('woocommerce_currency'), $this->allowed_currencies) && !get_user_meta($current_user->ID, '_wc_paypal_plus_not_support_currency_nag') )) {
-            echo '<div class="error"><p>' . sprintf(__('Gateway Disabled: PayPal Plus does not support your store currency (Supports: EUR, CAD).', 'paypal-for-woocommerce') . ' <a href="%s">' . __('Hide Notice', 'woocommerce') . '</a>', wp_nonce_url(add_query_arg('wc_paypal_plus_not_support_currency_nag', '1'), 'wc_paypal_plus_not_support_currency_nag_hide')) . '</p></div>';
+            echo '<div class="error"><p>' . sprintf(__('Gateway Disabled: PayPal Plus does not support your store currency (Supports: EUR, CAD).', 'paypal-for-woocommerce') . ' <a href="%s">' . __('Hide Notice', 'paypal-for-woocommerce') . '</a>', wp_nonce_url(add_query_arg('wc_paypal_plus_not_support_currency_nag', '1'), 'wc_paypal_plus_not_support_currency_nag_hide')) . '</p></div>';
         }
 
         if ($this->enabled != 'yes' || @$_GET['section'] == 'wc_gateway_paypal_plus_angelleye') {
@@ -236,14 +236,14 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'woocommerce'),
+                'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'paypal-for-woocommerce'),
                 'default' => 'WC-PPADV',
                 'desc_tip' => true,
             ),
             'cancel_url' => array(
                 'title' => __('Cancel URL', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Please enter an URL for customers to return when they cancel the order in PayPal.', 'woocommerce'),
+                'description' => __('Please enter an URL for customers to return when they cancel the order in PayPal.', 'paypal-for-woocommerce'),
                 'default' => site_url(),
             ),
             'landing_page' => array(
