@@ -9,6 +9,7 @@
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.html
+ * Text Domain:       paypal-for-woocommerce
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  *
@@ -254,7 +255,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $processed = (isset($_GET['processed']) ) ? $_GET['processed'] : FALSE;
                 if($processed) {
                     echo '<div class="updated">';
-                    echo '<p>'. sprintf( __('Action completed; %s records processed. ', $this->plugin_slug), ($processed == 'zero') ? 0 : $processed);
+                    echo '<p>'. sprintf( __('Action completed; %s records processed. ', 'paypal-for-woocommerce'), ($processed == 'zero') ? 0 : $processed);
                     echo '</div>';
                 }
             }
@@ -264,7 +265,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         function init(){
             global $pp_settings;
             if (!class_exists("WC_Payment_Gateway")) return;
-            load_plugin_textdomain('paypal-for-woocommerce', false, dirname(plugin_basename(__FILE__)). '/i18n/languages/');
+            load_plugin_textdomain( 'paypal-for-woocommerce', FALSE, basename( dirname( __FILE__ ) ) . '/i18n/languages/' );
             add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
             //remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_paypal_express_checkout_button', 12 );
             if(AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
@@ -388,7 +389,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 global $woocommerce;
                 
                 // Create review page for Express Checkout
-                wc_create_page(esc_sql(_x('review-order','page_slug','woocommerce')),'woocommerce_review_order_page_id',__('Checkout &rarr; Review Order','paypal-for-woocommerce'),'[woocommerce_review_order]',wc_get_page_id('checkout'));
+                wc_create_page(esc_sql(_x('review-order','page_slug','paypal-for-woocommerce')),'woocommerce_review_order_page_id',__('Checkout &rarr; Review Order','paypal-for-woocommerce'),'[woocommerce_review_order]',wc_get_page_id('checkout'));
 
                 // Log activation in Angell EYE database via web service.
                 // @todo Need to turn this into an option people can enable by request.
@@ -520,7 +521,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         if(!empty($pp_settings['pp_button_type_text_button'])){
                             $button_text = $pp_settings['pp_button_type_text_button'];
                         } else {
-                            $button_text = __( 'Proceed to Checkout', 'woocommerce' );
+                            $button_text = __( 'Proceed to Checkout', 'paypal-for-woocommerce' );
                         }
                         echo '<input data-action="'.$add_to_cart_action.'" type="button" style="float: left; clear: both; margin: 3px 0 0 0; border: none;',$hide,'" class="single_add_to_cart_button single_variation_wrap_angelleye paypal_checkout_button button alt '.$button_dynamic_class.'" name="express_checkout"  value="' .$button_text .'"/>';
                         break;
@@ -587,7 +588,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         if (!empty($pp_settings['pp_button_type_text_button'])) {
                             $button_text = $pp_settings['pp_button_type_text_button'];
                         } else {
-                            $button_text = __('Proceed to Checkout', 'woocommerce');
+                            $button_text = __('Proceed to Checkout', 'paypal-for-woocommerce');
                         }
                         echo '<div class="paypal_ec_textbutton">';
                         echo '<a class="paypal_checkout_button button alt" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">' . $button_text . '</a>';
@@ -1166,7 +1167,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         
                         $display_error = "There was a communication issue with PayPal's server. Please try again.";
                         
-                        throw new Exception( __( $display_error, 'woocommerce' ) );
+                        throw new Exception( __( $display_error, 'paypal-for-woocommerce' ) );
                         
                         wp_redirect(get_permalink(wc_get_page_id('cart')));
                         exit;

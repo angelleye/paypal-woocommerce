@@ -733,7 +733,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'woocommerce'),
+                'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'paypal-for-woocommerce'),
                 'default' => 'WC-PPADV',
                 'desc_tip' => true,
             ),
@@ -863,7 +863,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         }
 
         if (!is_null($amount) && $order->get_total() > $amount) {
-            return new WP_Error('paypal-advanced-error', __('Partial refund is not supported', 'woocommerce'));
+            return new WP_Error('paypal-advanced-error', __('Partial refund is not supported', 'paypal-for-woocommerce'));
         }
 
 
@@ -915,11 +915,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         if ($refund_result_arr['RESULT'] == 0) {
 
-            $order->add_order_note(sprintf(__('Successfully Refunded - Refund Transaction ID: %s', 'woocommerce'), $refund_result_arr['PNREF']));
+            $order->add_order_note(sprintf(__('Successfully Refunded - Refund Transaction ID: %s', 'paypal-for-woocommerce'), $refund_result_arr['PNREF']));
         } else {
 
-            $order->add_order_note(sprintf(__('Refund Failed - Refund Transaction ID: %s, Error Msg: %s', 'woocommerce'), $refund_result_arr['PNREF'], $refund_result_arr['RESPMSG']));
-            throw new Exception(sprintf(__('Refund Failed - Refund Transaction ID: %s, Error Msg: %s', 'woocommerce'), $refund_result_arr['PNREF'], $refund_result_arr['RESPMSG']));
+            $order->add_order_note(sprintf(__('Refund Failed - Refund Transaction ID: %s, Error Msg: %s', 'paypal-for-woocommerce'), $refund_result_arr['PNREF'], $refund_result_arr['RESPMSG']));
+            throw new Exception(sprintf(__('Refund Failed - Refund Transaction ID: %s, Error Msg: %s', 'paypal-for-woocommerce'), $refund_result_arr['PNREF'], $refund_result_arr['RESPMSG']));
 
             return false;
         }

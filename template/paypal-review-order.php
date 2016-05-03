@@ -46,7 +46,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
     <?php do_action( 'angelleye_review_order_before_customer_details' );?>
 
     <div class="title">
-        <h2><?php _e( 'Customer details', 'woocommerce' ); ?></h2>
+        <h2><?php _e( 'Customer details', 'paypal-for-woocommerce' ); ?></h2>
     </div>
 
     <div class="col2-set addresses">
@@ -54,7 +54,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         <div class="col-1">
 
             <div class="title">
-                <h3><?php _e( 'Shipping Address', 'woocommerce' ); ?></h3>
+                <h3><?php _e( 'Shipping Address', 'paypal-for-woocommerce' ); ?></h3>
             </div>
             <div class="address">
                 <p>
@@ -117,7 +117,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         	
 
 	            <div class="title">
-	                <h3><?php _e( 'Billing Address', 'woocommerce' ); ?></h3>
+	                <h3><?php _e( 'Billing Address', 'paypal-for-woocommerce' ); ?></h3>
 	            </div>
 	            <div class="address">
 	                <p>
@@ -200,7 +200,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
     <?php do_action( 'angelleye_review_order_before_login_create_account' );?>
 
     <div class="title">
-        <h2><?php _e( 'Login', 'woocommerce' ); ?></h2>
+        <h2><?php _e( 'Login', 'paypal-for-woocommerce' ); ?></h2>
     </div>
     <form name="" action="" method="post">
         <?php
@@ -215,7 +215,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         ?>
     </form>
     <div class="title">
-        <h2><?php _e( 'Create A New Account', 'woocommerce' ); ?></h2>
+        <h2><?php _e( 'Create A New Account', 'paypal-for-woocommerce' ); ?></h2>
     </div>
     <form action="<?php echo add_query_arg(array( 'pp_action' => 'revieworder'));?>" method="post">
         <p class="form-row form-row-first">
@@ -262,7 +262,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
                     var ischecked = jQuery('.terms_own').is(':checked') ;
 
                     if (ischecked == false) {
-                        jQuery('.wp_notice_own').html('<div class="woocommerce-error"><?php echo __( 'You must accept our Terms &amp; Conditions.', 'woocommerce' );?></div>');
+                        jQuery('.wp_notice_own').html('<div class="woocommerce-error"><?php echo __( 'You must accept our Terms &amp; Conditions.', 'paypal-for-woocommerce' );?></div>');
                         return false;
                     }else if (ischecked == true) {
                         jQuery('.wp_notice_own').html('');
@@ -296,7 +296,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         </style>
 
         <p class="terms">
-            <label for="terms" class="checkbox lbl_terms"><?php printf( __( 'I&rsquo;ve read and accept the <a href="%s" class="terms_chkbox" target="_blank">terms &amp; conditions</a>', 'woocommerce' ), esc_url( wc_get_page_permalink( 'terms' ) ) ); ?></label>
+            <label for="terms" class="checkbox lbl_terms"><?php printf( __( 'I&rsquo;ve read and accept the <a href="%s" class="terms_chkbox" target="_blank">terms &amp; conditions</a>', 'paypal-for-woocommerce' ), esc_url( wc_get_page_permalink( 'terms' ) ) ); ?></label>
             <input type="checkbox" class="input-checkbox terms_own" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
         </p>
         <?php  echo $cancel_button;?>

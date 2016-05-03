@@ -203,12 +203,12 @@ class AngellEYE_Utility {
             $ErrorShortMsg = urldecode($do_capture_result["L_SHORTMESSAGE0"]);
             $ErrorLongMsg = urldecode($do_capture_result["L_LONGMESSAGE0"]);
             $ErrorSeverityCode = urldecode($do_capture_result["L_SEVERITYCODE0"]);
-            $this->ec_add_log(__('PayPal DoCapture API call failed. ', $this->plugin_name));
+            $this->ec_add_log(__('PayPal DoCapture API call failed. ', 'paypal-for-woocommerce'));
             $this->ec_add_log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
             $this->ec_add_log(__('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg);
             $this->ec_add_log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
             $this->ec_add_log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
-            $order->add_order_note(__('PayPal DoCapture API call failed. ', $this->plugin_name) .
+            $order->add_order_note(__('PayPal DoCapture API call failed. ', 'paypal-for-woocommerce') .
                     ' ( Detailed Error Message: ' . $ErrorLongMsg . ", " .
                     ' Short Error Message: ' . $ErrorShortMsg . ' )' .
                     ' Error Code: ' . $ErrorCode . ' )' .
@@ -283,12 +283,12 @@ class AngellEYE_Utility {
                 $ErrorShortMsg = urldecode($do_capture_result["L_SHORTMESSAGE0"]);
                 $ErrorLongMsg = urldecode($do_capture_result["L_LONGMESSAGE0"]);
                 $ErrorSeverityCode = urldecode($do_capture_result["L_SEVERITYCODE0"]);
-                $this->ec_add_log(__('PayPal DoVoid API call failed. ', $this->plugin_name));
+                $this->ec_add_log(__('PayPal DoVoid API call failed. ', 'paypal-for-woocommerce'));
                 $this->ec_add_log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
                 $this->ec_add_log(__('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg);
                 $this->ec_add_log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
                 $this->ec_add_log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
-                $order->add_order_note(__('PayPal DoVoid API call failed. ', $this->plugin_name) .
+                $order->add_order_note(__('PayPal DoVoid API call failed. ', 'paypal-for-woocommerce') .
                         ' ( Detailed Error Message: ' . $ErrorLongMsg . ", " .
                         ' Short Error Message: ' . $ErrorShortMsg . ' )' .
                         ' Error Code: ' . $ErrorCode . ' )' .
@@ -341,7 +341,7 @@ class AngellEYE_Utility {
                 $ErrorShortMsg = urldecode($do_reauthorization_result["L_SHORTMESSAGE0"]);
                 $ErrorLongMsg = urldecode($do_reauthorization_result["L_LONGMESSAGE0"]);
                 $ErrorSeverityCode = urldecode($do_reauthorization_result["L_SEVERITYCODE0"]);
-                $this->ec_add_log(__('PayPal DoReauthorization API call failed. ', $this->plugin_name));
+                $this->ec_add_log(__('PayPal DoReauthorization API call failed. ', 'paypal-for-woocommerce'));
                 $this->ec_add_log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
                 $this->ec_add_log(__('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg);
                 $this->ec_add_log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
@@ -413,12 +413,12 @@ class AngellEYE_Utility {
                 $ErrorShortMsg = urldecode($do_authorization_result["L_SHORTMESSAGE0"]);
                 $ErrorLongMsg = urldecode($do_authorization_result["L_LONGMESSAGE0"]);
                 $ErrorSeverityCode = urldecode($do_authorization_result["L_SEVERITYCODE0"]);
-                $this->ec_add_log(__('PayPal DoAuthorization API call failed. ', $this->plugin_name));
+                $this->ec_add_log(__('PayPal DoAuthorization API call failed. ', 'paypal-for-woocommerce'));
                 $this->ec_add_log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
                 $this->ec_add_log(__('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg);
                 $this->ec_add_log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
                 $this->ec_add_log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
-                $order->add_order_note(__('PayPal DoAuthorization API call failed. ', $this->plugin_name) .
+                $order->add_order_note(__('PayPal DoAuthorization API call failed. ', 'paypal-for-woocommerce') .
                         ' ( Detailed Error Message: ' . $ErrorLongMsg . ", " .
                         ' Short Error Message: ' . $ErrorShortMsg . ' )' .
                         ' Error Code: ' . $ErrorCode . ' )' .
@@ -558,7 +558,7 @@ class AngellEYE_Utility {
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'woocommerce'),
+                'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'paypal-for-woocommerce'),
                 'default' => 'WC-PCCR',
                 'desc_tip' => true,
             ),

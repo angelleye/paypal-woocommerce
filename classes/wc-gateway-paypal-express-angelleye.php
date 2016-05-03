@@ -590,7 +590,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     if (!empty($pp_settings['pp_button_type_text_button'])) {
                         $button_text = $pp_settings['pp_button_type_text_button'];
                     } else {
-                        $button_text = __('Proceed to Checkout', 'woocommerce');
+                        $button_text = __('Proceed to Checkout', 'paypal-for-woocommerce');
                     }
                     echo '<div class="paypal_ec_textbutton">';
                     echo '<a class="paypal_checkout_button paypal_checkout_button_text button alt" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">' . $button_text . '</a>';
@@ -690,7 +690,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (!$review_order_page_url) {
                     $this->add_log(__('Review Order Page not found, re-create it. ', 'paypal-for-woocommerce'));
                     include_once( WC()->plugin_path() . '/includes/admin/wc-admin-functions.php' );
-                    $page_id = wc_create_page(esc_sql(_x('review-order', 'page_slug', 'woocommerce')), 'woocommerce_review_order_page_id', __('Checkout &rarr; Review Order', 'paypal-for-woocommerce'), '[woocommerce_review_order]', wc_get_page_id('checkout'));
+                    $page_id = wc_create_page(esc_sql(_x('review-order', 'page_slug', 'paypal-for-woocommerce')), 'woocommerce_review_order_page_id', __('Checkout &rarr; Review Order', 'paypal-for-woocommerce'), '[woocommerce_review_order]', wc_get_page_id('checkout'));
                     $review_order_page_url = get_permalink($page_id);
                 }
                 $returnURL = urlencode(add_query_arg('pp_action', 'revieworder', $review_order_page_url));
@@ -889,7 +889,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                             // Anti-spam trap
                             if (!empty($_POST['email_2'])) {
-                                throw new Exception(__('Anti-spam field was filled in.', 'woocommerce'));
+                                throw new Exception(__('Anti-spam field was filled in.', 'paypal-for-woocommerce'));
                                 wc_add_notice('<strong>' . __('Anti-spam field was filled in.', 'paypal-for-woocommerce') . ':</strong> ', 'error');
                             }
 
@@ -2226,7 +2226,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     if (!empty($pp_settings['pp_button_type_text_button'])) {
                         $button_text = $pp_settings['pp_button_type_text_button'];
                     } else {
-                        $button_text = __('Proceed to Checkout', 'woocommerce');
+                        $button_text = __('Proceed to Checkout', 'paypal-for-woocommerce');
                     }
                     echo '<a style="margin-bottom:1em; border: none; " class="paypal_checkout_button button alt" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">' . $button_text . '</a>';
                     echo $angelleyeOverlay;
