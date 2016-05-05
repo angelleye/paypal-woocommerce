@@ -73,7 +73,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
     } elseif ($gateway == 'paypal_credit_card_rest') {
         ?>
             <div class="wrap">
-                <p><?php _e('The Payments API provides an easy and secure way to accept online and mobile payments. You can take advantage of all the great benefits of PayPal while enabling customers to make payments with only a few clicks.', 'paypal-for-woocommerce'); ?></p>
+                <p><?php _e('PayPal direct credit card payments using the REST API.  This allows you to accept credit cards directly on the site without the need for the full Payments Pro.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal_credit_card_rest_angelleye'); ?>"><?php _e('PayPal Credit Card (REST) Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
         <?php

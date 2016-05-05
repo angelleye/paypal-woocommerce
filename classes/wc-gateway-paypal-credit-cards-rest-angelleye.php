@@ -18,7 +18,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
         $this->has_fields = true;
         $this->method_title = 'PayPal Credit Card (REST)';
         $this->woocommerce_paypal_supported_currencies = array('AUD', 'BRL', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'HUF', 'ILS', 'JPY', 'MYR', 'MXN', 'TWD', 'NZD', 'NOK', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'SEK', 'CHF', 'THB', 'TRY', 'USD');
-        $this->method_description = 'The Payments API provides an easy and secure way to accept online and mobile payments. You can take advantage of all the great benefits of PayPal while enabling customers to make payments with only a few clicks.';
+        $this->method_description = __('PayPal direct credit card payments using the REST API.  This allows you to accept credit cards directly on the site without the need for the full Payments Pro.', 'paypal-for-woocommerce');
         $this->supports = array(
             'products',
             'refunds'
