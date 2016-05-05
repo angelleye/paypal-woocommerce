@@ -59,7 +59,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
     } elseif ($gateway == 'wc_gateway_braintree_angelleye') {
         ?>
             <div class="wrap">
-                <p><?php _e('Braintree Payment Gateway authorizes credit card payments and processes them securely with your merchant account.', 'paypal-for-woocommerce'); ?></p>
+                <p><?php _e('Credit Card payments Powered by PayPal / Braintree.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_braintree_angelleye'); ?>"><?php _e('Braintree Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
         <?php

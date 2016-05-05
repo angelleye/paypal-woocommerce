@@ -15,7 +15,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         $this->icon = apply_filters('woocommerce_braintree_icon', plugins_url('assets/images/cards.png', __DIR__));
         $this->has_fields = true;
         $this->method_title = 'Braintree';
-        $this->method_description = 'Braintree Payment Gateway authorizes credit card payments and processes them securely with your merchant account.';
+        $this->method_description = __('Credit Card payments Powered by PayPal / Braintree.', 'paypal-for-woocommerce');
         $this->supports = array(
             'products',
             'refunds'
