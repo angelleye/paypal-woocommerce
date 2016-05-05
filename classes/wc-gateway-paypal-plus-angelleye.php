@@ -59,11 +59,8 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         $this->brand_name = isset($this->settings['brand_name']) ? $this->settings['brand_name'] : get_bloginfo('name');
         $this->checkout_logo = isset($this->settings['checkout_logo']) ? $this->settings['checkout_logo'] : '';
         // Enable Logs if user configures to debug
-        if ($this->debug == 'yes')
+        if ($this->debug == 'yes') {
             $this->log = new WC_Logger();
-        // Hooks
-        if (is_admin()) {
-            add_action('admin_notices', array($this, 'checks')); //checks for availability of the plugin
         }
         /* 1.6.6 */
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
@@ -88,29 +85,6 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         if (!defined("PP_CONFIG_PATH")) {
             define("PP_CONFIG_PATH", __DIR__);
         }
-    }
-
-    /**
-     * Check if required fields for configuring the gateway are filled up by the administrator
-     * @access public
-     * @return void
-     * */
-    public function checks() {
-
-        $current_user = wp_get_current_user();
-
-        if (($this->enabled === "yes" && $this->rest_client_id && $this->rest_secret_id ) && (!in_array(get_option('woocommerce_currency'), $this->allowed_currencies) && !get_user_meta($current_user->ID, '_wc_paypal_plus_not_support_currency_nag') )) {
-            echo '<div class="error"><p>' . sprintf(__('Gateway Disabled: PayPal Plus does not support your store currency (Supports: EUR, CAD).', 'paypal-for-woocommerce') . ' <a href="%s">' . __('Hide Notice', 'paypal-for-woocommerce') . '</a>', wp_nonce_url(add_query_arg('wc_paypal_plus_not_support_currency_nag', '1'), 'wc_paypal_plus_not_support_currency_nag_hide')) . '</p></div>';
-        }
-
-        if ($this->enabled != 'yes' || @$_GET['section'] == 'wc_gateway_paypal_plus_angelleye') {
-            return;
-        }
-        // Check required fields
-        if (!$this->rest_client_id || !$this->rest_secret_id) {
-            echo '<div class="error"><p>' . sprintf(__('Paypal Plus error: Please enter your Rest API Cient ID and Secret ID <a href="%s">here</a>', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout&section=' . strtolower('WC_Gateway_PayPal_Plus_AngellEYE'))) . '</p></div>';
-        }
-        return;
     }
 
     /**
@@ -149,14 +123,12 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         <p><?php _e('NOTE: This is currently considered BETA but has been tested thoroughly in the sandbox without issue.', 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
             <?php
-            //if user's currency is USD
             if (!in_array(get_option('woocommerce_currency'), $this->allowed_currencies)) {
                 ?>
                 <div class="inline error"><p><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal Plus does not support your store currency (Supports: EUR, CAD).', 'paypal-for-woocommerce'); ?></p></div>
                 <?php
                 return;
             } else {
-                // Generate the HTML For the settings form.
                 $this->generate_settings_html();
             }
             ?>
