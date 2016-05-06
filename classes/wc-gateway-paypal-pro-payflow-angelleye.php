@@ -309,14 +309,15 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             wc_add_notice( $fc_session_expired, "error" );
 		}
 		
-		/*
-		 * Check if the PayPal_PayFlow class has already been established.
-		 */
-		if(!class_exists('Angelleye_PayPal_PayFlow' ))
-		{
-			require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
-			require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');	
-		}
+                /*
+                 * Check if the PayPal_PayFlow class has already been established.
+                 */
+                if (!class_exists('Angelleye_PayPal')) {
+                    require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+                }
+                if(!class_exists('Angelleye_PayPal_PayFlow' )) {
+                    require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');	
+                }
 		
 		/**
 		 * Create PayPal_PayFlow object.
@@ -676,12 +677,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         if ( ! $order || ! $order->get_transaction_id() || ! $this->paypal_user || ! $this->paypal_password || ! $this->paypal_vendor ) {
             return false;
         }
-        /*
-		 * Check if the PayPal_PayFlow class has already been established.
-		 */
-        if(!class_exists('Angelleye_PayPal_PayFlow' ))
-        {
+
+        /**
+         * Check if the PayPal_PayFlow class has already been established.
+         */
+        if (!class_exists('Angelleye_PayPal')) {
             require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+        }
+        if(!class_exists('Angelleye_PayPal_PayFlow' )) {
             require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
         }
 

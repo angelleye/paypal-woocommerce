@@ -89,7 +89,7 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 	 * @param string Request
 	 * @return string
 	 */
-	function CURLRequest($Request = "", $APIName = "", $APIOperation = "")
+	function CURLRequest($Request = "", $APIName = "", $APIOperation = "", $PrintHeaders = false)
 	{
 	
 		$unique_id = date('YmdGis').rand(1000,9999);
