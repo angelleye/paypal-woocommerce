@@ -117,12 +117,17 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 		// in case of network issues.  The idea here is since you are posting via HTTPS there
 		// could be general network issues, so try a few times before you tell customer there
 		// is an issue.
-                if(curl_exec($curl) === false) {
+                
+                $Response = curl_exec($curl);
+                if($Response === false) {
                     return array( 'CURL_ERROR' =>curl_error($curl) );
                 } else {
                     $i=1;
                     while ($i++ <= 3) {
-                        $Response = curl_exec($curl);
+                        $k = $i;
+                        if($i != 2) {
+                            $Response = curl_exec($curl);
+                        }
                         $headers = curl_getinfo($curl);
                         if ($headers['http_code'] != 200) {
                             sleep(5);  // Let's wait 5 seconds to see if its a temporary network issue.

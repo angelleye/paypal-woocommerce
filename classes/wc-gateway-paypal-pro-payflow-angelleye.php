@@ -574,7 +574,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		}
 		catch(Exception $e)
 		{
-            $fc_connect_error = apply_filters( 'angelleye_fc_connect_error', __('Connection error:', 'paypal-for-woocommerce' ) . ': "' . $e->getMessage() . '"', $e  );
+            $fc_connect_error = apply_filters( 'angelleye_fc_connect_error', $e->getMessage() , $e  );
             wc_add_notice( $fc_connect_error, "error");
             return;
         }	
