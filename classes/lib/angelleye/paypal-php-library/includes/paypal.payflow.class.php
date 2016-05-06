@@ -124,7 +124,6 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
                 } else {
                     $i=1;
                     while ($i++ <= 3) {
-                        $k = $i;
                         if($i != 2) {
                             $Response = curl_exec($curl);
                         }
