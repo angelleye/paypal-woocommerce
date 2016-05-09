@@ -300,10 +300,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
                 'class' => 'angelleye_notifyurl'
             ),
             'enable_cardholder_first_last_name' => array(
-                'title' => __('Enable Cardholder first and last name', 'paypal-for-woocommerce'),
-                'label' => __('Enable Cardholder first and last name', 'paypal-for-woocommerce'),
+                'title' => __('Enable Cardholder Name', 'paypal-for-woocommerce'),
+                'label' => __('Adds fields for "card holder name" to checkout in addition to the "billing name" fields.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('Display cardholder first and last name in credit card form.', 'paypal-for-woocommerce'),
+                'description' => __('Display card holder first and last name in credit card form.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
             'debug' => array(
