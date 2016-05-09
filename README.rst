@@ -41,6 +41,10 @@ You'll see the following Checkout Options have been added.
 - PayPal Website Payments Pro (DoDirectPayment)
 - PayPal Payments Pro 2.0 (PayFlow) 
 - PayPal Express Checkout
+- PayPal Plus (Germany)
+- PayPal Payments Advanced
+- PayPal REST Credit Card Payments
+- PayPal Braintree Credit Card Payments
 
 For each one that you would like to activate, simply click into that section, enter your API credentials, and setup the options however you like.
 

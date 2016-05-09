@@ -3,8 +3,8 @@ Contributors: angelleye
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
-Tested up to: 4.5
-Stable tag: 1.1.9.2
+Tested up to: 4.5.2
+Stable tag: 1.2.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -20,6 +20,9 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayPal Manager / PayFlow Gateway)
  * PayPal Plus (Germany)
+ * PayPal Payments Advanced
+ * PayPal REST Credit Card Payments
+ * PayPal / Braintree Credit Card Payments
  
 [youtube https://www.youtube.com/watch?v=svq9ovWGp7I]
 
@@ -102,6 +105,40 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.2.0 - 05.10.2016 =
+* Feature - Adds PayPal Payments Advanced. ([#11](https://github.com/angelleye/paypal-woocommerce/issues/11))
+* Feature - Adds the ability to capture Orders / Authorizations from within the WooCommerce order screen. ([#36](https://github.com/angelleye/paypal-woocommerce/issues/36))
+* Feature - Adds an option to specify an Instant Payment Notification (IPN) URL for transactions ([#47](https://github.com/angelleye/paypal-woocommerce/issues/47))
+* Feature - Adds Express Checkout wallet coupons and rewards. ([#87](https://github.com/angelleye/paypal-woocommerce/issues/87))
+* Feature - Adds an option to provide separate fields for "billing name" and "credit card name" for Payments Pro credit card transactions. ([#180](https://github.com/angelleye/paypal-woocommerce/issues/180))
+* Feature - Adds Braintree credit card payments. ([#370](https://github.com/angelleye/paypal-woocommerce/issues/370))
+* Feature - Adds PayPal REST credit card payments. ([#414](https://github.com/angelleye/paypal-woocommerce/issues/414))
+* Feature - Adds refund functionality for PayPal Plus.  ([#398](https://github.com/angelleye/paypal-woocommerce/issues/398))
+* Feature - Adds order number to PayPal Plus. ([#400](https://github.com/angelleye/paypal-woocommerce/issues/400))
+* Feature - Adds an option to automatically cancel / refund orders that are not covered by PayPal Seller Protection. ([#429](https://github.com/angelleye/paypal-woocommerce/pull/429))
+* Feature - Adds a hook to include custom data in the CUSTOM parameter of PayPal payments. ([#431](https://github.com/angelleye/paypal-woocommerce/issues/431))
+* Tweak - Adjusts the way pending payments are handled in relation to digital goods orders. ([#440](https://github.com/angelleye/paypal-woocommerce/issues/440))
+* Tweak - Enables Fraud Management Filters information to be included in API response logs. ([#432](https://github.com/angelleye/paypal-woocommerce/issues/432))
+* Tweak - Woo Checkout Add-Ons compatibility. ([#430](https://github.com/angelleye/paypal-woocommerce/issues/430))
+* Tweak - Woo EU Vat Number compatibility. ([#434](https://github.com/angelleye/paypal-woocommerce/issues/434))
+* Tweak - Woo Local Pickup Plus compatibility. ([#438](https://github.com/angelleye/paypal-woocommerce/issues/438))
+* Tweak - Adds jQuery triggers / event listeners. ([#427](https://github.com/angelleye/paypal-woocommerce/pull/427))
+* Tweak - Adjustments to custom checkout image options. ([#435](https://github.com/angelleye/paypal-woocommerce/issues/435))
+* Tweak - Adds filter for add_body_classes for easier CSS styling. ([#428](https://github.com/angelleye/paypal-woocommerce/pull/428))
+* Tweak - Adds experience ID to PayPal Plus transactions. ([#402](https://github.com/angelleye/paypal-woocommerce/issues/402))
+* Tweak - Adjusts the CSS / jQuery used to place the Express Checkout button on product details pages. ([#209](https://github.com/angelleye/paypal-woocommerce/issues/209) [#312](https://github.com/angelleye/paypal-woocommerce/issues/312))
+* Tweak - Removes American Express from the credit card type options when incompatible currencies are set in WooCommerce. ([#420](https://github.com/angelleye/paypal-woocommerce/issues/420))
+* Tweak - Upgrades the PayPal PHP SDK. ([#422](https://github.com/angelleye/paypal-woocommerce/pull/422))
+* Tweak - Adds invoice prefix to the Order ID parameter in PayFlow requests. ([#443](https://github.com/angelleye/paypal-woocommerce/issues/443))
+* Tweak - WordPress 4.5 compatibility. ([#444](https://github.com/angelleye/paypal-woocommerce/issues/444))
+* Tweak - Adjusts the path displayed for log files. ([#458](https://github.com/angelleye/paypal-woocommerce/issues/458))
+* Tweak - Adjusts text domain and domain path. ([#459](https://github.com/angelleye/paypal-woocommerce/issues/459))
+* Fix - Resolves issues with 3DSecure in Website Payments Pro 3.0 ([#149](https://github.com/angelleye/paypal-woocommerce/issues/149))
+* Fix - Resolves a conflict with the Express Checkout button and the "Quick Buy" plugin. ([#415](https://github.com/angelleye/paypal-woocommerce/issues/415))
+* Fix - Resolves a problem with ajax loader. ([#417](https://github.com/angelleye/paypal-woocommerce/issues/417))
+* Fix - Resolves an issue with $0 orders in PayPal Plus. ([#442](https://github.com/angelleye/paypal-woocommerce/issues/442))
+* Fix - Resolves an issue with PayFlow Pro resulting in duplicate API requests. ([#454](https://github.com/angelleye/paypal-woocommerce/issues/454))
 
 = 1.1.9.2 - 02.07.2016 =
 * Fix - Resolves a problem with backorder handling when users are checking out near the same time. ([#403](https://github.com/angelleye/paypal-woocommerce/issues/403))
