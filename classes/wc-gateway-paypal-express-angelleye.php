@@ -522,9 +522,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class' => 'angelleye_notifyurl'
             ),
             'order_cancellations' => array(
-                'title' => __('Cancel/Refund orders that: ', 'paypal-for-woocommerce'),
+                'title' => __('Auto Cancel / Refund Orders ', 'paypal-for-woocommerce'),
                 'label' => '',
-                'description' => __('Allows you to cancel and refund orders that do not meet PayPal\'s Seller Protection criteria', 'paypal-for-woocommerce'),
+                'description' => __('Allows you to cancel and refund orders that do not meet PayPal\'s Seller Protection criteria.', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'options' => array(
                     'no_seller_protection' => __('Do *not* have PayPal Seller Protection', 'paypal-for-woocommerce'),
