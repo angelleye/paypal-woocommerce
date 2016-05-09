@@ -509,16 +509,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'enable_notifyurl' => array(
                 'title' => __('Enable PayPal IPN', 'paypal-for-woocommerce'),
-                'label' => __('Enable Instant Payment Notification.', 'paypal-for-woocommerce'),
+                'label' => __('Configure an IPN URL to be included with Express Checkout payments.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('', 'paypal-for-woocommerce'),
+                'description' => __('This will override any URL configured in your PayPal account profile.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'angelleye_enable_notifyurl'
             ),
             'notifyurl' => array(
                 'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
+                'description' => __('Your URL for receiving Instant Payment Notification (IPN) for transactions.', 'paypal-for-woocommerce'),
                 'class' => 'angelleye_notifyurl'
             ),
             'order_cancellations' => array(
