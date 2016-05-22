@@ -1902,7 +1902,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
          */
         if (!empty($this->confirm_order_id)) {
             $order = new WC_Order($this->confirm_order_id);
-            $invoice_number = preg_replace("/[^0-9,.]/", "", $order->get_order_number());
+            $invoice_number = preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number());
 
             if ($order->customer_note) {
                 $customer_notes = wptexturize($order->customer_note);

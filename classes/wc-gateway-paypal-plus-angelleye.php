@@ -503,7 +503,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
                 }'));
 
         $patchRequest = new \PayPal\Api\PatchRequest();
-        $invoice_number = preg_replace("/[^0-9,.]/", "", $order_id);
+        $invoice_number = preg_replace("/[^a-zA-Z0-9]/", "", $order_id);
         if ($order->needs_shipping_address() && !empty($order->shipping_country)) {
             //add shipping info
             $patchAdd = new \PayPal\Api\Patch();
