@@ -235,4 +235,35 @@ jQuery(document).ready(function ($) {
                         express_notifyurl.hide();
                     }
                 }).change();
+                
+                jQuery('#angelleye_payment_action').change(function(){
+                    if(jQuery(this).val() == 'DoCapture') {
+                        jQuery("#angelleye_paypal_capture_transaction_dropdown").show();
+                    } else {
+                        jQuery("#angelleye_paypal_capture_transaction_dropdown").hide();
+                    }
+                    if(jQuery(this).val() == 'DoAuthorization') {
+                        jQuery(".angelleye_authorization_box").show();
+                    } else {
+                        jQuery(".angelleye_authorization_box").hide();
+                    }
+                    
+                    if(jQuery(this).val() == 'DoVoid') {
+                        jQuery("#angelleye_paypal_dovoid_transaction_dropdown").show();
+                    } else {
+                        jQuery("#angelleye_paypal_dovoid_transaction_dropdown").hide();
+                    }
+                    
+                    if(jQuery(this).val() == 'DoReauthorization') {
+                        jQuery("#angelleye_paypal_doreauthorization_transaction_dropdown").show();
+                    } else {
+                        jQuery("#angelleye_paypal_doreauthorization_transaction_dropdown").hide();
+                    }
+                    if( jQuery(this).val().length === 0 ) {
+                        jQuery('#angelleye_payment_submit_button').hide();
+                        return false;
+                    } else {
+                        jQuery('#angelleye_payment_submit_button').show();
+                    }
+                });
 });

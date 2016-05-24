@@ -1026,14 +1026,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             $cvv2_response_order_note .= $cvv2_response_code;
             $cvv2_response_order_note .= $cvv2_response_message != '' ? ' - ' . $cvv2_response_message : '';
             $order->add_order_note($cvv2_response_order_note);
-
-            $payment_order_meta = array('_transaction_id' => $PayPalResult['TRANSACTIONID'], '_payment_action' => $this->payment_action);
-            AngellEYE_Utility::angelleye_add_order_meta($order->id, $payment_order_meta);
-
+     
             // Payment complete
             if ($this->payment_action == "Sale") {
                 $order->payment_complete($PayPalResult['TRANSACTIONID']);
             } else {
+                update_post_meta( $order->id, '_first_transaction_id', $PayPalResult['TRANSACTIONID'] );
+                $payment_order_meta = array('_transaction_id' => $PayPalResult['TRANSACTIONID'], '_payment_action' => $this->payment_action);
+                AngellEYE_Utility::angelleye_add_order_meta($order->id, $payment_order_meta);
+                AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
+                $angelleye_utility = new AngellEYE_Utility(null, null);
+                $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['TRANSACTIONID']);
                 $order->update_status('on-hold');
                 $order->add_order_note('Payment Action: ' . $this->payment_action);
             }

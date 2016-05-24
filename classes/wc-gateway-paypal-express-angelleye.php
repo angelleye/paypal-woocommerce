@@ -1310,6 +1310,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
 
                     update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
+                    update_post_meta( $order_id, '_first_transaction_id', $result['PAYMENTINFO_0_TRANSACTIONID'] );
 
                     $this->remove_session('TOKEN');
                     $order->add_order_note(__('PayPal Express payment completed', 'paypal-for-woocommerce') .
@@ -1327,9 +1328,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $addressstatus_note .= ucfirst($REVIEW_RESULT['ADDRESSSTATUS']);
                         $order->add_order_note($addressstatus_note);
                     }
-
-                    $payment_order_meta = array('_transaction_id' => $result['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->payment_action);
-                    AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
+                    
+                    if($this->payment_action != 'Sale') {
+                        AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($result, $order, $this->payment_action);
+                        $payment_order_meta = array('_transaction_id' => $result['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->payment_action);
+                        AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
+                    }
 
                     switch( strtolower( $result['PAYMENTINFO_0_PAYMENTSTATUS'] ) ) :
 			case 'completed' :
