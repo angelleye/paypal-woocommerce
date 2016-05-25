@@ -98,13 +98,8 @@ class AngellEYE_Utility {
                         $this->total_Order = self::get_total('Order', 'Pending', $order_id);
                         $this->total_DoVoid = self::get_total('DoVoid', '', $order_id);
                         $this->total_DoCapture = self::get_total('DoCapture', 'Completed', $order_id);
-                        if ($payment_action == 'Order') {
-                            $Authorization = 'DoAuthorization';
-                        } else {
-                            $Authorization = 'authorization';
-                        }
-                        $this->total_Pending_DoAuthorization = self::get_total($Authorization, 'Pending', $order_id);
-                        $this->total_Completed_DoAuthorization = self::get_total($Authorization, 'Completed', $order_id);
+                        $this->total_Pending_DoAuthorization = self::get_total('DoAuthorization', 'Pending', $order_id);
+                        $this->total_Completed_DoAuthorization = self::get_total('DoAuthorization', 'Completed', $order_id);
                         $this->total_DoReauthorization = self::get_total('DoReauthorization', '', $order_id);
                         switch ($payment_action) {
                             case ($payment_action == 'Order'):
@@ -809,7 +804,7 @@ class AngellEYE_Utility {
             $posts = get_posts($args);
             $order = wc_get_order($post->ID);
             ?>
-               <table class="widefat angelleye_order_action_table" style="width: 190px;float: right;">
+            <table class="widefat angelleye_order_action_table" style="width: 190px;float: right;">
                 <tbody>
                     <tr>
                         <td><?php echo __('Order Total:', 'paypal-for-woocommerce'); ?></td>
@@ -821,7 +816,7 @@ class AngellEYE_Utility {
                     </tr>
                 </tbody>
             </table>
-               <br/><br/>
+            <br/><br/>
             <table class="widefat angelleye_order_action_table">
                 <thead>
                     <tr>
@@ -863,6 +858,9 @@ class AngellEYE_Utility {
     }
 
     public static function angelleye_paypal_for_woocommerce_add_paypal_transaction($response, $order, $payment_action) {
+        if ($payment_action == 'Authorization') {
+            $payment_action = 'DoAuthorization';
+        }
         $TRANSACTIONID = '';
         if (isset($response['PAYMENTINFO_0_TRANSACTIONID']) && !empty($response['PAYMENTINFO_0_TRANSACTIONID'])) {
             $TRANSACTIONID = $response['PAYMENTINFO_0_TRANSACTIONID'];
@@ -983,22 +981,16 @@ class AngellEYE_Utility {
         $order = wc_get_order($post_id);
         wp_reset_postdata();
         $payment_action = get_post_meta($order->id, '_payment_action', true);
-        if ($this->total_Completed_DoAuthorization < $this->total_Order || $this->total_Pending_DoAuthorization > 0) {
-            if ($this->total_DoCapture == 0 && $this->total_Pending_DoAuthorization == 0) {
-                if ('Order' == $payment_action) {
-                    $post_status = 'order';
-                } else {
-                    $post_status = 'authorization';
-                }
-            } elseif ($this->total_Pending_DoAuthorization > 0) {
-                if ('Order' == $payment_action) {
-                    $post_status = 'doauthorization';
-                } else {
-                    $post_status = 'authorization';
-                }
+        if ($this->total_DoCapture == 0 && $this->total_Pending_DoAuthorization == 0) {
+            if ('Order' == $payment_action) {
+                $post_status = 'Order';
             } else {
-                return false;
+                $post_status = 'DoAuthorization';
             }
+        } else {
+            $post_status = 'DoAuthorization';
+        } 
+        if ($this->total_Completed_DoAuthorization < $this->total_Order || $this->total_Pending_DoAuthorization > 0) {
             $posts = $wpdb->get_results($wpdb->prepare("SELECT $wpdb->posts.ID, $wpdb->posts.post_title FROM $wpdb->posts INNER JOIN $wpdb->postmeta ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id ) WHERE 1=1 AND $wpdb->posts.post_status LIKE '%s' AND $wpdb->posts.post_parent = %d AND ( ( $wpdb->postmeta.meta_key = 'PAYMENTSTATUS' AND CAST($wpdb->postmeta.meta_value AS CHAR) = 'Pending' ) ) AND $wpdb->posts.post_type = 'paypal_transaction' GROUP BY $wpdb->posts.ID ORDER BY $wpdb->posts.post_date DESC LIMIT 0, 99", $post_status, $order->id), ARRAY_A);
             if (empty($posts)) {
                 return false;
@@ -1009,7 +1001,7 @@ class AngellEYE_Utility {
                 $i = 0;
                 foreach ($posts as $post):
                     if ($i == 0) {
-                        echo '<option value="" >Select Transaction</option>';
+                        echo '<option value="" >Select Transaction ID</option>';
                     }
                     ?>
                     <option value="<?php echo esc_attr($post['post_title']); ?>" ><?php echo esc_html($post['post_title']); ?></option>
@@ -1030,7 +1022,7 @@ class AngellEYE_Utility {
                 }
                 foreach ($posts as $post):
                     if ($i == 0) {
-                        echo '<option value="" >Select Transaction</option>';
+                        echo '<option value="" >Select Transaction ID</option>';
                     }
                     ?>
                     <option value="<?php echo esc_attr($post['post_title']); ?>" ><?php echo esc_html($post['post_title']); ?></option>
@@ -1051,7 +1043,7 @@ class AngellEYE_Utility {
                 }
                 foreach ($posts as $post):
                     if ($i == 0) {
-                        echo '<option value="" >Select Transaction</option>';
+                        echo '<option value="" >Select Transaction ID</option>';
                     }
                     ?>
                     <option value="<?php echo esc_attr($post['post_title']); ?>" ><?php echo esc_html($post['post_title']); ?></option>
