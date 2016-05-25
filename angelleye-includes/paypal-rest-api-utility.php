@@ -132,9 +132,9 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_item($order) {
-        $this->item = new Item();
         $this->payment_data = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
         foreach ($this->payment_data['order_items'] as $item) {
+            $this->item = new Item();
             $this->item->setName($item['name']);
             $this->item->setCurrency(get_woocommerce_currency());
             $this->item->setQuantity($item['qty']);
