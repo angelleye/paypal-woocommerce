@@ -113,7 +113,7 @@ class AngellEYE_Utility {
                                 if ($this->max_authorize_amount == $this->total_DoVoid || $this->max_authorize_amount == $this->total_DoCapture) {
                                     return $paypal_payment_action;
                                 } else {
-                                    $paypal_payment_action = array('DoCapture' => 'DoCapture', 'DoVoid' => 'DoVoid', 'DoAuthorization' => 'DoAuthorization');
+                                    $paypal_payment_action = array('DoCapture' => 'Capture Authorization', 'DoVoid' => 'Void Authorization', 'DoAuthorization' => 'Authorization');
                                     if ($this->total_Completed_DoAuthorization == $this->total_Pending_DoAuthorization || $this->total_Pending_DoAuthorization == 0) {
                                         unset($paypal_payment_action['DoCapture']);
                                     }
@@ -127,7 +127,7 @@ class AngellEYE_Utility {
                                 }
                                 break;
                             case ($payment_action == 'Authorization'):
-                                $paypal_payment_action = array('DoCapture' => 'DoCapture', 'DoReauthorization' => 'DoReauthorization', 'DoVoid' => 'DoVoid');
+                                $paypal_payment_action = array('DoCapture' => 'Capture Authorization', 'DoReauthorization' => 'Authorization', 'DoVoid' => 'Void Authorization');
                                 $transaction_id = get_post_meta($order_id, '_first_transaction_id', true);
                                 if (!$this->has_authorization_inside_honor_period($transaction_id)) {
                                     unset($paypal_payment_action['DoReauthorization']);
@@ -155,7 +155,7 @@ class AngellEYE_Utility {
                                 $this->total_Pending_DoAuthorization = self::get_total($Authorization, 'Pending', $order_id);
                                 $this->total_Completed_DoAuthorization = self::get_total($Authorization, 'Completed', $order_id);
                                 $this->total_DoReauthorization = self::get_total('DoReauthorization', '', $order_id);
-                                $paypal_payment_action = array('DoCapture' => 'DoCapture', 'DoReauthorization' => 'DoReauthorization', 'DoVoid' => 'DoVoid');
+                                $paypal_payment_action = array('DoCapture' => 'Capture Authorization', 'DoReauthorization' => 'Reauthorization', 'DoVoid' => 'Void Authorization');
                                 $this->angelleye_max_authorize_amount($order_id);
                                 $this->angelleye_remain_authorize_amount();
                                 $transaction_id = get_post_meta($order_id, '_first_transaction_id', true);
@@ -755,7 +755,7 @@ class AngellEYE_Utility {
     public function angelleye_paypal_for_woocommerce_order_action_meta_box($post_type, $post) {
         if (isset($post->ID) && !empty($post->ID)) {
             if ($this->angelleye_is_display_paypal_transaction_details($post->ID)) {
-                add_meta_box('angelleye-pw-order-action', __('PayPal Transaction details', 'paypal-for-woocommerce'), array($this, 'angelleye_paypal_for_woocommerce_order_action_callback'), 'shop_order', 'normal', 'high', null);
+                add_meta_box('angelleye-pw-order-action', __('PayPal Transaction History', 'paypal-for-woocommerce'), array($this, 'angelleye_paypal_for_woocommerce_order_action_callback'), 'shop_order', 'normal', 'high', null);
             }
         }
     }
@@ -777,7 +777,7 @@ class AngellEYE_Utility {
                             echo '<option value="" >Select Action</option>';
                         }
                         ?>
-                        <option value="<?php echo esc_attr($v); ?>" ><?php echo esc_html($v); ?></option>
+                        <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($v); ?></option>
                         <?php
                         $i = $i + 1;
                     endforeach;
