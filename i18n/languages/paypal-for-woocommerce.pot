@@ -2,10 +2,9 @@
 # This file is distributed under the same license as the PayPal for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: PayPal for WooCommerce 1.1.7.5\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/paypal-for-"
-"woocommerce\n"
-"POT-Creation-Date: 2016-01-11 09:54:51+00:00\n"
+"Project-Id-Version: PayPal for WooCommerce 1.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/paypal-woocommerce\n"
+"POT-Creation-Date: 2016-05-26 06:15:10+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,1183 +12,1914 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
+#: angelleye-includes/angelleye-utility.php:264
+msgid "PayPal DoCapture"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:270
+msgid "Payment Status: "
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:288
+#: angelleye-includes/angelleye-utility.php:293
+msgid "PayPal DoCapture API call failed. "
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:289
+#: angelleye-includes/angelleye-utility.php:373
+#: angelleye-includes/angelleye-utility.php:436
+#: angelleye-includes/angelleye-utility.php:507
+#: angelleye-includes/angelleye-utility.php:537
+#: angelleye-includes/angelleye-utility.php:548
+#: classes/wc-gateway-paypal-express-angelleye.php:730
+#: classes/wc-gateway-paypal-express-angelleye.php:743
+#: classes/wc-gateway-paypal-express-angelleye.php:1274
+#: classes/wc-gateway-paypal-express-angelleye.php:1446
+#: classes/wc-gateway-paypal-pro-angelleye.php:1063
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:561
+#: paypal-for-woocommerce.php:1164
+msgid "Detailed Error Message: "
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:290
+#: angelleye-includes/angelleye-utility.php:374
+#: angelleye-includes/angelleye-utility.php:437
+#: angelleye-includes/angelleye-utility.php:508
+#: angelleye-includes/angelleye-utility.php:538
+#: angelleye-includes/angelleye-utility.php:547
+#: angelleye-includes/angelleye-utility.php:558
+#: angelleye-includes/angelleye-utility.php:565
+#: classes/wc-gateway-paypal-express-angelleye.php:731
+#: classes/wc-gateway-paypal-express-angelleye.php:742
+#: classes/wc-gateway-paypal-express-angelleye.php:1273
+#: classes/wc-gateway-paypal-express-angelleye.php:1445
+msgid "Short Error Message: "
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:291
+#: angelleye-includes/angelleye-utility.php:375
+#: angelleye-includes/angelleye-utility.php:438
+#: angelleye-includes/angelleye-utility.php:509
+#: angelleye-includes/angelleye-utility.php:539
+#: angelleye-includes/angelleye-utility.php:545
+#: angelleye-includes/angelleye-utility.php:559
+#: angelleye-includes/angelleye-utility.php:564
+#: classes/wc-gateway-paypal-express-angelleye.php:732
+#: classes/wc-gateway-paypal-express-angelleye.php:740
+#: classes/wc-gateway-paypal-express-angelleye.php:1271
+#: classes/wc-gateway-paypal-express-angelleye.php:1443
+#: classes/wc-gateway-paypal-pro-angelleye.php:1062
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:560
+msgid "Error Code: "
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:292
+#: angelleye-includes/angelleye-utility.php:376
+#: angelleye-includes/angelleye-utility.php:439
+#: angelleye-includes/angelleye-utility.php:510
+#: angelleye-includes/angelleye-utility.php:540
+#: angelleye-includes/angelleye-utility.php:546
+#: classes/wc-gateway-paypal-express-angelleye.php:733
+#: classes/wc-gateway-paypal-express-angelleye.php:741
+#: classes/wc-gateway-paypal-express-angelleye.php:1272
+#: classes/wc-gateway-paypal-express-angelleye.php:1444
+msgid "Error Severity Code: "
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:358
+msgid "PayPal DoVoid"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:372
+#: angelleye-includes/angelleye-utility.php:377
+msgid "PayPal DoVoid API call failed. "
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:423
+msgid "PayPal DoReauthorization"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:435
+#: angelleye-includes/angelleye-utility.php:440
+msgid "PayPal DoReauthorization API call failed. "
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:494
+msgid "PayPal authorization"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:506
+#: angelleye-includes/angelleye-utility.php:511
+msgid "PayPal DoAuthorization API call failed. "
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:598
+#: classes/wc-gateway-braintree-angelleye.php:140
+#: classes/wc-gateway-paypal-advanced-angelleye.php:662
+#: classes/wc-gateway-paypal-express-angelleye.php:219
+#: classes/wc-gateway-paypal-plus-angelleye.php:153
+#: classes/wc-gateway-paypal-pro-angelleye.php:150
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:86
+msgid "Enable/Disable"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:600
+msgid "Enable PayPal Credit Card (REST)"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:604
+#: classes/wc-gateway-braintree-angelleye.php:147
+#: classes/wc-gateway-paypal-advanced-angelleye.php:668
+#: classes/wc-gateway-paypal-express-angelleye.php:226
+#: classes/wc-gateway-paypal-plus-angelleye.php:159
+#: classes/wc-gateway-paypal-pro-angelleye.php:157
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:93
+msgid "Title"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:606
+#: classes/wc-gateway-braintree-angelleye.php:149
+#: classes/wc-gateway-paypal-advanced-angelleye.php:670
+#: classes/wc-gateway-paypal-express-angelleye.php:228
+#: classes/wc-gateway-paypal-plus-angelleye.php:161
+#: classes/wc-gateway-paypal-pro-angelleye.php:159
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:95
+msgid "This controls the title which the user sees during checkout."
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:607 template/admin.php:27
+msgid "PayPal Credit Card (REST)"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:610
+#: classes/wc-gateway-braintree-angelleye.php:154
+#: classes/wc-gateway-paypal-advanced-angelleye.php:674
+#: classes/wc-gateway-paypal-express-angelleye.php:232
+#: classes/wc-gateway-paypal-plus-angelleye.php:165
+#: classes/wc-gateway-paypal-pro-angelleye.php:163
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:99
+msgid "Description"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:612
+#: classes/wc-gateway-braintree-angelleye.php:156
+#: classes/wc-gateway-paypal-advanced-angelleye.php:676
+#: classes/wc-gateway-paypal-express-angelleye.php:234
+#: classes/wc-gateway-paypal-plus-angelleye.php:167
+#: classes/wc-gateway-paypal-pro-angelleye.php:165
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:101
+msgid "This controls the description which the user sees during checkout."
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:613
+msgid "PayPal Credit Card (REST) description"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:616
+#: classes/wc-gateway-paypal-pro-angelleye.php:169
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:105
+msgid "Test Mode"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:618
+#: classes/wc-gateway-paypal-pro-angelleye.php:170
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:106
+msgid "Enable PayPal Sandbox/Test Mode"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:620
+msgid "Place the payment gateway in development mode. Sign up for a developer account <a href=\"%s\" target=\"_blank\">here</a>"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:623
+#: classes/wc-gateway-paypal-plus-angelleye.php:171
+msgid "Sandbox Client ID"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:629
+#: classes/wc-gateway-paypal-plus-angelleye.php:177
+msgid "Sandbox Secret ID"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:631
+#: classes/wc-gateway-paypal-plus-angelleye.php:179
+msgid "Enter your Sandbox PayPal Rest API Secret ID."
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:635
+#: classes/wc-gateway-paypal-plus-angelleye.php:183
+msgid "Live Client ID"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:641
+#: classes/wc-gateway-paypal-plus-angelleye.php:189
+msgid "Live Secret ID"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:643
+#: classes/wc-gateway-paypal-plus-angelleye.php:191
+msgid "Enter your PayPal Rest API Secret ID."
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:647
+#: classes/wc-gateway-paypal-advanced-angelleye.php:734
+#: classes/wc-gateway-paypal-plus-angelleye.php:209
+msgid "Invoice Prefix"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:649
+#: classes/wc-gateway-paypal-advanced-angelleye.php:736
+#: classes/wc-gateway-paypal-plus-angelleye.php:211
+msgid "Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number."
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:654
+#: classes/wc-gateway-braintree-angelleye.php:217
+#: classes/wc-gateway-paypal-advanced-angelleye.php:781
+#: classes/wc-gateway-paypal-plus-angelleye.php:242
+#: classes/wc-gateway-paypal-pro-angelleye.php:310
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:122
+msgid "Debug Log"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:656
+#: classes/wc-gateway-braintree-angelleye.php:219
+#: classes/wc-gateway-paypal-advanced-angelleye.php:783
+#: classes/wc-gateway-paypal-plus-angelleye.php:244
+#: classes/wc-gateway-paypal-pro-angelleye.php:312
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:124
+msgid "Enable logging"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:658
+#: classes/wc-gateway-paypal-plus-angelleye.php:246
+msgid "Log PayPal events, such as Secured Token requests, inside <code>%s</code>"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:714
+#: angelleye-includes/angelleye-utility.php:715
+msgid "PayPal Transaction"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:716
+msgctxt "Admin menu name"
+msgid "PayPal Transaction"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:717
+msgid "Add PayPal Transaction"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:718
+msgid "Add New PayPal Transaction"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:719
+msgid "Edit"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:720
+#: angelleye-includes/angelleye-utility.php:722
+#: angelleye-includes/angelleye-utility.php:723
+msgid "View PayPal Transaction"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:721
+msgid "New PayPal Transaction"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:724
+msgid "Search PayPal Transaction"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:725
+msgid "No PayPal Transaction found"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:726
+msgid "No PayPal Transaction found in trash"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:727
+msgid "Parent PayPal Transaction"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:729
+msgid "This is where you can add new PayPal Transaction to your store."
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:753
+msgid "PayPal Transaction History"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:810
+msgid "Order Total:"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:814
+msgid "Total Capture:"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:823
+#: angelleye-includes/angelleye-utility.php:832
+msgid "Transaction ID"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:824
+#: angelleye-includes/angelleye-utility.php:833
+msgid "Date"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:825
+#: angelleye-includes/angelleye-utility.php:834
+msgid "Amount"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:826
+#: angelleye-includes/angelleye-utility.php:835
+msgid "Payment Status"
+msgstr ""
+
+#: angelleye-includes/angelleye-utility.php:827
+#: angelleye-includes/angelleye-utility.php:836
+#: classes/wc-gateway-paypal-express-angelleye.php:479
+#: classes/wc-gateway-paypal-pro-angelleye.php:271
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:207
+msgid "Payment Action"
+msgstr ""
+
+#: angelleye-includes/paypal-rest-api-utility.php:69
+msgid "PayPal Credit Card (REST) payment completed"
+msgstr ""
+
+#: angelleye-includes/paypal-rest-api-utility.php:93
+#: angelleye-includes/paypal-rest-api-utility.php:101
+#: classes/wc-gateway-paypal-plus-angelleye.php:471
+#: classes/wc-gateway-paypal-plus-angelleye.php:476
+#: classes/wc-gateway-paypal-plus-angelleye.php:562
+#: classes/wc-gateway-paypal-plus-angelleye.php:567
+#: classes/wc-gateway-paypal-plus-angelleye.php:646
+msgid "Error processing checkout. Please try again. "
+msgstr ""
+
+#: angelleye-includes/paypal-rest-api-utility.php:375
+#: classes/wc-gateway-braintree-angelleye.php:500
+msgid "%s requires the %s PHP extension to function.  Contact your host or server administrator to configure and install the missing extension."
+msgid_plural "%s requires the following PHP extensions to function: %s.  Contact your host or server administrator to configure and install the missing extensions."
+msgstr[0] ""
+msgstr[1] ""
+
+#: classes/wc-gateway-braintree-angelleye.php:18 template/admin.php:62
+msgid "Credit Card payments Powered by PayPal / Braintree."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:48 template/admin.php:25
+msgid "Braintree"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:76
+msgid "Braintree Error: Braintree requires PHP 5.2.1 and above. You are using version %s."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:79
+msgid "Braintree is enabled, but the <a href=\"%s\">force SSL option</a> is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - Braintree custome credit card UI will only work in sandbox mode."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:102
+#: classes/wc-gateway-braintree-angelleye.php:108
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:141
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:147
+#: classes/wc-gateway-paypal-pro-angelleye.php:486
+#: classes/wc-gateway-paypal-pro-angelleye.php:501
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:771
+msgid "Card expiration date is invalid"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:105
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:144
+#: classes/wc-gateway-paypal-pro-angelleye.php:491
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:764
+msgid "Card security code is invalid (only digits are allowed)"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:111
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:150
+#: classes/wc-gateway-paypal-pro-angelleye.php:505
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:778
+msgid "Card number is invalid"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:124
+msgid "Braintree payment method nonce is empty"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:141
+msgid "Enable Braintree Payment Gateway"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:150
+msgid "Braintree Credit card"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:161
+#: classes/wc-gateway-braintree-angelleye.php:162
+msgid "Enable Drop-in Payment UI"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:164
+msgid "Rather than showing a credit card form on your checkout, this shows the form on it's own page, thus making the process more secure and more PCI friendly."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:168
+msgid "Sandbox"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:169
+msgid "Enable Sandbox Mode"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:171
+msgid "Place the payment gateway in sandbox mode using sandbox API keys (real payments will not be taken)."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:175
+msgid "Sandbox Merchant ID"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:177
+#: classes/wc-gateway-braintree-angelleye.php:184
+#: classes/wc-gateway-braintree-angelleye.php:191
+#: classes/wc-gateway-braintree-angelleye.php:198
+#: classes/wc-gateway-braintree-angelleye.php:205
+#: classes/wc-gateway-braintree-angelleye.php:212
+msgid "Get your API keys from your Braintree account."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:182
+msgid "Sandbox Public Key"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:189
+msgid "Sandbox Private Key"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:196
+msgid "Live Merchant ID"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:203
+msgid "Live Public Key"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:210
+msgid "Live Private Key"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:221
+msgid "Log PayPal/Braintree events, inside <code>%s</code>"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:408
+msgid "%s payment approved! Trnsaction ID: %s"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:411
+msgid "%s payment declined.<br />Code: %s"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:463
+#: classes/wc-gateway-braintree-angelleye.php:477
+msgid "Refunded %s - Transaction ID: %s"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:472
+msgid "Oops, you cannot partially void this order. Please use the full order amount."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:613
+msgid "An error occurred, please try again or try an alternate form of payment"
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:615
+msgid "We cannot process your order with the payment information that you provided. Please use a different payment account or an alternate payment method."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:617
+msgid "This order is being placed on hold for review. Please contact us to complete the transaction."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:619
+msgid "This order is being placed on hold for review due to an incorrect card verification number.  You may contact the store to complete the transaction."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:621
+msgid "The card verification number is invalid, please try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:623
+msgid "Please enter your card verification number and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:625
+msgid "That card type is not accepted, please use an alternate card or other form of payment."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:627
+#: classes/wc-gateway-braintree-angelleye.php:631
+msgid "The card type is invalid or does not correlate with the credit card number.  Please try again or use an alternate card or other form of payment."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:629
+msgid "Please select the card type and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:633
+msgid "The card number is invalid, please re-enter and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:635
+msgid "Please enter your card number and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:637
+msgid "The card expiration date is invalid, please re-enter and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:639
+msgid "The card expiration month is invalid, please re-enter and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:641
+msgid "The card expiration year is invalid, please re-enter and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:643
+msgid "Please enter your card expiration date and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:645
+msgid "The bank routing number is invalid, please re-enter and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:647
+msgid "The bank account number is invalid, please re-enter and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:649
+msgid "The provided card is expired, please use an alternate card or other form of payment."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:651
+msgid "The provided card was declined, please use an alternate card or other form of payment."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:653
+msgid "Insufficient funds in account, please use an alternate card or other form of payment."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:655
+msgid "The card is inactivate or not authorized for card-not-present transactions, please use an alternate card or other form of payment."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:657
+msgid "The credit limit for the card has been reached, please use an alternate card or other form of payment."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:659
+msgid "The card verification number does not match. Please re-enter and try again."
+msgstr ""
+
+#: classes/wc-gateway-braintree-angelleye.php:661
+msgid "The provided address does not match the billing address for cardholder. Please verify the address and try again."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:13
+#: classes/wc-gateway-paypal-advanced-angelleye.php:621
+#: classes/wc-gateway-paypal-advanced-angelleye.php:671 template/admin.php:26
+msgid "PayPal Advanced"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:81
+msgid "Paypal Advanced error: Please enter your PayPal Advanced Account Merchant Login."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:83
+msgid "Paypal Advanced error: Please enter your PayPal Advanced Account Partner."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:85
+msgid "Paypal Advanced error: Please enter your PayPal Advanced Account Password."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:150
+#: classes/wc-gateway-paypal-advanced-angelleye.php:901
+#: classes/wc-gateway-paypal-pro-angelleye.php:1087
+msgid "There was a problem connecting to the payment gateway."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:153
+#: classes/wc-gateway-paypal-advanced-angelleye.php:554
+#: classes/wc-gateway-paypal-advanced-angelleye.php:904
+msgid "Empty response."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:160
+msgid "Received result of Inquiry Transaction for the  (Order: %s) and is successful"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:163
+msgid "Received result of Inquiry Transaction for the  (Order: %s) and with error:%s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:180
+msgid "Relay Response Tokens Match"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:184
+msgid "Relay Response Tokens Mismatch"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:193
+msgid "PayPal Advanced payment completed (Order: %s). Transaction number/ID: %s."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:206
+#: classes/wc-gateway-paypal-advanced-angelleye.php:210
+msgid "Payment completed for the  (Order: %s)"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:233
+#: classes/wc-gateway-paypal-advanced-angelleye.php:573
+#: classes/wc-gateway-paypal-advanced-angelleye.php:841
+msgid "Error:"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:265
+msgid "Payment failed via PayPal Advanced because of."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:268
+msgid "Status has been changed to failed for order %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:271
+msgid "Error Occurred while processing %s : %s, status: %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:293
+msgid "Silent Relay Response Triggered: %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:295
+msgid "Relay Response Triggered: %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:317
+msgid "Redirecting to Thank You Page for order %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:364
+msgid "Requesting for the Secured Token for the order %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:459
+msgid "Order %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:535
+msgid "Requesting for the Secured Token for the order %s with following URL and Paramaters: %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:570
+#: classes/wc-gateway-paypal-advanced-angelleye.php:579
+msgid "Secured Token generation failed for the order %s with error: %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:622 template/admin.php:69
+msgid "PayPal Payments Advanced uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:629
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:77
+#: classes/wc-gateway-paypal-plus-angelleye.php:128
+msgid "Gateway Disabled"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:629
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:77
+msgid "PayPal does not support your store currency."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:664
+msgid "Enable PayPal Advanced"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:677
+msgid "PayPal Advanced description"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:680
+msgid "Merchant Login"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:686
+msgid "Partner"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:688
+msgid "Enter your PayPal Advanced Partner. If you purchased the account directly from PayPal, use PayPal."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:692
+msgid "User (or Merchant Login if no designated user is set up for the account)"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:694
+msgid "Enter your PayPal Advanced user account for this site."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:698
+msgid "Password"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:700
+msgid "Enter your PayPal Advanced account password."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:704
+#: classes/wc-gateway-paypal-plus-angelleye.php:195
+msgid "PayPal sandbox"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:706
+#: classes/wc-gateway-paypal-plus-angelleye.php:197
+msgid "Enable PayPal sandbox"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:708
+#: classes/wc-gateway-paypal-plus-angelleye.php:199
+msgid "PayPal sandbox can be used to test payments. Sign up for a developer account <a href=\"%s\">here</a>"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:711
+#: classes/wc-gateway-paypal-advanced-angelleye.php:713
+msgid "Transaction Type"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:719
+#: classes/wc-gateway-paypal-advanced-angelleye.php:721
+msgid "Layout"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:723
+msgid "Layouts A and B redirect to PayPal's website for the user to pay. <br/>Layout C (recommended) is a secure PayPal-hosted page but is embedded on your site using an iFrame."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:727
+msgid "Mobile Mode"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:729
+msgid "Display Mobile optimized form if browsed through Mobile"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:731
+msgid "Disable this option if your theme is not compatible with Mobile. Otherwise You would get Silent Post Error in Layout C."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:741
+msgid "Page Collapse Border Color"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:743
+msgid "Sets the color of the border around the embedded template C."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:749
+msgid "Page Collapse Text Color"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:751
+msgid "Sets the color of the words \"Pay with PayPal\" and \"Pay with credit or debit card\"."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:757
+msgid "Page Button Background Color"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:759
+msgid "Sets the background color of the Pay Now / Submit button."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:765
+msgid "Page Button Text Color"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:767
+msgid "Sets the color of the text on the Pay Now / Submit button."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:773
+msgid "Label Text Color"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:775
+msgid "Sets the color of the text for \"card number\", \"expiration date\", ..etc."
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:785
+#: classes/wc-gateway-paypal-pro-angelleye.php:314
+msgid "Log PayPal events, inside <code>%s</code>"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:830
+msgid "Secured Token generated successfully for the order %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:866
+msgid "Partial refund is not supported"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:913
+msgid "Response of the refund transaction: %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:918
+msgid "Successfully Refunded - Refund Transaction ID: %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:921
+#: classes/wc-gateway-paypal-advanced-angelleye.php:922
+msgid "Refund Failed - Refund Transaction ID: %s, Error Msg: %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:949
+msgid "Browser Info: %s"
+msgstr ""
+
+#: classes/wc-gateway-paypal-advanced-angelleye.php:958
+msgid "Show payment form(IFRAME) for the order %s as it is configured to use Layout C"
+msgstr ""
+
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:21
+#: template/admin.php:76
+msgid "PayPal direct credit card payments using the REST API.  This allows you to accept credit cards directly on the site without the need for the full Payments Pro."
+msgstr ""
+
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:58
+msgid "Settings"
+msgstr ""
+
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:91
+msgid "PayPal Credit Card (REST):  PayPal Credit Card (REST) requires PHP 5.2.1 and above. You are using version %s."
+msgstr ""
+
 #: classes/wc-gateway-paypal-express-angelleye.php:13
 msgid "PayPal Express Checkout "
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:14
-msgid ""
-"PayPal Express Checkout is designed to make the checkout experience for "
-"buyers using PayPal much more quick and easy than filling out billing and "
-"shipping forms.  Customers will be taken directly to PayPal to sign in and "
-"authorize the payment, and are then returned back to your store to choose a "
-"shipping method, review the final order total, and complete the payment."
+msgid "PayPal Express Checkout is designed to make the checkout experience for buyers using PayPal much more quick and easy than filling out billing and shipping forms.  Customers will be taken directly to PayPal to sign in and authorize the payment, and are then returned back to your store to choose a shipping method, review the final order total, and complete the payment."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:117
-#: classes/wc-gateway-paypal-express-angelleye.php:537
-#: classes/wc-gateway-paypal-express-angelleye.php:546
-#: classes/wc-gateway-paypal-express-angelleye.php:1929
-#: classes/wc-gateway-paypal-express-angelleye.php:1938
-#: paypal-for-woocommerce.php:495 paypal-for-woocommerce.php:503
-#: paypal-for-woocommerce.php:567 paypal-for-woocommerce.php:576
+#: classes/wc-gateway-paypal-express-angelleye.php:16
+msgid "Proceed to PayPal"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:137
+#: classes/wc-gateway-paypal-express-angelleye.php:603
+#: classes/wc-gateway-paypal-express-angelleye.php:612
+#: classes/wc-gateway-paypal-express-angelleye.php:2240
+#: classes/wc-gateway-paypal-express-angelleye.php:2247
+#: paypal-for-woocommerce.php:530 paypal-for-woocommerce.php:535
+#: paypal-for-woocommerce.php:601 paypal-for-woocommerce.php:610
 msgid "Pay with PayPal"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:151
-msgid ""
-"This image requires an SSL host.  Please upload your image to <a target="
-"\"_blank\" href=\"http://www.sslpic.com\">www.sslpic.com</a> and enter the "
-"image URL here."
-msgstr ""
-
 #: classes/wc-gateway-paypal-express-angelleye.php:185
-#: classes/wc-gateway-paypal-plus-angelleye.php:152
-#: classes/wc-gateway-paypal-pro-angelleye.php:130
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:100
-msgid "Enable/Disable"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:186
-msgid "Enable PayPal Express"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:192
-#: classes/wc-gateway-paypal-plus-angelleye.php:158
-#: classes/wc-gateway-paypal-pro-angelleye.php:137
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:107
-msgid "Title"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:194
-#: classes/wc-gateway-paypal-plus-angelleye.php:160
-#: classes/wc-gateway-paypal-pro-angelleye.php:139
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:109
-msgid "This controls the title which the user sees during checkout."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:195
-msgid "PayPal Express"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:198
-#: classes/wc-gateway-paypal-plus-angelleye.php:164
-#: classes/wc-gateway-paypal-pro-angelleye.php:143
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:113
-msgid "Description"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:200
-#: classes/wc-gateway-paypal-plus-angelleye.php:166
-#: classes/wc-gateway-paypal-pro-angelleye.php:145
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:115
-msgid "This controls the description which the user sees during checkout."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:201
-msgid ""
-"Pay via PayPal; you can pay with your credit card if you don't have a PayPal "
-"account"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:204
-msgid "Sandbox API User Name"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:206
-msgid ""
-"Create sandbox accounts and obtain API credentials from within your <a href="
-"\"http://developer.paypal.com\">PayPal developer account</a>."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:210
-#: classes/wc-gateway-paypal-pro-angelleye.php:180
-msgid "Sandbox API Password"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:215
-#: classes/wc-gateway-paypal-pro-angelleye.php:185
-msgid "Sandbox API Signature"
+#: classes/wc-gateway-paypal-plus-angelleye.php:149
+msgid "This image requires an SSL host.  Please upload your image to <a target=\"_blank\" href=\"http://www.sslpic.com\">www.sslpic.com</a> and enter the image URL here."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:220
-msgid "Live API User Name"
+msgid "Enable PayPal Express"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:222
-msgid ""
-"Get your live account API credentials from your PayPal account profile under "
-"the API Access section <br />or by using <a target=\"_blank\" href=\"https://"
-"www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run\">this tool</a>."
+#: classes/wc-gateway-paypal-express-angelleye.php:229
+msgid "PayPal Express"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:226
-#: classes/wc-gateway-paypal-pro-angelleye.php:197
-msgid "Live API Password"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:231
-#: classes/wc-gateway-paypal-pro-angelleye.php:202
-msgid "Live API Signature"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:236
-msgid "PayPal Sandbox"
+#: classes/wc-gateway-paypal-express-angelleye.php:235
+msgid "Pay via PayPal; you can pay with your credit card if you don't have a PayPal account"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:238
-msgid "Enable PayPal Sandbox"
+msgid "Sandbox API User Name"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:240
-msgid ""
-"The sandbox is PayPal's test environment and is only for use with sandbox "
-"accounts created within your <a href=\"http://developer.paypal.com\" target="
-"\"_blank\">PayPal developer account</a>."
+msgid "Create sandbox accounts and obtain API credentials from within your <a href=\"http://developer.paypal.com\">PayPal developer account</a>."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:243
-msgid "Debug"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:245
-msgid ""
-"Enable logging <code>/wp-content/uploads/wc-logs/paypal_express-{tag}.log</"
-"code>"
+#: classes/wc-gateway-paypal-express-angelleye.php:244
+#: classes/wc-gateway-paypal-pro-angelleye.php:200
+msgid "Sandbox API Password"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:249
-#: classes/wc-gateway-paypal-pro-angelleye.php:166
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:143
-msgid "Error Email Notifications"
+#: classes/wc-gateway-paypal-pro-angelleye.php:205
+msgid "Sandbox API Signature"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:251
-#: classes/wc-gateway-paypal-pro-angelleye.php:168
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:145
-msgid "Enable admin email notifications for errors."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:253
-#: classes/wc-gateway-paypal-pro-angelleye.php:170
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:147
-msgid ""
-"This will send a detailed error email to the WordPress site administrator if "
-"a PayPal API error occurs."
+#: classes/wc-gateway-paypal-express-angelleye.php:254
+msgid "Live API User Name"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:256
-#: classes/wc-gateway-paypal-pro-angelleye.php:156
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:126
-msgid "Invoice ID Prefix"
+msgid "Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using <a target=\"_blank\" href=\"https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run\">this tool</a>."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:258
-#: classes/wc-gateway-paypal-pro-angelleye.php:158
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:128
-msgid ""
-"Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate "
-"invoice problems when working with multiple websites on the same PayPal "
-"account."
+#: classes/wc-gateway-paypal-express-angelleye.php:260
+#: classes/wc-gateway-paypal-pro-angelleye.php:217
+msgid "Live API Password"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:269
-msgid "Checkout Button Type"
+#: classes/wc-gateway-paypal-express-angelleye.php:265
+#: classes/wc-gateway-paypal-pro-angelleye.php:222
+msgid "Live API Signature"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:271
-#: classes/wc-gateway-paypal-express-angelleye.php:282
-msgid "Use Checkout with PayPal image button"
+#: classes/wc-gateway-paypal-express-angelleye.php:270
+msgid "PayPal Sandbox"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:272
+msgid "Enable PayPal Sandbox"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:274
-msgid "PayPal Image"
+msgid "The sandbox is PayPal's test environment and is only for use with sandbox accounts created within your <a href=\"http://developer.paypal.com\" target=\"_blank\">PayPal developer account</a>."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:275
-msgid "Text Button"
+#: classes/wc-gateway-paypal-express-angelleye.php:277
+msgid "Debug"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:276
-msgid "Custom Image"
+#: classes/wc-gateway-paypal-express-angelleye.php:279
+msgid "Enable logging<code>%s</code>"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:280
-msgid "Select Image"
+#: classes/wc-gateway-paypal-express-angelleye.php:284
+#: classes/wc-gateway-paypal-pro-angelleye.php:186
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:129
+msgid "Error Email Notifications"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:286
-msgid "Custom Text"
+#: classes/wc-gateway-paypal-pro-angelleye.php:188
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:131
+msgid "Enable admin email notifications for errors."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:298
-msgid "Cart Page"
+#: classes/wc-gateway-paypal-express-angelleye.php:288
+#: classes/wc-gateway-paypal-pro-angelleye.php:190
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:133
+msgid "This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:299
-msgid "Show Express Checkout button on shopping cart page."
+#: classes/wc-gateway-paypal-express-angelleye.php:291
+#: classes/wc-gateway-paypal-pro-angelleye.php:176
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:112
+msgid "Invoice ID Prefix"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:293
+#: classes/wc-gateway-paypal-pro-angelleye.php:178
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:114
+msgid "Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:304
-msgid "Cart Button Position"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:305
-msgid "Where to display PayPal Express Checkout button(s)."
+msgid "Checkout Button Type"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:306
-msgid "Set where to display the PayPal Express Checkout button(s)."
+#: classes/wc-gateway-paypal-express-angelleye.php:317
+msgid "Use Checkout with PayPal image button"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:316
-msgid "Checkout Page Display"
+#: classes/wc-gateway-paypal-express-angelleye.php:309
+msgid "PayPal Image"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:319
-msgid "Do not display on checkout page."
+#: classes/wc-gateway-paypal-express-angelleye.php:310
+msgid "Text Button"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:320
-msgid "Display at the top of the checkout page."
+#: classes/wc-gateway-paypal-express-angelleye.php:311
+msgid "Custom Image"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:315
+msgid "Select Image"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:321
-msgid "Display in general list of enabled gatways on checkout page."
+msgid "Custom Text"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:322
-msgid ""
-"Display both at the top and in the general list of gateways on the checkout "
-"page."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:324
-msgid ""
-"Displaying the checkout button at the top of the checkout page will allow "
-"users to skip filling out the forms and can potentially increase conversion "
-"rates."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:327
-msgid "Product Page"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:329
-msgid "Show the Express Checkout button on product detail pages."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:331
-msgid "Allows customers to checkout using PayPal directly from a product page."
+#: classes/wc-gateway-paypal-express-angelleye.php:333
+msgid "Cart Page"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:334
-msgid "PayPal Account Optional"
+msgid "Show Express Checkout button on shopping cart page."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:336
-msgid ""
-"Allow customers to checkout without a PayPal account using their credit card."
+#: classes/wc-gateway-paypal-express-angelleye.php:339
+msgid "Cart Button Position"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:338
-msgid ""
-"PayPal Account Optional must be turned on in your PayPal account profile "
-"under Website Preferences."
+#: classes/wc-gateway-paypal-express-angelleye.php:340
+msgid "Where to display PayPal Express Checkout button(s)."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:341
-msgid "Landing Page"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:343
-msgid ""
-"Type of PayPal page to display as default. PayPal Account Optional must be "
-"checked for this option to be used."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:344
-#: template/paypal-review-order.php:183
-msgid "Login"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:345
-msgid "Billing"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:349
-#: classes/wc-gateway-paypal-pro-angelleye.php:239
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:150
-msgid "Error Display Type"
+msgid "Set where to display the PayPal Express Checkout button(s)."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:351
-#: classes/wc-gateway-paypal-pro-angelleye.php:241
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:152
-msgid "Display detailed or generic errors"
+msgid "Checkout Page Display"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:354
-#: classes/wc-gateway-paypal-pro-angelleye.php:244
-msgid "Detailed"
+msgid "Do not display on checkout page."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:355
-#: classes/wc-gateway-paypal-pro-angelleye.php:245
-msgid "Generic"
+msgid "Display at the top of the checkout page."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:356
+msgid "Display in general list of enabled gatways on checkout page."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:357
-msgid ""
-"Detailed displays actual errors returned from PayPal.  Generic displays "
-"general errors that do not reveal details\r\n"
-"\t\t\t\t\t\t\t\t\tand helps to prevent fraudulant activity on your site."
+msgid "Display both at the top and in the general list of gateways on the checkout page."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:361
-msgid "Enable PayPal Credit"
+#: classes/wc-gateway-paypal-express-angelleye.php:359
+msgid "Displaying the checkout button at the top of the checkout page will allow users to skip filling out the forms and can potentially increase conversion rates."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:363
-msgid "Show the PayPal Credit button next to the Express Checkout button."
+#: classes/wc-gateway-paypal-express-angelleye.php:362
+msgid "Product Page"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:365
-msgid ""
-"Currently disabled because PayPal Credit is only available for U.S. "
-"merchants."
+#: classes/wc-gateway-paypal-express-angelleye.php:364
+msgid "Show the Express Checkout button on product detail pages."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:368
-msgid "Use WordPress Locale Code"
+#: classes/wc-gateway-paypal-express-angelleye.php:366
+msgid "Allows customers to checkout using PayPal directly from a product page."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:370
-msgid ""
-"Pass the WordPress Locale Code setting to PayPal in order to display "
-"localized PayPal pages to buyers."
+#: classes/wc-gateway-paypal-express-angelleye.php:369
+msgid "PayPal Account Optional"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:374
-msgid "Brand Name"
+#: classes/wc-gateway-paypal-express-angelleye.php:371
+msgid "Allow customers to checkout without a PayPal account using their credit card."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:373
+msgid "PayPal Account Optional must be turned on in your PayPal account profile under Website Preferences."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:376
-msgid ""
-"This controls what users see as the brand / company name on PayPal review "
-"pages."
+#: classes/wc-gateway-paypal-plus-angelleye.php:222
+msgid "Landing Page"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:378
+msgid "Type of PayPal page to display as default. PayPal Account Optional must be checked for this option to be used."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:379
+#: classes/wc-gateway-paypal-plus-angelleye.php:225
+#: template/paypal-review-order.php:203
+msgid "Login"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:380
-msgid "PayPal Checkout Logo (190x60px)"
+#: classes/wc-gateway-paypal-plus-angelleye.php:226
+msgid "Billing"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:382
-msgid "This controls what users see as the logo on PayPal review pages. "
+#: classes/wc-gateway-paypal-express-angelleye.php:384
+#: classes/wc-gateway-paypal-pro-angelleye.php:259
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:136
+msgid "Error Display Type"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:386
-msgid "PayPal Checkout Banner (750x90px)"
+#: classes/wc-gateway-paypal-pro-angelleye.php:261
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:138
+msgid "Display detailed or generic errors"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:388
-msgid ""
-"This controls what users see as the header banner on PayPal review pages. "
+#: classes/wc-gateway-paypal-express-angelleye.php:389
+#: classes/wc-gateway-paypal-pro-angelleye.php:264
+msgid "Detailed"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:390
+#: classes/wc-gateway-paypal-pro-angelleye.php:265
+msgid "Generic"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:392
-msgid "Customer Service Number"
+#: classes/wc-gateway-paypal-pro-angelleye.php:267
+msgid ""
+"Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details\n"
+"\t\t\t\t\t\t\t\t\tand helps to prevent fraudulant activity on your site."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:394
-msgid ""
-"This controls what users see for your customer service phone number on "
-"PayPal review pages."
+#: classes/wc-gateway-paypal-express-angelleye.php:396
+msgid "Enable PayPal Credit"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:398
-#: paypal-for-woocommerce.php:129
-msgid "Gift Wrap"
+msgid "Show the PayPal Credit button next to the Express Checkout button."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:400
-msgid "Enables the gift wrap options for buyers."
+msgid "Currently disabled because PayPal Credit is only available for U.S. merchants."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:402
-msgid ""
-"This will display a gift wrap option to buyers during checkout based on the "
-"following Gift Wrap settings."
+#: classes/wc-gateway-paypal-express-angelleye.php:403
+msgid "Use WordPress Locale Code"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:405
-msgid "Gift Message"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:407
-msgid "Enables the gift message widget on PayPal pages."
+msgid "Pass the WordPress Locale Code setting to PayPal in order to display localized PayPal pages to buyers."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:409
-msgid ""
-"This will allow buyers to enter a message they would like to include with "
-"the item as a gift."
+#: classes/wc-gateway-paypal-plus-angelleye.php:230
+msgid "Brand Name"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:412
-msgid "Gift Receipt"
+#: classes/wc-gateway-paypal-express-angelleye.php:411
+msgid "This controls what users see as the brand / company name on PayPal review pages."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:414
-msgid "Enables the gift receipt widget on PayPal pages."
+#: classes/wc-gateway-paypal-express-angelleye.php:415
+#: classes/wc-gateway-paypal-plus-angelleye.php:236
+msgid "PayPal Checkout Logo (190x60px)"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:416
-msgid ""
-"This will allow buyers to choose whether or not to include a gift receipt in "
-"the order."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:419
-msgid "Gift Wrap Name"
+#: classes/wc-gateway-paypal-express-angelleye.php:417
+#: classes/wc-gateway-paypal-plus-angelleye.php:238
+msgid "This controls what users see as the logo on PayPal review pages. "
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:421
-msgid ""
-"Label for the gift wrap option on PayPal pages, such as \"Box with ribbon\""
+msgid "PayPal Checkout Banner (750x90px)"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:422
-msgid "Box with ribbon"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:425
-msgid "Gift Wrap Amount"
+#: classes/wc-gateway-paypal-express-angelleye.php:423
+msgid "This controls what users see as the header banner on PayPal review pages. "
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:427
-msgid "Amount to be charged to the buyer for adding the gift wrap option."
+msgid "Customer Service Number"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:428
-msgid "0.00"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:431
-msgid "Express Checkout Message"
+#: classes/wc-gateway-paypal-express-angelleye.php:429
+msgid "This controls what users see for your customer service phone number on PayPal review pages."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:433
-msgid ""
-"This message will be displayed next to the PayPal Express Checkout button at "
-"the top of the checkout page."
+#: paypal-for-woocommerce.php:161
+msgid "Gift Wrap"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:434
-#: classes/wc-gateway-paypal-express-angelleye.php:574
-msgid "Skip the forms and pay faster with PayPal!"
+#: classes/wc-gateway-paypal-express-angelleye.php:435
+msgid "Enables the gift wrap options for buyers."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:437
-msgid "Skip Final Review"
+msgid "This will display a gift wrap option to buyers during checkout based on the following Gift Wrap settings."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:438
-msgid "Enables the option to skip the final review page."
+#: classes/wc-gateway-paypal-express-angelleye.php:440
+msgid "Gift Message"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:442
+msgid "Enables the gift message widget on PayPal pages."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:444
-#: classes/wc-gateway-paypal-pro-angelleye.php:251
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:221
-msgid "Payment Action"
+msgid "This will allow buyers to enter a message they would like to include with the item as a gift."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:445
-#: classes/wc-gateway-paypal-pro-angelleye.php:252
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:222
-msgid "Whether to process as a Sale or Authorization."
+#: classes/wc-gateway-paypal-express-angelleye.php:447
+msgid "Gift Receipt"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:446
-#: classes/wc-gateway-paypal-pro-angelleye.php:253
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:223
-msgid ""
-"Sale will capture the funds immediately when the order is placed.  "
-"Authorization will authorize the payment but will not capture the funds.  "
-"You would need to capture funds through your PayPal account when you are "
-"ready to deliver."
+#: classes/wc-gateway-paypal-express-angelleye.php:449
+msgid "Enables the gift receipt widget on PayPal pages."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:455
-#: classes/wc-gateway-paypal-plus-angelleye.php:201
-#: template/paypal-review-order.php:111
-msgid "Billing Address"
+#: classes/wc-gateway-paypal-express-angelleye.php:451
+msgid "This will allow buyers to choose whether or not to include a gift receipt in the order."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:454
+msgid "Gift Wrap Name"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:456
-#: classes/wc-gateway-paypal-plus-angelleye.php:202
-msgid ""
-"Set billing address in WooCommerce using the address returned by PayPal."
+msgid "Label for the gift wrap option on PayPal pages, such as \"Box with ribbon\""
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:457
-#: classes/wc-gateway-paypal-plus-angelleye.php:203
-msgid ""
-"PayPal only returns a shipping address back to the website.  Enable this "
-"option if you would like to use this address for both billing and shipping "
-"in WooCommerce."
+msgid "Box with ribbon"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:460
+msgid "Gift Wrap Amount"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:462
-msgid "Cancel Page"
+msgid "Amount to be charged to the buyer for adding the gift wrap option."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:463
-msgid ""
-"Sets the page users will be returned to if they click the Cancel link on the "
-"PayPal checkout pages."
+msgid "0.00"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:466
+msgid "Express Checkout Message"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:468
-#: classes/wc-gateway-paypal-pro-angelleye.php:262
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:214
-msgid "Send Item Details"
+msgid "This message will be displayed next to the PayPal Express Checkout button at the top of the checkout page."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:469
+#: classes/wc-gateway-paypal-express-angelleye.php:640
+msgid "Skip the forms and pay faster with PayPal!"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:472
+msgid "Skip Final Review"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:473
+msgid "Enables the option to skip the final review page."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:480
+#: classes/wc-gateway-paypal-pro-angelleye.php:272
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:208
+msgid "Whether to process as a Sale or Authorization."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:481
+#: classes/wc-gateway-paypal-pro-angelleye.php:273
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:209
+msgid "Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds through your PayPal account when you are ready to deliver."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:491
+#: classes/wc-gateway-paypal-plus-angelleye.php:202
+#: template/paypal-review-order.php:120
+msgid "Billing Address"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:492
+#: classes/wc-gateway-paypal-plus-angelleye.php:203
+msgid "Set billing address in WooCommerce using the address returned by PayPal."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:493
+#: classes/wc-gateway-paypal-plus-angelleye.php:204
+msgid "PayPal only returns a shipping address back to the website.  Enable this option if you would like to use this address for both billing and shipping in WooCommerce."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:498
+msgid "Cancel Page"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:499
+msgid "Sets the page users will be returned to if they click the Cancel link on the PayPal checkout pages."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:504
+#: classes/wc-gateway-paypal-pro-angelleye.php:282
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:200
+msgid "Send Item Details"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:505
 msgid "Send line item details to PayPal."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:471
-#: classes/wc-gateway-paypal-pro-angelleye.php:265
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:217
-msgid ""
-"Include all line item details in the payment request to PayPal so that they "
-"can be seen from the PayPal transaction details page."
+#: classes/wc-gateway-paypal-express-angelleye.php:507
+#: classes/wc-gateway-paypal-pro-angelleye.php:285
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:203
+msgid "Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:511
+#: classes/wc-gateway-paypal-pro-angelleye.php:289
+msgid "Enable PayPal IPN"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:512
+msgid "Configure an IPN URL to be included with Express Checkout payments."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:514
+msgid "This will override any URL configured in your PayPal account profile."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:519
+#: classes/wc-gateway-paypal-pro-angelleye.php:297
+msgid "PayPal IPN URL"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:521
+msgid "Your URL for receiving Instant Payment Notification (IPN) for transactions."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:525
+msgid "Auto Cancel / Refund Orders "
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:527
-#: classes/wc-gateway-paypal-express-angelleye.php:1872
-#: classes/wc-gateway-paypal-express-angelleye.php:1919
-#: paypal-for-woocommerce.php:483 paypal-for-woocommerce.php:557
+msgid "Allows you to cancel and refund orders that do not meet PayPal's Seller Protection criteria."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:530
+msgid "Do *not* have PayPal Seller Protection"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:531
+msgid "Do *not* have PayPal Unauthorized Payment Protection"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:532
+msgid "Do not cancel any orders"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:593
+#: classes/wc-gateway-paypal-express-angelleye.php:2195
+#: classes/wc-gateway-paypal-express-angelleye.php:2233
+#: paypal-for-woocommerce.php:524 paypal-for-woocommerce.php:591
 msgid "Proceed to Checkout"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:624
+#: classes/wc-gateway-paypal-express-angelleye.php:691
 msgid "Review Order Page not found, re-create it. "
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:626
-#: paypal-for-woocommerce.php:331
+#: classes/wc-gateway-paypal-express-angelleye.php:693
+#: paypal-for-woocommerce.php:392
 msgctxt "page_slug"
 msgid "review-order"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:626
-#: paypal-for-woocommerce.php:331
+#: classes/wc-gateway-paypal-express-angelleye.php:693
+#: paypal-for-woocommerce.php:392
 msgid "Checkout &rarr; Review Order"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:662
+#: classes/wc-gateway-paypal-express-angelleye.php:729
 msgid "SetExpressCheckout API call failed. "
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:663
-#: classes/wc-gateway-paypal-express-angelleye.php:676
-#: classes/wc-gateway-paypal-express-angelleye.php:1178
-#: classes/wc-gateway-paypal-pro-angelleye.php:859
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:542
-msgid "Detailed Error Message: "
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:664
-#: classes/wc-gateway-paypal-express-angelleye.php:675
-#: classes/wc-gateway-paypal-express-angelleye.php:1177
-msgid "Short Error Message: "
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:665
-#: classes/wc-gateway-paypal-express-angelleye.php:673
-#: classes/wc-gateway-paypal-express-angelleye.php:1175
-#: classes/wc-gateway-paypal-pro-angelleye.php:858
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:541
-msgid "Error Code: "
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:666
-#: classes/wc-gateway-paypal-express-angelleye.php:674
-#: classes/wc-gateway-paypal-express-angelleye.php:1176
-msgid "Error Severity Code: "
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:672
+#: classes/wc-gateway-paypal-express-angelleye.php:739
 msgid "SetExpressCheckout API call failed."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:690
-#: classes/wc-gateway-paypal-express-angelleye.php:1195
+#: classes/wc-gateway-paypal-express-angelleye.php:744
+#: classes/wc-gateway-paypal-express-angelleye.php:1275
+#: classes/wc-gateway-paypal-express-angelleye.php:1447
+#: classes/wc-gateway-paypal-pro-angelleye.php:1064
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:563
+msgid "User IP: "
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:758
+#: classes/wc-gateway-paypal-express-angelleye.php:1464
 msgid "There was a problem paying with PayPal.  Please try another method."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:721
-#: classes/wc-gateway-paypal-express-angelleye.php:1222
-#: classes/wc-gateway-paypal-express-angelleye.php:1533
-#: classes/wc-gateway-paypal-express-angelleye.php:1598
-#: classes/wc-gateway-paypal-pro-angelleye.php:627
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:303
+#: classes/wc-gateway-paypal-express-angelleye.php:789
+#: classes/wc-gateway-paypal-express-angelleye.php:1076
+#: classes/wc-gateway-paypal-express-angelleye.php:1492
+#: classes/wc-gateway-paypal-express-angelleye.php:1804
+#: classes/wc-gateway-paypal-express-angelleye.php:1880
+#: classes/wc-gateway-paypal-pro-angelleye.php:784
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:308
 #: template/paypal-review-order.php:17
-msgid ""
-"Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:736
-msgid "We do not sell in your country, please try again with another address."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:802
-msgid "Username is required"
+msgid "Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:804
+msgid "We do not sell in your country, please try again with another address."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:871
+msgid "Username is required"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:873
 msgid "This username is already registered."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:806
-#: classes/wc-gateway-paypal-express-angelleye.php:935
+#: classes/wc-gateway-paypal-express-angelleye.php:875
+#: classes/wc-gateway-paypal-express-angelleye.php:1005
 msgid "Please provide a valid email address."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:808
+#: classes/wc-gateway-paypal-express-angelleye.php:877
+#: classes/wc-gateway-paypal-express-angelleye.php:1010
 msgid "Password is required."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:810
+#: classes/wc-gateway-paypal-express-angelleye.php:879
 msgid "Passwords do not match."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:812
-#: classes/wc-gateway-paypal-express-angelleye.php:937
+#: classes/wc-gateway-paypal-express-angelleye.php:881
+#: classes/wc-gateway-paypal-express-angelleye.php:1007
 msgid "This email address is already registered."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:823
-#: classes/wc-gateway-paypal-express-angelleye.php:824
+#: classes/wc-gateway-paypal-express-angelleye.php:892
+#: classes/wc-gateway-paypal-express-angelleye.php:893
 msgid "Anti-spam field was filled in."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:852
-#: classes/wc-gateway-paypal-express-angelleye.php:972
+#: classes/wc-gateway-paypal-express-angelleye.php:921
+#: classes/wc-gateway-paypal-express-angelleye.php:1045
 msgid "Error"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:1120
-msgid "Gift Wrap Added"
+#: classes/wc-gateway-paypal-express-angelleye.php:1086
+#: classes/wc-gateway-paypal-express-angelleye.php:2058
+msgid "Sorry, A successful transaction has already been completed for this token. <a href=%s>Return to homepage &rarr;</a>"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:1123
-msgid "Use Gift Receipt?: "
+#: classes/wc-gateway-paypal-express-angelleye.php:1237
+msgid "Transaction did not meet our Seller Protection requirements. Cancelling and refunding order."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:1129
-msgid "PayPal Express payment completed"
+#: classes/wc-gateway-paypal-express-angelleye.php:1239
+msgid "PayPal Express Checkout payment declined due to our Seller Protection Settings"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:1133
-msgid "Payer Status: "
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:1136
-msgid "Address Status: "
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:1174
-msgid "DoExpressCheckoutPayment API call failed."
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:1179
-#: classes/wc-gateway-paypal-pro-angelleye.php:860
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:544
-msgid "Order ID: "
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:1180
-#: classes/wc-gateway-paypal-pro-angelleye.php:861
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:545
-msgid "Customer Name: "
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:1181
-#: classes/wc-gateway-paypal-pro-angelleye.php:862
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:546
-msgid "Customer Email: "
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:1872
-msgid "Pay with Credit Card"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:498
-msgid "Cancel/Refund orders that: "
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:500
-msgid ""
-"Allows you to cancel and refund orders that do not meet PayPal's "
-"Seller Protection criteria"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:503
-msgid "Do *not* have PayPal Seller Protection"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:504
-msgid "Do *not* have PayPal Unauthorized Payment Protection"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:505
-msgid "Do not cancel any orders"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:1207
-msgid ""
-"Transaction did not meet our Seller Protection requirements. Cancelling and "
-"refunding order."
-""
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:1209
-msgid ""
-"PayPal Express Checkout payment declined due to our Seller Protection "
-"Settings"
-msgstr ""
-
-#: classes/wc-gateway-paypal-express-angelleye.php:1209
+#: classes/wc-gateway-paypal-express-angelleye.php:1239
 msgid "Order #"
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:1215
+#: classes/wc-gateway-paypal-express-angelleye.php:1245
 msgid "There was a problem processing your order. Please contact customer support."
 msgstr ""
 
-#: classes/wc-gateway-paypal-express-angelleye.php:1217
-msgid ""
-"Thank you for your recent order. Unfortunately it has been cancelled and refunded. "
-"Please contact our customer support team."
+#: classes/wc-gateway-paypal-express-angelleye.php:1247
+msgid "Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team."
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:26
+#: classes/wc-gateway-paypal-express-angelleye.php:1270
+msgid "DoExpressCheckoutPayment API call SuccessWithWarning."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1276
+#: classes/wc-gateway-paypal-express-angelleye.php:1448
+#: classes/wc-gateway-paypal-pro-angelleye.php:1065
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:564
+msgid "Order ID: "
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1277
+#: classes/wc-gateway-paypal-express-angelleye.php:1449
+#: classes/wc-gateway-paypal-pro-angelleye.php:1066
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:565
+msgid "Customer Name: "
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1278
+#: classes/wc-gateway-paypal-express-angelleye.php:1450
+#: classes/wc-gateway-paypal-pro-angelleye.php:1067
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:566
+msgid "Customer Email: "
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1316
+msgid "PayPal Express payment completed"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1322
+msgid "Payer Status: "
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1327
+msgid "Address Status: "
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1349
+msgid "Payment Completed via Express Checkout"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1362
+msgid "Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1365
+msgid "Authorization: The payment is pending because it has been authorized but not settled. You must capture the funds first."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1368
+msgid "eCheck: The payment is pending because it was made by an eCheck that has not yet cleared."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1371
+msgid "intl: The payment is pending because you hold a non-U.S. account and do not have a withdrawal mechanism. You must manually accept or deny this payment from your Account Overview."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1375
+msgid "Multi-currency: You do not have a balance in the currency sent, and you do not have your Payment Receiving Preferences set to automatically convert and accept this payment. You must manually accept or deny this payment."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1378
+msgid "Order: The payment is pending because it is part of an order that has been authorized but not settled."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1381
+msgid "Payment Review: The payment is pending while it is being reviewed by PayPal for risk."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1384
+msgid "Unilateral: The payment is pending because it was made to an email address that is not yet registered or confirmed."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1387
+msgid "Verify: The payment is pending because you are not yet verified. You must verify your account before you can accept this payment."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1390
+msgid "Other: For more information, contact PayPal customer service."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1394
+msgid "No pending reason provided."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1397
+msgid "Payment via Express Checkout Pending. PayPal reason: %s."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1405
+msgid "Payment %s via Express Checkout."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:1442
+msgid "DoExpressCheckoutPayment API call failed."
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:2195
+msgid "Pay with Credit Card"
+msgstr ""
+
+#: classes/wc-gateway-paypal-express-angelleye.php:2258
+msgid "Check out with PayPal Credit"
+msgstr ""
+
+#: classes/wc-gateway-paypal-plus-angelleye.php:28
 #: classes/wc-gateway-paypal-plus-angelleye.php:121
-#: classes/wc-gateway-paypal-plus-angelleye.php:161
+#: classes/wc-gateway-paypal-plus-angelleye.php:162 template/admin.php:24
 msgid "PayPal Plus"
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:94
-msgid ""
-"Paypal Plus error: Please enter your Rest API Cient ID and Secret ID <a href="
-"\"%s\">here</a>"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:122
-msgid ""
-"PayPal PLUS is a solution where PayPal offers PayPal, Credit Card and ELV as "
-"individual payment options on the payment selection page. The available "
-"payment methods are provided in a PayPal hosted iFrame."
+#: classes/wc-gateway-paypal-plus-angelleye.php:122 template/admin.php:55
+msgid "PayPal PLUS is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame."
 msgstr ""
 
 #: classes/wc-gateway-paypal-plus-angelleye.php:123
-msgid ""
-"NOTE: This is currently considered BETA but has been tested thoroughly in "
-"the sandbox without issue."
+msgid "NOTE: This is currently considered BETA but has been tested thoroughly in the sandbox without issue."
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:129
-msgid "Gateway Disabled"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:129
+#: classes/wc-gateway-paypal-plus-angelleye.php:128
 msgid "PayPal Plus does not support your store currency (Supports: EUR, CAD)."
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:154
+#: classes/wc-gateway-paypal-plus-angelleye.php:155
 msgid "Enable PayPal Plus"
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:167
+#: classes/wc-gateway-paypal-plus-angelleye.php:168
 msgid "PayPal Plus description"
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:170
-msgid "Sandbox Client ID"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:176
-msgid "Sandbox Secret ID"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:178
-msgid "Enter your Sandbox PayPal Rest API Secret ID."
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:182
-msgid "Live Client ID"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:188
-msgid "Live Secret ID"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:190
-msgid "Enter your PayPal Rest API Secret ID."
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:194
-msgid "PayPal sandbox"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:196
-msgid "Enable PayPal sandbox"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:198
-msgid ""
-"PayPal sandbox can be used to test payments. Sign up for a developer account "
-"<a href=\"%s\">here</a>"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:208
-msgid "Invoice Prefix"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:210
-msgid ""
-"Please enter a prefix for your invoice numbers. If you use your PayPal "
-"account for multiple stores ensure this prefix is unique as PayPal will not "
-"allow orders with the same invoice number."
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:215
+#: classes/wc-gateway-paypal-plus-angelleye.php:216
 msgid "Cancel URL"
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:217
-msgid ""
-"Please enter an URL for customers to return when they cancel the order in "
-"PayPal."
+#: classes/wc-gateway-paypal-plus-angelleye.php:218
+msgid "Please enter an URL for customers to return when they cancel the order in PayPal."
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:221
-#: classes/wc-gateway-paypal-pro-angelleye.php:269
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:136
-msgid "Debug Log"
+#: classes/wc-gateway-paypal-plus-angelleye.php:224
+msgid "Type of PayPal page to be displayed when a user lands on the PayPal site for checkout. When set to `Billing`, the Non-PayPal account landing page is used. When set to `Login`, the PayPal account login landing page is used."
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:223
-#: classes/wc-gateway-paypal-pro-angelleye.php:271
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:138
-msgid "Enable logging"
+#: classes/wc-gateway-paypal-plus-angelleye.php:232
+msgid "A label that overrides the business name in the PayPal account on the PayPal pages."
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:225
-msgid ""
-"Log PayPal events, such as Secured Token requests, inside <code>woocommerce/"
-"logs/paypal_plus.txt</code>"
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:262
+#: classes/wc-gateway-paypal-plus-angelleye.php:281
 msgid "Loading payment gates ..."
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:446
-#: classes/wc-gateway-paypal-plus-angelleye.php:449
-#: classes/wc-gateway-paypal-plus-angelleye.php:530
-#: classes/wc-gateway-paypal-plus-angelleye.php:583
-msgid "Error processing checkout. Please try again. "
+#: classes/wc-gateway-paypal-plus-angelleye.php:539
+msgid "Thank you for your order. We are now redirecting you to PayPal to make payment."
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:507
-msgid ""
-"Thank you for your order. We are now redirecting you to PayPal to make "
-"payment."
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:534
-#: classes/wc-gateway-paypal-plus-angelleye.php:587
-msgid "Error processing checkout. Please try again."
-msgstr ""
-
-#: classes/wc-gateway-paypal-plus-angelleye.php:550
+#: classes/wc-gateway-paypal-plus-angelleye.php:597
 msgid "Response: %s"
 msgstr ""
 
-#: classes/wc-gateway-paypal-plus-angelleye.php:573
+#: classes/wc-gateway-paypal-plus-angelleye.php:623
 msgid "PayPal Plus payment completed"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:16
+#: classes/wc-gateway-paypal-plus-angelleye.php:652
+msgid "Error processing checkout. Please try again."
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:24
 msgid "PayPal Website Payments Pro (DoDirectPayment) "
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:17
-msgid ""
-"PayPal Website Payments Pro allows you to accept credit cards directly on "
-"your site without any redirection through PayPal.  You host the checkout "
-"form on your own web server, so you will need an SSL certificate to ensure "
-"your customer data is protected."
+#: classes/wc-gateway-paypal-pro-angelleye.php:25
+msgid "PayPal Website Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:131
+#: classes/wc-gateway-paypal-pro-angelleye.php:151
 msgid "Enable PayPal Pro"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:140
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:110
+#: classes/wc-gateway-paypal-pro-angelleye.php:160
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:96
 msgid "Credit card"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:146
+#: classes/wc-gateway-paypal-pro-angelleye.php:166
 msgid "Pay with your credit card"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:149
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:119
-msgid "Test Mode"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:150
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:120
-msgid "Enable PayPal Sandbox/Test Mode"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:152
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:122
+#: classes/wc-gateway-paypal-pro-angelleye.php:172
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:108
 msgid "Place the payment gateway in development mode."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:161
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:131
+#: classes/wc-gateway-paypal-pro-angelleye.php:181
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:117
 msgid "Card Icon"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:173
+#: classes/wc-gateway-paypal-pro-angelleye.php:193
 msgid "Sandbox API Username"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:175
+#: classes/wc-gateway-paypal-pro-angelleye.php:195
 msgid ""
-"Create sandbox accounts and obtain API credentials from within your \r\n"
-"\t\t\t\t\t\t\t\t\t<a href=\"http://developer.paypal.com\">PayPal developer "
-"account</a>."
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:190
-msgid "Live API Username"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:192
-msgid ""
-"Get your live account API credentials from your PayPal account profile under "
-"the API Access section <br />or by using \r\n"
-"\t\t\t\t\t\t\t\t\t<a target=\"_blank\" href=\"https://www.paypal.com/us/cgi-"
-"bin/webscr?cmd=_login-api-run\">this tool</a>."
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:207
-msgid "3DSecure"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:208
-msgid "Enable 3DSecure"
+"Create sandbox accounts and obtain API credentials from within your\n"
+"\t\t\t\t\t\t\t\t\t<a href=\"http://developer.paypal.com\">PayPal developer account</a>."
 msgstr ""
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:210
+msgid "Live API Username"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:212
 msgid ""
-"Allows UK merchants to pass 3-D Secure authentication data to PayPal for "
-"debit and credit cards. Updating your site with 3-D Secure enables your "
-"participation in the Verified by Visa and MasterCard SecureCode programs. "
-"(Required to accept Maestro)"
+"Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using\n"
+"\t\t\t\t\t\t\t\t\t<a target=\"_blank\" href=\"https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run\">this tool</a>."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:214
-msgid "Centinel PID"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:216
-msgid "If enabling 3D Secure, enter your Cardinal Centinel Processor ID."
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:220
-msgid "Centinel MID"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:222
-msgid "If enabling 3D Secure, enter your Cardinal Centinel Merchant ID."
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:226
-msgid "Transaction Password"
+#: classes/wc-gateway-paypal-pro-angelleye.php:227
+msgid "3DSecure"
 msgstr ""
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:228
-msgid ""
-"If enabling 3D Secure, enter your Cardinal Centinel Transaction Password."
+msgid "Enable 3DSecure"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:232
+#: classes/wc-gateway-paypal-pro-angelleye.php:230
+msgid "Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:234
+msgid "Centinel PID"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:236
+msgid "If enabling 3D Secure, enter your Cardinal Centinel Processor ID."
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:240
+msgid "Centinel MID"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:242
+msgid "If enabling 3D Secure, enter your Cardinal Centinel Merchant ID."
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:246
+msgid "Transaction Password"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:248
+msgid "If enabling 3D Secure, enter your Cardinal Centinel Transaction Password."
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:252
 msgid "Liability Shift"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:233
+#: classes/wc-gateway-paypal-pro-angelleye.php:253
 msgid "Require liability shift"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:235
+#: classes/wc-gateway-paypal-pro-angelleye.php:255
 msgid "Only accept payments when liability shift has occurred."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:247
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:158
-msgid ""
-"Detailed displays actual errors returned from PayPal.  Generic displays "
-"general errors that do not reveal details \r\n"
-"\t\t\t\t\t\t\t\t\tand helps to prevent fraudulant activity on your site."
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:263
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:215
+#: classes/wc-gateway-paypal-pro-angelleye.php:283
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:201
 msgid "Send line item details to PayPal"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:273
-msgid ""
-"Log PayPal events inside <code>/wp-content/uploads/wc-logs/paypal-pro-{tag}."
-"log</code>"
+#: classes/wc-gateway-paypal-pro-angelleye.php:290
+msgid "Enable Instant Payment Notification."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:313
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:572
-msgid "TEST MODE/SANDBOX ENABLED"
+#: classes/wc-gateway-paypal-pro-angelleye.php:299
+msgid "Your URL for receiving Instant Payment Notification (IPN) about transactions."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:317
-msgid "Credit Card number"
+#: classes/wc-gateway-paypal-pro-angelleye.php:303
+msgid "Enable Cardholder Name"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:321
-msgid "Card type"
+#: classes/wc-gateway-paypal-pro-angelleye.php:304
+msgid "Adds fields for \"card holder name\" to checkout in addition to the \"billing name\" fields."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:330
-msgid "Expiration date"
+#: classes/wc-gateway-paypal-pro-angelleye.php:306
+msgid "Display card holder first and last name in credit card form."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:332
+#: classes/wc-gateway-paypal-pro-angelleye.php:363
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:592
+msgid "NOTICE: SANDBOX (TEST) MODE ENABLED."
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:365
+msgid "For testing purposes you can use the card number 4916311462114485 with any CVC and a valid expiration date."
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:376
+#: classes/wc-gateway-paypal-pro-angelleye.php:392
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:601
+msgid "Credit Card Number"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:381
+#: classes/wc-gateway-paypal-pro-angelleye.php:397
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:606
+msgid "Card Security Code"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:382
+#: classes/wc-gateway-paypal-pro-angelleye.php:398
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:607
+msgid "CVC"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:385
+msgid "Start Date (MM/YY)"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:386
+msgid "MM / YY"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:414
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:618
+msgid "Expiration Date"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:416
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:620
 msgid "Month"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:337
+#: classes/wc-gateway-paypal-pro-angelleye.php:420
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:624
 msgctxt "Month Names"
 msgid "F"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:343
+#: classes/wc-gateway-paypal-pro-angelleye.php:427
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:631
 msgid "Year"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:350
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:593
-msgid "Card security code"
+#: classes/wc-gateway-paypal-pro-angelleye.php:511
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:269
+msgid "Your processor is unable to process the Card Type in the currency requested. Please try another card type"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:373
-msgid "Card security code is invalid (only digits are allowed)"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:377
-msgid "Card security code is invalid (wrong length)"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:389
-msgid "Card expiration date is invalid"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:395
-msgid "Card number is invalid"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:499
-msgid "Processing your Payer Authentication Transaction"
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:499
-msgid "Please click Submit to continue the processing of your transaction."
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:510
-msgid ""
-"Authentication unavailable. Please try a different payment method or card."
-msgstr ""
-
-#: classes/wc-gateway-paypal-pro-angelleye.php:518
-#: classes/wc-gateway-paypal-pro-angelleye.php:594
+#: classes/wc-gateway-paypal-pro-angelleye.php:613
 msgid "Error in 3D secure authentication: "
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:572
-msgid ""
-"Authentication unavailable.  Please try a different payment method or card."
+#: classes/wc-gateway-paypal-pro-angelleye.php:627
+msgid "Authentication unavailable. Please try a different payment method or card."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:574
+#: classes/wc-gateway-paypal-pro-angelleye.php:719
 msgid "3D Secure error: No liability shift"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:587
-msgid "Payer Authentication failed.  Please try a different payment method."
+#: classes/wc-gateway-paypal-pro-angelleye.php:720
+msgid "Authentication unavailable.  Please try a different payment method or card."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:589
-#: classes/wc-gateway-paypal-pro-angelleye.php:596
+#: classes/wc-gateway-paypal-pro-angelleye.php:749
 msgid "3D Secure error: %s"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:792
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:447
+#: classes/wc-gateway-paypal-pro-angelleye.php:750
+msgid "Payer Authentication failed. Please try a different payment method."
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:989
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:466
 msgid "Empty PayPal response."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:799
+#: classes/wc-gateway-paypal-pro-angelleye.php:995
 msgid "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:817
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:491
+#: classes/wc-gateway-paypal-pro-angelleye.php:1013
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:510
 msgid "Address Verification Result"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:828
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:502
+#: classes/wc-gateway-paypal-pro-angelleye.php:1024
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:521
 msgid "Card Security Code Result"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:857
+#: classes/wc-gateway-paypal-pro-angelleye.php:1061
 msgid "DoDirectPayment API call failed."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:875
-msgid ""
-"PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to "
-"an error: %s"
+#: classes/wc-gateway-paypal-pro-angelleye.php:1079
+msgid "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:882
-#: classes/wc-gateway-paypal-pro-angelleye.php:887
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:527
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:531
+#: classes/wc-gateway-paypal-pro-angelleye.php:1085
+#: classes/wc-gateway-paypal-pro-angelleye.php:1088
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:546
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:550
 msgid "Payment error:"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:886
-msgid "There was a problem connecting to the payment gateway."
+#: classes/wc-gateway-paypal-pro-angelleye.php:1226
+msgid "Cardholder first name"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:1227
+msgid "First name"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:1230
+msgid "Cardholder last name"
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-angelleye.php:1231
+msgid "Last name"
 msgstr ""
 
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:18
@@ -1197,235 +1927,417 @@ msgid "PayPal Payments Pro 2.0 (PayFlow)"
 msgstr ""
 
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:19
-msgid ""
-"PayPal Payments Pro allows you to accept credit cards directly on your site "
-"without any redirection through PayPal.  You host the checkout form on your "
-"own web server, so you will need an SSL certificate to ensure your customer "
-"data is protected."
+msgid "PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:101
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:87
 msgid "Enable PayPal Pro Payflow Edition"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:116
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:102
 msgid "Pay with your credit card."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:140
-msgid ""
-"Log PayPal events inside <code>/wp-content/uploads/wc-logs/paypal_payflow-"
-"{tag}.log</code>"
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:126
+msgid "Log PayPal events inside <code>%s</code>"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:162
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:144
+msgid ""
+"Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details \n"
+"\t\t\t\t\t\t\t\t\tand helps to prevent fraudulant activity on your site."
+msgstr ""
+
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:148
 msgid "Sandbox PayPal Vendor"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:164
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:190
-msgid ""
-"Your merchant login ID that you created when you registered for the account."
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:150
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:176
+msgid "Your merchant login ID that you created when you registered for the account."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:168
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:154
 msgid "Sandbox PayPal Password"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:170
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:196
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:156
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:182
 msgid "The password that you defined while registering for the account."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:174
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:160
 msgid "Sandbox PayPal User"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:176
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:202
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:162
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:188
 msgid ""
-"If you set up one or more additional users on the account, this value is the "
-"ID\r\n"
-"of the user authorized to process transactions. Otherwise, leave this field "
-"blank."
+"If you set up one or more additional users on the account, this value is the ID\n"
+"of the user authorized to process transactions. Otherwise, leave this field blank."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:181
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:167
 msgid "Sandbox PayPal Partner"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:183
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:209
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:169
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:195
 msgid ""
-"The ID provided to you by the authorized PayPal Reseller who registered you"
-"\r\n"
-"for the Payflow SDK. If you purchased your account directly from PayPal, use "
-"PayPal or leave blank."
+"The ID provided to you by the authorized PayPal Reseller who registered you\n"
+"for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:188
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:174
 msgid "Live PayPal Vendor"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:194
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:180
 msgid "Live PayPal Password"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:200
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:186
 msgid "Live PayPal User"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:207
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:193
 msgid "Live PayPal Partner"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:473
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:492
 msgid "PayPal Pro payment completed (PNREF: %s)"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:493
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:512
 msgid "Address Match: %s"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:495
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:514
 msgid "Postal Match: %s"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:504
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:523
 msgid "CVV2 Match: %s"
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:522
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:541
 msgid "PayPal Pro payment failed. Payment was rejected due to an error: "
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:540
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:559
 msgid "PayFlow API call failed."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:558
-msgid "Connection error:"
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:594
+msgid "For testing purposes you can use the card number 4111111111111111 with any CVC and a valid expiration date."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:584
-msgid "Card number"
+#: paypal-for-woocommerce.php:75
+msgid "PayPal for WooCommerce requires WooCommerce version 2.1 or higher.  Please backup your site files and database, update WooCommerce, and try again."
 msgstr ""
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:589
-msgid "Expiry date <small>(MMYY)</small>"
-msgstr ""
-
-#: paypal-for-woocommerce.php:65
-msgid ""
-"PayPal for WooCommerce requires WooCommerce version 2.1 or higher.  Please "
-"backup your site files and database, update WooCommerce, and try again."
-msgstr ""
-
-#: paypal-for-woocommerce.php:145
+#: paypal-for-woocommerce.php:177
 msgid "Docs"
 msgstr ""
 
-#: paypal-for-woocommerce.php:146
+#: paypal-for-woocommerce.php:178
 msgid "Support"
 msgstr ""
 
-#: paypal-for-woocommerce.php:147
+#: paypal-for-woocommerce.php:179
 msgid "Write a Review"
 msgstr ""
 
-#: paypal-for-woocommerce.php:192
-msgid ""
-"WooCommerce PayPal Payments Pro requires that the %sForce secure checkout%s "
-"option is enabled; your checkout may not be secure! Please enable SSL and "
-"ensure your server has a valid SSL certificate - PayPal Pro will only work "
-"in test mode. | <a href=%s>%s</a>"
+#: paypal-for-woocommerce.php:230
+msgid "WooCommerce PayPal Payments Pro requires that the %sForce secure checkout%s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode. | <a href=%s>%s</a>"
 msgstr ""
 
-#: paypal-for-woocommerce.php:192 paypal-for-woocommerce.php:199
-#: paypal-for-woocommerce.php:203 paypal-for-woocommerce.php:207
-#: paypal-for-woocommerce.php:211
+#: paypal-for-woocommerce.php:230 paypal-for-woocommerce.php:237
+#: paypal-for-woocommerce.php:241 paypal-for-woocommerce.php:245
+#: paypal-for-woocommerce.php:249
 msgid "Hide this notice"
 msgstr ""
 
-#: paypal-for-woocommerce.php:199
-msgid ""
-"WooCommerce PayPal Payments ( %s ) is currently running in Sandbox mode and "
-"will NOT process any actual payments. | <a href=%s>%s</a>"
+#: paypal-for-woocommerce.php:237
+msgid "WooCommerce PayPal Payments ( %s ) is currently running in Sandbox mode and will NOT process any actual payments. | <a href=%s>%s</a>"
 msgstr ""
 
-#: paypal-for-woocommerce.php:203
-msgid ""
-"WooCommerce PayPal Express is currently running in Sandbox mode and will NOT "
-"process any actual payments. | <a href=%s>%s</a>"
+#: paypal-for-woocommerce.php:241
+msgid "WooCommerce PayPal Express is currently running in Sandbox mode and will NOT process any actual payments. | <a href=%s>%s</a>"
 msgstr ""
 
-#: paypal-for-woocommerce.php:211
-msgid ""
-"WooCommerce PayPal Payments requires WooCommerce plugin to work normally. "
-"Please activate it or install it from <a href='http://wordpress.org/plugins/"
-"woocommerce/' target='_blank'>here</a>. | <a href=%s>%s</a>"
+#: paypal-for-woocommerce.php:249
+msgid "WooCommerce PayPal Payments requires WooCommerce plugin to work normally. Please activate it or install it from <a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>here</a>. | <a href=%s>%s</a>"
 msgstr ""
 
-#: paypal-for-woocommerce.php:251
+#: paypal-for-woocommerce.php:258
+msgid "Action completed; %s records processed. "
+msgstr ""
+
+#: paypal-for-woocommerce.php:306
 msgid "Choose Image"
 msgstr ""
 
-#: paypal-for-woocommerce.php:281
+#: paypal-for-woocommerce.php:336
 msgid "3 digits usually found on the signature strip."
 msgstr ""
 
-#: paypal-for-woocommerce.php:282
+#: paypal-for-woocommerce.php:337
 msgid "4 digits usually found on the front of the card."
 msgstr ""
 
-#: paypal-for-woocommerce.php:538
-msgid "Hide"
+#: paypal-for-woocommerce.php:569
+msgid "Dismiss"
 msgstr ""
 
-#: template/paypal-review-order.php:40
+#: paypal-for-woocommerce.php:1009
+msgid "PayPal for WooCommerce - Settings"
+msgstr ""
+
+#: paypal-for-woocommerce.php:1010
+msgid "PayPal for WooCommerce"
+msgstr ""
+
+#: paypal-for-woocommerce.php:1133
+msgid "No Shipping Required"
+msgstr ""
+
+#: paypal-for-woocommerce.php:1134
+msgid "Disables shipping requirements in the PayPal checkout flow."
+msgstr ""
+
+#: paypal-for-woocommerce.php:1140 template/admin.php:96
+msgid "Enable PayPal Billing Agreement"
+msgstr ""
+
+#: paypal-for-woocommerce.php:1141
+msgid "Adds a billing agreement to the product.  The user must agree to the billing agreement on the PayPal checkout pages, and then you can process future payments for the buyer using reference transactions.."
+msgstr ""
+
+#: paypal-for-woocommerce.php:1163
+msgid "Error Code: 0"
+msgstr ""
+
+#: template/admin.php:14
+msgid "General"
+msgstr ""
+
+#: template/admin.php:15
+msgid "Tools"
+msgstr ""
+
+#: template/admin.php:21
+msgid "PayPal Express Checkout"
+msgstr ""
+
+#: template/admin.php:22
+msgid "PayPal Payments Pro (PayFlow)"
+msgstr ""
+
+#: template/admin.php:23
+msgid "PayPal Website Payments Pro (DoDirectPayment)"
+msgstr ""
+
+#: template/admin.php:34
+msgid "PayPal Express Checkout is a more advanced version of the standard PayPal payment option that is included with WooCommerce. It has more features included with it and allows us to more tightly integrate PayPal into WooCommerce. It is the recommended method of enabling PayPal payments in WooCommerce."
+msgstr ""
+
+#: template/admin.php:35
+msgid "Express Checkout Setting"
+msgstr ""
+
+#: template/admin.php:41
+msgid "PayPal Payments Pro 2.0 is the latest release of PayPal’s Pro offering. It works on PayPal’s PayFlow Gateway as opposed to their original DoDirectPayment API. You need to be sure that your account is setup for this version of Pro before configuring this payment gateway or you will end up with errors when people attempt to pay you via credit card."
+msgstr ""
+
+#: template/admin.php:42
+msgid "PayPal Payments Pro (PayFlow) Setting"
+msgstr ""
+
+#: template/admin.php:48
+msgid "PayPal’s Website Payments Pro 3.0 is the original Pro package that PayPal offered. It works on the DoDirectPayment API and is being slowly deprecated since the launch of Payments Pro 2.0 that works on the PayFlow API. You need to be sure that your account is setup for this version of Pro before configuring this payment gateway or you will end up with errors when people attempt to pay you via credit card."
+msgstr ""
+
+#: template/admin.php:49
+msgid "PayPal Website Payments Pro (DoDirectPayment) Setting"
+msgstr ""
+
+#: template/admin.php:56
+msgid "PayPal Plus Setting"
+msgstr ""
+
+#: template/admin.php:63
+msgid "Braintree Setting"
+msgstr ""
+
+#: template/admin.php:70
+msgid "PayPal Advanced Setting"
+msgstr ""
+
+#: template/admin.php:77
+msgid "PayPal Credit Card (REST) Setting"
+msgstr ""
+
+#: template/admin.php:87
+msgid "Bulk Edit Tool for Products"
+msgstr ""
+
+#: template/admin.php:88
+msgid "Select from the options below to enable / disable No shipping required or PayPal Billing Agreement on multiple products at once."
+msgstr ""
+
+#: template/admin.php:90
+msgid "Action"
+msgstr ""
+
+#: template/admin.php:93 template/admin.php:105 template/admin.php:118
+#: template/admin.php:135 template/admin.php:150
+msgid "- Select option"
+msgstr ""
+
+#: template/admin.php:94
+msgid "Enable No shipping required"
+msgstr ""
+
+#: template/admin.php:95
+msgid "Disable No shipping required"
+msgstr ""
+
+#: template/admin.php:97
+msgid "Disable PayPal Billing Agreement"
+msgstr ""
+
+#: template/admin.php:102
+msgid "Target"
+msgstr ""
+
+#: template/admin.php:106
+msgid "All products"
+msgstr ""
+
+#: template/admin.php:107
+msgid "All downloadable"
+msgstr ""
+
+#: template/admin.php:108
+msgid "All virtual"
+msgstr ""
+
+#: template/admin.php:109
+msgid "Featured products"
+msgstr ""
+
+#: template/admin.php:110
+msgid "Where..."
+msgstr ""
+
+#: template/admin.php:115
+msgid "Where"
+msgstr ""
+
+#: template/admin.php:119
+msgid "Category..."
+msgstr ""
+
+#: template/admin.php:120
+msgid "Product type..."
+msgstr ""
+
+#: template/admin.php:121
+msgid "Price greater than..."
+msgstr ""
+
+#: template/admin.php:122
+msgid "Price less than..."
+msgstr ""
+
+#: template/admin.php:123
+msgid "Stock greater than..."
+msgstr ""
+
+#: template/admin.php:124
+msgid "Stock less than..."
+msgstr ""
+
+#: template/admin.php:125
+msgid "In-stock"
+msgstr ""
+
+#: template/admin.php:126
+msgid "Out-of-stock"
+msgstr ""
+
+#: template/admin.php:127
+msgid "Sold individually"
+msgstr ""
+
+#: template/admin.php:132
+msgid "Category"
+msgstr ""
+
+#: template/admin.php:151
+msgid "Simple"
+msgstr ""
+
+#: template/admin.php:152
+msgid "Variable"
+msgstr ""
+
+#: template/admin.php:153
+msgid "Grouped"
+msgstr ""
+
+#: template/admin.php:154
+msgid "External"
+msgstr ""
+
+#: template/admin.php:173
+msgid "Process"
+msgstr ""
+
+#: template/paypal-review-order.php:49
 msgid "Customer details"
 msgstr ""
 
-#: template/paypal-review-order.php:48
+#: template/paypal-review-order.php:57
 msgid "Shipping Address"
 msgstr ""
 
-#: template/paypal-review-order.php:147
+#: template/paypal-review-order.php:161
 msgid "Create an account?"
 msgstr ""
 
-#: template/paypal-review-order.php:150
-msgid ""
-"Create an account by entering the information below. If you are a returning "
-"customer please login at the top of the page."
+#: template/paypal-review-order.php:164
+msgid "Create an account by entering the information below. If you are a returning customer please login at the top of the page."
 msgstr ""
 
-#: template/paypal-review-order.php:156
+#: template/paypal-review-order.php:170
 msgid "Account password"
 msgstr ""
 
-#: template/paypal-review-order.php:209
+#: template/paypal-review-order.php:218
 msgid "Create A New Account"
 msgstr ""
 
-#: template/paypal-review-order.php:240
+#: template/paypal-review-order.php:252
 msgid "Cancel order"
 msgstr ""
 
-#: template/paypal-review-order.php:251
+#: template/paypal-review-order.php:265
 msgid "You must accept our Terms &amp; Conditions."
 msgstr ""
 
-#: template/paypal-review-order.php:285
-msgid ""
-"I&rsquo;ve read and accept the <a href=\"%s\" class=\"terms_chkbox\" target="
-"\"_blank\">terms &amp; conditions</a>"
+#: template/paypal-review-order.php:299
+msgid "I&rsquo;ve read and accept the <a href=\"%s\" class=\"terms_chkbox\" target=\"_blank\">terms &amp; conditions</a>"
 msgstr ""
 
-#: template/paypal-review-order.php:289 template/paypal-review-order.php:293
+#: template/paypal-review-order.php:303 template/paypal-review-order.php:313
 msgid "Place Order"
 msgstr ""
 
+#: template/paypal-review-order.php:313
+msgid "Processing"
+msgstr ""
 #. Plugin Name of the plugin/theme
 msgid "PayPal for WooCommerce"
 msgstr ""
@@ -1435,10 +2347,7 @@ msgid "http://www.angelleye.com/product/paypal-for-woocommerce-plugin/"
 msgstr ""
 
 #. Description of the plugin/theme
-msgid ""
-"Easily enable PayPal Express Checkout, Website Payments Pro 3.0, Payments "
-"Pro 2.0 (PayFlow), and PayPal Plus (Germany).  Each option is available "
-"separately so you can enable them individually."
+msgid "Easily enable PayPal Express Checkout, Website Payments Pro 3.0, Payments Pro 2.0 (PayFlow), and PayPal Plus (Germany).  Each option is available separately so you can enable them individually."
 msgstr ""
 
 #. Author of the plugin/theme
