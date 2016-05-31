@@ -1414,7 +1414,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                     // Empty the Cart
                     WC()->cart->empty_cart();
-
+                    $this->pfw_remove_checkout_session_data();
                     wp_redirect($this->get_return_url($order));
                     exit();
                 } else {
@@ -1912,14 +1912,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $customer_notes = wptexturize($order->customer_note);
             }
 
-            $shipping_first_name = $order->shipping_first_name;
-            $shipping_last_name = $order->shipping_last_name;
-            $shipping_address_1 = $order->shipping_address_1;
-            $shipping_address_2 = $order->shipping_address_2;
-            $shipping_city = $order->shipping_city;
-            $shipping_state = $order->shipping_state;
-            $shipping_postcode = $order->shipping_postcode;
-            $shipping_country = $order->shipping_country;
+            
         }
 
         // Prepare request arrays
@@ -1948,14 +1941,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'custom' => '', // Free-form field for your own use.  256 char max.
             'invnum' => $this->invoice_id_prefix . $invoice_number, // Your own invoice or tracking number.  127 char max.
             'notifyurl' => $this->notifyurl, // URL for receiving Instant Payment Notifications
-            'shiptoname' => $shipping_first_name . ' ' . $shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
-            'shiptostreet' => $shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
-            'shiptostreet2' => $shipping_address_2, // Second street address.  100 char max.
-            'shiptocity' => wc_clean( stripslashes( $shipping_city ) ), // Required if shipping is included.  Name of city.  40 char max.
-            'shiptostate' => $shipping_state, // Required if shipping is included.  Name of state or province.  40 char max.
-            'shiptozip' => $shipping_postcode, // Required if shipping is included.  Postal code of shipping address.  20 char max.
-            'shiptocountrycode' => $shipping_country, // Required if shipping is included.  Country code of shipping address.  2 char max.
-            'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
             'notetext' => $this->get_session('customer_notes'), // Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', // The payment method type.  Specify the value InstantPaymentOnly.
             'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
@@ -2045,6 +2030,31 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
              array_push($Payments, $Payment);
         }
+        
+        if(WC()->cart->needs_shipping()) {
+        
+            $shipping_first_name = $order->shipping_first_name;
+            $shipping_last_name = $order->shipping_last_name;
+            $shipping_address_1 = $order->shipping_address_1;
+            $shipping_address_2 = $order->shipping_address_2;
+            $shipping_city = $order->shipping_city;
+            $shipping_state = $order->shipping_state;
+            $shipping_postcode = $order->shipping_postcode;
+            $shipping_country = $order->shipping_country;
+
+            $Payment = array('shiptoname' => $shipping_first_name . ' ' . $shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
+                    'shiptostreet' => $shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
+                    'shiptostreet2' => $shipping_address_2, // Second street address.  100 char max.
+                    'shiptocity' => wc_clean( stripslashes( $shipping_city ) ), // Required if shipping is included.  Name of city.  40 char max.
+                    'shiptostate' => $shipping_state, // Required if shipping is included.  Name of state or province.  40 char max.
+                    'shiptozip' => $shipping_postcode, // Required if shipping is included.  Postal code of shipping address.  20 char max.
+                    'shiptocountrycode' => $shipping_country, // Required if shipping is included.  Country code of shipping address.  2 char max.
+                    'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
+             );
+            
+            array_push($Payments, $Payment);
+        }
+        
         
         $PayPalRequestData = array(
             'DECPFields' => $DECPFields,
@@ -2462,6 +2472,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if( WC()->cart->check_cart_items() == false) {
             wp_redirect(get_permalink(wc_get_page_id('cart')));
             exit();
+        }
+    }
+    
+    public function pfw_remove_checkout_session_data() {
+        $checkout_session_array = array('TOKEN', 'PayerID', 'RESULT', 'company', 'firstname', 'lastname', 'shiptoname', 'shiptostreet', 'shiptostreet2', 'shiptocity', 'shiptocountrycode', 'shiptostate', 'shiptozip', 'payeremail', 'giftmessage', 'giftreceiptenable', 'giftwrapname', 'giftwrapamount', 'customer_notes', 'phonenum', 'payer_id', 'checkout_form', 'post_data');
+        foreach ($checkout_session_array as $key => $value) {
+            if(isset( WC()->session->$value ) ) {
+                unset( WC()->session->$value );
+            }
         }
     }
 }
