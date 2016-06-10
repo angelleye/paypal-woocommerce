@@ -474,7 +474,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             exit;
         } catch (Exception $ex) {
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-            $this->add_log($ex->getData());
+            $this->add_log($ex->getMessage());
             wp_redirect($woocommerce->cart->get_cart_url());
             exit;
         }
@@ -565,7 +565,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
             exit;
         } catch (Exception $ex) {
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-            $this->add_log($ex->getData());
+            $this->add_log($ex->getMessage());
             wp_redirect($woocommerce->cart->get_cart_url());
             exit;
         }
@@ -715,6 +715,7 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
     }
     
     public function create_web_experience_profile() {
+        global $woocommerce;
         $addroverride = '';
         if(WC()->cart->needs_shipping()) {
             $addroverride = 1;
@@ -753,9 +754,17 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         try {
             $createProfileResponse = $webProfile->create($this->getAuth());
             return $createProfileResponse->getId();
-        } catch (\PayPal\Exception\PayPalConnectionException $ex) {
-            
-        }
+        }  catch (PayPal\Exception\PayPalConnectionException $ex) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->add_log($ex->getData());
+                wp_redirect($woocommerce->cart->get_cart_url());
+                exit;
+            } catch (Exception $ex) {
+                $this->add_log($ex->getMessage()); // Prints the Error Code
+                wc_add_notice(__("Error processing checkout. Please try again.", 'paypal-for-woocommerce'), 'error');
+                wp_redirect($woocommerce->cart->get_cart_url());
+                exit;
+            }
     }
     
     public function angelleye_paypal_plus_needs_shipping() {

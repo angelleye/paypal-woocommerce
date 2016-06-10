@@ -99,7 +99,7 @@ class PayPal_Rest_API_Utility {
             exit;
         } catch (Exception $ex) {
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-            $this->add_log($ex->getData());
+            $this->add_log($ex->getMessage());
             return array(
                 'result' => 'fail',
                 'redirect' => ''
