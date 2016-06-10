@@ -735,9 +735,15 @@ class WC_Gateway_PayPal_Plus_AngellEYE extends WC_Payment_Gateway {
         
         $presentation = new \PayPal\Api\Presentation();
         
-        $presentation->setLogoImage($this->checkout_logo)
-                ->setBrandName($this->brand_name)
-                ->setLocaleCode($country);
+        if( isset($this->checkout_logo) && !empty($this->checkout_logo)) {
+            $presentation->setLogoImage($this->checkout_logo);
+        }
+        if( isset($this->brand_name) && !empty($this->brand_name)) {
+            $presentation->setBrandName($this->brand_name);
+        }
+        if( isset($country) && !empty($country)) {
+            $presentation->setLocaleCode($country);
+        }
         
         $inputFields = new \PayPal\Api\InputFields();
         
