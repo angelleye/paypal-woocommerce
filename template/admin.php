@@ -95,8 +95,8 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                                 <th class="titledesc" scope="row"><?php echo __('Force TLS 1.2', 'paypal-for-woocommerce'); ?></th>
                                 <td class="forminp forminp-checkbox">
                                     <fieldset>
-                                        <label for="woocommerce_calc_taxes">
-                                            <input type="checkbox" <?php echo (isset($Force_tls_one_point_two) && $Force_tls_one_point_two == true) ? 'checked="checked"' : '' ?> class="" id="woocommerce_calc_taxes" name="Force_tls_one_point_two"> 
+                                        <label for="Force_tls_one_point_two">
+                                            <input type="checkbox" <?php echo (isset($Force_tls_one_point_two) && $Force_tls_one_point_two == 'yes') ? 'checked="checked"' : '' ?> class="" id="Force_tls_one_point_two" name="Force_tls_one_point_two"> 
                                             <?php echo __('Enable Force TLS 1.2', 'paypal-for-woocommerce'); ?>					
                                         </label> 														
                                     </fieldset>
