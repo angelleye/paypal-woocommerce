@@ -45,6 +45,7 @@ class Angelleye_PayPal
 	var $Sandbox = '';
 	var $PathToCertKeyPEM = '';
 	var $SSL = '';
+        var $Force_tls_one_point_two = '';
 	
 	/**
 	 * Constructor

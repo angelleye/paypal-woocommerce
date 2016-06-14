@@ -47,9 +47,7 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 		$this->APIVendor = isset($DataArray['APIVendor']) ? $DataArray['APIVendor'] : '';
 		$this->APIPartner = isset($DataArray['APIPartner']) ? $DataArray['APIPartner'] : '';
 		$this->Verbosity = isset($DataArray['Verbosity']) ? $DataArray['Verbosity'] : 'HIGH';
-                if( isset($this->Force_tls_one_point_two) && $this->Force_tls_one_point_two == 'yes') {
-                    curl_setopt($curl, CURLOPT_SSLVERSION, 6);
-                }
+                $this->Force_tls_one_point_two = isset($DataArray['Force_tls_one_point_two']) ? $DataArray['Force_tls_one_point_two'] : 'no';
 		
 		if($this->Sandbox)
 		{
