@@ -93,6 +93,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->PAYPAL_URL = "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=";
         }
         $this->version = "64";  // PayPal SetExpressCheckout API version
+        
+        $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
+                
         // Actions
         add_action('woocommerce_api_' . strtolower(get_class()), array($this, 'paypal_express_checkout'), 12);
         add_action('woocommerce_receipt_paypal_express', array($this, 'receipt_page'));
@@ -1508,7 +1511,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
         $PayPal = new Angelleye_PayPal($PayPalConfig);
 
@@ -1822,7 +1826,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
         $PayPal = new Angelleye_PayPal($PayPalConfig);
 
@@ -1897,7 +1902,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
         $PayPal = new Angelleye_PayPal($PayPalConfig);
 
@@ -2315,7 +2321,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
         $PayPal = new Angelleye_PayPal($PayPalConfig);
         if ($reason) {

@@ -64,6 +64,8 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
             'refunds'
         );
 
+        $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
+
 		/* 1.6.6 */
 		add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
 
@@ -327,7 +329,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 						'APIUsername' => $this->paypal_user, 
 						'APIPassword' => trim($this->paypal_password), 
 						'APIVendor' => $this->paypal_vendor, 
-						'APIPartner' => $this->paypal_partner
+						'APIPartner' => $this->paypal_partner,
+                                                'Force_tls_one_point_two' => $this->Force_tls_one_point_two
 					  );
 		$PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
 		
@@ -696,7 +699,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             'APIUsername' => $this->paypal_user,
             'APIPassword' => trim($this->paypal_password),
             'APIVendor' => $this->paypal_vendor,
-            'APIPartner' => $this->paypal_partner
+            'APIPartner' => $this->paypal_partner,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
         $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
         $PayPalRequestData = array(

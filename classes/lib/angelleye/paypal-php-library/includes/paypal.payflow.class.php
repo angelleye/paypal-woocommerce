@@ -47,6 +47,9 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 		$this->APIVendor = isset($DataArray['APIVendor']) ? $DataArray['APIVendor'] : '';
 		$this->APIPartner = isset($DataArray['APIPartner']) ? $DataArray['APIPartner'] : '';
 		$this->Verbosity = isset($DataArray['Verbosity']) ? $DataArray['Verbosity'] : 'HIGH';
+                if( isset($this->Force_tls_one_point_two) && $this->Force_tls_one_point_two == 'yes') {
+                    curl_setopt($curl, CURLOPT_SSLVERSION, 6);
+                }
 		
 		if($this->Sandbox)
 		{
@@ -112,6 +115,9 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl, CURLOPT_POST, 1);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $Request);
+                if( isset($this->Force_tls_one_point_two) && $this->Force_tls_one_point_two == 'yes') {
+                    curl_setopt($curl, CURLOPT_SSLVERSION, 6);
+                }
 	
 		// Try to submit the transaction up to 3 times with 5 second delay.  This can be used
 		// in case of network issues.  The idea here is since you are posting via HTTPS there

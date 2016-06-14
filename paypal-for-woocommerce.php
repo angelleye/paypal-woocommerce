@@ -107,6 +107,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'wp_ajax_pfw_ed_shipping_bulk_tool', array( $this, 'angelleye_woocommerce_pfw_ed_shipping_bulk_tool' ) );
             add_action( 'woocommerce_checkout_process', array( $this, 'angelleye_paypal_express_checkout_process_checkout_fields' ) );
             add_filter('body_class', array($this, 'add_body_classes'));
+            add_action('http_api_curl', array($this, 'http_api_curl_ex_add_curl_parameter'), 10, 3);
             require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
         }
@@ -1507,6 +1508,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         private function set_session($key, $value) {
             WC()->session->$key = $value;
+        }
+        public function http_api_curl_ex_add_curl_parameter($handle, $r, $url ) {
+            $Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
+            if ( (strstr( $url, 'https://' ) && strstr( $url, '.paypal.com' )) && isset($Force_tls_one_point_two) && $Force_tls_one_point_two == 'yes' ) {
+                curl_setopt($handle, CURLOPT_VERBOSE, 1);
+                curl_setopt($handle, CURLOPT_SSLVERSION, 6);
+            }
         }
     }
 }

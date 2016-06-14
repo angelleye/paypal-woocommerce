@@ -116,6 +116,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             'refunds'
         );
 
+        $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
+
         if ($this->testmode == 'yes') {
             $this->api_username = $this->settings['sandbox_api_username'];
             $this->api_password = $this->settings['sandbox_api_password'];
@@ -799,7 +801,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
         $PayPal = new Angelleye_PayPal($PayPalConfig);
 
@@ -1159,7 +1162,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
         $PayPal = new Angelleye_PayPal($PayPalConfig);
         if ($reason) {

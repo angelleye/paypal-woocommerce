@@ -73,6 +73,7 @@ class Angelleye_PayPal
 		$this->PathToCertKeyPEM = '/path/to/cert/pem.txt';
 		$this->SSL = $_SERVER['SERVER_PORT'] == '443' ? true : false;
 		$this->APISubject = isset($DataArray['APISubject']) ? $DataArray['APISubject'] : '';
+                $this->Force_tls_one_point_two = isset($DataArray['Force_tls_one_point_two']) ? $DataArray['Force_tls_one_point_two'] : 'no';
 		
 		if($this->Sandbox)
 		{
@@ -605,6 +606,9 @@ class Angelleye_PayPal
 				curl_setopt($curl, CURLOPT_URL, $this->EndPointURL);
 				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 				curl_setopt($curl, CURLOPT_POSTFIELDS, $Request);
+                if( isset($this->Force_tls_one_point_two) && $this->Force_tls_one_point_two == 'yes') {
+                    curl_setopt($curl, CURLOPT_SSLVERSION, 6);
+                }
 				
 		if($this->APIMode == 'Certificate')
 		{

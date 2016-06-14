@@ -25,6 +25,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=wc_gateway_braintree_angelleye" class="nav-tab <?php echo $gateway == 'wc_gateway_braintree_angelleye' ? 'nav-tab-active' : ''; ?>"><?php echo __('Braintree', 'paypal-for-woocommerce'); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=wc_gateway_paypal_advanced_angelleye" class="nav-tab <?php echo $gateway == 'wc_gateway_paypal_advanced_angelleye' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Advanced', 'paypal-for-woocommerce'); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_credit_card_rest" class="nav-tab <?php echo $gateway == 'paypal_credit_card_rest' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Credit Card (REST)', 'paypal-for-woocommerce'); ?></a>
+            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=global" class="nav-tab <?php echo $gateway == 'global' ? 'nav-tab-active' : ''; ?>"><?php echo __('Global', 'paypal-for-woocommerce'); ?></a>
         </h2>
 
     <?php
@@ -77,6 +78,37 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal_credit_card_rest_angelleye'); ?>"><?php _e('PayPal Credit Card (REST) Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
         <?php
+        } elseif ($gateway == 'global') {
+            ?>
+            <div class="wrap">
+                <?php
+                if (isset($_POST['submit']) && !empty($_POST['submit'])) {
+                    update_option('Force_tls_one_point_two', (isset($_POST['Force_tls_one_point_two']) && wc_clean($_POST['Force_tls_one_point_two']) == 'on') ? 'yes' : 'no' );
+                    echo '<div class="updated"><p>' . __('Settings were saved successfully.', 'paypal-for-woocommerce') . '</p></div>';
+                }
+                $Force_tls_one_point_two = get_option('Force_tls_one_point_two');
+                ?>
+                <form method="post">
+                    <table class="form-table">
+                        <tbody>
+                            <tr valign="top" class="">
+                                <th class="titledesc" scope="row"><?php echo __('Force TLS 1.2', 'paypal-for-woocommerce'); ?></th>
+                                <td class="forminp forminp-checkbox">
+                                    <fieldset>
+                                        <label for="woocommerce_calc_taxes">
+                                            <input type="checkbox" <?php echo (isset($Force_tls_one_point_two) && $Force_tls_one_point_two == true) ? 'checked="checked"' : '' ?> class="" id="woocommerce_calc_taxes" name="Force_tls_one_point_two"> 
+                                            <?php echo __('Enable Force TLS 1.2', 'paypal-for-woocommerce'); ?>					
+                                        </label> 														
+                                    </fieldset>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <?php submit_button(); ?>
+                </form>
+
+            </div>
+            <?php
     }
     ?>
     <?php } else { ?>
