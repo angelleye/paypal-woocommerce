@@ -290,7 +290,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             </script>
             <?php
         } else {
-            $this->credit_card_form();
+            $cc_form = new WC_Payment_Gateway_CC;
+            $cc_form->id       = $this->id;
+            $cc_form->supports = $this->supports;
+            $cc_form->form();
         }
     }
 

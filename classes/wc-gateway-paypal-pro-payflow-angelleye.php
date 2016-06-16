@@ -59,10 +59,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
             $this->paypal_user     	= ! empty( $this->settings['sandbox_paypal_user'] ) ? $this->settings['sandbox_paypal_user'] : $this->paypal_vendor;
         }
 
-        $this->supports 			= array(
-            'products',
-            'refunds'
-        );
+        $this->supports = array(
+			'products',
+			'refunds'
+		);
 
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
 
@@ -71,11 +71,18 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 
 		/* 2.0.0 */
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+                
+                add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_payflow_credit_card_form_fields'), 10, 2);
 	}
-    function add_log( $message ) {
-        if ( empty( $this->log ) )
-            $this->log = new WC_Logger();
-        $this->log->add( 'paypal_payflow', $message );
+    
+    
+    public function add_log($message) {
+        if ($this->debug) {
+            if (!isset($this->log)) {
+                $this->log = new WC_Logger();
+            }
+            $this->log->add('paypal_payflow', $message);
+        }
     }
 	
 	/**
@@ -342,11 +349,6 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         	$GLOBALS['wp_rewrite'] = new WP_Rewrite();
 		}
 		
-		if($this->debug)
-		{
-			$this->add_log($order->get_checkout_order_received_url());
-		}
-		
 		try
 		{
 			/**
@@ -443,6 +445,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
         
+                        $log         = $PayPalRequestData;
+                        $log['acct'] = '****';
+                        $log['cvv2'] = '****';
+                        $this->add_log('PayFlow Request: '.print_r( $log, true ) );
 			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
                         
                         /**
@@ -452,14 +458,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
 			
-			/**
-			 * Log results
-			 */
-			if($this->debug)
-			{
-				$this->add_log('PayFlow Endpoint: '.$PayPal->APIEndPoint);
-            	$this->add_log(print_r($PayPalResult,true));
-			}
+			
+                        $this->add_log('PayFlow Endpoint: '.$PayPal->APIEndPoint);
+                        $this->add_log('PayFlow Response: '.print_r($PayPalResult,true));
+			
 
 			/**
 			 * Error check
@@ -469,15 +471,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $fc_empty_response = apply_filters( 'ae_pppf_paypal_response_empty_message', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult );
                 throw new Exception( $fc_empty_response );
 			}
-			
-			/** 
-			 * More logs
-			 */
-			if($this->debug)
-			{
-				$this->add_log(add_query_arg('key', $order->order_key, add_query_arg('order', $order->id)));
-			}
-			
+
 			/**
 			 * Check for errors or fraud filter warnings and proceed accordingly.
 			 */
@@ -598,20 +592,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					echo '</p>';
 				}
             }
-            
-            $default_fields = array(
-			'card-number-field' => '<p class="form-row form-row-wide">
-				<label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Credit Card Number', 'paypal-for-woocommerce' ) . ' <span class="required">*</span></label>
-				<input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
-			</p>',
-			'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox(),
-			'card-cvc-field' => '<p class="form-row form-row-last">
-				<label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card Security Code', 'paypal-for-woocommerce' ) . ' <span class="required">*</span></label>
-				<input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__( 'CVC', 'paypal-for-woocommerce' ) . '" name="' .  $this->id . '-card-cvc' . '" />
-			</p>'
-		);
-            
-            $this->credit_card_form( array(), $default_fields );
+            $cc_form = new WC_Payment_Gateway_CC;
+            $cc_form->id       = $this->id;
+            $cc_form->supports = $this->supports;
+            $cc_form->form();
             do_action( 'angelleye_after_fc_payment_fields', $this );
 	}
         
@@ -675,7 +659,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
         $order = wc_get_order( $order_id );
         $this->add_log( 'Begin Refund' );
-        $this->add_log( 'Order: '. print_r($order, true) );
+        $this->add_log( 'Order ID: '. print_r($order_id, true) );
         $this->add_log( 'Transaction ID: '. print_r($order->get_transaction_id(), true) );
         if ( ! $order || ! $order->get_transaction_id() || ! $this->paypal_user || ! $this->paypal_password || ! $this->paypal_vendor ) {
             return false;
@@ -710,8 +694,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             'AMT' => $amount,
             'CURRENCY' => $order->get_order_currency()
         );
-        $this->add_log('Refund Request: '.print_r( $PayPalRequestData, true ) );
+    
         $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+        
+        $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+        $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+
+        $this->add_log('Refund Request: ' . print_r($PayPalRequestData, true));
+        $this->add_log('Refund Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
         
          /**
          *  cURL Error Handling #146 
@@ -720,7 +710,6 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
         
-        $this->add_log('Refund Information: '.print_r( $PayPalResult, true ) );
         add_action( 'angelleye_after_refund', $PayPalResult, $order, $amount, $reason );
         if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)){
 
@@ -786,5 +775,24 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_exp_month, $card_exp_year);
 
         return true;
+    }
+    
+    public function angelleye_paypal_pro_payflow_credit_card_form_fields($default_fields, $current_gateway_id) {
+        if($current_gateway_id == $this->id) {
+              $fields = array(
+			'card-number-field' => '<p class="form-row form-row-wide">
+				<label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Credit Card Number', 'paypal-for-woocommerce' ) . ' <span class="required">*</span></label>
+				<input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
+			</p>',
+			'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox(),
+			'card-cvc-field' => '<p class="form-row form-row-last">
+				<label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card Security Code', 'paypal-for-woocommerce' ) . ' <span class="required">*</span></label>
+				<input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__( 'CVC', 'paypal-for-woocommerce' ) . '" name="' .  $this->id . '-card-cvc' . '" />
+			</p>'
+		);
+              return $fields;
+        } else {
+            return $default_fields;
+        }
     }
 }

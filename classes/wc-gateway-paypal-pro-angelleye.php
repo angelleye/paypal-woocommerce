@@ -112,9 +112,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
 
 
         $this->supports = array(
-            'products',
-            'refunds'
-        );
+			'products',
+			'refunds'
+		);
 
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
 
@@ -127,9 +127,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
         if (!$this->enable_3dsecure) {
             unset($this->available_card_types['GB']['Maestro']);
         }
-        // Logs
-        if ($this->debug)
-            $this->log = new WC_Logger();
+   
         // Hooks
         add_action('woocommerce_api_wc_gateway_paypal_pro_angelleye', array($this, 'handle_3dsecure'));
         /* 1.6.6 */
@@ -140,6 +138,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
         if ($this->enable_cardholder_first_last_name) {
             add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
         }
+        
+        add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_credit_card_form_fields'), 10, 2);
     }
 
     /**
@@ -368,44 +368,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
                 echo '</p>';
             }
         }
-
-        $fields = array();
-        $class = 'form-row form-row-first';
-        if (isset($this->available_card_types[WC()->countries->get_base_country()]['Maestro'])) {
-            $class = 'form-row form-row-last';
-            $fields = array(
-                'card-number-field' => '<p class="form-row form-row-first">
-                                <label for="' . esc_attr($this->id) . '-card-number">' . __('Credit Card Number', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
-                                <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
-                        </p>',
-                'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class),
-                'card-cvc-field' => '<p class="form-row form-row-first">
-                                <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
-                                <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-cvc' . '" />
-                        </p>',
-                'card-startdate-field' => '<p class="form-row form-row-last">
-                                <label for="' . esc_attr($this->id) . '-card-startdate">' . __('Start Date (MM/YY)', 'paypal-for-woocommerce') . '</label>
-                                <input id="' . esc_attr($this->id) . '-card-startdate" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . __('MM / YY', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-startdate' . '" />
-                        </p>'
-            );
-        } else {
-            $fields = array(
-                'card-number-field' => '<p class="form-row form-row-wide">
-				<label for="' . esc_attr($this->id) . '-card-number">' . __('Credit Card Number', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
-				<input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
-			</p>',
-                'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class),
-                'card-cvc-field' => '<p class="form-row form-row-last">
-				<label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
-				<input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-cvc' . '" />
-			</p>'
-            );
-        }
-
-        $this->credit_card_form(array(), $fields);
-
+        $cc_form = new WC_Payment_Gateway_CC;
+        $cc_form->id       = $this->id;
+        $cc_form->supports = $this->supports;
+        $cc_form->form();
         do_action('after_angelleye_pc_payment_fields', $this);
-
     }
 
 
@@ -529,8 +496,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
     function process_payment($order_id)
     {
         $order = new WC_Order($order_id);
-        if ($this->debug)
-            $this->log->add('paypal-pro', 'Processing order #' . $order_id);
+        
+        $this->log('Processing order #' . $order_id);
 
         $card = $this->get_posted_card();
 
@@ -963,12 +930,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             'Secure3D' => $Secure3D
         );
 
-        if ($this->debug) {
-            $log = $PayPalRequestData;
-            $log['CCDetails']['acct'] = '****';
-            $log['CCDetails']['cvv2'] = '****';
-            $this->log->add('paypal-pro', 'Do payment request ' . print_r($log, true));
-        }
+    
+        $log = $PayPalRequestData;
+        $log['CCDetails']['acct'] = '****';
+        $log['CCDetails']['cvv2'] = '****';
+        $this->log('Do payment request ' . print_r($log, true));
+       
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->DoDirectPayment($PayPalRequestData);
@@ -980,13 +947,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
 
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoDirectPayment', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
 
-        if ($this->debug) {
-            $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
-            $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+        
+        $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+        $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
 
-            $this->log->add('paypal-pro', 'Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
-            $this->log->add('paypal-pro', 'Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
-        }
+        $this->log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
+        $this->log('Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
+       
 
         if (empty($PayPalResult['RAWRESPONSE'])) {
             $pc_empty_response = apply_filters('ae_ppddp_paypal_response_empty_message', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult);
@@ -1075,9 +1042,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
                 wp_mail($admin_email, $pc_error_email_subject, $pc_error_email_message);
             }
 
-            if ($this->debug) {
-                $this->log->add('paypal-pro', 'Error ' . print_r($PayPalResult['ERRORS'], true));
-            }
+            
+             $this->log('Error ' . print_r($PayPalResult['ERRORS'], true));
+            
 
             $order->update_status('failed', sprintf(__('PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to an error: %s',
                 'paypal-for-woocommerce'), $PayPalResult['CORRELATIONID'], '(' . $PayPalResult['L_ERRORCODE0'] . ') ' . '"' . $error_message . '"'));
@@ -1138,16 +1105,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
     public function process_refund($order_id, $amount = null, $reason = '')
     {
         $order = wc_get_order($order_id);
-        $this->add_log('Begin Refund');
-        $this->add_log('Order: ' . print_r($order, true));
-        $this->add_log('Transaction ID: ' . print_r($order->get_transaction_id(), true));
-        $this->add_log('API Username: ' . print_r($this->api_username, true));
-        $this->add_log('API Password: ' . print_r($this->api_password, true));
-        $this->add_log('API Signature: ' . print_r($this->api_signature, true));
+        $this->log('Begin Refund');
+        $this->log('Order ID: ' . print_r($order_id, true));
+        $this->log('Transaction ID: ' . print_r($order->get_transaction_id(), true));
         if (!$order || !$order->get_transaction_id() || !$this->api_username || !$this->api_password || !$this->api_signature) {
             return false;
         }
-        $this->add_log('Include Class Request');
+ 
         /*
          * Check if the PayPal class has already been established.
          */
@@ -1194,7 +1158,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
         );
 
         $PayPalRequestData = array('RTFields' => $RTFields);
-        $this->add_log('Refund Request: ' . print_r($PayPalRequestData, true));
+
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->RefundTransaction($PayPalRequestData);
 
@@ -1205,7 +1169,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
 
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'RefundTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
 
-        $this->add_log('Refund Information: ' . print_r($PayPalResult, true));
+        $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+        $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+
+        $this->log('Refund Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
+        $this->log('Refund Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
+        
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
 
@@ -1225,7 +1194,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
 
     public function angelleye_woocommerce_credit_card_form_start($current_id)
     {
-        if ($this->enable_cardholder_first_last_name) {
+        if ($this->enable_cardholder_first_last_name && $current_id == $this->id) {
             $fields['card-cardholder-first'] = '<p class="form-row form-row-first">
                     <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Cardholder first name', 'paypal-for-woocommerce') . '</label>
                     <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-first' . '" />
@@ -1253,5 +1222,46 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
         $value = wc_clean( $value );
         return $value;
     }
+    
+    public function angelleye_paypal_pro_credit_card_form_fields($default_fields, $current_gateway_id) {
+        if($current_gateway_id == $this->id) {
+            $fields = array();
+            $class = 'form-row form-row-first';
+            if (isset($this->available_card_types[WC()->countries->get_base_country()]['Maestro'])) {
+                $class = 'form-row form-row-last';
+                $fields = array(
+                    'card-number-field' => '<p class="form-row form-row-first">
+                                    <label for="' . esc_attr($this->id) . '-card-number">' . __('Credit Card Number', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
+                                    <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
+                            </p>',
+                    'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class),
+                    'card-cvc-field' => '<p class="form-row form-row-first">
+                                    <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
+                                    <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-cvc' . '" />
+                            </p>',
+                    'card-startdate-field' => '<p class="form-row form-row-last">
+                                    <label for="' . esc_attr($this->id) . '-card-startdate">' . __('Start Date (MM/YY)', 'paypal-for-woocommerce') . '</label>
+                                    <input id="' . esc_attr($this->id) . '-card-startdate" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . __('MM / YY', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-startdate' . '" />
+                            </p>'
+                );
 
+            } else {
+                $fields = array(
+                    'card-number-field' => '<p class="form-row form-row-wide">
+                                    <label for="' . esc_attr($this->id) . '-card-number">' . __('Credit Card Number', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
+                                    <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
+                            </p>',
+                    'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class),
+                    'card-cvc-field' => '<p class="form-row form-row-last">
+                                    <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
+                                    <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-cvc' . '" />
+                            </p>'
+                );
+
+            }
+            return $fields;
+        } else {
+            return $default_fields;
+        }
+    }
 }
