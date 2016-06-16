@@ -109,10 +109,10 @@ class AngellEYE_Utility {
                                     return $paypal_payment_action;
                                 } else {
                                     $paypal_payment_action = array('DoCapture' => 'Capture Authorization', 'DoVoid' => 'Void Authorization', 'DoAuthorization' => 'Authorization');
-                                    if ($this->total_Completed_DoAuthorization == $this->total_Pending_DoAuthorization || $this->total_Pending_DoAuthorization == 0) {
+                                    if ($this->total_Completed_DoAuthorization == $this->total_Pending_DoAuthorization || $this->total_Pending_DoAuthorization == 0 || $this->total_Pending_DoAuthorization == $this->total_DoCapture) {
                                         unset($paypal_payment_action['DoCapture']);
                                     }
-                                    if ($this->total_Pending_DoAuthorization == 0 && $this->total_Completed_DoAuthorization > 0) {
+                                    if ($this->total_Pending_DoAuthorization == 0 && $this->total_Completed_DoAuthorization > 0 || $this->total_Pending_DoAuthorization == $this->total_DoCapture) {
                                         unset($paypal_payment_action['DoVoid']);
                                     }
                                     if ($this->max_authorize_amount == self::round($this->total_Pending_DoAuthorization + $this->total_Completed_DoAuthorization)) {
@@ -130,7 +130,7 @@ class AngellEYE_Utility {
                                 if (!is_object($order_id)) {
                                     $order = wc_get_order($order_id);
                                 }
-                                if ($order->order_total == $this->total_DoVoid || $this->total_Completed_DoAuthorization == $order->order_total) {
+                                if ($order->order_total == $this->total_DoVoid || $this->total_Completed_DoAuthorization == $order->order_total || $order->order_total == $this->total_DoCapture) {
                                     unset($paypal_payment_action['DoCapture']);
                                     unset($paypal_payment_action['DoVoid']);
                                 }
@@ -757,6 +757,24 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_paypal_for_woocommerce_order_action_callback($post) {
+        
+        $args = array(
+                'post_type' => 'paypal_transaction',
+                'posts_per_page' => -1,
+                'meta_key' => 'order_id',
+                'meta_value' => $post->ID,
+                'order' => 'ASC',
+                'post_status' => 'any'
+            );
+            $posts_array = get_posts($args);
+            foreach ($posts_array as $post_data):
+                $payment_status = get_post_meta($post_data->ID, 'PAYMENTSTATUS', true);
+                if( isset($post->post_title) && !empty($post_data->post_title) && isset($payment_status) && $payment_status == 'Pending' ) {
+                    $this->angelleye_get_transactionDetails($post_data->post_title);
+                }
+            endforeach;
+            $order = wc_get_order($post->ID);
+        
         if (empty($this->angelleye_woocommerce_order_actions)) {
             $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions();
         }
@@ -794,16 +812,7 @@ class AngellEYE_Utility {
                 <br/><br/><br/>
                 <?php
             }
-            $args = array(
-                'post_type' => 'paypal_transaction',
-                'posts_per_page' => -1,
-                'meta_key' => 'order_id',
-                'meta_value' => $post->ID,
-                'order' => 'ASC',
-                'post_status' => 'any'
-            );
-            $posts = get_posts($args);
-            $order = wc_get_order($post->ID);
+            
             ?>
             <table class="widefat angelleye_order_action_table" style="width: 190px;float: right;">
                 <tbody>
@@ -839,7 +848,7 @@ class AngellEYE_Utility {
                 </tfoot>
                 <tbody>
                     <?php
-                    foreach ($posts as $post):
+                    foreach ($posts_array as $post):
                         ?>
                         <tr>
                             <td><?php echo $post->post_title; ?></td>
@@ -929,14 +938,25 @@ class AngellEYE_Utility {
 			AND postmeta.post_id = posts.ID LIMIT 0, 99
 		", $action, $order_id));
         } else {
-            $total = $wpdb->get_var($wpdb->prepare("
-			SELECT SUM( postmeta.meta_value )
-			FROM $wpdb->postmeta AS postmeta
-                        JOIN $wpdb->postmeta pm2 ON pm2.post_id = postmeta.post_id
-			INNER JOIN $wpdb->posts AS posts ON ( posts.post_type = 'paypal_transaction' AND posts.post_status LIKE '%s' AND post_parent = %d )
-			WHERE postmeta.meta_key = 'AMT' AND pm2.meta_key = 'PAYMENTSTATUS' AND pm2.meta_value LIKE '%s'
-			AND postmeta.post_id = posts.ID LIMIT 0, 99
-		", $action, $order_id, $status));
+            if ($action == 'DoCapture') {
+                $total = $wpdb->get_var($wpdb->prepare("
+                            SELECT SUM( postmeta.meta_value )
+                            FROM $wpdb->postmeta AS postmeta
+                            JOIN $wpdb->postmeta pm2 ON pm2.post_id = postmeta.post_id
+                            INNER JOIN $wpdb->posts AS posts ON ( posts.post_type = 'paypal_transaction' AND posts.post_status LIKE '%s' AND post_parent = %d )
+                            WHERE postmeta.meta_key = 'AMT' AND pm2.meta_key = 'PAYMENTSTATUS' AND (pm2.meta_value LIKE '%s' OR pm2.meta_value LIKE 'Pending')
+                            AND postmeta.post_id = posts.ID LIMIT 0, 99
+                    ", $action, $order_id, $status));
+            } else {
+                $total = $wpdb->get_var($wpdb->prepare("
+                            SELECT SUM( postmeta.meta_value )
+                            FROM $wpdb->postmeta AS postmeta
+                            JOIN $wpdb->postmeta pm2 ON pm2.post_id = postmeta.post_id
+                            INNER JOIN $wpdb->posts AS posts ON ( posts.post_type = 'paypal_transaction' AND posts.post_status LIKE '%s' AND post_parent = %d )
+                            WHERE postmeta.meta_key = 'AMT' AND pm2.meta_key = 'PAYMENTSTATUS' AND pm2.meta_value LIKE '%s'
+                            AND postmeta.post_id = posts.ID LIMIT 0, 99
+                    ", $action, $order_id, $status));
+            }
         }
         if ($total == NULL) {
             $total = 0;
