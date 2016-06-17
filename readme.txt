@@ -22,7 +22,7 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
  * PayPal Plus (Germany)
  * PayPal Payments Advanced
  * PayPal REST Credit Card Payments
- * PayPal / Braintree Credit Card Payments
+ * PayPal Braintree Credit Card Payments
  
 [youtube https://www.youtube.com/watch?v=svq9ovWGp7I]
 
@@ -106,7 +106,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.2.0 - 05.10.2016 =
+= 1.2.0 - 06.17.2016 =
 * Feature - Adds PayPal Payments Advanced. ([#11](https://github.com/angelleye/paypal-woocommerce/issues/11))
 * Feature - Adds the ability to capture Orders / Authorizations from within the WooCommerce order screen. ([#36](https://github.com/angelleye/paypal-woocommerce/issues/36))
 * Feature - Adds an option to specify an Instant Payment Notification (IPN) URL for transactions ([#47](https://github.com/angelleye/paypal-woocommerce/issues/47))
@@ -118,6 +118,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds order number to PayPal Plus. ([#400](https://github.com/angelleye/paypal-woocommerce/issues/400))
 * Feature - Adds an option to automatically cancel / refund orders that are not covered by PayPal Seller Protection. ([#429](https://github.com/angelleye/paypal-woocommerce/pull/429))
 * Feature - Adds a hook to include custom data in the CUSTOM parameter of PayPal payments. ([#431](https://github.com/angelleye/paypal-woocommerce/issues/431))
+* Feature - Adds the ability to force TLS 1.2 for HTTP requests if your server is not doing this by default. ([#463](https://github.com/angelleye/paypal-woocommerce/issues/463))
+* Feature - Adds functionality for PayPal Orders, Authorization, and Capture. ([#462](https://github.com/angelleye/paypal-woocommerce/issues/462))
 * Tweak - Adjusts the way pending payments are handled in relation to digital goods orders. ([#440](https://github.com/angelleye/paypal-woocommerce/issues/440))
 * Tweak - Enables Fraud Management Filters information to be included in API response logs. ([#432](https://github.com/angelleye/paypal-woocommerce/issues/432))
 * Tweak - Woo Checkout Add-Ons compatibility. ([#430](https://github.com/angelleye/paypal-woocommerce/issues/430))
@@ -134,11 +136,16 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - WordPress 4.5 compatibility. ([#444](https://github.com/angelleye/paypal-woocommerce/issues/444))
 * Tweak - Adjusts the path displayed for log files. ([#458](https://github.com/angelleye/paypal-woocommerce/issues/458))
 * Tweak - Adjusts text domain and domain path. ([#459](https://github.com/angelleye/paypal-woocommerce/issues/459))
+* Tweak - Adjustments to avoid errors when using PSR 4 loading standards. ([#468](https://github.com/angelleye/paypal-woocommerce/issues/468))
+* Fix - WooCommerce 2.6 Compatibility ([#476](https://github.com/angelleye/paypal-woocommerce/issues/476))
 * Fix - Resolves issues with 3DSecure in Website Payments Pro 3.0 ([#149](https://github.com/angelleye/paypal-woocommerce/issues/149))
 * Fix - Resolves a conflict with the Express Checkout button and the "Quick Buy" plugin. ([#415](https://github.com/angelleye/paypal-woocommerce/issues/415))
 * Fix - Resolves a problem with ajax loader. ([#417](https://github.com/angelleye/paypal-woocommerce/issues/417))
 * Fix - Resolves an issue with $0 orders in PayPal Plus. ([#442](https://github.com/angelleye/paypal-woocommerce/issues/442))
 * Fix - Resolves an issue with PayFlow Pro resulting in duplicate API requests. ([#454](https://github.com/angelleye/paypal-woocommerce/issues/454))
+* Fix - Resolves an issue with a PHP undefined method. ([#472](https://github.com/angelleye/paypal-woocommerce/issues/472))
+* Fix - Resolves a problem with some invoice numbers being passed to PayPal incorrectly. ([#467](https://github.com/angelleye/paypal-woocommerce/issues/467))
+* Fix - Resolves a problem with PHP class declaration. ([#461](https://github.com/angelleye/paypal-woocommerce/issues/461))
 
 = 1.1.9.2 - 02.07.2016 =
 * Fix - Resolves a problem with backorder handling when users are checking out near the same time. ([#403](https://github.com/angelleye/paypal-woocommerce/issues/403))
