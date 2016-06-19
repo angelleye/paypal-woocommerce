@@ -368,11 +368,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
                 echo '</p>';
             }
         }
-        $cc_form = new WC_Payment_Gateway_CC;
-        $cc_form->id       = $this->id;
-        $cc_form->supports = $this->supports;
-        $cc_form->form();
-        do_action('after_angelleye_pc_payment_fields', $this);
+        if(class_exists('WC_Payment_Gateway_CC')) {
+            $cc_form = new WC_Payment_Gateway_CC;
+            $cc_form->id       = $this->id;
+            $cc_form->supports = $this->supports;
+            $cc_form->form();
+            do_action('after_angelleye_pc_payment_fields', $this);
+        } else {
+            $fields = $this->angelleye_paypal_pro_credit_card_form_fields($default_fields = null, $this->id);
+            $this->credit_card_form(array(), $fields);
+        }
+        
     }
 
 

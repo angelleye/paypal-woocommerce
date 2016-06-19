@@ -592,11 +592,16 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					echo '</p>';
 				}
             }
-            $cc_form = new WC_Payment_Gateway_CC;
-            $cc_form->id       = $this->id;
-            $cc_form->supports = $this->supports;
-            $cc_form->form();
-            do_action( 'angelleye_after_fc_payment_fields', $this );
+            if(class_exists('WC_Payment_Gateway_CC')) {
+                $cc_form = new WC_Payment_Gateway_CC;
+                $cc_form->id       = $this->id;
+                $cc_form->supports = $this->supports;
+                $cc_form->form();
+                do_action( 'angelleye_after_fc_payment_fields', $this );
+            } else {
+                $fields = $this->angelleye_paypal_pro_payflow_credit_card_form_fields($default_fields = null, $this->id);
+                $this->credit_card_form(array(), $fields);
+            }
 	}
         
         public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {

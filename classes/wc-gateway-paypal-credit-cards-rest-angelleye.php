@@ -117,10 +117,14 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
         if ($this->description) {
             echo wpautop(wptexturize($this->description));
         }
-        $cc_form = new WC_Payment_Gateway_CC;
-        $cc_form->id       = $this->id;
-        $cc_form->supports = $this->supports;
-        $cc_form->form();
+        if(class_exists('WC_Payment_Gateway_CC')) {
+            $cc_form = new WC_Payment_Gateway_CC;
+            $cc_form->id       = $this->id;
+            $cc_form->supports = $this->supports;
+            $cc_form->form();
+        } else {
+            $this->credit_card_form();
+        }
     }
 
     /**
