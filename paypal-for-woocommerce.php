@@ -285,10 +285,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             require_once('classes/wc-gateway-braintree-angelleye.php');
             require_once('classes/wc-gateway-paypal-express-angelleye.php');
             require_once('classes/wc-gateway-paypal-advanced-angelleye.php');
-            require_once('classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
+            
 
             if (version_compare(phpversion(), '5.3.0', '>=')) {
                 require_once('classes/wc-gateway-paypal-plus-angelleye.php');
+                require_once('classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
             }
         }
 
