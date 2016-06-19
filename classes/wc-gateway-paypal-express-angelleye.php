@@ -1074,6 +1074,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log('Start Pay Action');
                 if (!defined('WOOCOMMERCE_CHECKOUT'))
                     define('WOOCOMMERCE_CHECKOUT', true);
+                WC()->cart->calculate_totals();
                 $this->angelleye_check_cart_items();
                 if (sizeof(WC()->cart->get_cart()) == 0 || empty(WC()->session->TOKEN)) {
                     $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
@@ -1151,7 +1152,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 update_post_meta($order_id, 'paypal_email', $this->get_session('payeremail'));
                 do_action( 'angelleye_wc_eu_vat_number', $order_id, $call_third_party = true );
                 do_action( 'woocommerce_checkout_update_order_meta', $order_id, $checkout_form_data );
-
                 if ((isset($this->billing_address) && $this->billing_address =='yes' ) || (empty($checkout_form_data['billing_country']))) {
                     $checkout_form_data = array();
                 }
