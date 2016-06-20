@@ -112,6 +112,7 @@ jQuery(function($) {
                 //$( '#order_review' ).html( $.trim( response.html ) );
                 $( '#order_review' ).find( 'input[name=payment_method]:checked' ).trigger( 'click' );
                 $( 'body' ).trigger( 'updated_checkout' );
+                $('#order_methods, #paypalexpress_order_review').unblock();
             }
 
 		});
