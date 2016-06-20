@@ -42,7 +42,7 @@ jQuery(function($) {
 			var s_address_2	= address_2;
 		}
 
-		$('#order_methods, #order_review').block({message: null,overlayCSS: {background: '#fff',opacity: 0.6}});
+		$('#order_methods, #paypalexpress_order_review').block({message: null,overlayCSS: {background: '#fff',opacity: 0.6}});
 
 		var data = {
 			action: 			'woocommerce_update_order_review',
