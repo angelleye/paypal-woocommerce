@@ -858,6 +858,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 else {
                     $this->add_log("...ERROR: GetShippingDetails returned empty result");
                 }
+                WC()->cart->calculate_totals();
                 if(($this->skip_final_review == 'yes' && ((get_option('woocommerce_enable_guest_checkout') === "yes" || apply_filters('woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')) == "yes" ) || is_user_logged_in())) || is_user_logged_in() && isset(WC()->session->checkout_form) ) {
                     //check terms enable
                     $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
