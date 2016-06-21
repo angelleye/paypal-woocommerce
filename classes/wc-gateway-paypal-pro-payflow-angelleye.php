@@ -274,7 +274,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                
                 $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
                 
-                if($card_type == 'amex' && (get_woocommerce_currency() != 'USD' || get_woocommerce_currency() != 'AUD')) {
+                if($card_type == 'amex' && (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD')) {
                     throw new Exception( __( 'Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce' ) );
                 }
 
