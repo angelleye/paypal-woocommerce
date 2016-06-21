@@ -979,11 +979,7 @@ class AngellEYE_Utility {
             if ($order->order_total <= $this->total_Completed_DoAuthorization && $this->total_Pending_DoAuthorization == 0) {
                 $_first_transaction_id = get_post_meta($order->id, '_first_transaction_id', true);
                 $this->angelleye_get_transactionDetails($_first_transaction_id);
-                $update_post_data  = array(
-			'ID'          => $order->id,
-			'post_status' => 'wc-pending',
-		);
-		wp_update_post( $update_post_data );
+                do_action( 'woocommerce_order_status_pending_to_processing', $order->id );
                 $order->payment_complete($_first_transaction_id);
                 do_action('woocommerce_checkout_order_processed', $order->id);
             }
@@ -998,11 +994,7 @@ class AngellEYE_Utility {
             if ($order->order_total == $this->total_Completed_DoAuthorization && $this->total_Pending_DoAuthorization == 0) {
                 $_first_transaction_id = get_post_meta($order->id, '_first_transaction_id', true);
                 $this->angelleye_get_transactionDetails($_first_transaction_id);
-		$update_post_data  = array(
-			'ID'          => $order->id,
-			'post_status' => 'wc-pending',
-		);
-		wp_update_post( $update_post_data );
+		do_action( 'woocommerce_order_status_pending_to_processing', $order->id );
                 $order->payment_complete($_first_transaction_id);
                 do_action('woocommerce_checkout_order_processed', $order->id);
             }
