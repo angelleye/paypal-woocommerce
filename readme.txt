@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment
 Requires at least: 3.8
 Tested up to: 4.5.2
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -105,6 +105,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 1.2.2 - 06.21.2016 =
+* Fix - Resolves incompatibility with Express Checkout and new shipping features in WooCommerce 2.6. ([#483](https://github.com/angelleye/paypal-woocommerce/issues/483))
+* Fix - Resolves an issue with American Express orders getting denied with USD currency code. ([#485](https://github.com/angelleye/paypal-woocommerce/issues/485))
+* Fix - Resolves a problem with the auto cancel / refund feature based on seller protection. ([#486](https://github.com/angelleye/paypal-woocommerce/issues/486))
 
 = 1.2.1 - 06.19.2016 =
 * Fix - Backwards compatibility with WooCommerce 2.5 / 2.6. ([#480](https://github.com/angelleye/paypal-woocommerce/issues/480))
