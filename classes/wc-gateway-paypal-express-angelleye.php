@@ -59,10 +59,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->use_wp_locale_code = isset($this->settings['use_wp_locale_code']) ? $this->settings['use_wp_locale_code'] : '';
         $this->angelleye_skip_text = isset($this->settings['angelleye_skip_text']) ? $this->settings['angelleye_skip_text'] : '';
         $this->skip_final_review = isset($this->settings['skip_final_review']) ? $this->settings['skip_final_review'] : '';
-        $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
+        $this->payment_action = $this->get_option('payment_action', 'Sale');
         $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
         $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
-        $this->order_cancellations = isset($this->settings['order_cancellations']) ? $this->settings['order_cancellations'] : 'no_unauthorized_payment_protection';
+        $this->order_cancellations = $this->get_option('order_cancellations', 'disabled');
+        $this->email_notify_order_cancellations = isset($this->settings['email_notify_order_cancellations']) && $this->settings['email_notify_order_cancellations'] == 'yes' ? true : false;
         $this->customer_id = get_current_user_id();
         $this->enable_notifyurl = isset($this->settings['enable_notifyurl']) && $this->settings['enable_notifyurl'] == 'no' ? false : true;
         $this->notifyurl = '';
@@ -529,6 +530,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => '',
                 'description' => __('Allows you to cancel and refund orders that do not meet PayPal\'s Seller Protection criteria.', 'paypal-for-woocommerce'),
                 'type' => 'select',
+                'class' => 'order_cancellations',
                 'options' => array(
                     'no_seller_protection' => __('Do *not* have PayPal Seller Protection', 'paypal-for-woocommerce'),
                     'no_unauthorized_payment_protection' => __('Do *not* have PayPal Unauthorized Payment Protection', 'paypal-for-woocommerce'),
@@ -536,6 +538,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 ),
                 'default' => 'disabled'
              ),
+            
+            'email_notify_order_cancellations' => array(
+                'title' => __('Order canceled/refunded Email Notifications', 'paypal-for-woocommerce'),
+                'label' => __('Enable buyer email notifications for Order canceled/refunded', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('This will send buyer email notifications for Order canceled/refunded when Auto Cancel / Refund Orders option is selected.', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => 'email_notify_order_cancellations'
+            ),
             
                 /* 'Locale' => array(
                   'title' => __( 'Locale', 'paypal-for-woocommerce' ),
@@ -1134,16 +1145,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 update_post_meta($order_id, '_payment_method_title', $this->title);
                
                 $checkout_form_data = maybe_unserialize($this->get_session('checkout_form'));
-
+                $user_email_address = '';
                 if (is_user_logged_in()) {
                     $userLogined = wp_get_current_user();
+                    $user_email_address = $userLogined->user_email;
                     update_post_meta($order_id, '_billing_email', $userLogined->user_email);
                     update_post_meta($order_id, '_customer_user', $userLogined->ID);
                 } else {
                     if (isset($checkout_form_data['billing_email'])) {
+                        $user_email_address = $checkout_form_data['billing_email'];
                         update_post_meta($order_id, '_billing_email', $checkout_form_data['billing_email']);
                     }
                     else{
+                        $user_email_address = $this->get_session('payeremail');
                         update_post_meta($order_id, '_billing_email', $this->get_session('payeremail'));
                     }
                 }
@@ -1239,8 +1253,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $this->add_log('Order '.$order_id.' ('.$result['PAYMENTINFO_0_TRANSACTIONID'].') did not meet our Seller Protection requirements. Cancelling and refunding order.');
                         $order->add_order_note(__('Transaction did not meet our Seller Protection requirements. Cancelling and refunding order.', 'paypal-for-woocommerce'));
                         $admin_email = get_option("admin_email");
+                        if($this->email_notify_order_cancellations == true) {
+                            if( isset($user_email_address) && !empty($user_email_address)) {
+                                wp_mail($user_email_address, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce').$order_id);
+                            }
+                        }
                         wp_mail($admin_email, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce').$order_id);
                         // Payment was succesfull, add transaction ID to our order so we can refund it
+                        
                         update_post_meta($order_id, '_transaction_id', $result['PAYMENTINFO_0_TRANSACTIONID']);
                         // Also add the express token
                         update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));

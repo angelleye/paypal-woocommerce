@@ -236,6 +236,15 @@ jQuery(document).ready(function ($) {
                     }
                 }).change();
                 
+                jQuery('.order_cancellations').change(function () {
+                    var email_notify_order_cancellations = jQuery('.email_notify_order_cancellations').closest('tr');
+                    if (jQuery(this).val() !== 'disabled') {
+                        email_notify_order_cancellations.show();
+                    } else {
+                        email_notify_order_cancellations.hide();
+                    }
+                }).change();
+                
                 jQuery('#angelleye_payment_action').change(function(){
                     if(jQuery(this).val() == 'DoCapture') {
                         jQuery("#angelleye_paypal_capture_transaction_dropdown").show();
