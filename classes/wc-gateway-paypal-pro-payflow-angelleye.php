@@ -486,16 +486,22 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 }
 				else
 				{
-                    $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s)','paypal-for-woocommerce'),$PayPalResult['PNREF']));
-                    /* Checkout Note */
-                    if (isset($_POST) && !empty($_POST['order_comments'])) {
-                        // Update post 37
-                        $checkout_note = array(
-                            'ID' => $order->id,
-                            'post_excerpt' => $_POST['order_comments'],
-                        );
-                        wp_update_post($checkout_note);
-                    }
+                                
+                                if( isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF']) ) {
+                                    add_post_meta($order->id, 'PPREF', $PayPalResult['PPREF']);
+                                    $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s) (PPREF: %s)','paypal-for-woocommerce'),$PayPalResult['PNREF'], $PayPalResult['PPREF']));
+                                } else {
+                                    $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s)','paypal-for-woocommerce'),$PayPalResult['PNREF']));
+                                }
+                                /* Checkout Note */
+                                if (isset($_POST) && !empty($_POST['order_comments'])) {
+                                    // Update post 37
+                                    $checkout_note = array(
+                                        'ID' => $order->id,
+                                        'post_excerpt' => $_POST['order_comments'],
+                                    );
+                                    wp_update_post($checkout_note);
+                                }
                 }
 				
 				/**
