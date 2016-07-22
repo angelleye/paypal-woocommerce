@@ -89,10 +89,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
         $this->debug = isset($this->settings['debug']) && $this->settings['debug'] == 'yes' ? true : false;
         $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
         $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
-        $this->enable_notifyurl = isset($this->settings['enable_notifyurl']) && $this->settings['enable_notifyurl'] == 'no' ? false : true;
+         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->notifyurl = '';
-        if ($this->enable_notifyurl) {
-            $this->notifyurl = isset($this->settings['notifyurl']) ? str_replace('&amp;', '&', $this->settings['notifyurl']) : '';
+        if($this->enable_notifyurl == 'yes') {
+            $this->notifyurl = $this->get_option('notifyurl'); 
+            if( isset($this->notifyurl) && !empty($this->notifyurl)) {
+                $this->notifyurl =  str_replace('&amp;', '&', $this->notifyurl);
+            }
         }
         $this->enable_cardholder_first_last_name = isset($this->settings['enable_cardholder_first_last_name']) && $this->settings['enable_cardholder_first_last_name'] == 'yes' ? true : false;
         // 3DS
@@ -844,9 +847,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             'desc' => '',                            // Description of the order the customer is purchasing.  127 char max.
             'custom' => apply_filters( 'ae_ppddp_custom_parameter', $customer_note , $order ),                        // Free-form field for your own use.  256 char max.
             'invnum' => $invoice_number = $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", $order->id), // Your own invoice or tracking number
-            'notifyurl' => $this->notifyurl,                        // URL for receiving Instant Payment Notifications.  This overrides what your profile is set to use.
             'recurring' => ''                        // Flag to indicate a recurring transaction.  Value should be Y for recurring, or anything other than Y if it's not recurring.  To pass Y here, you must have an established billing agreement with the buyer.
         );
+        
+        if( isset($this->notifyurl) && !empty($this->notifyurl) ) {
+            $PaymentDetails['notifyurl'] = $this->notifyurl;
+        }
 
         $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
         $OrderItems = array();
