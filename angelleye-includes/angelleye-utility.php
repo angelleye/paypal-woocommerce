@@ -982,6 +982,7 @@ class AngellEYE_Utility {
                 do_action( 'woocommerce_order_status_pending_to_processing', $order->id );
                 $order->payment_complete($_first_transaction_id);
                 do_action('woocommerce_checkout_order_processed', $order->id);
+                $order->reduce_order_stock();
             }
         }
 
@@ -997,6 +998,7 @@ class AngellEYE_Utility {
 		do_action( 'woocommerce_order_status_pending_to_processing', $order->id );
                 $order->payment_complete($_first_transaction_id);
                 do_action('woocommerce_checkout_order_processed', $order->id);
+                $order->reduce_order_stock();
             }
         }
     }
