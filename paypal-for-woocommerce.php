@@ -75,6 +75,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 exit( __('PayPal for WooCommerce requires WooCommerce version 2.1 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce'));
             }
 
+            require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
+            $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
             add_action( 'plugins_loaded', array($this, 'init'));
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
@@ -108,8 +110,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_checkout_process', array( $this, 'angelleye_paypal_express_checkout_process_checkout_fields' ) );
             add_filter('body_class', array($this, 'add_body_classes'));
             add_action('http_api_curl', array($this, 'http_api_curl_ex_add_curl_parameter'), 10, 3);
-            require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
-            $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
+            
         }
 
         /*
@@ -269,6 +270,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             load_plugin_textdomain( 'paypal-for-woocommerce', FALSE, basename( dirname( __FILE__ ) ) . '/i18n/languages/' );
             add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
             //remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_paypal_express_checkout_button', 12 );
+            
+            
             if(AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
                 if( isset($pp_settings['button_position']) && ($pp_settings['button_position'] == 'bottom' || $pp_settings['button_position'] == 'both')){
                     add_action( 'woocommerce_proceed_to_checkout', array( 'WC_Gateway_PayPal_Express_AngellEYE', 'woocommerce_paypal_express_checkout_button_angelleye'), 22 );
@@ -497,6 +500,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         function buy_now_button() {
             global $pp_settings, $post, $product;
+            if(!AngellEYE_Utility::is_valid_for_use()) {
+                return false;
+            }
             if(!AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
                 return false;
             }
@@ -576,6 +582,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         function mini_cart_button(){
             global $pp_settings, $pp_pro, $pp_payflow;
+            if(!AngellEYE_Utility::is_valid_for_use()) {
+                return false;
+            }
             if(!AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
                 return false;
             }
