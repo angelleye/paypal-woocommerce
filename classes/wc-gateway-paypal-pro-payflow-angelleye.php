@@ -65,6 +65,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		);
 
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
+        $this->enable_cardholder_first_last_name = isset($this->settings['enable_cardholder_first_last_name']) && $this->settings['enable_cardholder_first_last_name'] == 'yes' ? true : false;
 
 		/* 1.6.6 */
 		add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
@@ -73,6 +74,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
                 
                 add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_payflow_credit_card_form_fields'), 10, 2);
+                
+                if ($this->enable_cardholder_first_last_name) {
+                    add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
+                }
 	}
     
     
@@ -223,6 +228,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 ),
                 'default' => 'Sale'
             ),
+            'enable_cardholder_first_last_name' => array(
+                'title' => __('Enable Cardholder Name', 'paypal-for-woocommerce'),
+                'label' => __('Adds fields for "card holder name" to checkout in addition to the "billing name" fields.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Display card holder first and last name in credit card form.', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
 		);
         $this->form_fields = apply_filters( 'angelleye_fc_form_fields', $this->form_fields );
     }
@@ -362,6 +374,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         
                         $customer_note = $order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '';
                         
+                        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro_payflow-card-cardholder-first']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']) : $order->billing_first_name;
+                        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro_payflow-card-cardholder-last']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']) : $order->billing_last_name;
+                        
 			$PayPalRequestData = array(
 					'tender'=>'C', 				// Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
 					'trxtype'=> $this->payment_action == 'Authorization' ? 'A' : 'S', 				// Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
@@ -382,9 +397,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'orderdesc'=>'Order ' . $order->get_order_number() . ' on ' . get_bloginfo( 'name' ), //
 					'billtoemail'=>$order->billing_email, 			// Account holder's email address.
 					'billtophonenum'=>'', 		// Account holder's phone number.
-					'billtofirstname'=>$order->billing_first_name, 		// Account holder's first name.
+					'billtofirstname'=> $firstname, 		// Account holder's first name.
 					'billtomiddlename'=>'', 	// Account holder's middle name.
-					'billtolastname'=>$order->billing_last_name, 		// Account holder's last name.
+					'billtolastname'=> $lastname, 		// Account holder's last name.
 					'billtostreet'=>$order->billing_address_1.' '.$order->billing_address_2, 		// The cardholder's street address (number and street name).  150 char max
 					'billtocity'=>$order->billing_city, 			// Bill to city.  45 char max
 					'billtostate'=>$order->billing_state, 			// Bill to state.  
@@ -804,6 +819,24 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
               return $fields;
         } else {
             return $default_fields;
+        }
+    }
+    
+    public function angelleye_woocommerce_credit_card_form_start($current_id)
+    {
+        if ($this->enable_cardholder_first_last_name && $current_id == $this->id) {
+            $fields['card-cardholder-first'] = '<p class="form-row form-row-first">
+                    <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Cardholder first name', 'paypal-for-woocommerce') . '</label>
+                    <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-first' . '" />
+            </p>';
+            $fields['card-cardholder-last'] = '<p class="form-row form-row-last">
+                    <label for="' . esc_attr($this->id) . '-card-startdate">' . __('Cardholder last name', 'paypal-for-woocommerce') . '</label>
+                    <input id="' . esc_attr($this->id) . '-card-startdate" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __('Last name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-last' . '" />
+            </p>';
+
+            foreach ($fields as $field) {
+                echo $field;
+            }
         }
     }
 }
