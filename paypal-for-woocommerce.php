@@ -800,7 +800,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $Item = array(
                         'name' => $item['name'], // Item name. 127 char max.
                         'desc' => '', // Item description. 127 char max.
-                        'amt' => self::round( $item['line_subtotal'] / $qty), // Cost of item.
+                        'amt' => self::number_format(self::round( $item['line_subtotal'] / $qty)), // Cost of item.
                         'number' => $sku, // Item number.  127 char max.
                         'qty' => $qty, // Item qty on order.  Any positive integer.
                     );
