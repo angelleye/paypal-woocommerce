@@ -52,8 +52,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             <?php $this->generate_settings_html(); ?>
             <script type="text/javascript">
                 jQuery('#woocommerce_braintree_sandbox').change(function () {
-                    var sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id, #woocommerce_braintree_sandbox_merchant_account_id').closest('tr'),
-                    var production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id, #woocommerce_braintree_merchant_account_id').closest('tr');
+                    sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id, #woocommerce_braintree_sandbox_merchant_account_id').closest('tr'),
+                    production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id, #woocommerce_braintree_merchant_account_id').closest('tr');
                     if (jQuery(this).is(':checked')) {
                         sandbox.show();
                         production.hide();
