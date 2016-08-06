@@ -2560,9 +2560,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ( $is_sandbox  == true ) {
             $this->view_transaction_url = $sandbox_transaction_url;
         } else {
-            if( $is_sandbox == false ) {
-                $this->view_transaction_url = $live_transaction_url;
-            } elseif ( empty( $is_sandbox ) ) {
+            if ( empty( $is_sandbox ) ) {
                 if (  $this->testmode == 'yes' ) {
                     $this->view_transaction_url = $sandbox_transaction_url;
                 } else {
