@@ -1661,15 +1661,24 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $Payment['shiptocountrycode'] = @$posted['billing_country'];
                 $Payment['shiptophonenum'] = @$posted['billing_phone'];
             }
-        } elseif (is_user_logged_in() && WC()->cart->needs_shipping()) {
-            $Payment['shiptostreet'] = WC()->customer->get_shipping_address();
-            $Payment['shiptostreet2'] = WC()->customer->get_shipping_address_2();
-            $Payment['shiptocity'] = WC()->customer->get_shipping_city();
-            $Payment['shiptostate'] = WC()->customer->get_shipping_state();
-            $Payment['shiptozip'] = WC()->customer->get_shipping_postcode();
-            $Payment['shiptocountrycode'] = WC()->customer->get_shipping_country();
+        } elseif (is_user_logged_in()) {
+            $user_mata = get_user_meta( $this->customer_id );
+            $user_mata_data = array_filter( array_map( function( $a ) {
+                                    return $a[0];
+                    }, $user_mata ) );
+            $first_name = ( isset($user_mata_data['billing_first_name']) && !empty($user_mata_data['billing_first_name']) ) ? $user_mata_data['billing_first_name'] : ( isset($user_mata_data['shipping_first_name']) && !empty($user_mata_data['shipping_first_name']) ) ? $user_mata_data['shipping_first_name'] : get_user_meta($this->customer_id, 'display_name', true);
+            $last_name = ( isset($user_mata_data['billing_last_name']) && !empty($user_mata_data['billing_last_name']) ) ? $user_mata_data['billing_last_name'] : ( isset($user_mata_data['shipping_last_name']) && !empty($user_mata_data['shipping_last_name']) ) ? $user_mata_data['shipping_last_name'] : '';
+            $Payment['shiptoname'] = $first_name . ' ' . $last_name;
+            $Payment['shiptostreet'] = ( isset($user_mata_data['billing_address_1']) && !empty($user_mata_data['billing_address_1']) ) ? $user_mata_data['billing_address_1'] : ( isset($user_mata_data['shipping_address_1']) && !empty($user_mata_data['shipping_address_1']) ) ? $user_mata_data['shipping_address_1'] : '';
+            $Payment['shiptostreet2'] = ( isset($user_mata_data['billing_address_2']) && !empty($user_mata_data['billing_address_2']) ) ? $user_mata_data['billing_address_2'] : ( isset($user_mata_data['shipping_address_2']) && !empty($user_mata_data['shipping_address_2']) ) ? $user_mata_data['shipping_address_2'] : '';
+            $Payment['shiptocity'] = ( isset($user_mata_data['billing_city']) && !empty($user_mata_data['billing_city']) ) ? $user_mata_data['billing_city'] : ( isset($user_mata_data['shipping_city']) && !empty($user_mata_data['shipping_city']) ) ? $user_mata_data['shipping_city'] : '';
+            $Payment['shiptocountrycode'] = ( isset($user_mata_data['billing_country']) && !empty($user_mata_data['billing_country']) ) ? $user_mata_data['billing_country'] : ( isset($user_mata_data['shipping_country']) && !empty($user_mata_data['shipping_country']) ) ? $user_mata_data['shipping_country'] : '';
+            $Payment['shiptostate'] = ( isset($user_mata_data['billing_state']) && !empty($user_mata_data['billing_state']) ) ? $user_mata_data['billing_state'] : ( isset($user_mata_data['shipping_state']) && !empty($user_mata_data['shipping_state']) ) ? $user_mata_data['shipping_state'] : '';
+            $Payment['shiptozip'] = ( isset($user_mata_data['billing_postcode']) && !empty($user_mata_data['billing_postcode']) ) ? $user_mata_data['billing_postcode'] : ( isset($user_mata_data['shipping_postcode']) && !empty($user_mata_data['shipping_postcode']) ) ? $user_mata_data['shipping_postcode'] : '';
+            $user_email = get_user_meta($this->customer_id, 'user_email', true);
+            $Payment['email'] = ( isset($user_mata_data['billing_email']) && !empty($user_mata_data['billing_email']) ) ? $user_mata_data['billing_email'] : ( isset($user_email) && !empty($user_email) ) ? $user_email : '';
+            $Payment['shiptophonenum'] = ( isset($user_mata_data['billing_phone']) && !empty($user_mata_data['billing_phone']) ) ? $user_mata_data['billing_phone'] : '';
         }
-
         $SECFields = AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_needs_shipping($SECFields);
         
         $PaymentData = AngellEYE_Gateway_Paypal::calculate(null, true);
