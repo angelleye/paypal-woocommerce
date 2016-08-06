@@ -212,5 +212,27 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
             }
         }
     }
+    
+    public function get_transaction_url( $order ) {
+        $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
+        $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
+        $is_sandbox = get_post_meta($order->id, 'is_sandbox', true);
+        if ( $is_sandbox  == true ) {
+            $this->view_transaction_url = $sandbox_transaction_url;
+        } else {
+            if( $is_sandbox == false ) {
+                $this->view_transaction_url = $live_transaction_url;
+            } elseif ( empty( $is_sandbox ) ) {
+                if (  $this->mode == 'SANDBOX' ) {
+                    $this->view_transaction_url = $sandbox_transaction_url;
+                } else {
+                    $this->view_transaction_url = $live_transaction_url;
+                }
+            } else {
+                $this->view_transaction_url = $live_transaction_url;
+            }
+        }
+        return parent::get_transaction_url( $order );
+    }
 
 }

@@ -68,6 +68,8 @@ class PayPal_Rest_API_Utility {
                 $saleId = $sale->getId();
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
                 $order->payment_complete($saleId);
+                $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
+                update_post_meta($order->id, 'is_sandbox', $is_sandbox);
                 WC()->cart->empty_cart();
                 $return_url = $order->get_checkout_order_received_url();
                 if (is_ajax()) {
