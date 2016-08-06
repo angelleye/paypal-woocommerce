@@ -1178,5 +1178,8 @@ class AngellEYE_Utility {
             return false;
         }
     }
+    public static function is_valid_for_use() {
+	return in_array( get_woocommerce_currency(), apply_filters( 'paypal_for_woocommerce_supported_currencies', array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP' ) ) );
+    }
 
 }
