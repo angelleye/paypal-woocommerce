@@ -65,10 +65,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->order_cancellations = $this->get_option('order_cancellations', 'disabled');
         $this->email_notify_order_cancellations = isset($this->settings['email_notify_order_cancellations']) && $this->settings['email_notify_order_cancellations'] == 'yes' ? true : false;
         $this->customer_id = get_current_user_id();
-        $this->enable_notifyurl = isset($this->settings['enable_notifyurl']) && $this->settings['enable_notifyurl'] == 'no' ? false : true;
+        $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->notifyurl = '';
-        if($this->enable_notifyurl) {
-            $this->notifyurl = isset($this->settings['notifyurl']) ? str_replace('&amp;', '&', $this->settings['notifyurl']) : '';
+        if($this->enable_notifyurl == 'yes') {
+            $this->notifyurl = $this->get_option('notifyurl'); 
+            if( isset($this->notifyurl) && !empty($this->notifyurl)) {
+                $this->notifyurl =  str_replace('&amp;', '&', $this->notifyurl);
+            }
         }
 
         if ($this->not_us){
@@ -1945,7 +1948,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => '', // Free-form field for your own use.  256 char max.
             'invnum' => $this->invoice_id_prefix . $invoice_number, // Your own invoice or tracking number.  127 char max.
-            'notifyurl' => $this->notifyurl, // URL for receiving Instant Payment Notifications
             'notetext' => $this->get_session('customer_notes'), // Note to the merchant.  255 char max.
             'allowedpaymentmethod' => '', // The payment method type.  Specify the value InstantPaymentOnly.
             'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain the payment.  When implementing parallel payments, this field is required and must be set to Order.
@@ -1956,7 +1958,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'sellerregistrationdate' => '', // Date when the seller registered at the marketplace site.
             'softdescriptor' => ''     // A per transaction description of the payment that is passed to the buyer's credit card statement.
         );
-
+        
+        if( isset($this->notifyurl) && !empty($this->notifyurl)) {
+           $Payment['notifyurl'] = $this->notifyurl;
+        }
 
         $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
         $PaymentOrderItems = array();
