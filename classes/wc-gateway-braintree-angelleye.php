@@ -31,6 +31,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         $this->private_key = $this->sandbox == 'no' ? $this->get_option('private_key') : $this->get_option('sandbox_private_key');
         $this->public_key = $this->sandbox == 'no' ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
         $this->enable_braintree_drop_in = $this->get_option('enable_braintree_drop_in') === "yes" ? true : false;
+        $this->merchant_account_id = $this->sandbox == 'no' ? $this->get_option('merchant_account_id') : $this->get_option('sandbox_merchant_account_id');
         $this->debug = isset($this->settings['debug']) && $this->settings['debug'] == 'yes' ? true : false;
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         $this->response = '';
@@ -51,8 +52,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             <?php $this->generate_settings_html(); ?>
             <script type="text/javascript">
                 jQuery('#woocommerce_braintree_sandbox').change(function () {
-                    var sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id').closest('tr'),
-                            production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id').closest('tr');
+                    var sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id, #woocommerce_braintree_sandbox_merchant_account_id').closest('tr'),
+                    var production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id, #woocommerce_braintree_merchant_account_id').closest('tr');
                     if (jQuery(this).is(':checked')) {
                         sandbox.show();
                         production.hide();
@@ -171,6 +172,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Place the payment gateway in sandbox mode using sandbox API keys (real payments will not be taken).', 'paypal-for-woocommerce'),
                 'default' => 'yes'
             ),
+            'sandbox_merchant_account_id' => array (
+                 'type' => 'text',
+                 'default' => '',
+                 'title' => __ ( 'Sandbox Merchant Account Id', 'paypal-for-woocommerce' ),
+                 'tool_tip' => true,
+                 'description' => __ ( 'NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,
+                                 and clicking Settings > Processing and scrolling to the bottom of the page.', 'paypal-for-woocommerce' ) 
+             ),
             'sandbox_merchant_id' => array(
                 'title' => __('Sandbox Merchant ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
@@ -192,6 +201,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true
             ),
+             'merchant_account_id' => array (
+                 'type' => 'text',
+                 'default' => '',
+                 'title' => __ ( 'Live Merchant Account Id', 'paypal-for-woocommerce' ),
+                 'tool_tip' => true,
+                 'description' => __ ( 'NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,
+                                 and clicking Settings > Processing and scrolling to the bottom of the page.', 'paypal-for-woocommerce' ) 
+             ),
             'merchant_id' => array(
                 'title' => __('Live Merchant ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
@@ -388,6 +405,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'email' => $order->billing_email,
             );
             $request_data['amount'] = number_format($order->get_total(), 2, '.', '');
+            if( isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
+                 $request_data['merchantAccountId'] = $this->merchant_account_id;
+             }
             $request_data['orderId'] = $order->get_order_number();
             $request_data['options'] = $this->get_braintree_options();
             $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
