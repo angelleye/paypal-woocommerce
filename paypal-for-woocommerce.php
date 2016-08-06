@@ -968,15 +968,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if (trim(self::number_format($order_total)) !== trim(self::number_format($Payment['itemamt'] + $giftwrapamount + $tax + $shipping))) {
                 $diffrence_amount = AngellEYE_Gateway_Paypal::get_diffrent($order_total, $Payment['itemamt'] + $tax + $shipping);
                 if($shipping > 0) {
-                    $Payment['shippingamt'] = self::number_format($shipping + $diffrence_amount);
+                    $Payment['shippingamt'] = abs(self::number_format($shipping + $diffrence_amount));
                 } elseif ($tax > 0) {
-                    $Payment['taxamt'] = self::number_format($tax + $diffrence_amount);
+                    $Payment['taxamt'] = abs(self::number_format($tax + $diffrence_amount));
                 } else {
                     //make change to itemamt
-                    $Payment['itemamt'] = self::number_format($Payment['itemamt'] + $diffrence_amount);
+                    $Payment['itemamt'] = abs(self::number_format($Payment['itemamt'] + $diffrence_amount));
                     //also make change to the first item
                     if ($send_items) {
-                        $Payment['order_items'][0]['amt'] = self::number_format($Payment['order_items'][0]['amt'] + $diffrence_amount / $Payment['order_items'][0]['qty']);
+                        $Payment['order_items'][0]['amt'] = abs(self::number_format($Payment['order_items'][0]['amt'] + $diffrence_amount / $Payment['order_items'][0]['qty']));
                     }
 
                 }
