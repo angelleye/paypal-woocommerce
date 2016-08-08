@@ -1310,9 +1310,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                     if ( ! empty( $result['BILLINGAGREEMENTID'] ) ) {
                         update_post_meta( $order_id, '_billing_agreement_id', $result['BILLINGAGREEMENTID'] );
-                        $billing_agreement_note = __('billing agreement ID: ', 'paypal-for-woocommerce');
-                        $billing_agreement_note .= $result['BILLINGAGREEMENTID'];
-                        $order->add_order_note($billing_agreement_note);
                     }
                     
                     $this->remove_session('TOKEN');
