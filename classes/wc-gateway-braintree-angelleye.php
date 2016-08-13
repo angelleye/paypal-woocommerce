@@ -401,7 +401,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'firstName' => $order->billing_first_name,
                 'lastName' => $order->billing_last_name,
                 'company' => $order->billing_company,
-                'phone' => $this->str_truncate(preg_replace('/[^\d-().]/', '', $order->billing_phone), 14, ''),
+                'phone' => $order->billing_phone,
                 'email' => $order->billing_email,
             );
             $request_data['amount'] = number_format($order->get_total(), 2, '.', '');
@@ -448,23 +448,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             wc_add_notice($ex->getMessage(), 'error');
             wp_redirect($order->get_checkout_payment_url(true));
             exit;
-        }
-    }
-
-    public function str_truncate($string, $length, $omission = '...') {
-        if (self::multibyte_loaded()) {
-            if (mb_strlen($string) <= $length) {
-                return $string;
-            }
-            $length -= mb_strlen($omission);
-            return mb_substr($string, 0, $length) . $omission;
-        } else {
-            $string = self::str_to_ascii($string);
-            if (strlen($string) <= $length) {
-                return $string;
-            }
-            $length -= strlen($omission);
-            return substr($string, 0, $length) . $omission;
         }
     }
 
@@ -735,18 +718,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         if (!is_checkout() || !$this->is_available()) {
             return;
         }
-//        $this->angelleye_braintree_lib();
-//        $this->add_log('Begin Braintree_ClientToken::generate Request');
-//        $clientToken = Braintree_ClientToken::generate();
-//        if (isset($clientToken) && !empty($clientToken)) {
-//            $this->add_log('Braintree_ClientToken::generate Response: ' . '**************************************************************');
-//        }
-//        $suffix = ''; //defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
         wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/v2/braintree.js', array(), WC_VERSION, false);
-//        wp_enqueue_script('wc-braintree-gateway', plugins_url('assets/js/braintree-gateway' . $suffix . '.js', __DIR__), array('jquery', 'braintree-gateway'), WC_VERSION, false);
-//        wp_localize_script('wc-braintree-gateway', 'Braintree_commerce_params', array(
-//            'key' => $clientToken
-//        ));
     }
-
 }
