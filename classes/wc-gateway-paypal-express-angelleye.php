@@ -136,7 +136,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (empty($pp_settings['checkout_with_pp_button_type'])) {
             $pp_settings['checkout_with_pp_button_type'] = 'paypalimage';
         }
-        if( isset( $pp_settings['checkout_with_pp_button_type'] ) && !empty( $pp_settings['checkout_with_pp_button_type'] ) ) {
+        if( !empty( $pp_settings['checkout_with_pp_button_type'] ) && $pp_settings['checkout_with_pp_button_type'] == 'customimage' ) {
             if( isset($pp_settings['pp_button_type_my_custom']) && !empty($pp_settings['pp_button_type_my_custom'])) {
                 $image_path = $pp_settings['pp_button_type_my_custom'];
             }
