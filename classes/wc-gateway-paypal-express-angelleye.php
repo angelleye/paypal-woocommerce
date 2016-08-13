@@ -786,8 +786,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     if (!is_ajax()) {
                         wp_redirect(get_permalink(wc_get_page_id('cart')));
                         exit;
-                    } else
+                    } else {
                         return;
+                    }
                 }
             }
         }

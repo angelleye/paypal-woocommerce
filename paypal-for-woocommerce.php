@@ -1152,7 +1152,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                             wp_mail($admin_email, $gateway . " Error Notification",$message);
                         }
                         $display_error = 'There was a problem connecting to the payment gateway.';
-                        throw new Exception( __( $display_error, 'paypal-for-woocommerce' ) );
+                        wc_add_notice($display_error, 'error');
+                        if (!is_ajax()) {
+                            wp_redirect(get_permalink(wc_get_page_id('cart')));
+                            exit;
+                        } else {
+                            wp_send_json_error( array( 'error' => $display_error ) );
+                        }
                         
                 } catch ( Exception $e ) {
                     if ( ! empty( $e ) ) {
