@@ -1328,7 +1328,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $addressstatus_note .= ucfirst($REVIEW_RESULT['ADDRESSSTATUS']);
                         $order->add_order_note($addressstatus_note);
                     }
-                    
+                    $is_sandbox = $this->testmode == 'yes' ? true : false;
+                    update_post_meta($order->id, 'is_sandbox', $is_sandbox);
                     if($this->payment_action != 'Sale') {
                         AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($result, $order, $this->payment_action);
                         $payment_order_meta = array('_transaction_id' => $result['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->payment_action);
@@ -2554,5 +2555,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 update_user_meta($this->customer_id, 'billing_email', isset($result['EMAIL']) ? $result['EMAIL'] : '');
             }
         }
+    }
+     
+    public function get_transaction_url( $order ) {
+        $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
+        $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
+        $is_sandbox = get_post_meta($order->id, 'is_sandbox', true);
+        if ( $is_sandbox  == true ) {
+            $this->view_transaction_url = $sandbox_transaction_url;
+        } else {
+            if ( empty( $is_sandbox ) ) {
+                if (  $this->testmode == 'yes' ) {
+                    $this->view_transaction_url = $sandbox_transaction_url;
+                } else {
+                    $this->view_transaction_url = $live_transaction_url;
+                }
+            } else {
+                $this->view_transaction_url = $live_transaction_url;
+            }
+        }
+        return parent::get_transaction_url( $order );
     }
 }
