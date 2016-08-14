@@ -247,7 +247,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         try {
         $clientToken = Braintree_ClientToken::generate();
         } catch (Exception $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
             $this->add_log($ex->getMessage());
             wp_redirect($woocommerce->cart->get_cart_url());
             exit;
