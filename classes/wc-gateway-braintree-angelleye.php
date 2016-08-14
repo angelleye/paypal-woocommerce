@@ -241,9 +241,17 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function payment_fields() {
+        global $woocommerce;
         $this->angelleye_braintree_lib();
         $this->add_log('Begin Braintree_ClientToken::generate Request');
+        try {
         $clientToken = Braintree_ClientToken::generate();
+        } catch (Exception $ex) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
+            $this->add_log($ex->getMessage());
+            wp_redirect($woocommerce->cart->get_cart_url());
+            exit;
+        }
         if ($this->description) {
             echo wpautop(wptexturize($this->description));
         }
@@ -260,6 +268,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 var clientToken = "<?php echo $clientToken; ?>";
                 braintree.setup(clientToken, "dropin", {
                     container: "braintree-payment-form",
+                    onReady : function() {
+                        jQuery.each(jQuery('#braintree-payment-form').children('iFrame'),
+                        function(index) {
+                                if (index > 0) {
+                                        jQuery(this).remove();
+                                }
+                        });
+                    },
                     onError: function (a) {
                         if ("VALIDATION" === a.type) {
                             if (is_angelleye_braintree_selected()) {
@@ -356,6 +372,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function angelleye_do_payment($order) {
+        global $woocommerce;
         try {
             if (isset($_POST['braintree_token']) && !empty($_POST['braintree_token'])) {
                 $payment_method_nonce = $_POST['braintree_token'];
@@ -439,9 +456,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             } else {
                 if ($this->has_validation_errors()) {
                     $this->add_log('Braintree_Transaction::sale Response: ' . print_r($this->response, true));
-                    wc_add_notice('Braintree Error ' . $this->get_message(), 'error');
-                    wp_redirect($order->get_checkout_payment_url(true));
-                    exit;
+                    wc_add_notice('Braintree Error ' . $this->get_status_message(), 'error');
+                    wp_send_json(array(
+                            'result' => 'success',
+                            'redirect' => $woocommerce->cart->get_cart_url()
+                    ));
                 }
             }
         } catch (Exception $ex) {
@@ -718,6 +737,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         if (!is_checkout() || !$this->is_available()) {
             return;
         }
-        wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/v2/braintree.js', array(), WC_VERSION, false);
+        wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/js/braintree-2.27.0.min.js', array(), WC_VERSION, false);
     }
 }
