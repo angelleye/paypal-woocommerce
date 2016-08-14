@@ -886,7 +886,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $this->add_log("...ERROR: GetShippingDetails returned empty result");
                 }
                 WC()->cart->calculate_totals();
-                if( $this->skip_final_review == 'yes' && ( get_option('woocommerce_enable_guest_checkout') === "yes" || apply_filters('woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')) == "yes" ) || is_user_logged_in() ) {
+                if( $this->skip_final_review == 'yes' && ( get_option('woocommerce_enable_guest_checkout') === "yes" || apply_filters('woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')) == "yes" || is_user_logged_in() ) ) {
                     //check terms enable
                     $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
                     if (!( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ))) {
@@ -972,7 +972,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         } elseif (isset($_GET['pp_action']) && $_GET['pp_action'] == 'payaction') {
             if( isset($_POST) || ( $this->skip_final_review == 'yes' && (get_option('woocommerce_enable_guest_checkout') === "yes" || apply_filters('woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')) == "yes" ) || is_user_logged_in() ) ) {
-                $result = unserialize(WC()->session->RESULT);
+               $result = unserialize(WC()->session->RESULT);
                 /* create account start */
                 if (isset($_POST['createaccount']) && !empty($_POST['createaccount'])) {
                     $this->customer_id = apply_filters('woocommerce_checkout_customer_id', get_current_user_id());
