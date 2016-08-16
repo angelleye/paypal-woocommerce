@@ -1089,7 +1089,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
                 $order_id = WC()->checkout()->create_order();
 
-                do_action( 'woocommerce_checkout_order_processed', $order_id);
+                do_action( 'woocommerce_checkout_order_processed', $order_id, $checkout_form_post_data);
 
                 /**
                  * Update meta data with session data
@@ -1347,11 +1347,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				if ( ! in_array( strtolower( $result['PAYMENTINFO_0_TRANSACTIONTYPE'] ), array( 'cart', 'instant', 'expresscheckout', 'web_accept', 'masspay', 'send_money' ) ) ) {
 					break;
 				}
-
                                 $order->add_order_note( __( 'Payment Completed via Express Checkout', 'paypal-for-woocommerce' ) );
                                 $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
-                                do_action('woocommerce_checkout_order_processed', $order_id);
-
 				break;
 			case 'pending' :
 
