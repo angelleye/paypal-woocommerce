@@ -443,25 +443,39 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 }
                 $this->add_log('Braintree_Transaction::sale Reuest Data ' . print_r($log, true));
             }
-            $this->response = Braintree_Transaction::sale($request_data);
+            
+            try {
+                $this->response = Braintree_Transaction::sale($request_data);
+            } catch (Exception $e) {
+                $notice = sprintf( __( 'Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'woocommerce-gateway-paypal-braintree' ), $e->getMessage() );
+                wc_add_notice( $notice, 'error' );
+                $this->add_log('Error: Unable to complete transaction. Reason: ' . $e->getMessage() );
+                return false;
+            }
+            
+            if ( !$this->response->success ) {
+                $notice = sprintf( __( 'Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'woocommerce-gateway-paypal-braintree' ), $this->response->message );
+                wc_add_notice( $notice, 'error' );
+                $this->log( "Error: Unable to complete transaction. Reason: {$this->response->message}" );
+                return false;
+            }
+            
             $this->add_log('Braintree_Transaction::sale Response code: ' . print_r($this->get_status_code(), true));
             $this->add_log('Braintree_Transaction::sale Response message: ' . print_r($this->get_status_message(), true));
-            if ($this->response->success) {
+            
+            $maybe_settled_later = array(
+			'settling',
+			'settlement_pending',
+			'submitted_for_settlement',
+		);
+            
+            if (in_array( $this->response->transaction->status, $maybe_settled_later )) {
                 $order->payment_complete($this->response->transaction->id);
-
                 $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $this->response->transaction->id));
                 WC()->cart->empty_cart();
-            } else if ($this->response->transaction) {
-                $order->add_order_note(sprintf(__('%s payment declined.<br />Code: %s', 'paypal-for-woocommerce'), $this->title, $this->response->transaction->processorResponseCode));
             } else {
-                if ($this->has_validation_errors()) {
-                    $this->add_log('Braintree_Transaction::sale Response: ' . print_r($this->response, true));
-                    wc_add_notice('Braintree Error ' . $this->get_status_message(), 'error');
-                    wp_send_json(array(
-                            'result' => 'success',
-                            'redirect' => $woocommerce->cart->get_cart_url()
-                    ));
-                }
+                $this->add_log( sprintf( 'Info: unhandled transaction id = %s, status = %s', $this->response->transaction->id, $this->response->transaction->status ) );
+		$order->update_status( 'on-hold', sprintf( __( 'Transaction was submitted to PayPal Braintree but not handled by WooCommerce order, transaction_id: %s, status: %s. Order was put in-hold.', 'woocommerce-gateway-paypal-braintree' ), $this->response->transaction->id, $this->response->transaction->status ) );
             }
         } catch (Exception $ex) {
             wc_add_notice($ex->getMessage(), 'error');
