@@ -876,7 +876,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         }
                     }
                 } else {
-                    if (WC()->cart->get_cart_discount_total() > 0) {
+                    if ( !empty( WC()->cart->applied_coupons ) ) {
                         foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
                             $Item = array(
                                 'name' => 'Cart Discount',
@@ -891,7 +891,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     }
 
                     if (!AngellEYE_Gateway_Paypal::is_wc_version_greater_2_3()) {
-                        if (WC()->cart->get_order_discount_total() > 0) {
+                        if ( !empty( WC()->cart->applied_coupons ) ) {
                             foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
                                 $Item = array(
                                     'name' => 'Order Discount',
