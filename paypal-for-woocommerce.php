@@ -203,7 +203,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $user_id = $current_user->ID;
             
             /* If user clicks to ignore the notice, add that to their user meta */
-            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate');
+            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice');
             
             foreach ($notices as $notice) {
                 if ( isset($_GET[$notice]) && '0' == $_GET[$notice] ) {
@@ -259,6 +259,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     echo '</div>';
                 }
             }
+            
+            $this->angelleye_paypal_plus_notice($user_id);
         }
 
         //init function
@@ -717,8 +719,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 	
                 	update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
                 }
- 				
-                update_option('paypal_for_woocommerce_version', self::VERSION_PFW);
+                    update_option('paypal_for_woocommerce_version', self::VERSION_PFW);
         	}
         }
 
@@ -1506,6 +1507,27 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if ( (strstr( $url, 'https://' ) && strstr( $url, '.paypal.com' )) && isset($Force_tls_one_point_two) && $Force_tls_one_point_two == 'yes' ) {
                 curl_setopt($handle, CURLOPT_VERBOSE, 1);
                 curl_setopt($handle, CURLOPT_SSLVERSION, 6);
+            }
+        }
+        
+        public function angelleye_paypal_plus_notice($user_id) {
+            $paypal_plus = get_option('woocommerce_paypal_plus_settings');
+            $ignore_paypal_plus_move_notice = get_option('ignore_paypal_plus_move_notice');
+            $ignore_paypal_plus_move_notice = get_user_meta($user_id, 'ignore_paypal_plus_move_notice');
+            if($ignore_paypal_plus_move_notice == 'true') {
+                return false;
+            }
+            if ( !empty($paypal_plus['enabled']) && $paypal_plus['enabled'] == 'yes' && version_compare(self::VERSION_PFW,'1.2.4','<=') && $this->is_paypal_plus_plugin_active() == false && $ignore_paypal_plus_move_notice == false) {
+                echo '<div class="notice welcome-panel error"><p style="margin: 10px;">' . sprintf( __("PayPal Plus is designed for non-U.S. based PayPal accounts, and because of this, PayPal does not support us the way they do with other PayPal products. As such, we were forced to move PayPal Plus to its own paid plugin separate from this one. <a href='https://www.angelleye.com/product/woocommerce-paypal-plus-plugin' target='_blank'>Get the New PayPal Plus Plugin!</a>"));
+                ?></p><a class="welcome-panel-close" style="margin-top: 20px;" href="<?php echo esc_url( add_query_arg( array( 'ignore_paypal_plus_move_notice' => '0' ) ) ); ?>"><?php _e( 'Dismiss' ); ?></a></div><?php 
+            }
+        }
+        
+        public function is_paypal_plus_plugin_active() {
+            if ( !in_array( 'woo-paypal-plus/woo-paypal-plus.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) && !is_plugin_active_for_network( 'woo-paypal-plus/woo-paypal-plus.php' )) {
+                return false;
+            } else {
+                return true;
             }
         }
     }
