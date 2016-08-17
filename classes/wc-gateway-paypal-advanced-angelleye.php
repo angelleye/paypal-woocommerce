@@ -737,7 +737,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'description' => sprintf(__('Disable this option if your theme is not compatible with Mobile. Otherwise You would get Silent Post Error in Layout C.', 'paypal-for-woocommerce'), 'https://developer.paypal.com/'),
             ),
             'card_icon' => array(
-                'title' => __('Card Icon', 'paypal-for-woocommerce'),
+                'title' => __('Credit Card Logo Graphic', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'default' => WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png'
             ),
