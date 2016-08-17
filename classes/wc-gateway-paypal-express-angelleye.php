@@ -420,7 +420,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'page_style' => array(
                 'title' => __( 'Page Style', 'paypal-for-woocommerce' ), 
                 'type' => 'text', 
-                'description' => __( 'Optionally enter the name of the page style you wish to use. These are defined within your PayPal account.', 'paypal-for-woocommerce' ), 
+                'description' => __( 'If you wish to use a <a target="_blank" href="https://www.paypal.com/customize">custom page style configured in your PayPal account</a>, enter the name of the page style here.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
             'brand_name' => array(
