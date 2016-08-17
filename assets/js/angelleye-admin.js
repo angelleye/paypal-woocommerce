@@ -62,6 +62,9 @@ jQuery(document).ready(function ($) {
     //PayPal Flow
     jQuery("#woocommerce_paypal_pro_payflow_card_icon").css({float: "left"});
     jQuery("#woocommerce_paypal_pro_payflow_card_icon").after('<a href="#" id="upload" class="button_upload button">Upload</a>');
+    
+    jQuery("#woocommerce_paypal_advanced_card_icon").css({float: "left"});
+    jQuery("#woocommerce_paypal_advanced_card_icon").after('<a href="#" id="upload" class="button_upload button">Upload</a>');
 
     var custom_uploader;
     $('.button_upload').click(function (e) {

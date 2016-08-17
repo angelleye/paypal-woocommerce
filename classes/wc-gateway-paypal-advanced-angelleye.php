@@ -4,7 +4,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
     public function __construct() {
         $this->id = 'paypal_advanced';
-        $this->icon = apply_filters('woocommerce_paypal_advanced_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
+       
         $this->has_fields = true;
         $this->home_url = is_ssl() ? home_url('/', 'https') : home_url('/'); //set the urls (cancel or return) based on SSL
         $this->testurl = 'https://pilot-payflowpro.paypal.com';
@@ -40,6 +40,12 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->page_button_bgcolor = $this->settings['page_button_bgcolor'];
         $this->page_button_textcolor = $this->settings['page_button_textcolor'];
         $this->label_textcolor = $this->settings['label_textcolor'];
+        
+        $this->icon = !empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png';
+        if (is_ssl()) {
+            $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
+        }
+        $this->icon = apply_filters('woocommerce_paypal_advanced_icon', $this->icon);
 
         if (!isset($this->settings['mobilemode']))
             $this->mobilemode = 'yes';
@@ -729,6 +735,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'label' => __('Display Mobile optimized form if browsed through Mobile', 'paypal-for-woocommerce'),
                 'default' => 'yes',
                 'description' => sprintf(__('Disable this option if your theme is not compatible with Mobile. Otherwise You would get Silent Post Error in Layout C.', 'paypal-for-woocommerce'), 'https://developer.paypal.com/'),
+            ),
+            'card_icon' => array(
+                'title' => __('Card Icon', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'default' => WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png'
             ),
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
