@@ -99,6 +99,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->version = "64";  // PayPal SetExpressCheckout API version
         
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
+        
+        $this->page_style = ( isset( $this->settings['page_style'] ) ) ? $this->settings['page_style'] : '';
                 
         // Actions
         add_action('woocommerce_api_' . strtolower(get_class()), array($this, 'paypal_express_checkout'), 12);
@@ -414,6 +416,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Pass the WordPress Locale Code setting to PayPal in order to display localized PayPal pages to buyers.', 'paypal-for-woocommerce'),
                 'default' => 'yes'
+            ),
+            'page_style' => array(
+                'title' => __( 'Page Style', 'paypal-for-woocommerce' ), 
+                'type' => 'text', 
+                'description' => __( 'Optionally enter the name of the page style you wish to use. These are defined within your PayPal account.', 'paypal-for-woocommerce' ), 
+                'default' => ''
             ),
             'brand_name' => array(
                 'title' => __('Brand Name', 'paypal-for-woocommerce'),
@@ -1554,7 +1562,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'allownote' => 1, // The value 1 indiciates that the customer may enter a note to the merchant on the PayPal page during checkout.  The note is returned in the GetExpresscheckoutDetails response and the DoExpressCheckoutPayment response.  Must be 1 or 0.
             'addroverride' => '', // The value 1 indiciates that the PayPal pages should display the shipping address set by you in the SetExpressCheckout request, not the shipping address on file with PayPal.  This does not allow the customer to edit the address here.  Must be 1 or 0.
             'localecode' => ($this->use_wp_locale_code == 'yes' && get_locale() != '') ? get_locale() : '', // Locale of pages displayed by PayPal during checkout.  Should be a 2 character country code.  You can retrive the country code by passing the country name into the class' GetCountryCode() function.
-            'pagestyle' => '', // Sets the Custom Payment Page Style for payment pages associated with this button/link.
+            'pagestyle' => $this->page_style, // Sets the Custom Payment Page Style for payment pages associated with this button/link.
             'hdrimg' => $this->checkout_logo_hdrimg, // URL for the image displayed as the header during checkout.  Max size of 750x90.  Should be stored on an https:// server or you'll get a warning message in the browser.
             'logoimg' => $this->checkout_logo,
             'hdrbordercolor' => '', // Sets the border color around the header of the payment page.  The border is a 2-pixel permiter around the header space.  Default is black.
