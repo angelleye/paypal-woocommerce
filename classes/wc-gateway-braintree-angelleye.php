@@ -456,7 +456,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             if ( !$this->response->success ) {
                 $notice = sprintf( __( 'Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'woocommerce-gateway-paypal-braintree' ), $this->response->message );
                 wc_add_notice( $notice, 'error' );
-                $this->log( "Error: Unable to complete transaction. Reason: {$this->response->message}" );
+                $this->add_log( "Error: Unable to complete transaction. Reason: {$this->response->message}" );
                 return false;
             }
             
