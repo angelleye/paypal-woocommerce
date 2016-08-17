@@ -28,6 +28,9 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
 
 [youtube https://www.youtube.com/watch?v=VhQT8rX7uwE]
 
+= FREE PayPal Payments Pro Account =
+By using our plugin we can get you hooked up with PayPal Payments Pro with no monthly fee!  [Contact us](https://www.angelleye.com/contact-us) for details.
+
 = Quality Control =
 Payment processing can't go wrong.  It's as simple as that.  Our certified PayPal engineers have developed and thoroughly tested this plugin on the PayPal sandbox (test) servers to ensure your customers don't have problems paying you.  
 
@@ -54,7 +57,7 @@ Developers can contribute to the source code on the [PayPal for WooCommerce GitH
 
 = Minimum Requirements =
 
-* WooCommerce 2.1 or higher
+* WooCommerce 2.6 or higher
 
 = Automatic installation =
 
