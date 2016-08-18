@@ -172,21 +172,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Place the payment gateway in sandbox mode using sandbox API keys (real payments will not be taken).', 'paypal-for-woocommerce'),
                 'default' => 'yes'
             ),
-            'sandbox_merchant_account_id' => array (
-                 'type' => 'text',
-                 'default' => '',
-                 'title' => __ ( 'Sandbox Merchant Account Id', 'paypal-for-woocommerce' ),
-                 'tool_tip' => true,
-                 'description' => __ ( 'NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,
-                                 and clicking Settings > Processing and scrolling to the bottom of the page.', 'paypal-for-woocommerce' ) 
-             ),
-            'sandbox_merchant_id' => array(
-                'title' => __('Sandbox Merchant ID', 'paypal-for-woocommerce'),
-                'type' => 'password',
-                'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
-                'default' => '',
-                'desc_tip' => true
-            ),
             'sandbox_public_key' => array(
                 'title' => __('Sandbox Public Key', 'paypal-for-woocommerce'),
                 'type' => 'password',
@@ -201,21 +186,21 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true
             ),
-             'merchant_account_id' => array (
-                 'type' => 'text',
-                 'default' => '',
-                 'title' => __ ( 'Live Merchant Account Id', 'paypal-for-woocommerce' ),
-                 'tool_tip' => true,
-                 'description' => __ ( 'NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,
-                                 and clicking Settings > Processing and scrolling to the bottom of the page.', 'paypal-for-woocommerce' ) 
-             ),
-            'merchant_id' => array(
-                'title' => __('Live Merchant ID', 'paypal-for-woocommerce'),
+            'sandbox_merchant_id' => array(
+                'title' => __('Sandbox Merchant ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
             ),
+            'sandbox_merchant_account_id' => array (
+                 'type' => 'text',
+                 'default' => '',
+                 'title' => __ ( 'Sandbox Merchant Account Id', 'paypal-for-woocommerce' ),
+                 'tool_tip' => true,
+                 'description' => __ ( 'NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,
+                                 and clicking Settings > Processing and scrolling to the bottom of the page.', 'paypal-for-woocommerce' ) 
+             ),
             'public_key' => array(
                 'title' => __('Live Public Key', 'paypal-for-woocommerce'),
                 'type' => 'password',
@@ -230,6 +215,21 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true
             ),
+            'merchant_id' => array(
+                'title' => __('Live Merchant ID', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true
+            ),
+            'merchant_account_id' => array (
+                 'type' => 'text',
+                 'default' => '',
+                 'title' => __ ( 'Live Merchant Account Id', 'paypal-for-woocommerce' ),
+                 'tool_tip' => true,
+                 'description' => __ ( 'NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,
+                                 and clicking Settings > Processing and scrolling to the bottom of the page.', 'paypal-for-woocommerce' ) 
+             ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -244,13 +244,40 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         global $woocommerce;
         $this->angelleye_braintree_lib();
         $this->add_log('Begin Braintree_ClientToken::generate Request');
-        try {
-        $clientToken = Braintree_ClientToken::generate();
-        } catch (Exception $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-            $this->add_log($ex->getMessage());
-            wp_redirect($woocommerce->cart->get_cart_url());
-            exit;
+        if ($this->enable_braintree_drop_in) {
+            try {
+                $clientToken = Braintree_ClientToken::generate();
+            } catch (Braintree_Exception_Authentication $e ) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+                wp_redirect($woocommerce->cart->get_cart_url());
+                exit;
+            } catch (Braintree_Exception_Authorization $e) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+                wp_redirect($woocommerce->cart->get_cart_url());
+                exit;
+            } catch (Braintree_Exception_DownForMaintenance $e) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->add_log("Braintree_ClientToken::generate Exception: Request times out.");
+                wp_redirect($woocommerce->cart->get_cart_url());
+                exit;
+            } catch (Braintree_Exception_ServerError $e) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->add_log("Braintree_ClientToken::generate Braintree_Exception_ServerError" . $e->getMessage());
+                wp_redirect($woocommerce->cart->get_cart_url());
+                exit;
+            } catch (Braintree_Exception_SSLCertificate $e) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->add_log("Braintree_ClientToken::generate Braintree_Exception_SSLCertificate" . $e->getMessage());
+                wp_redirect($woocommerce->cart->get_cart_url());
+                exit;
+            } catch (Exception $ex) {
+                $this->add_log("Braintree_ClientToken::generate Exception:" . $ex->getMessage());
+                wp_redirect($woocommerce->cart->get_cart_url());
+                exit;
+            }
+            
         }
         if ($this->description) {
             echo wpautop(wptexturize($this->description));
@@ -263,8 +290,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 </fieldset>
             </div>
             <script>
-                var $form = jQuery('form.checkout');
-                var ccForm = jQuery('form.checkout');
+                var $form = jQuery('form.checkout, #order_review');
+                var ccForm = jQuery('form.checkout, #order_review');
                 var clientToken = "<?php echo $clientToken; ?>";
                 braintree.setup(clientToken, "dropin", {
                     container: "braintree-payment-form",
@@ -304,7 +331,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                     }
                 }
                 function braintreeResponseHandler(obj) {
-                    var $form = jQuery('form.checkout'),
+                    var $form = jQuery('form.checkout, #order_review'),
                             ccForm = jQuery('#braintree-cc-form');
                     if (obj.nonce) {
                         ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + obj.nonce + '"/>');
@@ -364,8 +391,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         $success = $this->angelleye_do_payment($order);
         if($success == true) {
             return array(
-                'result'   => 'success',
-                'redirect' => $this->get_return_url( $order )
+                'result' => 'success',
+                'redirect' => $this->get_return_url($order)
             );
         } else {
             return array(
@@ -451,12 +478,28 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             
             try {
                 $this->response = Braintree_Transaction::sale($request_data);
+            } catch (Braintree_Exception_Authentication $e ) {
+                $this->add_log("Braintree_Transaction::sale Braintree_Exception_Authentication: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+                return $success = false;
+            } catch (Braintree_Exception_Authorization $e) {
+                $this->add_log("Braintree_Transaction::sale Braintree_Exception_Authorization: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+                return $success = false;
+            } catch (Braintree_Exception_DownForMaintenance $e) {
+                $this->add_log("Braintree_Transaction::sale Braintree_Exception_DownForMaintenance: Request times out.");
+                return $success = false;
+            } catch (Braintree_Exception_ServerError $e) {
+                $this->add_log("Braintree_Transaction::sale Braintree_Exception_ServerError " . $e->getMessage());
+                return $success = false;
+            } catch (Braintree_Exception_SSLCertificate $e) {
+                $this->add_log("Braintree_Transaction::sale Braintree_Exception_SSLCertificate " . $e->getMessage());
+                return $success = false;
             } catch (Exception $e) {
-                $notice = sprintf( __( 'Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'woocommerce-gateway-paypal-braintree' ), $e->getMessage() );
+                $notice = sprintf( __( 'Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment.', 'woocommerce-gateway-paypal-braintree' ), $e->getMessage() );
                 wc_add_notice( $notice, 'error' );
                 $this->add_log('Error: Unable to complete transaction. Reason: ' . $e->getMessage() );
                 return $success = false;
             }
+            
             if ( !$this->response->success ) {
                 $notice = sprintf( __( 'Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'woocommerce-gateway-paypal-braintree' ), $this->response->message );
                 wc_add_notice( $notice, 'error' );
@@ -501,11 +544,55 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
         if (!$order || !$order->get_transaction_id()) {
             return false;
         }
+        
         $this->angelleye_braintree_lib();
-        $transaction = Braintree_Transaction::find($order->get_transaction_id());
+        
+        try {
+            $transaction = Braintree_Transaction::find($order->get_transaction_id());
+        } catch (Braintree_Exception_NotFound $e) {
+            $this->add_log("Braintree_Transaction::find Braintree_Exception_NotFound" . $e->getMessage());
+            return new WP_Error($e->getMessage());
+        } catch (Braintree_Exception_Authentication $e ) {
+            $this->add_log("Braintree_Transaction::find Braintree_Exception_Authentication: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+            return new WP_Error($e->getMessage());
+        } catch (Braintree_Exception_Authorization $e) {
+            $this->add_log("Braintree_Transaction::find Braintree_Exception_Authorization: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+            return new WP_Error($e->getMessage());
+        } catch (Braintree_Exception_DownForMaintenance $e) {
+            $this->add_log("Braintree_Transaction::find Braintree_Exception_DownForMaintenance: Request times out.");
+            return new WP_Error($e->getMessage());
+        } catch (Exception $e) {
+            $this->add_log($e->getMessage());
+            return new WP_Error($e->getMessage());
+        }
+    
         if (isset($transaction->status) && $transaction->status == 'submitted_for_settlement') {
             if ($amount == $order->get_total()) {
-                $result = Braintree_Transaction::void($order->get_transaction_id());
+                try {
+                    $result = Braintree_Transaction::void($order->get_transaction_id());
+                    if ($result->success) {
+                        $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
+                        return true;
+                    } else {
+                        $error = '';
+                        foreach (($result->errors->deepAll()) as $error) {
+                            return new WP_Error('ec_refund-error', $error->message);
+                        }
+                    }
+                } catch (Braintree_Exception_NotFound $e) {
+                    $this->add_log("Braintree_Transaction::void Braintree_Exception_NotFound: " . $e->getMessage());
+                    return new WP_Error($e->getMessage());
+                } catch (Exception $ex) {
+                    $this->add_log("Braintree_Transaction::void Exception: " . $e->getMessage());
+                    return new WP_Error($e->getMessage());
+                }
+                
+            } else {
+                return new WP_Error('braintree_refund-error', __('Oops, you cannot partially void this order. Please use the full order amount.', 'paypal-for-woocommerce'));
+            }
+        } elseif (isset($transaction->status) && ($transaction->status == 'settled' || $transaction->status == 'settling')) {
+            try {
+                $result = Braintree_Transaction::refund($order->get_transaction_id(), $amount);
                 if ($result->success) {
                     $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
                     return true;
@@ -515,29 +602,28 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                         return new WP_Error('ec_refund-error', $error->message);
                     }
                 }
-            } else {
-                return new WP_Error('braintree_refund-error', __('Oops, you cannot partially void this order. Please use the full order amount.', 'paypal-for-woocommerce'));
-            }
-        } elseif (isset($transaction->status) && ($transaction->status == 'settled' || $transaction->status == 'settling')) {
-            $result = Braintree_Transaction::refund($order->get_transaction_id(), $amount);
-            if ($result->success) {
-                $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
-                return true;
-            } else {
-                $error = '';
-                foreach (($result->errors->deepAll()) as $error) {
-                    return new WP_Error('ec_refund-error', $error->message);
-                }
+            } catch (Braintree_Exception_NotFound $e) {
+                $this->add_log("Braintree_Transaction::refund Braintree_Exception_NotFound: " . $e->getMessage());
+                return new WP_Error($e->getMessage());
+            } catch (Exception $ex) {
+                $this->add_log("Braintree_Transaction::refund Exception: " . $e->getMessage());
+                return new WP_Error($e->getMessage());
             }
         }
     }
 
     public function angelleye_braintree_lib() {
-        require_once( 'lib/Braintree/Braintree.php' );
-        Braintree_Configuration::environment($this->environment);
-        Braintree_Configuration::merchantId($this->merchant_id);
-        Braintree_Configuration::publicKey($this->public_key);
-        Braintree_Configuration::privateKey($this->private_key);
+        try {
+            require_once( 'lib/Braintree/Braintree.php' );
+            Braintree_Configuration::environment($this->environment);
+            Braintree_Configuration::merchantId($this->merchant_id);
+            Braintree_Configuration::publicKey($this->public_key);
+            Braintree_Configuration::privateKey($this->private_key);
+        } catch (Exception $ex) {
+            $this->add_log('Error: Unable to Load Braintree. Reason: ' . $ex->getMessage() );
+            WP_Error('Error: Unable to Load Braintree. Reason: ' . $ex->getMessage());
+        }
+        
     }
 
     public function add_dependencies_admin_notices() {
