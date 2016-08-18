@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PayPal for WooCommerce 1.2.3\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/paypal-woocommerce\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/paypal-for-woocommerce\n"
 "POT-Creation-Date: 2016-08-18 07:14:12+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -429,7 +429,8 @@ msgstr ""
 #: classes/wc-gateway-braintree-angelleye.php:180
 #: classes/wc-gateway-braintree-angelleye.php:209
 msgid ""
-"NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,\n"
+"NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,
+\n"
 "                                 and clicking Settings > Processing and scrolling to the bottom of the page."
 msgstr ""
 
@@ -1137,7 +1138,8 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye.php:404
 #: classes/wc-gateway-paypal-pro-angelleye.php:272
 msgid ""
-"Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details\n"
+"Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
+\n"
 "\t\t\t\t\t\t\t\t\tand helps to prevent fraudulant activity on your site."
 msgstr ""
 
@@ -1650,7 +1652,8 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:200
 msgid ""
-"Create sandbox accounts and obtain API credentials from within your\n"
+"Create sandbox accounts and obtain API credentials from within your
+\n"
 "\t\t\t\t\t\t\t\t\t<a href=\"http://developer.paypal.com\">PayPal developer account</a>."
 msgstr ""
 
@@ -1660,7 +1663,8 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:217
 msgid ""
-"Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using\n"
+"Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using
+\n"
 "\t\t\t\t\t\t\t\t\t<a target=\"_blank\" href=\"https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run\">this tool</a>."
 msgstr ""
 
@@ -1901,7 +1905,8 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:158
 msgid ""
-"Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details \n"
+"Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details 
+\n"
 "\t\t\t\t\t\t\t\t\tand helps to prevent fraudulant activity on your site."
 msgstr ""
 
@@ -1930,7 +1935,8 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:176
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:202
 msgid ""
-"If you set up one or more additional users on the account, this value is the ID\n"
+"If you set up one or more additional users on the account, this value is the ID
+\n"
 "of the user authorized to process transactions. Otherwise, leave this field blank."
 msgstr ""
 
@@ -1941,7 +1947,8 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:183
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:209
 msgid ""
-"The ID provided to you by the authorized PayPal Reseller who registered you\n"
+"The ID provided to you by the authorized PayPal Reseller who registered you
+\n"
 "for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank."
 msgstr ""
 
