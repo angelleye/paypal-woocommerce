@@ -285,6 +285,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                                 return $form.unblock();
                             }
                         } else {
+                            jQuery( '.woocommerce-error, .braintree-token', ccForm ).remove();
+                            ccForm.prepend('<ul class="woocommerce-error"><li>' + a.message + '</li></ul>');
                             console.log("configuration error " + a.message);
                             return $form.unblock();
                         }
