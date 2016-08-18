@@ -285,6 +285,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                                 return $form.unblock();
                             }
                         } else {
+                            jQuery( '.woocommerce-error, .braintree-token', ccForm ).remove();
+                            ccForm.prepend('<ul class="woocommerce-error"><li>' + a.message + '</li></ul>');
                             console.log("configuration error " + a.message);
                             return $form.unblock();
                         }
@@ -359,19 +361,22 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
      */
     public function process_payment($order_id) {
         $order = new WC_Order($order_id);
-        $this->angelleye_do_payment($order);
-        if (is_ajax()) {
+        $success = $this->angelleye_do_payment($order);
+        if($success == true) {
             return array(
-                'result' => 'success',
-                'redirect' => $this->get_return_url($order)
+                'result'   => 'success',
+                'redirect' => $this->get_return_url( $order )
             );
         } else {
-            wp_redirect($this->get_return_url($order));
-            exit();
+            return array(
+                'result'   => 'fail',
+                'redirect' => ''
+            );
         }
     }
 
     public function angelleye_do_payment($order) {
+        $success = true;
         global $woocommerce;
         try {
             if (isset($_POST['braintree_token']) && !empty($_POST['braintree_token'])) {
@@ -450,14 +455,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 $notice = sprintf( __( 'Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'woocommerce-gateway-paypal-braintree' ), $e->getMessage() );
                 wc_add_notice( $notice, 'error' );
                 $this->add_log('Error: Unable to complete transaction. Reason: ' . $e->getMessage() );
-                return false;
+                return $success = false;
             }
-            
             if ( !$this->response->success ) {
                 $notice = sprintf( __( 'Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'woocommerce-gateway-paypal-braintree' ), $this->response->message );
                 wc_add_notice( $notice, 'error' );
                 $this->add_log( "Error: Unable to complete transaction. Reason: {$this->response->message}" );
-                return false;
+                return $success = false;
             }
             
             $this->add_log('Braintree_Transaction::sale Response code: ' . print_r($this->get_status_code(), true));
@@ -479,9 +483,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             }
         } catch (Exception $ex) {
             wc_add_notice($ex->getMessage(), 'error');
-            wp_redirect($order->get_checkout_payment_url(true));
-            exit;
+            return $success = false;
         }
+        return $success;
     }
 
     public function get_braintree_options() {
