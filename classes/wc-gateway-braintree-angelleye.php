@@ -148,7 +148,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Title', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
-                'default' => __('Braintree Credit card', 'paypal-for-woocommerce'),
+                'default' => __('Credit Card', 'paypal-for-woocommerce'),
                 'desc_tip' => true
             ),
             'description' => array(
