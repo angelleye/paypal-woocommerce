@@ -395,6 +395,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'redirect' => $this->get_return_url($order)
             );
         } else {
+            WC()->session->reload_checkout = true;
             return array(
                 'result'   => 'fail',
                 'redirect' => ''
