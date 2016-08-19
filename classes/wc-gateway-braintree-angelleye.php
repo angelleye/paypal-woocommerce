@@ -292,7 +292,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
             </div>
             <script>
                 var $form = jQuery('form.checkout, #order_review');
-                var ccForm = jQuery('form.checkout, #order_review');
+                var ccForm = jQuery('form.checkout');
                 var clientToken = "<?php echo $clientToken; ?>";
                 braintree.setup(clientToken, "dropin", {
                     container: "braintree-payment-form",
