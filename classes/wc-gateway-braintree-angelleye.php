@@ -163,7 +163,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway {
                 'label' => __('Enable Drop-in Payment UI', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => __('Rather than showing a credit card form on your checkout, this shows the form on it\'s own page, thus making the process more secure and more PCI friendly.', 'paypal-for-woocommerce'),
-                'default' => 'no'
+                'default' => 'yes'
             ),
             'sandbox' => array(
                 'title' => __('Sandbox', 'paypal-for-woocommerce'),
