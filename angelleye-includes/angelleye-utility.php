@@ -82,8 +82,7 @@ class AngellEYE_Utility {
             }
             add_filter('woocommerce_payment_gateway_supports', array($this, 'angelleye_woocommerce_payment_gateway_supports'), 10, 3);
         }
-        add_action('woocommerce_process_shop_order_meta', array($this, 'save'), 50, 2);
-        add_action( 'woocommerce_admin_order_data_after_order_details', array($this, 'angelleye_paypal_for_woocommerce_payment_mode'), 10, 1);
+        add_action('woocommerce_process_shop_order_meta', array($this, 'save'), 51, 2);
     }
 
     public function angelleye_woocommerce_order_actions($order_actions = array()) {
@@ -683,7 +682,7 @@ class AngellEYE_Utility {
 
     public static function is_express_checkout_credentials_is_set() {
         $pp_settings = get_option('woocommerce_paypal_express_settings');
-        $testmode = $pp_settings['testmode'];
+        $testmode = isset($pp_settings['testmode']) ? $pp_settings['testmode'] : 'yes';
         $enabled = $pp_settings['enabled'];
         if ($testmode == 'yes') {
             $api_username = $pp_settings['sandbox_api_username'];
@@ -1183,11 +1182,5 @@ class AngellEYE_Utility {
     }
     public static function is_valid_for_use() {
 	return in_array( get_woocommerce_currency(), apply_filters( 'paypal_for_woocommerce_supported_currencies', array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP' ) ) );
-    }
-
-    public function angelleye_paypal_for_woocommerce_payment_mode($order) {
-        ?>
-        <p> Sandbox</p>
-        <?php 
     }
 }

@@ -36,8 +36,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->api_username = $this->settings['api_username'];
         $this->api_password = $this->settings['api_password'];
         $this->api_signature = $this->settings['api_signature'];
-        $this->testmode = $this->settings['testmode'];
-        $this->debug = $this->settings['debug'];
+        $this->testmode = isset($this->settings['testmode']) ? $this->settings['testmode'] : 'yes';
+        $this->debug = isset($this->settings['debug']) ? $this->settings['debug'] : 'no'; 
         $this->error_email_notify = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
         $this->invoice_id_prefix = isset($this->settings['invoice_id_prefix']) ? $this->settings['invoice_id_prefix'] : '';
         //$this->checkout_with_pp_button = $this->settings['checkout_with_pp_button'];
@@ -496,7 +496,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'payment_action' => array(
                 'title' => __('Payment Action', 'paypal-for-woocommerce'),
                 'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
-                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds through your PayPal account when you are ready to deliver.'),
+                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds from within the WooCommerce order when you are ready to deliver.'),
                 'type' => 'select',
                 'options' => array(
                     'Sale' => 'Sale',
