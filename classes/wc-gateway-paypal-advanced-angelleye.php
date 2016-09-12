@@ -394,8 +394,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'CUSTREF' => $order->get_order_number(),
             'USER1' => $order->id,
             'INVNUM' => $this->invoice_prefix . ltrim($order->get_order_number(), '#'),
-            'AMT' => $order->get_total(),
-            'FREIGHTAMT' => number_format($order->get_total_shipping(), 2, '.', ''),
+            'AMT' => number_format($order->get_total(), 2, '.', ''),
+            'FREIGHTAMT' => '',
             'COMPANYNAME[' . strlen($order->billing_company) . ']' => $order->billing_company,
             'CURRENCY' => get_woocommerce_currency(),
             'EMAIL' => $order->billing_email,
@@ -444,18 +444,15 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $silentposturl = add_query_arg('wc-api', 'WC_Gateway_PayPal_Advanced_AngellEYE', add_query_arg('silent', 'true', $this->home_url));
         $paypal_args['SILENTPOSTURL[' . strlen($silentposturl) . ']'] = $silentposturl;
 
-
         // If prices include tax or have order discounts, send the whole order as a single item
-        if ($order->prices_include_tax == 'yes' || $order->get_total_discount() > 0 || $length_error > 1) {
+        if ( ($order->prices_include_tax == 'yes' || $order->get_total_discount() > 0 || $length_error > 1) && $order->get_subtotal() > 0) {
 
             // Don't pass items - paypal borks tax due to prices including tax. PayPal has no option for tax inclusive pricing sadly. Pass 1 item for the order items overall
             $item_names = array();
 
             if (sizeof($order->get_items()) > 0) {
 
-                $paypal_args['FREIGHTAMT'] = number_format($order->get_total_shipping() + $order->get_shipping_tax(), 2, '.', '');
-
-                if ($length_error <= 1) {
+                if ($length_error <= 1 ) {
                     foreach ($order->get_items() as $item)
                         if ($item['qty'])
                             $item_names[] = $item['name'] . ' x ' . $item['qty'];
@@ -468,10 +465,17 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 $paypal_args['L_NAME0[' . strlen($items_names_str) . ']'] = $items_names_str;
                 $paypal_args['L_DESC0[' . strlen($items_desc_str) . ']'] = $items_desc_str;
                 $paypal_args['L_QTY0'] = 1;
-                $paypal_args['L_COST0'] = number_format($order->get_total() - round($order->get_total_shipping() + $order->get_shipping_tax(), 2), 2, '.', '');
+                
+                if ($order->get_subtotal() == 0 ) {
+                    $paypal_args['L_COST0'] = number_format($order->get_total_shipping() + $order->get_shipping_tax(), 2, '.', '');
+                } else {
+                    $paypal_args['FREIGHTAMT'] = number_format($order->get_total_shipping() + $order->get_shipping_tax(), 2, '.', '');
+                    $paypal_args['L_COST0'] = number_format($order->get_total() - round($order->get_total_shipping() + $order->get_shipping_tax(), 2), 2, '.', '');
+                }
 
                 //determine ITEMAMT
                 $paypal_args['ITEMAMT'] = $paypal_args['L_COST0'] * $paypal_args['L_QTY0'];
+                
             }
         } else {
 
@@ -485,7 +489,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
             // Cart Contents
             $item_loop = 0;
-            if (sizeof($order->get_items()) > 0) {
+            if (sizeof($order->get_items()) > 0 && $order->get_subtotal() > 0) {
                 foreach ($order->get_items() as $item) {
                     if ($item['qty']) {
 
@@ -512,6 +516,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                         $item_loop++;
                     }
                 }
+            } else {
+                $paypal_args['L_NAME0'] = sprintf( __( 'Shipping via %s', 'woocommerce' ), $order->get_shipping_method() );
+                $paypal_args['L_QTY0'] = 1;
+                $paypal_args['L_COST0'] = number_format($order->get_total_shipping() + $order->get_shipping_tax(), 2, '.', '');
+                $paypal_args['ITEMAMT'] = number_format($order->get_total_shipping() + $order->get_shipping_tax(), 2, '.', '');
             }
         }
 
@@ -537,7 +546,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             if ($this->debug == 'yes') {
 
                 $logData = trim($logData, '&');
-
                 $this->log->add('paypal_advanced', sprintf(__('Requesting for the Secured Token for the order %s with following URL and Paramaters: %s', 'paypal-for-woocommerce'), $order->get_order_number(), $this->hostaddr . '?' . $logData));
             }
 
