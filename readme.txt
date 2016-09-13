@@ -112,6 +112,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.2.5 - xx.xx.xxxx =
+* Fix - Resolves an issue in PayPal Advanced on orders where the subtotal is $0 but shipping still needs to be paid. ([#543](https://github.com/angelleye/paypal-woocommerce/issues/543))
+
+
 = 1.2.4 - 09.13.2016 =
 * Feature - PayPal Advanced logo setup. ([#491](https://github.com/angelleye/paypal-woocommerce/issues/491))
 * Feature - Adds the ability to set a Page Style Option in the Express Checkout settings. [(#535](https://github.com/angelleye/paypal-woocommerce/issues/535))
