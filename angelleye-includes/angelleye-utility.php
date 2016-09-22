@@ -664,7 +664,7 @@ class AngellEYE_Utility {
     public static function card_type_from_account_number($account_number) {
         $types = array(
             'visa' => '/^4/',
-            'mc' => '/^5[1-5]/',
+            'mastercard' => '/^5[1-5]/',
             'amex' => '/^3[47]/',
             'discover' => '/^(6011|65|64[4-9]|622)/',
             'diners' => '/^(36|38|30[0-5])/',
