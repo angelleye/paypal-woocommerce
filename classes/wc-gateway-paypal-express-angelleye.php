@@ -1,9 +1,9 @@
-<?php
+                <?php 
 
 class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     /**
-     * __construct function. 
+     * __construct function.  
      *
      * @access public
      * @return void
@@ -18,7 +18,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'products',
             'refunds'
         );
-
+        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if($this->enable_tokenized_payments == 'yes') {
+            array_push($this->supports, "tokenization");
+        }
         if (substr(get_option("woocommerce_default_country"),0,2) != 'US') {
             $this->not_us= true;
         } else {
@@ -525,6 +528,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
                 'default' => 'yes'
             ),
+            'enable_tokenized_payments' => array(
+                'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => ''
+            ),
             'enable_notifyurl' => array(
                 'title' => __('Enable PayPal IPN', 'paypal-for-woocommerce'),
                 'label' => __('Configure an IPN URL to be included with Express Checkout payments.', 'paypal-for-woocommerce'),
@@ -693,6 +704,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      *  3. 'payaction' - Customer has pressed "Place Order" on the review page.
      */
     function paypal_express_checkout($posted = null) {
+        
         if (!empty($posted) || ( isset($_GET['pp_action']) && $_GET['pp_action'] == 'expresscheckout' )) {
             $this->angelleye_check_cart_items();
             if (sizeof(WC()->cart->get_cart()) > 0) {
@@ -1319,8 +1331,24 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                     if( isset($result['BILLINGAGREEMENTID']) && !empty($result['BILLINGAGREEMENTID']) ) {
                         update_post_meta( $order_id, 'billing_agreement_id', $result['BILLINGAGREEMENTID'] );
+                        if(!empty($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == true) {
+                            $customer_id =  $order->get_user_id();
+                            $billing_agreement_id = $result['BILLINGAGREEMENTID'];
+                            $token = new WC_Payment_Token_CC();
+                            $token->set_user_id( $customer_id );
+                            $token->set_token( $billing_agreement_id );
+                            $token->set_gateway_id( $this->id );
+                            $token->set_card_type( 'PayPal Billing Agreement' );
+                            $token->set_last4( substr( $billing_agreement_id, -4 ) );
+                            $token->set_expiry_month( date( 'm' ) );
+                            $token->set_expiry_year( date( 'Y', strtotime( '+20 years' ) ) );
+                            $save_result = $token->save();
+                            if ( $save_result ) {
+                                    $order->add_payment_token( $token );
+                            }
+                        }
+                        add_post_meta( $order->id, 'BILLINGAGREEMENTID', $result['BILLINGAGREEMENTID'] );
                     }
-
                     $this->remove_session('TOKEN');
                     $order->add_order_note(__('PayPal Express payment completed', 'paypal-for-woocommerce') .
                             ' ( Response Code: ' . $result['ACK'] . ", " . $SuccessWithWarning_order_note .
@@ -2007,9 +2035,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         /*
          * Set tax, shipping, itemamt
          */
-        $Payment['taxamt']      = $PaymentData['taxamt'];       // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
-        $Payment['shippingamt'] = $PaymentData['shippingamt'];      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
-        $Payment['itemamt']     = $PaymentData['itemamt'];      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+        $Payment['taxamt']      = AngellEYE_Gateway_Paypal::number_format($PaymentData['taxamt']);       // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
+        $Payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($PaymentData['shippingamt']);      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+        $Payment['itemamt']     = AngellEYE_Gateway_Paypal::number_format($PaymentData['itemamt']);      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
 
         $Payment['order_items'] = $PaymentOrderItems;
        
@@ -2414,7 +2442,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * Regular checkout process
      */
     function regular_checkout($posted) {
-
+        if(!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
+            return;
+        }
         if ($posted['payment_method'] == 'paypal_express' && wc_notice_count('error') == 0) {
 
             if (!is_user_logged_in() && (get_option( 'woocommerce_enable_guest_checkout' ) != 'yes' || (isset($posted['createaccount']) && $posted['createaccount'] == 1) )) {
@@ -2582,5 +2612,287 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         return parent::get_transaction_url( $order );
     }
+    
+    public function payment_fields() {
+        $this->new_method_label = __( 'Create a new billing agreement', 'wc-autoship' );
+        if ( $this->supports( 'tokenization' ) && is_checkout() ) {
+            $this->tokenization_script();
+            $this->saved_payment_methods();
+            $this->save_payment_method_checkbox();
+        }
+    }
+    
+   public function process_payment($order_id) {
+       if(!empty($_POST['wc-paypal_express-payment-token'])) {
+            $result = $this->DoReferenceTransaction($order_id);
+            if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+                $order = wc_get_order($order_id);
+                $order->payment_complete($result['TRANSACTIONID']);
+                $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
+                WC()->cart->empty_cart();
+                return array(
+                    'result' => 'success',
+                    'redirect' => $this->get_return_url($order)
+                );
+                   
+            } else {
+                $redirect_url = get_permalink(wc_get_page_id('cart'));
+                $this->paypal_express_checkout_error_handler($request_name = 'DoReferenceTransaction', $redirect_url);
+            }
+        }
+    }
+    
+    public function DoReferenceTransaction($order_id) {
+        $PayPalRequestData = array();
+        $token_id = $_POST['wc-paypal_express-payment-token'];
+        $token    = WC_Payment_Tokens::get( $token_id );
+        if ( $token->get_user_id() !== get_current_user_id() ) {
+            return;
+        }
+        $order = wc_get_order($order_id);
+        if (sizeof(WC()->cart->get_cart()) == 0 ) {
+            $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
+            $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
+            wc_add_notice($ec_confirm_message, "error");
+            wp_redirect(get_permalink(wc_get_page_id('cart')));
+        }
+        if (!class_exists('Angelleye_PayPal')) {
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+        }
+        $PayPalConfig = array(
+            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+        );
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        if (!empty($this->confirm_order_id)) {
+            $order = new WC_Order($this->confirm_order_id);
+            $invoice_number = preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number());
+            if ($order->customer_note) {
+                $customer_notes = wptexturize($order->customer_note);
+            } else {
+                $customer_notes = '';
+            }
+        } else {
+            $invoice_number = $order->id;
+        }
+        $DRTFields = array(
+            'referenceid' => $token->get_token(), 
+            'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', 
+            'returnfmfdetails' => '1', 
+            'softdescriptor' => ''
+        );
+        $PayPalRequestData['DRTFields'] = $DRTFields;
+        $PaymentDetails = array(
+            'amt' => AngellEYE_Gateway_Paypal::number_format($order->order_total), 							// Required. Total amount of the order, including shipping, handling, and tax.
+            'currencycode' => get_woocommerce_currency(), 					// A three-character currency code.  Default is USD.
+            'itemamt' => '', 						// Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.  
+            'shippingamt' => '', 					// Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+            'insuranceamt' => '', 
+            'shippingdiscount' => '', 
+            'handlingamt' => '', 					// Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
+            'taxamt' => '', 						// Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order. 
+            'insuranceoptionoffered' => '', 		// If true, the insurance drop-down on the PayPal review page displays Yes and shows the amount.
+            'desc' => '', 							// Description of items on the order.  127 char max.
+            'custom' => '', 						// Free-form field for your own use.  256 char max.
+            'invnum' => $this->invoice_id_prefix . $invoice_number, 						// Your own invoice or tracking number.  127 char max.
+            'buttonsource' => ''					// URL for receiving Instant Payment Notifications
+        );
+        if( isset($this->notifyurl) && !empty($this->notifyurl)) {
+           $PaymentDetails['notifyurl'] = $this->notifyurl;
+        }
+        if(WC()->cart->needs_shipping()) {
+            $shipping_first_name = $order->shipping_first_name;
+            $shipping_last_name = $order->shipping_last_name;
+            $shipping_address_1 = $order->shipping_address_1;
+            $shipping_address_2 = $order->shipping_address_2;
+            $shipping_city = $order->shipping_city;
+            $shipping_state = $order->shipping_state;
+            $shipping_postcode = $order->shipping_postcode;
+            $shipping_country = $order->shipping_country;
+            $ShippingAddress = array('shiptoname' => $shipping_first_name . ' ' . $shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
+                    'shiptostreet' => $shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
+                    'shiptostreet2' => $shipping_address_2, // Second street address.  100 char max.
+                    'shiptocity' => wc_clean( stripslashes( $shipping_city ) ), // Required if shipping is included.  Name of city.  40 char max.
+                    'shiptostate' => $shipping_state, // Required if shipping is included.  Name of state or province.  40 char max.
+                    'shiptozip' => $shipping_postcode, // Required if shipping is included.  Postal code of shipping address.  20 char max.
+                    'shiptocountrycode' => $shipping_country, // Required if shipping is included.  Country code of shipping address.  2 char max.
+                    'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
+             );
+            $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
+        }
+        $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
+        $OrderItems = array();
+        if ($this->send_items) {
+            foreach ($PaymentData['order_items'] as $item) {
+                $Item = array(
+                    'name'      => $item['name'], // Item name. 127 char max.
+                    'desc'      => '', // Item description. 127 char max.
+                    'amt'       => $item['amt'], // Cost of item.
+                    'number'    => $item['number'], // Item number.  127 char max.
+                    'qty'       => $item['qty'], // Item qty on order.  Any positive integer.
+                );
+                array_push($OrderItems, $Item);
+            }
+            $PayPalRequestData['OrderItems'] = $OrderItems;
+        }
+        $PaymentDetails['taxamt']      = AngellEYE_Gateway_Paypal::number_format($PaymentData['taxamt']);       // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
+        $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($PaymentData['shippingamt']);      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+        $PaymentDetails['itemamt']     = AngellEYE_Gateway_Paypal::number_format($PaymentData['itemamt']);      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+        $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
+        $PayPalResult = $PayPal->DoReferenceTransaction($PayPalRequestData);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
+        $this->add_log('Test Mode: ' . $this->testmode);
+        $this->add_log('Endpoint: ' . $this->API_Endpoint);
+        $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+        $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+        $this->add_log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
+        $this->add_log('Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
+        return $PayPalResult;
+    }
+    
+    public function add_payment_method() {
+        $SECFields = array(
+            'returnurl' => add_query_arg( array(
+                        'do_action' => 'update_payment_method',
+                        'action_name' => 'SetExpressCheckout',
+                        'method_name' => 'paypal_express',
+                        'customer_id' => get_current_user_id()
+                ), home_url('/') ), 
+            'cancelurl' => wc_get_account_endpoint_url( 'add-payment-method' ), 							
+            'noshipping' => '1', 						
+        );
+        $Payments = array(
+            'amt' => '0', 							
+            'currencycode' => get_woocommerce_currency(), 					
+            'paymentaction' => 'AUTHORIZATION', 					
+        );
+        $BillingAgreements = array();
+        $Item = array(
+            'l_billingtype' => 'MerchantInitiatedBilling', 							
+            'l_billingagreementdescription' => 'Billing Agreement', 			
+            'l_paymenttype' => 'Any', 							
+            'l_billingagreementcustom' => ''					
+        );
+        array_push($BillingAgreements, $Item);
+        $PayPalRequest = array(
+            'SECFields' => $SECFields, 
+            'BillingAgreements' => $BillingAgreements, 
+            'Payments' => $Payments
+        );
+        $result = $this->paypal_express_checkout_token_request_handler( $PayPalRequest, 'SetExpressCheckout' );
+        if ( $result['ACK'] == 'Success' ) {
+                return array(
+                        'result'   => 'success',
+                        'redirect' => $this->PAYPAL_URL . $result['TOKEN']
+                );
+        } else {
+            $redirect_url = wc_get_account_endpoint_url( 'add-payment-method' );
+            $this->paypal_express_checkout_error_handler($request_name = 'SetExpressCheckout', $redirect_url);
+        }
+    }
+    
+    public function paypal_express_checkout_token_request_handler($PayPalRequest = array(), $action_name = '') {
+        if (!class_exists('Angelleye_PayPal')) {
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+        }
+        $PayPalConfig = array(
+            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+        );
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        if( !empty($PayPalRequest) && !empty($action_name)) {
+            if('SetExpressCheckout' == $action_name) {
+                $PayPalResult = $PayPal->SetExpressCheckout($PayPalRequest);
+                AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'SetExpressCheckout', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
+                $this->add_log('Test Mode: ' . $this->testmode);
+                $this->add_log('Endpoint: ' . $this->API_Endpoint);
+                $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+                $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+                $this->add_log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
+                $this->add_log('Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
+                return $PayPalResult;
+            }
+        }
+        if( !empty($_GET['method_name']) && $_GET['method_name'] == 'paypal_express') {
+            if($_GET['action_name'] == 'SetExpressCheckout') {
+                $PayPalResult = $PayPal->GetExpressCheckoutDetails($_GET['token']);
+                if ( $PayPalResult['ACK'] == 'Success' ) {
+                    $data = array(
+                            'METHOD' => 'CreateBillingAgreement',
+                            'TOKEN' => $_GET['token']
+                    );
+                    $billing_result = $PayPal->CreateBillingAgreement($_GET['token']);
+                    if ( $billing_result['ACK'] == 'Success' ) {
+                        if ( ! empty( $billing_result['BILLINGAGREEMENTID'] ) ) {
+                            $billing_agreement_id = $billing_result['BILLINGAGREEMENTID'];
+                            $token = new WC_Payment_Token_CC();
+                            $customer_id = get_current_user_id();
+                            $token->set_user_id( $customer_id );
+                            $token->set_token( $billing_agreement_id );
+                            $token->set_gateway_id( $this->id );
+                            $token->set_card_type( 'PayPal Billing Agreement' );
+                            $token->set_last4( substr( $billing_agreement_id, -4 ) );
+                            $token->set_expiry_month( date( 'm' ) );
+                            $token->set_expiry_year( date( 'Y', strtotime( '+20 year' ) ) );
+                            $save_result = $token->save();
+                            wp_redirect( wc_get_account_endpoint_url( 'add-payment-method' ) );
+                            exit();
+                        }
+                    }
+                } else {
+                   $redirect_url = wc_get_account_endpoint_url( 'add-payment-method' );
+                   $this->paypal_express_checkout_error_handler($request_name = 'GetExpressCheckoutDetails', $redirect_url);
+                }
+            }
+        }
+    }
+    
+    public function paypal_express_checkout_error_handler($request_name = '', $redirect_url = ''){
+        $ErrorCode = urldecode($result["L_ERRORCODE0"]);
+        $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
+        $ErrorLongMsg = urldecode($result["L_LONGMESSAGE0"]);
+        $ErrorSeverityCode = urldecode($result["L_SEVERITYCODE0"]);
+        $this->add_log(__($request_name .'API call failed. ', 'paypal-for-woocommerce'));
+        $this->add_log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
+        $this->add_log(__('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg);
+        $this->add_log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
+        $this->add_log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
+        $message = '';
+        if ($this->error_email_notify) {
+            $admin_email = get_option("admin_email");
+            $message .= __($request_name . " API call failed.", "paypal-for-woocommerce") . "\n\n";
+            $message .= __('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode . "\n";
+            $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
+            $message .= __('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg . "\n";
+            $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
+            $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+            $error_email_notify_mes = apply_filters( 'ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
+            $subject = "PayPal Express Checkout Error Notification";
+            $error_email_notify_subject = apply_filters( 'ae_ppec_error_email_subject', $subject );
+            wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
+        }
+        if ($this->error_display_type == 'detailed') {
+            $sec_error_notice = $ErrorCode . ' - ' . $ErrorLongMsg;
+            $error_display_type_message = sprintf(__($sec_error_notice, 'paypal-for-woocommerce'));
+        } else {
+            $error_display_type_message = sprintf(__('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce'));
+        }
+        $error_display_type_message = apply_filters( 'ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg );
+        wc_add_notice($error_display_type_message, 'error');
+        if (!is_ajax()) {
+            wp_redirect($redirect_url);
+            exit;
+        } else {
+            return array(
+                'result'   => 'fail',
+                'redirect' => $redirect_url
+            );
+        }
+    }
 }
-

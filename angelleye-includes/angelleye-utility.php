@@ -572,6 +572,9 @@ class AngellEYE_Utility {
 
     public function angelleye_woocommerce_payment_gateway_supports($boolean, $feature, $current) {
         global $post;
+        if( empty($post->ID) ) {
+           return false;
+        }
         $order_id = $post->ID;
         $payment_action = '';
         if ($current->id == 'paypal_express' || $current->id == 'paypal_pro') {

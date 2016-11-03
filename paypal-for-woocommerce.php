@@ -75,6 +75,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
 
             require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
+            require_once plugin_dir_path(__FILE__) . 'angelleye-includes/wc-gateway-payment-token-api.php';
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
             add_action( 'plugins_loaded', array($this, 'init'));
@@ -86,6 +87,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
             add_action( 'woocommerce_sections_checkout', array( $this, 'donate_message' ), 11 );
             add_action( 'parse_request', array($this, 'woocommerce_paypal_express_review_order_page_angelleye') , 11);
+            add_action( 'parse_request', array($this, 'wc_gateway_payment_token_api_parser') , 99);
 
             // http://stackoverflow.com/questions/22577727/problems-adding-action-links-to-wordpress-plugin
             $basename = plugin_basename(__FILE__);
@@ -1069,7 +1071,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $_product = $value['data'];
                     if (isset($_product->id) && !empty($_product->id) ) {
                         $_paypal_billing_agreement = get_post_meta($_product->id, '_paypal_billing_agreement', true);
-                        if( $_paypal_billing_agreement == 'yes' ) {
+                        if( $_paypal_billing_agreement == 'yes' || true) {
                             $BillingAgreements = array();
                             $Item = array(
                                 'l_billingtype' => '', // Required.  Type of billing agreement.  For recurring payments it must be RecurringPayments.  You can specify up to ten billing agreements.  For reference transactions, this field must be either:  MerchantInitiatedBilling, or MerchantInitiatedBillingSingleSource
@@ -1528,6 +1530,21 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 return false;
             } else {
                 return true;
+            }
+        }
+        
+        public function wc_gateway_payment_token_api_parser() {
+            if( !empty($_GET['do_action']) && $_GET['do_action'] = 'update_payment_method') {
+                if( !empty($_GET['method_name']) && $_GET['method_name'] == 'paypal_express') {
+                    switch ($_GET['action_name']) {
+                       case 'SetExpressCheckout':
+                            $woocommerce_token_api = new WC_Gateway_PayPal_Express_AngellEYE();
+                            $woocommerce_token_api->paypal_express_checkout_token_request_handler();
+                           break;
+                       default:
+                           break;
+                   }
+                }
             }
         }
     }
