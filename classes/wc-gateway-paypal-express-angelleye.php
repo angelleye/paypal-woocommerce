@@ -1,4 +1,4 @@
-                <?php 
+<?php 
 
 class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
