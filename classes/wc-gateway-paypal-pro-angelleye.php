@@ -4,7 +4,7 @@
  *
  * @extends WC_Payment_Gateway
  */
-class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
+class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
 {
 
     /**
@@ -110,15 +110,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
 
         //fix ssl for image icon
         $this->icon = !empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png';
-        if (is_ssl())
+        if (is_ssl()) {
             $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
-
-
+        }
         $this->supports = array(
-			'products',
-			'refunds'
-		);
-
+            'products',
+            'refunds'
+	);
+        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if($this->enable_tokenized_payments == 'yes') {
+            array_push($this->supports, "tokenization");
+        }
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
 
         if ($this->testmode == 'yes') {
@@ -298,6 +300,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
                 'default' => 'no',
                 'class' => 'angelleye_enable_notifyurl'
             ),
+            'enable_tokenized_payments' => array(
+                'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => ''
+            ),
             'notifyurl' => array(
                 'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
                 'type' => 'text',
@@ -356,11 +366,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
     /**
      * Payment form on checkout page
      */
-    public function payment_fields()
-    {
-
+    public function payment_fields() {
         do_action('before_angelleye_pc_payment_fields', $this);
-
         if ($this->description) {
             echo '<p>' . wp_kses_post($this->description);
             if ($this->testmode == "yes") {
@@ -371,22 +378,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
                 echo '</p>';
             }
         }
-        if(class_exists('WC_Payment_Gateway_CC')) {
-            $cc_form = new WC_Payment_Gateway_CC;
-            $cc_form->id       = $this->id;
-            $cc_form->supports = $this->supports;
-            $cc_form->form();
-            do_action('after_angelleye_pc_payment_fields', $this);
-        } else {
-            $fields = $this->angelleye_paypal_pro_credit_card_form_fields($default_fields = null, $this->id);
-            $this->credit_card_form(array(), $fields);
-        }
-        
+        parent::payment_fields();
     }
 
-
-    public function paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class)
-    {
+    public function paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class) {
         $form_html = "";
         $form_html .= '<p class="' . $class . '">';
         $form_html .= '<label for="cc-expire-month">' . __("Expiration Date", 'paypal-for-woocommerce') . '<span class="required">*</span></label>';
@@ -458,6 +453,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
     public function validate_fields()
     {
         try {
+            if ( isset( $_POST['wc-paypal_pro-payment-token'] ) && 'new' !== $_POST['wc-paypal_pro-payment-token'] ) {
+                $token_id = wc_clean( $_POST['wc-paypal_pro-payment-token'] );
+                $token  = WC_Payment_Tokens::get( $token_id );
+                if ( $token->get_user_id() !== get_current_user_id() ) {
+                    throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
+                }else {
+                    return true;
+                }
+            }
             $card = $this->get_posted_card();
             do_action('before_angelleye_pro_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
             if (empty($card->exp_month) || empty($card->exp_year)) {
@@ -800,6 +804,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             'returnfmfdetails' => '1'                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
         );
 
+        
         $CCDetails = array(
             'creditcardtype' => $card_type,                    // Required. Type of credit card.  Visa, MasterCard, Discover, Amex, Maestro, Solo.  If Maestro or Solo, the currency code must be GBP.  In addition, either start date or issue number must be specified.
             'acct' => $card_number,                                // Required.  Credit card number.  No spaces or punctuation.
@@ -941,16 +946,29 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             'OrderItems' => $OrderItems,
             'Secure3D' => $Secure3D
         );
-
-    
+        
         $log = $PayPalRequestData;
-        $log['CCDetails']['acct'] = '****';
-        $log['CCDetails']['cvv2'] = '****';
+        $log['CCDetails']['acct'] = isset($log['CCDetails']['acct']) ? '****' : '';
+        $log['CCDetails']['cvv2'] = isset($log['CCDetails']['cvv2']) ? '****' : '';
         $this->log('Do payment request ' . print_r($log, true));
-       
-
+        
+        if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') {
+            $token_id = wc_clean( $_POST['wc-paypal_pro-payment-token'] );
+            $token = WC_Payment_Tokens::get( $token_id );
+            unset($PayPalRequestData['DPFields']);
+            $PayPalRequestData['DRTFields'] = array(
+                'referenceid' => $token->get_token(), 
+                'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', 
+                'returnfmfdetails' => '1', 
+                'softdescriptor' => ''
+            );
+            $PayPalResult = $PayPal->DoReferenceTransaction($PayPalRequestData);
+        } else {
+            $PayPalResult = $PayPal->DoDirectPayment($PayPalRequestData);
+        }
+        
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
-        $PayPalResult = $PayPal->DoDirectPayment($PayPalRequestData);
+        
 
         /**
          *  cURL Error Handling #146
@@ -1012,6 +1030,25 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             $is_sandbox = $this->testmode == 'yes' ? true : false;
             update_post_meta($order->id, 'is_sandbox', $is_sandbox);
      
+            if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') {
+                if(!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) {
+                    $customer_id =  $order->get_user_id();
+                    $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
+                    $token = new WC_Payment_Token_CC();
+                    $token->set_user_id( $customer_id );
+                    $token->set_token( $TRANSACTIONID );
+                    $token->set_gateway_id( $this->id );
+                    $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
+                    $token->set_last4( substr( $PayPalRequestData['CCDetails']['acct'], -4 ) );
+                    $token->set_expiry_month( date( 'm' ) );
+                    $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+                    $save_result = $token->save();
+                    if ( $save_result ) {
+                            $order->add_payment_token( $token );
+                    }
+                }
+            }
+            
             // Payment complete
             if ($this->payment_action == "Sale") {
                 $order->payment_complete($PayPalResult['TRANSACTIONID']);

@@ -2626,7 +2626,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
     
    public function process_payment($order_id) {
-       if(!empty($_POST['wc-paypal_express-payment-token'])) {
+       if(!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
             $result = $this->DoReferenceTransaction($order_id);
             if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                 $order = wc_get_order($order_id);
