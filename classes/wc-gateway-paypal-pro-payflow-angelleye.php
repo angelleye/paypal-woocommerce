@@ -5,7 +5,7 @@
  *
  * @extends WC_Payment_Gateway
  */
-class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
+class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 
 	/**
 	 * __construct function.
@@ -64,6 +64,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway {
 			'refunds'
 		);
 
+        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if($this->enable_tokenized_payments == 'yes') {
+            array_push($this->supports, "tokenization");
+        }
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         $this->enable_cardholder_first_last_name = isset($this->settings['enable_cardholder_first_last_name']) && $this->settings['enable_cardholder_first_last_name'] == 'yes' ? true : false;
 
@@ -227,6 +231,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     'Authorization' => 'Authorization',
                 ),
                 'default' => 'Sale'
+            ),
+            'enable_tokenized_payments' => array(
+                'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => ''
             ),
             'enable_cardholder_first_last_name' => array(
                 'title' => __('Enable Cardholder Name', 'paypal-for-woocommerce'),
@@ -460,9 +472,16 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
         
-                        $log         = $PayPalRequestData;
-                        $log['acct'] = '****';
-                        $log['cvv2'] = '****';
+                        $log = $PayPalRequestData;
+                        if(!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] != 'new') {
+                             $token_id = wc_clean( $_POST['wc-paypal_pro_payflow-payment-token'] );
+                             $token = WC_Payment_Tokens::get( $token_id );
+                             $PayPalRequestData['origid'] = $token->get_token();
+                             $PayPalRequestData['expdate'] = '';
+                        } else {
+                            $log['acct'] = '****';
+                            $log['cvv2'] = '****';
+                        }
                         $this->add_log('PayFlow Request: '.print_r( $log, true ) );
 			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
                         
@@ -543,6 +562,25 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                 // Payment complete
                 //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
+                                
+                if(!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] == 'new') {
+                    if(!empty($_POST['wc-paypal_pro_payflow-new-payment-method']) && $_POST['wc-paypal_pro_payflow-new-payment-method'] == true) {
+                        $customer_id =  $order->get_user_id();
+                        $TRANSACTIONID = $PayPalResult['PNREF'];
+                        $token = new WC_Payment_Token_CC();
+                        $token->set_user_id( $customer_id );
+                        $token->set_token( $TRANSACTIONID );
+                        $token->set_gateway_id( $this->id );
+                        $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['acct']));
+                        $token->set_last4( substr( $PayPalRequestData['acct'], -4 ) );
+                        $token->set_expiry_month( date( 'm' ) );
+                        $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+                        $save_result = $token->save();
+                        if ( $save_result ) {
+                                $order->add_payment_token( $token );
+                        }
+                    }
+                }
                 $order->payment_complete($PayPalResult['PNREF']);
 
                 // Remove cart
@@ -603,26 +641,17 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         public function payment_fields() {
             do_action( 'angelleye_before_fc_payment_fields', $this );
             if ( $this->description ) {
-				echo '<p>' . wp_kses_post( $this->description );
-				if($this->testmode == "yes")
-				{
-					echo '<p>';
-					_e('NOTICE: SANDBOX (TEST) MODE ENABLED.', 'paypal-for-woocommerce');
-					echo '<br />';
-					_e('For testing purposes you can use the card number 4111111111111111 with any CVC and a valid expiration date.', 'paypal-for-woocommerce');
-					echo '</p>';
-				}
+                echo '<p>' . wp_kses_post( $this->description );
+                if($this->testmode == "yes")
+                {
+                        echo '<p>';
+                        _e('NOTICE: SANDBOX (TEST) MODE ENABLED.', 'paypal-for-woocommerce');
+                        echo '<br />';
+                        _e('For testing purposes you can use the card number 4111111111111111 with any CVC and a valid expiration date.', 'paypal-for-woocommerce');
+                        echo '</p>';
+                }
             }
-            if(class_exists('WC_Payment_Gateway_CC')) {
-                $cc_form = new WC_Payment_Gateway_CC;
-                $cc_form->id       = $this->id;
-                $cc_form->supports = $this->supports;
-                $cc_form->form();
-                do_action( 'angelleye_after_fc_payment_fields', $this );
-            } else {
-                $fields = $this->angelleye_paypal_pro_payflow_credit_card_form_fields($default_fields = null, $this->id);
-                $this->credit_card_form(array(), $fields);
-            }
+            parent::payment_fields();
 	}
         
         public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {
@@ -762,6 +791,15 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
      */
     public function validate_fields() {
 
+        if ( isset( $_POST['wc-paypal_pro_payflow-payment-token'] ) && 'new' !== $_POST['wc-paypal_pro_payflow-payment-token'] ) {
+            $token_id = wc_clean( $_POST['wc-paypal_pro_payflow-payment-token'] );
+            $token  = WC_Payment_Tokens::get( $token_id );
+            if ( $token->get_user_id() !== get_current_user_id() ) {
+                throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
+            }else {
+                return true;
+            }
+         }
         $card_number    = isset( $_POST['paypal_pro_payflow-card-number'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-number'] ) : '';
         $card_cvc       = isset( $_POST['paypal_pro_payflow-card-cvc'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-cvc'] ) : '';
         $card_exp_year    = isset( $_POST['paypal_pro_payflow_card_expiration_year'] ) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration_year'] ) : '';
