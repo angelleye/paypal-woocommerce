@@ -19,7 +19,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'refunds'
         );
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
-        if($this->enable_tokenized_payments == 'yes') {
+        if($this->enable_tokenized_payments == 'yes' && is_user_logged_in()) {
             array_push($this->supports, "tokenization");
         }
         if (substr(get_option("woocommerce_default_country"),0,2) != 'US') {
@@ -2614,6 +2614,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
     
     public function payment_fields() {
+        if ( $description = $this->get_description() ) {
+            echo wpautop( wptexturize( $description ) );
+	}
         $this->new_method_label = __( 'Create a new billing agreement', 'wc-autoship' );
         if ( $this->supports( 'tokenization' ) && is_checkout() ) {
             $this->tokenization_script();
