@@ -4,6 +4,7 @@ use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Rest\ApiContext;
 use PayPal\Api\Amount;
 use PayPal\Api\CreditCard;
+use PayPal\Api\CreditCardToken;
 use PayPal\Api\Details;
 use PayPal\Api\FundingInstrument;
 use PayPal\Api\Item;
@@ -29,6 +30,7 @@ class PayPal_Rest_API_Utility {
     protected $payment;
     protected $payment_method;
     protected $gateway;
+    protected $CreditCardToken;
 
     public function __construct() {
         $this->add_paypal_rest_api_lib();
@@ -67,6 +69,30 @@ class PayPal_Rest_API_Utility {
                 $sale = $relatedResources[0]->getSale();
                 $saleId = $sale->getId();
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
+                if(!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] == 'new') {
+                    if(!empty($_POST['wc-paypal_credit_card_rest-new-payment-method']) && $_POST['wc-paypal_credit_card_rest-new-payment-method'] == true) {
+                        try {
+                            $this->card->create($this->getAuth());
+                            $customer_id =  $order->get_user_id();
+                            $creditcard_id = $this->card->getId();
+                            $token = new WC_Payment_Token_CC();
+                            $token->set_user_id( $customer_id );
+                            $token->set_token( $creditcard_id );
+                            $token->set_gateway_id( $this->payment_method );
+                            $token->set_card_type( $this->card->type );
+                            $token->set_last4( substr( $this->card->number, -4 ) );
+                            $token->set_expiry_month( date( 'm' ) );
+                            $token->set_expiry_year( date( 'Y', strtotime( $this->card->valid_until ) ) );
+                            $save_result = $token->save();
+                            if ( $save_result ) {
+                                    $order->add_payment_token( $token );
+                            }
+                        } catch (Exception $ex) {
+
+                        }
+                        
+                    }
+                }
                 $order->payment_complete($saleId);
                 $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
                 update_post_meta($order->id, 'is_sandbox', $is_sandbox);
@@ -115,9 +141,19 @@ class PayPal_Rest_API_Utility {
      * @param type $card_data
      */
     public function set_trnsaction_obj_value($order, $card_data) {
-        $this->set_card_details($order, $card_data);
-        $this->fundingInstrument = new FundingInstrument();
-        $this->fundingInstrument->setCreditCard($this->card);
+        if(!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
+            $token_id = wc_clean( $_POST['wc-paypal_credit_card_rest-payment-token'] );
+            $token = WC_Payment_Tokens::get( $token_id );
+            $this->CreditCardToken = new CreditCardToken();
+            $this->CreditCardToken->setCreditCardId($token->get_token());
+            $this->fundingInstrument = new FundingInstrument();
+            $this->fundingInstrument->setCreditCardToken($this->CreditCardToken);
+        } else {
+            $this->set_card_details($order, $card_data);
+            $this->fundingInstrument = new FundingInstrument();
+            $this->fundingInstrument->setCreditCard($this->card);
+        }
+        
         $this->payer = new Payer();
         $this->payer->setPaymentMethod("credit_card");
         $this->payer->setFundingInstruments(array($this->fundingInstrument));
@@ -231,8 +267,9 @@ class PayPal_Rest_API_Utility {
      */
     public function getAuth() {
         $auth = new ApiContext(new OAuthTokenCredential($this->rest_client_id, $this->rest_secret_id));
-        $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce'));
+        $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce', 'log.LogEnabled' => true, 'log.LogLevel' => ($this->mode == 'SANDBOX' ) ? 'DEBUG' : 'INFO', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest'), 'cache.enabled' => true, 'cache.FileName' => wc_get_log_file_path('paypal_credit_card_rest_cache')));
         return $auth;
+        
     }
 
     /**
@@ -312,6 +349,7 @@ class PayPal_Rest_API_Utility {
      * @since    1.2
      */
     public function create_transaction_method_obj() {
+        
         $this->card = new CreditCard();
         $this->order_item = array();
         $this->send_items = true;
