@@ -863,8 +863,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         }
     }
     
-    public function angelleye_woocommerce_credit_card_form_start($current_id)
-    {
+    public function angelleye_woocommerce_credit_card_form_start($current_id) {
         if ($this->enable_cardholder_first_last_name && $current_id == $this->id) {
             $fields['card-cardholder-first'] = '<p class="form-row form-row-first">
                     <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Cardholder First Name', 'paypal-for-woocommerce') . '</label>
@@ -878,6 +877,130 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             foreach ($fields as $field) {
                 echo $field;
             }
+        }
+    }
+    
+    public function get_posted_card()
+    {
+        try {
+            $card_number    = isset( $_POST['paypal_pro_payflow-card-number'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-number'] ) : '';
+            $card_cvc       = isset( $_POST['paypal_pro_payflow-card-cvc'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-cvc'] ) : '';
+            $card_exp_year    = isset( $_POST['paypal_pro_payflow_card_expiration_year'] ) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration_year'] ) : '';
+            $card_exp_month    = isset( $_POST['paypal_pro_payflow_card_expiration_month'] ) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration_month'] ) : '';
+            $card_number    = str_replace( array( ' ', '-' ), '', $card_number );
+            $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
+            if($card_type == 'amex' && (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD')) {
+                throw new Exception( __( 'Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce' ) );
+            }
+            if ( strlen( $card_exp_year ) == 4 ) {
+                $card_exp_year = $card_exp_year - 2000;
+            }
+            $card_exp_month = (int) $card_exp_month;
+            if ($card_exp_month < 10) {
+                $card_exp_month = '0'.$card_exp_month;
+            }
+            return (object)array(
+                'number' => $card_number,
+                'type' => '',
+                'cvc' => $card_cvc,
+                'exp_month' => $card_exp_month,
+                'exp_year' => $card_exp_year,
+                'start_month' => '',
+                'start_year' => ''
+            );
+        } catch (Exception $ex) {
+
+        }
+        
+    }
+
+    public function add_payment_method() {
+        $customer_id = get_current_user_id();
+        if (!class_exists('Angelleye_PayPal')) {
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+        }
+        if(!class_exists('Angelleye_PayPal_PayFlow' )) {
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
+        }
+        $PayPalConfig = array(
+            'Sandbox' => ($this->testmode=='yes')? true:false,
+            'APIUsername' => $this->paypal_user,
+            'APIPassword' => trim($this->paypal_password),
+            'APIVendor' => $this->paypal_vendor,
+            'APIPartner' => $this->paypal_partner,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+        );
+        $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+        $this->validate_fields();
+        $card = $this->get_posted_card();
+        
+        $billtofirstname = (get_user_meta( $customer_id, 'billing_first_name', true )) ? get_user_meta( $customer_id, 'billing_first_name', true ) : get_user_meta( $customer_id, 'shipping_first_name', true );
+        $billtolastname = (get_user_meta( $customer_id, 'billing_last_name', true )) ? get_user_meta( $customer_id, 'billing_last_name', true ) : get_user_meta( $customer_id, 'shipping_last_name', true );
+        $billtostate = (get_user_meta( $customer_id, 'billing_state', true )) ? get_user_meta( $customer_id, 'billing_state', true ) : get_user_meta( $customer_id, 'shipping_state', true );
+        $billtocountry = (get_user_meta( $customer_id, 'billing_country', true )) ? get_user_meta( $customer_id, 'billing_country', true ) : get_user_meta( $customer_id, 'shipping_country', true );
+        $billtozip = (get_user_meta( $customer_id, 'billing_postcode', true )) ? get_user_meta( $customer_id, 'billing_postcode', true ) : get_user_meta( $customer_id, 'shipping_postcode', true );
+        
+        $PayPalRequestData = array(
+            'tender' => 'C',
+            'trxtype' => 'A',
+            'acct' => $card->number,
+            'expdate' => $card->exp_month . $card->exp_year,
+            'amt' => '0.00',
+            'currency' => get_woocommerce_currency(), 
+            'cvv2' => $card->cvc,
+            'orderid'=> '',
+            'orderdesc'=> '',
+            'billtoemail' => '',
+            'billtophonenum' => '', 
+            'billtofirstname' => $billtofirstname,
+            'billtomiddlename' => '',
+            'billtolastname'=> $billtolastname,
+            'billtostreet' => '', 
+            'billtocity' => '', 			
+            'billtostate' => $billtostate, 			
+            'billtozip' => $billtozip, 			
+            'billtocountry' => $billtocountry, 		
+            'origid' => '', 				
+            'custref' => '',
+            'custcode'=>'', 
+            'custip' => $this->get_user_ip(),
+            'invnum'=> '',
+            'ponum' => '',
+            'starttime' => '',
+            'endtime' => '',
+            'securetoken' => '',
+            'partialauth' => '',
+            'authcode' => ''
+        );
+        $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+        if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)) {
+            if ($PayPalResult['RESULT'] == 126) {
+                wc_add_notice( __( 'The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.', 'woocommerce' ), 'error' );
+                wp_redirect( wc_get_account_endpoint_url( 'payment-methods' ) );
+                exit();
+            } else {
+                $customer_id = get_current_user_id();
+                $TRANSACTIONID = $PayPalResult['PNREF'];
+                $token = new WC_Payment_Token_CC();
+                $token->set_user_id( $customer_id );
+                $token->set_token( $TRANSACTIONID );
+                $token->set_gateway_id( $this->id );
+                $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['acct']));
+                $token->set_last4( substr( $PayPalRequestData['acct'], -4 ) );
+                $token->set_expiry_month( date( 'm' ) );
+                $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+                $save_result = $token->save();
+                if ( $save_result ) {
+                    return array(
+                        'result' => 'success',
+                        'redirect' => wc_get_account_endpoint_url( 'payment-methods' )
+                    );
+                }
+            }
+        } else {
+            wc_add_notice( __( $PayPalResult['RESPMSG'], 'woocommerce' ), 'error' );
+            wp_redirect( wc_get_account_endpoint_url( 'payment-methods' ) );
+            exit();
         }
     }
 }

@@ -1402,7 +1402,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             'returnfmfdetails' => '1'
         );
         $CCDetails = array(
-            'creditcardtype' => $card->number,
+            'creditcardtype' => $card->type,
             'acct' => $card->number,
             'expdate' => $card->exp_month . $card->exp_year,
             'cvv2' => $card->cvc
