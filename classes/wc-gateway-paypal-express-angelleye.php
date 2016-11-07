@@ -2640,7 +2640,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                    
             } else {
                 $redirect_url = get_permalink(wc_get_page_id('cart'));
-                $this->paypal_express_checkout_error_handler($request_name = 'DoReferenceTransaction', $redirect_url);
+                $this->paypal_express_checkout_error_handler($request_name = 'DoReferenceTransaction', $redirect_url, $result);
             }
         }
     }
@@ -2793,7 +2793,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 );
         } else {
             $redirect_url = wc_get_account_endpoint_url( 'add-payment-method' );
-            $this->paypal_express_checkout_error_handler($request_name = 'SetExpressCheckout', $redirect_url);
+            $this->paypal_express_checkout_error_handler($request_name = 'SetExpressCheckout', $redirect_url, $result);
         }
     }
     
@@ -2844,19 +2844,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $token->set_expiry_month( date( 'm' ) );
                             $token->set_expiry_year( date( 'Y', strtotime( '+20 year' ) ) );
                             $save_result = $token->save();
-                            wp_redirect( wc_get_account_endpoint_url( 'add-payment-method' ) );
+                            wp_redirect( wc_get_account_endpoint_url( 'payment-methods' ) );
                             exit();
                         }
                     }
                 } else {
                    $redirect_url = wc_get_account_endpoint_url( 'add-payment-method' );
-                   $this->paypal_express_checkout_error_handler($request_name = 'GetExpressCheckoutDetails', $redirect_url);
+                   $this->paypal_express_checkout_error_handler($request_name = 'GetExpressCheckoutDetails', $redirect_url, $PayPalResult);
                 }
             }
         }
     }
     
-    public function paypal_express_checkout_error_handler($request_name = '', $redirect_url = ''){
+    public function paypal_express_checkout_error_handler($request_name = '', $redirect_url = '', $result){
         $ErrorCode = urldecode($result["L_ERRORCODE0"]);
         $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
         $ErrorLongMsg = urldecode($result["L_LONGMESSAGE0"]);

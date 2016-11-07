@@ -1339,4 +1339,104 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         }
         return parent::get_transaction_url( $order );
     }
+    
+    public function paypal_pro_error_handler($request_name = '', $redirect_url = '', $result){
+        $ErrorCode = urldecode($result["L_ERRORCODE0"]);
+        $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
+        $ErrorLongMsg = urldecode($result["L_LONGMESSAGE0"]);
+        $ErrorSeverityCode = urldecode($result["L_SEVERITYCODE0"]);
+        $this->log(__($request_name .'API call failed. ', 'paypal-for-woocommerce'));
+        $this->log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
+        $this->log(__('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg);
+        $this->log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
+        $this->log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
+        $message = '';
+        if ($this->error_email_notify) {
+            $admin_email = get_option("admin_email");
+            $message .= __($request_name . " API call failed.", "paypal-for-woocommerce") . "\n\n";
+            $message .= __('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode . "\n";
+            $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
+            $message .= __('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg . "\n";
+            $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
+            $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+            $error_email_notify_mes = apply_filters( 'ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
+            $subject = "PayPal Express Checkout Error Notification";
+            $error_email_notify_subject = apply_filters( 'ae_ppec_error_email_subject', $subject );
+            wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
+        }
+        if ($this->error_display_type == 'detailed') {
+            $sec_error_notice = $ErrorCode . ' - ' . $ErrorLongMsg;
+            $error_display_type_message = sprintf(__($sec_error_notice, 'paypal-for-woocommerce'));
+        } else {
+            $error_display_type_message = sprintf(__('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce'));
+        }
+        $error_display_type_message = apply_filters( 'ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg );
+        wc_add_notice($error_display_type_message, 'error');
+        if (!is_ajax()) {
+            wp_redirect($redirect_url);
+            exit;
+        } else {
+            return array(
+                'result'   => 'fail',
+                'redirect' => $redirect_url
+            );
+        }
+    }
+    public function add_payment_method() {
+        if (!class_exists('Angelleye_PayPal')) {
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+        }
+        $this->validate_fields();
+        $card = $this->get_posted_card();
+        $PayPalConfig = array(
+            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+        );
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        $DPFields = array(
+            'paymentaction' => 'Authorization',
+            'ipaddress' => $this->get_user_ip(),
+            'returnfmfdetails' => '1'
+        );
+        $CCDetails = array(
+            'creditcardtype' => $card->number,
+            'acct' => $card->number,
+            'expdate' => $card->exp_month . $card->exp_year,
+            'cvv2' => $card->cvc
+        );
+        $PaymentDetails = array(
+            'amt' => 0, 			
+            'currencycode' => get_woocommerce_currency(), 					
+        );
+        $PayPalRequestData = array(
+            'DPFields' => $DPFields, 
+            'CCDetails' => $CCDetails, 
+            'PaymentDetails' => $PaymentDetails
+        );
+        $result = $PayPal->DoDirectPayment($PayPalRequestData);
+        if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+            $customer_id = get_current_user_id();
+            $TRANSACTIONID = $result['TRANSACTIONID'];
+            $token = new WC_Payment_Token_CC();
+            $token->set_user_id( $customer_id );
+            $token->set_token( $TRANSACTIONID );
+            $token->set_gateway_id( $this->id );
+            $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
+            $token->set_last4( substr( $PayPalRequestData['CCDetails']['acct'], -4 ) );
+            $token->set_expiry_month( date( 'm' ) );
+            $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+            $save_result = $token->save();
+            return array(
+                    'result' => 'success',
+                    'redirect' => wc_get_account_endpoint_url( 'payment-methods' )
+                );
+           
+        } else {
+            $redirect_url = wc_get_account_endpoint_url( 'payment-methods' );
+            $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
+        }
+    }
 }
