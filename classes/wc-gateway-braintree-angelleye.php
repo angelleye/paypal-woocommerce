@@ -281,7 +281,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     } else {
                         $clientToken = Braintree_ClientToken::generate();
                     }
+                } else {
+                    $clientToken = Braintree_ClientToken::generate();
                 }
+                
             } catch (Braintree_Exception_Authentication $e ) {
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
                 $this->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
@@ -364,6 +367,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     var $form = jQuery('form.checkout, #order_review'),
                             ccForm = jQuery('#braintree-cc-form');
                     if (obj.nonce) {
+                        jQuery( '.woocommerce-error, .braintree-token', ccForm ).remove();
                         ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + obj.nonce + '"/>');
                         $form.submit();
                     }
@@ -372,20 +376,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     return braintreeFormHandler();
                 });
                 function braintreeFormHandler() {
-                    if (jQuery('#payment_method_braintree').is(':checked')) {
-                        if (0 === jQuery('input.braintree-token').size()) {
-                            return false;
+                   if (jQuery('#payment_method_braintree').is(':checked')) {
+                            if (0 === jQuery('input.braintree-token').size()) {
+                                return false;
+                            }
                         }
-                    }
                     return true;
+                    
                 }
             </script>
-            <?php 
-                $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
-                if( empty($braintree_customer_id) ) {
-                    $this->save_payment_method_checkbox();
-                }
-            ?>
             <?php
         } else {
             parent::payment_fields();
@@ -581,7 +580,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     if((!empty($_POST['wc-braintree-new-payment-method']) && $_POST['wc-braintree-new-payment-method'] == true) || ($this->enable_braintree_drop_in && $this->supports( 'tokenization' ))) {
                         try {
                             $transaction = Braintree_Transaction::find($this->response->transaction->id);
-                            if( !empty($transaction->creditCard) ) {
+                            if( !empty($transaction->creditCard) && !empty($transaction->customer['id'])) {
                                 $customer_id =  $order->get_user_id();
                                 update_user_meta($customer_id, 'braintree_customer_id', $transaction->customer['id']);
                                 $payment_method_token = $transaction->creditCard['token'];
@@ -603,6 +602,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     $order->add_payment_token( $wc_existing_token );
                                 }
                             }
+                            
                         } catch (Braintree_Exception_NotFound $e) {
                             $this->add_log("Braintree_Transaction::find Braintree_Exception_NotFound: " . $e->getMessage());
                             return new WP_Error(404, $e->getMessage());
@@ -938,7 +938,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (!is_checkout() || !$this->is_available()) {
             return;
         }
-        wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/js/braintree-2.27.0.min.js', array(), WC_VERSION, false);
+        wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/js/braintree-2.29.0.min.js', array(), WC_VERSION, false);
     }
     
     public static function get_posted_variable( $variable, $default = '' ) {
