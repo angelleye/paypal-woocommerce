@@ -364,8 +364,9 @@ class PayPal_Rest_API_Utility {
             return;
         }
         if (!class_exists('Angelleye_PayPal')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/autoload.php' );
+            //require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/autoload.php' );
         }
+        require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/autoload.php' );
     }
 
     /**
@@ -537,6 +538,63 @@ class PayPal_Rest_API_Utility {
             $decimals = 0;
         }
         return number_format($price, $decimals, '.', '');
+    }
+    
+    public function save_credit_card($card_data) {
+        $customer_id = get_current_user_id();
+        $this->card = new CreditCard();
+        $this->set_card_type($card_data);
+        $this->set_card_number($card_data);
+        $this->set_card_expire_month($card_data);
+        $this->set_card_expire_year($card_data);
+        $this->set_card_cvv($card_data);
+        
+        $billtofirstname = (get_user_meta( $customer_id, 'billing_first_name', true )) ? get_user_meta( $customer_id, 'billing_first_name', true ) : get_user_meta( $customer_id, 'shipping_first_name', true );
+        $billtolastname = (get_user_meta( $customer_id, 'billing_last_name', true )) ? get_user_meta( $customer_id, 'billing_last_name', true ) : get_user_meta( $customer_id, 'shipping_last_name', true );
+        
+        $this->card->setFirstName($billtofirstname);
+        $this->card->setLastName($billtolastname);
+        $this->card->setMerchantId(get_bloginfo('name').'_'.$customer_id.'_'.uniqid());
+        $this->card->setExternalCardId($card_data->number.'_'.uniqid());
+        $this->card->setExternalCustomerId($card_data->number.'_'.$customer_id.'_'.uniqid());
+        
+        try {
+            $this->card->create($this->getAuth());
+            if($this->card->state == 'ok') {
+                $customer_id = get_current_user_id();
+                $creditcard_id = $this->card->getId();
+                $token = new WC_Payment_Token_CC();
+                $token->set_user_id( $customer_id );
+                $token->set_token( $creditcard_id );
+                $token->set_gateway_id( $this->payment_method );
+                $token->set_card_type( $this->card->type );
+                $token->set_last4( substr( $this->card->number, -4 ) );
+                $token->set_expiry_month( date( 'm' ) );
+                $token->set_expiry_year( date( 'Y', strtotime( $this->card->valid_until ) ) );
+                $save_result = $token->save();
+                if ( $save_result ) {
+                    return array(
+                        'result' => 'success',
+                        'redirect' => wc_get_account_endpoint_url( 'payment-methods' )
+                    );
+                    
+                }
+            } else {
+                    wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                    return array(
+                        'result' => 'fail',
+                        'redirect' => wc_get_account_endpoint_url( 'payment-methods' )
+                    );
+            }
+        } catch (Exception $ex) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->add_log($ex->getMessage());
+                return array(
+                    'result' => 'fail',
+                    'redirect' => ''
+                );
+        }
+        
     }
 
 }

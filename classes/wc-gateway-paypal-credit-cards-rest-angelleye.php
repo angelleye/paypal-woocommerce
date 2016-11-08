@@ -263,5 +263,12 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             return $default_fields;
         }
     }
+    
+    public function add_payment_method() {
+        $this->add_rest_api_utility();
+        $card = $this->paypal_rest_api->get_posted_card();
+        $result = $this->paypal_rest_api->save_credit_card($card);
+        return $result;
+    }
 
 }
