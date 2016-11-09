@@ -1070,7 +1070,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $_product = $value['data'];
                     if (isset($_product->id) && !empty($_product->id) ) {
                         $_paypal_billing_agreement = get_post_meta($_product->id, '_paypal_billing_agreement', true);
-                        if( $_paypal_billing_agreement == 'yes' || true) {
+                        if( $_paypal_billing_agreement == 'yes') {
                             $BillingAgreements = array();
                             $Item = array(
                                 'l_billingtype' => '', // Required.  Type of billing agreement.  For recurring payments it must be RecurringPayments.  You can specify up to ten billing agreements.  For reference transactions, this field must be either:  MerchantInitiatedBilling, or MerchantInitiatedBillingSingleSource
