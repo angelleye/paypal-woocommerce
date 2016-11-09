@@ -1794,7 +1794,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
        	);
 	
-       $PayPalRequestData = AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_paypal_billing_agreement($PayPalRequestData);
+       $PayPalRequestData = AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_paypal_billing_agreement($PayPalRequestData, $this->supports( 'tokenization' ));
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
         $PayPalResult = $PayPal->SetExpressCheckout($PayPalRequestData);
