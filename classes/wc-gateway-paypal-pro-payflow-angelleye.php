@@ -14,74 +14,82 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 	 * @return void
 	 */
 	function __construct() {
-		$this->id					= 'paypal_pro_payflow';
-		$this->method_title 		= __( 'PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce' );
-		$this->method_description 	= __( 'PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
-		$this->has_fields 			= true;
-		$this->liveurl				= 'https://payflowpro.paypal.com';
-		$this->testurl				= 'https://pilot-payflowpro.paypal.com';
-		$this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD', 'NZD' ) );
+            $this->id = 'paypal_pro_payflow';
+            $this->method_title	= __( 'PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce' );
+            $this->method_description = __( 'PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
+            $this->has_fields = true;
+            $this->liveurl = 'https://payflowpro.paypal.com';
+            $this->testurl = 'https://pilot-payflowpro.paypal.com';
+            $this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD', 'NZD' ) );
 
+            // Load the form fields
+            $this->init_form_fields();
 
-        // Load the form fields
-        $this->init_form_fields();
+            // Load the settings.
+            $this->init_settings();
 
-        // Load the settings.
-        $this->init_settings();
+            // Get setting values
+            $this->title          		= $this->settings['title'];
+            $this->description    		= $this->settings['description'];
+            $this->enabled        		= $this->settings['enabled'];
 
-		// Get setting values
-		$this->title          		= $this->settings['title'];
-		$this->description    		= $this->settings['description'];
-		$this->enabled        		= $this->settings['enabled'];
+            $this->paypal_vendor  		= $this->settings['paypal_vendor'];
+            $this->paypal_partner 		= ! empty( $this->settings['paypal_partner'] ) ? $this->settings['paypal_partner'] : 'PayPal';
+            $this->paypal_password 		= $this->settings['paypal_password'];
+            $this->paypal_user     		= ! empty( $this->settings['paypal_user'] ) ? $this->settings['paypal_user'] : $this->paypal_vendor;
 
-		$this->paypal_vendor  		= $this->settings['paypal_vendor'];
-		$this->paypal_partner 		= ! empty( $this->settings['paypal_partner'] ) ? $this->settings['paypal_partner'] : 'PayPal';
-		$this->paypal_password 		= $this->settings['paypal_password'];
-		$this->paypal_user     		= ! empty( $this->settings['paypal_user'] ) ? $this->settings['paypal_user'] : $this->paypal_vendor;
+            $this->testmode        		= $this->settings['testmode'];
+            $this->invoice_id_prefix    = isset( $this->settings['invoice_id_prefix'] ) ? $this->settings['invoice_id_prefix'] : '';
+            $this->debug		   		= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
+            $this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
+            $this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
+            $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'no' ? false : true;
+            $this->payment_action       = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
 
-		$this->testmode        		= $this->settings['testmode'];
-        $this->invoice_id_prefix    = isset( $this->settings['invoice_id_prefix'] ) ? $this->settings['invoice_id_prefix'] : '';
-		$this->debug		   		= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
-		$this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
-		$this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
-        $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'no' ? false : true;
-        $this->payment_action       = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
+            //fix ssl for image icon
+            $this->icon = ! empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png';
+            if (is_ssl())
+                $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
 
-        //fix ssl for image icon
-        $this->icon = ! empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png';
-        if (is_ssl())
-            $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
+            if ($this->testmode=="yes") {
+                $this->paypal_vendor   	= $this->settings['sandbox_paypal_vendor'];
+                $this->paypal_partner  	= ! empty( $this->settings['sandbox_paypal_partner'] ) ? $this->settings['sandbox_paypal_partner'] : 'PayPal';
+                $this->paypal_password 	= $this->settings['sandbox_paypal_password'];
+                $this->paypal_user     	= ! empty( $this->settings['sandbox_paypal_user'] ) ? $this->settings['sandbox_paypal_user'] : $this->paypal_vendor;
+            }
 
-        if ($this->testmode=="yes") {
-            $this->paypal_vendor   	= $this->settings['sandbox_paypal_vendor'];
-            $this->paypal_partner  	= ! empty( $this->settings['sandbox_paypal_partner'] ) ? $this->settings['sandbox_paypal_partner'] : 'PayPal';
-            $this->paypal_password 	= $this->settings['sandbox_paypal_password'];
-            $this->paypal_user     	= ! empty( $this->settings['sandbox_paypal_user'] ) ? $this->settings['sandbox_paypal_user'] : $this->paypal_vendor;
-        }
+            $this->supports = array(
+                'products',
+                'refunds'
+            );
 
-        $this->supports = array(
-			'products',
-			'refunds'
-		);
+            $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+            if($this->enable_tokenized_payments == 'yes') {
+                array_push($this->supports, "tokenization");
+            }
+            $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
+            $this->enable_cardholder_first_last_name = isset($this->settings['enable_cardholder_first_last_name']) && $this->settings['enable_cardholder_first_last_name'] == 'yes' ? true : false;
 
-        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
-        if($this->enable_tokenized_payments == 'yes') {
-            array_push($this->supports, "tokenization");
-        }
-        $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
-        $this->enable_cardholder_first_last_name = isset($this->settings['enable_cardholder_first_last_name']) && $this->settings['enable_cardholder_first_last_name'] == 'yes' ? true : false;
+            /* 1.6.6 */
+            add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
 
-		/* 1.6.6 */
-		add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
+            /* 2.0.0 */
+            add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
-		/* 2.0.0 */
-		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-                
-                add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_payflow_credit_card_form_fields'), 10, 2);
-                
-                if ($this->enable_cardholder_first_last_name) {
-                    add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
-                }
+            add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_payflow_credit_card_form_fields'), 10, 2);
+
+            if ($this->enable_cardholder_first_last_name) {
+                add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
+            }
+            
+            $this->enable_automated_account_creation_for_guest_checkouts = 'yes' === $this->get_option('enable_automated_account_creation_for_guest_checkouts', 'no');
+            $this->enable_guest_checkout = get_option( 'woocommerce_enable_guest_checkout' ) == 'yes' ? true : false;
+            if ( $this->supports( 'tokenization' ) && is_checkout() && $this->enable_guest_checkout && !is_user_logged_in() && $this->enable_automated_account_creation_for_guest_checkouts) {
+                $this->enable_automated_account_creation_for_guest_checkouts = true;
+                add_action( 'woocommerce_after_checkout_validation', array( $this, 'enable_automated_account_creation_for_guest_checkouts' ), 10, 1 );
+            } else {
+                $this->enable_automated_account_creation_for_guest_checkouts = false;                          
+            }
 	}
     
     
@@ -238,7 +246,15 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'type' => 'checkbox',
                 'description' => __('', 'paypal-for-woocommerce'),
                 'default' => 'no',
-                'class' => ''
+                'class' => 'enable_tokenized_payments'
+            ),
+            'enable_automated_account_creation_for_guest_checkouts' => array(
+                'title' => __('Enable automated account creation', 'paypal-for-woocommerce'),
+                'label' => __('Enable automated account creation for guest checkouts.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => 'enable_automated_account_creation_for_guest_checkouts'
             ),
             'enable_cardholder_first_last_name' => array(
                 'title' => __('Enable Cardholder Name', 'paypal-for-woocommerce'),
@@ -652,6 +668,23 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 }
             }
             parent::payment_fields();
+            if($this->enable_automated_account_creation_for_guest_checkouts == true) :
+                ?>
+                <script type="text/javascript">
+                    jQuery( document.body ).on( 'updated_checkout wc-credit-card-form-init', function() {
+                        jQuery( '.payment_method_paypal_credit_card_rest .woocommerce-SavedPaymentMethods-saveNew').show();
+                        if(!jQuery( '.payment_method_paypal_credit_card_rest .woocommerce-SavedPaymentMethods-saveNew').hasClass("force-show")){
+                            jQuery( '.payment_method_paypal_credit_card_rest .woocommerce-SavedPaymentMethods-saveNew').addClass("force-show");
+                         }
+                    });
+                </script>
+                <style>
+                    .force-show {
+                        display: inline !important;
+                    }
+                </style>
+                <?php 
+            endif;
 	}
         
         public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {
@@ -1001,6 +1034,27 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             wc_add_notice( __( $PayPalResult['RESPMSG'], 'woocommerce' ), 'error' );
             wp_redirect( wc_get_account_endpoint_url( 'payment-methods' ) );
             exit();
+        }
+    }
+    
+    public function enable_automated_account_creation_for_guest_checkouts($posted) {
+        try {
+            if( empty($posted) ) {
+                 return false;
+            }
+            if( $posted['createaccount'] == true ) {
+                return false;
+            }
+            if ( wc_notice_count( 'error' ) > 0 ) {
+                return false;
+            }
+            if( $posted['payment_method'] == $this->id ) {
+                AngellEYE_Gateway_Paypal::angelleye_automated_account_creation_for_guest_checkouts();
+            }
+        } catch (Exception $e) {
+            if ( ! empty( $e ) ) {
+                wc_add_notice( $e->getMessage(), 'error' );
+            }
         }
     }
 }

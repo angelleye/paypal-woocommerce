@@ -239,6 +239,15 @@ jQuery(document).ready(function ($) {
                     }
                 }).change();
                 
+                jQuery('.enable_tokenized_payments').change(function () {
+                    var enable_automated_account_creation_for_guest_checkouts = jQuery('.enable_automated_account_creation_for_guest_checkouts').closest('tr');
+                    if (jQuery(this).is(':checked')) {
+                        enable_automated_account_creation_for_guest_checkouts.show();
+                    } else {
+                        enable_automated_account_creation_for_guest_checkouts.hide();
+                    }
+                }).change();
+                
                 jQuery('.order_cancellations').change(function () {
                     var email_notify_order_cancellations = jQuery('.email_notify_order_cancellations').closest('tr');
                     if (jQuery(this).val() !== 'disabled') {

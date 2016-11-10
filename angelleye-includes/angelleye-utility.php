@@ -653,7 +653,15 @@ class AngellEYE_Utility {
                 'type' => 'checkbox',
                 'description' => __('', 'paypal-for-woocommerce'),
                 'default' => 'no',
-                'class' => ''
+                'class' => 'enable_tokenized_payments'
+            ),
+            'enable_automated_account_creation_for_guest_checkouts' => array(
+                'title' => __('Enable automated account creation', 'paypal-for-woocommerce'),
+                'label' => __('Enable automated account creation for guest checkouts.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => 'enable_automated_account_creation_for_guest_checkouts'
             ),
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
