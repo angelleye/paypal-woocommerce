@@ -117,7 +117,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($this->enabled == 'yes' && ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both'))
             add_action('woocommerce_before_checkout_form', array($this, 'checkout_message'), 5);
         add_action('woocommerce_ppe_do_payaction', array($this, 'get_confirm_order'));
-        add_action('woocommerce_after_checkout_validation', array($this, 'regular_checkout'));
+        add_action('woocommerce_after_checkout_validation', array($this, 'regular_checkout'), 99);
         add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'));
         
         if(class_exists('WC_EU_VAT_Number')) {
