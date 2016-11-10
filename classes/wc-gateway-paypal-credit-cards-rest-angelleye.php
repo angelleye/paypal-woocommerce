@@ -92,9 +92,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         if ($this->enabled == 'no') {
             return;
         }
-        if (version_compare(phpversion(), '5.2.1', '<')) {
-            echo '<div class="error"><p>' . sprintf(__('PayPal Credit Card (REST):  PayPal Credit Card (REST) requires PHP 5.2.1 and above. You are using version %s.', 'paypal-for-woocommerce'), phpversion()) . '</p></div>';
-        }
         $this->paypal_rest_api->add_dependencies_admin_notices();
     }
 

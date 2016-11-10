@@ -63,17 +63,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function __construct()
         {
-
-            /**
-             * Check current WooCommerce version to ensure compatibility.
-             */
-            
-            $woo_version = $this->wpbo_get_woo_version_number();
-            if(version_compare($woo_version,'2.1','<'))
-            {
-                exit( __('PayPal for WooCommerce requires WooCommerce version 2.1 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce'));
-            }
-
             require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
@@ -269,7 +258,18 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             global $pp_settings;
             if (!class_exists("WC_Payment_Gateway")) return;
             load_plugin_textdomain( 'paypal-for-woocommerce', FALSE, basename( dirname( __FILE__ ) ) . '/i18n/languages/' );
-            add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
+            
+            /**
+             * Check current WooCommerce version to ensure compatibility.
+             */
+            
+            $woo_version = $this->wpbo_get_woo_version_number();
+            if(version_compare($woo_version,'2.6','<')) {
+                add_action( 'admin_notices', array($this, 'woo_compatibility_notice') );
+            } else {
+                add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
+            }
+            
             //remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_paypal_express_checkout_button', 12 );
             
             
@@ -427,13 +427,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $methods[] = 'WC_Gateway_PayPal_Pro_AngellEYE';
             $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
             $methods[] = 'WC_Gateway_PayPal_Express_AngellEYE';
-            $methods[] = 'WC_Gateway_Braintree_AngellEYE';
+            if (version_compare(phpversion(), '5.4.0', '>=')) {
+                $methods[] = 'WC_Gateway_Braintree_AngellEYE';
+            }
             $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
             if (version_compare(phpversion(), '5.3.0', '>=')) {
                 $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE';
             }
-            
-
             return $methods;
         }
 
@@ -1546,6 +1546,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                    }
                 }
             }
+        }
+        
+        public function woo_compatibility_notice() {
+            echo '<div class="error"><p>' . __('PayPal for WooCommerce requires WooCommerce version 2.6 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce') . '</p></div>';
         }
     }
 }
