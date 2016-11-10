@@ -25,7 +25,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->init_settings();
 
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
-        if($this->enable_tokenized_payments == 'yes' && is_user_logged_in() && !is_add_payment_method_page()) {
+        if($this->enable_tokenized_payments == 'yes' && !is_add_payment_method_page()) {
             array_push($this->supports, "tokenization");
         }
         // Define user set variables

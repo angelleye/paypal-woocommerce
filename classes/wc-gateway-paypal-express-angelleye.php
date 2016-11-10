@@ -19,7 +19,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'refunds'
         );
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
-        if($this->enable_tokenized_payments == 'yes' && is_user_logged_in()) {
+        if($this->enable_tokenized_payments == 'yes') {
             array_push($this->supports, "tokenization");
         }
         if (substr(get_option("woocommerce_default_country"),0,2) != 'US') {
