@@ -30,7 +30,7 @@ if (!function_exists('angelleye_automated_account_creation_for_guest_checkouts')
                     'ID' => $customer_id,
                     'first_name' => $posted['billing_first_name'] ? $posted['billing_first_name'] : '',
                     'last_name' => $posted['billing_last_name'] ? $posted['billing_last_name'] : '',
-                    'display_name' => $this->posted['billing_first_name'] ? $posted['billing_first_name'] : ''
+                    'display_name' => $posted['billing_first_name'] ? $posted['billing_first_name'] : ''
                 );
                 wp_update_user(apply_filters('woocommerce_checkout_customer_userdata', $userdata, $posted));
             }
