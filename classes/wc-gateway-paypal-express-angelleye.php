@@ -2945,7 +2945,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 return false;
             }
             if( $posted['payment_method'] == $this->id ) {
-                AngellEYE_Gateway_Paypal::angelleye_automated_account_creation_for_guest_checkouts($posted);
+                if (!function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
+                    angelleye_automated_account_creation_for_guest_checkouts($posted);
+                }
             }
         } catch (Exception $e) {
             if ( ! empty( $e ) ) {
