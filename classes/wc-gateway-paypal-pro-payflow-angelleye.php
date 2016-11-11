@@ -1049,7 +1049,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 return false;
             }
             if( $posted['payment_method'] == $this->id ) {
-                AngellEYE_Gateway_Paypal::angelleye_automated_account_creation_for_guest_checkouts();
+                AngellEYE_Gateway_Paypal::angelleye_automated_account_creation_for_guest_checkouts($posted);
             }
         } catch (Exception $e) {
             if ( ! empty( $e ) ) {

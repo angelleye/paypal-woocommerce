@@ -1204,7 +1204,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 return false;
             }
             if( $posted['payment_method'] == $this->id ) {
-                AngellEYE_Gateway_Paypal::angelleye_automated_account_creation_for_guest_checkouts();
+                AngellEYE_Gateway_Paypal::angelleye_automated_account_creation_for_guest_checkouts($posted);
             }
         } catch (Exception $e) {
             if ( ! empty( $e ) ) {
