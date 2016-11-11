@@ -2644,9 +2644,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ?>
             <script type="text/javascript">
                 jQuery( document.body ).on( 'updated_checkout wc-credit-card-form-init', function() {
-                    jQuery( '.payment_method_paypal_advanced .woocommerce-SavedPaymentMethods-saveNew').show();
-                    if(!jQuery( '.payment_method_paypal_advanced .woocommerce-SavedPaymentMethods-saveNew').hasClass("force-show")){
-                        jQuery( '.payment_method_paypal_advanced .woocommerce-SavedPaymentMethods-saveNew').addClass("force-show");
+                    jQuery( '.payment_method_paypal_express .woocommerce-SavedPaymentMethods-saveNew').show();
+                    if(!jQuery( '.payment_method_paypal_express .woocommerce-SavedPaymentMethods-saveNew').hasClass("force-show")){
+                        jQuery( '.payment_method_paypal_express .woocommerce-SavedPaymentMethods-saveNew').addClass("force-show");
                      }
                 });
             </script>
