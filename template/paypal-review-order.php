@@ -306,7 +306,17 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 
 <?php
     } else {
-
+        $gateways = WC()->payment_gateways()->payment_gateways();
+        if($gateways[ 'paypal_express' ]->supports( 'tokenization' )) :
+           echo sprintf(
+			'<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+				<input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" value="true" style="width:auto;" />
+				<label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
+			</p>',
+			esc_attr( 'paypal_express' ),
+			esc_html__( 'Save PayPal Billing Agreement to Account', 'woocommerce' )
+		);     
+        endif;
         do_action( 'angelleye_review_order_before_place_order' );
 
         echo $cancel_button;

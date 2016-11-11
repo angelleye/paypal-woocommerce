@@ -1089,7 +1089,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     }
                 }
             } 
-            
+            return $PayPalRequestData;
         }
         
         

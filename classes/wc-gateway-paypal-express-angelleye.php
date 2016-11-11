@@ -923,7 +923,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $this->add_log("...ERROR: GetShippingDetails returned empty result");
                 }
                 WC()->cart->calculate_totals();
-                if( $this->skip_final_review == 'yes' && ( get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters('woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')) == "yes" || is_user_logged_in() ) ) {
+                if( $this->skip_final_review == 'yes' && ( get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters('woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')) == "yes" || is_user_logged_in() )) {
+                    if($this->supports( 'tokenization' )) {
+                        return;
+                    }
                     //check terms enable
                     $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
                     if (!( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ))) {
@@ -2639,7 +2642,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ( $this->supports( 'tokenization' ) && is_checkout() ) {
             $this->tokenization_script();
             $this->saved_payment_methods();
-            $this->save_payment_method_checkbox();
+            //$this->save_payment_method_checkbox();
         }
         if($this->enable_automated_account_creation_for_guest_checkouts == true) :
             ?>
