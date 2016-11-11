@@ -1255,7 +1255,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 return false;
             }
             if( $posted['payment_method'] == $this->id ) {
-                if (!function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
+                if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
                     angelleye_automated_account_creation_for_guest_checkouts($posted);
                 }
             }
