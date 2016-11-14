@@ -11,7 +11,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
      * Store client
      */
     private $centinel_client = false;
-
+    public $customer_id;
     /**
      * __construct function.
      *
@@ -154,6 +154,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         } else {
             $this->enable_automated_account_creation_for_guest_checkouts = false;                          
         }
+        $this->customer_id;
     }
 
     /**
@@ -1487,7 +1488,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             }
             if( $posted['payment_method'] == $this->id ) {
                 if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
-                    angelleye_automated_account_creation_for_guest_checkouts($posted);
+                    $this->customer_id = angelleye_automated_account_creation_for_guest_checkouts($posted);
                 }
             }
         } catch (Exception $e) {

@@ -2,6 +2,7 @@
 
 class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
+    public $customer_id;
     public function __construct() {
         $this->id = 'paypal_advanced';
        
@@ -83,6 +84,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->enable_automated_account_creation_for_guest_checkouts = false;                          
         }
+        $this->customer_id;
     }
 
     /**
@@ -1256,7 +1258,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             }
             if( $posted['payment_method'] == $this->id ) {
                 if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
-                    angelleye_automated_account_creation_for_guest_checkouts($posted);
+                    $this->customer_id = angelleye_automated_account_creation_for_guest_checkouts($posted);
                 }
             }
         } catch (Exception $e) {

@@ -13,6 +13,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 	 * @access public
 	 * @return void
 	 */
+        public $customer_id;
 	function __construct() {
             $this->id = 'paypal_pro_payflow';
             $this->method_title	= __( 'PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce' );
@@ -90,6 +91,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 $this->enable_automated_account_creation_for_guest_checkouts = false;                          
             }
+            $this->customer_id;
 	}
     
     
@@ -1050,7 +1052,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             }
             if( $posted['payment_method'] == $this->id ) {
                 if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
-                    angelleye_automated_account_creation_for_guest_checkouts($posted);
+                    $this->customer_id = angelleye_automated_account_creation_for_guest_checkouts($posted);
                 }
             }
         } catch (Exception $e) {

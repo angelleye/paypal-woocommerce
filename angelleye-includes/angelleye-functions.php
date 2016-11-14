@@ -33,6 +33,8 @@ if (!function_exists('angelleye_automated_account_creation_for_guest_checkouts')
                     'display_name' => $posted['billing_first_name'] ? $posted['billing_first_name'] : ''
                 );
                 wp_update_user(apply_filters('woocommerce_checkout_customer_userdata', $userdata, $posted));
+                wc_clear_notices();
+                return $customer_id;
             }
         }
     }
@@ -72,6 +74,7 @@ if (!function_exists('angelleye_automated_account_creation_for_guest_checkouts_f
                     'display_name' => $posted['FIRSTNAME'] ? $posted['FIRSTNAME'] : ''
                 );
                 wp_update_user(apply_filters('woocommerce_checkout_customer_userdata', $userdata, $posted));
+                return $customer_id;
             }
         }
     }

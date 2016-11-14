@@ -10,6 +10,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     /**
      * Constuctor
      */
+    public $customer_id;
     function __construct() {
         $this->id = 'braintree';
         $this->icon = apply_filters('woocommerce_braintree_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
@@ -52,6 +53,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $this->enable_automated_account_creation_for_guest_checkouts = false;                          
         }
+        $this->customer_id;
        
     }
 
@@ -1205,7 +1207,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
             if( $posted['payment_method'] == $this->id ) {
                 if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
-                    angelleye_automated_account_creation_for_guest_checkouts($posted);
+                    $this->customer_id = angelleye_automated_account_creation_for_guest_checkouts($posted);
                 }
             }
         } catch (Exception $e) {

@@ -1368,7 +1368,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }
                         add_post_meta( $order->id, 'BILLINGAGREEMENTID', $result['BILLINGAGREEMENTID'] );
                     }
-                    $this->remove_session('TOKEN');
+                    unset(WC()->session->TOKEN);
                     $order->add_order_note(__('PayPal Express payment completed', 'paypal-for-woocommerce') .
                             ' ( Response Code: ' . $result['ACK'] . ", " . $SuccessWithWarning_order_note .
                             ' TransactionID: ' . $result['PAYMENTINFO_0_TRANSACTIONID'] . ' )');

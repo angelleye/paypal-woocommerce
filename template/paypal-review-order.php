@@ -253,7 +253,20 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 
     if ($is_paypal_express && wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ) ){
 ?>
-        <?php do_action( 'angelleye_review_order_before_place_order' );?>
+        <?php do_action( 'angelleye_review_order_before_place_order' );
+        
+        $gateways = WC()->payment_gateways()->payment_gateways();
+        if($gateways[ 'paypal_express' ]->supports( 'tokenization' )) :
+           echo sprintf(
+			'<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+				<input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" value="true" style="width:auto;" />
+				<label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
+			</p>',
+			esc_attr( 'paypal_express' ),
+			esc_html__( 'Save PayPal Billing Agreement to Account', 'woocommerce' )
+		);     
+        endif;
+        ?>
 
         <script type="text/javascript">
             jQuery(document).ready(function (){

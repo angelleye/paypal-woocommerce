@@ -60,7 +60,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         
         const VERSION_PFW = '1.2.4';
-        
+        public $customer_id = '';
         public function __construct()
         {
             require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
@@ -100,7 +100,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter('body_class', array($this, 'add_body_classes'));
             add_action('http_api_curl', array($this, 'http_api_curl_ex_add_curl_parameter'), 10, 3);
             add_action( 'enable_automated_account_creation_for_guest_checkouts', array($this, 'enable_automated_account_creation_for_guest_checkouts'), 10, 1 );
-            
+            $this->customer_id;
         }
 
         /*
@@ -1566,7 +1566,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     return false;
                 }
                 if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
-                    angelleye_automated_account_creation_for_guest_checkouts_for_express_checkout($posted);
+                    $this->customer_id = angelleye_automated_account_creation_for_guest_checkouts_for_express_checkout($posted);
                 }
 
             } catch (Exception $e) {
