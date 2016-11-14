@@ -18,10 +18,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'products',
             'refunds'
         );
-        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
-        if($this->enable_tokenized_payments == 'yes') {
-            array_push($this->supports, "tokenization");
-        }
+       
         if (substr(get_option("woocommerce_default_country"),0,2) != 'US') {
             $this->not_us= true;
         } else {
@@ -33,6 +30,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         // Load the settings.
         $this->init_settings();
         // Get setting values
+        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if($this->enable_tokenized_payments == 'yes') {
+            array_push($this->supports, "tokenization");
+        }
         $this->enabled = $this->settings['enabled'];
         $this->title = $this->settings['title'];
         $this->description = $this->settings['description'];
@@ -207,14 +208,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!AngellEYE_Gateway_Paypal::is_ssl()) {
             $require_ssl = __('This image requires an SSL host.  Please upload your image to <a target="_blank" href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce');
         }
-
+        $skip_final_review_option_not_allowed = '';
         $woocommerce_enable_guest_checkout = get_option('woocommerce_enable_guest_checkout');
         if (isset($woocommerce_enable_guest_checkout) && ( $woocommerce_enable_guest_checkout === "no" )) {
-            $skip_final_review_option_not_allowed = ' (This is not available because your WooCommerce orders require an account.)';
-        } else {
-            $skip_final_review_option_not_allowed = '';
+            $skip_final_review_option_not_allowed .= ' (This is not available because your WooCommerce orders require an account.)';
+        }         
+        if ( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) ) {
+            $skip_final_review_option_not_allowed .= ' (This is not available because your WooCommerce orders require accept Terms &amp; Conditions.)';
         }
-
+        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if($this->enable_tokenized_payments == 'yes') {
+            $skip_final_review_option_not_allowed .= ' (This is not available because tokenized payments is enable.)';
+        }
         $args = array(
             'sort_order' => 'ASC',
             'sort_column' => 'post_title',
