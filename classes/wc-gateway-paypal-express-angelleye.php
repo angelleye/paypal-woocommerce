@@ -174,6 +174,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         disable_term.hide();
                     }
                 }).change();
+                
+                jQuery('#woocommerce_paypal_express_disable_term').change(function () {
+                    term_notice = jQuery('.terms_notice');
+                    if (jQuery(this).is(':checked')) {
+                        term_notice.hide();
+                    } else {
+                        term_notice.show();
+                    }
+                }).change();
             </script>
         </table> <?php
     }
@@ -252,17 +261,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!AngellEYE_Gateway_Paypal::is_ssl()) {
             $require_ssl = __('This image requires an SSL host.  Please upload your image to <a target="_blank" href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce');
         }
-        $skip_final_review_option_not_allowed = '';
+        $skip_final_review_option_not_allowed_guest_checkout = '';
+        $skip_final_review_option_not_allowed_terms = '';
+        $skip_final_review_option_not_allowed_tokenized_payments = '';
         $woocommerce_enable_guest_checkout = get_option('woocommerce_enable_guest_checkout');
         if (isset($woocommerce_enable_guest_checkout) && ( $woocommerce_enable_guest_checkout === "no" )) {
-            $skip_final_review_option_not_allowed .= ' (This is not available because your WooCommerce orders require an account.)';
+            $skip_final_review_option_not_allowed_guest_checkout = ' (This is not available because your WooCommerce orders require an account.)';
         }         
         if ( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) ) {
-            $skip_final_review_option_not_allowed .= ' (This is not available because your WooCommerce orders require accept Terms &amp; Conditions.)';
+            $skip_final_review_option_not_allowed_terms = ' (This is not available because your WooCommerce orders require accept Terms &amp; Conditions.)';
         }
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if($this->enable_tokenized_payments == 'yes') {
-            $skip_final_review_option_not_allowed .= ' (This is not available because tokenized payments is enable.)';
+            $skip_final_review_option_not_allowed_tokenized_payments = ' (This is not available because tokenized payments is enable.)';
         }
         $args = array(
             'sort_order' => 'ASC',
@@ -549,7 +560,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'skip_final_review' => array(
                 'title' => __('Skip Final Review', 'paypal-for-woocommerce'),
                 'label' => __('Enables the option to skip the final review page.', 'paypal-for-woocommerce'),
-                 'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.') . '<b class="final_review_notice">' . $skip_final_review_option_not_allowed . '</b>',
+                 'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.') . '<b class="final_review_notice"><span class="guest_checkout_notice">' . $skip_final_review_option_not_allowed_guest_checkout . '</span></b>' . '<b class="final_review_notice"><span class="terms_notice">' . $skip_final_review_option_not_allowed_terms . '</span></b>' . '<b class="final_review_notice"><span class="tokenized_payments_notice">' . $skip_final_review_option_not_allowed_tokenized_payments . '</span></b>',
                 'type' => 'checkbox',
                 'default' => 'no'
             ),
