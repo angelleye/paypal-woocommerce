@@ -14,7 +14,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
     public $customer_id;
     function __construct() {
         $this->id = 'paypal_credit_card_rest';
-        $this->icon = apply_filters('woocommerce_paypal_credit_card_rest_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
         $this->has_fields = true;
         $this->method_title = 'PayPal Credit Card (REST)';
         $this->woocommerce_paypal_supported_currencies = array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP' );
@@ -25,6 +24,14 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         );
         $this->init_form_fields();
         $this->init_settings();
+        $card_icon = $this->get_option('card_icon', 'no');
+        if($card_icon == 'no') {
+            $card_icon = WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+        }
+        $this->icon = apply_filters('woocommerce_paypal_credit_card_rest_icon', $card_icon);
+        if (is_ssl()) {
+            $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
+        }
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if($this->enable_tokenized_payments == 'yes') {
             array_push($this->supports, "tokenization");
