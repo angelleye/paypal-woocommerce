@@ -246,15 +246,15 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('', 'paypal-for-woocommerce'),
+                'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
             'enable_automated_account_creation_for_guest_checkouts' => array(
-                'title' => __('Enable automated account creation', 'paypal-for-woocommerce'),
-                'label' => __('Enable automated account creation for guest checkouts.', 'paypal-for-woocommerce'),
+                'title' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
+                'label' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('', 'paypal-for-woocommerce'),
+                'description' => __('If guest checkout in WooCommerce general settings is enabled, and the buyer chooses to save payment details, an account will be automatically created for them if they do not create one on their own.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_automated_account_creation_for_guest_checkouts'
             ),
