@@ -62,7 +62,24 @@ class PayPal_Rest_API_Utility {
         global $woocommerce;
         try {
             $this->set_trnsaction_obj_value($order, $card_data);
-            $this->payment->create($this->getAuth());
+            try {
+                $this->add_log(print_r($this->payment, true));
+                $this->payment->create($this->getAuth());
+            } catch (PayPal\Exception\PayPalConnectionException $ex) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
+                return array(
+                    'result' => 'fail',
+                    'redirect' => ''
+                );
+            } catch (Exception $ex) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
+                $this->add_log($ex->getMessage());
+                return array(
+                    'result' => 'fail',
+                    'redirect' => ''
+                );
+            }
+            
             if ($this->payment->state == "approved") {
                 $transactions = $this->payment->getTransactions();
                 $relatedResources = $transactions[0]->getRelatedResources();
@@ -266,10 +283,10 @@ class PayPal_Rest_API_Utility {
      * @return ApiContext
      */
     public function getAuth() {
+        $this->mode = $this->testmode == 'yes' ? 'SANDBOX' : 'LIVE';
         $auth = new ApiContext(new OAuthTokenCredential($this->rest_client_id, $this->rest_secret_id));
-        $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce', 'log.LogEnabled' => true, 'log.LogLevel' => ($this->mode == 'SANDBOX' ) ? 'DEBUG' : 'INFO', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest'), 'cache.enabled' => true, 'cache.FileName' => wc_get_log_file_path('paypal_credit_card_rest_cache')));
+        $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce', 'log.LogEnabled' => true, 'log.LogLevel' => ($this->mode == 'SANDBOX' ) ? 'DEBUG' : 'INFO', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
         return $auth;
-        
     }
 
     /**
@@ -374,7 +391,7 @@ class PayPal_Rest_API_Utility {
      * @param type $message
      */
     public function add_log($message) {
-        if ($this->debug == 'yes') {
+        if ($this->debug == 'yes' && $this->mode == 'LIVE') {
             if (empty($this->log)) {
                 $this->log = new WC_Logger();
             }
