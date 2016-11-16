@@ -59,9 +59,15 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->paypal_user     	= ! empty( $this->settings['sandbox_paypal_user'] ) ? $this->settings['sandbox_paypal_user'] : $this->paypal_vendor;
             }
 
-            $this->supports = array(
-                'products',
-                'refunds'
+            $this->supports = array( 
+                'products', 
+                'subscriptions',
+                'subscription_cancellation', 
+                'subscription_suspension', 
+                'subscription_reactivation',
+                'subscription_amount_changes',
+                'subscription_date_changes',
+                'subscription_payment_method_change'
             );
 
             $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
@@ -295,41 +301,124 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		return false;
 	}
 
-	/**
-     * Process the payment
-     */
-	function process_payment( $order_id ) {
+        /**
+        * Process the payment
+        */
+        
+        function process_payment( $order_id ) {
+            if ( ! session_id() )
+                session_start();
 
-		if ( ! session_id() )
-			session_start();
+            $card_number    = isset( $_POST['paypal_pro_payflow-card-number'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-number'] ) : '';
+            $card_cvc       = isset( $_POST['paypal_pro_payflow-card-cvc'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-cvc'] ) : '';
+            $card_exp_year    = isset( $_POST['paypal_pro_payflow_card_expiration_year'] ) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration_year'] ) : '';
+            $card_exp_month    = isset( $_POST['paypal_pro_payflow_card_expiration_month'] ) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration_month'] ) : '';
+            $card_number    = str_replace( array( ' ', '-' ), '', $card_number );
+            $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
 
-		$order = new WC_Order( $order_id );
-
-                
-                $card_number    = isset( $_POST['paypal_pro_payflow-card-number'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-number'] ) : '';
-                $card_cvc       = isset( $_POST['paypal_pro_payflow-card-cvc'] ) ? wc_clean( $_POST['paypal_pro_payflow-card-cvc'] ) : '';
-                $card_exp_year    = isset( $_POST['paypal_pro_payflow_card_expiration_year'] ) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration_year'] ) : '';
-                $card_exp_month    = isset( $_POST['paypal_pro_payflow_card_expiration_month'] ) ? wc_clean( $_POST['paypal_pro_payflow_card_expiration_month'] ) : '';
-
-                // Format values
-                $card_number    = str_replace( array( ' ', '-' ), '', $card_number );
-               
-                $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
-                
-                if($card_type == 'amex' && (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD')) {
-                    throw new Exception( __( 'Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce' ) );
+            if($card_type == 'amex' && (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD')) {
+                throw new Exception( __( 'Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce' ) );
+            }
+            if ( strlen( $card_exp_year ) == 4 ) {
+                $card_exp_year = $card_exp_year - 2000;
+            }
+            $card_exp_month = (int) $card_exp_month;
+            if ($card_exp_month < 10) {
+                $card_exp_month = '0'.$card_exp_month;
+            }
+            if ( class_exists( 'WC_Subscriptions_Order' ) && WC_Subscriptions_Order::order_contains_subscription( $order_id ) ) {	
+                $order = new WC_Order( $order_id );
+                $order_items = $order->get_items();
+                // Only one subscription allowed in the cart when PayPal Standard is active
+                $product = $order->get_product_from_item( $order_items[0] );
+                // It's a subscription
+                $PayPalRequestData['recurring'] = 'Y';
+                if ( count( $order->get_items() ) > 1 ) {
+                    foreach ( $order->get_items() as $item ) {
+                        if ( $item['qty'] > 1 ) {
+                                $item_names[] = $item['qty'] . ' x ' . $item['name'];
+                        } else if ( $item['qty'] > 0 ) {
+                            $item_names[] = $item['name'];
+                        }
+                    }
+                    $PayPalRequestData['item_name'] = sprintf( __( 'Order %s', WC_Subscriptions::$text_domain ), $order->get_order_number() );
+                } else {
+                    //$PayPalRequestData['item_name'] = $product->get_title();
                 }
-
-                if ( strlen( $card_exp_year ) == 4 ) {
-                        $card_exp_year = $card_exp_year - 2000;
+                $unconverted_periods = array(
+                        'billing_period' => WC_Subscriptions_Order::get_subscription_period( $order ),
+                        'trial_period'   => WC_Subscriptions_Order::get_subscription_trial_period( $order )
+                );
+                $converted_periods = array();
+                // Convert period strings into PayPay's format
+                foreach ( $unconverted_periods as $key => $period ) {
+                    switch( strtolower( $period ) ) {
+                        case 'day':
+                                $converted_periods[$key] = 'D';
+                                break;
+                        case 'week':
+                                $converted_periods[$key] = 'W';
+                                break;
+                        case 'year':
+                                $converted_periods[$key] = 'Y';
+                                break;
+                        case 'month':
+                        default:
+                                $converted_periods[$key] = 'M';
+                                break;
+                    }
                 }
-                
-                $card_exp_month = (int) $card_exp_month;
-                if ($card_exp_month < 10) {
-                    $card_exp_month = '0'.$card_exp_month;
+                $sign_up_fee = WC_Subscriptions_Order::get_sign_up_fee( $order );
+                $initial_payment = WC_Subscriptions_Order::get_total_initial_payment( $order );
+                $price_per_period = WC_Subscriptions_Order::get_recurring_total( $order );
+                $subscription_interval = WC_Subscriptions_Order::get_subscription_interval( $order );
+                $subscription_installments = WC_Subscriptions_Order::get_subscription_length( $order ) / $subscription_interval;
+                $subscription_trial_length = WC_Subscriptions_Order::get_subscription_trial_length( $order );
+                if ( $subscription_trial_length > 0 ) { // Specify a free trial period
+                    $PayPalRequestData['ITEMAMT'] = ( $sign_up_fee > 0 ) ? $sign_up_fee : 0; // Maybe add the sign up fee to the free trial period
+                    // Trial period length
+                    $PayPalRequestData['p1'] = $subscription_trial_length;
+                    // Trial period
+                    $PayPalRequestData['t1'] = $converted_periods['trial_period'];
+                } elseif ( $sign_up_fee > 0 ) { // No trial period, so charge sign up fee and per period price for the first period
+                    if ( $subscription_installments == 1 ) {
+                        $param_number = 3;
+                    } else {
+                        $param_number = 1;
+                    }
+                    $PayPalRequestData['a'.$param_number] = $initial_payment;
+                    // Sign Up interval
+                    $PayPalRequestData['p'.$param_number] = $subscription_interval;
+                    // Sign Up unit of duration
+                    $PayPalRequestData['t'.$param_number] = $converted_periods['billing_period'];
                 }
-		// Do payment with paypal
-		return $this->do_payment( $order, $card_number, $card_exp_month . $card_exp_year, $card_cvc );
+                // We have a recurring payment
+                if ( ! isset( $param_number ) || $param_number == 1 ) {
+                        // Subscription price
+                        $PayPalRequestData['a3'] = $price_per_period;
+                        // Subscription duration
+                        $PayPalRequestData['p3'] = $subscription_interval;
+                        // Subscription period
+                        $PayPalRequestData['t3'] = $converted_periods['billing_period'];
+                }
+                // Recurring payments
+                if ( $subscription_installments == 1 || ( $sign_up_fee > 0 && $subscription_trial_length == 0 && $subscription_installments == 2 ) ) {
+                    // Non-recurring payments
+                    $PayPalRequestData['src'] = 0;
+                } else {
+                    $PayPalRequestData['src'] = 1;
+                    if ( $subscription_installments > 0 ) {
+                        if ( $sign_up_fee > 0 && $subscription_trial_length == 0 ) {
+                                $subscription_installments--;
+                        }
+                        $PayPalRequestData['srt'] = $subscription_installments;
+                    }
+                }
+                // Force return URL so that order description &amp; instructions display
+                $PayPalRequestData['rm'] = 2;
+	
+            } 
+            return $this->do_payment( $order, $card_number, $card_exp_month . $card_exp_year, $card_cvc );
 	}
 
 	/**
@@ -577,6 +666,54 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				$cvv2_response_order_note .= "\n";
 				$cvv2_response_order_note .= sprintf(__('CVV2 Match: %s','paypal-for-woocommerce'),$cvv2_response_code);
 				$order->add_order_note($cvv2_response_order_note);
+                                
+                                if ( WC_Subscriptions_Order::order_contains_subscription( $order->id ) ) {
+        				$subscription_key = WC_Subscriptions_Manager::get_subscription_key( $order->id, $_product->id );
+					$subscription = WC_Subscriptions_Manager::get_subscription( $subscription_key );
+					$date = date( 'mdY', strtotime( '+ 1 month' ) );
+					$PayPalRequestData = array(
+                                            'TRXTYPE' => 'R', 
+                                            'TENDER' => 'C', 
+                                            'PARTNER' => 'PayPal', 
+                                            'ACTION' => 'A', 
+                                            'PROFILENAME' => $order->get_order_number(), 
+                                            'ORIGID' => $PayPalResult['PNREF'], 
+                                            'START' => $date,
+                                            'PAYPERIOD' => 'MONT', // only monthly subscriptions
+                                            'TERM' => 0,           // Number of payments to be made, 0 means infinite
+                                            'AMT' => $order->get_total(),
+					);
+					/**
+					 * Pass data to the class and store the $PayPalResult
+					 */
+					$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+					/**
+					 * Log results
+					 */
+					if($this->debug) {
+                                            $this->add_log('PayFlow Endpoint: '.$PayPal->APIEndPoint);
+                                            $this->add_log(print_r($PayPalResult,true));
+					}
+					/**
+					 * Error check
+					 */
+					if(empty($PayPalResult['RAWRESPONSE'])) {
+					    throw new Exception(__('Empty PayPal response.', 'paypal-for-woocommerce'));
+					}
+					/**
+					 * Check for errors or warnings and proceed accordingly.
+					 */
+					if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 31 )) {
+					    // Add order note
+					    if ($PayPalResult['RESULT'] == 31) {
+					        $order->add_order_note( $PayPalResult['RESPMSG']);
+					        $order->add_order_note( $PayPalResult['PREFPSMSG']);
+					        $order->add_order_note( "The recurring payment was not set, plase check your PayPal Manager account to review.");
+					    } else {
+					        $order->add_order_note(sprintf(__('PayPal Pro recurring payment added (PNREF: %s)','paypal-for-woocommerce'),$PayPalResult['PNREF']));
+					    }
+					}
+				}
 
                 // Payment complete
                 //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
@@ -744,9 +881,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
      * @return  bool|wp_error True or false based on success, or a WP_Error object
      */
     public function process_refund( $order_id, $amount = null, $reason = '' ) {
-
         do_action( 'angelleye_before_fc_refund', $order_id, $amount, $reason );
-
         $order = wc_get_order( $order_id );
         $this->add_log( 'Begin Refund' );
         $this->add_log( 'Order ID: '. print_r($order_id, true) );
@@ -754,7 +889,6 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         if ( ! $order || ! $order->get_transaction_id() || ! $this->paypal_user || ! $this->paypal_password || ! $this->paypal_vendor ) {
             return false;
         }
-
         /**
          * Check if the PayPal_PayFlow class has already been established.
          */
@@ -764,7 +898,6 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         if(!class_exists('Angelleye_PayPal_PayFlow' )) {
             require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
         }
-
         /**
          * Create PayPal_PayFlow object.
          */
@@ -784,32 +917,22 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             'AMT' => $amount,
             'CURRENCY' => $order->get_order_currency()
         );
-    
         $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
-        
-        $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
-
         $this->add_log('Refund Request: ' . print_r($PayPalRequestData, true));
         $this->add_log('Refund Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
-        
          /**
          *  cURL Error Handling #146 
          *  @since    1.1.8
          */
-        
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
-        
         add_action( 'angelleye_after_refund', $PayPalResult, $order, $amount, $reason );
         if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)){
-
-			$order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);
-
-			$max_remaining_refund = wc_format_decimal( $order->get_total() - $order->get_total_refunded() );
-			if ( !$max_remaining_refund > 0 ) {
-				$order->update_status('refunded');
-			}
-
+            $order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);
+            $max_remaining_refund = wc_format_decimal( $order->get_total() - $order->get_total_refunded() );
+            if ( !$max_remaining_refund > 0 ) {
+                $order->update_status('refunded');
+            }
             if (ob_get_length()) ob_end_clean();
             return true;
         }else{
