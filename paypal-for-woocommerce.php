@@ -53,7 +53,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
     	
     	protected $plugin_screen_hook_suffix = null;
     	protected $plugin_slug = 'paypal-for-woocommerce';
-    	
+    	private $subscription_support_enabled = false;
         /**
          * General class constructor where we'll setup our actions, hooks, and shortcodes.
          *
@@ -63,6 +63,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public $customer_id = '';
         public function __construct()
         {
+            
             require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
             require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-functions.php';
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
@@ -291,7 +292,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             require_once('classes/wc-gateway-braintree-angelleye.php');
             require_once('classes/wc-gateway-paypal-express-angelleye.php');
             require_once('classes/wc-gateway-paypal-advanced-angelleye.php');
-            
 
             if (version_compare(phpversion(), '5.3.0', '>=')) {
                 require_once('classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
@@ -420,6 +420,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          *
          */
         function angelleye_add_paypal_pro_gateway( $methods ) {
+            if ( class_exists( 'WC_Subscriptions_Order' ) && function_exists( 'wcs_create_renewal_order' ) ) {
+                $this->subscription_support_enabled = true;
+            }
             foreach ($methods as $key=>$method){
                 if (in_array($method, array('WC_Gateway_PayPal_Pro', 'WC_Gateway_PayPal_Pro_Payflow', 'WC_Gateway_PayPal_Express'))) {
                     unset($methods[$key]);
@@ -427,7 +430,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
             }
             $methods[] = 'WC_Gateway_PayPal_Pro_AngellEYE';
-            $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
+            if($this->subscription_support_enabled) {
+                require_once('classes/subscriptions/wc-gateway-paypal-pro-payflow-subscriptions-angelleye.php');
+                $methods[] = 'WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE';
+            } else {
+                $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
+            }
             $methods[] = 'WC_Gateway_PayPal_Express_AngellEYE';
             if (version_compare(phpversion(), '5.4.0', '>=')) {
                 $methods[] = 'WC_Gateway_Braintree_AngellEYE';
