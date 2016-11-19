@@ -1382,4 +1382,5 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
+
 }

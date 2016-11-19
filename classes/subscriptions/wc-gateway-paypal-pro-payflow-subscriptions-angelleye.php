@@ -77,4 +77,5 @@ class WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE extends WC_Gateway_P
     public function update_failing_payment_method($subscription, $renewal_order) {
         update_post_meta($subscription->id, '_payment_tokens_id', $renewal_order->payment_tokens_id);
     }
+
 }
