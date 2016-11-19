@@ -432,8 +432,20 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if( $this->subscription_support_enabled ) {
                 require_once('classes/subscriptions/wc-gateway-paypal-pro-payflow-subscriptions-angelleye.php');
                 require_once('classes/subscriptions/wc-gateway-paypal-advanced-subscriptions-angelleye.php');
+                require_once('classes/subscriptions/wc-gateway-paypal-express-subscriptions-angelleye.php');
+                require_once('classes/subscriptions/wc-gateway-paypal-pro-subscriptions-angelleye.php');
                 $methods[] = 'WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE';
                 $methods[] = 'WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE';
+                $methods[] = 'WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE';
+                $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
+                if (version_compare(phpversion(), '5.4.0', '>=')) {
+                    require_once('classes/subscriptions/wc-gateway-braintree-subscriptions-angelleye.php');
+                    $methods[] = 'WC_Gateway_Braintree_Subscriptions_AngellEYE';
+                }
+                if (version_compare(phpversion(), '5.3.0', '>=')) {
+                    require_once('classes/subscriptions/wc-gateway-paypal-credit-cards-rest-subscriptions-angelleye.php');
+                    $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE';
+                }
             } else {
                 $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
                 $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
