@@ -483,6 +483,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
                         add_post_meta($order->id, 'PPREF', $PayPalResult['PPREF']);
+                        add_post_meta($order->id, 'payment_tokens_id', $PayPalResult['PPREF']);
                         $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
                     } else {
                         $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
@@ -1075,6 +1076,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
                 $order->payment_complete($PayPalResult['PNREF']);
+                add_post_meta($order->id, 'payment_tokens_id', $PayPalResult['PPREF']);
                 $this->are_reference_transactions_enabled($TRANSACTIONID);
                 if (!empty($order->subscription_renewal)) {
                     return true;
