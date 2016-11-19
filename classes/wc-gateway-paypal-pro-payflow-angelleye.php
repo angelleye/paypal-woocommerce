@@ -541,7 +541,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                         }
                     }
                 }
-                add_post_meta($order->id, '_payment_tokens_id', $PayPalResult['PNREF']);
+                $this->save_payment_token($order, $PayPalResult['PNREF']);
                 $order->payment_complete($PayPalResult['PNREF']);
                 WC()->cart->empty_cart();
                 return array(
@@ -1080,7 +1080,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
                 $order->payment_complete($PayPalResult['PNREF']);
-                add_post_meta($order->id, '_payment_tokens_id', $PayPalResult['PNREF']);
+                $this->save_payment_token($order, $PayPalResult['PNREF']);
                 $this->are_reference_transactions_enabled($PayPalResult['PNREF']);
                 if (!empty($order->subscription_renewal)) {
                     return true;
@@ -1198,6 +1198,13 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $emails = WC()->mailer()->get_emails();
         if (!empty($emails) && !empty($order_id)) {
             $emails['WC_Email_Failed_Order']->trigger($order_id);
+        }
+    }
+
+    public function save_payment_token($order, $payment_tokens_id) {
+        // Store source in the order
+        if (!empty($payment_tokens_id)) {
+            update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
 }

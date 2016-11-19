@@ -12,6 +12,8 @@ class WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE extends WC_Gateway_P
             add_action('woocommerce_scheduled_subscription_payment_' . $this->id, array($this, 'scheduled_subscription_payment'), 10, 2);
             add_filter('woocommerce_subscription_payment_meta', array($this, 'add_subscription_payment_meta'), 10, 2);
             add_filter('woocommerce_subscription_validate_payment_meta', array($this, 'validate_subscription_payment_meta'), 10, 2);
+            add_action('wcs_resubscribe_order_created', array($this, 'delete_resubscribe_meta'), 10);
+            add_action('woocommerce_subscription_failing_payment_method_updated_stripe', array($this, 'update_failing_payment_method'), 10, 2);
         }
     }
 
@@ -49,5 +51,30 @@ class WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE extends WC_Gateway_P
                 throw new Exception('A "_payment_tokens_id" value is required.');
             }
         }
+    }
+
+    public function save_payment_token($order, $payment_tokens_id) {
+        parent::save_payment_token($order, $payment_tokens_id);
+        // Also store it on the subscriptions being purchased or paid for in the order
+        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order->id)) {
+            $subscriptions = wcs_get_subscriptions_for_order($order->id);
+        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order->id)) {
+            $subscriptions = wcs_get_subscriptions_for_renewal_order($order->id);
+        } else {
+            $subscriptions = array();
+        }
+        if (!empty($subscriptions)) {
+            foreach ($subscriptions as $subscription) {
+                update_post_meta($subscription->id, '_payment_tokens_id', $payment_tokens_id);
+            }
+        }
+    }
+
+    public function delete_resubscribe_meta($resubscribe_order) {
+        delete_post_meta($resubscribe_order->id, '_payment_tokens_id');
+    }
+
+    public function update_failing_payment_method($subscription, $renewal_order) {
+        update_post_meta($subscription->id, '_payment_tokens_id', $renewal_order->payment_tokens_id);
     }
 }
