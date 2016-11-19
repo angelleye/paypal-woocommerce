@@ -483,7 +483,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
                         add_post_meta($order->id, 'PPREF', $PayPalResult['PPREF']);
-                        add_post_meta($order->id, 'payment_tokens_id', $PayPalResult['PPREF']);
+
                         $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
                     } else {
                         $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
@@ -541,6 +541,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                         }
                     }
                 }
+                add_post_meta($order->id, '_payment_tokens_id', $PayPalResult['PNREF']);
                 $order->payment_complete($PayPalResult['PNREF']);
                 WC()->cart->empty_cart();
                 return array(
@@ -575,6 +576,9 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 return;
             }
         } catch (Exception $e) {
+            if ($order->has_status(array('pending', 'failed'))) {
+                $this->send_failed_order_email($order->id);
+            }
             $fc_connect_error = apply_filters('angelleye_fc_connect_error', $e->getMessage(), $e);
             wc_add_notice($fc_connect_error, "error");
             return;
@@ -1021,7 +1025,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $PayPalRequestData['SHIPTOZIP'] = $order->shipping_postcode;
             }
             if (!empty($order->subscription_renewal)) {
-                $PayPalRequestData['origid'] = get_post_meta($order->id, '_payment_tokens', true);
+                $PayPalRequestData['origid'] = get_post_meta($order->id, '_payment_tokens_id', true);
             }
             $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
 
@@ -1076,22 +1080,14 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
                 $order->payment_complete($PayPalResult['PNREF']);
-                add_post_meta($order->id, 'payment_tokens_id', $PayPalResult['PPREF']);
-                $this->are_reference_transactions_enabled($TRANSACTIONID);
+                add_post_meta($order->id, '_payment_tokens_id', $PayPalResult['PNREF']);
+                $this->are_reference_transactions_enabled($PayPalResult['PNREF']);
                 if (!empty($order->subscription_renewal)) {
                     return true;
                 }
             } else {
+
                 $order->update_status('failed', __('PayPal Pro payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce') . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"');
-                // Generate error message based on Error Display Type setting
-                if ($this->error_display_type == 'detailed') {
-                    $fc_error_display_type = __('Payment error:', 'paypal-for-woocommerce') . ' ' . $PayPalResult['RESULT'] . '-' . $PayPalResult['RESPMSG'];
-                } else {
-                    $fc_error_display_type = __('Payment error:', 'paypal-for-woocommerce') . ' There was a problem processing your payment.  Please try another method.';
-                }
-                $fc_error_display_type = apply_filters('ae_pppf_error_user_display_message', $fc_error_display_type, $PayPalResult['RESULT'], $PayPalResult['RESPMSG'], $PayPalResult);
-                wc_add_notice($fc_error_display_type, "error");
-                // Notice admin if has any issue from PayPal
                 if ($this->error_email_notify) {
                     $admin_email = get_option("admin_email");
                     $message = __("PayFlow API call failed.", "paypal-for-woocommerce") . "\n\n";
@@ -1109,8 +1105,9 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 return;
             }
         } catch (Exception $e) {
-            $fc_connect_error = apply_filters('angelleye_fc_connect_error', $e->getMessage(), $e);
-            wc_add_notice($fc_connect_error, "error");
+            if ($order->has_status(array('pending', 'failed'))) {
+                $this->send_failed_order_email($order->id);
+            }
             return;
         }
     }
@@ -1197,4 +1194,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
+    public function send_failed_order_email($order_id) {
+        $emails = WC()->mailer()->get_emails();
+        if (!empty($emails) && !empty($order_id)) {
+            $emails['WC_Email_Failed_Order']->trigger($order_id);
+        }
+    }
 }
