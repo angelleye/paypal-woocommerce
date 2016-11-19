@@ -48,6 +48,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         if (is_ssl()) {
             $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
+        $this->icon = apply_filters('woocommerce_paypal_pro_payflow_icon', $this->icon);
         if ($this->testmode == true) {
             $this->paypal_vendor = $this->get_option('sandbox_paypal_vendor');
             $this->paypal_partner = $this->get_option('sandbox_paypal_partner', 'PayPal');
