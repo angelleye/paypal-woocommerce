@@ -347,7 +347,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
 
         try {
-           
+
             $customer_note = $order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '';
 
             $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro_payflow-card-cardholder-first']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']) : $order->billing_first_name;
@@ -525,6 +525,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                     if (!empty($_POST['wc-paypal_pro_payflow-new-payment-method']) && $_POST['wc-paypal_pro_payflow-new-payment-method'] == true) {
                         $customer_id = $order->get_user_id();
                         $TRANSACTIONID = $PayPalResult['PNREF'];
+                        $this->are_reference_transactions_enabled($TRANSACTIONID);
                         $token = new WC_Payment_Token_CC();
                         $token->set_user_id($customer_id);
                         $token->set_token($TRANSACTIONID);
@@ -910,6 +911,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 $customer_id = get_current_user_id();
                 $TRANSACTIONID = $PayPalResult['PNREF'];
+                $this->are_reference_transactions_enabled($TRANSACTIONID);
                 $token = new WC_Payment_Token_CC();
                 $token->set_user_id($customer_id);
                 $token->set_token($TRANSACTIONID);
@@ -957,7 +959,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function process_subscription_payment($order, $amount) {
-       if (!class_exists('Angelleye_PayPal')) {
+        if (!class_exists('Angelleye_PayPal')) {
             require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
         }
         if (!class_exists('Angelleye_PayPal_PayFlow')) {
@@ -1072,8 +1074,8 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $cvv2_response_order_note .= "\n";
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
-
                 $order->payment_complete($PayPalResult['PNREF']);
+                $this->are_reference_transactions_enabled($TRANSACTIONID);
                 if (!empty($order->subscription_renewal)) {
                     return true;
                 }
@@ -1110,4 +1112,87 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             return;
         }
     }
+
+    public function are_reference_transactions_enabled($token_id) {
+        if ($this->supports('tokenization') && class_exists('WC_Subscriptions_Order')) {
+            $are_reference_transactions_enabled = get_option('are_reference_transactions_enabled', 'no');
+            if ($are_reference_transactions_enabled == 'no') {
+                $customer_id = get_current_user_id();
+                if (!class_exists('Angelleye_PayPal')) {
+                    require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+                }
+                if (!class_exists('Angelleye_PayPal_PayFlow')) {
+                    require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
+                }
+                $PayPalConfig = array(
+                    'Sandbox' => $this->testmode,
+                    'APIUsername' => $this->paypal_user,
+                    'APIPassword' => trim($this->paypal_password),
+                    'APIVendor' => $this->paypal_vendor,
+                    'APIPartner' => $this->paypal_partner,
+                    'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+                );
+                $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+                $this->validate_fields();
+                $card = $this->get_posted_card();
+                $billtofirstname = (get_user_meta($customer_id, 'billing_first_name', true)) ? get_user_meta($customer_id, 'billing_first_name', true) : get_user_meta($customer_id, 'shipping_first_name', true);
+                $billtolastname = (get_user_meta($customer_id, 'billing_last_name', true)) ? get_user_meta($customer_id, 'billing_last_name', true) : get_user_meta($customer_id, 'shipping_last_name', true);
+                $billtostate = (get_user_meta($customer_id, 'billing_state', true)) ? get_user_meta($customer_id, 'billing_state', true) : get_user_meta($customer_id, 'shipping_state', true);
+                $billtocountry = (get_user_meta($customer_id, 'billing_country', true)) ? get_user_meta($customer_id, 'billing_country', true) : get_user_meta($customer_id, 'shipping_country', true);
+                $billtozip = (get_user_meta($customer_id, 'billing_postcode', true)) ? get_user_meta($customer_id, 'billing_postcode', true) : get_user_meta($customer_id, 'shipping_postcode', true);
+                $PayPalRequestData = array(
+                    'tender' => 'C',
+                    'trxtype' => 'A',
+                    'acct' => '',
+                    'expdate' => '',
+                    'amt' => '0.00',
+                    'currency' => get_woocommerce_currency(),
+                    'cvv2' => '',
+                    'orderid' => '',
+                    'orderdesc' => '',
+                    'billtoemail' => '',
+                    'billtophonenum' => '',
+                    'billtofirstname' => $billtofirstname,
+                    'billtomiddlename' => '',
+                    'billtolastname' => $billtolastname,
+                    'billtostreet' => '',
+                    'billtocity' => '',
+                    'billtostate' => $billtostate,
+                    'billtozip' => $billtozip,
+                    'billtocountry' => $billtocountry,
+                    'origid' => $token_id,
+                    'custref' => '',
+                    'custcode' => '',
+                    'custip' => $this->get_user_ip(),
+                    'invnum' => '',
+                    'ponum' => '',
+                    'starttime' => '',
+                    'endtime' => '',
+                    'securetoken' => '',
+                    'partialauth' => '',
+                    'authcode' => ''
+                );
+                $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+                if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 117)) {
+                    $admin_email = get_option("admin_email");
+                    $message = __("PayPal Reference Transactions are not enabled on your account, some subscription management features are not enabled", "paypal-for-woocommerce") . "\n\n";
+                    $message .= __("PayFlow API call failed.", "paypal-for-woocommerce") . "\n\n";
+                    $message .= __('Error Code: ', 'paypal-for-woocommerce') . $PayPalResult['RESULT'] . "\n";
+                    $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
+                    $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
+                    $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+                    $message .= __('Order ID: ') . $order->id . "\n";
+                    $message .= __('Customer Name: ') . $order->billing_first_name . ' ' . $order->billing_last_name . "\n";
+                    $message .= __('Customer Email: ') . $order->billing_email . "\n";
+                    $message = apply_filters('ae_pppf_error_email_message', $message);
+                    $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Payments Pro (PayFlow) Error Notification");
+                    wp_mail($admin_email, $subject, $message);
+                    return false;
+                } else {
+                    update_option('are_reference_transactions_enabled', 'yes');
+                }
+            }
+        }
+    }
+
 }
