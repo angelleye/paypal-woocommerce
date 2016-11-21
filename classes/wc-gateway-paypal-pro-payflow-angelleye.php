@@ -94,6 +94,12 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->enable_automated_account_creation_for_guest_checkouts = false;
         }
         $this->customer_id;
+        if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+        } else {
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/wc-gateway-calculations-angelleye.php' );
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+        }
     }
 
     public function add_log($message) {
@@ -1025,6 +1031,35 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $PayPalRequestData['SHIPTOCOUNTRY'] = $order->shipping_country;
                 $PayPalRequestData['SHIPTOZIP'] = $order->shipping_postcode;
             }
+            
+            $PaymentData = $this->calculation_angelleye->order_calculation($order->id);
+            $OrderItems = array();
+            if ($this->send_items) {
+                $item_loop = 0;
+                foreach ($PaymentData['order_items'] as $_item) {
+                    $Item['L_NUMBER' . $item_loop] = $_item['number'];
+                    $Item['L_NAME' . $item_loop] = $_item['name'];
+                    $Item['L_COST' . $item_loop] = $_item['amt'];
+                    $Item['L_QTY' . $item_loop] = $_item['qty'];
+                    if ($_item['number']) {
+                        $Item['L_SKU' . $item_loop] = $_item['number'];
+                    }
+                    $OrderItems = array_merge($OrderItems, $Item);
+                    $item_loop++;
+                }
+            }
+
+            /**
+             * Shipping/tax/item amount
+             */
+            $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
+            $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
+            $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
+
+            if ($this->send_items) {
+                $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
+            }
+
             if (!empty($order->subscription_renewal)) {
                 $PayPalRequestData['origid'] = get_post_meta($order->id, '_payment_tokens_id', true);
             }
