@@ -1815,8 +1815,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $Payment['shiptophonenum'] = ( isset($user_mata_data['billing_phone']) && !empty($user_mata_data['billing_phone']) ) ? $user_mata_data['billing_phone'] : '';
         }
         $SECFields = AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_needs_shipping($SECFields);
-        //$PaymentData = AngellEYE_Gateway_Paypal::calculate(null, true);
-        $PaymentData = $this->calculation_angelleye->cart_calculation();
+        $PaymentData = AngellEYE_Gateway_Paypal::calculate(null, true);
         $PaymentOrderItems = array();
         $ctr = $total_items = $total_discount = $total_tax = $order_total = 0;
         if ($this->send_items){
@@ -2096,8 +2095,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
            $Payment['notifyurl'] = $this->notifyurl;
         }
 
-        //$PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
-        $PaymentData = $this->calculation_angelleye->order_calculation($order->id);
+        $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
         $PaymentOrderItems = array();
         if ($this->send_items) {
             foreach ($PaymentData['order_items'] as $item) {
@@ -2838,8 +2836,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
              );
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
-        //$PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
-        $PaymentData = $this->calculation_angelleye->order_calculation($order->id);
+        $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
         $OrderItems = array();
         if ($this->send_items) {
             foreach ($PaymentData['order_items'] as $item) {
