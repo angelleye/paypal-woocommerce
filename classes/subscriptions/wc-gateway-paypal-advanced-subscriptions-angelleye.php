@@ -30,7 +30,9 @@ class WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE extends WC_Gateway_PayP
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
-        parent::process_subscription_payment($renewal_order, $amount_to_charge);
+        $payment_tokens_id = get_post_meta($renewal_order->id, '_payment_tokens_id', true); 
+        parent::process_payment($renewal_order->id);
+        //parent::process_subscription_payment($renewal_order, $amount_to_charge);
     }
 
     public function add_subscription_payment_meta($payment_meta, $subscription) {

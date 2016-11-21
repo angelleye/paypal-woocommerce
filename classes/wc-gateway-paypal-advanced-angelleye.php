@@ -809,15 +809,22 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if (!empty($_POST['wc-paypal_advanced-new-payment-method']) && $_POST['wc-paypal_advanced-new-payment-method'] == true) {
             update_post_meta($order_id, '_is_save_payment_method', 'yes');
         }
-        if (!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') {
-            $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
-            $token = WC_Payment_Tokens::get($token_id);
-            $this->create_reference_transaction($token->get_token(), $order);
+        if ((!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') || !empty($order->subscription_renewal)) {
+            if(!empty($order->subscription_renewal)) {
+                $payment_tokens_id = get_post_meta($order->id, '_payment_tokens_id', true);
+            } else {
+                $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
+                $token = WC_Payment_Tokens::get($token_id);
+                $payment_tokens_id = $token->get_token();
+            }
+            $this->create_reference_transaction($payment_tokens_id, $order);
             $inq_result = $this->inquiry_transaction($order, $order_id);
             if ($inq_result == 'Approved') {
-                $order->payment_complete($token->get_token());
-                $this->save_payment_token($order, $token->get_token());
-                WC()->cart->empty_cart();
+                $order->payment_complete($payment_tokens_id);
+                $this->save_payment_token($order, $payment_tokens_id);
+                if(empty($order->subscription_renewal)) {
+                    WC()->cart->empty_cart();
+                }
                 $order->add_order_note(sprintf(__('Payment completed for the  (Order: %s)', 'paypal-for-woocommerce'), $order->get_order_number()));
                 $this->add_log(sprintf(__('Payment completed for the  (Order: %s)', 'paypal-for-woocommerce'), $order->get_order_number()));
                 return array(
@@ -1142,148 +1149,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 $this->log = new WC_Logger();
             }
             $this->log->add($this->id, $message);
-        }
-    }
-
-    public function process_subscription_payment($order) {
-        $paypal_args = array();
-        $paypal_args = array(
-            'VERBOSITY' => 'HIGH',
-            'TENDER' => 'C',
-            'USER' => $this->user,
-            'VENDOR' => $this->loginid,
-            'PARTNER' => $this->resellerid,
-            'PWD[' . strlen($this->password) . ']' => $this->password,
-            'TRXTYPE' => $this->transtype,
-            'CUSTREF' => $order->get_order_number(),
-            'USER1' => $order->id,
-            'INVNUM' => $this->invoice_prefix . ltrim($order->get_order_number(), '#'),
-            'AMT' => number_format($order->get_total(), 2, '.', ''),
-            'FREIGHTAMT' => '',
-            'COMPANYNAME[' . strlen($order->billing_company) . ']' => $order->billing_company,
-            'CURRENCY' => get_woocommerce_currency(),
-            'EMAIL' => $order->billing_email,
-            'BILLTOFIRSTNAME[' . strlen($order->billing_first_name) . ']' => $order->billing_first_name,
-            'BILLTOLASTNAME[' . strlen($order->billing_last_name) . ']' => $order->billing_last_name,
-            'BILLTOSTREET[' . strlen($order->billing_address_1 . ' ' . $order->billing_address_2) . ']' => $order->billing_address_1 . ' ' . $order->billing_address_2,
-            'BILLTOCITY[' . strlen($order->billing_city) . ']' => $order->billing_city,
-            'BILLTOSTATE[' . strlen($order->billing_state) . ']' => $order->billing_state,
-            'BILLTOZIP' => $order->billing_postcode,
-            'BILLTOCOUNTRY[' . strlen($order->billing_country) . ']' => $order->billing_country,
-            'BILLTOEMAIL' => $order->billing_email,
-            'BILLTOPHONENUM' => $order->billing_phone,
-            'SHIPTOFIRSTNAME[' . strlen($order->shipping_first_name) . ']' => $order->shipping_first_name,
-            'SHIPTOLASTNAME[' . strlen($order->shipping_last_name) . ']' => $order->shipping_last_name,
-            'SHIPTOSTREET[' . strlen($order->shipping_address_1 . ' ' . $order->shipping_address_2) . ']' => $order->shipping_address_1 . ' ' . $order->shipping_address_2,
-            'SHIPTOCITY[' . strlen($order->shipping_city) . ']' => $order->shipping_city,
-            'SHIPTOZIP' => $order->shipping_postcode,
-            'SHIPTOCOUNTRY[' . strlen($order->shipping_country) . ']' => $order->shipping_country,
-            'BUTTONSOURCE' => 'AngellEYE_SP_WooCommerce',
-        );
-        if (!empty($order->subscription_renewal)) {
-            $paypal_args['origid'] = get_post_meta($order->id, '_payment_tokens_id', true);
-        }
-        if (empty($order->shipping_state)) {
-            $paypal_args['SHIPTOSTATE[' . strlen($order->shipping_city) . ']'] = $order->shipping_city;
-        } else {
-            $paypal_args['SHIPTOSTATE[' . strlen($order->shipping_state) . ']'] = $order->shipping_state;
-        }
-        if (($order->prices_include_tax == 'yes' || $order->get_total_discount() > 0 ) && $order->get_subtotal() > 0) {
-            $item_names = array();
-            if (sizeof($order->get_items()) > 0) {
-                foreach ($order->get_items() as $item) {
-                    if ($item['qty']) {
-                        $item_names[] = $item['name'] . ' x ' . $item['qty'];
-                    }
-                }
-                $items_str = sprintf(__('Order %s', 'paypal-for-woocommerce'), $order->get_order_number()) . " - " . implode(', ', $item_names);
-                $items_names_str = $this->paypal_advanced_item_name($items_str);
-                $items_desc_str = $this->paypal_advanced_item_desc($items_str);
-                $paypal_args['L_NAME0[' . strlen($items_names_str) . ']'] = $items_names_str;
-                $paypal_args['L_DESC0[' . strlen($items_desc_str) . ']'] = $items_desc_str;
-                $paypal_args['L_QTY0'] = 1;
-                if ($order->get_subtotal() == 0) {
-                    $paypal_args['L_COST0'] = number_format($order->get_total_shipping() + $order->get_shipping_tax(), 2, '.', '');
-                } else {
-                    $paypal_args['FREIGHTAMT'] = number_format($order->get_total_shipping() + $order->get_shipping_tax(), 2, '.', '');
-                    $paypal_args['L_COST0'] = number_format($order->get_total() - round($order->get_total_shipping() + $order->get_shipping_tax(), 2), 2, '.', '');
-                }
-                $paypal_args['ITEMAMT'] = $paypal_args['L_COST0'] * $paypal_args['L_QTY0'];
-            }
-        } else {
-            $paypal_args['TAXAMT'] = $order->get_total_tax();
-            $paypal_args['ITEMAMT'] = 0;
-            $item_loop = 0;
-            if (sizeof($order->get_items()) > 0 && $order->get_subtotal() > 0) {
-                foreach ($order->get_items() as $item) {
-                    if ($item['qty']) {
-                        $product = $order->get_product_from_item($item);
-                        $item_name = $item['name'];
-                        $item_meta = new WC_order_item_meta($item['item_meta']);
-                        if ($length_error == 0 && $meta = $item_meta->display(true, true)) {
-                            $item_name .= ' (' . $meta . ')';
-                            $item_name = $this->paypal_advanced_item_name($item_name);
-                        }
-                        $paypal_args['L_NAME' . $item_loop . '[' . strlen($item_name) . ']'] = $item_name;
-                        if ($product->get_sku()) {
-                            $paypal_args['L_SKU' . $item_loop] = $product->get_sku();
-                        }
-                        $paypal_args['L_QTY' . $item_loop] = $item['qty'];
-                        $paypal_args['L_COST' . $item_loop] = $order->get_item_total($item, false, false); /* No Tax , No Round) */
-                        $paypal_args['L_TAXAMT' . $item_loop] = $order->get_item_tax($item, false); /* No Round it */
-                        $paypal_args['ITEMAMT'] += $order->get_line_total($item, false, false); /* No tax, No Round */
-                        $item_loop++;
-                    }
-                }
-            } else {
-                $paypal_args['L_NAME0'] = sprintf(__('Shipping via %s', 'woocommerce'), $order->get_shipping_method());
-                $paypal_args['L_QTY0'] = 1;
-                $paypal_args['L_COST0'] = number_format($order->get_total_shipping() + $order->get_shipping_tax(), 2, '.', '');
-                $paypal_args['ITEMAMT'] = number_format($order->get_total_shipping() + $order->get_shipping_tax(), 2, '.', '');
-            }
-        }
-        try {
-            $postData = '';
-            $logData = '';
-            foreach ($paypal_args as $key => $val) {
-                $postData .= '&' . $key . '=' . $val;
-                if (strpos($key, 'PWD') === 0) {
-                    $logData .= '&PWD=XXXX';
-                } else {
-                    $logData .= '&' . $key . '=' . $val;
-                }
-            }
-            $postData = trim($postData, '&');
-            $response = wp_remote_post($this->hostaddr, array(
-                'method' => 'POST',
-                'body' => $postData,
-                'timeout' => 70,
-                'user-agent' => 'WooCommerce ' . WC_VERSION,
-                'httpversion' => '1.1',
-                'headers' => array('host' => 'www.paypal.com')
-            ));
-            if (is_wp_error($response)) {
-                throw new Exception($response->get_error_message());
-            }
-            if (empty($response['body'])) {
-                throw new Exception(__('Empty response.', 'paypal-for-woocommerce'));
-            }
-            parse_str($response['body'], $arr);
-            if ($arr['RESULT'] > 0) {
-                throw new Exception(__('There was an error processing your order - ' . $arr['RESPMSG'], 'paypal-for-woocommerce'));
-            } else {//return the secure token
-                $_POST['PNREF'] = $arr['PNREF'];
-                $order->payment_complete($arr['PNREF']);
-                $this->save_payment_token($order, $arr['PNREF']);
-                $this->are_reference_transactions_enabled($arr['PNREF']);
-                if (!empty($order->subscription_renewal)) {
-                    return true;
-                }
-            }
-        } catch (Exception $e) {
-            if ($order->has_status(array('pending', 'failed'))) {
-                $this->send_failed_order_email($order->id);
-            }
         }
     }
 
