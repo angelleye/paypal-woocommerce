@@ -133,12 +133,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->enable_automated_account_creation_for_guest_checkouts = false;                          
         }
-        if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
-            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
-        } else {
-            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/wc-gateway-calculations-angelleye.php' );
-            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
-        }
+        
     }
     
     /**
