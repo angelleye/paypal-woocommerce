@@ -1589,18 +1589,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         public function angelleye_wc_autoship_cart_has_autoship_items() {
-            $cart = WC()->cart;
-            if ( empty( $cart ) || ( ! is_checkout() && ! is_ajax() ) ) {
-               return false;
-            }
-            $has_autoship_items = false;
-            foreach ( $cart->get_cart() as $item ) {
-                if ( isset( $item['wc_autoship_frequency'] ) ) {
-                    $has_autoship_items = true;
-                    break;
-                }
-            }
-            return $has_autoship_items;
+            $bool = angelleye_wc_autoship_cart_has_autoship_item();
+            return $bool;
         }
     }
 }

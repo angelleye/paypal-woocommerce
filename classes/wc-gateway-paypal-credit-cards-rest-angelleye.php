@@ -60,6 +60,11 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         } else {
             $this->enable_automated_account_creation_for_guest_checkouts = false;                          
         }
+        if(!$this->enable_automated_account_creation_for_guest_checkouts) {
+            if(angelleye_wc_autoship_cart_has_autoship_item() == true) {
+                $this->enable_automated_account_creation_for_guest_checkouts = true;
+            }
+        }
         $this->customer_id;
     }
 

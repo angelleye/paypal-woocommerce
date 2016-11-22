@@ -133,6 +133,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->enable_automated_account_creation_for_guest_checkouts = false;                          
         }
+        if(!$this->enable_automated_account_creation_for_guest_checkouts) {
+            if(angelleye_wc_autoship_cart_has_autoship_item() == true) {
+                $this->enable_automated_account_creation_for_guest_checkouts = true;
+            }
+        }
         
     }
     
@@ -1991,6 +1996,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $this->set_session('payer_id', $PayPalResult['PAYERID']);
         }
+        
         if($this->enable_automated_account_creation_for_guest_checkouts) {
             do_action('enable_automated_account_creation_for_guest_checkouts', $PayPalResult);
         }
