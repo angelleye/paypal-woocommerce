@@ -27,7 +27,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'subscription_payment_method_change_admin',
             'subscription_date_changes',
             'multiple_subscriptions',
-            'tokenization',
             'add_payment_method'
         );
 

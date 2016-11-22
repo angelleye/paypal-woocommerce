@@ -68,7 +68,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             'subscription_payment_method_change_admin',
             'subscription_date_changes',
             'multiple_subscriptions',
-            'tokenization',
             'add_payment_method'
         );
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');

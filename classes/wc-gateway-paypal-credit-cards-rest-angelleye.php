@@ -33,7 +33,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             'subscription_payment_method_change_admin',
             'subscription_date_changes',
             'multiple_subscriptions',
-            'tokenization',
             'add_payment_method'
         );
         $this->init_form_fields();
