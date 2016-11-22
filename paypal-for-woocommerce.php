@@ -101,6 +101,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('http_api_curl', array($this, 'http_api_curl_ex_add_curl_parameter'), 10, 3);
             add_action( 'enable_automated_account_creation_for_guest_checkouts', array($this, 'enable_automated_account_creation_for_guest_checkouts'), 10, 1 );
             $this->customer_id;
+            add_filter( 'pre_option_woocommerce_enable_guest_checkout', array($this, 'angelleye_wc_autoship_get_option_enable_guest_checkout'), 11, 1 );
         }
 
         /*
@@ -1574,6 +1575,32 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     wc_add_notice( $e->getMessage(), 'error' );
                 }
             }
+        }
+        
+        public function angelleye_wc_autoship_get_option_enable_guest_checkout($enable_guest_checkout) {
+            if($this->angelleye_wc_autoship_cart_has_autoship_items()) {
+                global $wpdb;
+                $row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_enable_guest_checkout' ) );
+                if( empty($row->option_value) || $row->option_value == 'yes' ) {
+                    return $woocommerce_enable_guest_checkout = 'yes';
+                }
+            }
+            return $enable_guest_checkout;
+        }
+
+        public function angelleye_wc_autoship_cart_has_autoship_items() {
+            $cart = WC()->cart;
+            if ( empty( $cart ) || ( ! is_checkout() && ! is_ajax() ) ) {
+               return false;
+            }
+            $has_autoship_items = false;
+            foreach ( $cart->get_cart() as $item ) {
+                if ( isset( $item['wc_autoship_frequency'] ) ) {
+                    $has_autoship_items = true;
+                    break;
+                }
+            }
+            return $has_autoship_items;
         }
     }
 }
