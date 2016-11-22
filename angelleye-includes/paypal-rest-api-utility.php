@@ -671,21 +671,29 @@ class PayPal_Rest_API_Utility {
         try {
             $this->set_trnsaction_obj_value($order, $card_data);
             try {
-                $this->card->create($this->getAuth());
-                $customer_id = $order->get_user_id();
-                $creditcard_id = $this->card->getId();
-                $this->save_payment_token($order, $creditcard_id);
-                $token = new WC_Payment_Token_CC();
-                $token->set_user_id($customer_id);
-                $token->set_token($creditcard_id);
-                $token->set_gateway_id($this->payment_method);
-                $token->set_card_type($this->card->type);
-                $token->set_last4(substr($this->card->number, -4));
-                $token->set_expiry_month(date('m'));
-                $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
-                $save_result = $token->save();
-                if ($save_result) {
+                if (!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
+                    $creditcard_id = $this->CreditCardToken->getCreditCardId();
+                    $this->save_payment_token($order, $creditcard_id);
+                    $token_id = wc_clean($_POST['wc-paypal_credit_card_rest-payment-token']);
+                    $token = WC_Payment_Tokens::get($token_id);
                     $order->add_payment_token($token);
+                } else {
+                    $this->card->create($this->getAuth());
+                    $customer_id = $order->get_user_id();
+                    $creditcard_id = $this->card->getId();
+                    $this->save_payment_token($order, $creditcard_id);
+                    $token = new WC_Payment_Token_CC();
+                    $token->set_user_id($customer_id);
+                    $token->set_token($creditcard_id);
+                    $token->set_gateway_id($this->payment_method);
+                    $token->set_card_type($this->card->type);
+                    $token->set_last4(substr($this->card->number, -4));
+                    $token->set_expiry_month(date('m'));
+                    $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
+                    $save_result = $token->save();
+                    if ($save_result) {
+                        $order->add_payment_token($token);
+                    }
                 }
             } catch (Exception $ex) {
                 
