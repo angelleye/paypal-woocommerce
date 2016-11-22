@@ -670,6 +670,11 @@ class AngellEYE_Utility {
                 'default' => 'WC-PCCR',
                 'desc_tip' => true,
             ),
+            'card_icon'        => array(
+                'title'       => __( 'Card Icon', 'paypal-for-woocommerce' ),
+                'type'        => 'text',
+                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png'
+            ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
