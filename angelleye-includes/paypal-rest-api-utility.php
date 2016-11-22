@@ -66,53 +66,64 @@ class PayPal_Rest_API_Utility {
                 $this->add_log(print_r($this->payment, true));
                 $this->payment->create($this->getAuth());
             } catch (PayPal\Exception\PayPalConnectionException $ex) {
+                $this->add_log($ex->getMessage());
+                if (!empty($order->subscription_renewal)) {
+                    return true;
+                }
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
                 return array(
                     'result' => 'fail',
                     'redirect' => ''
                 );
             } catch (Exception $ex) {
+                $this->send_failed_order_email($order->id);
+                $this->add_log($ex->getMessage());                
+                if (!empty($order->subscription_renewal)) {
+                    return true;
+                }
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
-                $this->add_log($ex->getMessage());
                 return array(
                     'result' => 'fail',
                     'redirect' => ''
                 );
             }
-            
+
             if ($this->payment->state == "approved") {
                 $transactions = $this->payment->getTransactions();
                 $relatedResources = $transactions[0]->getRelatedResources();
                 $sale = $relatedResources[0]->getSale();
                 $saleId = $sale->getId();
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
-                if(!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] == 'new') {
-                    if(!empty($_POST['wc-paypal_credit_card_rest-new-payment-method']) && $_POST['wc-paypal_credit_card_rest-new-payment-method'] == true) {
+                if ((!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] == 'new') || $this->is_subscription($order->id)) {
+                    if ((!empty($_POST['wc-paypal_credit_card_rest-new-payment-method']) && $_POST['wc-paypal_credit_card_rest-new-payment-method'] == true) || $this->is_subscription($order->id)) {
                         try {
                             $this->card->create($this->getAuth());
-                            $customer_id =  $order->get_user_id();
+                            $customer_id = $order->get_user_id();
                             $creditcard_id = $this->card->getId();
+                            $this->save_payment_token($order, $creditcard_id);
                             $token = new WC_Payment_Token_CC();
-                            $token->set_user_id( $customer_id );
-                            $token->set_token( $creditcard_id );
-                            $token->set_gateway_id( $this->payment_method );
-                            $token->set_card_type( $this->card->type );
-                            $token->set_last4( substr( $this->card->number, -4 ) );
-                            $token->set_expiry_month( date( 'm' ) );
-                            $token->set_expiry_year( date( 'Y', strtotime( $this->card->valid_until ) ) );
+                            $token->set_user_id($customer_id);
+                            $token->set_token($creditcard_id);
+                            $token->set_gateway_id($this->payment_method);
+                            $token->set_card_type($this->card->type);
+                            $token->set_last4(substr($this->card->number, -4));
+                            $token->set_expiry_month(date('m'));
+                            $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
                             $save_result = $token->save();
-                            if ( $save_result ) {
-                                    $order->add_payment_token( $token );
+                            if ($save_result) {
+                                $order->add_payment_token($token);
                             }
                         } catch (Exception $ex) {
-
+                            
                         }
-                        
                     }
                 }
                 $order->payment_complete($saleId);
                 $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
                 update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+                if (!empty($order->subscription_renewal)) {
+                    return true;
+                }
                 WC()->cart->empty_cart();
                 $return_url = $order->get_checkout_order_received_url();
                 if (is_ajax()) {
@@ -127,6 +138,10 @@ class PayPal_Rest_API_Utility {
                     exit;
                 }
             } else {
+                $this->send_failed_order_email($order->id);
+                if (!empty($order->subscription_renewal)) {
+                    return true;
+                }
                 wc_add_notice(__('Error Payment state:' . $this->payment->state, 'paypal-for-woocommerce'), 'error');
                 $this->add_log(__('Error Payment state:' . $this->payment->state, 'paypal-for-woocommerce'));
                 return array(
@@ -135,16 +150,24 @@ class PayPal_Rest_API_Utility {
                 );
             }
         } catch (PayPal\Exception\PayPalConnectionException $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->send_failed_order_email($order->id);
             $this->add_log($ex->getData());
+            if (!empty($order->subscription_renewal)) {
+                return true;
+            }
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
             return array(
                 'result' => 'fail',
                 'redirect' => ''
             );
             exit;
         } catch (Exception $ex) {
-            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->send_failed_order_email($order->id);
             $this->add_log($ex->getMessage());
+            if (!empty($order->subscription_renewal)) {
+                return true;
+            }
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
             return array(
                 'result' => 'fail',
                 'redirect' => ''
@@ -158,11 +181,17 @@ class PayPal_Rest_API_Utility {
      * @param type $card_data
      */
     public function set_trnsaction_obj_value($order, $card_data) {
-        if(!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
-            $token_id = wc_clean( $_POST['wc-paypal_credit_card_rest-payment-token'] );
-            $token = WC_Payment_Tokens::get( $token_id );
+        if (!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
+            $token_id = wc_clean($_POST['wc-paypal_credit_card_rest-payment-token']);
+            $token = WC_Payment_Tokens::get($token_id);
             $this->CreditCardToken = new CreditCardToken();
             $this->CreditCardToken->setCreditCardId($token->get_token());
+            $this->fundingInstrument = new FundingInstrument();
+            $this->fundingInstrument->setCreditCardToken($this->CreditCardToken);
+        } else if (!empty($order->subscription_renewal)) {
+            $payment_tokens = get_post_meta($order->id, '_payment_tokens_id', true);
+            $this->CreditCardToken = new CreditCardToken();
+            $this->CreditCardToken->setCreditCardId($payment_tokens);
             $this->fundingInstrument = new FundingInstrument();
             $this->fundingInstrument->setCreditCardToken($this->CreditCardToken);
         } else {
@@ -170,16 +199,17 @@ class PayPal_Rest_API_Utility {
             $this->fundingInstrument = new FundingInstrument();
             $this->fundingInstrument->setCreditCard($this->card);
         }
-        
         $this->payer = new Payer();
         $this->payer->setPaymentMethod("credit_card");
         $this->payer->setFundingInstruments(array($this->fundingInstrument));
-        $this->set_item($order);
-        $this->set_item_list();
-        $this->set_detail_values();
-        $this->set_amount_values($order);
-        $this->set_transaction();
-        $this->set_payment();
+        if ($order->get_total() > 0) {
+            $this->set_item($order);
+            $this->set_item_list();
+            $this->set_detail_values();
+            $this->set_amount_values($order);
+            $this->set_transaction();
+            $this->set_payment();
+        }
     }
 
     /**
@@ -366,7 +396,7 @@ class PayPal_Rest_API_Utility {
      * @since    1.2
      */
     public function create_transaction_method_obj() {
-        
+
         $this->card = new CreditCard();
         $this->order_item = array();
         $this->send_items = true;
@@ -556,7 +586,7 @@ class PayPal_Rest_API_Utility {
         }
         return number_format($price, $decimals, '.', '');
     }
-    
+
     public function save_credit_card($card_data) {
         $customer_id = get_current_user_id();
         $this->card = new CreditCard();
@@ -565,53 +595,153 @@ class PayPal_Rest_API_Utility {
         $this->set_card_expire_month($card_data);
         $this->set_card_expire_year($card_data);
         $this->set_card_cvv($card_data);
-        
-        $billtofirstname = (get_user_meta( $customer_id, 'billing_first_name', true )) ? get_user_meta( $customer_id, 'billing_first_name', true ) : get_user_meta( $customer_id, 'shipping_first_name', true );
-        $billtolastname = (get_user_meta( $customer_id, 'billing_last_name', true )) ? get_user_meta( $customer_id, 'billing_last_name', true ) : get_user_meta( $customer_id, 'shipping_last_name', true );
-        
+
+        $billtofirstname = (get_user_meta($customer_id, 'billing_first_name', true)) ? get_user_meta($customer_id, 'billing_first_name', true) : get_user_meta($customer_id, 'shipping_first_name', true);
+        $billtolastname = (get_user_meta($customer_id, 'billing_last_name', true)) ? get_user_meta($customer_id, 'billing_last_name', true) : get_user_meta($customer_id, 'shipping_last_name', true);
+
         $this->card->setFirstName($billtofirstname);
         $this->card->setLastName($billtolastname);
-        $this->card->setMerchantId(get_bloginfo('name').'_'.$customer_id.'_'.uniqid());
-        $this->card->setExternalCardId($card_data->number.'_'.uniqid());
-        $this->card->setExternalCustomerId($card_data->number.'_'.$customer_id.'_'.uniqid());
-        
+        $this->card->setMerchantId(get_bloginfo('name') . '_' . $customer_id . '_' . uniqid());
+        $this->card->setExternalCardId($card_data->number . '_' . uniqid());
+        $this->card->setExternalCustomerId($card_data->number . '_' . $customer_id . '_' . uniqid());
+
         try {
             $this->card->create($this->getAuth());
-            if($this->card->state == 'ok') {
+            if ($this->card->state == 'ok') {
                 $customer_id = get_current_user_id();
                 $creditcard_id = $this->card->getId();
                 $token = new WC_Payment_Token_CC();
-                $token->set_user_id( $customer_id );
-                $token->set_token( $creditcard_id );
-                $token->set_gateway_id( $this->payment_method );
-                $token->set_card_type( $this->card->type );
-                $token->set_last4( substr( $this->card->number, -4 ) );
-                $token->set_expiry_month( date( 'm' ) );
-                $token->set_expiry_year( date( 'Y', strtotime( $this->card->valid_until ) ) );
+                $token->set_user_id($customer_id);
+                $token->set_token($creditcard_id);
+                $token->set_gateway_id($this->payment_method);
+                $token->set_card_type($this->card->type);
+                $token->set_last4(substr($this->card->number, -4));
+                $token->set_expiry_month(date('m'));
+                $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
                 $save_result = $token->save();
-                if ( $save_result ) {
+                if ($save_result) {
                     return array(
                         'result' => 'success',
-                        'redirect' => wc_get_account_endpoint_url( 'payment-methods' )
+                        'redirect' => wc_get_account_endpoint_url('payment-methods')
                     );
-                    
                 }
             } else {
-                    wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-                    return array(
-                        'result' => 'fail',
-                        'redirect' => wc_get_account_endpoint_url( 'payment-methods' )
-                    );
-            }
-        } catch (Exception $ex) {
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-                $this->add_log($ex->getMessage());
                 return array(
                     'result' => 'fail',
-                    'redirect' => ''
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
                 );
+            }
+        } catch (Exception $ex) {
+            $this->send_failed_order_email($order->id);
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log($ex->getMessage());
+            return array(
+                'result' => 'fail',
+                'redirect' => ''
+            );
         }
-        
+    }
+
+    function is_subscription($order_id) {
+        return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
+    }
+
+    public function save_payment_token($order, $payment_tokens_id) {
+        // Store source in the order
+        if (!empty($payment_tokens_id)) {
+            update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
+        }
+        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order->id)) {
+            $subscriptions = wcs_get_subscriptions_for_order($order->id);
+        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order->id)) {
+            $subscriptions = wcs_get_subscriptions_for_renewal_order($order->id);
+        } else {
+            $subscriptions = array();
+        }
+        if (!empty($subscriptions)) {
+            foreach ($subscriptions as $subscription) {
+                update_post_meta($subscription->id, '_payment_tokens_id', $payment_tokens_id);
+            }
+        }
+    }
+
+    public function create_payment_with_zero_amount($order, $card_data) {
+        global $woocommerce;
+        try {
+            $this->set_trnsaction_obj_value($order, $card_data);
+            try {
+                $this->card->create($this->getAuth());
+                $customer_id = $order->get_user_id();
+                $creditcard_id = $this->card->getId();
+                $this->save_payment_token($order, $creditcard_id);
+                $token = new WC_Payment_Token_CC();
+                $token->set_user_id($customer_id);
+                $token->set_token($creditcard_id);
+                $token->set_gateway_id($this->payment_method);
+                $token->set_card_type($this->card->type);
+                $token->set_last4(substr($this->card->number, -4));
+                $token->set_expiry_month(date('m'));
+                $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
+                $save_result = $token->save();
+                if ($save_result) {
+                    $order->add_payment_token($token);
+                }
+            } catch (Exception $ex) {
+                
+            }
+            $order->payment_complete($creditcard_id);
+            $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
+            update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+            if (!empty($order->subscription_renewal)) {
+                return true;
+            }
+            WC()->cart->empty_cart();
+            $return_url = $order->get_checkout_order_received_url();
+            if (is_ajax()) {
+                wp_send_json(array(
+                    'result' => 'success',
+                    'redirect' => apply_filters('woocommerce_checkout_no_payment_needed_redirect', $return_url, $order)
+                ));
+            } else {
+                wp_safe_redirect(
+                        apply_filters('woocommerce_checkout_no_payment_needed_redirect', $return_url, $order)
+                );
+                exit;
+            }
+        } catch (PayPal\Exception\PayPalConnectionException $ex) {
+            $this->send_failed_order_email($order->id);
+            $this->add_log($ex->getData());
+            if (!empty($order->subscription_renewal)) {
+                return true;
+            }
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            return array(
+                'result' => 'fail',
+                'redirect' => ''
+            );
+            exit;
+        } catch (Exception $ex) {
+            $this->send_failed_order_email($order->id);
+            $this->add_log($ex->getMessage());
+            if (!empty($order->subscription_renewal)) {
+                return true;
+            }
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+
+            return array(
+                'result' => 'fail',
+                'redirect' => ''
+            );
+            
+        }
+    }
+    
+    public function send_failed_order_email($order_id) {
+        $emails = WC()->mailer()->get_emails();
+        if (!empty($emails) && !empty($order_id)) {
+            $emails['WC_Email_Failed_Order']->trigger($order_id);
+        }
     }
 
 }

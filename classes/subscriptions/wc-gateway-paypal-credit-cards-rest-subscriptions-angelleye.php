@@ -22,15 +22,24 @@ class WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE extends WC_Gate
     }
 
     public function process_payment($order_id) {
+        $order = wc_get_order($order_id);
         if ($this->is_subscription($order_id)) {
-            return parent::process_payment($order_id);
+            if ($order->get_total() > 0) {
+                parent::process_payment($order_id);
+            } else {
+                parent::process_subscription_payment($order);
+            }
         } else {
             return parent::process_payment($order_id);
         }
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
-        parent::process_subscription_payment($renewal_order, $amount_to_charge);
+        if ($renewal_order->get_total() > 0) {
+            parent::process_payment($renewal_order->id);
+        } else {
+            parent::process_subscription_payment($renewal_order);
+        }
     }
 
     public function add_subscription_payment_meta($payment_meta, $subscription) {
@@ -49,23 +58,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE extends WC_Gate
         if ($this->id === $payment_method_id) {
             if (!empty($payment_meta['post_meta']['_payment_tokens_id']['value']) && empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
                 throw new Exception('A "_payment_tokens_id" value is required.');
-            }
-        }
-    }
-
-    public function save_payment_token($order, $payment_tokens_id) {
-        parent::save_payment_token($order, $payment_tokens_id);
-        // Also store it on the subscriptions being purchased or paid for in the order
-        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order->id)) {
-            $subscriptions = wcs_get_subscriptions_for_order($order->id);
-        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order->id)) {
-            $subscriptions = wcs_get_subscriptions_for_renewal_order($order->id);
-        } else {
-            $subscriptions = array();
-        }
-        if (!empty($subscriptions)) {
-            foreach ($subscriptions as $subscription) {
-                update_post_meta($subscription->id, '_payment_tokens_id', $payment_tokens_id);
             }
         }
     }
