@@ -76,19 +76,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_receipt_paypal_advanced', array($this, 'receipt_page'));
         add_action('woocommerce_api_wc_gateway_paypal_advanced_angelleye', array($this, 'relay_response'));
         $this->enabled = isset($this->settings['enabled']) && $this->settings['enabled'] == 'yes' ? true : false;
-        $this->enable_automated_account_creation_for_guest_checkouts = 'yes' === $this->get_option('enable_automated_account_creation_for_guest_checkouts', 'no');
-        $this->enable_guest_checkout = get_option( 'woocommerce_enable_guest_checkout' ) == 'yes' ? true : false;
-        if ( $this->supports( 'tokenization' ) && is_checkout() && $this->enable_guest_checkout && !is_user_logged_in() && $this->enable_automated_account_creation_for_guest_checkouts) {
-            $this->enable_automated_account_creation_for_guest_checkouts = true;
-            add_action( 'woocommerce_after_checkout_validation', array( $this, 'enable_automated_account_creation_for_guest_checkouts' ), 10, 1 );
-        } else {
-            $this->enable_automated_account_creation_for_guest_checkouts = false;                          
-        }
-        if(!$this->enable_automated_account_creation_for_guest_checkouts) {
-            if(angelleye_wc_autoship_cart_has_autoship_item() == true) {
-                $this->enable_automated_account_creation_for_guest_checkouts = true;
-            }
-        }
         $this->customer_id;
     }
 
@@ -756,14 +743,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
-            'enable_automated_account_creation_for_guest_checkouts' => array(
-                'title' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
-                'label' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('If guest checkout in WooCommerce general settings is enabled, and the buyer chooses to save payment details, an account will be automatically created for them if they do not create one on their own.', 'paypal-for-woocommerce'),
-                'default' => 'no',
-                'class' => 'enable_automated_account_creation_for_guest_checkouts'
-            ),
+          
             'testmode' => array(
                 'title' => __('PayPal sandbox', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -874,23 +854,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $this->saved_payment_methods();
             $this->save_payment_method_checkbox();
         }
-        if($this->enable_automated_account_creation_for_guest_checkouts == true) :
-            ?>
-            <script type="text/javascript">
-                jQuery( document.body ).on( 'updated_checkout wc-credit-card-form-init', function() {
-                    jQuery( '.payment_method_paypal_advanced .woocommerce-SavedPaymentMethods-saveNew').show();
-                    if(!jQuery( '.payment_method_paypal_advanced .woocommerce-SavedPaymentMethods-saveNew').hasClass("force-show")){
-                        jQuery( '.payment_method_paypal_advanced .woocommerce-SavedPaymentMethods-saveNew').addClass("force-show");
-                     }
-                });
-            </script>
-            <style>
-                .force-show {
-                    display: inline !important;
-                }
-            </style>
-            <?php 
-        endif;
     }
 
     /**
@@ -1246,29 +1209,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 return;
             } else {
                 $length_error++;
-            }
-        }
-    }
-    
-    public function enable_automated_account_creation_for_guest_checkouts($posted) {
-        try {
-            if( empty($posted) ) {
-                 return false;
-            }
-            if( $posted['createaccount'] == true ) {
-                return false;
-            }
-            if ( wc_notice_count( 'error' ) > 0 ) {
-                return false;
-            }
-            if( $posted['payment_method'] == $this->id ) {
-                if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
-                    $this->customer_id = angelleye_automated_account_creation_for_guest_checkouts($posted);
-                }
-            }
-        } catch (Exception $e) {
-            if ( ! empty( $e ) ) {
-                wc_add_notice( $e->getMessage(), 'error' );
             }
         }
     }

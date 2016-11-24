@@ -655,14 +655,6 @@ class AngellEYE_Utility {
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
-            'enable_automated_account_creation_for_guest_checkouts' => array(
-                'title' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
-                'label' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('If guest checkout in WooCommerce general settings is enabled, and the buyer chooses to save payment details, an account will be automatically created for them if they do not create one on their own.', 'paypal-for-woocommerce'),
-                'default' => 'no',
-                'class' => 'enable_automated_account_creation_for_guest_checkouts'
-            ),
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
                 'type' => 'text',

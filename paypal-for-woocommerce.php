@@ -99,9 +99,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_checkout_process', array( $this, 'angelleye_paypal_express_checkout_process_checkout_fields' ) );
             add_filter('body_class', array($this, 'add_body_classes'));
             add_action('http_api_curl', array($this, 'http_api_curl_ex_add_curl_parameter'), 10, 3);
-            add_action( 'enable_automated_account_creation_for_guest_checkouts', array($this, 'enable_automated_account_creation_for_guest_checkouts'), 10, 1 );
             $this->customer_id;
-            add_filter( 'pre_option_woocommerce_enable_guest_checkout', array($this, 'angelleye_wc_autoship_get_option_enable_guest_checkout'), 11, 1 );
         }
 
         /*
@@ -1553,44 +1551,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function woo_compatibility_notice() {
             echo '<div class="error"><p>' . __('PayPal for WooCommerce requires WooCommerce version 2.6 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce') . '</p></div>';
-        }
-        
-        public function enable_automated_account_creation_for_guest_checkouts($posted) {
-            try {
-                if( empty($posted) ) {
-                     return false;
-                }
-                if( $posted['ACK'] != 'Success' ) {
-                    return false;
-                }
-                if ( wc_notice_count( 'error' ) > 0 ) {
-                    return false;
-                }
-                if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
-                    $this->customer_id = angelleye_automated_account_creation_for_guest_checkouts_for_express_checkout($posted);
-                }
-
-            } catch (Exception $e) {
-                if ( ! empty( $e ) ) {
-                    wc_add_notice( $e->getMessage(), 'error' );
-                }
-            }
-        }
-        
-        public function angelleye_wc_autoship_get_option_enable_guest_checkout($enable_guest_checkout) {
-            if($this->angelleye_wc_autoship_cart_has_autoship_items()) {
-                global $wpdb;
-                $row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_enable_guest_checkout' ) );
-                if( empty($row->option_value) || $row->option_value == 'yes' ) {
-                    return $woocommerce_enable_guest_checkout = 'yes';
-                }
-            }
-            return $enable_guest_checkout;
-        }
-
-        public function angelleye_wc_autoship_cart_has_autoship_items() {
-            $bool = angelleye_wc_autoship_cart_has_autoship_item();
-            return $bool;
         }
     }
 }

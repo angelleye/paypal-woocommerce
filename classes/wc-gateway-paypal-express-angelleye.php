@@ -126,19 +126,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             add_action( 'angelleye_wc_eu_vat_number', array('WC_EU_VAT_Number', 'process_checkout'), 10);
         }
         
-        $this->enable_automated_account_creation_for_guest_checkouts = 'yes' === $this->get_option('enable_automated_account_creation_for_guest_checkouts', 'no');
-        $this->enable_guest_checkout = get_option( 'woocommerce_enable_guest_checkout' ) == 'yes' ? true : false;
-        if ( $this->supports( 'tokenization' ) && $this->enable_guest_checkout && !is_user_logged_in() && $this->enable_automated_account_creation_for_guest_checkouts) {
-            $this->enable_automated_account_creation_for_guest_checkouts = true;
-        } else {
-            $this->enable_automated_account_creation_for_guest_checkouts = false;                          
-        }
-        if(!$this->enable_automated_account_creation_for_guest_checkouts) {
-            if(angelleye_wc_autoship_cart_has_autoship_item() == true) {
-                $this->enable_automated_account_creation_for_guest_checkouts = true;
-            }
-        }
-        
     }
     
     /**
@@ -616,14 +603,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
-            ),
-            'enable_automated_account_creation_for_guest_checkouts' => array(
-                'title' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
-                'label' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('If guest checkout in WooCommerce general settings is enabled, and the buyer chooses to save payment details, an account will be automatically created for them if they do not create one on their own.', 'paypal-for-woocommerce'),
-                'default' => 'no',
-                'class' => 'enable_automated_account_creation_for_guest_checkouts'
             ),
             'enable_notifyurl' => array(
                 'title' => __('Enable PayPal IPN', 'paypal-for-woocommerce'),
@@ -1996,10 +1975,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $this->set_session('payer_id', $PayPalResult['PAYERID']);
         }
-        
-        if($this->enable_automated_account_creation_for_guest_checkouts) {
-            do_action('enable_automated_account_creation_for_guest_checkouts', $PayPalResult);
-        }
         /*
          * Return the class library result array.
          */
@@ -2712,29 +2687,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ( $description = $this->get_description() ) {
             echo wpautop( wptexturize( $description ) );
 	}
-        $this->new_method_label = __( 'Create a new billing agreement', 'wc-autoship' );
+        $this->new_method_label = __( 'Create a new billing agreement', 'paypal-for-woocommerce' );
         if ( $this->supports( 'tokenization' ) && is_checkout() ) {
             $this->tokenization_script();
             $this->saved_payment_methods();
             //$this->save_payment_method_checkbox();
         }
-        if($this->enable_automated_account_creation_for_guest_checkouts == true) :
-            ?>
-            <script type="text/javascript">
-                jQuery( document.body ).on( 'updated_checkout wc-credit-card-form-init', function() {
-                    jQuery( '.payment_method_paypal_express .woocommerce-SavedPaymentMethods-saveNew').show();
-                    if(!jQuery( '.payment_method_paypal_express .woocommerce-SavedPaymentMethods-saveNew').hasClass("force-show")){
-                        jQuery( '.payment_method_paypal_express .woocommerce-SavedPaymentMethods-saveNew').addClass("force-show");
-                     }
-                });
-            </script>
-            <style>
-                .force-show {
-                    display: inline !important;
-                }
-            </style>
-            <?php 
-        endif;
     }
     
    public function process_payment($order_id) {

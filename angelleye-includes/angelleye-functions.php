@@ -80,22 +80,3 @@ if (!function_exists('angelleye_automated_account_creation_for_guest_checkouts_f
     } 
 
 }
-
-if (!function_exists('angelleye_wc_autoship_cart_has_autoship_item')) {
-    
-    function angelleye_wc_autoship_cart_has_autoship_item() {
-        $cart = WC()->cart;
-        if ( empty( $cart ) ) {
-           return false;
-        }
-        $has_autoship_items = false;
-        foreach ( $cart->get_cart() as $item ) {
-            if ( isset( $item['wc_autoship_frequency'] ) ) {
-                $has_autoship_items = true;
-                break;
-            }
-        }
-        return $has_autoship_items;
-    }
-    
-}
