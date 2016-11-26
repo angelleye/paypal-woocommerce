@@ -37,8 +37,8 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $this->init_form_fields();
         $this->init_settings();
         $card_icon = $this->get_option('card_icon', 'no');
-        if($card_icon == 'no') {
-            $card_icon = WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+        if ($card_icon == 'no') {
+            $card_icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png';
         }
         $this->icon = apply_filters('woocommerce_paypal_credit_card_rest_icon', $card_icon);
         if (is_ssl()) {
@@ -290,9 +290,11 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $result = $this->paypal_rest_api->save_credit_card($card);
         return $result;
     }
+
     public function process_subscription_payment($order) {
         $this->add_rest_api_utility();
         $card = $this->paypal_rest_api->get_posted_card();
         $this->paypal_rest_api->create_payment_with_zero_amount($order, $card);
     }
+
 }

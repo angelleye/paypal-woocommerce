@@ -105,8 +105,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 
         $this->customer_id;
     }
-    
-    
+
     public function add_log($message) {
         if ($this->debug) {
             if (!isset($this->log)) {
@@ -602,33 +601,8 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             }
             parent::payment_fields();
             do_action('payment_fields_saved_payment_methods', $this);
-	}
-    }
-        
-        public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {
-            $form_html = "";
-            $form_html .= '<p class="form-row form-row-first">';
-            $form_html .= '<label for="cc-expire-month">' . __("Expiration Date", 'paypal-for-woocommerce') . '<span class="required">*</span></label>';
-            $form_html .= '<select name="paypal_pro_payflow_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month mr5">';
-            $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
-            $months = array();
-            for ($i = 1; $i <= 12; $i++) :
-                $timestamp = mktime(0, 0, 0, $i, 1);
-                $months[date('n', $timestamp)] = date_i18n(_x('F', 'Month Names', 'paypal-for-woocommerce'), $timestamp);
-            endfor;
-            foreach ($months as $num => $name) {
-                $form_html .= '<option value=' . $num . '>' . $name . '</option>';
-            }
-            $form_html .= '</select>';
-            $form_html .= '<select name="paypal_pro_payflow_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year ml5">';
-            $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
-            for ($i = date('y'); $i <= date('y') + 15; $i++) {
-                $form_html .= '<option value=' . $i . '>20' . $i . '</option>';
-            }
-            $form_html .= '</select>';
-            $form_html .= '</p>';
-            return $form_html;
         }
+    }
 
     public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {
         $form_html = "";
@@ -1013,7 +987,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $PayPalRequestData['SHIPTOCOUNTRY'] = $order->shipping_country;
                 $PayPalRequestData['SHIPTOZIP'] = $order->shipping_postcode;
             }
-            
+
             $PaymentData = $this->calculation_angelleye->order_calculation($order->id);
             $OrderItems = array();
             if ($this->send_items) {
@@ -1225,4 +1199,5 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
+
 }

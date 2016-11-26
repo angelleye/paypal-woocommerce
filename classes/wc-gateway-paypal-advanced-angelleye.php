@@ -652,7 +652,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
-          
             'testmode' => array(
                 'title' => __('PayPal sandbox', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -777,7 +776,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             update_post_meta($order_id, '_is_save_payment_method', 'yes');
         }
         if ((!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') || !empty($order->subscription_renewal)) {
-            if(!empty($order->subscription_renewal)) {
+            if (!empty($order->subscription_renewal)) {
                 $payment_tokens_id = get_post_meta($order->id, '_payment_tokens_id', true);
             } else {
                 $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
@@ -789,7 +788,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             if ($inq_result == 'Approved') {
                 $order->payment_complete($payment_tokens_id);
                 $this->save_payment_token($order, $payment_tokens_id);
-                if(empty($order->subscription_renewal)) {
+                if (empty($order->subscription_renewal)) {
                     WC()->cart->empty_cart();
                 }
                 $order->add_order_note(sprintf(__('Payment completed for the  (Order: %s)', 'paypal-for-woocommerce'), $order->get_order_number()));
@@ -854,7 +853,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $postData .= '&' . $key . '=' . $val;
         }
         $postData = trim($postData, '&');
-        // Using Curl post necessary information to the Paypal Site to generate the secured token 
+        // Using Curl post necessary information to the Paypal Site to generate the secured token
         $response = wp_remote_post($this->hostaddr, array(
             'method' => 'POST',
             'body' => $postData,
@@ -869,7 +868,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if (empty($response['body'])) {
             throw new Exception(__('Empty response.', 'paypal-for-woocommerce'));
         }
-        // Parse and assign to array 
+        // Parse and assign to array
         $refund_result_arr = array(); //stores the response in array format
         parse_str($response['body'], $refund_result_arr);
         $this->add_log(sprintf(__('Response of the refund transaction: %s', 'paypal-for-woocommerce'), print_r($refund_result_arr, true)));
@@ -1086,6 +1085,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             }
         }
     }
+
     public function add_log($message) {
         if ($this->debug) {
             if (!isset($this->log)) {
@@ -1190,4 +1190,5 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
+
 }

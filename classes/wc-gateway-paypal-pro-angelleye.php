@@ -1431,7 +1431,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
         }
     }
-    
+
     public function process_subscription_payment($order) {
         if (!class_exists('Angelleye_PayPal')) {
             require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
@@ -1769,4 +1769,5 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             return;
         }
     }
+
 }
