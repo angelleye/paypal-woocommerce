@@ -853,6 +853,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $this->tokenization_script();
             $this->saved_payment_methods();
             $this->save_payment_method_checkbox();
+            do_action('payment_fields_saved_payment_methods', $this);
         }
     }
 

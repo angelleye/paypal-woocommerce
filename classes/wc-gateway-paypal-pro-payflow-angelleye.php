@@ -654,6 +654,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 }
             }
             parent::payment_fields();
+            do_action('payment_fields_saved_payment_methods', $this);
 	}
         
         public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {

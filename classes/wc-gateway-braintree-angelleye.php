@@ -390,6 +390,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             <?php
         } else {
             parent::payment_fields();
+            do_action('payment_fields_saved_payment_methods', $this);
         }
     }
 

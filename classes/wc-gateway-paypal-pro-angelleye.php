@@ -381,6 +381,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             }
         }
         parent::payment_fields();
+        do_action('payment_fields_saved_payment_methods', $this);
     }
 
     public function paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class) {

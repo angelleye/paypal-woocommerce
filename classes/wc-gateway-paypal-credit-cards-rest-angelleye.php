@@ -128,6 +128,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             echo wpautop(wptexturize($this->description));
         }
         parent::payment_fields();
+        do_action('payment_fields_saved_payment_methods', $this);
     }
 
     /**

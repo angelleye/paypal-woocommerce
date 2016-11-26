@@ -1975,6 +1975,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $this->set_session('payer_id', $PayPalResult['PAYERID']);
         }
+        do_action('enable_automated_account_creation_for_guest_checkouts_paypal_express', $PayPalResult);
         /*
          * Return the class library result array.
          */
@@ -2691,7 +2692,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ( $this->supports( 'tokenization' ) && is_checkout() ) {
             $this->tokenization_script();
             $this->saved_payment_methods();
-            //$this->save_payment_method_checkbox();
+            $this->save_payment_method_checkbox();
+            do_action('payment_fields_saved_payment_methods', $this);
         }
     }
     
