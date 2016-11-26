@@ -154,17 +154,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enable_cardholder_first_last_name) {
             add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
         }
-
         add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_credit_card_form_fields'), 10, 2);
-
-        $this->enable_automated_account_creation_for_guest_checkouts = 'yes' === $this->get_option('enable_automated_account_creation_for_guest_checkouts', 'no');
-        $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
-        if ($this->supports('tokenization') && is_checkout() && $this->enable_guest_checkout && !is_user_logged_in() && $this->enable_automated_account_creation_for_guest_checkouts) {
-            $this->enable_automated_account_creation_for_guest_checkouts = true;
-            add_action('woocommerce_after_checkout_validation', array($this, 'enable_automated_account_creation_for_guest_checkouts'), 10, 1);
-        } else {
-            $this->enable_automated_account_creation_for_guest_checkouts = false;
-        }
         $this->customer_id;
     }
 
@@ -328,14 +318,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
-            'enable_automated_account_creation_for_guest_checkouts' => array(
-                'title' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
-                'label' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('If guest checkout in WooCommerce general settings is enabled, and the buyer chooses to save payment details, an account will be automatically created for them if they do not create one on their own.', 'paypal-for-woocommerce'),
-                'default' => 'no',
-                'class' => 'enable_automated_account_creation_for_guest_checkouts'
-            ),
             'notifyurl' => array(
                 'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
                 'type' => 'text',
@@ -408,23 +390,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
         }
         parent::payment_fields();
-        if ($this->enable_automated_account_creation_for_guest_checkouts == true) :
-            ?>
-            <script type="text/javascript">
-                jQuery(document.body).on('updated_checkout wc-credit-card-form-init', function () {
-                    jQuery('.payment_method_paypal_pro .woocommerce-SavedPaymentMethods-saveNew').show();
-                    if (!jQuery('.payment_method_paypal_pro .woocommerce-SavedPaymentMethods-saveNew').hasClass("force-show")) {
-                        jQuery('.payment_method_paypal_pro .woocommerce-SavedPaymentMethods-saveNew').addClass("force-show");
-                    }
-                });
-            </script>
-            <style>
-                .force-show {
-                    display: inline !important;
-                }
-            </style>
-            <?php
-        endif;
+        do_action('payment_fields_saved_payment_methods', $this);
     }
 
     public function paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class) {
@@ -1463,29 +1429,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $redirect_url = wc_get_account_endpoint_url('payment-methods');
             $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
-        }
-    }
-
-    public function enable_automated_account_creation_for_guest_checkouts($posted) {
-        try {
-            if (empty($posted)) {
-                return false;
-            }
-            if ($posted['createaccount'] == true) {
-                return false;
-            }
-            if (wc_notice_count('error') > 0) {
-                return false;
-            }
-            if ($posted['payment_method'] == $this->id) {
-                if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
-                    $this->customer_id = angelleye_automated_account_creation_for_guest_checkouts($posted);
-                }
-            }
-        } catch (Exception $e) {
-            if (!empty($e)) {
-                wc_add_notice($e->getMessage(), 'error');
-            }
         }
     }
     

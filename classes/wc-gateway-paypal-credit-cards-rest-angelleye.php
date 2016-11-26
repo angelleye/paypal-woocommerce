@@ -64,14 +64,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_notices', array($this, 'checks'));
         add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_credit_card_rest_credit_card_form_fields'), 10, 2);
-        $this->enable_automated_account_creation_for_guest_checkouts = 'yes' === $this->get_option('enable_automated_account_creation_for_guest_checkouts', 'no');
-        $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
-        if ($this->supports('tokenization') && is_checkout() && $this->enable_guest_checkout && !is_user_logged_in() && $this->enable_automated_account_creation_for_guest_checkouts) {
-            $this->enable_automated_account_creation_for_guest_checkouts = true;
-            add_action('woocommerce_after_checkout_validation', array($this, 'enable_automated_account_creation_for_guest_checkouts'), 10, 1);
-        } else {
-            $this->enable_automated_account_creation_for_guest_checkouts = false;
-        }
         $this->customer_id;
     }
 
@@ -148,23 +140,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             echo wpautop(wptexturize($this->description));
         }
         parent::payment_fields();
-        if ($this->enable_automated_account_creation_for_guest_checkouts == true) :
-            ?>
-            <script type="text/javascript">
-                jQuery(document.body).on('updated_checkout wc-credit-card-form-init', function () {
-                    jQuery('.payment_method_paypal_credit_card_rest .woocommerce-SavedPaymentMethods-saveNew').show();
-                    if (!jQuery('.payment_method_paypal_credit_card_rest .woocommerce-SavedPaymentMethods-saveNew').hasClass("force-show")) {
-                        jQuery('.payment_method_paypal_credit_card_rest .woocommerce-SavedPaymentMethods-saveNew').addClass("force-show");
-                    }
-                });
-            </script>
-            <style>
-                .force-show {
-                    display: inline !important;
-                }
-            </style>
-            <?php
-        endif;
+        do_action('payment_fields_saved_payment_methods', $this);
     }
 
     /**
@@ -314,30 +290,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $result = $this->paypal_rest_api->save_credit_card($card);
         return $result;
     }
-
-    public function enable_automated_account_creation_for_guest_checkouts($posted) {
-        try {
-            if (empty($posted)) {
-                return false;
-            }
-            if ($posted['createaccount'] == true) {
-                return false;
-            }
-            if (wc_notice_count('error') > 0) {
-                return false;
-            }
-            if ($posted['payment_method'] == $this->id) {
-                if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
-                    $this->customer_id = angelleye_automated_account_creation_for_guest_checkouts($posted);
-                }
-            }
-        } catch (Exception $e) {
-            if (!empty($e)) {
-                wc_add_notice($e->getMessage(), 'error');
-            }
-        }
-    }
-    
     public function process_subscription_payment($order) {
         $this->add_rest_api_utility();
         $card = $this->paypal_rest_api->get_posted_card();

@@ -99,8 +99,14 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/wc-gateway-calculations-angelleye.php' );
             $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
         }
-    }
+        if ($this->enable_cardholder_first_last_name) {
+            add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
+        }
 
+        $this->customer_id;
+    }
+    
+    
     public function add_log($message) {
         if ($this->debug) {
             if (!isset($this->log)) {
@@ -249,14 +255,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
-            ),
-            'enable_automated_account_creation_for_guest_checkouts' => array(
-                'title' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
-                'label' => __('Enable Guest Checkout', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('If guest checkout in WooCommerce general settings is enabled, and the buyer chooses to save payment details, an account will be automatically created for them if they do not create one on their own.', 'paypal-for-woocommerce'),
-                'default' => 'no',
-                'class' => 'enable_automated_account_creation_for_guest_checkouts'
             ),
             'enable_cardholder_first_last_name' => array(
                 'title' => __('Enable Cardholder Name', 'paypal-for-woocommerce'),
@@ -602,27 +600,35 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 _e('For testing purposes you can use the card number 4111111111111111 with any CVC and a valid expiration date.', 'paypal-for-woocommerce');
                 echo '</p>';
             }
-        }
-        parent::payment_fields();
-        if ($this->enable_automated_account_creation_for_guest_checkouts == true) :
-            ?>
-            <script type="text/javascript">
-                jQuery(document.body).on('updated_checkout wc-credit-card-form-init', function () {
-                    jQuery('.payment_method_paypal_pro_payflow .woocommerce-SavedPaymentMethods-saveNew').show();
-                    if (!jQuery('.payment_method_paypal_pro_payflow .woocommerce-SavedPaymentMethods-saveNew').hasClass("force-show")) {
-                        jQuery('.payment_method_paypal_pro_payflow .woocommerce-SavedPaymentMethods-saveNew').addClass("force-show");
-                    }
-                });
-            </script>
-            <style>
-                .force-show {
-                    display: inline !important;
-                }
-            </style>
-            <?php
-
-        endif;
+            parent::payment_fields();
+            do_action('payment_fields_saved_payment_methods', $this);
+	}
     }
+        
+        public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {
+            $form_html = "";
+            $form_html .= '<p class="form-row form-row-first">';
+            $form_html .= '<label for="cc-expire-month">' . __("Expiration Date", 'paypal-for-woocommerce') . '<span class="required">*</span></label>';
+            $form_html .= '<select name="paypal_pro_payflow_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month mr5">';
+            $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
+            $months = array();
+            for ($i = 1; $i <= 12; $i++) :
+                $timestamp = mktime(0, 0, 0, $i, 1);
+                $months[date('n', $timestamp)] = date_i18n(_x('F', 'Month Names', 'paypal-for-woocommerce'), $timestamp);
+            endfor;
+            foreach ($months as $num => $name) {
+                $form_html .= '<option value=' . $num . '>' . $name . '</option>';
+            }
+            $form_html .= '</select>';
+            $form_html .= '<select name="paypal_pro_payflow_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year ml5">';
+            $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
+            for ($i = date('y'); $i <= date('y') + 15; $i++) {
+                $form_html .= '<option value=' . $i . '>20' . $i . '</option>';
+            }
+            $form_html .= '</select>';
+            $form_html .= '</p>';
+            return $form_html;
+        }
 
     public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {
         $form_html = "";
@@ -946,29 +952,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
-    public function enable_automated_account_creation_for_guest_checkouts($posted) {
-        try {
-            if (empty($posted)) {
-                return false;
-            }
-            if ($posted['createaccount'] == true) {
-                return false;
-            }
-            if (wc_notice_count('error') > 0) {
-                return false;
-            }
-            if ($posted['payment_method'] == $this->id) {
-                if (function_exists('angelleye_automated_account_creation_for_guest_checkouts')) {
-                    $this->customer_id = angelleye_automated_account_creation_for_guest_checkouts($posted);
-                }
-            }
-        } catch (Exception $e) {
-            if (!empty($e)) {
-                wc_add_notice($e->getMessage(), 'error');
-            }
-        }
-    }
-
     public function process_subscription_payment($order, $amount) {
         if (!class_exists('Angelleye_PayPal')) {
             require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
@@ -1242,5 +1225,4 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
-
 }
