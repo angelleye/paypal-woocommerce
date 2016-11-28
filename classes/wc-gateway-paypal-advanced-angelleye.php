@@ -158,7 +158,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         }
         $inquiry_result_arr = array(); //stores the response in array format
         parse_str($response['body'], $inquiry_result_arr);
-        if ($inquiry_result_arr['RESULT'] == 0 && $inquiry_result_arr['RESPMSG'] == 'Approved') {
+        if ($inquiry_result_arr['RESULT'] == 0 && ($inquiry_result_arr['RESPMSG'] == 'Approved' || $inquiry_result_arr['RESPMSG'] == 'Verified')) {
             $order->add_order_note(sprintf(__('Received result of Inquiry Transaction for the  (Order: %s) and is successful', 'paypal-for-woocommerce'), $order->get_order_number()));
             return 'Approved';
         } else {
@@ -316,7 +316,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         switch ($_REQUEST['RESULT']) {
             case 0 :
                 //handle exceptional cases
-                if ($_REQUEST['RESPMSG'] == 'Approved') {
+                if ($_REQUEST['RESPMSG'] == 'Approved' || $_REQUEST['RESPMSG'] == 'Verified') {
                     $this->success_handler($order, $order_id, $silent_post);
                 } else if ($_REQUEST['RESPMSG'] == 'Declined') {
                     $this->decline_handler($order, $order_id, $silent_post);
@@ -356,6 +356,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         } else {
             $template = $this->layout;
         }
+        $this->transtype = ($order->get_total() == 0 ) ? 'A' : $this->transtype; 
         $paypal_args = array(
             'VERBOSITY' => 'HIGH',
             'USER' => $this->user,
@@ -890,7 +891,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * */
     public function receipt_page($order_id) {
         //get the mode
-        $PF_MODE = $this->settings['testmode'] == 'yes' ? 'TEST' : 'LIVE';
+        $PF_MODE = $this->testmode == 'yes' ? 'TEST' : 'LIVE';
         //create order object
         $order = new WC_Order($order_id);
         //get the tokens
@@ -941,6 +942,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
     public function create_reference_transaction($token, $order) {
         static $length_error = 0;
+        $this->transtype = ($order->get_total() == 0) ? 'A' : $this->transtype;
         $paypal_args = array();
         $paypal_args = array(
             'VERBOSITY' => 'HIGH',
