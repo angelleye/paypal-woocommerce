@@ -1170,7 +1170,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $_POST = $checkout_form_post_data;
                 }
                 $order_id = WC()->checkout()->create_order();
-
+                 if (is_user_logged_in()) {
+                    $userLogined = wp_get_current_user();
+                    $user_email_address = $userLogined->user_email;
+                    update_post_meta($order_id, '_billing_email', $userLogined->user_email);
+                    update_post_meta($order_id, '_customer_user', $userLogined->ID);
+                }
                 do_action('woocommerce_checkout_order_processed', $order_id, $checkout_form_post_data);
 
                 /**
@@ -1407,6 +1412,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             if ($save_result) {
                                 $order->add_payment_token($token);
                             }
+                            $this->save_payment_token($order, $result['BILLINGAGREEMENTID']);
                         }
                         add_post_meta($order->id, 'BILLINGAGREEMENTID', $result['BILLINGAGREEMENTID']);
                     }
