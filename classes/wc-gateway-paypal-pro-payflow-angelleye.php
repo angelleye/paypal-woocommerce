@@ -56,23 +56,27 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->paypal_user = $this->get_option('sandbox_paypal_user', $this->paypal_vendor);
         }
         $this->supports = array(
-            'subscriptions',
             'products',
-            'refunds',
-            'subscription_cancellation',
-            'subscription_reactivation',
-            'subscription_suspension',
-            'subscription_amount_changes',
-            'subscription_payment_method_change', // Subs 1.n compatibility.
-            'subscription_payment_method_change_customer',
-            'subscription_payment_method_change_admin',
-            'subscription_date_changes',
-            'multiple_subscriptions',
-            'add_payment_method'
+            'refunds'
         );
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes') {
-            array_push($this->supports, "tokenization");
+            $this->supports = array(
+                'subscriptions',
+                'products',
+                'refunds',
+                'subscription_cancellation',
+                'subscription_reactivation',
+                'subscription_suspension',
+                'subscription_amount_changes',
+                'subscription_payment_method_change', // Subs 1.n compatibility.
+                'subscription_payment_method_change_customer',
+                'subscription_payment_method_change_admin',
+                'subscription_date_changes',
+                'multiple_subscriptions',
+                'add_payment_method',
+                'tokenization'
+            );
         }
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         $this->enable_cardholder_first_last_name = 'yes' === $this->get_option('enable_cardholder_first_last_name', 'no');

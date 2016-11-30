@@ -15,19 +15,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->secure_token_id = '';
         $this->securetoken = '';
         $this->supports = array(
-            'subscriptions',
             'products',
-            'refunds',
-            'subscription_cancellation',
-            'subscription_reactivation',
-            'subscription_suspension',
-            'subscription_amount_changes',
-            'subscription_payment_method_change', // Subs 1.n compatibility.
-            'subscription_payment_method_change_customer',
-            'subscription_payment_method_change_admin',
-            'subscription_date_changes',
-            'multiple_subscriptions',
-            'add_payment_method'
+            'refunds'
         );
 
         // Load the form fields.
@@ -38,7 +27,22 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes' && !is_add_payment_method_page()) {
-            array_push($this->supports, "tokenization");
+            $this->supports = array(
+                'subscriptions',
+                'products',
+                'refunds',
+                'subscription_cancellation',
+                'subscription_reactivation',
+                'subscription_suspension',
+                'subscription_amount_changes',
+                'subscription_payment_method_change', // Subs 1.n compatibility.
+                'subscription_payment_method_change_customer',
+                'subscription_payment_method_change_admin',
+                'subscription_date_changes',
+                'multiple_subscriptions',
+                'add_payment_method',
+                'tokenization'
+            );
         }
         $this->enabled = 'yes' === $this->get_option('enabled', 'no');
         $this->title = $this->get_option('title');

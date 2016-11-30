@@ -32,7 +32,22 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         // Get setting values
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes') {
-            array_push($this->supports, "tokenization");
+            $this->supports = array(
+                'subscriptions',
+                'products',
+                'refunds',
+                'subscription_cancellation',
+                'subscription_reactivation',
+                'subscription_suspension',
+                'subscription_amount_changes',
+                'subscription_payment_method_change', // Subs 1.n compatibility.
+                'subscription_payment_method_change_customer',
+                'subscription_payment_method_change_admin',
+                'subscription_date_changes',
+                'multiple_subscriptions',
+                'add_payment_method',
+                'tokenization'
+            );
         }
         $this->enabled = $this->settings['enabled'];
         $this->title = $this->settings['title'];
@@ -747,7 +762,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             echo '</div>';
             echo '<div class="clear"></div></div>';
             ?>
-                    <!--<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php /* echo WC()->plugin_url(); */ ?>/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>-->
+                        <!--<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php /* echo WC()->plugin_url(); */ ?>/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>-->
             <?php
             echo '</div>';
             echo '<div style="clear:both; margin-bottom:10px;"></div>';
@@ -2946,6 +2961,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'result' => 'fail',
                 'redirect' => $redirect_url
             );
+        }
+    }
+
+    public function send_failed_order_email($order_id) {
+        $emails = WC()->mailer()->get_emails();
+        if (!empty($emails) && !empty($order_id)) {
+            $emails['WC_Email_Failed_Order']->trigger($order_id);
+        }
+    }
+
+    public function save_payment_token($order, $payment_tokens_id) {
+        // Store source in the order
+        if (!empty($payment_tokens_id)) {
+            update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
 
