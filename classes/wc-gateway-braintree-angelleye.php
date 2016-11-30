@@ -293,7 +293,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 if (is_user_logged_in()) {
                     $customer_id = get_current_user_id();
                     $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
-                    if (!empty($braintree_customer_id)) {
+                    if (!empty($braintree_customer_id) && !empty($this->merchant_account_id)) {
+                        $clientToken = Braintree_ClientToken::generate(array('customerId' => $braintree_customer_id, 'merchantAccountId' => $this->merchant_account_id));
+                    } else if (!empty($braintree_customer_id)) {
                         $clientToken = Braintree_ClientToken::generate(array('customerId' => $braintree_customer_id));
                     } else {
                         $clientToken = Braintree_ClientToken::generate();
@@ -326,7 +328,21 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->add_log("Braintree_ClientToken::generate Braintree_Exception_SSLCertificate" . $e->getMessage());
                 wp_redirect($woocommerce->cart->get_cart_url());
                 exit;
+            } catch (InvalidArgumentException $e) {
+                if ($e->getMessage() == 'Customer specified by customer_id does not exist') {
+                    if (is_user_logged_in()) {
+                        $customer_id = get_current_user_id();
+                        delete_user_meta($customer_id, 'braintree_customer_id');
+                        $clientToken = Braintree_ClientToken::generate();
+                    }
+                } else {
+                    wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                    $this->add_log("Braintree_ClientToken::generate Braintree_Exception_NotFound" . $e->getMessage());
+                    wp_redirect($woocommerce->cart->get_cart_url());
+                    exit;
+                }
             } catch (Exception $ex) {
+                $ex->getCode();
                 $this->add_log("Braintree_ClientToken::generate Exception:" . $ex->getMessage());
                 wp_redirect($woocommerce->cart->get_cart_url());
                 exit;
@@ -1197,10 +1213,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     exit;
                 } else {
                     return array(
-                    'result' => 'success',
-                    '_payment_tokens_id' => $payment_method_token,
-                    'redirect' => wc_get_account_endpoint_url('payment-methods')
-                );
+                        'result' => 'success',
+                        '_payment_tokens_id' => $payment_method_token,
+                        'redirect' => wc_get_account_endpoint_url('payment-methods')
+                    );
                 }
             }
         } else {
