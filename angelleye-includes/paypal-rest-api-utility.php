@@ -77,7 +77,7 @@ class PayPal_Rest_API_Utility {
                 );
             } catch (Exception $ex) {
                 $this->send_failed_order_email($order->id);
-                $this->add_log($ex->getMessage());                
+                $this->add_log($ex->getMessage());
                 if (!empty($order->subscription_renewal)) {
                     return true;
                 }
@@ -188,6 +188,7 @@ class PayPal_Rest_API_Utility {
             $this->CreditCardToken->setCreditCardId($token->get_token());
             $this->fundingInstrument = new FundingInstrument();
             $this->fundingInstrument->setCreditCardToken($this->CreditCardToken);
+            $this->save_payment_token($order, $token->get_token());
         } else if (!empty($order->subscription_renewal)) {
             $payment_tokens = get_post_meta($order->id, '_payment_tokens_id', true);
             $this->CreditCardToken = new CreditCardToken();
@@ -741,10 +742,9 @@ class PayPal_Rest_API_Utility {
                 'result' => 'fail',
                 'redirect' => ''
             );
-            
         }
     }
-    
+
     public function send_failed_order_email($order_id) {
         $emails = WC()->mailer()->get_emails();
         if (!empty($emails) && !empty($order_id)) {
