@@ -496,10 +496,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     }
                 } else {
                     if (isset($_POST['wc-braintree-payment-token']) && 'new' !== $_POST['wc-braintree-payment-token']) {
-                        $customer_id = get_current_user_id();
                         $token_id = wc_clean($_POST['wc-braintree-payment-token']);
                         $token = WC_Payment_Tokens::get($token_id);
-                        $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
                         $request_data['paymentMethodToken'] = $token->get_token();
                     } else {
                         $request_data['creditCard'] = array(
@@ -631,8 +629,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     $order->add_payment_token($token);
                                 }
                             } else {
-                                $this->save_payment_token($order, $wc_existing_token);
-                                $order->add_payment_token($wc_existing_token);
+                                $this->save_payment_token($order, $payment_method_token);
+                                $order->add_payment_token($payment_method_token);
                             }
                         }
                     } catch (Braintree_Exception_NotFound $e) {
@@ -1089,7 +1087,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enable_braintree_drop_in) {
             $payment_method_nonce = self::get_posted_variable('braintree_token');
             if (!empty($payment_method_nonce)) {
-                $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce, 'options' => array('failOnDuplicatePaymentMethod' => true));
+                $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce, 'options' => array('failOnDuplicatePaymentMethod' => false));
                 if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
                     $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
                 }
@@ -1172,7 +1170,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (!empty($result->creditCard)) {
             $braintree_method = $result->creditCard;
         } else {
-            $braintree_method = $braintree_method;
+            $braintree_method = $result->paymentMethod;
         }
         update_user_meta($customer_id, 'braintree_customer_id', $braintree_method->customerId);
         $payment_method_token = $braintree_method->token;
@@ -1198,7 +1196,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                     exit;
                 } else {
-                    return false;
+                    return array(
+                    'result' => 'success',
+                    '_payment_tokens_id' => $payment_method_token,
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
+                );
                 }
             }
         } else {
@@ -1206,7 +1208,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                 exit;
             } else {
-                return false;
+                return array(
+                    'result' => 'success',
+                    '_payment_tokens_id' => $payment_method_token,
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
+                );
             }
         }
     }
@@ -1238,6 +1244,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function subscription_process_payment($order_id) {
+        $this->angelleye_braintree_lib();
         $order = new WC_Order($order_id);
         if (isset($_POST['wc-braintree-payment-token']) && 'new' !== $_POST['wc-braintree-payment-token']) {
             $token_id = wc_clean($_POST['wc-braintree-payment-token']);
