@@ -45,7 +45,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
-        $this->enabled = $this->get_option('enabled');
+        $this->enabled = $this->get_option('enabled', 'no');
         $this->sandbox = $this->get_option('sandbox');
         $this->environment = $this->sandbox == 'no' ? 'production' : 'sandbox';
         $this->merchant_id = $this->sandbox == 'no' ? $this->get_option('merchant_id') : $this->get_option('sandbox_merchant_id');
@@ -53,7 +53,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->public_key = $this->sandbox == 'no' ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
         $this->enable_braintree_drop_in = $this->get_option('enable_braintree_drop_in') === "yes" ? true : false;
         $this->merchant_account_id = $this->sandbox == 'no' ? $this->get_option('merchant_account_id') : $this->get_option('sandbox_merchant_account_id');
-        $this->debug = isset($this->settings['debug']) && $this->settings['debug'] == 'yes' ? true : false;
+        $this->debug = 'yes' === $this->get_option('debug', 'no');
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         $this->response = '';
         if ($this->enable_braintree_drop_in) {

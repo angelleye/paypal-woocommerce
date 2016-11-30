@@ -18,13 +18,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'products',
             'refunds'
         );
-
         if (substr(get_option("woocommerce_default_country"), 0, 2) != 'US') {
             $this->not_us = true;
         } else {
             $this->not_us = false;
         }
-
         // Load the form fields
         $this->init_form_fields();
         // Load the settings.
@@ -49,41 +47,39 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'tokenization'
             );
         }
-        $this->enabled = $this->settings['enabled'];
-        $this->title = $this->settings['title'];
-        $this->description = $this->settings['description'];
-        $this->api_username = $this->settings['api_username'];
-        $this->api_password = $this->settings['api_password'];
-        $this->api_signature = $this->settings['api_signature'];
-        $this->testmode = isset($this->settings['testmode']) ? $this->settings['testmode'] : 'yes';
-        $this->debug = isset($this->settings['debug']) ? $this->settings['debug'] : 'no';
-        $this->error_email_notify = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
-        $this->invoice_id_prefix = isset($this->settings['invoice_id_prefix']) ? $this->settings['invoice_id_prefix'] : '';
-        //$this->checkout_with_pp_button = $this->settings['checkout_with_pp_button'];
-        //$this->hide_checkout_button    = $this->settings['hide_checkout_button'];
-        $this->show_on_checkout = isset($this->settings['show_on_checkout']) ? $this->settings['show_on_checkout'] : 'both';
-        $this->paypal_account_optional = isset($this->settings['paypal_account_optional']) ? $this->settings['paypal_account_optional'] : '';
-        $this->error_display_type = isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
-        $this->landing_page = isset($this->settings['landing_page']) ? $this->settings['landing_page'] : '';
-        $this->checkout_logo = isset($this->settings['checkout_logo']) ? $this->settings['checkout_logo'] : '';
-        $this->checkout_logo_hdrimg = isset($this->settings['checkout_logo_hdrimg']) ? $this->settings['checkout_logo_hdrimg'] : '';
-        $this->show_paypal_credit = isset($this->settings['show_paypal_credit']) ? $this->settings['show_paypal_credit'] : '';
-        $this->brand_name = isset($this->settings['brand_name']) ? $this->settings['brand_name'] : '';
-        $this->customer_service_number = isset($this->settings['customer_service_number']) ? $this->settings['customer_service_number'] : '';
+        $this->enabled = $this->get_option('enabled', 'no');
+        $this->title = $this->get_option('title');
+        $this->description = $this->get_option('description');
+        $this->api_username = $this->get_option('api_username');
+        $this->api_password = $this->get_option('api_password');
+        $this->api_signature = $this->get_option('api_signature');
+        $this->testmode = $this->get_option('testmode', 'yes');
+        $this->debug = $this->get_option('debug', 'no');
+        $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'yes');
+        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
+        $this->show_on_checkout = $this->get_option('show_on_checkout', 'top');
+        $this->paypal_account_optional = $this->get_option('paypal_account_optional', 'no');
+        $this->error_display_type = $this->get_option('error_display_type', 'generic');
+        $this->landing_page = $this->get_option('landing_page', 'login');
+        $this->checkout_logo = $this->get_option('checkout_logo');
+        $this->checkout_logo_hdrimg = $this->get_option('checkout_logo_hdrimg');
+        $this->show_paypal_credit = $this->get_option('show_paypal_credit', 'yes');
+        $this->brand_name = $this->get_option('brand_name');
+        $this->customer_service_number = $this->get_option('customer_service_number');
         $this->gift_wrap_enabled = isset($this->settings['gift_wrap_enabled']) ? $this->settings['gift_wrap_enabled'] : '';
         $this->gift_message_enabled = isset($this->settings['gift_message_enabled']) ? $this->settings['gift_message_enabled'] : '';
         $this->gift_receipt_enabled = isset($this->settings['gift_receipt_enabled']) ? $this->settings['gift_receipt_enabled'] : '';
         $this->gift_wrap_name = isset($this->settings['gift_wrap_name']) ? $this->settings['gift_wrap_name'] : '';
         $this->gift_wrap_amount = isset($this->settings['gift_wrap_amount']) ? $this->settings['gift_wrap_amount'] : '';
-        $this->use_wp_locale_code = isset($this->settings['use_wp_locale_code']) ? $this->settings['use_wp_locale_code'] : '';
-        $this->angelleye_skip_text = isset($this->settings['angelleye_skip_text']) ? $this->settings['angelleye_skip_text'] : '';
-        $this->skip_final_review = isset($this->settings['skip_final_review']) ? $this->settings['skip_final_review'] : '';
+        $this->use_wp_locale_code = $this->get_option('use_wp_locale_code', 'yes');
+        $this->angelleye_skip_text = $this->get_option('angelleye_skip_text', __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce'));
+        $this->skip_final_review = $this->get_option('skip_final_review', 'no');
         $this->disable_term = $this->get_option('disable_term', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
-        $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
-        $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
+        $this->billing_address = $this->get_option('billing_address', 'no');
+        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->order_cancellations = $this->get_option('order_cancellations', 'disabled');
-        $this->email_notify_order_cancellations = isset($this->settings['email_notify_order_cancellations']) && $this->settings['email_notify_order_cancellations'] == 'yes' ? true : false;
+        $this->email_notify_order_cancellations = 'yes' === $this->get_option('email_notify_order_cancellations', 'no');
         $this->customer_id = get_current_user_id();
         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->notifyurl = '';
@@ -93,19 +89,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->notifyurl = str_replace('&amp;', '&', $this->notifyurl);
             }
         }
-
         if ($this->not_us) {
             $this->show_paypal_credit = 'no';
         }
-
-        /*
-          ' Define the PayPal Redirect URLs.
-          ' 	This is the URL that the buyer is first sent to do authorize payment with their paypal account
-          ' 	change the URL depending if you are testing on the sandbox or the live PayPal site
-          '
-          ' For the sandbox, the URL is       https://www.sandbox.paypal.com/webscr&cmd=_express-checkout&token=
-          ' For the live site, the URL is     https://www.paypal.com/webscr&cmd=_express-checkout&token=
-         */
         if ($this->testmode == 'yes') {
             $this->API_Endpoint = "https://api-3t.sandbox.paypal.com/nvp";
             $this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
@@ -131,12 +117,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
 
-        if ($this->enabled == 'yes' && ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both'))
+        if ($this->enabled == 'yes' && ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both')) {
             add_action('woocommerce_before_checkout_form', array($this, 'checkout_message'), 5);
+        }
         add_action('woocommerce_ppe_do_payaction', array($this, 'get_confirm_order'));
         add_action('woocommerce_after_checkout_validation', array($this, 'regular_checkout'), 99);
         add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'));
-
         if (class_exists('WC_EU_VAT_Number')) {
             add_action('angelleye_wc_eu_vat_number', array('WC_EU_VAT_Number', 'process_checkout'), 10);
         }
@@ -762,7 +748,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             echo '</div>';
             echo '<div class="clear"></div></div>';
             ?>
-                        <!--<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php /* echo WC()->plugin_url(); */ ?>/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>-->
+                                <!--<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php /* echo WC()->plugin_url(); */ ?>/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>-->
             <?php
             echo '</div>';
             echo '<div style="clear:both; margin-bottom:10px;"></div>';
