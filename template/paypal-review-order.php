@@ -80,7 +80,6 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         <div class="col-2">
         	<?php 
         	$woocommerce_paypal_express_settings = maybe_unserialize(get_option('woocommerce_paypal_express_settings'));
-        	if( isset($woocommerce_paypal_express_settings['billing_address']) && $woocommerce_paypal_express_settings['billing_address'] == 'yes') :
         	// Formatted Addresses
         	$user_submit_form = maybe_unserialize(WC()->session->checkout_form);
 
@@ -130,7 +129,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 	            </div>
 
        
-        	<?php endif; endif; ?>
+        	<?php endif; ?>
         </div><!-- /.col-2 -->
     </div><!-- /.col2-set -->
 
