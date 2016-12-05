@@ -63,12 +63,12 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
                     $address = array(
                     'first_name' 	=> WC()->customer->shiptoname,
                     'company'		=> WC()->customer->company,
-                    'address_1'		=> WC()->customer->get_address(),
-                    'address_2'		=> WC()->customer->get_address_2(),
-                    'city'			=> WC()->customer->get_city(),
-                    'state'			=> WC()->customer->get_state(),
-                    'postcode'		=> WC()->customer->get_postcode(),
-                    'country'		=> WC()->customer->get_country()
+                    'address_1'		=> WC()->customer->shipping_address_1,
+                    'address_2'		=> WC()->customer->shipping_address_2,
+                    'city'			=> WC()->customer->shipping_city,
+                    'state'			=> WC()->customer->shipping_state,
+                    'postcode'		=> WC()->customer->shipping_postcode,
+                    'country'		=> WC()->customer->shipping_country
                     ) ;
 
                     echo WC()->countries->get_formatted_address( $address );
