@@ -710,7 +710,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case "paypalimage":
                     echo '<div id="paypal_ec_button">';
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo "<img src='https://www.paypal.com/" . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . "/i/btn/btn_xpressCheckout.gif' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                    echo "<img src='https://www.paypalobjects.com/webstatic/".WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code()."/i/buttons/checkout-logo-medium.png' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                     echo "</a>";
                     echo $_angelleyeOverlay;
                     echo '</div>';
@@ -2370,7 +2370,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case "paypalimage":
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo '<img src="https://www.paypal.com/' . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . '/i/btn/btn_xpressCheckout.gif" width="145" height="42" style="width: 145px; height: 42px; margin: 3px 0 0 0; border: none; padding: 0;" align="top" alt="' . __( 'Pay with PayPal', 'paypal-for-woocommerce' ) . '" />';
+                    echo '<img src="https://www.paypalobjects.com/webstatic/' . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . '/i/buttons/checkout-logo-medium.png" width="170" height="32" style="width: 170px; height: 32px; margin: 3px 5px 0 0; border: none; padding: 0;" align="top" alt="' . __( 'Pay with PayPal', 'paypal-for-woocommerce' ) . '" />';
                     echo "</a>";
                     echo $angelleyeOverlay;
                     break;
