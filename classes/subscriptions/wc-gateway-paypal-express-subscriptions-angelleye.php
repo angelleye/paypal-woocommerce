@@ -17,20 +17,16 @@ class WC_Gateway_PayPal_Express_Subscriptions_AngellEYE extends WC_Gateway_PayPa
         }
     }
 
-    protected function is_subscription($order_id) {
+    public function is_subscription($order_id) {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
     }
 
     public function process_payment($order_id) {
-        if ($this->is_subscription($order_id)) {
-            return parent::process_payment($order_id);
-        } else {
-            return parent::process_payment($order_id);
-        }
+       return parent::process_payment($order_id);
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
-        parent::process_subscription_payment($renewal_order, $amount_to_charge);
+       parent::process_subscription_payment($renewal_order->id);
     }
 
     public function add_subscription_payment_meta($payment_meta, $subscription) {

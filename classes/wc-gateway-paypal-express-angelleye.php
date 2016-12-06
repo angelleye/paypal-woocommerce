@@ -2,6 +2,8 @@
 
 class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
+    public $customer_id;
+
     /**
      * __construct function.
      *
@@ -115,6 +117,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         //Save settings
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+        add_filter('woocommerce_new_order_data', array($this, 'woocommerce_new_order_data_add_customer_user'), 10, 1);
 
 
         if ($this->enabled == 'yes' && ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both')) {
@@ -146,7 +149,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
-            <?php $this->generate_settings_html(); ?>
+        <?php $this->generate_settings_html(); ?>
             <script type="text/javascript">
                 var display_disable_terms = "<?php echo $display_disable_terms; ?>";
         <?php if ($guest_checkout === 'no') { ?>
@@ -704,7 +707,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case "paypalimage":
                     echo '<div id="paypal_ec_button">';
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo "<img src='https://www.paypalobjects.com/webstatic/".WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code()."/i/buttons/checkout-logo-medium.png' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                    echo "<img src='https://www.paypalobjects.com/webstatic/" . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . "/i/buttons/checkout-logo-medium.png' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                     echo "</a>";
                     echo $_angelleyeOverlay;
                     echo '</div>';
@@ -748,7 +751,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             echo '</div>';
             echo '<div class="clear"></div></div>';
             ?>
-                                <!--<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php /* echo WC()->plugin_url(); */ ?>/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>-->
+                                        <!--<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php /* echo WC()->plugin_url(); */ ?>/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>-->
             <?php
             echo '</div>';
             echo '<div style="clear:both; margin-bottom:10px;"></div>';
@@ -1169,12 +1172,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (isset($checkout_form_post_data) && !empty($checkout_form_post_data)) {
                     $_POST = $checkout_form_post_data;
                 }
-                $order_id = WC()->checkout()->create_order();
-                 if (is_user_logged_in()) {
+
+                if (is_user_logged_in()) {
                     $userLogined = wp_get_current_user();
                     $user_email_address = $userLogined->user_email;
+                    $this->customer_id = $userLogined->ID;
+                    $order_id = WC()->checkout()->create_order();
                     update_post_meta($order_id, '_billing_email', $userLogined->user_email);
                     update_post_meta($order_id, '_customer_user', $userLogined->ID);
+                } else {
+                    WC()->checkout()->
+                            $order_id = WC()->checkout()->create_order();
                 }
                 do_action('woocommerce_checkout_order_processed', $order_id, $checkout_form_post_data);
 
@@ -1277,7 +1285,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->add_log('...Order Total: ' . $order->order_total);
                 $this->add_log('...Cart Total: ' . WC()->cart->get_total());
                 $this->add_log("...Token:" . $this->get_session('TOKEN'));
-                $result = $this->ConfirmPayment($order->order_total);
+                if ($order->get_total() > 0) {
+                    $result = $this->ConfirmPayment($order->order_total);
+                } else if ($this->is_subscription($order_id)) {
+                    $result = $this->CreateBillingAgreement($order, WC()->session->TOKEN);
+                }
+
 
                 // Set Customer Name
                 if (!get_current_user_id()) {
@@ -2357,7 +2370,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case "paypalimage":
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo '<img src="https://www.paypalobjects.com/webstatic/' . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . '/i/buttons/checkout-logo-medium.png" width="170" height="32" style="width: 170px; height: 32px; margin: 3px 5px 0 0; border: none; padding: 0;" align="top" alt="' . __( 'Pay with PayPal', 'paypal-for-woocommerce' ) . '" />';
+                    echo '<img src="https://www.paypalobjects.com/webstatic/' . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . '/i/buttons/checkout-logo-medium.png" width="170" height="32" style="width: 170px; height: 32px; margin: 3px 5px 0 0; border: none; padding: 0;" align="top" alt="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '" />';
                     echo "</a>";
                     echo $angelleyeOverlay;
                     break;
@@ -2883,10 +2896,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if ($_GET['action_name'] == 'SetExpressCheckout') {
                 $PayPalResult = $PayPal->GetExpressCheckoutDetails($_GET['token']);
                 if ($PayPalResult['ACK'] == 'Success') {
-                    $data = array(
-                        'METHOD' => 'CreateBillingAgreement',
-                        'TOKEN' => $_GET['token']
-                    );
                     $billing_result = $PayPal->CreateBillingAgreement($_GET['token']);
                     if ($billing_result['ACK'] == 'Success') {
                         if (!empty($billing_result['BILLINGAGREEMENTID'])) {
@@ -2969,5 +2978,242 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
+
+    public function is_subscription($order_id) {
+        return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
+    }
+
+    public function CreateBillingAgreement($order, $Token) {
+        if (!class_exists('Angelleye_PayPal')) {
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+        }
+        $PayPalConfig = array(
+            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+        );
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        $billing_result = $PayPal->CreateBillingAgreement($_GET['token']);
+        if ($billing_result['ACK'] == 'Success') {
+            if (!empty($billing_result['BILLINGAGREEMENTID'])) {
+                $billing_agreement_id = $billing_result['BILLINGAGREEMENTID'];
+                $token = new WC_Payment_Token_CC();
+                $customer_id = get_current_user_id();
+                $token->set_user_id($customer_id);
+                $token->set_token($billing_agreement_id);
+                $token->set_gateway_id($this->id);
+                $token->set_card_type('PayPal Billing Agreement');
+                $token->set_last4(substr($billing_agreement_id, -4));
+                $token->set_expiry_month(date('m'));
+                $token->set_expiry_year(date('Y', strtotime('+20 year')));
+                $save_result = $token->save();
+                $this->save_payment_token($order, $billing_agreement_id);
+                $order->payment_complete($billing_agreement_id);
+                WC()->cart->empty_cart();
+                $result = array(
+                    'result' => 'success',
+                    'redirect' => $this->get_return_url($order)
+                );
+                if (is_ajax()) {
+                    wp_send_json($result);
+                } else {
+                    wp_redirect($result['redirect']);
+                    exit;
+                }
+            }
+        }
+    }
+
+    public function woocommerce_new_order_data_add_customer_user($order_data) {
+        if (is_user_logged_in()) {
+            $userLogined = wp_get_current_user();
+            $order_data['customer_id'] = $userLogined->ID;
+            $this->customer_id = $userLogined->ID;
+        }
+        return $order_data;
+    }
+    
+    public function process_subscription_payment($order) {
+        if (!class_exists('Angelleye_PayPal')) {
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+        }
+        $PayPalConfig = array(
+            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+        );
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        $DPFields = array(
+            'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
+            'ipaddress' => $this->get_user_ip(), // Required.  IP address of the payer's browser.
+            'returnfmfdetails' => '1'                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
+        );
+        $PayerInfo = array(
+            'email' => $order->billing_email, // Email address of payer.
+            'firstname' => '', // Required.  Payer's first name.
+            'lastname' => ''                            // Required.  Payer's last name.
+        );
+        $BillingAddress = array(
+            'street' => $order->billing_address_1, // Required.  First street address.
+            'street2' => $order->billing_address_2, // Second street address.
+            'city' => $order->billing_city, // Required.  Name of City.
+            'state' => $order->billing_state, // Required. Name of State or Province.
+            'countrycode' => $order->billing_country, // Required.  Country code.
+            'zip' => $order->billing_postcode, // Required.  Postal code of payer.
+            'phonenum' => $order->billing_phone                        // Phone Number of payer.  20 char max.
+        );
+        $ShippingAddress = array(
+            'shiptoname' => $order->shipping_first_name . ' ' . $order->shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
+            'shiptostreet' => $order->shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
+            'shiptostreet2' => $order->shipping_address_2, // Second street address.  100 char max.
+            'shiptocity' => $order->shipping_city, // Required if shipping is included.  Name of city.  40 char max.
+            'shiptostate' => $order->shipping_state, // Required if shipping is included.  Name of state or province.  40 char max.
+            'shiptozip' => $order->shipping_postcode, // Required if shipping is included.  Postal code of shipping address.  20 char max.
+            'shiptocountry' => $order->shipping_country, // Required if shipping is included.  Country code of shipping address.  2 char max.
+            'shiptophonenum' => $order->shipping_phone                    // Phone number for shipping address.  20 char max.
+        );
+        $customer_note = $order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '';
+        $PaymentDetails = array(
+            'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()), // Required.  Total amount of order, including shipping, handling, and tax.
+            'currencycode' => get_woocommerce_currency(), // Required.  Three-letter currency code.  Default is USD.
+            'insuranceamt' => '', // Total shipping insurance costs for this order.
+            'shipdiscamt' => '0.00', // Shipping discount for the order, specified as a negative number.
+            'handlingamt' => '0.00', // Total handling costs for the order.  If you specify handlingamt, you must also specify itemamt.
+            'desc' => '', // Description of the order the customer is purchasing.  127 char max.
+            'custom' => apply_filters('ae_ppddp_custom_parameter', $customer_note, $order), // Free-form field for your own use.  256 char max.
+            'invnum' => $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number()), // Your own invoice or tracking number
+            'recurring' => ''                        // Flag to indicate a recurring transaction.  Value should be Y for recurring, or anything other than Y if it's not recurring.  To pass Y here, you must have an established billing agreement with the buyer.
+        );
+        if (isset($this->notifyurl) && !empty($this->notifyurl)) {
+            $PaymentDetails['notifyurl'] = $this->notifyurl;
+        }
+        $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
+        $OrderItems = array();
+        if ($this->send_items) {
+            foreach ($PaymentData['order_items'] as $item) {
+                $Item = array(
+                    'l_name' => $item['name'], // Item Name.  127 char max.
+                    'l_desc' => '', // Item description.  127 char max.
+                    'l_amt' => $item['amt'], // Cost of individual item.
+                    'l_number' => $item['number'], // Item Number.  127 char max.
+                    'l_qty' => $item['qty'], // Item quantity.  Must be any positive integer.
+                    'l_taxamt' => '', // Item's sales tax amount.
+                    'l_ebayitemnumber' => '', // eBay auction number of item.
+                    'l_ebayitemauctiontxnid' => '', // eBay transaction ID of purchased item.
+                    'l_ebayitemorderid' => ''                // eBay order ID for the item.
+                );
+                array_push($OrderItems, $Item);
+            }
+        }
+        if ($PaymentData['itemamt'] == 0 && $PaymentData['shippingamt'] > 0) {
+            $OrderItems = array();
+            $Item = array(
+                'l_name' => __(apply_filters('angelleye_paypal_pro_shipping_text', 'Shipping'), 'paypal-for-woocommerce'), // Item Name.  127 char max.
+                'l_desc' => '', // Item description.  127 char max.
+                'l_amt' => $PaymentData['shippingamt'], // Cost of individual item.
+                'l_number' => '', // Item Number.  127 char max.
+                'l_qty' => 1, // Item quantity.  Must be any positive integer.
+                'l_taxamt' => '', // Item's sales tax amount.
+                'l_ebayitemnumber' => '', // eBay auction number of item.
+                'l_ebayitemauctiontxnid' => '', // eBay transaction ID of purchased item.
+                'l_ebayitemorderid' => ''                // eBay order ID for the item.
+            );
+            array_push($OrderItems, $Item);
+            if ($PaymentData['taxamt'] > 0) {
+                $Item = array(
+                    'l_name' => __(apply_filters('angelleye_paypal_pro_tax_text', 'Tax'), 'paypal-for-woocommerce'), // Item Name.  127 char max.
+                    'l_desc' => '', // Item description.  127 char max.
+                    'l_amt' => $PaymentData['taxamt'], // Cost of individual item.
+                    'l_number' => '', // Item Number.  127 char max.
+                    'l_qty' => 1, // Item quantity.  Must be any positive integer.
+                    'l_taxamt' => '', // Item's sales tax amount.
+                    'l_ebayitemnumber' => '', // eBay auction number of item.
+                    'l_ebayitemauctiontxnid' => '', // eBay transaction ID of purchased item.
+                    'l_ebayitemorderid' => ''                // eBay order ID for the item.
+                );
+                array_push($OrderItems, $Item);
+            }
+            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($order->get_total());
+        } else {
+            $PaymentDetails['taxamt'] = $PaymentData['taxamt'];
+            $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
+            $PaymentDetails['itemamt'] = $PaymentData['itemamt'];
+        }
+        $PayPalRequestData = array(
+            'DPFields' => $DPFields,
+            'PayerInfo' => $PayerInfo,
+            'BillingAddress' => $BillingAddress,
+            'ShippingAddress' => $ShippingAddress,
+            'PaymentDetails' => $PaymentDetails,
+            'OrderItems' => $OrderItems
+        );
+        $PayPalRequestData['DRTFields'] = array(
+            'referenceid' => get_post_meta($order->id, '_payment_tokens_id', true),
+            'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale',
+            'returnfmfdetails' => '1',
+            'softdescriptor' => ''
+        );
+        $PayPalResult = $PayPal->DoReferenceTransaction($PayPalRequestData);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoReferenceTransaction', $gateway = 'Express Checkout', $this->error_email_notify);
+        $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+        $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+        $this->log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
+        $this->log('Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
+        if (empty($PayPalResult['RAWRESPONSE'])) {
+            $pc_empty_response = apply_filters('ae_ec_paypal_response_empty_message', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult);
+            throw new Exception($pc_empty_response);
+        }
+        if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
+            $order->add_order_note(sprintf(__('Payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
+            $is_sandbox = $this->testmode == 'yes' ? true : false;
+            update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+            if ($this->payment_action == "Sale") {
+                $this->save_payment_token($order, $PayPalRequestData['DRTFields']['referenceid']);
+                $order->payment_complete($PayPalResult['TRANSACTIONID']);
+            } else {
+                $this->save_payment_token($order, $PayPalRequestData['DRTFields']['referenceid']);
+                update_post_meta($order->id, '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
+                $payment_order_meta = array('_transaction_id' => $PayPalResult['TRANSACTIONID'], '_payment_action' => $this->payment_action);
+                AngellEYE_Utility::angelleye_add_order_meta($order->id, $payment_order_meta);
+                AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
+                $angelleye_utility = new AngellEYE_Utility(null, null);
+                $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['TRANSACTIONID']);
+                $order->update_status('on-hold');
+                $order->add_order_note('Payment Action: ' . $this->payment_action);
+            }
+            return true;
+        } else {
+            $error_code = isset($PayPalResult['ERRORS'][0]['L_ERRORCODE']) ? $PayPalResult['ERRORS'][0]['L_ERRORCODE'] : '';
+            $long_message = isset($PayPalResult['ERRORS'][0]['L_LONGMESSAGE']) ? $PayPalResult['ERRORS'][0]['L_LONGMESSAGE'] : '';
+            $error_message = $error_code . '-' . $long_message;
+            if ($this->error_email_notify) {
+                $admin_email = get_option("admin_email");
+                $message = __("DoReferenceTransaction API call failed.", "paypal-for-woocommerce") . "\n\n";
+                $message .= __('Error Code: ', 'paypal-for-woocommerce') . $error_code . "\n";
+                $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $long_message . "\n";
+                $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+                $message .= __('Order ID: ') . $order->id . "\n";
+                $message .= __('Customer Name: ') . $order->billing_first_name . ' ' . $order->billing_last_name . "\n";
+                $message .= __('Customer Email: ') . $order->billing_email . "\n";
+                $pc_error_email_message = apply_filters('ae_ec_error_email_message', $message, $error_code, $long_message);
+                $pc_error_email_subject = apply_filters('ae_ec_error_email_subject', "PayPal Pro Error Notification", $error_code, $long_message);
+                wp_mail($admin_email, $pc_error_email_subject, $pc_error_email_message);
+            }
+            $this->log('Error ' . print_r($PayPalResult['ERRORS'], true));
+            $order->update_status('failed', sprintf(__('Express Checkout payment failed (Correlation ID: %s). Payment was rejected due to an error: %s', 'paypal-for-woocommerce'), $PayPalResult['CORRELATIONID'], '(' . $PayPalResult['L_ERRORCODE0'] . ') ' . '"' . $error_message . '"'));
+            if ($this->error_display_type == 'detailed') {
+                $pc_display_type_error = __($error_message, 'paypal-for-woocommerce');
+                $pc_display_type_notice = __('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message;
+            } else {
+                $pc_display_type_error = __('There was a problem connecting to the payment gateway.', 'paypal-for-woocommerce');
+                $pc_display_type_notice = __('Payment error:', 'paypal-for-woocommerce') . ' ' . $error_message;
+            }
+        }
+    }
+
 
 }
