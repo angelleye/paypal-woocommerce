@@ -63,12 +63,12 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
                     $address = array(
                     'first_name' 	=> WC()->customer->shiptoname,
                     'company'		=> WC()->customer->company,
-                    'address_1'		=> WC()->customer->get_address(),
-                    'address_2'		=> WC()->customer->get_address_2(),
-                    'city'			=> WC()->customer->get_city(),
-                    'state'			=> WC()->customer->get_state(),
-                    'postcode'		=> WC()->customer->get_postcode(),
-                    'country'		=> WC()->customer->get_country()
+                    'address_1'		=> WC()->customer->shipping_address_1,
+                    'address_2'		=> WC()->customer->shipping_address_2,
+                    'city'			=> WC()->customer->shipping_city,
+                    'state'			=> WC()->customer->shipping_state,
+                    'postcode'		=> WC()->customer->shipping_postcode,
+                    'country'		=> WC()->customer->shipping_country
                     ) ;
 
                     echo WC()->countries->get_formatted_address( $address );
@@ -80,7 +80,6 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         <div class="col-2">
         	<?php 
         	$woocommerce_paypal_express_settings = maybe_unserialize(get_option('woocommerce_paypal_express_settings'));
-        	if( isset($woocommerce_paypal_express_settings['billing_address']) && $woocommerce_paypal_express_settings['billing_address'] == 'yes') :
         	// Formatted Addresses
         	$user_submit_form = maybe_unserialize(WC()->session->checkout_form);
 
@@ -130,7 +129,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 	            </div>
 
        
-        	<?php endif; endif; ?>
+        	<?php endif; ?>
         </div><!-- /.col-2 -->
     </div><!-- /.col2-set -->
 

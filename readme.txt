@@ -117,9 +117,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds compatibility with WooCommerce AutoShip plugin. ([#597](https://github.com/angelleye/paypal-woocommerce/issues/597))
 * Feature - Adds the option to disable Terms and Conditions when using the Skip Final Review option with Express Checkout. ([#471](https://github.com/angelleye/paypal-woocommerce/issues/471))
 * Tweak - Improved logs for REST credit card processing. ([#559](https://github.com/angelleye/paypal-woocommerce/issues/559))
+* Tweak - Adjustments to the way the address is displayed on the Express Checkout review page. ([#595](https://github.com/angelleye/paypal-woocommerce/issues/595))
+* Tweak - Updates Express Checkout image used on product page, cart page, and checkout page. ([#573](https://github.com/angelleye/paypal-woocommerce/issues/573))
 * Fix - Resolves references to Braintree within the REST credit card processing. ([#591](https://github.com/angelleye/paypal-woocommerce/issues/591))
 * Fix - Resolves an issue in PayPal Advanced on orders where the subtotal is $0 but shipping still needs to be paid. ([#543](https://github.com/angelleye/paypal-woocommerce/issues/543))
 * Fix - Replaces deprecated function. ([#552](https://github.com/angelleye/paypal-woocommerce/issues/552))
+* Fix - Resolves an issue with deprecated address functions in WooCommerce 2.6 or higher. ([#602](https://github.com/angelleye/paypal-woocommerce/issues/602))
 
 = 1.2.4 - 09.13.2016 =
 * Feature - PayPal Advanced logo setup. ([#491](https://github.com/angelleye/paypal-woocommerce/issues/491))
