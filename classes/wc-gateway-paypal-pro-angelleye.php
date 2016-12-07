@@ -1032,7 +1032,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             
             $is_sandbox = $this->testmode == 'yes' ? true : false;
             update_post_meta($order->id, 'is_sandbox', $is_sandbox);
-     
+            do_action('before_save_payment_token', $order->id);
             if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') {
                 if(!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) {
                     $customer_id =  $order->get_user_id();

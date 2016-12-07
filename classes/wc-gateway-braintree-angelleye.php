@@ -579,6 +579,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $is_sandbox = $this->sandbox == 'no' ? false : true;
                 update_post_meta($order->id, 'is_sandbox', $is_sandbox);
                 $order->payment_complete($this->response->transaction->id);
+                do_action('before_save_payment_token', $order->id);
                 if((!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') || ( $this->enable_braintree_drop_in && $this->supports( 'tokenization' ))) {
                     if((!empty($_POST['wc-braintree-new-payment-method']) && $_POST['wc-braintree-new-payment-method'] == true) || ($this->enable_braintree_drop_in && $this->supports( 'tokenization' ))) {
                         try {

@@ -564,7 +564,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                 // Payment complete
                 //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
-                                
+                do_action('before_save_payment_token', $order->id);               
                 if(!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] == 'new') {
                     if(!empty($_POST['wc-paypal_pro_payflow-new-payment-method']) && $_POST['wc-paypal_pro_payflow-new-payment-method'] == true) {
                         $customer_id =  $order->get_user_id();
