@@ -342,7 +342,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     exit;
                 }
             } catch (Exception $ex) {
-                $ex->getCode();
+
                 $this->add_log("Braintree_ClientToken::generate Exception:" . $ex->getMessage());
                 wp_redirect($woocommerce->cart->get_cart_url());
                 exit;
@@ -386,7 +386,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         braintreeResponseHandler(obj);
                     }
                 });
-
                 function is_angelleye_braintree_selected() {
                     if (jQuery('#payment_method_braintree').is(':checked')) {
                         return true;
@@ -564,7 +563,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }
                 $this->add_log('Braintree_Transaction::sale Reuest Data ' . print_r($log, true));
             }
-
             try {
                 $this->response = Braintree_Transaction::sale($request_data);
             } catch (Braintree_Exception_Authentication $e) {
@@ -592,17 +590,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->add_log('Error: Unable to complete transaction. Reason: ' . $e->getMessage());
                 return $success = false;
             }
-
             if (!$this->response->success) {
                 $notice = sprintf(__('Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'paypal-for-woocommerce'), $this->response->message);
                 wc_add_notice($notice, 'error');
                 $this->add_log("Error: Unable to complete transaction. Reason: {$this->response->message}");
                 return $success = false;
             }
-
             $this->add_log('Braintree_Transaction::sale Response code: ' . print_r($this->get_status_code(), true));
             $this->add_log('Braintree_Transaction::sale Response message: ' . print_r($this->get_status_message(), true));
-
             $maybe_settled_later = array(
                 'settling',
                 'settlement_pending',
@@ -612,6 +607,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if (in_array($this->response->transaction->status, $maybe_settled_later)) {
                 $is_sandbox = $this->sandbox == 'no' ? false : true;
                 update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+                do_action('before_save_payment_token', $order->id);
                 if (isset($_POST['wc-braintree-payment-token']) && 'new' == $_POST['wc-braintree-payment-token']) {
                     if ((!empty($_POST['wc-braintree-new-payment-method']) && $_POST['wc-braintree-new-payment-method'] == true) || $this->is_subscription($order->id)) {
                         $result = $this->add_payment_method($zero_amount_payment = true);
@@ -697,9 +693,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (!$order || !$order->get_transaction_id()) {
             return false;
         }
-
         $this->angelleye_braintree_lib();
-
         try {
             $transaction = Braintree_Transaction::find($order->get_transaction_id());
         } catch (Braintree_Exception_NotFound $e) {
