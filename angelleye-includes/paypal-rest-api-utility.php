@@ -93,6 +93,7 @@ class PayPal_Rest_API_Utility {
                 $relatedResources = $transactions[0]->getRelatedResources();
                 $sale = $relatedResources[0]->getSale();
                 $saleId = $sale->getId();
+                do_action('before_save_payment_token', $order->id);
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
                 if ((!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] == 'new') || $this->is_subscription($order->id)) {
                     if ((!empty($_POST['wc-paypal_credit_card_rest-new-payment-method']) && $_POST['wc-paypal_credit_card_rest-new-payment-method'] == true) || $this->is_subscription($order->id)) {

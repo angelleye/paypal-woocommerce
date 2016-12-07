@@ -198,6 +198,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             // Payment complete
             $this->save_payment_token($order, $_POST['PNREF']);
             $order->payment_complete($_POST['PNREF']);
+            do_action('before_save_payment_token', $order_id);
             $is_save_payment_method = get_post_meta($order_id, '_is_save_payment_method', true);
             if ($is_save_payment_method == 'yes') {
                 $customer_id = $order->get_user_id();

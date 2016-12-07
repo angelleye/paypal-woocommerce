@@ -1406,12 +1406,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
 
                     update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
-                    update_post_meta($order_id, '_first_transaction_id', $result['PAYMENTINFO_0_TRANSACTIONID']);
-
-                    if (isset($result['BILLINGAGREEMENTID']) && !empty($result['BILLINGAGREEMENTID'])) {
-                        update_post_meta($order_id, 'billing_agreement_id', $result['BILLINGAGREEMENTID']);
-                        if (!empty($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == true) {
-                            $customer_id = $order->get_user_id();
+                    update_post_meta( $order_id, '_first_transaction_id', $result['PAYMENTINFO_0_TRANSACTIONID'] );
+                    do_action('before_save_payment_token', $order_id);
+                    if( isset($result['BILLINGAGREEMENTID']) && !empty($result['BILLINGAGREEMENTID']) ) {
+                        update_post_meta( $order_id, 'billing_agreement_id', $result['BILLINGAGREEMENTID'] );
+                        if(!empty($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == true) {
+                            $customer_id =  $order->get_user_id();
                             $billing_agreement_id = $result['BILLINGAGREEMENTID'];
                             $token = new WC_Payment_Token_CC();
                             $token->set_user_id($customer_id);
