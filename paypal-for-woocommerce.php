@@ -432,7 +432,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if( $this->subscription_support_enabled ) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-pro-payflow-subscriptions-angelleye.php' );
                 $methods[] = 'WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE';
-                $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
                 $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
                 $methods[] = 'WC_Gateway_PayPal_Pro_AngellEYE';
                 $methods[] = 'WC_Gateway_PayPal_Express_AngellEYE';
