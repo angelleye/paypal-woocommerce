@@ -1181,8 +1181,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     update_post_meta($order_id, '_billing_email', $userLogined->user_email);
                     update_post_meta($order_id, '_customer_user', $userLogined->ID);
                 } else {
-                    WC()->checkout()->
-                            $order_id = WC()->checkout()->create_order();
+                     $order_id = WC()->checkout()->create_order();
                 }
                 do_action('woocommerce_checkout_order_processed', $order_id, $checkout_form_post_data);
 
