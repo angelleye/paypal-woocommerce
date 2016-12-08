@@ -949,6 +949,27 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     if (isset($result['SHIPTOZIP'])) {
                         WC()->customer->set_shipping_postcode($result['SHIPTOZIP']);
                     }
+                    
+                    if ($this->billing_address == 'yes') {
+                        if (isset($result['SHIPTOSTREET'])) {
+                            WC()->customer->set_address($result['SHIPTOSTREET']);
+                        }
+                        if (isset($result['SHIPTOSTREET2'])) {
+                            WC()->customer->set_address_2($result['SHIPTOSTREET2']);
+                        }
+                        if (isset($result['SHIPTOCITY'])) {
+                            WC()->customer->set_city($result['SHIPTOCITY']);
+                        }
+                        if (isset($result['SHIPTOCOUNTRYCODE'])) {
+                            WC()->customer->set_country($result['SHIPTOCOUNTRYCODE']);
+                        }
+                        if (isset($result['SHIPTOSTATE'])) {
+                            WC()->customer->set_state($this->get_state_code($result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE']));
+                        }
+                        if (isset($result['SHIPTOZIP'])) {
+                            WC()->customer->set_postcode($result['SHIPTOZIP']);
+                        }
+                    }
 
                     /**
                      * Save GECD data in sessions for use in DECP
