@@ -494,7 +494,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         function buy_now_button() {
             global $pp_settings, $post, $product;
-            if(!AngellEYE_Utility::is_valid_for_use()) {
+            if(!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
                 return false;
             }
             if(!AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
@@ -576,7 +576,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         function mini_cart_button(){
             global $pp_settings, $pp_pro, $pp_payflow;
-            if(!AngellEYE_Utility::is_valid_for_use()) {
+            if(!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
                 return false;
             }
             if(!AngellEYE_Utility::is_express_checkout_credentials_is_set()) {

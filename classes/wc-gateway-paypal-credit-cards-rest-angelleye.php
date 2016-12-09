@@ -66,7 +66,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
      * @since    1.2
      */
     public function admin_options() {
-        if ($this->is_valid_for_use()) {
+        if ($this->is_valid_for_use_paypal_credit_card_rest()) {
             ?>
             <h3><?php echo (!empty($this->method_title) ) ? $this->method_title : __('Settings', 'paypal-for-woocommerce'); ?></h3>
             <?php echo (!empty($this->method_description) ) ? wpautop($this->method_description) : ''; ?>
@@ -112,7 +112,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             if (!$this->rest_client_id || !$this->rest_secret_id) {
                 return false;
             }
-            if (!in_array(get_woocommerce_currency(), apply_filters('paypal_rest_api_supported_currencies', $this->woocommerce_paypal_supported_currencies))) {
+            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_rest_api_supported_currencies', $this->woocommerce_paypal_supported_currencies))) {
                 return false;
             }
             return true;
@@ -135,8 +135,8 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
      * @since    1.2
      * @return type
      */
-    public function is_valid_for_use() {
-        return in_array(get_woocommerce_currency(), apply_filters('paypal_rest_api_supported_currencies', $this->woocommerce_paypal_supported_currencies));
+    public function is_valid_for_use_paypal_credit_card_rest() {
+        return in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_rest_api_supported_currencies', $this->woocommerce_paypal_supported_currencies));
     }
 
     /**
