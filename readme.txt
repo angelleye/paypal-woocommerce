@@ -119,6 +119,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Improved logs for REST credit card processing. ([#559](https://github.com/angelleye/paypal-woocommerce/issues/559))
 * Tweak - Adjustments to the way the address is displayed on the Express Checkout review page. ([#595](https://github.com/angelleye/paypal-woocommerce/issues/595))
 * Tweak - Updates Express Checkout image used on product page, cart page, and checkout page. ([#573](https://github.com/angelleye/paypal-woocommerce/issues/573))
+* Tweak - Adjusts the log files saved for REST transactions. ([#566](https://github.com/angelleye/paypal-woocommerce/issues/566))
 * Fix - Resolves references to Braintree within the REST credit card processing. ([#591](https://github.com/angelleye/paypal-woocommerce/issues/591))
 * Fix - Resolves an issue in PayPal Advanced on orders where the subtotal is $0 but shipping still needs to be paid. ([#543](https://github.com/angelleye/paypal-woocommerce/issues/543))
 * Fix - Replaces deprecated function. ([#552](https://github.com/angelleye/paypal-woocommerce/issues/552))
