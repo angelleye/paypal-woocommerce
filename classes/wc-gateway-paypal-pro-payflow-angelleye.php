@@ -21,7 +21,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->has_fields = true;
             $this->liveurl = 'https://payflowpro.paypal.com';
             $this->testurl = 'https://pilot-payflowpro.paypal.com';
-            $this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_allowed_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD', 'NZD' ) );
+            $this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_payflow_supported_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD', 'NZD' ) );
 
             // Load the form fields
             $this->init_form_fields();
@@ -397,7 +397,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'acct'=>$card_number, 				// Required for credit card transaction.  Credit card or purchase card number.
 					'expdate'=>$card_exp, 				// Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
 					'amt'=> AngellEYE_Gateway_Paypal::number_format($order->get_total()), 					// Required.  Amount of the transaction.  Must have 2 decimal places. 
-					'currency'=>get_woocommerce_currency(), // 
+					'currency'=>$order->get_order_currency(), // 
 					'dutyamt'=>'', 				//
 					'freightamt'=>'', 			//
 					'taxamt'=>'', 				//

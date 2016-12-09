@@ -221,7 +221,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if(!$this->is_express_checkout_credentials_is_set()) {
             return false;
         }
-        if(!AngellEYE_Utility::is_valid_for_use()) {
+        if(!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
                 return false;
         }
         if( $this->show_on_checkout == 'regular' || $this->show_on_checkout == 'both') {
@@ -678,7 +678,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if(!$this->is_express_checkout_credentials_is_set()) {
                 return false;
         }
-        if(!AngellEYE_Utility::is_valid_for_use()) {
+        if(!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
                 return false;
         }
         if (WC()->cart->total > 0) {
@@ -2072,7 +2072,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $Payments = array();
         $Payment = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($FinalPaymentAmt), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
-            'currencycode' => get_woocommerce_currency(), // A three-character currency code.  Default is USD.
+            'currencycode' => $order->get_order_currency(), // A three-character currency code.  Default is USD.
             'shippingdiscamt' => '', // Total shipping discount for this order, specified as a negative number.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays the string 'Yes' and the insurance amount.  If true, the total shipping insurance for this order must be a positive number.
             'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
@@ -2371,7 +2371,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      */
     static function woocommerce_paypal_express_checkout_button_angelleye() {
         global $pp_settings;
-        if(!AngellEYE_Utility::is_valid_for_use()) {
+        if(!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
                 return false;
         }
         if (@$pp_settings['enabled'] == 'yes' && (empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart'] == 'yes') && 0 < WC()->cart->total) {
@@ -2783,7 +2783,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $PayPalRequestData['DRTFields'] = $DRTFields;
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->order_total), 							// Required. Total amount of the order, including shipping, handling, and tax.
-            'currencycode' => get_woocommerce_currency(), 					// A three-character currency code.  Default is USD.
+            'currencycode' => $order->get_order_currency(), 					// A three-character currency code.  Default is USD.
             'itemamt' => '', 						// Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.  
             'shippingamt' => '', 					// Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
             'insuranceamt' => '', 

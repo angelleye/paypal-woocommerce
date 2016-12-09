@@ -251,7 +251,7 @@ class AngellEYE_Utility {
         $DataArray = array(
             'AUTHORIZATIONID' => $transaction_id,
             'AMT' => $AMT,
-            'CURRENCYCODE' => get_woocommerce_currency(),
+            'CURRENCYCODE' => $order->get_order_currency(),
             'COMPLETETYPE' => 'NotComplete',
         );
         $PayPalRequest = array(
@@ -412,7 +412,7 @@ class AngellEYE_Utility {
             $DRFields = array(
                 'authorizationid' => $transaction_id, // Required. The value of a previously authorized transaction ID returned by PayPal.
                 'amt' => $AMT, // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
-                'currencycode' => get_woocommerce_currency(), // Three-character currency code.
+                'currencycode' => $order->get_order_currency(), // Three-character currency code.
                 'msgsubid' => ''      // A message ID used for idempotence to uniquely identify a message.
             );
             $PayPalRequestData = array('DRFields' => $DRFields);
@@ -484,7 +484,7 @@ class AngellEYE_Utility {
             $DRFields = array(
                 'TRANSACTIONID' => $transaction_id, // Required. The value of a previously authorized transaction ID returned by PayPal.
                 'AMT' => $_POST['_regular_price'], // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
-                'CURRENCYCODE' => get_woocommerce_currency()
+                'CURRENCYCODE' => $order->get_order_currency()
             );
             $PayPalRequestData = array('DAFields' => $DRFields);
             $do_authorization_result = $this->paypal->DoAuthorization($PayPalRequestData);
@@ -1196,7 +1196,7 @@ class AngellEYE_Utility {
             return false;
         }
     }
-    public static function is_valid_for_use() {
-	return in_array( get_woocommerce_currency(), apply_filters( 'paypal_for_woocommerce_supported_currencies', array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP' ) ) );
+    public static function is_valid_for_use_paypal_express() {
+	return in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paypal_express_supported_currencies', array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP' ) ) );
     }
 }

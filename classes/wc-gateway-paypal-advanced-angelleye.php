@@ -419,7 +419,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'AMT' => number_format($order->get_total(), 2, '.', ''),
             'FREIGHTAMT' => '',
             'COMPANYNAME[' . strlen($order->billing_company) . ']' => $order->billing_company,
-            'CURRENCY' => get_woocommerce_currency(),
+            'CURRENCY' => $order->get_order_currency(),
             'EMAIL' => $order->billing_email,
             'BILLTOFIRSTNAME[' . strlen($order->billing_first_name) . ']' => $order->billing_first_name,
             'BILLTOLASTNAME[' . strlen($order->billing_last_name) . ']' => $order->billing_last_name,
@@ -629,7 +629,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         //if enabled checkbox is checked
         if ($this->enabled == 'yes') {
-            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_advanced_allowed_currencies', array('USD', 'CAD')))) {
+            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_advanced_supported_currencies', array('USD', 'CAD')))) {
                 return false;
             }
             if (!$this->user || !$this->loginid ) {
@@ -1092,7 +1092,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'AMT' => number_format($order->get_total(), 2, '.', ''),
             'FREIGHTAMT' => '',
             'COMPANYNAME[' . strlen($order->billing_company) . ']' => $order->billing_company,
-            'CURRENCY' => get_woocommerce_currency(),
+            'CURRENCY' => $order->get_order_currency(),
             'EMAIL' => $order->billing_email,
             'BILLTOFIRSTNAME[' . strlen($order->billing_first_name) . ']' => $order->billing_first_name,
             'BILLTOLASTNAME[' . strlen($order->billing_last_name) . ']' => $order->billing_last_name,

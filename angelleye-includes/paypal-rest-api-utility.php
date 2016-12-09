@@ -192,7 +192,7 @@ class PayPal_Rest_API_Utility {
         foreach ($this->payment_data['order_items'] as $item) {
             $this->item = new Item();
             $this->item->setName($item['name']);
-            $this->item->setCurrency(get_woocommerce_currency());
+            $this->item->setCurrency($order->get_order_currency());
             $this->item->setQuantity($item['qty']);
             $this->item->setPrice($item['amt']);
             array_push($this->order_item, $this->item);
@@ -229,7 +229,7 @@ class PayPal_Rest_API_Utility {
      */
     public function set_amount_values($order) {
         $this->amount = new Amount();
-        $this->amount->setCurrency(get_woocommerce_currency());
+        $this->amount->setCurrency($order->get_order_currency());
         $this->amount->setTotal($this->number_format($order->get_total(), $order));
         $this->amount->setDetails($this->details);
     }
@@ -461,7 +461,7 @@ class PayPal_Rest_API_Utility {
         }
         $sale = Sale::get($order->get_transaction_id(), $this->getAuth());
         $this->amount = new Amount();
-        $this->amount->setCurrency(get_woocommerce_currency());
+        $this->amount->setCurrency($order->get_order_currency());
         $this->amount->setTotal($this->number_format($amount, $order));
         $refund = new Refund();
         $refund->setAmount($this->amount);

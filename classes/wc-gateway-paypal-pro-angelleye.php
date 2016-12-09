@@ -344,7 +344,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         if ($this->enabled == "yes") :
             if ($this->testmode == "no" && get_option('woocommerce_force_ssl_checkout') == 'no' && !class_exists('WordPressHTTPS')) return false;
             // Currency check
-            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_pro_allowed_currencies', array('AUD', 'CAD', 'CZK', 'DKK', 'EUR', 'HUF', 'JPY', 'NOK', 'NZD', 'PLN', 'GBP', 'SGD', 'SEK', 'CHF', 'USD')))) return false;
+            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_pro_supported_currencies', array('AUD', 'CAD', 'CZK', 'DKK', 'EUR', 'HUF', 'JPY', 'NOK', 'NZD', 'PLN', 'GBP', 'SGD', 'SEK', 'CHF', 'USD')))) return false;
             // Required fields check
             if (!$this->api_username || !$this->api_password || !$this->api_signature) return false;
             return isset($this->available_card_types[WC()->countries->get_base_country()]);
@@ -848,7 +848,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()),                            // Required.  Total amount of order, including shipping, handling, and tax.
-            'currencycode' => get_woocommerce_currency(),                    // Required.  Three-letter currency code.  Default is USD.
+            'currencycode' => $order->get_order_currency(),                    // Required.  Three-letter currency code.  Default is USD.
             'insuranceamt' => '',                    // Total shipping insurance costs for this order.
             'shipdiscamt' => '0.00',                    // Shipping discount for the order, specified as a negative number.
             'handlingamt' => '0.00',                    // Total handling costs for the order.  If you specify handlingamt, you must also specify itemamt.
