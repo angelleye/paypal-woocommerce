@@ -4,14 +4,14 @@
  *
  * @extends WC_Payment_Gateway
  */
-class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
+class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
 {
 
     /**
      * Store client
      */
     private $centinel_client = false;
-
+    public $customer_id;
     /**
      * __construct function.
      *
@@ -110,15 +110,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
 
         //fix ssl for image icon
         $this->icon = !empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png';
-        if (is_ssl())
+        if (is_ssl()) {
             $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
-
-
+        }
         $this->supports = array(
-			'products',
-			'refunds'
-		);
-
+            'products',
+            'refunds'
+	);
+        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if($this->enable_tokenized_payments == 'yes') {
+            array_push($this->supports, "tokenization");
+        }
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
 
         if ($this->testmode == 'yes') {
@@ -143,6 +145,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
         }
         
         add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_credit_card_form_fields'), 10, 2);
+       
+        $this->customer_id;
     }
 
     /**
@@ -298,6 +302,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
                 'default' => 'no',
                 'class' => 'angelleye_enable_notifyurl'
             ),
+            'enable_tokenized_payments' => array(
+                'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => 'enable_tokenized_payments'
+            ),
             'notifyurl' => array(
                 'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
                 'type' => 'text',
@@ -356,11 +368,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
     /**
      * Payment form on checkout page
      */
-    public function payment_fields()
-    {
-
+    public function payment_fields() {
         do_action('before_angelleye_pc_payment_fields', $this);
-
         if ($this->description) {
             echo '<p>' . wp_kses_post($this->description);
             if ($this->testmode == "yes") {
@@ -371,22 +380,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
                 echo '</p>';
             }
         }
-        if(class_exists('WC_Payment_Gateway_CC')) {
-            $cc_form = new WC_Payment_Gateway_CC;
-            $cc_form->id       = $this->id;
-            $cc_form->supports = $this->supports;
-            $cc_form->form();
-            do_action('after_angelleye_pc_payment_fields', $this);
-        } else {
-            $fields = $this->angelleye_paypal_pro_credit_card_form_fields($default_fields = null, $this->id);
-            $this->credit_card_form(array(), $fields);
-        }
-        
+        parent::payment_fields();
+        do_action('payment_fields_saved_payment_methods', $this);
     }
 
-
-    public function paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class)
-    {
+    public function paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class) {
         $form_html = "";
         $form_html .= '<p class="' . $class . '">';
         $form_html .= '<label for="cc-expire-month">' . __("Expiration Date", 'paypal-for-woocommerce') . '<span class="required">*</span></label>';
@@ -458,6 +456,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
     public function validate_fields()
     {
         try {
+            if ( isset( $_POST['wc-paypal_pro-payment-token'] ) && 'new' !== $_POST['wc-paypal_pro-payment-token'] ) {
+                $token_id = wc_clean( $_POST['wc-paypal_pro-payment-token'] );
+                $token  = WC_Payment_Tokens::get( $token_id );
+                if ( $token->get_user_id() !== get_current_user_id() ) {
+                    throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
+                }else {
+                    return true;
+                }
+            }
             $card = $this->get_posted_card();
             do_action('before_angelleye_pro_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
             if (empty($card->exp_month) || empty($card->exp_year)) {
@@ -800,6 +807,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             'returnfmfdetails' => '1'                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
         );
 
+        
         $CCDetails = array(
             'creditcardtype' => $card_type,                    // Required. Type of credit card.  Visa, MasterCard, Discover, Amex, Maestro, Solo.  If Maestro or Solo, the currency code must be GBP.  In addition, either start date or issue number must be specified.
             'acct' => $card_number,                                // Required.  Credit card number.  No spaces or punctuation.
@@ -941,16 +949,29 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             'OrderItems' => $OrderItems,
             'Secure3D' => $Secure3D
         );
-
-    
+        
         $log = $PayPalRequestData;
-        $log['CCDetails']['acct'] = '****';
-        $log['CCDetails']['cvv2'] = '****';
+        $log['CCDetails']['acct'] = isset($log['CCDetails']['acct']) ? '****' : '';
+        $log['CCDetails']['cvv2'] = isset($log['CCDetails']['cvv2']) ? '****' : '';
         $this->log('Do payment request ' . print_r($log, true));
-       
-
+        
+        if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') {
+            $token_id = wc_clean( $_POST['wc-paypal_pro-payment-token'] );
+            $token = WC_Payment_Tokens::get( $token_id );
+            unset($PayPalRequestData['DPFields']);
+            $PayPalRequestData['DRTFields'] = array(
+                'referenceid' => $token->get_token(), 
+                'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', 
+                'returnfmfdetails' => '1', 
+                'softdescriptor' => ''
+            );
+            $PayPalResult = $PayPal->DoReferenceTransaction($PayPalRequestData);
+        } else {
+            $PayPalResult = $PayPal->DoDirectPayment($PayPalRequestData);
+        }
+        
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
-        $PayPalResult = $PayPal->DoDirectPayment($PayPalRequestData);
+        
 
         /**
          *  cURL Error Handling #146
@@ -1011,7 +1032,26 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             
             $is_sandbox = $this->testmode == 'yes' ? true : false;
             update_post_meta($order->id, 'is_sandbox', $is_sandbox);
-     
+            do_action('before_save_payment_token', $order->id);
+            if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') {
+                if(!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) {
+                    $customer_id =  $order->get_user_id();
+                    $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
+                    $token = new WC_Payment_Token_CC();
+                    $token->set_user_id( $customer_id );
+                    $token->set_token( $TRANSACTIONID );
+                    $token->set_gateway_id( $this->id );
+                    $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
+                    $token->set_last4( substr( $PayPalRequestData['CCDetails']['acct'], -4 ) );
+                    $token->set_expiry_month( date( 'm' ) );
+                    $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+                    $save_result = $token->save();
+                    if ( $save_result ) {
+                            $order->add_payment_token( $token );
+                    }
+                }
+            }
+            
             // Payment complete
             if ($this->payment_action == "Sale") {
                 $order->payment_complete($PayPalResult['TRANSACTIONID']);
@@ -1238,6 +1278,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
         return $value;
     }
     
+    public function field_name( $name ) {
+	return ' name="' . esc_attr( $this->id . '-' . $name ) . '" ';
+    }
     public function angelleye_paypal_pro_credit_card_form_fields($default_fields, $current_gateway_id) {
         if($current_gateway_id == $this->id) {
             $fields = array();
@@ -1245,32 +1288,32 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             if (isset($this->available_card_types[WC()->countries->get_base_country()]['Maestro'])) {
                 $class = 'form-row form-row-last';
                 $fields = array(
-                    'card-number-field' => '<p class="form-row form-row-first">
-                                    <label for="' . esc_attr($this->id) . '-card-number">' . __('Credit Card Number', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
-                                    <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
-                            </p>',
+                    'card-number-field' => '<p class="form-row form-row-wide">
+                        <label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Card number', 'woocommerce' ) . ' <span class="required">*</span></label>
+                        <input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name( 'card-number' ) . ' />
+                    </p>',
                     'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class),
-                    'card-cvc-field' => '<p class="form-row form-row-first">
-                                    <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
-                                    <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-cvc' . '" />
-                            </p>',
+                    '<p class="form-row form-row-last">
+			<label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card Security Code', 'woocommerce' ) . ' <span class="required">*</span></label>
+			<input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__( 'CVC', 'woocommerce' ) . '" ' . $this->field_name( 'card-cvc' ) . ' style="width:100px" />
+                    </p>',
                     'card-startdate-field' => '<p class="form-row form-row-last">
-                                    <label for="' . esc_attr($this->id) . '-card-startdate">' . __('Start Date (MM/YY)', 'paypal-for-woocommerce') . '</label>
-                                    <input id="' . esc_attr($this->id) . '-card-startdate" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . __('MM / YY', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-startdate' . '" />
-                            </p>'
+                        <label for="' . esc_attr($this->id) . '-card-startdate">' . __('Start Date (MM/YY)', 'paypal-for-woocommerce') . '</label>
+                        <input id="' . esc_attr($this->id) . '-card-startdate" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . __('MM / YY', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-startdate' . '" />
+                     </p>'
                 );
 
             } else {
                 $fields = array(
                     'card-number-field' => '<p class="form-row form-row-wide">
-                                    <label for="' . esc_attr($this->id) . '-card-number">' . __('Credit Card Number', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
-                                    <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" name="' . $this->id . '-card-number' . '" />
-                            </p>',
+                        <label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Card number', 'woocommerce' ) . ' <span class="required">*</span></label>
+                        <input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name( 'card-number' ) . ' />
+                    </p>',
                     'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class),
-                    'card-cvc-field' => '<p class="form-row form-row-last">
-                                    <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
-                                    <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-cvc' . '" />
-                            </p>'
+                    '<p class="form-row form-row-last">
+			<label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card Security Code', 'woocommerce' ) . ' <span class="required">*</span></label>
+			<input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__( 'CVC', 'woocommerce' ) . '" ' . $this->field_name( 'card-cvc' ) . ' style="width:100px" />
+                    </p>'
                 );
 
             }
@@ -1298,5 +1341,105 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway
             }
         }
         return parent::get_transaction_url( $order );
+    }
+    
+    public function paypal_pro_error_handler($request_name = '', $redirect_url = '', $result){
+        $ErrorCode = urldecode($result["L_ERRORCODE0"]);
+        $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
+        $ErrorLongMsg = urldecode($result["L_LONGMESSAGE0"]);
+        $ErrorSeverityCode = urldecode($result["L_SEVERITYCODE0"]);
+        $this->log(__($request_name .'API call failed. ', 'paypal-for-woocommerce'));
+        $this->log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
+        $this->log(__('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg);
+        $this->log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
+        $this->log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
+        $message = '';
+        if ($this->error_email_notify) {
+            $admin_email = get_option("admin_email");
+            $message .= __($request_name . " API call failed.", "paypal-for-woocommerce") . "\n\n";
+            $message .= __('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode . "\n";
+            $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
+            $message .= __('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg . "\n";
+            $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
+            $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+            $error_email_notify_mes = apply_filters( 'ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg );
+            $subject = "PayPal Express Checkout Error Notification";
+            $error_email_notify_subject = apply_filters( 'ae_ppec_error_email_subject', $subject );
+            wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
+        }
+        if ($this->error_display_type == 'detailed') {
+            $sec_error_notice = $ErrorCode . ' - ' . $ErrorLongMsg;
+            $error_display_type_message = sprintf(__($sec_error_notice, 'paypal-for-woocommerce'));
+        } else {
+            $error_display_type_message = sprintf(__('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce'));
+        }
+        $error_display_type_message = apply_filters( 'ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg );
+        wc_add_notice($error_display_type_message, 'error');
+        if (!is_ajax()) {
+            wp_redirect($redirect_url);
+            exit;
+        } else {
+            return array(
+                'result'   => 'fail',
+                'redirect' => $redirect_url
+            );
+        }
+    }
+    public function add_payment_method() {
+        if (!class_exists('Angelleye_PayPal')) {
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+        }
+        $this->validate_fields();
+        $card = $this->get_posted_card();
+        $PayPalConfig = array(
+            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+        );
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        $DPFields = array(
+            'paymentaction' => 'Authorization',
+            'ipaddress' => $this->get_user_ip(),
+            'returnfmfdetails' => '1'
+        );
+        $CCDetails = array(
+            'creditcardtype' => $card->type,
+            'acct' => $card->number,
+            'expdate' => $card->exp_month . $card->exp_year,
+            'cvv2' => $card->cvc
+        );
+        $PaymentDetails = array(
+            'amt' => 0, 			
+            'currencycode' => get_woocommerce_currency(), 					
+        );
+        $PayPalRequestData = array(
+            'DPFields' => $DPFields, 
+            'CCDetails' => $CCDetails, 
+            'PaymentDetails' => $PaymentDetails
+        );
+        $result = $PayPal->DoDirectPayment($PayPalRequestData);
+        if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+            $customer_id = get_current_user_id();
+            $TRANSACTIONID = $result['TRANSACTIONID'];
+            $token = new WC_Payment_Token_CC();
+            $token->set_user_id( $customer_id );
+            $token->set_token( $TRANSACTIONID );
+            $token->set_gateway_id( $this->id );
+            $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
+            $token->set_last4( substr( $PayPalRequestData['CCDetails']['acct'], -4 ) );
+            $token->set_expiry_month( date( 'm' ) );
+            $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+            $save_result = $token->save();
+            return array(
+                    'result' => 'success',
+                    'redirect' => wc_get_account_endpoint_url( 'payment-methods' )
+                );
+           
+        } else {
+            $redirect_url = wc_get_account_endpoint_url( 'payment-methods' );
+            $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
+        }
     }
 }

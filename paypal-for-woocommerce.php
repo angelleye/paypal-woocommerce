@@ -60,20 +60,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         
         const VERSION_PFW = '1.2.4';
-        
+        public $customer_id = '';
         public function __construct()
         {
-
-            /**
-             * Check current WooCommerce version to ensure compatibility.
-             */
-            
-            $woo_version = $this->wpbo_get_woo_version_number();
-            if(version_compare($woo_version,'2.1','<'))
-            {
-                exit( __('PayPal for WooCommerce requires WooCommerce version 2.1 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce'));
-            }
-
             require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
@@ -86,6 +75,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
             add_action( 'woocommerce_sections_checkout', array( $this, 'donate_message' ), 11 );
             add_action( 'parse_request', array($this, 'woocommerce_paypal_express_review_order_page_angelleye') , 11);
+            add_action( 'parse_request', array($this, 'wc_gateway_payment_token_api_parser') , 99);
 
             // http://stackoverflow.com/questions/22577727/problems-adding-action-links-to-wordpress-plugin
             $basename = plugin_basename(__FILE__);
@@ -108,7 +98,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_checkout_process', array( $this, 'angelleye_paypal_express_checkout_process_checkout_fields' ) );
             add_filter('body_class', array($this, 'add_body_classes'));
             add_action('http_api_curl', array($this, 'http_api_curl_ex_add_curl_parameter'), 10, 3);
-            
+            $this->customer_id;
         }
 
         /*
@@ -268,7 +258,18 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             global $pp_settings;
             if (!class_exists("WC_Payment_Gateway")) return;
             load_plugin_textdomain( 'paypal-for-woocommerce', FALSE, basename( dirname( __FILE__ ) ) . '/i18n/languages/' );
-            add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
+            
+            /**
+             * Check current WooCommerce version to ensure compatibility.
+             */
+            
+            $woo_version = $this->wpbo_get_woo_version_number();
+            if(version_compare($woo_version,'2.6','<')) {
+                add_action( 'admin_notices', array($this, 'woo_compatibility_notice') );
+            } else {
+                add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
+            }
+            
             //remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_paypal_express_checkout_button', 12 );
             
             
@@ -426,13 +427,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $methods[] = 'WC_Gateway_PayPal_Pro_AngellEYE';
             $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
             $methods[] = 'WC_Gateway_PayPal_Express_AngellEYE';
-            $methods[] = 'WC_Gateway_Braintree_AngellEYE';
+            if (version_compare(phpversion(), '5.4.0', '>=')) {
+                $methods[] = 'WC_Gateway_Braintree_AngellEYE';
+            }
             $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
             if (version_compare(phpversion(), '5.3.0', '>=')) {
                 $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE';
             }
-            
-
             return $methods;
         }
 
@@ -527,8 +528,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         echo '<input data-action="'.$add_to_cart_action.'" type="button" style="float: left; clear: both; margin: 3px 0 0 0; border: none;',$hide,'" class="single_add_to_cart_button single_variation_wrap_angelleye paypal_checkout_button button alt '.$button_dynamic_class.'" name="express_checkout"  value="' .$button_text .'"/>';
                         break;
                     case "paypalimage":
-                        $button_img =  "https://www.paypal.com/".WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code()."/i/btn/btn_xpressCheckout.gif";
-                        echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="width: 145px; height: 42px; float: left; clear: both; margin: 3px 0 0 0; border: none; padding: 0;',$hide,'" class="single_add_to_cart_button single_variation_wrap_angelleye '.$button_dynamic_class.'" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+                        $button_img =  "https://www.paypalobjects.com/webstatic/".WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code()."/i/buttons/checkout-logo-medium.png";
+                        echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="width: 170px; height: 32px; float: left; clear: both; margin: 3px 0 0 0; border: none; padding: 0;',$hide,'" class="single_add_to_cart_button single_variation_wrap_angelleye '.$button_dynamic_class.'" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
                         break;
                     case "customimage":
                         $add_to_cart_action = esc_url(add_query_arg( 'express_checkout', '1'));
@@ -602,7 +603,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     case "paypalimage":
                         echo '<div id="paypal_ec_button">';
                         echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                        echo "<img src='https://www.paypal.com/" . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . "/i/btn/btn_xpressCheckout.gif' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                        echo "<img src='https://www.paypalobjects.com/webstatic/".WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code()."/i/buttons/checkout-logo-medium.png' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                         echo "</a>";
                         echo $_angelleyeOverlay;
                         echo '</div>';
@@ -1063,13 +1064,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         /*
          *   Billing Agreement Adjustments #382 
          */
-        public static function angelleye_paypal_for_woocommerce_paypal_billing_agreement($PayPalRequestData) {
+        public static function angelleye_paypal_for_woocommerce_paypal_billing_agreement($PayPalRequestData, $tokenization) {
             if (sizeof(WC()->cart->get_cart()) != 0) {
                 foreach (WC()->cart->get_cart() as $key => $value) {
                     $_product = $value['data'];
                     if (isset($_product->id) && !empty($_product->id) ) {
                         $_paypal_billing_agreement = get_post_meta($_product->id, '_paypal_billing_agreement', true);
-                        if( $_paypal_billing_agreement == 'yes' ) {
+                        if( $_paypal_billing_agreement == 'yes' || $tokenization == true) {
                             $BillingAgreements = array();
                             $Item = array(
                                 'l_billingtype' => '', // Required.  Type of billing agreement.  For recurring payments it must be RecurringPayments.  You can specify up to ten billing agreements.  For reference transactions, this field must be either:  MerchantInitiatedBilling, or MerchantInitiatedBillingSingleSource
@@ -1079,8 +1080,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                 'l_paymenttype' => 'Any', // Specifies the type of PayPal payment you require for the billing agreement.  Any or IntantOnly
                                 'l_billingagreementcustom' => ''     // Custom annotation field for your own use.  256 char max.
                             );
-                             array_push($BillingAgreements, $Item);
+                            array_push($BillingAgreements, $Item);
                             $PayPalRequestData['BillingAgreements'] = $BillingAgreements;
+                            return $PayPalRequestData;
                         } 
                     }
                 }
@@ -1529,6 +1531,25 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } else {
                 return true;
             }
+        }
+        
+        public function wc_gateway_payment_token_api_parser() {
+            if( !empty($_GET['do_action']) && $_GET['do_action'] = 'update_payment_method') {
+                if( !empty($_GET['method_name']) && $_GET['method_name'] == 'paypal_express') {
+                    switch ($_GET['action_name']) {
+                       case 'SetExpressCheckout':
+                            $woocommerce_token_api = new WC_Gateway_PayPal_Express_AngellEYE();
+                            $woocommerce_token_api->paypal_express_checkout_token_request_handler();
+                           break;
+                       default:
+                           break;
+                   }
+                }
+            }
+        }
+        
+        public function woo_compatibility_notice() {
+            echo '<div class="error"><p>' . __('PayPal for WooCommerce requires WooCommerce version 2.6 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce') . '</p></div>';
         }
     }
 }

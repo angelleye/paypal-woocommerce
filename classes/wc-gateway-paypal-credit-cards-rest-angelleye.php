@@ -5,16 +5,15 @@
  *
  * @extends WC_Payment_Gateway
  */
-class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
+class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC {
 
     /**
-     * Constuctor
+     * Constructor
      */
     protected $paypal_rest_api;
-
+    public $customer_id;
     function __construct() {
         $this->id = 'paypal_credit_card_rest';
-        $this->icon = apply_filters('woocommerce_braintree_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
         $this->has_fields = true;
         $this->method_title = 'PayPal Credit Card (REST)';
         $this->woocommerce_paypal_supported_currencies = array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP' );
@@ -25,6 +24,18 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
         );
         $this->init_form_fields();
         $this->init_settings();
+        $card_icon = $this->get_option('card_icon', 'no');
+        if($card_icon == 'no') {
+            $card_icon = WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png';
+        }
+        $this->icon = apply_filters('woocommerce_paypal_credit_card_rest_icon', $card_icon);
+        if (is_ssl()) {
+            $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
+        }
+        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if($this->enable_tokenized_payments == 'yes') {
+            array_push($this->supports, "tokenization");
+        }
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->testmode = 'yes' === $this->get_option('testmode', 'no');
@@ -40,6 +51,8 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_notices', array($this, 'checks'));
+        add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_credit_card_rest_credit_card_form_fields'), 10, 2);
+        $this->customer_id;
     }
 
     /**
@@ -87,9 +100,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
         if ($this->enabled == 'no') {
             return;
         }
-        if (version_compare(phpversion(), '5.2.1', '<')) {
-            echo '<div class="error"><p>' . sprintf(__('PayPal Credit Card (REST):  PayPal Credit Card (REST) requires PHP 5.2.1 and above. You are using version %s.', 'paypal-for-woocommerce'), phpversion()) . '</p></div>';
-        }
         $this->paypal_rest_api->add_dependencies_admin_notices();
     }
 
@@ -117,14 +127,8 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
         if ($this->description) {
             echo wpautop(wptexturize($this->description));
         }
-        if(class_exists('WC_Payment_Gateway_CC')) {
-            $cc_form = new WC_Payment_Gateway_CC;
-            $cc_form->id       = $this->id;
-            $cc_form->supports = $this->supports;
-            $cc_form->form();
-        } else {
-            $this->credit_card_form();
-        }
+        parent::payment_fields();
+        do_action('payment_fields_saved_payment_methods', $this);
     }
 
     /**
@@ -143,6 +147,15 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
     public function validate_fields() {
         $this->add_rest_api_utility();
         try {
+            if ( isset( $_POST['wc-paypal_credit_card_rest-payment-token'] ) && 'new' !== $_POST['wc-paypal_credit_card_rest-payment-token'] ) {
+                $token_id = wc_clean( $_POST['wc-paypal_credit_card_rest-payment-token'] );
+                $token  = WC_Payment_Tokens::get( $token_id );
+                if ( $token->get_user_id() !== get_current_user_id() ) {
+                    throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
+                }else {
+                    return true;
+                }
+            }
             $card = $this->paypal_rest_api->get_posted_card();
             if (empty($card->exp_month) || empty($card->exp_year)) {
                 throw new Exception(__('Card expiration date is invalid', 'woocommerce-gateway-paypal-pro'));
@@ -232,5 +245,35 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway {
         }
         return parent::get_transaction_url( $order );
     }
-
+    public function field_name( $name ) {
+	return ' name="' . esc_attr( $this->id . '-' . $name ) . '" ';
+    }
+    public function angelleye_paypal_credit_card_rest_credit_card_form_fields($default_fields, $current_gateway_id) {
+        if($current_gateway_id == $this->id) {
+		$fields = array(
+                    'card-number-field' => '<p class="form-row form-row-wide">
+                        <label for="' . esc_attr( $this->id ) . '-card-number">' . __( 'Card number', 'woocommerce' ) . ' <span class="required">*</span></label>
+                        <input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name( 'card-number' ) . ' />
+                    </p>',
+                    'card-expiry-field' => '<p class="form-row form-row-first">
+                        <label for="' . esc_attr( $this->id ) . '-card-expiry">' . __( 'Expiry (MM/YY)', 'woocommerce' ) . ' <span class="required">*</span></label>
+                        <input id="' . esc_attr( $this->id ) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry" inputmode="numeric" autocomplete="cc-exp" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="' . esc_attr__( 'MM / YY', 'woocommerce' ) . '" ' . $this->field_name( 'card-expiry' ) . ' />
+                    </p>',
+                    '<p class="form-row form-row-last">
+                        <label for="' . esc_attr( $this->id ) . '-card-cvc">' . __( 'Card code', 'woocommerce' ) . ' <span class="required">*</span></label>
+                        <input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__( 'CVC', 'woocommerce' ) . '" ' . $this->field_name( 'card-cvc' ) . ' style="width:100px" />
+                    </p>'
+		);
+                return $fields;
+        } else {
+            return $default_fields;
+        }
+    }
+    
+    public function add_payment_method() {
+        $this->add_rest_api_utility();
+        $card = $this->paypal_rest_api->get_posted_card();
+        $result = $this->paypal_rest_api->save_credit_card($card);
+        return $result;
+    }
 }

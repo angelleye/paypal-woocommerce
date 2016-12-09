@@ -572,6 +572,9 @@ class AngellEYE_Utility {
 
     public function angelleye_woocommerce_payment_gateway_supports($boolean, $feature, $current) {
         global $post;
+        if( empty($post->ID) ) {
+           return false;
+        }
         $order_id = $post->ID;
         $payment_action = '';
         if ($current->id == 'paypal_express' || $current->id == 'paypal_pro') {
@@ -644,12 +647,25 @@ class AngellEYE_Utility {
                 'description' => __('Enter your PayPal Rest API Secret ID.', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
+            'enable_tokenized_payments' => array(
+                'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => 'enable_tokenized_payments'
+            ),
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'paypal-for-woocommerce'),
                 'default' => 'WC-PCCR',
                 'desc_tip' => true,
+            ),
+            'card_icon'        => array(
+                'title'       => __( 'Card Icon', 'paypal-for-woocommerce' ),
+                'type'        => 'text',
+                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png'
             ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),

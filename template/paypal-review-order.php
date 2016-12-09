@@ -63,12 +63,12 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
                     $address = array(
                     'first_name' 	=> WC()->customer->shiptoname,
                     'company'		=> WC()->customer->company,
-                    'address_1'		=> WC()->customer->get_address(),
-                    'address_2'		=> WC()->customer->get_address_2(),
-                    'city'			=> WC()->customer->get_city(),
-                    'state'			=> WC()->customer->get_state(),
-                    'postcode'		=> WC()->customer->get_postcode(),
-                    'country'		=> WC()->customer->get_country()
+                    'address_1'		=> WC()->customer->shipping_address_1,
+                    'address_2'		=> WC()->customer->shipping_address_2,
+                    'city'			=> WC()->customer->shipping_city,
+                    'state'			=> WC()->customer->shipping_state,
+                    'postcode'		=> WC()->customer->shipping_postcode,
+                    'country'		=> WC()->customer->shipping_country
                     ) ;
 
                     echo WC()->countries->get_formatted_address( $address );
@@ -80,7 +80,6 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         <div class="col-2">
         	<?php 
         	$woocommerce_paypal_express_settings = maybe_unserialize(get_option('woocommerce_paypal_express_settings'));
-        	if( isset($woocommerce_paypal_express_settings['billing_address']) && $woocommerce_paypal_express_settings['billing_address'] == 'yes') :
         	// Formatted Addresses
         	$user_submit_form = maybe_unserialize(WC()->session->checkout_form);
 
@@ -130,7 +129,7 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 	            </div>
 
        
-        	<?php endif; endif; ?>
+        	<?php endif; ?>
         </div><!-- /.col-2 -->
     </div><!-- /.col2-set -->
 
@@ -253,7 +252,20 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 
     if ($is_paypal_express && wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) && empty( $checkout_form_data['terms'] ) ){
 ?>
-        <?php do_action( 'angelleye_review_order_before_place_order' );?>
+        <?php do_action( 'angelleye_review_order_before_place_order' );
+        
+        $gateways = WC()->payment_gateways()->payment_gateways();
+        if($gateways[ 'paypal_express' ]->supports( 'tokenization' )) :
+           echo sprintf(
+			'<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+				<input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" value="true" style="width:auto;" />
+				<label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
+			</p>',
+			esc_attr( 'paypal_express' ),
+			esc_html__( 'Save PayPal Billing Agreement to Account', 'woocommerce' )
+		);     
+        endif;
+        ?>
 
         <script type="text/javascript">
             jQuery(document).ready(function (){
@@ -306,7 +318,17 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 
 <?php
     } else {
-
+        $gateways = WC()->payment_gateways()->payment_gateways();
+        if($gateways[ 'paypal_express' ]->supports( 'tokenization' )) :
+           echo sprintf(
+			'<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+				<input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" value="true" style="width:auto;" />
+				<label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
+			</p>',
+			esc_attr( 'paypal_express' ),
+			esc_html__( 'Save PayPal Billing Agreement to Account', 'woocommerce' )
+		);     
+        endif;
         do_action( 'angelleye_review_order_before_place_order' );
 
         echo $cancel_button;
