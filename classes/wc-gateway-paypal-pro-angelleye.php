@@ -951,8 +951,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         );
         
         $log = $PayPalRequestData;
-        $log['CCDetails']['acct'] = isset($log['CCDetails']['acct']) ? '****' : '';
-        $log['CCDetails']['cvv2'] = isset($log['CCDetails']['cvv2']) ? '****' : '';
+        $log['CCDetails']['acct'] = empty($log['CCDetails']['acct']) ? '****' : '';
+        $log['CCDetails']['cvv2'] = empty($log['CCDetails']['cvv2']) ? '****' : '';
         $this->log('Do payment request ' . print_r($log, true));
         
         if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') {
