@@ -200,7 +200,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }
         $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
-        return apply_filters('woocommerce_gateway_icon', $icon, $this->id);
+        return apply_filters('woocommerce_paypal_express_icon', $icon, $this->id);
     }
 
     public function get_confirm_order($order) {

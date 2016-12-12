@@ -44,10 +44,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->page_button_bgcolor = $this->settings['page_button_bgcolor'];
         $this->page_button_textcolor = $this->settings['page_button_textcolor'];
         $this->label_textcolor = $this->settings['label_textcolor'];
-        
-        $this->icon = !empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png';
+        $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
         if (is_ssl()) {
-            $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
+            $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
         $this->icon = apply_filters('woocommerce_paypal_advanced_icon', $this->icon);
 
@@ -778,7 +777,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'card_icon' => array(
                 'title' => __('Credit Card Logo Graphic', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'default' => WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png'
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
             ),
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),

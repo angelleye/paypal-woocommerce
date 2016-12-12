@@ -13,7 +13,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public $customer_id;
     function __construct() {
         $this->id = 'braintree';
-        $this->icon = apply_filters('woocommerce_braintree_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
+        $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
+        if (is_ssl()) {
+            $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
+        }
+        $this->icon = apply_filters('woocommerce_braintree_icon', $this->icon);
         $this->has_fields = true;
         $this->method_title = 'Braintree';
         $this->method_description = __('Credit Card payments Powered by PayPal / Braintree.', 'paypal-for-woocommerce');
@@ -254,6 +258,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
+            ),
+            'card_icon' => array(
+                'title' => __('Card Icon', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
             ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
