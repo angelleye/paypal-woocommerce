@@ -48,10 +48,11 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->payment_action       = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
 
             //fix ssl for image icon
-            $this->icon = ! empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png';
-            if (is_ssl())
-                $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
-
+            $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__))));
+            if (is_ssl()) {
+                $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
+            }
+            $this->icon = apply_filters('woocommerce_paypal_pro_payflow_icon', $this->icon);
             if ($this->testmode=="yes") {
                 $this->paypal_vendor   	= $this->settings['sandbox_paypal_vendor'];
                 $this->paypal_partner  	= ! empty( $this->settings['sandbox_paypal_partner'] ) ? $this->settings['sandbox_paypal_partner'] : 'PayPal';
@@ -136,7 +137,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             'card_icon'        => array(
                 'title'       => __( 'Card Icon', 'paypal-for-woocommerce' ),
                 'type'        => 'text',
-                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/payflow-cards.png'
+                'default'     => plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__)))
             ),
 			'debug' => array(
                 'title' => __( 'Debug Log', 'paypal-for-woocommerce' ),

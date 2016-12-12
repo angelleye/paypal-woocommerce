@@ -107,12 +107,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 $this->enable_3dsecure = false;
             $this->centinel_url = $this->testmode == "no" ? $this->liveurl_3ds : $this->testurl_3ds;
         }
-
+        
         //fix ssl for image icon
-        $this->icon = !empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png';
+        $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
         if (is_ssl()) {
-            $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
+            $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
+        $this->icon = apply_filters('woocommerce_paypal_pro_icon', $this->icon);
         $this->supports = array(
             'products',
             'refunds'
@@ -189,7 +190,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             'card_icon' => array(
                 'title' => __('Card Icon', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'default' => WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png'
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
             ),
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
