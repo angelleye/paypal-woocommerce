@@ -13,7 +13,8 @@
             <key name="description" />
             <key name="pp_button_type_text_button" />
             <key name="gift_wrap_name" />
+            <key name="angelleye_skip_text" />
         </key>
-    </admin-texts>    
+    </admin-texts>
 </wpml-config>
 
