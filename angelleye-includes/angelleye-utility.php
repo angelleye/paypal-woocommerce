@@ -37,15 +37,23 @@ class AngellEYE_Utility {
 
     public function add_ec_angelleye_paypal_php_library() {
         if (!class_exists('WC_Payment_Gateway')) {
-            return;
+            return false;
         }
         if (!class_exists('Angelleye_PayPal')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
+        if( empty($this->payment_method) || $this->payment_method == false) {
+            $this->angelleye_set_payment_method();
+        }
+        if( empty($this->payment_method) || $this->payment_method == false) {
+            return false;
+        }
         if ($this->payment_method == 'paypal_express') {
             $gateway_obj = new WC_Gateway_PayPal_Express_AngellEYE();
-        } else {
+        } else if($this->payment_method == 'paypal_pro') {
             $gateway_obj = new WC_Gateway_PayPal_Pro_AngellEYE();
+        } else {
+            return false;
         }
         $this->testmode = $gateway_obj->get_option('testmode');
         if ($this->testmode == true) {
@@ -160,7 +168,7 @@ class AngellEYE_Utility {
                                 if (!is_object($order_id)) {
                                     $order = wc_get_order($order_id);
                                 }
-                                if ($order->order_total == $this->total_DoVoid || $this->total_Completed_DoAuthorization == $order->order_total) {
+                                if ($order->order_total == $this->total_DoVoid || $this->total_Completed_DoAuthorization == $order->order_total || $this->total_DoCapture == $order->order_total) {
                                     unset($paypal_payment_action['DoCapture']);
                                     unset($paypal_payment_action['DoVoid']);
                                 }
@@ -985,16 +993,17 @@ class AngellEYE_Utility {
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
+        $_first_transaction_id = get_post_meta($order->id, '_first_transaction_id', true);
+        if( empty($_first_transaction_id) ) {
+            return false;
+        }
+        $this->angelleye_get_transactionDetails($_first_transaction_id);
         $_payment_action = get_post_meta($order->id, '_payment_action', true);
         if (isset($_payment_action) && !empty($_payment_action) && $_payment_action == 'Order') {
             if (($this->max_authorize_amount <= $this->total_DoVoid) || ($this->total_Pending_DoAuthorization == 0 && $this->total_Completed_DoAuthorization == 0 && $this->total_DoVoid == $order->order_total)) {
-                $_first_transaction_id = get_post_meta($order->id, '_first_transaction_id', true);
-                $this->angelleye_get_transactionDetails($_first_transaction_id);
                 $order->update_status('cancelled');
             }
             if ($order->order_total <= $this->total_Completed_DoAuthorization && $this->total_Pending_DoAuthorization == 0) {
-                $_first_transaction_id = get_post_meta($order->id, '_first_transaction_id', true);
-                $this->angelleye_get_transactionDetails($_first_transaction_id);
                 do_action( 'woocommerce_order_status_pending_to_processing', $order->id );
                 $order->payment_complete($_first_transaction_id);
                 do_action('woocommerce_checkout_order_processed', $order->id, $posted = array());
@@ -1004,13 +1013,9 @@ class AngellEYE_Utility {
 
         if (isset($_payment_action) && !empty($_payment_action) && $_payment_action == 'Authorization') {
             if ($order->order_total == $this->total_DoVoid) {
-                $_first_transaction_id = get_post_meta($order->id, '_first_transaction_id', true);
-                $this->angelleye_get_transactionDetails($_first_transaction_id);
                 $order->update_status('cancelled');
             }
             if ($order->order_total == $this->total_Completed_DoAuthorization && $this->total_Pending_DoAuthorization == 0) {
-                $_first_transaction_id = get_post_meta($order->id, '_first_transaction_id', true);
-                $this->angelleye_get_transactionDetails($_first_transaction_id);
 		do_action( 'woocommerce_order_status_pending_to_processing', $order->id );
                 $order->payment_complete($_first_transaction_id);
                 do_action('woocommerce_checkout_order_processed', $order->id, $posted = array());
@@ -1100,6 +1105,9 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_get_transactionDetails($transaction_id) {
+        if( empty($this->payment_method) && $this->payment_method == false) {
+            $this->angelleye_set_payment_method_using_transaction_id($transaction_id);
+        }
         $this->add_ec_angelleye_paypal_php_library();
         $GTDFields = array(
             'transactionid' => $transaction_id
@@ -1198,5 +1206,23 @@ class AngellEYE_Utility {
     }
     public static function is_valid_for_use_paypal_express() {
 	return in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paypal_express_supported_currencies', array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP' ) ) );
+    }
+    
+    public function angelleye_set_payment_method() {
+        if( empty($this->payment_method) || $this->payment_method == false) {
+            global $post;
+            $order_id = $post->ID;
+            $this->payment_method = get_post_meta($order_id, '_payment_method', true);
+        }
+    }
+    
+    public function angelleye_set_payment_method_using_transaction_id($transaction) {
+        if( empty($this->payment_method) || $this->payment_method == false) {
+            global $wpdb;
+            $results = $wpdb->get_results( $wpdb->prepare( "SELECT post_id FROM {$wpdb->prefix}postmeta WHERE meta_value = %s ORDER BY meta_id", $transaction ));
+            if( !empty($results[0]->post_id) ) {
+                $this->payment_method = get_post_meta($results[0]->post_id, '_payment_method', true);
+            }
+        }
     }
 }
