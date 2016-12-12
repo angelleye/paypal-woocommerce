@@ -9,16 +9,16 @@
  */
 class AngellEYE_Utility {
 
-    private $plugin_name;
-    private $version;
-    private $paypal;
-    private $testmode;
-    private $api_username;
-    private $api_password;
-    private $api_signature;
-    private $ec_debug;
-    private $payment_method;
-    private $error_email_notify;
+    public $plugin_name;
+    public $version;
+    public $paypal;
+    public $testmode;
+    public $api_username;
+    public $api_password;
+    public $api_signature;
+    public $ec_debug;
+    public $payment_method;
+    public $error_email_notify;
     public $angelleye_woocommerce_order_actions;
     public $total_Order;
     public $total_DoVoid;
@@ -76,7 +76,7 @@ class AngellEYE_Utility {
         $this->paypal = new Angelleye_PayPal($PayPalConfig);
     }
 
-    private function load_dependencies() {
+    public function load_dependencies() {
         add_action('init', array($this, 'paypal_for_woocommerce_paypal_transaction_history'), 5);
         if (is_admin() && !defined('DOING_AJAX')) {
             add_action('add_meta_boxes', array($this, 'angelleye_paypal_for_woocommerce_order_action_meta_box'), 10, 2);
