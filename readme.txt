@@ -127,6 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Replaces deprecated function. ([#552](https://github.com/angelleye/paypal-woocommerce/issues/552))
 * Fix - Resolves an issue with deprecated address functions in WooCommerce 2.6 or higher. ([#602](https://github.com/angelleye/paypal-woocommerce/issues/602))
 * Fix - Resolves a problem processing MasterCard transactions with REST. ([#558](https://github.com/angelleye/paypal-woocommerce/issues/558))
+* Fix - Resolves problems capturing authorized orders. ([#553](https://github.com/angelleye/paypal-woocommerce/issues/553))
 
 = 1.2.4 - 09.13.2016 =
 * Feature - PayPal Advanced logo setup. ([#491](https://github.com/angelleye/paypal-woocommerce/issues/491))
