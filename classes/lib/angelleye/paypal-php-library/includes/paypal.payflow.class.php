@@ -177,7 +177,12 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 			if($DataArrayVal != '')
 			{
 				$NVPRequest .= '&'.strtoupper($DataArrayVar).'['.strlen($DataArrayVal).']='.$DataArrayVal;
-				$NVPRequestmask .= '&'.strtoupper($DataArrayVar).'['.strlen($DataArrayVal).']='.$DataArrayVal;
+                                if(strtoupper($DataArrayVar) == 'ACCT' || strtoupper($DataArrayVar) == 'EXPDATE' || strtoupper($DataArrayVar) == 'CVV2') {
+                                    $NVPRequestmask .= '&'.strtoupper($DataArrayVar).'['.strlen($DataArrayVal).']='.'****';
+                                } else {
+                                    $NVPRequestmask .= '&'.strtoupper($DataArrayVar).'['.strlen($DataArrayVal).']='.$DataArrayVal;
+                                } 
+				
 			}
 		}
 		

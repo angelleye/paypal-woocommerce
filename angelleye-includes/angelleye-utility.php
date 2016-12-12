@@ -82,8 +82,7 @@ class AngellEYE_Utility {
             }
             add_filter('woocommerce_payment_gateway_supports', array($this, 'angelleye_woocommerce_payment_gateway_supports'), 10, 3);
         }
-        add_action('woocommerce_process_shop_order_meta', array($this, 'save'), 50, 2);
-        add_action( 'woocommerce_admin_order_data_after_order_details', array($this, 'angelleye_paypal_for_woocommerce_payment_mode'), 10, 1);
+        add_action('woocommerce_process_shop_order_meta', array($this, 'save'), 51, 2);
     }
 
     public function angelleye_woocommerce_order_actions($order_actions = array()) {
@@ -252,7 +251,7 @@ class AngellEYE_Utility {
         $DataArray = array(
             'AUTHORIZATIONID' => $transaction_id,
             'AMT' => $AMT,
-            'CURRENCYCODE' => get_woocommerce_currency(),
+            'CURRENCYCODE' => $order->get_order_currency(),
             'COMPLETETYPE' => 'NotComplete',
         );
         $PayPalRequest = array(
@@ -413,7 +412,7 @@ class AngellEYE_Utility {
             $DRFields = array(
                 'authorizationid' => $transaction_id, // Required. The value of a previously authorized transaction ID returned by PayPal.
                 'amt' => $AMT, // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
-                'currencycode' => get_woocommerce_currency(), // Three-character currency code.
+                'currencycode' => $order->get_order_currency(), // Three-character currency code.
                 'msgsubid' => ''      // A message ID used for idempotence to uniquely identify a message.
             );
             $PayPalRequestData = array('DRFields' => $DRFields);
@@ -485,7 +484,7 @@ class AngellEYE_Utility {
             $DRFields = array(
                 'TRANSACTIONID' => $transaction_id, // Required. The value of a previously authorized transaction ID returned by PayPal.
                 'AMT' => $_POST['_regular_price'], // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
-                'CURRENCYCODE' => get_woocommerce_currency()
+                'CURRENCYCODE' => $order->get_order_currency()
             );
             $PayPalRequestData = array('DAFields' => $DRFields);
             $do_authorization_result = $this->paypal->DoAuthorization($PayPalRequestData);
@@ -573,6 +572,9 @@ class AngellEYE_Utility {
 
     public function angelleye_woocommerce_payment_gateway_supports($boolean, $feature, $current) {
         global $post;
+        if( empty($post->ID) ) {
+           return false;
+        }
         $order_id = $post->ID;
         $payment_action = '';
         if ($current->id == 'paypal_express' || $current->id == 'paypal_pro') {
@@ -645,12 +647,25 @@ class AngellEYE_Utility {
                 'description' => __('Enter your PayPal Rest API Secret ID.', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
+            'enable_tokenized_payments' => array(
+                'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => 'enable_tokenized_payments'
+            ),
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'paypal-for-woocommerce'),
                 'default' => 'WC-PCCR',
                 'desc_tip' => true,
+            ),
+            'card_icon'        => array(
+                'title'       => __( 'Card Icon', 'paypal-for-woocommerce' ),
+                'type'        => 'text',
+                'default'     => WP_PLUGIN_URL . "/" . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/assets/images/cards.png'
             ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
@@ -665,7 +680,7 @@ class AngellEYE_Utility {
     public static function card_type_from_account_number($account_number) {
         $types = array(
             'visa' => '/^4/',
-            'mc' => '/^5[1-5]/',
+            'mastercard' => '/^5[1-5]/',
             'amex' => '/^3[47]/',
             'discover' => '/^(6011|65|64[4-9]|622)/',
             'diners' => '/^(36|38|30[0-5])/',
@@ -683,7 +698,7 @@ class AngellEYE_Utility {
 
     public static function is_express_checkout_credentials_is_set() {
         $pp_settings = get_option('woocommerce_paypal_express_settings');
-        $testmode = $pp_settings['testmode'];
+        $testmode = isset($pp_settings['testmode']) ? $pp_settings['testmode'] : 'yes';
         $enabled = $pp_settings['enabled'];
         if ($testmode == 'yes') {
             $api_username = $pp_settings['sandbox_api_username'];
@@ -1181,13 +1196,7 @@ class AngellEYE_Utility {
             return false;
         }
     }
-    public static function is_valid_for_use() {
-	return in_array( get_woocommerce_currency(), apply_filters( 'paypal_for_woocommerce_supported_currencies', array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP' ) ) );
-    }
-
-    public function angelleye_paypal_for_woocommerce_payment_mode($order) {
-        ?>
-        <p> Sandbox</p>
-        <?php 
+    public static function is_valid_for_use_paypal_express() {
+	return in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paypal_express_supported_currencies', array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP' ) ) );
     }
 }

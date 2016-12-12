@@ -121,7 +121,6 @@
             if($payload != "" && $payload != null) {
                 $parts = explode("&", $payload);
                 $hashPart =  explode("=", $parts[count($parts)-1]);
-                
                 $origPayload = preg_replace("/\&".$parts[count($parts)-1]."/", '', $payload ).$transactionPwd; 
                 $payloadHash = $hashPart[1];
                 $payloadCalcHash = sha1($origPayload);
