@@ -403,7 +403,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'freightamt'=>'', 			//
 					'taxamt'=>'', 				//
 					'taxexempt'=>'', 			// 
-					'comment1'=> apply_filters( 'ae_pppf_custom_parameter', $customer_note , $order ), 			// Merchant-defined value for reporting and auditing purposes.  128 char max
+					'custom' =>  apply_filters( 'ae_pppf_custom_parameter', $customer_note , $order ),                        // Free-form field for your own use. 
+					'comment1'=> apply_filters( 'ae_pppf_comment1_parameter', '' , $order ), 			// Merchant-defined value for reporting and auditing purposes.  128 char max
 					'comment2'=> apply_filters( 'ae_pppf_comment2_parameter', '' , $order ), 			// Merchant-defined value for reporting and auditing purposes.  128 char max
 					'cvv2'=>$card_csc, 				// A code printed on the back of the card (or front for Amex)
 					'recurring'=>'', 			// Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring. 
