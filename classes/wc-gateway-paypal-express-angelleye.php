@@ -1483,12 +1483,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             if ( ! in_array( strtolower( $result['PAYMENTINFO_0_TRANSACTIONTYPE'] ), array( 'cart', 'instant', 'expresscheckout', 'web_accept', 'masspay', 'send_money' ) ) ) {
 					break;
 				}
-
+                                $order_status = 'on-hold';
 				switch( strtolower( $result['PAYMENTINFO_0_PENDINGREASON'] ) ) {
 					case 'address':
 						$pending_reason = __( 'Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile.', 'paypal-for-woocommerce' );
 						break;
 					case 'authorization':
+                                                $order_status = 'complete';
 						$pending_reason = __( 'Authorization: The payment is pending because it has been authorized but not settled. You must capture the funds first.', 'paypal-for-woocommerce' );
 						break;
 					case 'echeck':
@@ -1522,7 +1523,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 						break;
 				}
 				$order->add_order_note( sprintf( __( 'Payment via Express Checkout Pending. PayPal reason: %s.', 'paypal-for-woocommerce' ), $pending_reason ) );
-				$order->update_status( 'on-hold' );
+                                if( $order_status == 'on-hold' ) {
+                                    $order->update_status( 'on-hold' );
+                                } else {
+                                    $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
+                                }
 				break;
 			case 'denied' :
 			case 'expired' :
