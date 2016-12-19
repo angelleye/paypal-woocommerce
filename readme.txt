@@ -114,7 +114,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.3.0 - xx.xx.xxxx =
 * Feature - Adds WooCommerce tokenized payments compatibility in all payment gateways. ([#585](https://github.com/angelleye/paypal-woocommerce/issues/585))
-* Feature - Adds compatibility with WooCommerce AutoShip plugin. ([#597](https://github.com/angelleye/paypal-woocommerce/issues/597))
+* Feature - Adds compatibility with WC AutoShip plugin. ([#597](https://github.com/angelleye/paypal-woocommerce/issues/597))
 * Feature - Adds the option to disable Terms and Conditions when using the Skip Final Review option with Express Checkout. ([#471](https://github.com/angelleye/paypal-woocommerce/issues/471))
 * Feature - Adds filters for currency codes to all gateways and improves Aelia Currency Switcher compatibility. ([#587](https://github.com/angelleye/paypal-woocommerce/issues/587))
 * Feature - Adds filters for credit card icon graphics on checkout page. ([#563](https://github.com/angelleye/paypal-woocommerce/issues/563))
