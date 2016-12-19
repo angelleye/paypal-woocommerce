@@ -93,6 +93,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 2. PayPal Express Checkout button on product detail page.
 3. Your logo and cart items accurately displayed on PayPal Express Checkout review pages.
 4. Direct credit card processing option available with PayPal Payments Pro.
+5. WooCommerce Payment Tokens - Save to Account option displayed to buyer during checkout.
 
 == Frequently Asked Questions ==
 
