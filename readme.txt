@@ -23,10 +23,14 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
  * PayPal Payments Advanced
  * PayPal REST Credit Card Payments
  * PayPal Braintree Credit Card Payments
+ * Fully Supports WooCommerce Payment Tokens!
  
 [youtube https://www.youtube.com/watch?v=svq9ovWGp7I]
 
 [youtube https://www.youtube.com/watch?v=VhQT8rX7uwE]
+
+= WooCommerce Payment Tokens Compatibility =
+Fully supports WooCommerce payment tokens, so buyers can choose to save their payment method to their account with your site for quicker checkout in the future.
 
 = FREE PayPal Payments Pro Account =
 By using our plugin we can get you hooked up with PayPal Payments Pro with no monthly fee!  [Contact us](https://www.angelleye.com/contact-us) for details.
