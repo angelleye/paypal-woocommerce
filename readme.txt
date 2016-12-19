@@ -125,6 +125,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds filters for credit card icon graphics on checkout page. ([#563](https://github.com/angelleye/paypal-woocommerce/issues/563))
 * Feature - Adds a button to quickly clear all logs saved by the plugin. ([#562](https://github.com/angelleye/paypal-woocommerce/issues/562))
 * Feature - Adds a hook to send your own value in the CUSTOM parameter for PayFlow. ([#610](https://github.com/angelleye/paypal-woocommerce/issues/610))
+* Tweak - Adjustments to terms and conditions check box on review page. ([#614](https://github.com/angelleye/paypal-woocommerce/pull/614))
 * Tweak - Improved logs for REST credit card processing. ([#559](https://github.com/angelleye/paypal-woocommerce/issues/559))
 * Tweak - Adjustments to the way the address is displayed on the Express Checkout review page. ([#595](https://github.com/angelleye/paypal-woocommerce/issues/595))
 * Tweak - Updates Express Checkout image used on product page, cart page, and checkout page. ([#573](https://github.com/angelleye/paypal-woocommerce/issues/573))
