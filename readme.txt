@@ -33,7 +33,7 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
 Fully supports WooCommerce payment tokens, so buyers can choose to save their payment method to their account with your site for quicker checkout in the future.
 
 = FREE PayPal Payments Pro Account =
-By using our plugin we can get you hooked up with PayPal Payments Pro with no monthly fee!  [Contact us](https://www.angelleye.com/contact-us) for details.
+By using our plugin we can get you hooked up with PayPal Payments Pro with no monthly fee! (U.S. merchants only) [Contact us](https://www.angelleye.com/contact-us) for details.
 
 = PayPal Plus Information =
 The BETA version of PayPal Plus that we had included with this plugin has been stripped out as of version 1.2.4.  We have moved PayPal Plus to its own separate plugin so that we may focus on all the different features and functionality it needs to work with the various countries it supports.  [Get the PayPal Plus Plugin!](https://www.angelleye.com/product/woocommerce-paypal-plus-plugin/)
