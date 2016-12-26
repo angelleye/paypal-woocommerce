@@ -600,7 +600,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
+                'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future. (Currently considered BETA for Express Checkout.)', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
