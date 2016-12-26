@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
 Tested up to: 4.7
-Stable tag: 1.2.4
+Stable tag: 1.3.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -117,7 +117,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.3.0 - xx.xx.xxxx =
+= 1.3.0 - 12.26.2016 =
 * Feature - Adds WooCommerce payment tokens compatibility in all payment gateways. ([#585](https://github.com/angelleye/paypal-woocommerce/issues/585))
 * Feature - Adds compatibility with WC AutoShip plugin. ([#597](https://github.com/angelleye/paypal-woocommerce/issues/597))
 * Feature - Adds the option to disable Terms and Conditions when using the Skip Final Review option with Express Checkout. ([#471](https://github.com/angelleye/paypal-woocommerce/issues/471))
