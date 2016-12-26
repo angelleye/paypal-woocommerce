@@ -258,14 +258,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $skip_final_review_option_not_allowed_tokenized_payments = '';
         $woocommerce_enable_guest_checkout = get_option('woocommerce_enable_guest_checkout');
         if (isset($woocommerce_enable_guest_checkout) && ( $woocommerce_enable_guest_checkout === "no" )) {
-            $skip_final_review_option_not_allowed_guest_checkout = ' (This is not available because your WooCommerce orders require an account.)';
+            $skip_final_review_option_not_allowed_guest_checkout = ' (The WooCommerce guest checkout option is disabled.  Therefore, the review page is required for login / account creation, and this option will be overridden.)';
         }         
         if ( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) ) {
-            $skip_final_review_option_not_allowed_terms = ' (This is not available because your WooCommerce orders require accept Terms &amp; Conditions.)';
+            $skip_final_review_option_not_allowed_terms = ' (You currently have a Terms &amp; Conditions page set, which requires the review page, and will override this option.)';
         }
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if($this->enable_tokenized_payments == 'yes') {
-            $skip_final_review_option_not_allowed_tokenized_payments = ' (This is not available because tokenized payments is enable.)';
+            $skip_final_review_option_not_allowed_tokenized_payments = ' (Payments tokens are enabled, which require the review page, and that will override this option.)';
         }
         $args = array(
             'sort_order' => 'ASC',
@@ -552,14 +552,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'skip_final_review' => array(
                 'title' => __('Skip Final Review', 'paypal-for-woocommerce'),
                 'label' => __('Enables the option to skip the final review page.', 'paypal-for-woocommerce'),
-                 'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.') . '<b class="final_review_notice"><span class="guest_checkout_notice">' . $skip_final_review_option_not_allowed_guest_checkout . '</span></b>' . '<b class="final_review_notice"><span class="terms_notice">' . $skip_final_review_option_not_allowed_terms . '</span></b>' . '<b class="final_review_notice"><span class="tokenized_payments_notice">' . $skip_final_review_option_not_allowed_tokenized_payments . '</span></b>',
+                 'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.') . '<br /><b class="final_review_notice"><span class="guest_checkout_notice">' . $skip_final_review_option_not_allowed_guest_checkout . '</span></b>' . '<b class="final_review_notice"><span class="terms_notice">' . $skip_final_review_option_not_allowed_terms . '</span></b>' . '<b class="final_review_notice"><span class="tokenized_payments_notice">' . $skip_final_review_option_not_allowed_tokenized_payments . '</span></b>',
                 'type' => 'checkbox',
                 'default' => 'no'
             ),
              'disable_term' => array(
-                'title' => __('Skip Terms and Conditions', 'paypal-for-woocommerce'),
-                'label' => __('Enables the option to skip the Terms and Conditions.', 'paypal-for-woocommerce'),
-                'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.'),
+                'title' => __('Disable Terms and Conditions', 'paypal-for-woocommerce'),
+                'label' => __('Disable Terms and Conditions for Express Checkout orders.', 'paypal-for-woocommerce'),
+                'description' => __('By default, if a Terms and Conditions page is set in WooCommerce, this would require the review page and would override the Skip Final Review option.  Check this option to disable Terms and Conditions for Express Checkout orders only so that you can use the Skip Final Review option.'),
                 'type' => 'checkbox',
                 'default' => 'no',
                 'class' => 'disable_term',
