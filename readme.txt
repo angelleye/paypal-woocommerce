@@ -117,6 +117,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.3.1 - 12.28.2016 =
+* Fix - Resolves an issue causing the incorrect expiration date to display on credit card token payments. ([#620](https://github.com/angelleye/paypal-woocommerce/issues/620))
+
 = 1.3.0 - 12.26.2016 =
 * Feature - Adds WooCommerce payment tokens compatibility in all payment gateways. ([#585](https://github.com/angelleye/paypal-woocommerce/issues/585))
 * Feature - Adds compatibility with WC AutoShip plugin. ([#597](https://github.com/angelleye/paypal-woocommerce/issues/597))
