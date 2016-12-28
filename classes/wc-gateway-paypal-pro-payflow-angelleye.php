@@ -577,8 +577,12 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         $token->set_gateway_id( $this->id );
                         $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['acct']));
                         $token->set_last4( substr( $PayPalRequestData['acct'], -4 ) );
-                        $token->set_expiry_month( date( 'm' ) );
-                        $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+                        $token->set_expiry_month( substr( $PayPalRequestData['expdate'], 0,2 ) );
+                        $expiry_year = substr( $PayPalRequestData['expdate'], 2,3 );
+                        if ( strlen( $expiry_year ) == 2 ) {
+                            $expiry_year = $expiry_year + 2000;
+                        }
+                        $token->set_expiry_year( $expiry_year );
                         $save_result = $token->save();
                         if ( $save_result ) {
                                 $order->add_payment_token( $token );
@@ -992,8 +996,12 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $token->set_gateway_id( $this->id );
                 $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['acct']));
                 $token->set_last4( substr( $PayPalRequestData['acct'], -4 ) );
-                $token->set_expiry_month( date( 'm' ) );
-                $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+                $token->set_expiry_month( substr( $PayPalRequestData['expdate'], 0,2 ) );
+                $expiry_year = substr( $PayPalRequestData['expdate'], 2,3 );
+                if ( strlen( $expiry_year ) == 2 ) {
+                    $expiry_year = $expiry_year + 2000;
+                }
+                $token->set_expiry_year( $expiry_year );
                 $save_result = $token->save();
                 if ( $save_result ) {
                     return array(

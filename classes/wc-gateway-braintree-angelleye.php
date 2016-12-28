@@ -605,8 +605,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     $token->set_gateway_id( $this->id );
                                     $token->set_card_type( $transaction->creditCard['cardType']);
                                     $token->set_last4( $transaction->creditCard['last4'] );
-                                    $token->set_expiry_month( date( 'm' ) );
-                                    $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+                                    $token->set_expiry_month( $transaction->creditCard['expirationMonth'] );
+                                    $token->set_expiry_year( $transaction->creditCard['expirationYear'] );
                                     $save_result = $token->save();
                                     if ( $save_result ) {
                                         $order->add_payment_token( $token );
@@ -1128,8 +1128,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $token->set_gateway_id( $this->id );
             $token->set_card_type( $braintree_method->cardType);
             $token->set_last4( $braintree_method->last4 );
-            $token->set_expiry_month( date( 'm' ) );
-            $token->set_expiry_year( date( 'Y', strtotime( '+10 years' ) ) );
+            $token->set_expiry_month( $braintree_method->expirationMonth );
+            $token->set_expiry_year( $braintree_method->expirationYear );
             $save_result = $token->save();
             if ( $save_result ) {
                 return array(

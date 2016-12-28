@@ -17,20 +17,20 @@ use PayPal\Api\Sale;
 
 class PayPal_Rest_API_Utility {
 
-    protected $card;
-    protected $FundingInstrument;
-    protected $Payer;
-    protected $order_item;
-    protected $item;
-    protected $item_list;
-    protected $details;
-    protected $payment_data;
-    protected $amount;
-    protected $transaction;
-    protected $payment;
-    protected $payment_method;
-    protected $gateway;
-    protected $CreditCardToken;
+    public $card;
+    public $FundingInstrument;
+    public $Payer;
+    public $order_item;
+    public $item;
+    public $item_list;
+    public $details;
+    public $payment_data;
+    public $amount;
+    public $transaction;
+    public $payment;
+    public $payment_method;
+    public $gateway;
+    public $CreditCardToken;
 
     public function __construct() {
         $this->add_paypal_rest_api_lib();
@@ -99,8 +99,8 @@ class PayPal_Rest_API_Utility {
                             $token->set_gateway_id( $this->payment_method );
                             $token->set_card_type( $this->card->type );
                             $token->set_last4( substr( $this->card->number, -4 ) );
-                            $token->set_expiry_month( date( 'm' ) );
-                            $token->set_expiry_year( date( 'Y', strtotime( $this->card->valid_until ) ) );
+                            $token->set_expiry_month( $this->card->expire_month );
+                            $token->set_expiry_year( $this->card->expire_year );
                             $save_result = $token->save();
                             if ( $save_result ) {
                                     $order->add_payment_token( $token );
@@ -563,8 +563,8 @@ class PayPal_Rest_API_Utility {
                 $token->set_gateway_id( $this->payment_method );
                 $token->set_card_type( $this->card->type );
                 $token->set_last4( substr( $this->card->number, -4 ) );
-                $token->set_expiry_month( date( 'm' ) );
-                $token->set_expiry_year( date( 'Y', strtotime( $this->card->valid_until ) ) );
+                $token->set_expiry_month( $this->card->expire_month );
+                $token->set_expiry_year( $this->card->expire_year );
                 $save_result = $token->save();
                 if ( $save_result ) {
                     return array(

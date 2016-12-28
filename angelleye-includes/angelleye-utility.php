@@ -529,9 +529,10 @@ class AngellEYE_Utility {
 
     public function ec_add_log($message) {
         if ($this->ec_debug == 'yes') {
-            if (empty($this->log))
+            if (empty($this->log)) {
                 $this->log = new WC_Logger();
-            $this->log->add($this->payment_method, $message);
+            }
+            $this->log->add(str_replace("_","-", $this->payment_method) , $message);
         }
     }
 
