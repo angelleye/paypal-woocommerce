@@ -694,7 +694,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $pp_settings['checkout_with_pp_button_type'] = 'paypalimage';
 
             $_angelleyeOverlay = '<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url('. WC()->plugin_url() .'/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>';
-
+            
             switch ($pp_settings['checkout_with_pp_button_type']) {
                 case "textbutton":
                     if (!empty($pp_settings['pp_button_type_text_button'])) {
@@ -710,7 +710,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case "paypalimage":
                     echo '<div id="paypal_ec_button">';
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo "<img src='https://www.paypalobjects.com/webstatic/".WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code()."/i/buttons/checkout-logo-medium.png' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                    echo "<img src='".WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage()."' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                     echo "</a>";
                     echo $_angelleyeOverlay;
                     echo '</div>';
@@ -2396,7 +2396,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case "paypalimage":
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo '<img src="https://www.paypalobjects.com/webstatic/' . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . '/i/buttons/checkout-logo-medium.png" width="170" height="32" style="width: 170px; height: 32px; margin: 3px 5px 0 0; border: none; padding: 0;" align="top" alt="' . __( 'Pay with PayPal', 'paypal-for-woocommerce' ) . '" />';
+                    echo '<img src='.WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage().' style="margin: 3px 5px 0 0; border: none; padding: 0;" align="top" alt="' . __( 'Pay with PayPal', 'paypal-for-woocommerce' ) . '" />';
                     echo "</a>";
                     echo $angelleyeOverlay;
                     break;
@@ -2423,12 +2423,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     static function get_button_locale_code() {
-        $locale_code = defined("WPLANG") && get_locale() != '' ? get_locale() : 'en_US';
-        switch ($locale_code) {
-            case "de_DE": $locale_code = "de_DE/DE";
-                break;
+        $_supportedLocale = array(
+            'en_US', 'fr_XC', 'es_XC', 'zh_XC', 'en_AU', 'de_DE', 'nl_NL',
+            'fr_FR', 'pt_BR', 'fr_CA', 'zh_CN', 'ru_RU', 'en_GB', 'zh_HK',
+            'he_IL', 'it_IT', 'ja_JP', 'pl_PL', 'pt_PT', 'es_ES', 'sv_SE', 'zh_TW', 'tr_TR'
+	);
+        $locale = get_locale();
+        if ( ! in_array( $locale, $_supportedLocale ) ) {
+                $locale = 'en_US';
         }
-        return $locale_code;
+        return $locale;
+    }
+    
+    public static function angelleye_get_paypalimage() {
+        return esc_url(add_query_arg('cmd', '_dynamic-image', add_query_arg('locale', self::get_button_locale_code(), 'https://fpdbs.paypal.com/dynamicimageweb')));
     }
 
     /**
