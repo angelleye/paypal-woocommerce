@@ -118,21 +118,22 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     }else {
                         return true;
                     }
+                } else {
+                    $card = $this->get_posted_card();
+                    if (empty($card->exp_month) || empty($card->exp_year)) {
+                        throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
+                    }
+                    if (!ctype_digit($card->cvc)) {
+                        throw new Exception(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'));
+                    }
+                    if (!ctype_digit($card->exp_month) || !ctype_digit($card->exp_year) || $card->exp_month > 12 || $card->exp_month < 1 || $card->exp_year < date('y')) {
+                        throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
+                    }
+                    if (empty($card->number) || !ctype_digit($card->number)) {
+                        throw new Exception(__('Card number is invalid', 'paypal-for-woocommerce'));
+                    }
+                    return true;
                 }
-                $card = $this->get_posted_card();
-                if (empty($card->exp_month) || empty($card->exp_year)) {
-                    throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
-                }
-                if (!ctype_digit($card->cvc)) {
-                    throw new Exception(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'));
-                }
-                if (!ctype_digit($card->exp_month) || !ctype_digit($card->exp_year) || $card->exp_month > 12 || $card->exp_month < 1 || $card->exp_year < date('y')) {
-                    throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
-                }
-                if (empty($card->number) || !ctype_digit($card->number)) {
-                    throw new Exception(__('Card number is invalid', 'paypal-for-woocommerce'));
-                }
-                return true;
             } catch (Exception $e) {
                 wc_add_notice($e->getMessage(), 'error');
                 return false;
@@ -482,14 +483,12 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             );
             if ($this->enable_braintree_drop_in == false) {
                 if(!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') {
-                    if(!empty($_POST['wc-braintree-new-payment-method']) && $_POST['wc-braintree-new-payment-method'] == true) {
                         $request_data['creditCard'] = array(
                             'number' => $card->number,
                             'expirationDate' => $card->exp_month . '/' . $card->exp_year,
                             'cvv' => $card->cvc,
                             'cardholderName' => $order->billing_first_name . ' ' . $order->billing_last_name
                         );
-                    }
                 } else {
                     if(is_user_logged_in()) {
                         $customer_id = get_current_user_id();
