@@ -119,7 +119,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.3.2 - xx.xx.2017 =
 * Fix - Resolves an issue with dynamic Express Checkout buttons not loading properly for some countries. ([#623](https://github.com/angelleye/paypal-woocommerce/issues/623))
-
+* Fix - Resolves an issue with Braintree calls failing on some sites. ([#625](https://github.com/angelleye/paypal-woocommerce/issues/625))
 
 = 1.3.1 - 12.28.2016 =
 * Fix - Resolves an issue causing the incorrect expiration date to display on credit card token payments. ([#620](https://github.com/angelleye/paypal-woocommerce/issues/620))
