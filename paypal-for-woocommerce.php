@@ -529,12 +529,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         break;
                     case "paypalimage":
                         $button_img =  WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage();
-                        echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="width: auto; height: auto;float: left; clear: both; margin: 3px 0 0 0; border: none; padding: 0;',$hide,'" class="single_add_to_cart_button single_variation_wrap_angelleye '.$button_dynamic_class.'" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+                        echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="width: auto; height: auto;float: left; clear: both; margin: 3px 0 3px 0; border: none; padding: 0;',$hide,'" class="single_add_to_cart_button single_variation_wrap_angelleye '.$button_dynamic_class.'" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
                         break;
                     case "customimage":
                         $add_to_cart_action = esc_url(add_query_arg( 'express_checkout', '1'));
                         $button_img = $pp_settings['pp_button_type_my_custom'];
-                        echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="float: left; clear: both; margin: 3px 0 0 0; border: none; padding: 0;',$hide,'" class="single_add_to_cart_button single_variation_wrap_angelleye '.$button_dynamic_class.'" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
+                        echo '<input data-action="'.$add_to_cart_action.'" type="image" src="',$button_img,'" style="float: left; clear: both; margin: 3px 0 3px 0; border: none; padding: 0;',$hide,'" class="single_add_to_cart_button single_variation_wrap_angelleye '.$button_dynamic_class.'" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') .'"/>';
                         break;
                 }
                 ?>
