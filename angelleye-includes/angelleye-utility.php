@@ -255,7 +255,13 @@ class AngellEYE_Utility {
     public function pfw_do_capture($order, $transaction_id = null, $capture_total = null) {
         $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('DoCapture API call');
-        $AMT = $this->get_amount_by_transaction_id($transaction_id);
+
+        if($capture_total == null)
+            $AMT = $this->get_amount_by_transaction_id($transaction_id);
+        else
+            $AMT = $capture_total;
+
+        $AMT -= $order->get_total_refunded();
         $DataArray = array(
             'AUTHORIZATIONID' => $transaction_id,
             'AMT' => $AMT,
