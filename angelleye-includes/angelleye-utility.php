@@ -261,7 +261,7 @@ class AngellEYE_Utility {
         else
             $AMT = $capture_total;
 
-        $AMT -= $order->get_total_refunded();
+        $AMT = self::round($AMT - $order->get_total_refunded());
         $DataArray = array(
             'AUTHORIZATIONID' => $transaction_id,
             'AMT' => $AMT,
@@ -849,7 +849,7 @@ class AngellEYE_Utility {
                 <tbody>
                     <tr>
                         <td><?php echo __('Order Total:', 'paypal-for-woocommerce'); ?></td>
-                        <td><?php echo get_woocommerce_currency_symbol() . ($order->order_total - $order->get_total_refunded()); ?></td>
+                        <td><?php echo get_woocommerce_currency_symbol() .  self::round($order->order_total - $order->get_total_refunded()); ?></td>
                     </tr>
                     <tr>
                         <td><?php echo __('Total Capture:', 'paypal-for-woocommerce'); ?></td>
