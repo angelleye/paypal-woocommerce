@@ -2396,7 +2396,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case "paypalimage":
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo '<img src='.WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage().' style="margin: 3px 5px 0 0; border: none; padding: 0;" align="top" alt="' . __( 'Pay with PayPal', 'paypal-for-woocommerce' ) . '" />';
+                    echo '<img src='.WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage().' style="width: auto; height: auto; margin: 3px 5px 0 0; border: none; padding: 0;" align="top" alt="' . __( 'Pay with PayPal', 'paypal-for-woocommerce' ) . '" />';
                     echo "</a>";
                     echo $angelleyeOverlay;
                     break;
@@ -2436,7 +2436,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
     
     public static function angelleye_get_paypalimage() {
-        return esc_url(add_query_arg('cmd', '_dynamic-image', add_query_arg('locale', self::get_button_locale_code(), 'https://fpdbs.paypal.com/dynamicimageweb')));
+        if( self::get_button_locale_code() == '') {
+            return "https://www.paypalobjects.com/webstatic/".self::get_button_locale_code()."/i/buttons/checkout-logo-medium.png";
+        } else {
+            return esc_url(add_query_arg('cmd', '_dynamic-image', add_query_arg('locale', self::get_button_locale_code(), 'https://fpdbs.paypal.com/dynamicimageweb')));
+        }
+        
+        
     }
 
     /**
