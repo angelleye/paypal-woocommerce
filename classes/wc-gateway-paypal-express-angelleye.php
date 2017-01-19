@@ -2436,7 +2436,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
     
     public static function angelleye_get_paypalimage() {
-        if( self::get_button_locale_code() == '') {
+        if( self::get_button_locale_code() == 'en_US') {
             return "https://www.paypalobjects.com/webstatic/".self::get_button_locale_code()."/i/buttons/checkout-logo-medium.png";
         } else {
             return esc_url(add_query_arg('cmd', '_dynamic-image', add_query_arg('locale', self::get_button_locale_code(), 'https://fpdbs.paypal.com/dynamicimageweb')));
