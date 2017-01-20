@@ -56,7 +56,7 @@ class AngellEYE_Utility {
             return false;
         }
         $this->testmode = $gateway_obj->get_option('testmode');
-        if ($this->testmode == true) {
+        if ($this->testmode == 'yes') {
             $this->api_username = $gateway_obj->get_option('sandbox_api_username');
             $this->api_password = $gateway_obj->get_option('sandbox_api_password');
             $this->api_signature = $gateway_obj->get_option('sandbox_api_signature');
