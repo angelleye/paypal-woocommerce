@@ -3,7 +3,7 @@
  * @wordpress-plugin
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
- * Description:       Easily enable PayPal Express Checkout, Website Payments Pro 3.0, Payments Pro 2.0 (PayFlow).  Each option is available separately so you can enable them individually.
+ * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
  * Version:           1.3.1
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
