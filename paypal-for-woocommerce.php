@@ -98,6 +98,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'woocommerce_checkout_process', array( $this, 'angelleye_paypal_express_checkout_process_checkout_fields' ) );
             add_filter('body_class', array($this, 'add_body_classes'));
             add_action('http_api_curl', array($this, 'http_api_curl_ex_add_curl_parameter'), 10, 3);
+            add_filter( "pre_option_woocommerce_paypal_express_settings", array($this, 'angelleye_express_checkout_decrypt_gateway_api'), 10, 1);
             $this->customer_id;
         }
 
@@ -1550,6 +1551,24 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function woo_compatibility_notice() {
             echo '<div class="error"><p>' . __('PayPal for WooCommerce requires WooCommerce version 2.6 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce') . '</p></div>';
+        }
+        
+        public function angelleye_express_checkout_decrypt_gateway_api($bool) {
+            global $wpdb;
+            $row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings' ) );
+            $woocommerce_paypal_express_settings = maybe_unserialize($row->option_value);
+            if( !empty($row->option_value) && !empty($woocommerce_paypal_express_settings['is_encrypt'])) {
+                $express_checkout_setting_key_array = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
+                foreach ($express_checkout_setting_key_array as $express_checkout_setting_key => $express_checkout_setting_value) {
+                    if( !empty( $woocommerce_paypal_express_settings[$express_checkout_setting_value]) ) {
+                        $woocommerce_paypal_express_settings[$express_checkout_setting_value] = AngellEYE_Utility::crypting($woocommerce_paypal_express_settings[$express_checkout_setting_value], $action = 'd');
+                    }
+                }
+                return $woocommerce_paypal_express_settings;
+            } else {
+                return $bool;
+            }
+        
         }
     }
 }
