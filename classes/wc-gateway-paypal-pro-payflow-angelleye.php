@@ -1024,7 +1024,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         }
     }
     
-    public function angelleye_paypal_advanced_encrypt_gateway_api($settings) {
+    public function angelleye_paypal_pro_payflow_encrypt_gateway_api($settings) {
         if( !empty($settings['is_encrypt']) ) {
             $gateway_settings_keys = array('sandbox_paypal_vendor', 'sandbox_paypal_password', 'sandbox_paypal_user', 'sandbox_paypal_partner', 'paypal_vendor', 'paypal_password', 'paypal_user', 'paypal_partner');
             foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
