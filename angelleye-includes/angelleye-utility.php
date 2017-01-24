@@ -96,6 +96,9 @@ class AngellEYE_Utility {
     public function angelleye_woocommerce_order_actions($order_actions = array()) {
         global $post;
         $order_id = $post->ID;
+        if (!is_object($order_id)) {
+            $order = wc_get_order($order);
+        }
         $paypal_payment_action = array();
         $this->payment_method = get_post_meta($order_id, '_payment_method', true);
         $payment_action = get_post_meta($order_id, '_payment_action', true);
@@ -117,7 +120,7 @@ class AngellEYE_Utility {
                                     return $paypal_payment_action;
                                 } else {
                                     $paypal_payment_action = array('DoCapture' => 'Capture Authorization', 'DoVoid' => 'Void Authorization', 'DoAuthorization' => 'Authorization');
-                                    if ($this->total_Completed_DoAuthorization == $this->total_Pending_DoAuthorization || $this->total_Pending_DoAuthorization == 0 || $this->total_Pending_DoAuthorization == $this->total_DoCapture) {
+                                    if ($this->total_Completed_DoAuthorization == $this->total_Pending_DoAuthorization || $this->total_Pending_DoAuthorization == 0 || $this->total_Pending_DoAuthorization == $this->total_DoCapture || $this->total_DoCapture == $order->get_total() - $order->get_total_refunded()) {
                                         unset($paypal_payment_action['DoCapture']);
                                     }
                                     if ($this->total_Pending_DoAuthorization == 0 && $this->total_Completed_DoAuthorization > 0 || $this->total_Pending_DoAuthorization == $this->total_DoCapture) {
@@ -138,7 +141,7 @@ class AngellEYE_Utility {
                                 if (!is_object($order_id)) {
                                     $order = wc_get_order($order_id);
                                 }
-                                if ($order->order_total == $this->total_DoVoid || $this->total_Completed_DoAuthorization == $order->order_total || $order->order_total == $this->total_DoCapture) {
+                                if ($order->order_total == $this->total_DoVoid || $this->total_Completed_DoAuthorization == $order->order_total || $order->order_total == $this->total_DoCapture || $this->total_DoCapture == $order->get_total() - $order->get_total_refunded()) {
                                     unset($paypal_payment_action['DoCapture']);
                                     unset($paypal_payment_action['DoVoid']);
                                 }
@@ -168,7 +171,7 @@ class AngellEYE_Utility {
                                 if (!is_object($order_id)) {
                                     $order = wc_get_order($order_id);
                                 }
-                                if ($order->order_total == $this->total_DoVoid || $this->total_Completed_DoAuthorization == $order->order_total || $this->total_DoCapture == $order->order_total) {
+                                if ($order->get_total() == $this->total_DoVoid || $this->total_Completed_DoAuthorization == $order->get_total() - $order->get_total_refunded() || $this->total_DoCapture == $order->get_total() - $order->get_total_refunded()) {
                                     unset($paypal_payment_action['DoCapture']);
                                     unset($paypal_payment_action['DoVoid']);
                                 }
@@ -856,7 +859,7 @@ class AngellEYE_Utility {
                 <tbody>
                     <tr>
                         <td><?php echo __('Order Total:', 'paypal-for-woocommerce'); ?></td>
-                        <td><?php echo get_woocommerce_currency_symbol() .  self::round($order->order_total - $order->get_total_refunded()); ?></td>
+                        <td><?php echo $order->get_formatted_order_total(); ?></td>
                     </tr>
                     <tr>
                         <td><?php echo __('Total Capture:', 'paypal-for-woocommerce'); ?></td>
@@ -1017,7 +1020,7 @@ class AngellEYE_Utility {
             if (($this->max_authorize_amount <= $this->total_DoVoid) || ($this->total_Pending_DoAuthorization == 0 && $this->total_Completed_DoAuthorization == 0 && $this->total_DoVoid == $order->order_total)) {
                 $order->update_status('cancelled');
             }
-            if ($order->order_total <= $this->total_Completed_DoAuthorization && $this->total_Pending_DoAuthorization == 0) {
+            if ($order->get_total() - $order->get_total_refunded() <= $this->total_Completed_DoAuthorization && $this->total_Pending_DoAuthorization == 0) {
                 do_action( 'woocommerce_order_status_pending_to_processing', $order->id );
                 $order->payment_complete($_first_transaction_id);
                 do_action('woocommerce_checkout_order_processed', $order->id, $posted = array());
