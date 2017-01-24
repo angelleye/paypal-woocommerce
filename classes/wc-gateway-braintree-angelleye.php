@@ -44,6 +44,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->debug = isset($this->settings['debug']) && $this->settings['debug'] == 'yes' ? true : false;
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
         if ($this->enable_braintree_drop_in) {
             add_action('wp_enqueue_scripts', array($this, 'payment_scripts'), 0);

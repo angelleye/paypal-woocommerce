@@ -50,6 +50,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_notices', array($this, 'checks'));
         add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_credit_card_rest_credit_card_form_fields'), 10, 2);
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_credit_card_rest_encrypt_gateway_api'), 10, 1);
         $this->customer_id;
     }
 

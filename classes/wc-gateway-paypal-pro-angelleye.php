@@ -141,7 +141,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         /* 2.0.0 */
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_pro_encrypt_gateway_api'), 10, 1);
         if ($this->enable_cardholder_first_last_name) {
             add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
         }
@@ -1452,7 +1452,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         }
     }
     
-    public function angelleye_paypal_advanced_encrypt_gateway_api($settings) {
+    public function angelleye_paypal_pro_encrypt_gateway_api($settings) {
         if( !empty($settings['is_encrypt']) ) {
             $gateway_settings_keys = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
             foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
