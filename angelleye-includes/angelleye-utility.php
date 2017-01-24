@@ -255,7 +255,13 @@ class AngellEYE_Utility {
     public function pfw_do_capture($order, $transaction_id = null, $capture_total = null) {
         $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('DoCapture API call');
-        $AMT = $this->get_amount_by_transaction_id($transaction_id);
+
+        if($capture_total == null)
+            $AMT = $this->get_amount_by_transaction_id($transaction_id);
+        else
+            $AMT = $capture_total;
+
+        $AMT = self::round($AMT - $order->get_total_refunded());
         $DataArray = array(
             'AUTHORIZATIONID' => $transaction_id,
             'AMT' => $AMT,
@@ -850,7 +856,7 @@ class AngellEYE_Utility {
                 <tbody>
                     <tr>
                         <td><?php echo __('Order Total:', 'paypal-for-woocommerce'); ?></td>
-                        <td><?php echo get_woocommerce_currency_symbol() . $order->order_total; ?></td>
+                        <td><?php echo get_woocommerce_currency_symbol() .  self::round($order->order_total - $order->get_total_refunded()); ?></td>
                     </tr>
                     <tr>
                         <td><?php echo __('Total Capture:', 'paypal-for-woocommerce'); ?></td>
