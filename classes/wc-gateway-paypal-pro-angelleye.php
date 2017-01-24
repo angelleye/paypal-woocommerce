@@ -74,21 +74,21 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         // Load the settings.
         $this->init_settings();
         // Get setting values
-        $this->title = $this->settings['title'];
-        $this->description = $this->settings['description'];
-        $this->enabled = $this->settings['enabled'];
-        $this->api_username = $this->settings['api_username'];
-        $this->api_password = $this->settings['api_password'];
-        $this->api_signature = $this->settings['api_signature'];
-        $this->testmode = $this->settings['testmode'];
-        $this->invoice_id_prefix = isset($this->settings['invoice_id_prefix']) ? $this->settings['invoice_id_prefix'] : '';
-        $this->error_email_notify = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
-        $this->error_display_type = isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
-        $this->enable_3dsecure = isset($this->settings['enable_3dsecure']) && $this->settings['enable_3dsecure'] == 'yes' ? true : false;
-        $this->liability_shift = isset($this->settings['liability_shift']) && $this->settings['liability_shift'] == 'yes' ? true : false;
-        $this->debug = isset($this->settings['debug']) && $this->settings['debug'] == 'yes' ? true : false;
-        $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
-        $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
+        $this->title = $this->get_option('title');
+        $this->description = $this->get_option('description');
+        $this->enabled = $this->get_option('enabled');
+        $this->api_username = $this->get_option('api_username');
+        $this->api_password = $this->get_option('api_password');
+        $this->api_signature = $this->get_option('api_signature');
+        $this->testmode = $this->get_option('testmode');
+        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
+        $this->error_email_notify = $this->get_option('error_email_notify');
+        $this->error_display_type = $this->get_option('error_display_type'); 
+        $this->enable_3dsecure = 'yes' === $this->get_option('enable_3dsecure', 'no');
+        $this->liability_shift = 'yes' === $this->get_option('liability_shift', 'no');
+        $this->debug = 'yes' === $this->get_option('debug', 'no'); 
+        $this->payment_action = $this->get_option('payment_action', 'Sale');
+        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->notifyurl = '';
@@ -101,9 +101,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->enable_cardholder_first_last_name = isset($this->settings['enable_cardholder_first_last_name']) && $this->settings['enable_cardholder_first_last_name'] == 'yes' ? true : false;
         // 3DS
         if ($this->enable_3dsecure) {
-            $this->centinel_pid = $this->settings['centinel_pid'];
-            $this->centinel_mid = $this->settings['centinel_mid'];
-            $this->centinel_pwd = $this->settings['centinel_pwd'];
+            $this->centinel_pid = $this->get_option('centinel_pid');
+            $this->centinel_mid = $this->get_option('centinel_mid');
+            $this->centinel_pwd = $this->get_option('centinel_pwd');
             if (empty($this->centinel_pid) || empty($this->centinel_mid) || empty($this->centinel_pwd))
                 $this->enable_3dsecure = false;
             $this->centinel_url = $this->testmode == "no" ? $this->liveurl_3ds : $this->testurl_3ds;
@@ -126,9 +126,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
 
         if ($this->testmode == 'yes') {
-            $this->api_username = $this->settings['sandbox_api_username'];
-            $this->api_password = $this->settings['sandbox_api_password'];
-            $this->api_signature = $this->settings['sandbox_api_signature'];
+            $this->api_username = $this->get_option('sandbox_api_username');
+            $this->api_password = $this->get_option('sandbox_api_password');
+            $this->api_signature = $this->get_option('sandbox_api_signature');
         }
         // Maestro
         if (!$this->enable_3dsecure) {

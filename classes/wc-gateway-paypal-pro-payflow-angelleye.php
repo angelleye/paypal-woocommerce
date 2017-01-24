@@ -30,22 +30,20 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->init_settings();
 
             // Get setting values
-            $this->title          		= $this->settings['title'];
-            $this->description    		= $this->settings['description'];
-            $this->enabled        		= $this->settings['enabled'];
-
-            $this->paypal_vendor  		= $this->settings['paypal_vendor'];
-            $this->paypal_partner 		= ! empty( $this->settings['paypal_partner'] ) ? $this->settings['paypal_partner'] : 'PayPal';
-            $this->paypal_password 		= $this->settings['paypal_password'];
-            $this->paypal_user     		= ! empty( $this->settings['paypal_user'] ) ? $this->settings['paypal_user'] : $this->paypal_vendor;
-
-            $this->testmode        		= $this->settings['testmode'];
-            $this->invoice_id_prefix    = isset( $this->settings['invoice_id_prefix'] ) ? $this->settings['invoice_id_prefix'] : '';
-            $this->debug		   		= isset( $this->settings['debug'] ) && $this->settings['debug'] == 'yes' ? true : false;
-            $this->error_email_notify   = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
-            $this->error_display_type 	= isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
-            $this->send_items			= isset( $this->settings['send_items'] ) && $this->settings['send_items'] == 'no' ? false : true;
-            $this->payment_action       = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
+            $this->title = $this->get_option('title');
+            $this->description = $this->get_option('description');
+            $this->enabled = $this->get_option('enabled');
+            $this->paypal_vendor = $this->get_option('paypal_vendor');
+            $this->paypal_partner = $this->get_option('paypal_partner', 'PayPal');
+            $this->paypal_password = $this->settings['paypal_password'];
+            $this->paypal_user = $this->get_option('paypal_user', $this->paypal_vendor); 
+            $this->testmode = $this->get_option('testmode', 'no');
+            $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
+            $this->debug = 'yes' === $this->get_option('debug', 'no'); 
+            $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
+            $this->error_display_type = $this->get_option('error_display_type', 'no');
+            $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
+            $this->payment_action = $this->get_option('payment_action', 'Sale'); 
 
             //fix ssl for image icon
             $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__))));
@@ -54,10 +52,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $this->icon = apply_filters('woocommerce_paypal_pro_payflow_icon', $this->icon);
             if ($this->testmode=="yes") {
-                $this->paypal_vendor   	= $this->settings['sandbox_paypal_vendor'];
-                $this->paypal_partner  	= ! empty( $this->settings['sandbox_paypal_partner'] ) ? $this->settings['sandbox_paypal_partner'] : 'PayPal';
-                $this->paypal_password 	= $this->settings['sandbox_paypal_password'];
-                $this->paypal_user     	= ! empty( $this->settings['sandbox_paypal_user'] ) ? $this->settings['sandbox_paypal_user'] : $this->paypal_vendor;
+                $this->paypal_vendor = $this->get_option('sandbox_paypal_vendor');
+                $this->paypal_partner = $this->get_option('sandbox_paypal_partner', 'PayPal');
+                $this->paypal_password = $this->get_option('sandbox_paypal_password');
+                $this->paypal_user = $this->get_option('sandbox_paypal_user', $this->paypal_vendor);
             }
 
             $this->supports = array(
@@ -70,7 +68,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 array_push($this->supports, "tokenization");
             }
             $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
-            $this->enable_cardholder_first_last_name = isset($this->settings['enable_cardholder_first_last_name']) && $this->settings['enable_cardholder_first_last_name'] == 'yes' ? true : false;
+            $this->enable_cardholder_first_last_name = 'yes' === $this->get_option('enable_cardholder_first_last_name', 'no'); 
             $this->is_encrypt = $this->get_option('is_encrypt', 'no');
             /* 1.6.6 */
             add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );

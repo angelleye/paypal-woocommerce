@@ -34,39 +34,36 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if($this->enable_tokenized_payments == 'yes') {
             array_push($this->supports, "tokenization");
         }
-        $this->enabled = $this->settings['enabled'];
-        $this->title = $this->settings['title'];
-        $this->description = $this->settings['description'];
-        
-        $this->testmode = isset($this->settings['testmode']) ? $this->settings['testmode'] : 'yes';
-        $this->debug = isset($this->settings['debug']) ? $this->settings['debug'] : 'no'; 
-        $this->error_email_notify = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
-        $this->invoice_id_prefix = isset($this->settings['invoice_id_prefix']) ? $this->settings['invoice_id_prefix'] : '';
-        //$this->checkout_with_pp_button = $this->settings['checkout_with_pp_button'];
-        //$this->hide_checkout_button    = $this->settings['hide_checkout_button'];
-        $this->show_on_checkout = isset($this->settings['show_on_checkout']) ? $this->settings['show_on_checkout'] : 'both';
-        $this->paypal_account_optional = isset($this->settings['paypal_account_optional']) ? $this->settings['paypal_account_optional'] : '';
-        $this->error_display_type = isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
-        $this->landing_page = isset($this->settings['landing_page']) ? $this->settings['landing_page'] : '';
-        $this->checkout_logo = isset($this->settings['checkout_logo']) ? $this->settings['checkout_logo'] : '';
-        $this->checkout_logo_hdrimg = isset($this->settings['checkout_logo_hdrimg']) ? $this->settings['checkout_logo_hdrimg'] : '';
-        $this->show_paypal_credit = isset($this->settings['show_paypal_credit']) ? $this->settings['show_paypal_credit'] : '';
-        $this->brand_name = isset($this->settings['brand_name']) ? $this->settings['brand_name'] : '';
-        $this->customer_service_number = isset($this->settings['customer_service_number']) ? $this->settings['customer_service_number'] : '';
-        $this->gift_wrap_enabled = isset($this->settings['gift_wrap_enabled']) ? $this->settings['gift_wrap_enabled'] : '';
-        $this->gift_message_enabled = isset($this->settings['gift_message_enabled']) ? $this->settings['gift_message_enabled'] : '';
-        $this->gift_receipt_enabled = isset($this->settings['gift_receipt_enabled']) ? $this->settings['gift_receipt_enabled'] : '';
-        $this->gift_wrap_name = isset($this->settings['gift_wrap_name']) ? $this->settings['gift_wrap_name'] : '';
-        $this->gift_wrap_amount = isset($this->settings['gift_wrap_amount']) ? $this->settings['gift_wrap_amount'] : '';
-        $this->use_wp_locale_code = isset($this->settings['use_wp_locale_code']) ? $this->settings['use_wp_locale_code'] : '';
-        $this->angelleye_skip_text = isset($this->settings['angelleye_skip_text']) ? $this->settings['angelleye_skip_text'] : '';
-        $this->skip_final_review = isset($this->settings['skip_final_review']) ? $this->settings['skip_final_review'] : '';
+        $this->enabled = $this->get_option('enabled');
+        $this->title = $this->get_option('title');
+        $this->description = $this->get_option('description');
+        $this->testmode = $this->get_option('testmode', 'yes');
+        $this->debug = $this->get_option('debug', 'no');
+        $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no'); 
+        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
+        $this->show_on_checkout = $this->get_option('show_on_checkout', 'top');
+        $this->paypal_account_optional = $this->get_option('paypal_account_optional', 'no');
+        $this->error_display_type = $this->get_option('error_display_type', 'detailed');
+        $this->landing_page = $this->get_option('landing_page', 'login'); 
+        $this->checkout_logo = $this->get_option('checkout_logo', '');
+        $this->checkout_logo_hdrimg = $this->get_option('checkout_logo_hdrimg', '');
+        $this->show_paypal_credit = $this->get_option('show_paypal_credit', 'yes');
+        $this->brand_name = $this->get_option('brand_name', get_bloginfo('name'));
+        $this->customer_service_number = $this->get_option('customer_service_number', '');
+        $this->gift_wrap_enabled = $this->get_option('gift_wrap_enabled', '');
+        $this->gift_message_enabled = $this->get_option('gift_message_enabled', '');
+        $this->gift_receipt_enabled = $this->get_option('gift_receipt_enabled', '');
+        $this->gift_wrap_name = $this->get_option('gift_wrap_name', '');
+        $this->gift_wrap_amount = $this->get_option('gift_wrap_amount', '');
+        $this->use_wp_locale_code = $this->get_option('use_wp_locale_code', 'yes');
+        $this->angelleye_skip_text = $this->get_option('angelleye_skip_text', 'Skip the forms and pay faster with PayPal!');
+        $this->skip_final_review = $this->get_option('skip_final_review', 'no'); 
         $this->disable_term = $this->get_option('disable_term', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
-        $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
-        $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
+        $this->billing_address = $this->get_option('billing_address', 'no');
+        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->order_cancellations = $this->get_option('order_cancellations', 'disabled');
-        $this->email_notify_order_cancellations = isset($this->settings['email_notify_order_cancellations']) && $this->settings['email_notify_order_cancellations'] == 'yes' ? true : false;
+        $this->email_notify_order_cancellations = 'yes' === $this->get_option('email_notify_order_cancellations', 'no');
         $this->customer_id = get_current_user_id();
         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->notifyurl = '';
@@ -85,21 +82,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($this->testmode == 'yes') {
             $this->API_Endpoint = "https://api-3t.sandbox.paypal.com/nvp";
             $this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
-            $this->api_username = $this->settings['sandbox_api_username'];
-            $this->api_password = $this->settings['sandbox_api_password'];
-            $this->api_signature = $this->settings['sandbox_api_signature'];
+            $this->api_username = $this->get_option('sandbox_api_username');
+            $this->api_password = $this->get_option('sandbox_api_password');
+            $this->api_signature = $this->get_option('sandbox_api_signature');
         } else {
             $this->API_Endpoint = "https://api-3t.paypal.com/nvp";
             $this->PAYPAL_URL = "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=";
-            $this->api_username = $this->settings['api_username'];
-            $this->api_password = $this->settings['api_password'];
-            $this->api_signature = $this->settings['api_signature'];
+            $this->api_username = $this->get_option('api_username');
+            $this->api_password = $this->get_option('api_password');
+            $this->api_signature = $this->get_option('api_signature');
         }
         $this->version = "64";  // PayPal SetExpressCheckout API version
         
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         
-        $this->page_style = ( isset( $this->settings['page_style'] ) ) ? $this->settings['page_style'] : '';
+        $this->page_style = $this->get_option('page_style', ''); 
                 
         // Actions
         add_action('woocommerce_api_' . strtolower(get_class()), array($this, 'paypal_express_checkout'), 12);
@@ -459,7 +456,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'generic' => __('Generic', 'paypal-for-woocommerce')
                 ),
                 'description' => __('Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
-									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce')
+									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce'),
+                'default' => 'detailed',
             ),
             'show_paypal_credit' => array(
                 'title' => __('Enable PayPal Credit', 'paypal-for-woocommerce'),

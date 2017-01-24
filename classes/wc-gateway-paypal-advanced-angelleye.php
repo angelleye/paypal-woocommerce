@@ -30,32 +30,29 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             array_push($this->supports, "tokenization");
         }
         // Define user set variables
-        $this->title = $this->settings['title'];
-        $this->description = $this->settings['description'];
-        $this->testmode = $this->settings['testmode'];
-        $this->loginid = $this->settings['loginid'];
-        $this->resellerid = $this->settings['resellerid'];
-        $this->transtype = $this->settings['transtype'];
-        $this->password = $this->settings['password'];
-        $this->debug = $this->settings['debug'];
-        $this->invoice_prefix = $this->settings['invoice_prefix'];
-        $this->page_collapse_bgcolor = $this->settings['page_collapse_bgcolor'];
-        $this->page_collapse_textcolor = $this->settings['page_collapse_textcolor'];
-        $this->page_button_bgcolor = $this->settings['page_button_bgcolor'];
-        $this->page_button_textcolor = $this->settings['page_button_textcolor'];
-        $this->label_textcolor = $this->settings['label_textcolor'];
+        $this->title = $this->get_option('title');
+        $this->description = $this->get_option('description');
+        $this->testmode = $this->get_option('testmode', 'yes');
+        $this->loginid = $this->get_option('loginid');
+        $this->resellerid = $this->get_option('resellerid');
+        $this->transtype = $this->get_option('transtype');
+        $this->password = $this->get_option('password');
+        $this->debug = $this->get_option('debug');
+        $this->invoice_prefix = $this->get_option('invoice_prefix');
+        $this->page_collapse_bgcolor = $this->get_option('page_collapse_bgcolor');
+        $this->page_collapse_textcolor = $this->get_option('page_collapse_textcolor');
+        $this->page_button_bgcolor = $this->get_option('page_button_bgcolor');
+        $this->page_button_textcolor = $this->get_option('page_button_textcolor');
+        $this->label_textcolor = $this->get_option('label_textcolor');
         $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
+        $this->loginid = $this->get_option('loginid');
+        $this->user = $this->get_option('user', $this->loginid);
+        $this->mobilemode = $this->get_option('mobilemode', 'yes');
         if (is_ssl()) {
             $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
         $this->icon = apply_filters('woocommerce_paypal_advanced_icon', $this->icon);
-
-        if (!isset($this->settings['mobilemode']))
-            $this->mobilemode = 'yes';
-        else
-            $this->mobilemode = $this->settings['mobilemode'];
-
         switch ($this->settings['layout']) {
             case 'A': $this->layout = 'TEMPLATEA';
                 break;
@@ -65,7 +62,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 break;
         }
 
-        $this->user = $this->settings['user'] == '' ? $this->settings['loginid'] : $this->settings['user'];
+        
         $this->hostaddr = $this->testmode == 'yes' ? $this->testurl : $this->liveurl;
 
         if ($this->debug == 'yes')
