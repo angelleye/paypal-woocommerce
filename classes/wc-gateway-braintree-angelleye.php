@@ -42,6 +42,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->enable_braintree_drop_in = $this->get_option('enable_braintree_drop_in') === "yes" ? true : false;
         $this->merchant_account_id = $this->sandbox == 'no' ? $this->get_option('merchant_account_id') : $this->get_option('sandbox_merchant_account_id');
         $this->debug = isset($this->settings['debug']) && $this->settings['debug'] == 'yes' ? true : false;
+        $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         $this->response = '';
         if ($this->enable_braintree_drop_in) {
@@ -271,6 +272,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'description' => sprintf( __( 'Log PayPal/Braintree events, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'braintree' ) )
+            ),
+            'is_encrypt' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'label' => __('', 'paypal-for-woocommerce'),
+                'type' => 'hidden',
+                'default' => 'yes',
+                'class' => ''
             )
         );
     }
@@ -1169,5 +1177,17 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 return $result->customer->id;
             }
         }
+    }
+    
+    public function angelleye_braintree_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_key_array = array('sandbox_public_key', 'sandbox_private_key', 'sandbox_merchant_id', 'sandbox_merchant_account_id', 'public_key', 'private_key', 'merchant_id', 'merchant_account_id');
+            foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
     }
 }

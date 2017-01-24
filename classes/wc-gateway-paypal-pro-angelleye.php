@@ -89,7 +89,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->debug = isset($this->settings['debug']) && $this->settings['debug'] == 'yes' ? true : false;
         $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
         $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
-         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
+        $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
+        $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->notifyurl = '';
         if($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl'); 
@@ -330,6 +331,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'description' => sprintf( __( 'Log PayPal events, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'paypal-pro' ) )
+            ),
+            'is_encrypt' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'label' => __('', 'paypal-for-woocommerce'),
+                'type' => 'hidden',
+                'default' => 'yes',
+                'class' => ''
             )
         );
         $this->form_fields = apply_filters('angelleye_pc_form_fields', $this->form_fields);
@@ -1442,5 +1450,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $redirect_url = wc_get_account_endpoint_url( 'payment-methods' );
             $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
         }
+    }
+    
+    public function angelleye_paypal_advanced_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_keys = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
+            foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
     }
 }

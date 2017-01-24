@@ -640,7 +640,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'hidden',
                 'default' => 'yes',
                 'class' => ''
-            ),
+            )
                 /* 'Locale' => array(
                   'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                   'type' => 'select',
@@ -3012,10 +3012,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
     public function angelleye_express_checkout_encrypt_gateway_api($settings) {
         if( !empty($settings['is_encrypt']) ) {
-            $express_checkout_setting_key_array = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
-            foreach ($express_checkout_setting_key_array as $express_checkout_setting_key => $express_checkout_setting_value) {
-                if( !empty( $settings[$express_checkout_setting_value]) ) {
-                    $settings[$express_checkout_setting_value] = AngellEYE_Utility::crypting($settings[$express_checkout_setting_value], $action = 'e');
+            $gateway_settings_keys = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
+            foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
                 }
             }
         }

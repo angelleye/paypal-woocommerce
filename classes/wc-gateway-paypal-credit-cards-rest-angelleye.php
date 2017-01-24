@@ -38,6 +38,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $this->testmode = 'yes' === $this->get_option('testmode', 'no');
         $this->mode = $this->testmode == 'yes' ? "SANDBOX" : "LIVE";
         $this->debug = 'yes' === $this->get_option('debug', 'no');
+        $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         if ($this->testmode) {
             $this->rest_client_id = $this->get_option('rest_client_id_sandbox', false);
             $this->rest_secret_id = $this->get_option('rest_secret_id_sandbox', false);
@@ -272,5 +273,17 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $card = $this->paypal_rest_api->get_posted_card();
         $result = $this->paypal_rest_api->save_credit_card($card);
         return $result;
+    }
+    
+    public function angelleye_paypal_credit_card_rest_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_key_array = array('rest_client_id_sandbox', 'rest_secret_id_sandbox', 'rest_client_id', 'rest_secret_id');
+            foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
     }
 }
