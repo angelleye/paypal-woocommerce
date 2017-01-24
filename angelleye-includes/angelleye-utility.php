@@ -682,6 +682,13 @@ class AngellEYE_Utility {
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'description' => sprintf(__('Log PayPal events, such as Secured Token requests, inside <code>%s</code>', 'paypal-for-woocommerce'), wc_get_log_file_path('paypal_credit_card_rest')),
+            ),
+            'is_encrypt' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'label' => __('', 'paypal-for-woocommerce'),
+                'type' => 'hidden',
+                'default' => 'yes',
+                'class' => ''
             )
         );
     }
@@ -708,15 +715,15 @@ class AngellEYE_Utility {
     public static function is_express_checkout_credentials_is_set() {
         $pp_settings = get_option('woocommerce_paypal_express_settings');
         $testmode = isset($pp_settings['testmode']) ? $pp_settings['testmode'] : 'yes';
-        $enabled = $pp_settings['enabled'];
+        $enabled = (isset($pp_settings['enabled']) && $pp_settings['enabled'] == 'yes') ? 'yes' : 'no';
         if ($testmode == 'yes') {
-            $api_username = $pp_settings['sandbox_api_username'];
-            $api_password = $pp_settings['sandbox_api_password'];
-            $api_signature = $pp_settings['sandbox_api_signature'];
+            $api_username = isset($pp_settings['sandbox_api_username']) ? $pp_settings['sandbox_api_username'] : '';
+            $api_password = isset($pp_settings['sandbox_api_password']) ? $pp_settings['sandbox_api_password'] : '';
+            $api_signature = isset($pp_settings['sandbox_api_signature']) ? $pp_settings['sandbox_api_signature'] : '';
         } else {
-            $api_username = $pp_settings['api_username'];
-            $api_password = $pp_settings['api_password'];
-            $api_signature = $pp_settings['api_signature'];
+            $api_username = isset($pp_settings['api_username']) ? $pp_settings['api_username'] : '';
+            $api_password = isset($pp_settings['api_password']) ? $pp_settings['api_password'] : '';
+            $api_signature = isset($pp_settings['api_signature']) ? $pp_settings['api_signature'] : '';
         }
         if ('yes' != $enabled) {
             return false;
@@ -1227,5 +1234,21 @@ class AngellEYE_Utility {
                 $this->payment_method = get_post_meta($results[0]->post_id, '_payment_method', true);
             }
         }
+    }
+    
+    public static function crypting( $string, $action = 'e' ) {
+        $secret_key = AUTH_SALT;
+        $secret_iv = SECURE_AUTH_SALT;
+        $output = false;
+        $encrypt_method = "AES-256-CBC";
+        $key = hash( 'sha256', $secret_key );
+        $iv = substr( hash( 'sha256', $secret_iv ), 0, 16 );
+        if( $action == 'e' ) {
+            $output = base64_encode( openssl_encrypt( $string, $encrypt_method, $key, 0, $iv ) );
+        }
+        else if( $action == 'd' ){
+            $output = openssl_decrypt( base64_decode( $string ), $encrypt_method, $key, 0, $iv );
+        }
+        return $output;
     }
 }

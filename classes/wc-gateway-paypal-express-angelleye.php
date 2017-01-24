@@ -37,9 +37,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->enabled = $this->settings['enabled'];
         $this->title = $this->settings['title'];
         $this->description = $this->settings['description'];
-        $this->api_username = $this->settings['api_username'];
-        $this->api_password = $this->settings['api_password'];
-        $this->api_signature = $this->settings['api_signature'];
+        
         $this->testmode = isset($this->settings['testmode']) ? $this->settings['testmode'] : 'yes';
         $this->debug = isset($this->settings['debug']) ? $this->settings['debug'] : 'no'; 
         $this->error_email_notify = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
@@ -72,6 +70,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->customer_id = get_current_user_id();
         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->notifyurl = '';
+        $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         if($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl'); 
             if( isset($this->notifyurl) && !empty($this->notifyurl)) {
@@ -82,15 +81,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($this->not_us){
             $this->show_paypal_credit = 'no';
         }
-
-        /*
-          ' Define the PayPal Redirect URLs.
-          ' 	This is the URL that the buyer is first sent to do authorize payment with their paypal account
-          ' 	change the URL depending if you are testing on the sandbox or the live PayPal site
-          '
-          ' For the sandbox, the URL is       https://www.sandbox.paypal.com/webscr&cmd=_express-checkout&token=
-          ' For the live site, the URL is     https://www.paypal.com/webscr&cmd=_express-checkout&token=
-         */
+        
         if ($this->testmode == 'yes') {
             $this->API_Endpoint = "https://api-3t.sandbox.paypal.com/nvp";
             $this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
@@ -100,6 +91,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->API_Endpoint = "https://api-3t.paypal.com/nvp";
             $this->PAYPAL_URL = "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=";
+            $this->api_username = $this->settings['api_username'];
+            $this->api_password = $this->settings['api_password'];
+            $this->api_signature = $this->settings['api_signature'];
         }
         $this->version = "64";  // PayPal SetExpressCheckout API version
         
@@ -114,7 +108,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         //Save settings
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
         
         if ($this->enabled == 'yes' && ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both'))
             add_action('woocommerce_before_checkout_form', array($this, 'checkout_message'), 5);
@@ -640,7 +634,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'class' => 'email_notify_order_cancellations'
             ),
-            
+            'is_encrypt' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'label' => __('', 'paypal-for-woocommerce'),
+                'type' => 'hidden',
+                'default' => 'yes',
+                'class' => ''
+            )
                 /* 'Locale' => array(
                   'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                   'type' => 'select',
@@ -3010,6 +3010,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
         }
     }
-    
-    
+    public function angelleye_express_checkout_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_keys = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
+            foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
+    }
 }

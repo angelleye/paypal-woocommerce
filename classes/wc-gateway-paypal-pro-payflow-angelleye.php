@@ -71,7 +71,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
             $this->enable_cardholder_first_last_name = isset($this->settings['enable_cardholder_first_last_name']) && $this->settings['enable_cardholder_first_last_name'] == 'yes' ? true : false;
-
+            $this->is_encrypt = $this->get_option('is_encrypt', 'no');
             /* 1.6.6 */
             add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
 
@@ -79,7 +79,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
             add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_payflow_credit_card_form_fields'), 10, 2);
-
+            add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_pro_payflow_encrypt_gateway_api'), 10, 1);
             if ($this->enable_cardholder_first_last_name) {
                 add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
             }
@@ -250,6 +250,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'description' => __('Display card holder first and last name in credit card form.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
+            'is_encrypt' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'label' => __('', 'paypal-for-woocommerce'),
+                'type' => 'hidden',
+                'default' => 'yes',
+                'class' => ''
+            )
 		);
         $this->form_fields = apply_filters( 'angelleye_fc_form_fields', $this->form_fields );
     }
@@ -1015,5 +1022,17 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             wp_redirect( wc_get_account_endpoint_url( 'payment-methods' ) );
             exit();
         }
+    }
+    
+    public function angelleye_paypal_pro_payflow_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_keys = array('sandbox_paypal_vendor', 'sandbox_paypal_password', 'sandbox_paypal_user', 'sandbox_paypal_partner', 'paypal_vendor', 'paypal_password', 'paypal_user', 'paypal_partner');
+            foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
     }
 }
