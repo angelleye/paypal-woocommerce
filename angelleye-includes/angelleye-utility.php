@@ -841,6 +841,36 @@ class AngellEYE_Utility {
                 <?php $this->angelleye_express_checkout_transaction_capture_dropdownbox($post->ID); ?>
                 <input type="submit" id="angelleye_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
                 <br/><br/><br/>
+                <script>
+                    //Asking confirm for the capture
+                    jQuery('#angelleye_payment_submit_button').on('click', function(){
+                        var selected = jQuery('#angelleye_payment_action option:checked').val();
+                        if(selected == 'DoCapture') {
+                            var amt = jQuery('.angelleye_order_action_table:first tr:first td:last').text();
+
+                            return confirm('You are capuring: ' + amt + '. Are you sure?');
+                        }
+                    })
+
+                    MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+                    var observer = new MutationObserver(function(mutations, observer) {
+                        for(var i = 0, len = mutations.length; i < len; i++) {
+                            //Updating the total order action table field
+                            if(mutations[i].target.className == 'inside' && mutations[i].addedNodes.length > 0) {
+                                var new_amt_with_curr = jQuery('.wc-order-refund-items .wc-order-totals tr td.total .amount:last').text();
+                                jQuery('.angelleye_order_action_table:first tr:first td:last').text(new_amt_with_curr);
+                            }
+                        }
+                    });
+
+                    //Setting an observer to know about total new total amount
+                    jQuery(document).ready(function () {
+                        var target = document.getElementById('woocommerce-order-items').getElementsByClassName('inside')[0];
+                        observer.observe(target, {
+                            childList: true,
+                        });
+                    });
+                </script>
                 <?php
             }
             
