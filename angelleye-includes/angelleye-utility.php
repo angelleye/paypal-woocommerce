@@ -854,10 +854,14 @@ class AngellEYE_Utility {
 
                     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
                     var observer = new MutationObserver(function(mutations, observer) {
+                        var currency_symbol = window.woocommerce_admin_meta_boxes.currency_format_symbol;
+                        
                         for(var i = 0, len = mutations.length; i < len; i++) {
                             //Updating the total order action table field
                             if(mutations[i].target.className == 'inside' && mutations[i].addedNodes.length > 0) {
                                 var new_amt_with_curr = jQuery('.wc-order-refund-items .wc-order-totals tr td.total .amount:last').text();
+                                //Adjusting price with paypal-for-woocommerce amount format
+                                new_amt_with_curr = currency_symbol + new_amt_with_curr.replace(currency_symbol, '');
                                 jQuery('.angelleye_order_action_table:first tr:first td:last').text(new_amt_with_curr);
                             }
                         }
