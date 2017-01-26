@@ -842,11 +842,14 @@ class AngellEYE_Utility {
                 <input type="submit" id="angelleye_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
                 <br/><br/><br/>
                 <script>
+                (function($) {
+                    "use strict";
+                    
                     //Asking confirm for the capture
-                    jQuery('#angelleye_payment_submit_button').on('click', function(){
-                        var selected = jQuery('#angelleye_payment_action option:checked').val();
+                    $('#angelleye_payment_submit_button').on('click', function(){
+                        var selected = $('#angelleye_payment_action option:checked').val();
                         if(selected == 'DoCapture') {
-                            var amt = jQuery('.angelleye_order_action_table:first tr:first td:last').text();
+                            var amt = $('.angelleye_order_action_table:first tr:first td:last').text();
 
                             return confirm('You are capuring: ' + amt + '. Are you sure?');
                         }
@@ -859,21 +862,22 @@ class AngellEYE_Utility {
                         for(var i = 0, len = mutations.length; i < len; i++) {
                             //Updating the total order action table field
                             if(mutations[i].target.className == 'inside' && mutations[i].addedNodes.length > 0) {
-                                var new_amt_with_curr = jQuery('.wc-order-refund-items .wc-order-totals tr td.total .amount:last').text();
+                                var new_amt_with_curr = $('.wc-order-refund-items .wc-order-totals tr td.total .amount:last').text();
                                 //Adjusting price with paypal-for-woocommerce amount format
                                 new_amt_with_curr = currency_symbol + new_amt_with_curr.replace(currency_symbol, '');
-                                jQuery('.angelleye_order_action_table:first tr:first td:last').text(new_amt_with_curr);
+                                $('.angelleye_order_action_table:first tr:first td:last').text(new_amt_with_curr);
                             }
                         }
                     });
 
                     //Setting an observer to know about total new total amount
-                    jQuery(document).ready(function () {
+                    $(document).ready(function () {
                         var target = document.getElementById('woocommerce-order-items').getElementsByClassName('inside')[0];
                         observer.observe(target, {
                             childList: true,
                         });
                     });
+                })(jQuery);
                 </script>
                 <?php
             }
