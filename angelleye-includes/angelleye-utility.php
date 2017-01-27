@@ -851,7 +851,7 @@ class AngellEYE_Utility {
                         if(selected == 'DoCapture') {
                             var amt = $('.angelleye_order_action_table:first tr:first td:last').text();
 
-                            return confirm('You are capuring: ' + amt + '. Are you sure?');
+                            return confirm('You are capturing: ' + amt + '. Are you sure?');
                         }
                     })
 
