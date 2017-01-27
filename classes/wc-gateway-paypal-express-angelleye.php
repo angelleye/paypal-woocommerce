@@ -63,6 +63,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->use_wp_locale_code = isset($this->settings['use_wp_locale_code']) ? $this->settings['use_wp_locale_code'] : '';
         $this->angelleye_skip_text = isset($this->settings['angelleye_skip_text']) ? $this->settings['angelleye_skip_text'] : '';
         $this->skip_final_review = isset($this->settings['skip_final_review']) ? $this->settings['skip_final_review'] : '';
+        $this->force_skip_final_review = $this->get_option('force_skip_final_review', 'no');
         $this->disable_term = $this->get_option('disable_term', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
         $this->billing_address = isset($this->settings['billing_address']) ? $this->settings['billing_address'] : 'no';
@@ -133,6 +134,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     */
     public function admin_options() {
         $guest_checkout = get_option('woocommerce_enable_guest_checkout', 'yes');
+        $enable_tokenized_payments = $this->enable_tokenized_payments;
+        $force_skip = $this->force_skip_final_review;
+
         if ( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) ) {
             if($guest_checkout === 'yes') {
                 $display_disable_terms = 'yes';
@@ -147,14 +151,48 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
             <?php $this->generate_settings_html(); ?>
+            
             <script type="text/javascript">
                 var display_disable_terms = "<?php echo $display_disable_terms; ?>";
+                var $final_review = jQuery("#woocommerce_paypal_express_skip_final_review"),
+                    $force_review = jQuery("#woocommerce_paypal_express_force_skip_final_review");
+                    $tokenized_payments = jQuery("#woocommerce_paypal_express_enable_tokenized_payments");
+
+                var init_token = $tokenized_payments.is(':checked');
                 <?php
-                if( $guest_checkout === 'no' ) { ?>
-                    jQuery("#woocommerce_paypal_express_skip_final_review").prop("checked", false);
-                    jQuery("#woocommerce_paypal_express_skip_final_review").attr("disabled", true);
-                <?php } ?>
-                jQuery('#woocommerce_paypal_express_skip_final_review').change(function () {
+                if( $guest_checkout === 'no') { ?>
+                    $final_review.prop("checked", false);
+                    $final_review.attr("disabled", true);
+                <?php } 
+
+                //Init
+                if( $force_skip === 'yes' && $enable_tokenized_payments === 'no' && $guest_checkout === 'no') { ?>
+                    $final_review.prop("checked", true);
+                    $tokenized_payments.attr("disabled", true);
+                    jQuery('.force_final_review_notice').show(); <?php 
+                } else { 
+                    if($enable_tokenized_payments === 'yes' || $guest_checkout === 'yes' ) { ?>
+                        $force_review.attr("disabled", true); <?php
+                    } ?> 
+
+                    jQuery('.force_final_review_notice').hide(); <?php 
+                } ?>            
+                
+                $force_review.change(function () {
+                    if(jQuery(this).is(':checked')) {
+                        $final_review.prop("checked", true);
+                        $tokenized_payments.prop("disabled", true);
+                        $tokenized_payments.prop("checked", false);
+                        jQuery('.force_final_review_notice').show();
+                    } else {
+                        $final_review.prop("checked", false);
+                        $tokenized_payments.prop("disabled", false);
+                        $tokenized_payments.prop("checked", init_token);
+                        jQuery('.force_final_review_notice').hide();
+                    }
+                });
+
+                $final_review.change(function () {
                     disable_term = jQuery('#woocommerce_paypal_express_disable_term').closest('tr');
                     if (jQuery(this).is(':checked')) {
                         if(display_disable_terms === 'yes') {
@@ -553,6 +591,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Skip Final Review', 'paypal-for-woocommerce'),
                 'label' => __('Enables the option to skip the final review page.', 'paypal-for-woocommerce'),
                  'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.') . '<br /><b class="final_review_notice"><span class="guest_checkout_notice">' . $skip_final_review_option_not_allowed_guest_checkout . '</span></b>' . '<b class="final_review_notice"><span class="terms_notice">' . $skip_final_review_option_not_allowed_terms . '</span></b>' . '<b class="final_review_notice"><span class="tokenized_payments_notice">' . $skip_final_review_option_not_allowed_tokenized_payments . '</span></b>',
+                'type' => 'checkbox',
+                'default' => 'no'
+            ),
+            'force_skip_final_review' => array(
+                'title' => __('Force Skip Final Review', 'paypal-for-woocommerce'),
+                'label' => __('Enables the option if you manage login on your platform before payment and not returnig from PayPal', 'paypal-for-woocommerce'). '<br /><b class="final_review_notice"><span class="force_final_review_notice">Warning! you are forcing to skip the final review page!</span></b>',
+                'description' => '',
                 'type' => 'checkbox',
                 'default' => 'no'
             ),
@@ -996,7 +1041,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $this->add_log("...ERROR: GetShippingDetails returned empty result");
                 }
                 WC()->cart->calculate_totals();
-                if( $this->skip_final_review == 'yes' && ( get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters('woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')) == "yes" || is_user_logged_in() )) {
+                if( $this->skip_final_review == 'yes' && (
+                    ( get_option('woocommerce_enable_guest_checkout') === "yes" && apply_filters('woocommerce_enable_guest_checkout', get_option('woocommerce_enable_guest_checkout')) == "yes" || is_user_logged_in() )) 
+                    || $this->force_skip_final_review === 'yes'
+                ){
                     if($this->supports( 'tokenization' )) {
                         return;
                     }
