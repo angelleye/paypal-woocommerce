@@ -491,22 +491,21 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'countryCodeAlpha2' => $order->shipping_country,
             );
             if ($this->enable_braintree_drop_in == false) {
-                if(!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') {
+                if( (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') || empty($_POST['wc-braintree-payment-token'])) {
                         $request_data['creditCard'] = array(
                             'number' => $card->number,
                             'expirationDate' => $card->exp_month . '/' . $card->exp_year,
                             'cvv' => $card->cvc,
                             'cardholderName' => $order->billing_first_name . ' ' . $order->billing_last_name
                         );
-                } else {
-                    if(is_user_logged_in()) {
+                } else if( is_user_logged_in() && (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] != 'new') ) {
                         $customer_id = get_current_user_id();
                         $token_id = wc_clean( $_POST['wc-braintree-payment-token'] );
                         $token = WC_Payment_Tokens::get( $token_id );
                         $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
                         $request_data['paymentMethodToken'] = $token->get_token();
-                    }
-                }
+                    
+                } 
             } else {
                 $request_data['paymentMethodNonce'] = $payment_method_nonce;
             }
