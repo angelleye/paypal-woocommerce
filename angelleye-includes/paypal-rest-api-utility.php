@@ -43,11 +43,11 @@ class PayPal_Rest_API_Utility {
         $this->mode = $this->testmode == 'yes' ? 'SANDBOX' : 'LIVE';
         $this->debug = 'yes' === $this->gateway->get_option('debug', 'no');
         if ($this->testmode) {
-            $this->rest_client_id = $this->gateway->get_option('rest_client_id_sandbox', false);
-            $this->rest_secret_id = $this->gateway->get_option('rest_secret_id_sandbox', false);
+            $this->rest_client_id = apply_filters('paypal_rest_client_id_sandbox', $this->gateway->get_option('rest_client_id_sandbox', false));
+            $this->rest_secret_id = apply_filters('paypal_rest_secret_id_sandbox', $this->gateway->get_option('rest_secret_id_sandbox', false));
         } else {
-            $this->rest_client_id = $this->gateway->get_option('rest_client_id', false);
-            $this->rest_secret_id = $this->gateway->get_option('rest_secret_id', false);
+            $this->rest_client_id = apply_filters('paypal_rest_client_id', $this->gateway->get_option('rest_client_id', false));
+            $this->rest_secret_id = apply_filters('paypal_rest_secret_id', $this->gateway->get_option('rest_secret_id', false));
         }
     }
 
