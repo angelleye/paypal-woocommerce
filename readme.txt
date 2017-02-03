@@ -117,6 +117,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.3.3 - 02.03.2017 =
+* Fix - Resolves PHP failures happening when out-dated versions of PHP and/or WooCommerce are installed. ([#635](https://github.com/angelleye/paypal-woocommerce/issues/635))
+
 = 1.3.2 - 01.27.2017 =
 * Tweak - Adds confirmation when capturing orders to ensure the expected amount is being captured.  ([#631](https://github.com/angelleye/paypal-woocommerce/pull/631))
 * Fix - Resolves an issue with dynamic Express Checkout buttons not loading properly for some countries. ([#623](https://github.com/angelleye/paypal-woocommerce/issues/623))
