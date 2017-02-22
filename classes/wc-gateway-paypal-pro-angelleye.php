@@ -74,22 +74,23 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         // Load the settings.
         $this->init_settings();
         // Get setting values
-        $this->title = $this->settings['title'];
-        $this->description = $this->settings['description'];
-        $this->enabled = $this->settings['enabled'];
-        $this->api_username = $this->settings['api_username'];
-        $this->api_password = $this->settings['api_password'];
-        $this->api_signature = $this->settings['api_signature'];
-        $this->testmode = $this->settings['testmode'];
-        $this->invoice_id_prefix = isset($this->settings['invoice_id_prefix']) ? $this->settings['invoice_id_prefix'] : '';
-        $this->error_email_notify = isset($this->settings['error_email_notify']) && $this->settings['error_email_notify'] == 'yes' ? true : false;
-        $this->error_display_type = isset($this->settings['error_display_type']) ? $this->settings['error_display_type'] : '';
-        $this->enable_3dsecure = isset($this->settings['enable_3dsecure']) && $this->settings['enable_3dsecure'] == 'yes' ? true : false;
-        $this->liability_shift = isset($this->settings['liability_shift']) && $this->settings['liability_shift'] == 'yes' ? true : false;
-        $this->debug = isset($this->settings['debug']) && $this->settings['debug'] == 'yes' ? true : false;
-        $this->payment_action = isset($this->settings['payment_action']) ? $this->settings['payment_action'] : 'Sale';
-        $this->send_items = isset($this->settings['send_items']) && $this->settings['send_items'] == 'no' ? false : true;
-         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
+        $this->title = $this->get_option('title');
+        $this->description = $this->get_option('description');
+        $this->enabled = $this->get_option('enabled');
+        $this->api_username = $this->get_option('api_username');
+        $this->api_password = $this->get_option('api_password');
+        $this->api_signature = $this->get_option('api_signature');
+        $this->testmode = $this->get_option('testmode');
+        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
+        $this->error_email_notify = $this->get_option('error_email_notify');
+        $this->error_display_type = $this->get_option('error_display_type'); 
+        $this->enable_3dsecure = 'yes' === $this->get_option('enable_3dsecure', 'no');
+        $this->liability_shift = 'yes' === $this->get_option('liability_shift', 'no');
+        $this->debug = 'yes' === $this->get_option('debug', 'no'); 
+        $this->payment_action = $this->get_option('payment_action', 'Sale');
+        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
+        $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
+        $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->notifyurl = '';
         if($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl'); 
@@ -100,19 +101,20 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->enable_cardholder_first_last_name = isset($this->settings['enable_cardholder_first_last_name']) && $this->settings['enable_cardholder_first_last_name'] == 'yes' ? true : false;
         // 3DS
         if ($this->enable_3dsecure) {
-            $this->centinel_pid = $this->settings['centinel_pid'];
-            $this->centinel_mid = $this->settings['centinel_mid'];
-            $this->centinel_pwd = $this->settings['centinel_pwd'];
+            $this->centinel_pid = $this->get_option('centinel_pid');
+            $this->centinel_mid = $this->get_option('centinel_mid');
+            $this->centinel_pwd = $this->get_option('centinel_pwd');
             if (empty($this->centinel_pid) || empty($this->centinel_mid) || empty($this->centinel_pwd))
                 $this->enable_3dsecure = false;
             $this->centinel_url = $this->testmode == "no" ? $this->liveurl_3ds : $this->testurl_3ds;
         }
-
+        
         //fix ssl for image icon
-        $this->icon = !empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png';
+        $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
         if (is_ssl()) {
-            $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
+            $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
+        $this->icon = apply_filters('woocommerce_paypal_pro_icon', $this->icon);
         $this->supports = array(
             'products',
             'refunds'
@@ -124,9 +126,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
 
         if ($this->testmode == 'yes') {
-            $this->api_username = $this->settings['sandbox_api_username'];
-            $this->api_password = $this->settings['sandbox_api_password'];
-            $this->api_signature = $this->settings['sandbox_api_signature'];
+            $this->api_username = $this->get_option('sandbox_api_username');
+            $this->api_password = $this->get_option('sandbox_api_password');
+            $this->api_signature = $this->get_option('sandbox_api_signature');
         }
         // Maestro
         if (!$this->enable_3dsecure) {
@@ -139,7 +141,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         /* 2.0.0 */
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_pro_encrypt_gateway_api'), 10, 1);
         if ($this->enable_cardholder_first_last_name) {
             add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
         }
@@ -189,7 +191,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             'card_icon' => array(
                 'title' => __('Card Icon', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'default' => WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png'
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
             ),
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
@@ -329,6 +331,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'description' => sprintf( __( 'Log PayPal events, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'paypal-pro' ) )
+            ),
+            'is_encrypt' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'label' => __('', 'paypal-for-woocommerce'),
+                'type' => 'hidden',
+                'default' => 'yes',
+                'class' => ''
             )
         );
         $this->form_fields = apply_filters('angelleye_pc_form_fields', $this->form_fields);
@@ -344,7 +353,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         if ($this->enabled == "yes") :
             if ($this->testmode == "no" && get_option('woocommerce_force_ssl_checkout') == 'no' && !class_exists('WordPressHTTPS')) return false;
             // Currency check
-            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_pro_allowed_currencies', array('AUD', 'CAD', 'CZK', 'DKK', 'EUR', 'HUF', 'JPY', 'NOK', 'NZD', 'PLN', 'GBP', 'SGD', 'SEK', 'CHF', 'USD')))) return false;
+            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_pro_supported_currencies', array('AUD', 'CAD', 'CZK', 'DKK', 'EUR', 'HUF', 'JPY', 'NOK', 'NZD', 'PLN', 'GBP', 'SGD', 'SEK', 'CHF', 'USD')))) return false;
             // Required fields check
             if (!$this->api_username || !$this->api_password || !$this->api_signature) return false;
             return isset($this->available_card_types[WC()->countries->get_base_country()]);
@@ -848,7 +857,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()),                            // Required.  Total amount of order, including shipping, handling, and tax.
-            'currencycode' => get_woocommerce_currency(),                    // Required.  Three-letter currency code.  Default is USD.
+            'currencycode' => $order->get_order_currency(),                    // Required.  Three-letter currency code.  Default is USD.
             'insuranceamt' => '',                    // Total shipping insurance costs for this order.
             'shipdiscamt' => '0.00',                    // Shipping discount for the order, specified as a negative number.
             'handlingamt' => '0.00',                    // Total handling costs for the order.  If you specify handlingamt, you must also specify itemamt.
@@ -951,8 +960,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         );
         
         $log = $PayPalRequestData;
-        $log['CCDetails']['acct'] = isset($log['CCDetails']['acct']) ? '****' : '';
-        $log['CCDetails']['cvv2'] = isset($log['CCDetails']['cvv2']) ? '****' : '';
+        $log['CCDetails']['acct'] = empty($log['CCDetails']['acct']) ? '****' : '';
+        $log['CCDetails']['cvv2'] = empty($log['CCDetails']['cvv2']) ? '****' : '';
         $this->log('Do payment request ' . print_r($log, true));
         
         if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') {
@@ -1043,8 +1052,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                     $token->set_gateway_id( $this->id );
                     $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
                     $token->set_last4( substr( $PayPalRequestData['CCDetails']['acct'], -4 ) );
-                    $token->set_expiry_month( date( 'm' ) );
-                    $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+                    $token->set_expiry_month( substr( $PayPalRequestData['CCDetails']['expdate'], 0,2 ) );
+                    $token->set_expiry_year( substr( $PayPalRequestData['CCDetails']['expdate'], 2,5 ) );
                     $save_result = $token->save();
                     if ( $save_result ) {
                             $order->add_payment_token( $token );
@@ -1062,7 +1071,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                 $angelleye_utility = new AngellEYE_Utility(null, null);
                 $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['TRANSACTIONID']);
-                $order->update_status('on-hold');
+                $order->payment_complete($PayPalResult['TRANSACTIONID']);
                 $order->add_order_note('Payment Action: ' . $this->payment_action);
             }
 
@@ -1429,8 +1438,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $token->set_gateway_id( $this->id );
             $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
             $token->set_last4( substr( $PayPalRequestData['CCDetails']['acct'], -4 ) );
-            $token->set_expiry_month( date( 'm' ) );
-            $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+            $token->set_expiry_month( substr( $PayPalRequestData['CCDetails']['expdate'], 0,2 ) );
+            $token->set_expiry_year( substr( $PayPalRequestData['CCDetails']['expdate'], 2,5 ) );
             $save_result = $token->save();
             return array(
                     'result' => 'success',
@@ -1441,5 +1450,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $redirect_url = wc_get_account_endpoint_url( 'payment-methods' );
             $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
         }
+    }
+    
+    public function angelleye_paypal_pro_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_keys = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
+            foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
     }
 }

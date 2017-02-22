@@ -119,9 +119,8 @@
             $this->response = array();
             
             if($payload != "" && $payload != null) {
-                $parts = preg_split("&", $payload);
-                $hashPart =  preg_split("=", $parts[count($parts)-1]);
-                
+                $parts = explode("&", $payload);
+                $hashPart =  explode("=", $parts[count($parts)-1]);
                 $origPayload = preg_replace("/\&".$parts[count($parts)-1]."/", '', $payload ).$transactionPwd; 
                 $payloadHash = $hashPart[1];
                 $payloadCalcHash = sha1($origPayload);
@@ -132,7 +131,7 @@
                 } // end if
 
                 for($i = 0; $i < count($parts); $i++) {
-                    $kv = preg_split("=", $parts[$i]);   
+                    $kv = explode("=", $parts[$i]);   
                     $key = $kv[0];
                     $value = $kv[1];
                     if("ErrorNo" == $key && isset($this->response["ErrorNo"]) ) {

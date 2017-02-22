@@ -13,7 +13,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public $customer_id;
     function __construct() {
         $this->id = 'braintree';
-        $this->icon = apply_filters('woocommerce_braintree_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
+        $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
+        if (is_ssl()) {
+            $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
+        }
+        $this->icon = apply_filters('woocommerce_braintree_icon', $this->icon);
         $this->has_fields = true;
         $this->method_title = 'Braintree';
         $this->method_description = __('Credit Card payments Powered by PayPal / Braintree.', 'paypal-for-woocommerce');
@@ -37,8 +41,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->public_key = $this->sandbox == 'no' ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
         $this->enable_braintree_drop_in = $this->get_option('enable_braintree_drop_in') === "yes" ? true : false;
         $this->merchant_account_id = $this->sandbox == 'no' ? $this->get_option('merchant_account_id') : $this->get_option('sandbox_merchant_account_id');
-        $this->debug = isset($this->settings['debug']) && $this->settings['debug'] == 'yes' ? true : false;
+        $this->debug = 'yes' === $this->get_option('debug', 'no');
+        $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
         if ($this->enable_braintree_drop_in) {
             add_action('wp_enqueue_scripts', array($this, 'payment_scripts'), 0);
@@ -114,21 +120,22 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     }else {
                         return true;
                     }
+                } else {
+                    $card = $this->get_posted_card();
+                    if (empty($card->exp_month) || empty($card->exp_year)) {
+                        throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
+                    }
+                    if (!ctype_digit($card->cvc)) {
+                        throw new Exception(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'));
+                    }
+                    if (!ctype_digit($card->exp_month) || !ctype_digit($card->exp_year) || $card->exp_month > 12 || $card->exp_month < 1 || $card->exp_year < date('y')) {
+                        throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
+                    }
+                    if (empty($card->number) || !ctype_digit($card->number)) {
+                        throw new Exception(__('Card number is invalid', 'paypal-for-woocommerce'));
+                    }
+                    return true;
                 }
-                $card = $this->get_posted_card();
-                if (empty($card->exp_month) || empty($card->exp_year)) {
-                    throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
-                }
-                if (!ctype_digit($card->cvc)) {
-                    throw new Exception(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'));
-                }
-                if (!ctype_digit($card->exp_month) || !ctype_digit($card->exp_year) || $card->exp_month > 12 || $card->exp_month < 1 || $card->exp_year < date('y')) {
-                    throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
-                }
-                if (empty($card->number) || !ctype_digit($card->number)) {
-                    throw new Exception(__('Card number is invalid', 'paypal-for-woocommerce'));
-                }
-                return true;
             } catch (Exception $e) {
                 wc_add_notice($e->getMessage(), 'error');
                 return false;
@@ -255,12 +262,24 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
+            'card_icon' => array(
+                'title' => __('Card Icon', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
+            ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'description' => sprintf( __( 'Log PayPal/Braintree events, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'braintree' ) )
+            ),
+            'is_encrypt' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'label' => __('', 'paypal-for-woocommerce'),
+                'type' => 'hidden',
+                'default' => 'yes',
+                'class' => ''
             )
         );
     }
@@ -472,24 +491,21 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'countryCodeAlpha2' => $order->shipping_country,
             );
             if ($this->enable_braintree_drop_in == false) {
-                if(!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') {
-                    if(!empty($_POST['wc-braintree-new-payment-method']) && $_POST['wc-braintree-new-payment-method'] == true) {
+                if( (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') || empty($_POST['wc-braintree-payment-token'])) {
                         $request_data['creditCard'] = array(
                             'number' => $card->number,
                             'expirationDate' => $card->exp_month . '/' . $card->exp_year,
                             'cvv' => $card->cvc,
                             'cardholderName' => $order->billing_first_name . ' ' . $order->billing_last_name
                         );
-                    }
-                } else {
-                    if(is_user_logged_in()) {
+                } else if( is_user_logged_in() && (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] != 'new') ) {
                         $customer_id = get_current_user_id();
                         $token_id = wc_clean( $_POST['wc-braintree-payment-token'] );
                         $token = WC_Payment_Tokens::get( $token_id );
                         $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
                         $request_data['paymentMethodToken'] = $token->get_token();
-                    }
-                }
+                    
+                } 
             } else {
                 $request_data['paymentMethodNonce'] = $payment_method_nonce;
             }
@@ -596,8 +612,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     $token->set_gateway_id( $this->id );
                                     $token->set_card_type( $transaction->creditCard['cardType']);
                                     $token->set_last4( $transaction->creditCard['last4'] );
-                                    $token->set_expiry_month( date( 'm' ) );
-                                    $token->set_expiry_year( date( 'Y', strtotime( '+2 years' ) ) );
+                                    $token->set_expiry_month( $transaction->creditCard['expirationMonth'] );
+                                    $token->set_expiry_year( $transaction->creditCard['expirationYear'] );
                                     $save_result = $token->save();
                                     if ( $save_result ) {
                                         $order->add_payment_token( $token );
@@ -1119,8 +1135,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $token->set_gateway_id( $this->id );
             $token->set_card_type( $braintree_method->cardType);
             $token->set_last4( $braintree_method->last4 );
-            $token->set_expiry_month( date( 'm' ) );
-            $token->set_expiry_year( date( 'Y', strtotime( '+10 years' ) ) );
+            $token->set_expiry_month( $braintree_method->expirationMonth );
+            $token->set_expiry_year( $braintree_method->expirationYear );
             $save_result = $token->save();
             if ( $save_result ) {
                 return array(
@@ -1161,5 +1177,17 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 return $result->customer->id;
             }
         }
+    }
+    
+    public function angelleye_braintree_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_key_array = array('sandbox_public_key', 'sandbox_private_key', 'sandbox_merchant_id', 'sandbox_merchant_account_id', 'public_key', 'private_key', 'merchant_id', 'merchant_account_id');
+            foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
     }
 }

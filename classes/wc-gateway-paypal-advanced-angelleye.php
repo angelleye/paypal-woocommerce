@@ -30,32 +30,29 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             array_push($this->supports, "tokenization");
         }
         // Define user set variables
-        $this->title = $this->settings['title'];
-        $this->description = $this->settings['description'];
-        $this->testmode = $this->settings['testmode'];
-        $this->loginid = $this->settings['loginid'];
-        $this->resellerid = $this->settings['resellerid'];
-        $this->transtype = $this->settings['transtype'];
-        $this->password = $this->settings['password'];
-        $this->debug = $this->settings['debug'];
-        $this->invoice_prefix = $this->settings['invoice_prefix'];
-        $this->page_collapse_bgcolor = $this->settings['page_collapse_bgcolor'];
-        $this->page_collapse_textcolor = $this->settings['page_collapse_textcolor'];
-        $this->page_button_bgcolor = $this->settings['page_button_bgcolor'];
-        $this->page_button_textcolor = $this->settings['page_button_textcolor'];
-        $this->label_textcolor = $this->settings['label_textcolor'];
-        
-        $this->icon = !empty($this->settings['card_icon']) ? $this->settings['card_icon'] : WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png';
+        $this->title = $this->get_option('title');
+        $this->description = $this->get_option('description');
+        $this->testmode = $this->get_option('testmode', 'yes');
+        $this->loginid = $this->get_option('loginid');
+        $this->resellerid = $this->get_option('resellerid');
+        $this->transtype = $this->get_option('transtype');
+        $this->password = $this->get_option('password');
+        $this->debug = $this->get_option('debug');
+        $this->invoice_prefix = $this->get_option('invoice_prefix');
+        $this->page_collapse_bgcolor = $this->get_option('page_collapse_bgcolor');
+        $this->page_collapse_textcolor = $this->get_option('page_collapse_textcolor');
+        $this->page_button_bgcolor = $this->get_option('page_button_bgcolor');
+        $this->page_button_textcolor = $this->get_option('page_button_textcolor');
+        $this->label_textcolor = $this->get_option('label_textcolor');
+        $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
+        $this->is_encrypt = $this->get_option('is_encrypt', 'no');
+        $this->loginid = $this->get_option('loginid');
+        $this->user = $this->get_option('user', $this->loginid);
+        $this->mobilemode = $this->get_option('mobilemode', 'yes');
         if (is_ssl()) {
-            $this->icon = preg_replace("/^http:/i", "https:", $this->settings['card_icon']);
+            $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
         $this->icon = apply_filters('woocommerce_paypal_advanced_icon', $this->icon);
-
-        if (!isset($this->settings['mobilemode']))
-            $this->mobilemode = 'yes';
-        else
-            $this->mobilemode = $this->settings['mobilemode'];
-
         switch ($this->settings['layout']) {
             case 'A': $this->layout = 'TEMPLATEA';
                 break;
@@ -65,7 +62,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 break;
         }
 
-        $this->user = $this->settings['user'] == '' ? $this->settings['loginid'] : $this->settings['user'];
+        
         $this->hostaddr = $this->testmode == 'yes' ? $this->testurl : $this->liveurl;
 
         if ($this->debug == 'yes')
@@ -75,6 +72,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('woocommerce_receipt_paypal_advanced', array($this, 'receipt_page'));
         add_action('woocommerce_api_wc_gateway_paypal_advanced_angelleye', array($this, 'relay_response'));
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_advanced_encrypt_gateway_api'), 10, 1);
         $this->enabled = isset($this->settings['enabled']) && $this->settings['enabled'] == 'yes' ? true : false;
         $this->customer_id;
     }
@@ -419,7 +417,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'AMT' => number_format($order->get_total(), 2, '.', ''),
             'FREIGHTAMT' => '',
             'COMPANYNAME[' . strlen($order->billing_company) . ']' => $order->billing_company,
-            'CURRENCY' => get_woocommerce_currency(),
+            'CURRENCY' => $order->get_order_currency(),
             'EMAIL' => $order->billing_email,
             'BILLTOFIRSTNAME[' . strlen($order->billing_first_name) . ']' => $order->billing_first_name,
             'BILLTOLASTNAME[' . strlen($order->billing_last_name) . ']' => $order->billing_last_name,
@@ -629,7 +627,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         //if enabled checkbox is checked
         if ($this->enabled == 'yes') {
-            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_advanced_allowed_currencies', array('USD', 'CAD')))) {
+            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_advanced_supported_currencies', array('USD', 'CAD')))) {
                 return false;
             }
             if (!$this->user || !$this->loginid ) {
@@ -778,7 +776,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'card_icon' => array(
                 'title' => __('Credit Card Logo Graphic', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'default' => WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png'
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
             ),
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
@@ -833,6 +831,13 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'description' => sprintf( __( 'Log PayPal events, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'paypal_advanced' ) )
+            ),
+            'is_encrypt' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'label' => __('', 'paypal-for-woocommerce'),
+                'type' => 'hidden',
+                'default' => 'yes',
+                'class' => ''
             )
         );
     }
@@ -1092,7 +1097,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'AMT' => number_format($order->get_total(), 2, '.', ''),
             'FREIGHTAMT' => '',
             'COMPANYNAME[' . strlen($order->billing_company) . ']' => $order->billing_company,
-            'CURRENCY' => get_woocommerce_currency(),
+            'CURRENCY' => $order->get_order_currency(),
             'EMAIL' => $order->billing_email,
             'BILLTOFIRSTNAME[' . strlen($order->billing_first_name) . ']' => $order->billing_first_name,
             'BILLTOLASTNAME[' . strlen($order->billing_last_name) . ']' => $order->billing_last_name,
@@ -1213,5 +1218,17 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 $length_error++;
             }
         }
+    }
+    
+    public function angelleye_paypal_advanced_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_keys = array('loginid', 'resellerid', 'user', 'password');
+            foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
     }
 }
