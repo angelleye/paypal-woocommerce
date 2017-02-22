@@ -876,7 +876,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
                         $ctr++;
                     }
-                            $total_discount -= $order->get_order_discount();
+                            
                 }
                 if ($order){
                         if ($order->get_total_discount() > 0) {
@@ -921,10 +921,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     }
                 }
             }
-            }
-
-
-
             if( $tax > 0) {
                 $tax = self::number_format($tax);
             }
