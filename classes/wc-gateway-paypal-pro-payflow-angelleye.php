@@ -1176,4 +1176,15 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         }
         return $settings;
     }
+    public function angelleye_paypal_pro_payflow_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_keys = array('sandbox_paypal_vendor', 'sandbox_paypal_password', 'sandbox_paypal_user', 'sandbox_paypal_partner', 'paypal_vendor', 'paypal_password', 'paypal_user', 'paypal_partner');
+            foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
+    }
 }
