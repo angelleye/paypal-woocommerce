@@ -1300,8 +1300,7 @@ class AngellEYE_Utility {
         }
         return $output;
     }
-<<<<<<< HEAD
-=======
+
     
     public function angelleye_paypal_for_woocommerce_billing_agreement_details($order) {
         if (!is_object($order)) {
@@ -1318,5 +1317,4 @@ class AngellEYE_Utility {
         <p> <?php echo $billing_agreement_id; ?></p> <?php 
     }
 
->>>>>>> origin/Issue-493-A
 }
