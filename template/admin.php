@@ -113,7 +113,31 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
             <?php
     }
     ?>
-    <?php } else { ?>
+    <?php } else { 
+            if ( !empty( $_GET['_paypal_for_woocommerce_remove_log_file'] ) || wp_verify_nonce( $_GET['_paypal_for_woocommerce_remove_log_file'], 'paypal-for-woocommerce-remove-log-file' ) ) {
+                   $paypal_for_woocommerce_logfile_path = array('paypal_credit_card_rest' => wc_get_log_file_path('paypal_credit_card_rest'),
+                    'braintree' => wc_get_log_file_path( 'braintree' ),
+                    'paypal_advanced' => wc_get_log_file_path( 'paypal_advanced' ),
+                    'paypal_express' => wc_get_log_file_path( 'paypal_express' ),
+                    'paypal-pro' => wc_get_log_file_path( 'paypal-pro' ),
+                    'paypal_payflow' => wc_get_log_file_path( 'paypal_payflow' ) 
+                );
+                $count = 0;
+                foreach ($paypal_for_woocommerce_logfile_path as $key => $value) {
+                    if ( file_exists( $value ) ) {
+                        unlink( $value );
+                        $count = $count + 1;
+                    }
+                }
+                $remove_logfile_tool_url = remove_query_arg( '_paypal_for_woocommerce_remove_log_file' );
+                wp_redirect( esc_url_raw( add_query_arg( 'count', $count, $remove_logfile_tool_url ) ) );
+                exit;
+            }
+            if( !empty($_GET['count']) && $_GET['count'] > 0) {
+                 echo '<div class="updated"><p>' . __( 'Logfile has been successfully deleted.', 'paypal-for-woocommerce' ) . '</p></div>';
+            }
+            
+        ?>
         <div class="wrap">
             <div class="angelleye-paypal-for-woocommerce-shipping-tools-wrap">
                 <form id="woocommerce_paypal-for-woocommerce_options_form_bulk_tool_shipping" autocomplete="off" action="<?php echo admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=tools'); ?>" method="post">
@@ -211,5 +235,20 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                 </form>
             </div>
         </div>
+        <div class="wrap">
+            <div class="angelleye-paypal-for-woocommerce-shipping-tools-wrap">
+                <div><br></div>
+                <p><a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'paypal_for_woocommerce_remove_log_file' ), 'paypal-for-woocommerce-remove-log-file', '_paypal_for_woocommerce_remove_log_file' ) ); ?>" class="delete_template button"><?php _e( 'Clear All Log Files', 'paypal-for-woocommerce' ); ?></a><span><?php echo str_repeat('&nbsp;', 3); echo __( 'This will remove all the log file of PayPal for WooCoomerce plugin.', 'paypal-for-woocommerce' ); ?> </span></p>
+            </div>
+        </div>
+        <?php 
+        wc_enqueue_js( "jQuery( 'a.delete_template' ).click( function() {
+                if ( window.confirm('" . esc_js( __( 'Are you sure you want to delete all the logfile of PayPal for WooCoomerce plugin?', 'paypal-for-woocommerce' ) ) . "') ) {
+                        return true;
+                }
+
+                return false;
+        });");
+        ?>
 <?php } ?>
 </div>

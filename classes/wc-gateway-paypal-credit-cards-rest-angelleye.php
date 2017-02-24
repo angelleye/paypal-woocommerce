@@ -25,14 +25,11 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         );
         $this->init_form_fields();
         $this->init_settings();
-        $card_icon = $this->get_option('card_icon', 'no');
-        if ($card_icon == 'no') {
-            $card_icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(dirname(__FILE__))) . '/assets/images/cards.png';
-        }
-        $this->icon = apply_filters('woocommerce_paypal_credit_card_rest_icon', $card_icon);
+        $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
         if (is_ssl()) {
             $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
+        $this->icon = apply_filters('woocommerce_paypal_credit_card_rest_icon', $this->icon);
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes') {
             $this->supports = array(
@@ -57,6 +54,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $this->testmode = 'yes' === $this->get_option('testmode', 'no');
         $this->mode = $this->testmode == 'yes' ? "SANDBOX" : "LIVE";
         $this->debug = 'yes' === $this->get_option('debug', 'no');
+        $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         if ($this->testmode) {
             $this->rest_client_id = $this->get_option('rest_client_id_sandbox', false);
             $this->rest_secret_id = $this->get_option('rest_secret_id_sandbox', false);
@@ -67,7 +65,8 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_notices', array($this, 'checks'));
-        add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_credit_card_rest_credit_card_form_fields'), 10, 2);
+        add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_credit_card_rest_credit_card_form_fields'), 10, 2);
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_credit_card_rest_encrypt_gateway_api'), 10, 1);
         $this->customer_id;
     }
 
@@ -82,7 +81,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
      * @since    1.2
      */
     public function admin_options() {
-        if ($this->is_valid_for_use()) {
+        if ($this->is_valid_for_use_paypal_credit_card_rest()) {
             ?>
             <h3><?php echo (!empty($this->method_title) ) ? $this->method_title : __('Settings', 'paypal-for-woocommerce'); ?></h3>
             <?php echo (!empty($this->method_description) ) ? wpautop($this->method_description) : ''; ?>
@@ -128,7 +127,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             if (!$this->rest_client_id || !$this->rest_secret_id) {
                 return false;
             }
-            if (!in_array(get_woocommerce_currency(), apply_filters('paypal_rest_api_supported_currencies', $this->woocommerce_paypal_supported_currencies))) {
+            if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_rest_api_supported_currencies', $this->woocommerce_paypal_supported_currencies))) {
                 return false;
             }
             return true;
@@ -151,8 +150,8 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
      * @since    1.2
      * @return type
      */
-    public function is_valid_for_use() {
-        return in_array(get_woocommerce_currency(), apply_filters('paypal_rest_api_supported_currencies', $this->woocommerce_paypal_supported_currencies));
+    public function is_valid_for_use_paypal_credit_card_rest() {
+        return in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_rest_api_supported_currencies', $this->woocommerce_paypal_supported_currencies));
     }
 
     /**
@@ -315,4 +314,15 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         }
     }
 
+    public function angelleye_paypal_credit_card_rest_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_key_array = array('rest_client_id_sandbox', 'rest_secret_id_sandbox', 'rest_client_id', 'rest_secret_id');
+            foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
+    }
 }

@@ -282,6 +282,12 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
 
                     if (ischecked == false) {
                         jQuery('.wp_notice_own').html('<div class="woocommerce-error"><?php echo __( 'You must accept our Terms &amp; Conditions.', 'paypal-for-woocommerce' );?></div>');
+			    
+			// Scroll to .wp_notice_own to better highlight form *error*!
+			jQuery( "html, body" ).animate({
+				scrollTop: ( jQuery( ".wp_notice_own" ).offset().top - 60 )
+			}, 1000 );				    
+			    
                         return false;
                     }else if (ischecked == true) {
                         jQuery('.wp_notice_own').html('');
@@ -315,8 +321,11 @@ $show_act = apply_filters('paypal-for-woocommerce-show-login', $is_paypal_expres
         </style>
 
         <p class="terms">
-            <label for="terms" class="checkbox lbl_terms"><?php printf( __( 'I&rsquo;ve read and accept the <a href="%s" class="terms_chkbox" target="_blank">terms &amp; conditions</a>', 'paypal-for-woocommerce' ), esc_url( wc_get_page_permalink( 'terms' ) ) ); ?></label>
-            <input type="checkbox" class="input-checkbox terms_own" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
+            	<label for="terms" class="checkbox lbl_terms">
+		    <input type="checkbox" class="input-checkbox terms_own" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
+		    <?php printf( __( 'I&rsquo;ve read and accept the <a href="%s" class="terms_chkbox" target="_blank">terms &amp; conditions</a>', 'paypal-for-woocommerce' ), esc_url( wc_get_page_permalink( 'terms' ) ) ); ?>
+		</label>   
+		<?php do_action( 'angelleye_review_order_after_terms' );?>
         </p>
         <?php  echo $cancel_button;?>
         <input type="button" class="button cls_place_order_own" value="<?php echo  __( 'Place Order','paypal-for-woocommerce');?>" /></p>

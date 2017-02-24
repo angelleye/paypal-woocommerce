@@ -1,14 +1,14 @@
-<?php
+<?php 
 
 class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public $customer_id;
-
+ 
     /**
      * __construct function.
      *
      * @access public
-     * @return void
+     * @return void 
      */
     public function __construct() {
         $this->id = 'paypal_express';
@@ -61,7 +61,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
         $this->show_on_checkout = $this->get_option('show_on_checkout', 'top');
         $this->paypal_account_optional = $this->get_option('paypal_account_optional', 'no');
-        $this->error_display_type = $this->get_option('error_display_type', 'generic');
         $this->landing_page = $this->get_option('landing_page', 'login');
         $this->checkout_logo = $this->get_option('checkout_logo');
         $this->checkout_logo_hdrimg = $this->get_option('checkout_logo_hdrimg');
@@ -76,6 +75,24 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->use_wp_locale_code = $this->get_option('use_wp_locale_code', 'yes');
         $this->angelleye_skip_text = $this->get_option('angelleye_skip_text', __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce'));
         $this->skip_final_review = $this->get_option('skip_final_review', 'no');
+        if($this->enable_tokenized_payments == 'yes') {
+            array_push($this->supports, "tokenization");
+        }
+        $this->error_display_type = $this->get_option('error_display_type', 'detailed');
+        $this->landing_page = $this->get_option('landing_page', 'login'); 
+        $this->checkout_logo = $this->get_option('checkout_logo', '');
+        $this->checkout_logo_hdrimg = $this->get_option('checkout_logo_hdrimg', '');
+        $this->show_paypal_credit = $this->get_option('show_paypal_credit', 'yes');
+        $this->brand_name = $this->get_option('brand_name', get_bloginfo('name'));
+        $this->customer_service_number = $this->get_option('customer_service_number', '');
+        $this->gift_wrap_enabled = $this->get_option('gift_wrap_enabled', '');
+        $this->gift_message_enabled = $this->get_option('gift_message_enabled', '');
+        $this->gift_receipt_enabled = $this->get_option('gift_receipt_enabled', '');
+        $this->gift_wrap_name = $this->get_option('gift_wrap_name', '');
+        $this->gift_wrap_amount = $this->get_option('gift_wrap_amount', '');
+        $this->use_wp_locale_code = $this->get_option('use_wp_locale_code', 'yes');
+        $this->angelleye_skip_text = $this->get_option('angelleye_skip_text', 'Skip the forms and pay faster with PayPal!');
+        $this->skip_final_review = $this->get_option('skip_final_review', 'no'); 
         $this->disable_term = $this->get_option('disable_term', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
         $this->billing_address = $this->get_option('billing_address', 'no');
@@ -85,10 +102,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->customer_id = get_current_user_id();
         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->notifyurl = '';
-        if ($this->enable_notifyurl == 'yes') {
-            $this->notifyurl = $this->get_option('notifyurl');
-            if (isset($this->notifyurl) && !empty($this->notifyurl)) {
-                $this->notifyurl = str_replace('&amp;', '&', $this->notifyurl);
+        $this->is_encrypt = $this->get_option('is_encrypt', 'no');
+        if($this->enable_notifyurl == 'yes') {
+            $this->notifyurl = $this->get_option('notifyurl'); 
+            if( isset($this->notifyurl) && !empty($this->notifyurl)) {
+                $this->notifyurl =  str_replace('&amp;', '&', $this->notifyurl);
             }
         }
         if ($this->not_us) {
@@ -97,12 +115,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($this->testmode == 'yes') {
             $this->API_Endpoint = "https://api-3t.sandbox.paypal.com/nvp";
             $this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
-            $this->api_username = $this->settings['sandbox_api_username'];
-            $this->api_password = $this->settings['sandbox_api_password'];
-            $this->api_signature = $this->settings['sandbox_api_signature'];
+            $this->api_username = $this->get_option('sandbox_api_username');
+            $this->api_password = $this->get_option('sandbox_api_password');
+            $this->api_signature = $this->get_option('sandbox_api_signature');
         } else {
             $this->API_Endpoint = "https://api-3t.paypal.com/nvp";
             $this->PAYPAL_URL = "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=";
+            $this->api_username = $this->get_option('api_username');
+            $this->api_password = $this->get_option('api_password');
+            $this->api_signature = $this->get_option('api_signature');
         }
         $this->version = "64";  // PayPal SetExpressCheckout API version
 
@@ -110,6 +131,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
         $this->page_style = ( isset($this->settings['page_style']) ) ? $this->settings['page_style'] : '';
 
+        $this->page_style = $this->get_option('page_style', ''); 
+                
         // Actions
         add_action('woocommerce_api_' . strtolower(get_class()), array($this, 'paypal_express_checkout'), 12);
         add_action('woocommerce_receipt_paypal_express', array($this, 'receipt_page'));
@@ -118,8 +141,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_new_order_data', array($this, 'woocommerce_new_order_data_add_customer_user'), 10, 1);
-
-
+        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
         if ($this->enabled == 'yes' && ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both')) {
             add_action('woocommerce_before_checkout_form', array($this, 'checkout_message'), 5);
         }
@@ -202,7 +224,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }
         $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
-        return apply_filters('woocommerce_gateway_icon', $icon, $this->id);
+        return apply_filters('woocommerce_paypal_express_icon', $icon, $this->id);
     }
 
     public function get_confirm_order($order) {
@@ -223,7 +245,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!$this->is_express_checkout_credentials_is_set()) {
             return false;
         }
-        if (!AngellEYE_Utility::is_valid_for_use()) {
+        if(!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
             return false;
         }
         if ($this->show_on_checkout == 'regular' || $this->show_on_checkout == 'both') {
@@ -266,6 +288,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes') {
             $skip_final_review_option_not_allowed_tokenized_payments = ' (This is not available because tokenized payments is enable.)';
+            $skip_final_review_option_not_allowed_guest_checkout = ' (The WooCommerce guest checkout option is disabled.  Therefore, the review page is required for login / account creation, and this option will be overridden.)';
+        }         
+        if ( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) ) {
+            $skip_final_review_option_not_allowed_terms = ' (You currently have a Terms &amp; Conditions page set, which requires the review page, and will override this option.)';
+        }
+        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if($this->enable_tokenized_payments == 'yes') {
+            $skip_final_review_option_not_allowed_tokenized_payments = ' (Payments tokens are enabled, which require the review page, and that will override this option.)';
         }
         $args = array(
             'sort_order' => 'ASC',
@@ -464,7 +494,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'generic' => __('Generic', 'paypal-for-woocommerce')
                 ),
                 'description' => __('Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
-									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce')
+									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce'),
+                'default' => 'detailed',
             ),
             'show_paypal_credit' => array(
                 'title' => __('Enable PayPal Credit', 'paypal-for-woocommerce'),
@@ -551,14 +582,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'skip_final_review' => array(
                 'title' => __('Skip Final Review', 'paypal-for-woocommerce'),
                 'label' => __('Enables the option to skip the final review page.', 'paypal-for-woocommerce'),
-                'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.') . '<b class="final_review_notice"><span class="guest_checkout_notice">' . $skip_final_review_option_not_allowed_guest_checkout . '</span></b>' . '<b class="final_review_notice"><span class="terms_notice">' . $skip_final_review_option_not_allowed_terms . '</span></b>' . '<b class="final_review_notice"><span class="tokenized_payments_notice">' . $skip_final_review_option_not_allowed_tokenized_payments . '</span></b>',
+                 'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.') . '<br /><b class="final_review_notice"><span class="guest_checkout_notice">' . $skip_final_review_option_not_allowed_guest_checkout . '</span></b>' . '<b class="final_review_notice"><span class="terms_notice">' . $skip_final_review_option_not_allowed_terms . '</span></b>' . '<b class="final_review_notice"><span class="tokenized_payments_notice">' . $skip_final_review_option_not_allowed_tokenized_payments . '</span></b>',
                 'type' => 'checkbox',
                 'default' => 'no'
             ),
-            'disable_term' => array(
-                'title' => __('Skip Terms and Conditions', 'paypal-for-woocommerce'),
-                'label' => __('Enables the option to skip the Terms and Conditions.', 'paypal-for-woocommerce'),
-                'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.'),
+             'disable_term' => array(
+                'title' => __('Disable Terms and Conditions', 'paypal-for-woocommerce'),
+                'label' => __('Disable Terms and Conditions for Express Checkout orders.', 'paypal-for-woocommerce'),
+                'description' => __('By default, if a Terms and Conditions page is set in WooCommerce, this would require the review page and would override the Skip Final Review option.  Check this option to disable Terms and Conditions for Express Checkout orders only so that you can use the Skip Final Review option.'),
                 'type' => 'checkbox',
                 'default' => 'no',
                 'class' => 'disable_term',
@@ -599,7 +630,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
+                'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future. (Currently considered BETA for Express Checkout.)', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
@@ -638,6 +669,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'class' => 'email_notify_order_cancellations'
             ),
+            'is_encrypt' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'label' => __('', 'paypal-for-woocommerce'),
+                'type' => 'hidden',
+                'default' => 'yes',
+                'class' => ''
+            )
                 /* 'Locale' => array(
                   'title' => __( 'Locale', 'paypal-for-woocommerce' ),
                   'type' => 'select',
@@ -675,8 +713,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!$this->is_express_checkout_credentials_is_set()) {
             return false;
         }
-        if (!AngellEYE_Utility::is_valid_for_use()) {
-            return false;
+        if(!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
+                return false;
         }
         if (WC()->cart->total > 0) {
             wp_enqueue_script('angelleye_button');
@@ -690,8 +728,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (empty($pp_settings['checkout_with_pp_button_type']))
                 $pp_settings['checkout_with_pp_button_type'] = 'paypalimage';
 
-            $_angelleyeOverlay = '<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(' . WC()->plugin_url() . '/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>';
-
+            $_angelleyeOverlay = '<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url('. WC()->plugin_url() .'/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>';
+            
             switch ($pp_settings['checkout_with_pp_button_type']) {
                 case "textbutton":
                     if (!empty($pp_settings['pp_button_type_text_button'])) {
@@ -707,7 +745,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case "paypalimage":
                     echo '<div id="paypal_ec_button">';
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo "<img src='https://www.paypalobjects.com/webstatic/" . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . "/i/buttons/checkout-logo-medium.png' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                    echo "<img src='".WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage()."' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                     echo "</a>";
                     echo $_angelleyeOverlay;
                     echo '</div>';
@@ -944,6 +982,27 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                     if (isset($result['SHIPTOZIP'])) {
                         WC()->customer->set_shipping_postcode($result['SHIPTOZIP']);
+                    }
+                    
+                    if ($this->billing_address == 'yes') {
+                        if (isset($result['SHIPTOSTREET'])) {
+                            WC()->customer->set_address($result['SHIPTOSTREET']);
+                        }
+                        if (isset($result['SHIPTOSTREET2'])) {
+                            WC()->customer->set_address_2($result['SHIPTOSTREET2']);
+                        }
+                        if (isset($result['SHIPTOCITY'])) {
+                            WC()->customer->set_city($result['SHIPTOCITY']);
+                        }
+                        if (isset($result['SHIPTOCOUNTRYCODE'])) {
+                            WC()->customer->set_country($result['SHIPTOCOUNTRYCODE']);
+                        }
+                        if (isset($result['SHIPTOSTATE'])) {
+                            WC()->customer->set_state($this->get_state_code($result['SHIPTOCOUNTRYCODE'], $result['SHIPTOSTATE']));
+                        }
+                        if (isset($result['SHIPTOZIP'])) {
+                            WC()->customer->set_postcode($result['SHIPTOZIP']);
+                        }
                     }
 
                     /**
@@ -1452,75 +1511,79 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                     }
 
-                    switch (strtolower($result['PAYMENTINFO_0_PAYMENTSTATUS'])) :
-                        case 'completed' :
+                    switch( strtolower( $result['PAYMENTINFO_0_PAYMENTSTATUS'] ) ) :
+			case 'completed' :
 
-                            if ($order->status == 'completed') {
-                                break;
-                            }
+                                if ( $order->status == 'completed' ) {
+					break;
+				}
 
-                            if (!in_array(strtolower($result['PAYMENTINFO_0_TRANSACTIONTYPE']), array('cart', 'instant', 'expresscheckout', 'web_accept', 'masspay', 'send_money'))) {
-                                break;
-                            }
-                            $order->add_order_note(__('Payment Completed via Express Checkout', 'paypal-for-woocommerce'));
-                            $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
-                            break;
-                        case 'pending' :
+				if ( ! in_array( strtolower( $result['PAYMENTINFO_0_TRANSACTIONTYPE'] ), array( 'cart', 'instant', 'expresscheckout', 'web_accept', 'masspay', 'send_money' ) ) ) {
+					break;
+				}
+                                $order->add_order_note( __( 'Payment Completed via Express Checkout', 'paypal-for-woocommerce' ) );
+                                $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
+				break;
+			case 'pending' :
 
-                            if (!in_array(strtolower($result['PAYMENTINFO_0_TRANSACTIONTYPE']), array('cart', 'instant', 'expresscheckout', 'web_accept', 'masspay', 'send_money'))) {
-                                break;
-                            }
-
-                            switch (strtolower($result['PAYMENTINFO_0_PENDINGREASON'])) {
-                                case 'address':
-                                    $pending_reason = __('Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile.', 'paypal-for-woocommerce');
-                                    break;
-                                case 'authorization':
-                                    $pending_reason = __('Authorization: The payment is pending because it has been authorized but not settled. You must capture the funds first.', 'paypal-for-woocommerce');
-                                    break;
-                                case 'echeck':
-                                    $pending_reason = __('eCheck: The payment is pending because it was made by an eCheck that has not yet cleared.', 'paypal-for-woocommerce');
-                                    break;
-                                case 'intl':
-                                    $pending_reason = __('intl: The payment is pending because you hold a non-U.S. account and do not have a withdrawal mechanism. You must manually accept or deny this payment from your Account Overview.', 'paypal-for-woocommerce');
-                                    break;
-                                case 'multicurrency':
-                                case 'multi-currency':
-                                    $pending_reason = __('Multi-currency: You do not have a balance in the currency sent, and you do not have your Payment Receiving Preferences set to automatically convert and accept this payment. You must manually accept or deny this payment.', 'paypal-for-woocommerce');
-                                    break;
-                                case 'order':
-                                    $pending_reason = __('Order: The payment is pending because it is part of an order that has been authorized but not settled.', 'paypal-for-woocommerce');
-                                    break;
-                                case 'paymentreview':
-                                    $pending_reason = __('Payment Review: The payment is pending while it is being reviewed by PayPal for risk.', 'paypal-for-woocommerce');
-                                    break;
-                                case 'unilateral':
-                                    $pending_reason = __('Unilateral: The payment is pending because it was made to an email address that is not yet registered or confirmed.', 'paypal-for-woocommerce');
-                                    break;
-                                case 'verify':
-                                    $pending_reason = __('Verify: The payment is pending because you are not yet verified. You must verify your account before you can accept this payment.', 'paypal-for-woocommerce');
-                                    break;
-                                case 'other':
-                                    $pending_reason = __('Other: For more information, contact PayPal customer service.', 'paypal-for-woocommerce');
-                                    break;
-                                case 'none':
-                                default:
-                                    $pending_reason = __('No pending reason provided.', 'paypal-for-woocommerce');
-                                    break;
-                            }
-                            $order->add_order_note(sprintf(__('Payment via Express Checkout Pending. PayPal reason: %s.', 'paypal-for-woocommerce'), $pending_reason));
-                            $order->update_status('on-hold');
-                            break;
-                        case 'denied' :
-                        case 'expired' :
-                        case 'failed' :
-                        case 'voided' :
-                            // Order failed
-                            $order->update_status('failed', sprintf(__('Payment %s via Express Checkout.', 'paypal-for-woocommerce'), strtolower($result['PAYMENTINFO_0_PAYMENTSTATUS'])));
-                            break;
-                        default:
-                            break;
-
+                            if ( ! in_array( strtolower( $result['PAYMENTINFO_0_TRANSACTIONTYPE'] ), array( 'cart', 'instant', 'expresscheckout', 'web_accept', 'masspay', 'send_money' ) ) ) {
+					break;
+				}
+                                $order_status = 'on-hold';
+				switch( strtolower( $result['PAYMENTINFO_0_PENDINGREASON'] ) ) {
+					case 'address':
+						$pending_reason = __( 'Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile.', 'paypal-for-woocommerce' );
+						break;
+					case 'authorization':
+                                                $order_status = 'complete';
+						$pending_reason = __( 'Authorization: The payment is pending because it has been authorized but not settled. You must capture the funds first.', 'paypal-for-woocommerce' );
+						break;
+					case 'echeck':
+						$pending_reason = __( 'eCheck: The payment is pending because it was made by an eCheck that has not yet cleared.', 'paypal-for-woocommerce' );
+						break;
+					case 'intl':
+						$pending_reason = __( 'intl: The payment is pending because you hold a non-U.S. account and do not have a withdrawal mechanism. You must manually accept or deny this payment from your Account Overview.', 'paypal-for-woocommerce' );
+						break;
+					case 'multicurrency':
+					case 'multi-currency':
+						$pending_reason = __( 'Multi-currency: You do not have a balance in the currency sent, and you do not have your Payment Receiving Preferences set to automatically convert and accept this payment. You must manually accept or deny this payment.', 'paypal-for-woocommerce' );
+						break;
+					case 'order':
+						$pending_reason = __( 'Order: The payment is pending because it is part of an order that has been authorized but not settled.', 'paypal-for-woocommerce' );
+						break;
+					case 'paymentreview':
+						$pending_reason = __( 'Payment Review: The payment is pending while it is being reviewed by PayPal for risk.', 'paypal-for-woocommerce' );
+						break;
+					case 'unilateral':
+						$pending_reason = __( 'Unilateral: The payment is pending because it was made to an email address that is not yet registered or confirmed.', 'paypal-for-woocommerce' );
+						break;
+					case 'verify':
+						$pending_reason = __( 'Verify: The payment is pending because you are not yet verified. You must verify your account before you can accept this payment.', 'paypal-for-woocommerce' );
+						break;
+					case 'other':
+						$pending_reason = __( 'Other: For more information, contact PayPal customer service.', 'paypal-for-woocommerce' );
+						break;
+					case 'none':
+					default:
+						$pending_reason = __( 'No pending reason provided.', 'paypal-for-woocommerce' );
+						break;
+				}
+				$order->add_order_note( sprintf( __( 'Payment via Express Checkout Pending. PayPal reason: %s.', 'paypal-for-woocommerce' ), $pending_reason ) );
+                                if( $order_status == 'on-hold' ) {
+                                    $order->update_status( 'on-hold' );
+                                } else {
+                                    $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
+                                }
+				break;
+			case 'denied' :
+			case 'expired' :
+			case 'failed' :
+			case 'voided' :
+				// Order failed
+				$order->update_status( 'failed', sprintf( __( 'Payment %s via Express Checkout.', 'paypal-for-woocommerce' ), strtolower( $result['PAYMENTINFO_0_PAYMENTSTATUS'] ) ) );
+				break;
+			default:
+				break;
                     endswitch;
 
                     unset(WC()->session->checkout_form);
@@ -2051,7 +2114,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $Payments = array();
         $Payment = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($FinalPaymentAmt), // Required.  The total cost of the transaction to the customer.  If shipping cost and tax charges are known, include them in this value.  If not, this value should be the current sub-total of the order.
-            'currencycode' => get_woocommerce_currency(), // A three-character currency code.  Default is USD.
+            'currencycode' => $order->get_order_currency(), // A three-character currency code.  Default is USD.
             'shippingdiscamt' => '', // Total shipping discount for this order, specified as a negative number.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays the string 'Yes' and the insurance amount.  If true, the total shipping insurance for this order must be a positive number.
             'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
@@ -2349,7 +2412,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      */
     static function woocommerce_paypal_express_checkout_button_angelleye() {
         global $pp_settings;
-        if (!AngellEYE_Utility::is_valid_for_use()) {
+        if(!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
             return false;
         }
         if (@$pp_settings['enabled'] == 'yes' && (empty($pp_settings['show_on_cart']) || $pp_settings['show_on_cart'] == 'yes') && 0 < WC()->cart->total) {
@@ -2369,7 +2432,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case "paypalimage":
                     echo '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'expresscheckout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    echo '<img src="https://www.paypalobjects.com/webstatic/' . WC_Gateway_PayPal_Express_AngellEYE::get_button_locale_code() . '/i/buttons/checkout-logo-medium.png" width="170" height="32" style="width: 170px; height: 32px; margin: 3px 5px 0 0; border: none; padding: 0;" align="top" alt="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '" />';
+                    echo '<img src='.WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage().' style="width: auto; height: auto; margin: 3px 5px 3px 0; border: none; padding: 0;" align="top" alt="' . __( 'Pay with PayPal', 'paypal-for-woocommerce' ) . '" />';
                     echo "</a>";
                     echo $angelleyeOverlay;
                     break;
@@ -2396,12 +2459,26 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     static function get_button_locale_code() {
-        $locale_code = defined("WPLANG") && get_locale() != '' ? get_locale() : 'en_US';
-        switch ($locale_code) {
-            case "de_DE": $locale_code = "de_DE/DE";
-                break;
+        $_supportedLocale = array(
+            'en_US', 'fr_XC', 'es_XC', 'zh_XC', 'en_AU', 'de_DE', 'nl_NL',
+            'fr_FR', 'pt_BR', 'fr_CA', 'zh_CN', 'ru_RU', 'en_GB', 'zh_HK',
+            'he_IL', 'it_IT', 'ja_JP', 'pl_PL', 'pt_PT', 'es_ES', 'sv_SE', 'zh_TW', 'tr_TR'
+	);
+        $locale = get_locale();
+        if ( ! in_array( $locale, $_supportedLocale ) ) {
+                $locale = 'en_US';
         }
-        return $locale_code;
+        return $locale;
+    }
+    
+    public static function angelleye_get_paypalimage() {
+        if( self::get_button_locale_code() == 'en_US') {
+            return "https://www.paypalobjects.com/webstatic/".self::get_button_locale_code()."/i/buttons/checkout-logo-medium.png";
+        } else {
+            return esc_url(add_query_arg('cmd', '_dynamic-image', add_query_arg('locale', self::get_button_locale_code(), 'https://fpdbs.paypal.com/dynamicimageweb')));
+        }
+        
+        
     }
 
     /**
@@ -2758,19 +2835,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         );
         $PayPalRequestData['DRTFields'] = $DRTFields;
         $PaymentDetails = array(
-            'amt' => AngellEYE_Gateway_Paypal::number_format($order->order_total), // Required. Total amount of the order, including shipping, handling, and tax.
-            'currencycode' => get_woocommerce_currency(), // A three-character currency code.  Default is USD.
-            'itemamt' => '', // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
-            'shippingamt' => '', // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
-            'insuranceamt' => '',
-            'shippingdiscount' => '',
-            'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
-            'taxamt' => '', // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
-            'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays Yes and shows the amount.
-            'desc' => '', // Description of items on the order.  127 char max.
-            'custom' => '', // Free-form field for your own use.  256 char max.
-            'invnum' => $this->invoice_id_prefix . $invoice_number, // Your own invoice or tracking number.  127 char max.
-            'buttonsource' => ''     // URL for receiving Instant Payment Notifications
+            'amt' => AngellEYE_Gateway_Paypal::number_format($order->order_total), 							// Required. Total amount of the order, including shipping, handling, and tax.
+            'currencycode' => $order->get_order_currency(), 					// A three-character currency code.  Default is USD.
+            'itemamt' => '', 						// Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.  
+            'shippingamt' => '', 					// Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+            'insuranceamt' => '', 
+            'shippingdiscount' => '', 
+            'handlingamt' => '', 					// Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
+            'taxamt' => '', 						// Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order. 
+            'insuranceoptionoffered' => '', 		// If true, the insurance drop-down on the PayPal review page displays Yes and shows the amount.
+            'desc' => '', 							// Description of items on the order.  127 char max.
+            'custom' => '', 						// Free-form field for your own use.  256 char max.
+            'invnum' => $this->invoice_id_prefix . $invoice_number, 						// Your own invoice or tracking number.  127 char max.
+            'buttonsource' => ''					// URL for receiving Instant Payment Notifications
         );
         if (isset($this->notifyurl) && !empty($this->notifyurl)) {
             $PaymentDetails['notifyurl'] = $this->notifyurl;
@@ -3214,5 +3291,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
-
+    public function angelleye_express_checkout_encrypt_gateway_api($settings) {
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_keys = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
+            foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
+    }
 }

@@ -17,20 +17,20 @@ use PayPal\Api\Sale;
 
 class PayPal_Rest_API_Utility {
 
-    protected $card;
-    protected $FundingInstrument;
-    protected $Payer;
-    protected $order_item;
-    protected $item;
-    protected $item_list;
-    protected $details;
-    protected $payment_data;
-    protected $amount;
-    protected $transaction;
-    protected $payment;
-    protected $payment_method;
-    protected $gateway;
-    protected $CreditCardToken;
+    public $card;
+    public $FundingInstrument;
+    public $Payer;
+    public $order_item;
+    public $item;
+    public $item_list;
+    public $details;
+    public $payment_data;
+    public $amount;
+    public $transaction;
+    public $payment;
+    public $payment_method;
+    public $gateway;
+    public $CreditCardToken;
 
     public function __construct() {
         $this->add_paypal_rest_api_lib();
@@ -103,13 +103,13 @@ class PayPal_Rest_API_Utility {
                             $creditcard_id = $this->card->getId();
                             $this->save_payment_token($order, $creditcard_id);
                             $token = new WC_Payment_Token_CC();
-                            $token->set_user_id($customer_id);
-                            $token->set_token($creditcard_id);
-                            $token->set_gateway_id($this->payment_method);
-                            $token->set_card_type($this->card->type);
-                            $token->set_last4(substr($this->card->number, -4));
-                            $token->set_expiry_month(date('m'));
-                            $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
+                            $token->set_user_id( $customer_id );
+                            $token->set_token( $creditcard_id );
+                            $token->set_gateway_id( $this->payment_method );
+                            $token->set_card_type( $this->card->type );
+                            $token->set_last4( substr( $this->card->number, -4 ) );
+                            $token->set_expiry_month( $this->card->expire_month );
+                            $token->set_expiry_year( $this->card->expire_year );
                             $save_result = $token->save();
                             if ($save_result) {
                                 $order->add_payment_token($token);
@@ -223,7 +223,7 @@ class PayPal_Rest_API_Utility {
         foreach ($this->payment_data['order_items'] as $item) {
             $this->item = new Item();
             $this->item->setName($item['name']);
-            $this->item->setCurrency(get_woocommerce_currency());
+            $this->item->setCurrency($order->get_order_currency());
             $this->item->setQuantity($item['qty']);
             $this->item->setPrice($item['amt']);
             array_push($this->order_item, $this->item);
@@ -260,7 +260,7 @@ class PayPal_Rest_API_Utility {
      */
     public function set_amount_values($order) {
         $this->amount = new Amount();
-        $this->amount->setCurrency(get_woocommerce_currency());
+        $this->amount->setCurrency($order->get_order_currency());
         $this->amount->setTotal($this->number_format($order->get_total(), $order));
         $this->amount->setDetails($this->details);
     }
@@ -288,36 +288,12 @@ class PayPal_Rest_API_Utility {
 
     /**
      * @since    1.2
-     * @param type $account_number
-     * @return type
-     */
-    public function card_type_from_account_number($account_number) {
-        $types = array(
-            'visa' => '/^4/',
-            'mc' => '/^5[1-5]/',
-            'amex' => '/^3[47]/',
-            'discover' => '/^(6011|65|64[4-9]|622)/',
-            'diners' => '/^(36|38|30[0-5])/',
-            'jcb' => '/^35/',
-            'maestro' => '/^(5018|5020|5038|6304|6759|676[1-3])/',
-            'laser' => '/^(6706|6771|6709)/',
-        );
-        foreach ($types as $type => $pattern) {
-            if (1 === preg_match($pattern, $account_number)) {
-                return $type;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @since    1.2
      * @return ApiContext
      */
     public function getAuth() {
         $this->mode = $this->testmode == 'yes' ? 'SANDBOX' : 'LIVE';
         $auth = new ApiContext(new OAuthTokenCredential($this->rest_client_id, $this->rest_secret_id));
-        $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce', 'log.LogEnabled' => true, 'log.LogLevel' => ($this->mode == 'SANDBOX' ) ? 'DEBUG' : 'INFO', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
+        $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce', 'log.LogEnabled' => true, 'log.LogLevel' => 'DEBUG', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
         return $auth;
     }
 
@@ -342,7 +318,7 @@ class PayPal_Rest_API_Utility {
      */
     public function set_card_type($card_data) {
         $first_four = substr($card_data->number, 0, 4);
-        $card_type = $this->card_type_from_account_number($first_four);
+        $card_type = AngellEYE_Utility::card_type_from_account_number($first_four);
         $this->card->setType($card_type);
     }
 
@@ -516,7 +492,7 @@ class PayPal_Rest_API_Utility {
         }
         $sale = Sale::get($order->get_transaction_id(), $this->getAuth());
         $this->amount = new Amount();
-        $this->amount->setCurrency(get_woocommerce_currency());
+        $this->amount->setCurrency($order->get_order_currency());
         $this->amount->setTotal($this->number_format($amount, $order));
         $refund = new Refund();
         $refund->setAmount($this->amount);
@@ -613,13 +589,13 @@ class PayPal_Rest_API_Utility {
                 $customer_id = get_current_user_id();
                 $creditcard_id = $this->card->getId();
                 $token = new WC_Payment_Token_CC();
-                $token->set_user_id($customer_id);
-                $token->set_token($creditcard_id);
-                $token->set_gateway_id($this->payment_method);
-                $token->set_card_type($this->card->type);
-                $token->set_last4(substr($this->card->number, -4));
-                $token->set_expiry_month(date('m'));
-                $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
+                $token->set_user_id( $customer_id );
+                $token->set_token( $creditcard_id );
+                $token->set_gateway_id( $this->payment_method );
+                $token->set_card_type( $this->card->type );
+                $token->set_last4( substr( $this->card->number, -4 ) );
+                $token->set_expiry_month( $this->card->expire_month );
+                $token->set_expiry_year( $this->card->expire_year );
                 $save_result = $token->save();
                 if ($save_result) {
                     return array(
