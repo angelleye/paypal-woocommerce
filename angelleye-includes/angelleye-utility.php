@@ -90,7 +90,9 @@ class AngellEYE_Utility {
             }
             add_filter('woocommerce_payment_gateway_supports', array($this, 'angelleye_woocommerce_payment_gateway_supports'), 10, 3);
         }
-        add_action('woocommerce_process_shop_order_meta', array($this, 'save'), 51, 2);
+
+        add_action( 'woocommerce_process_shop_order_meta', array($this, 'save' ), 50, 2);
+        add_action( 'woocommerce_admin_order_data_after_shipping_address', array($this, 'angelleye_paypal_for_woocommerce_billing_agreement_details'), 10, 1);
     }
 
     public function angelleye_woocommerce_order_actions($order_actions = array()) {
@@ -1298,4 +1300,21 @@ class AngellEYE_Utility {
         }
         return $output;
     }
+
+    
+    public function angelleye_paypal_for_woocommerce_billing_agreement_details($order) {
+        if (!is_object($order)) {
+            $order = wc_get_order($order);
+        }
+        $billing_agreement_id = get_post_meta( $order->id, '_billing_agreement_id', true );
+        if( empty($billing_agreement_id) ) {
+            return false;
+        }
+        ?>
+        <h3>
+            <?php _e( 'Billing Agreement Details', 'woocommerce' ); ?>
+        </h3>
+        <p> <?php echo $billing_agreement_id; ?></p> <?php 
+    }
+
 }
