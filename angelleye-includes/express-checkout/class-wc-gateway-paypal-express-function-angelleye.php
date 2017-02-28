@@ -14,7 +14,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -27,7 +27,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -40,7 +40,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -94,7 +94,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 echo apply_filters('wc_ec_button', $ec_button_output, $ec_button_link);
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -107,7 +107,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
             }
             return $result;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -122,7 +122,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
             }
             return $is_us;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -153,7 +153,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
             }
             return apply_filters('wc_ec_button_language', $locale);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -190,7 +190,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 exit;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -201,4 +201,5 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     public function ec_get_version() {
         return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
     }
+
 }

@@ -21,6 +21,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function __construct($gateway) {
         try {
             $this->gateway = $gateway;
+            $this->skip_final_review = $this->gateway->get_option('skip_final_review', 'no');
             $this->credentials = array(
                 'Sandbox' => $this->gateway->testmode == 'yes' ? TRUE : FALSE,
                 'APIUsername' => $this->gateway->api_username,
@@ -46,11 +47,44 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         }
     }
 
+    public function angelleye_redirect() {
+        unset(WC()->session->paypal_express_checkout);
+        if (!is_ajax()) {
+            wp_redirect(get_permalink(wc_get_page_id('cart')));
+            exit;
+        } else {
+            $args = array(
+                'result' => 'failure',
+                'redirect' => get_permalink(wc_get_page_id('cart')),
+            );
+            if ($this->function_helper->ec_is_version_gte_2_4()) {
+                wp_send_json($args);
+            } else {
+                echo '<!--WC_START-->' . json_encode($args) . '<!--WC_END-->';
+            }
+        }
+    }
+
+    public function angelleye_redirect_action($url) {
+        if (!empty($url)) {
+            if (!is_ajax()) {
+                wp_redirect($url);
+                exit;
+            } else {
+                $args = array(
+                    'result' => 'success',
+                    'redirect' => $url,
+                );
+                wp_send_json($args);
+            }
+        }
+    }
+
     public function angelleye_set_express_checkout() {
         try {
             $this->angelleye_set_express_checkout_request();
             if ($this->response_helper->ec_is_response_success_or_successwithwarning($this->paypal_response)) {
-                wp_redirect($this->paypal_response['REDIRECTURL']);
+                $this->angelleye_redirect_action($this->paypal_response['REDIRECTURL']);
                 exit;
             } else {
                 $this->angelleye_write_error_log_and_send_email_notification($paypal_action_name = 'SetExpressCheckout');
@@ -81,8 +115,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 WC()->session->shiptoname = $this->paypal_response['FIRSTNAME'] . ' ' . $this->paypal_response['LASTNAME'];
                 WC()->session->payeremail = $this->paypal_response['EMAIL'];
                 WC()->session->chosen_payment_method = get_class($this->gateway);
-                wp_redirect(WC()->cart->get_checkout_url());
-                exit();
+                if ($this->skip_final_review == 'no') {
+                    wp_redirect(WC()->cart->get_checkout_url());
+                    exit();
+                }
             } else {
                 $this->angelleye_write_error_log_and_send_email_notification($paypal_action_name = 'GetExpresscheckoutDetails');
                 $this->angelleye_redirect();
@@ -512,36 +548,19 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $error_display_type_message = apply_filters('ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg);
         wc_add_notice($error_display_type_message, 'error');
     }
-    
+
     public function angelleye_write_paypal_request_log($paypal_action_name) {
-        if($paypal_action_name == 'SetExpressCheckout') {
+        if ($paypal_action_name == 'SetExpressCheckout') {
             WC_Gateway_PayPal_Express_AngellEYE::log('Redirecting to PayPal');
-            WC_Gateway_PayPal_Express_AngellEYE::log( sprintf(__('PayPal for WooCommerce Version: %s', 'express-checkout'), VERSION_PFW) );
-            WC_Gateway_PayPal_Express_AngellEYE::log( sprintf(__('WooCommerce Version: %s', 'express-checkout'), WC_VERSION) );
+            WC_Gateway_PayPal_Express_AngellEYE::log(sprintf(__('PayPal for WooCommerce Version: %s', 'express-checkout'), VERSION_PFW));
+            WC_Gateway_PayPal_Express_AngellEYE::log(sprintf(__('WooCommerce Version: %s', 'express-checkout'), WC_VERSION));
             WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->gateway->testmode);
             WC_Gateway_PayPal_Express_AngellEYE::log('Endpoint: ' . $this->gateway->API_Endpoint);
         }
         $PayPalRequest = isset($this->paypal_response['RAWREQUEST']) ? $this->paypal_response['RAWREQUEST'] : '';
         $PayPalResponse = isset($this->paypal_response['RAWRESPONSE']) ? $this->paypal_response['RAWRESPONSE'] : '';
-        WC_Gateway_PayPal_Express_AngellEYE::log( $paypal_action_name . ' Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
-        WC_Gateway_PayPal_Express_AngellEYE::log( $paypal_action_name . ' Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
+        WC_Gateway_PayPal_Express_AngellEYE::log($paypal_action_name . ' Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
+        WC_Gateway_PayPal_Express_AngellEYE::log($paypal_action_name . ' Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
     }
 
-    public function angelleye_redirect() {
-        unset(WC()->session->paypal_express_checkout);
-        if (!is_ajax()) {
-            wp_redirect(get_permalink(wc_get_page_id('cart')));
-            exit;
-        } else {
-            $args = array(
-                'result' => 'failure',
-                'redirect' => get_permalink(wc_get_page_id('cart')),
-            );
-            if ($this->function_helper->ec_is_version_gte_2_4()) {
-                wp_send_json($args);
-            } else {
-                echo '<!--WC_START-->' . json_encode($args) . '<!--WC_END-->';
-            }
-        }
-    }
 }

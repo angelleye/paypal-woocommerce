@@ -18,7 +18,7 @@ class WC_Gateway_PayPal_Express_listner_AngellEYE {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -47,7 +47,7 @@ class WC_Gateway_PayPal_Express_listner_AngellEYE {
             }
             return false;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -59,7 +59,7 @@ class WC_Gateway_PayPal_Express_listner_AngellEYE {
             $this->third_party_API_request($posted);
             $this->ipn_response_data_handler($posted);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -89,7 +89,7 @@ class WC_Gateway_PayPal_Express_listner_AngellEYE {
             wp_remote_post($third_party_notifyurl, $params);
             return;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -119,7 +119,7 @@ class WC_Gateway_PayPal_Express_listner_AngellEYE {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -146,7 +146,7 @@ class WC_Gateway_PayPal_Express_listner_AngellEYE {
             }
             return $PayPalRequestData = array('ID' => $ID, 'Sandbox' => $sandbox, 'APIUsername' => $apiusername, 'APIPassword' => $apipassword, 'APISignature' => $apisignature, 'APISubject' => $apisubject, 'APIMethod' => $apimethod, 'Buttonsource' => $buttonsource, 'transactionid' => $transactionid);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -160,7 +160,7 @@ class WC_Gateway_PayPal_Express_listner_AngellEYE {
                 return $post_data;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -178,7 +178,7 @@ class WC_Gateway_PayPal_Express_listner_AngellEYE {
                 WC()->cart->empty_cart();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 

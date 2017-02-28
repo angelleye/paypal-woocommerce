@@ -100,7 +100,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
-        
+
         if (!has_action('woocommerce_api_' . strtolower(get_class($this)))) {
             add_action('woocommerce_api_' . strtolower(get_class($this)), array($this, 'handle_wc_api'));
         }
@@ -212,8 +212,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'password',
                 'default' => ''
             ),
-            
-            
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -495,6 +493,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         return parent::is_available();
     }
 
+    public function payment_fields() {
+        if ($description = $this->get_description()) {
+            echo wpautop(wptexturize($description));
+        }
+        $this->new_method_label = __('Create a new billing agreement', 'paypal-for-woocommerce');
+        if ($this->supports('tokenization') && is_checkout()) {
+            $this->tokenization_script();
+            $this->saved_payment_methods();
+            $this->save_payment_method_checkbox();
+            do_action('payment_fields_saved_payment_methods', $this);
+        }
+    }
+
     public function process_payment($order_id) {
         try {
             if ($this->function_helper->ec_is_express_checkout()) {
@@ -517,10 +528,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
                 exit;
             } else {
-                // todo reidrect to cart page, display notice
+                $_GET['pp_action'] = 'set_express_checkout';
+                $this->handle_wc_api();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -575,13 +587,42 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case 'get_express_checkout_details':
                     $paypal_express_request->angelleye_get_express_checkout_details();
+                    if ($this->skip_final_review == 'yes') {
+                        $order_id = WC()->checkout()->create_order();
+                        if (is_wp_error($order_id)) {
+                            throw new Exception($order_id->get_error_message());
+                        }
+                        $order = wc_get_order($order_id);
+                        $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'billing');
+                        $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'shipping');
+                        $order->set_payment_method($this->id);
+
+                        update_post_meta($order_id, '_payment_method', $this->id);
+                        update_post_meta($order_id, '_payment_method_title', $this->title);
+
+                        update_post_meta($order_id, '_customer_user', get_current_user_id());
+                        if (!empty(WC()->session->post_data['billing_phone'])) {
+                            update_post_meta($order_id, '_billing_phone', WC()->session->post_data['billing_phone']);
+                        }
+                        if (!empty(WC()->session->post_data['order_comments'])) {
+                            update_post_meta($order_id, 'order_comments', WC()->session->post_data['order_comments']);
+                            $my_post = array(
+                                'ID' => $order_id,
+                                'post_excerpt' => WC()->session->post_data['order_comments'],
+                            );
+                            wp_update_post($my_post);
+                        }
+                        $_GET['order_id'] = $order_id;
+                        do_action('woocommerce_checkout_order_processed', $order_id, array());
+                        $paypal_express_request->angelleye_do_express_checkout_payment();
+                    }
                     break;
                 case 'do_express_checkout_payment':
                     $paypal_express_request->angelleye_do_express_checkout_payment();
                     break;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 

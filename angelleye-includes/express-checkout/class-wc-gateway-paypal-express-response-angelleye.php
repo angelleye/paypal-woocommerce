@@ -26,7 +26,7 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
             }
             return $details;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -44,7 +44,7 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
             }
             return $state;
         } catch (Exception $ex) {
-            
+
         }
     }
 

@@ -217,10 +217,10 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
     public function add_rest_api_utility() {
         if (empty($this->paypal_rest_api)) {
             if (class_exists('PayPal_Rest_API_Utility')) {
-                $this->paypal_rest_api = new PayPal_Rest_API_Utility();
+                $this->paypal_rest_api = new PayPal_Rest_API_Utility($this);
             } else {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/paypal-rest-api-utility.php' );
-                $this->paypal_rest_api = new PayPal_Rest_API_Utility();
+                $this->paypal_rest_api = new PayPal_Rest_API_Utility($this);
             }
         }
     }
