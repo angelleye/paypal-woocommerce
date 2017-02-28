@@ -495,18 +495,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class' => 'email_notify_order_cancellations',
                 'desc_tip' => true,
             ),
+            'debug' => array(
+                'title' => __('Debug', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => sprintf(__('Enable logging<code>%s</code>', 'paypal-for-woocommerce'), wc_get_log_file_path('paypal_express')),
+                'default' => 'no'
+            ),
             'is_encrypt' => array(
                 'title' => __('', 'paypal-for-woocommerce'),
                 'label' => __('', 'paypal-for-woocommerce'),
                 'type' => 'hidden',
                 'default' => 'yes',
                 'class' => ''
-            ),
-            'debug' => array(
-                'title' => __('Debug', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => sprintf(__('Enable logging<code>%s</code>', 'paypal-for-woocommerce'), wc_get_log_file_path('paypal_express')),
-                'default' => 'no'
             )
         );
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
@@ -520,7 +520,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($description = $this->get_description()) {
             echo wpautop(wptexturize($description));
         }
-        $this->new_method_label = __('Create a new billing agreement', 'paypal-for-woocommerce');
+        $this->new_method_label = __('Save PayPal account for future use', 'paypal-for-woocommerce');
         if ($this->supports('tokenization') && is_checkout()) {
             $this->tokenization_script();
             $this->saved_payment_methods();

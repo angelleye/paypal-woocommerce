@@ -12,6 +12,7 @@ jQuery(document).ready(function ($){
 	            var angelleye_action = $(this).data('action');
 	            $('form.cart').attr( 'action', angelleye_action );
 	            $(this).attr('disabled', 'disabled');
+                    $('form.cart').append("<input type='hidden' name='save_to_account' value='yes' /> ");
 	            $('form.cart').submit();
 	            return false;
        		}

@@ -77,11 +77,11 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                     $ec_button_output .= '<input type="image" class="single_add_to_cart_button" src="https://www.paypalobjects.com/webstatic/' . $this->ec_get_locale() . '/i/buttons/checkout-logo-medium.png" width="170" height="32" style="width: 170px; height: 32px; float: right; clear: both; margin: 3px 0px 6px 0; border: none; padding: 0;" align="top" alt="' . __('Check out with PayPal', 'express-checkout') . '" />';
                     $ec_button_output .= "</a></div>";
                 } else {
-                    $ec_button_output .= '<a class="single_add_to_cart_button paypal-express-checkout-button button alt" href="' . $ec_button_link . '">' . __('Check out with PayPal &rarr;', 'express-checkout') . '</a>';
+                    $ec_button_output .= '<a class="single_add_to_cart_button paypal_checkout_button paypal-express-checkout-button button alt" href="' . $ec_button_link . '">' . __('Check out with PayPal &rarr;', 'express-checkout') . '</a>';
                 }
                 if ($this->ec_show_paypal_credit()) {
                     $ec_button_output .= '<div class="express_checkout_button_cradit_card"><a href="' . esc_url(add_query_arg('use_bml', 'true', $ec_button_link)) . '" class="single_add_to_cart_button paypal_checkout_button ec_clearfix">';
-                    $ec_button_output .= '<input type="image" class="single_add_to_cart_button" src="https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png" width="145" height="32" style="width: 145px; height: 32px; float: right; clear: both; border: none; padding: 0; margin: 0;" align="top" alt="' . __('Check out with PayPal', 'express-checkout') . '" />';
+                    $ec_button_output .= '<input type="image" class="single_add_to_cart_button paypal_checkout_button" src="https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png" width="145" height="32" style="width: 145px; height: 32px; float: right; clear: both; border: none; padding: 0; margin: 0;" align="top" alt="' . __('Check out with PayPal', 'express-checkout') . '" />';
                     $ec_button_output .= '</a>';
                     $ec_button_output .= '</div>';
                 }

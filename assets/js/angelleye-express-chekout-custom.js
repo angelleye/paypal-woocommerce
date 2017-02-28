@@ -21,7 +21,9 @@ if( is_set_class ){
         jQuery('#express_checkout_button_chekout_page').hide();
         jQuery('#express_checkout_button_text').hide();
             jQuery('.woocommerce-message').hide();
-            jQuery('.woocommerce-info').hide();            
+            jQuery('#checkout_paypal_message').hide();
+            
+//            jQuery('.woocommerce-info').hide();            
         }
         
     } else if(is_page_name == "cart_page"){
