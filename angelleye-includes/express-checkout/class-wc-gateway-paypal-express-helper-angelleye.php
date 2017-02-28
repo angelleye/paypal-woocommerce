@@ -14,6 +14,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->version = '1.0.1';
             $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
             $this->setting = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
+            $this->enable_tokenized_payments = !empty($this->setting['enable_tokenized_payments']) ? $this->setting['enable_tokenized_payments'] : 'no';
+            
             $this->checkout_with_pp_button_type = !empty($this->setting['checkout_with_pp_button_type']) ? $this->setting['checkout_with_pp_button_type'] : 'paypalimage';
             $this->pp_button_type_text_button = !empty($this->setting['pp_button_type_text_button']) ? $this->setting['pp_button_type_text_button'] : 'Proceed to Checkout';
             $this->pp_button_type_my_custom = !empty($this->setting['pp_button_type_my_custom']) ? $this->setting['pp_button_type_my_custom'] : '';
@@ -82,6 +84,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         try {
             global $post, $product;
             if ($this->enabled == 'yes' && $this->show_on_product_page == 'yes') {
+                if ($this->enable_tokenized_payments == 'yes') {
+                    $this->function_helper->angelleye_ec_save_payment_method_checkbox();
+                }
                 echo '<div class="angelleye_button_single">';
                 $_product = wc_get_product($post->ID);
                 $button_dynamic_class = 'single_variation_wrap_angelleye_' . $product->id;
@@ -124,6 +129,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         try {
             if (isset($_REQUEST['express_checkout']) || isset($_REQUEST['express_checkout_x'])) {
                 wc_clear_notices();
+                if( isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on' ) {
+                    WC()->session->paypal_express_checkout['ec_save_to_account'] = $_POST['wc-paypal_express-new-payment-method'];
+                }
                 $url = esc_url_raw(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
             }
             return $url;
@@ -345,6 +353,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             return false;
         }
         if ($this->enabled == 'yes' && $this->show_on_cart == 'yes' && 0 < WC()->cart->total) {
+            if ($this->enable_tokenized_payments == 'yes') {
+                $this->function_helper->angelleye_ec_save_payment_method_checkbox();
+            }
             $angelleyeOverlay = '<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px;  width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(' . WC()->plugin_url() . '/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>';
             switch ($this->checkout_with_pp_button_type) {
                 case 'textbutton':
@@ -384,6 +395,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if (WC()->cart->total > 0) {
             wp_enqueue_script('angelleye_button');
             echo '<div id="checkout_paypal_message" class="woocommerce-info info">';
+            if($this->enable_tokenized_payments == 'yes') {
+                $this->function_helper->angelleye_ec_save_payment_method_checkbox();
+            }
             echo '<div id="paypal_box_button">';
             $_angelleyeOverlay = '<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(' . WC()->plugin_url() . '/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>';
             switch ($this->checkout_with_pp_button_type) {

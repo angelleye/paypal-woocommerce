@@ -7,3 +7,9 @@
     border: none; padding: 0;
     box-shadow: none;
 }
+p.woocommerce-SavedPaymentMethods-saveNew {
+    margin-bottom: 8px;
+}
+.angelleye_ec_save_to_accoount_box {
+    clear: both;
+}

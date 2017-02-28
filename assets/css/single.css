@@ -13,3 +13,9 @@
     opacity: 0.4;
     cursor: not-allowed;
 }
+p.woocommerce-SavedPaymentMethods-saveNew {
+    margin-bottom: 8px;
+}
+.angelleye_ec_save_to_accoount_box {
+    clear: both;
+}

@@ -87,6 +87,12 @@ background-position: right center;
     vertical-align: middle;
     max-width: 330px;
 }
+p.woocommerce-SavedPaymentMethods-saveNew {
+    margin-bottom: 8px;
+}
+.angelleye_ec_save_to_accoount_box {
+    clear: both;
+}
 @media only screen 
   and (min-device-width: 320px) 
   and (max-device-width: 480px) {
