@@ -14,7 +14,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -27,7 +27,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -40,7 +40,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -74,14 +74,14 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 $ec_button_link = $this->ec_get_checkout_url('ec_set_express_checkout');
                 if ('image' === $this->express_checkout_get_option('checkout_button_style')) {
                     $ec_button_output .= '<div class="express_checkout_button"><a href="' . $ec_button_link . '" class="single_add_to_cart_button paypal_checkout_button paypal-express-checkout-button ec_clearfix">';
-                    $ec_button_output .= '<input type="image" class="single_add_to_cart_button" src="https://www.paypalobjects.com/webstatic/' . $this->ec_get_locale() . '/i/buttons/checkout-logo-medium.png" width="170" height="32" style="width: 170px; height: 32px; float: right; clear: both; margin: 3px 0px 6px 0; border: none; padding: 0;" align="top" alt="' . __('Check out with PayPal', 'express-checkout') . '" />';
+                    $ec_button_output .= '<input type="image" class="single_add_to_cart_button" src="https://www.paypalobjects.com/webstatic/' . $this->ec_get_locale() . '/i/buttons/checkout-logo-medium.png" width="170" height="32" style="width: 170px; height: 32px; float: right; clear: both; margin: 3px 0px 6px 0; border: none; padding: 0;" align="top" alt="' . __('Check out with PayPal', 'paypal-for-woocommerce') . '" />';
                     $ec_button_output .= "</a></div>";
                 } else {
-                    $ec_button_output .= '<a class="single_add_to_cart_button paypal_checkout_button paypal-express-checkout-button button alt" href="' . $ec_button_link . '">' . __('Check out with PayPal &rarr;', 'express-checkout') . '</a>';
+                    $ec_button_output .= '<a class="single_add_to_cart_button paypal_checkout_button paypal-express-checkout-button button alt" href="' . $ec_button_link . '">' . __('Check out with PayPal &rarr;', 'paypal-for-woocommerce') . '</a>';
                 }
                 if ($this->ec_show_paypal_credit()) {
                     $ec_button_output .= '<div class="express_checkout_button_cradit_card"><a href="' . esc_url(add_query_arg('use_bml', 'true', $ec_button_link)) . '" class="single_add_to_cart_button paypal_checkout_button ec_clearfix">';
-                    $ec_button_output .= '<input type="image" class="single_add_to_cart_button paypal_checkout_button" src="https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png" width="145" height="32" style="width: 145px; height: 32px; float: right; clear: both; border: none; padding: 0; margin: 0;" align="top" alt="' . __('Check out with PayPal', 'express-checkout') . '" />';
+                    $ec_button_output .= '<input type="image" class="single_add_to_cart_button paypal_checkout_button" src="https://www.paypalobjects.com/webstatic/en_US/btn/btn_bml_SM.png" width="145" height="32" style="width: 145px; height: 32px; float: right; clear: both; border: none; padding: 0; margin: 0;" align="top" alt="' . __('Check out with PayPal', 'paypal-for-woocommerce') . '" />';
                     $ec_button_output .= '</a>';
                     $ec_button_output .= '</div>';
                 }
@@ -94,7 +94,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 echo apply_filters('wc_ec_button', $ec_button_output, $ec_button_link);
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -107,7 +107,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
             }
             return $result;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -122,7 +122,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
             }
             return $is_us;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -153,7 +153,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
             }
             return apply_filters('wc_ec_button_language', $locale);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -190,7 +190,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 exit;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -200,6 +200,15 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
 
     public function ec_get_version() {
         return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
+    }
+
+    function angelleye_ec_save_payment_method_checkbox() {
+        echo sprintf(
+                '<div class="angelleye_ec_save_to_accoount_box"><p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+				<input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" value="true" style="width:auto;" />
+				<label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
+			</p></div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'woocommerce')
+        );
     }
 
 }

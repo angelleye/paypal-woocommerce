@@ -408,7 +408,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     if (!in_array(strtolower($result['PAYMENTINFO_0_TRANSACTIONTYPE']), array('cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
                         break;
                     }
-                    $order->add_order_note(__('Payment Completed via Express Checkout', 'express-checkout'));
+                    $order->add_order_note(__('Payment Completed via Express Checkout', 'paypal-for-woocommerce'));
                     $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
                     break;
                 case 'pending' :
@@ -417,49 +417,49 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     }
                     switch (strtolower($result['PAYMENTINFO_0_PENDINGREASON'])) {
                         case 'address':
-                            $pending_reason = __('Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile.', 'express-checkout');
+                            $pending_reason = __('Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile.', 'paypal-for-woocommerce');
                             break;
                         case 'authorization':
-                            $pending_reason = __('Authorization: The payment is pending because it has been authorized but not settled. You must capture the funds first.', 'express-checkout');
+                            $pending_reason = __('Authorization: The payment is pending because it has been authorized but not settled. You must capture the funds first.', 'paypal-for-woocommerce');
                             break;
                         case 'echeck':
-                            $pending_reason = __('eCheck: The payment is pending because it was made by an eCheck that has not yet cleared.', 'express-checkout');
+                            $pending_reason = __('eCheck: The payment is pending because it was made by an eCheck that has not yet cleared.', 'paypal-for-woocommerce');
                             break;
                         case 'intl':
-                            $pending_reason = __('intl: The payment is pending because you hold a non-U.S. account and do not have a withdrawal mechanism. You must manually accept or deny this payment from your Account Overview.', 'express-checkout');
+                            $pending_reason = __('intl: The payment is pending because you hold a non-U.S. account and do not have a withdrawal mechanism. You must manually accept or deny this payment from your Account Overview.', 'paypal-for-woocommerce');
                             break;
                         case 'multicurrency':
                         case 'multi-currency':
-                            $pending_reason = __('Multi-currency: You do not have a balance in the currency sent, and you do not have your Payment Receiving Preferences set to automatically convert and accept this payment. You must manually accept or deny this payment.', 'express-checkout');
+                            $pending_reason = __('Multi-currency: You do not have a balance in the currency sent, and you do not have your Payment Receiving Preferences set to automatically convert and accept this payment. You must manually accept or deny this payment.', 'paypal-for-woocommerce');
                             break;
                         case 'order':
-                            $pending_reason = __('Order: The payment is pending because it is part of an order that has been authorized but not settled.', 'express-checkout');
+                            $pending_reason = __('Order: The payment is pending because it is part of an order that has been authorized but not settled.', 'paypal-for-woocommerce');
                             break;
                         case 'paymentreview':
-                            $pending_reason = __('Payment Review: The payment is pending while it is being reviewed by PayPal for risk.', 'express-checkout');
+                            $pending_reason = __('Payment Review: The payment is pending while it is being reviewed by PayPal for risk.', 'paypal-for-woocommerce');
                             break;
                         case 'unilateral':
-                            $pending_reason = __('Unilateral: The payment is pending because it was made to an email address that is not yet registered or confirmed.', 'express-checkout');
+                            $pending_reason = __('Unilateral: The payment is pending because it was made to an email address that is not yet registered or confirmed.', 'paypal-for-woocommerce');
                             break;
                         case 'verify':
-                            $pending_reason = __('Verify: The payment is pending because you are not yet verified. You must verify your account before you can accept this payment.', 'express-checkout');
+                            $pending_reason = __('Verify: The payment is pending because you are not yet verified. You must verify your account before you can accept this payment.', 'paypal-for-woocommerce');
                             break;
                         case 'other':
-                            $pending_reason = __('Other: For more information, contact PayPal customer service.', 'express-checkout');
+                            $pending_reason = __('Other: For more information, contact PayPal customer service.', 'paypal-for-woocommerce');
                             break;
                         case 'none':
                         default:
-                            $pending_reason = __('No pending reason provided.', 'express-checkout');
+                            $pending_reason = __('No pending reason provided.', 'paypal-for-woocommerce');
                             break;
                     }
-                    $order->add_order_note(sprintf(__('Payment via Express Checkout Pending. PayPal reason: %s.', 'express-checkout'), $pending_reason));
+                    $order->add_order_note(sprintf(__('Payment via Express Checkout Pending. PayPal reason: %s.', 'paypal-for-woocommerce'), $pending_reason));
                     $order->update_status('on-hold');
                     break;
                 case 'denied' :
                 case 'expired' :
                 case 'failed' :
                 case 'voided' :
-                    $order->update_status('failed', sprintf(__('Payment %s via Express Checkout.', 'express-checkout'), strtolower($result['PAYMENTINFO_0_PAYMENTSTATUS'])));
+                    $order->update_status('failed', sprintf(__('Payment %s via Express Checkout.', 'paypal-for-woocommerce'), strtolower($result['PAYMENTINFO_0_PAYMENTSTATUS'])));
                     break;
                 default:
                     break;
@@ -552,8 +552,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_write_paypal_request_log($paypal_action_name) {
         if ($paypal_action_name == 'SetExpressCheckout') {
             WC_Gateway_PayPal_Express_AngellEYE::log('Redirecting to PayPal');
-            WC_Gateway_PayPal_Express_AngellEYE::log(sprintf(__('PayPal for WooCommerce Version: %s', 'express-checkout'), VERSION_PFW));
-            WC_Gateway_PayPal_Express_AngellEYE::log(sprintf(__('WooCommerce Version: %s', 'express-checkout'), WC_VERSION));
+            WC_Gateway_PayPal_Express_AngellEYE::log(sprintf(__('PayPal for WooCommerce Version: %s', 'paypal-for-woocommerce'), VERSION_PFW));
+            WC_Gateway_PayPal_Express_AngellEYE::log(sprintf(__('WooCommerce Version: %s', 'paypal-for-woocommerce'), WC_VERSION));
             WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->gateway->testmode);
             WC_Gateway_PayPal_Express_AngellEYE::log('Endpoint: ' . $this->gateway->API_Endpoint);
         }

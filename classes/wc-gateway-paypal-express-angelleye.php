@@ -520,7 +520,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($description = $this->get_description()) {
             echo wpautop(wptexturize($description));
         }
-        $this->new_method_label = __('Save PayPal account for future use', 'paypal-for-woocommerce');
+        $this->new_method_label = __( 'Create a new billing agreement', 'paypal-for-woocommerce' );
         if ($this->supports('tokenization') && is_checkout()) {
             $this->tokenization_script();
             $this->saved_payment_methods();
@@ -598,7 +598,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 return;
             }
             if (WC()->cart->cart_contents_total <= 0) {
-                wc_add_notice(__('your order amount is zero, We were unable to process your order, please try again.', 'express-checkout'), 'error');
+                wc_add_notice(__('your order amount is zero, We were unable to process your order, please try again.', 'paypal-for-woocommerce'), 'error');
                 wp_redirect(WC()->cart->get_cart_url());
                 exit;
             }

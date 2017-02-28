@@ -203,7 +203,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             ?>
             <div class="express-provided-address">
-<!--                <a href="#" class="ex-show-address-fields" data-type="<?php echo esc_attr($type); ?>"><?php esc_html_e('Edit', 'express-checkout'); ?></a>-->
+<!--                <a href="#" class="ex-show-address-fields" data-type="<?php echo esc_attr($type); ?>"><?php esc_html_e('Edit', 'paypal-for-woocommerce'); ?></a>-->
                 <address>
                     <?php
                     $address = array(
@@ -265,7 +265,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             return;
         }
         printf(
-                '<a href="%1$s" class="ex-paypal-express-cancel">%2$s</a>', esc_url(add_query_arg(array('wc_paypal_express_clear_session' => true), WC()->cart->get_cart_url())), esc_html__('Cancel', 'express-checkout')
+                '<a href="%1$s" class="ex-paypal-express-cancel">%2$s</a>', esc_url(add_query_arg(array('wc_paypal_express_clear_session' => true), WC()->cart->get_cart_url())), esc_html__('Cancel', 'paypal-for-woocommerce')
         );
     }
 
