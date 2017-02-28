@@ -155,7 +155,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 wp_redirect($this->gateway->get_return_url($order));
                 exit();
             } else {
-                $this->angelleye_add_order_note_with_error($order);
+                $this->angelleye_add_order_note_with_error($order, $paypal_action_name = 'DoExpressCheckoutPayment');
                 $this->angelleye_write_error_log_and_send_email_notification($paypal_action_name = 'DoExpressCheckoutPayment');
                 $this->angelleye_redirect();
             }
@@ -486,7 +486,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         }
     }
 
-    public function angelleye_add_order_note_with_error($order, $paypal_action_name) {
+    public function angelleye_add_order_note_with_error($order, $paypal_action_name = null) {
         if (!empty($this->paypal_response['L_ERRORCODE0'])) {
             $ErrorCode = urldecode($this->paypal_response['L_ERRORCODE0']);
         } else {

@@ -38,7 +38,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         self::$log_enabled = $this->debug;
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
-        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
+        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', 'WC-EC');
         $this->show_on_checkout = $this->get_option('show_on_checkout', 'top');
         $this->paypal_account_optional = $this->get_option('paypal_account_optional', 'no');
         $this->error_display_type = $this->get_option('error_display_type', 'detailed');
@@ -108,6 +108,28 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-function-angelleye.php' );
         }
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
+    }
+    
+    public function admin_options() {
+        ?>
+        <h3><?php _e('Braintree', 'paypal-for-woocommerce'); ?></h3>
+        <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
+        <table class="form-table">
+            <?php $this->generate_settings_html(); ?>
+            <script type="text/javascript">
+                jQuery('#woocommerce_paypal_express_testmode').change(function () {
+                    sandbox = jQuery('#woocommerce_paypal_express_sandbox_api_username, #woocommerce_paypal_express_sandbox_api_password, #woocommerce_paypal_express_sandbox_api_signature').closest('tr'),
+                    production = jQuery('#woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature').closest('tr');
+                    if (jQuery(this).is(':checked')) {
+                        sandbox.show();
+                        production.hide();
+                    } else {
+                        sandbox.hide();
+                        production.show();
+                    }
+                }).change();
+            </script>
+        </table> <?php
     }
 
     public function init_form_fields() {
@@ -218,13 +240,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
                 'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce'),
-                'desc_tip' => true,
+                'desc_tip' => true
             ),
             'invoice_id_prefix' => array(
                 'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce'),
                 'desc_tip' => true,
+                'default' => 'WC-EC'
             ),
             'checkout_with_pp_button_type' => array(
                 'title' => __('Checkout Button Type', 'paypal-for-woocommerce'),

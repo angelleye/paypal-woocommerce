@@ -203,7 +203,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             ?>
             <div class="express-provided-address">
-                <a href="#" class="ex-show-address-fields" data-type="<?php echo esc_attr($type); ?>"><?php esc_html_e('Edit', 'express-checkout'); ?></a>
+<!--                <a href="#" class="ex-show-address-fields" data-type="<?php echo esc_attr($type); ?>"><?php esc_html_e('Edit', 'express-checkout'); ?></a>-->
                 <address>
                     <?php
                     $address = array(

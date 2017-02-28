@@ -27,6 +27,13 @@ class WC_Gateway_Calculation_AngellEYE {
     }
 
     public function cart_calculation() {
+        if(!defined('WOOCOMMERCE_CHECKOUT')) {
+            define('WOOCOMMERCE_CHECKOUT', true);
+        } 
+        if(!defined('WOOCOMMERCE_CART')) {
+            define('WOOCOMMERCE_CART', true);
+        } 
+        WC()->cart->calculate_totals();
         $this->payment = array();
         $this->itemamt = 0;
         $this->order_items = array();
@@ -44,6 +51,8 @@ class WC_Gateway_Calculation_AngellEYE {
             $this->order_items[] = $item;
             $roundedPayPalTotal += round($amount * $values['quantity'], $this->decimals);
         }
+   
+        
         $this->taxamt = round(WC()->cart->tax_total + WC()->cart->shipping_tax_total, $this->decimals);
         $this->shippingamt = round(WC()->cart->shipping_total, $this->decimals);
         $this->itemamt = round(WC()->cart->cart_contents_total, $this->decimals) + $this->discount_amount;
@@ -66,9 +75,7 @@ class WC_Gateway_Calculation_AngellEYE {
             $this->itemamt -= $this->discount_amount;
             $this->order_total -= $this->discount_amount;
         }
-        if(!defined('WOOCOMMERCE_CHECKOUT')) {
-            define('WOOCOMMERCE_CHECKOUT', true);
-        } 
+        
         WC()->cart->calculate_totals();
         $wooOrderTotal = round(WC()->cart->total, $this->decimals);
         if ($wooOrderTotal != $this->order_total) {
@@ -82,7 +89,7 @@ class WC_Gateway_Calculation_AngellEYE {
         $this->cart_re_calculate();
         $this->payment['itemamt'] = round($this->itemamt, $this->decimals);
         $this->payment['taxamt'] = round($this->taxamt, $this->decimals);
-        $this->payment['shippingamt'] = round($this->shippingamt, $this->decimals);
+        $this->payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->shippingamt, $this->decimals));
         $this->payment['order_items'] = $this->order_items;
         $this->payment['discount_amount'] = round($this->discount_amount, $this->decimals);
         return $this->payment;
