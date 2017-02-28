@@ -374,7 +374,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $_product = $value['data'];
                     if (isset($_product->id) && !empty($_product->id)) {
                         $_paypal_billing_agreement = get_post_meta($_product->id, '_paypal_billing_agreement', true);
-                        if ($_paypal_billing_agreement == 'yes' || ( isset(WC()->session->paypal_express_checkout['ec_save_to_account']) && WC()->session->paypal_express_checkout['ec_save_to_account'] == 'on') ) {
+                        if ($_paypal_billing_agreement == 'yes' || ( isset(WC()->session->ec_save_to_account) && WC()->session->ec_save_to_account == 'on') ) {
                             $BillingAgreements = array();
                             $Item = array(
                                 'l_billingtype' => '',
