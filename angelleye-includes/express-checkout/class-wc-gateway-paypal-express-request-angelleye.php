@@ -22,6 +22,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         try {
             $this->gateway = $gateway;
             $this->skip_final_review = $this->gateway->get_option('skip_final_review', 'no');
+            $this->billing_address = $this->gateway->get_option('billing_address', 'no');
             $this->credentials = array(
                 'Sandbox' => $this->gateway->testmode == 'yes' ? TRUE : FALSE,
                 'APIUsername' => $this->gateway->api_username,
@@ -43,7 +44,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -91,7 +92,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_redirect();
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -115,18 +116,19 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 WC()->session->shiptoname = $this->paypal_response['FIRSTNAME'] . ' ' . $this->paypal_response['LASTNAME'];
                 WC()->session->payeremail = $this->paypal_response['EMAIL'];
                 WC()->session->chosen_payment_method = get_class($this->gateway);
-                $this->enable_guest_checkout = get_option( 'woocommerce_enable_guest_checkout' ) == 'yes' ? true : false;
-		$this->must_create_account   = $this->enable_guest_checkout || is_user_logged_in() ? false : true;
+                $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
+                $this->must_create_account = $this->enable_guest_checkout || is_user_logged_in() ? false : true;
                 if ($this->skip_final_review == 'no' || $this->must_create_account) {
                     wp_redirect(WC()->cart->get_checkout_url());
                     exit();
                 }
+                $this->angelleye_ec_load_customer_data_using_ec_details();
             } else {
                 $this->angelleye_write_error_log_and_send_email_notification($paypal_action_name = 'GetExpresscheckoutDetails');
                 $this->angelleye_redirect();
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -162,7 +164,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_redirect();
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -269,7 +271,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->paypal_response = $this->paypal->DoExpressCheckoutPayment($this->paypal_request);
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'DoExpressCheckoutPayment');
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -280,7 +282,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             $this->paypal = new Angelleye_PayPal($this->credentials);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -365,7 +367,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'SetExpressCheckout');
             return $this->paypal_response;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -376,7 +378,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $_product = $value['data'];
                     if (isset($_product->id) && !empty($_product->id)) {
                         $_paypal_billing_agreement = get_post_meta($_product->id, '_paypal_billing_agreement', true);
-                        if ($_paypal_billing_agreement == 'yes' || ( isset(WC()->session->ec_save_to_account) && WC()->session->ec_save_to_account == 'on') ) {
+                        if ($_paypal_billing_agreement == 'yes' || ( isset(WC()->session->ec_save_to_account) && WC()->session->ec_save_to_account == 'on')) {
                             $BillingAgreements = array();
                             $Item = array(
                                 'l_billingtype' => '',
@@ -395,7 +397,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             return $PayPalRequestData;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -468,7 +470,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             endswitch;
             return;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -563,6 +565,81 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $PayPalResponse = isset($this->paypal_response['RAWRESPONSE']) ? $this->paypal_response['RAWRESPONSE'] : '';
         WC_Gateway_PayPal_Express_AngellEYE::log($paypal_action_name . ' Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
         WC_Gateway_PayPal_Express_AngellEYE::log($paypal_action_name . ' Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
+    }
+
+    public function angelleye_ec_load_customer_data_using_ec_details() {
+        if (!empty($this->paypal_response['SHIPTOCOUNTRYCODE'])) {
+            if (!array_key_exists($this->paypal_response['SHIPTOCOUNTRYCODE'], WC()->countries->get_allowed_countries())) {
+                wc_add_notice(sprintf(__('We do not sell in your country, please try again with another address.', 'paypal-for-woocommerce')), 'error');
+                wp_redirect(get_permalink(wc_get_page_id('cart')));
+                exit;
+            }
+        }
+        if (isset($this->paypal_response['FIRSTNAME'])) {
+            WC()->customer->firstname = $this->paypal_response['FIRSTNAME'];
+        }
+        if (isset($this->paypal_response['LASTNAME'])) {
+            WC()->customer->lastname = $this->paypal_response['LASTNAME'];
+        }
+        if (isset($this->paypal_response['SHIPTONAME'])) {
+            WC()->customer->shiptoname = $this->paypal_response['SHIPTONAME'];
+        }
+        if (isset($this->paypal_response['SHIPTOSTREET'])) {
+            WC()->customer->set_shipping_address($this->paypal_response['SHIPTOSTREET']);
+        }
+        if (isset($this->paypal_response['SHIPTOSTREET2'])) {
+            WC()->customer->set_shipping_address_2($this->paypal_response['SHIPTOSTREET2']);
+        }
+        if (isset($this->paypal_response['SHIPTOCITY'])) {
+            WC()->customer->set_shipping_city($this->paypal_response['SHIPTOCITY']);
+        }
+        if (isset($this->paypal_response['SHIPTOCOUNTRYCODE'])) {
+            WC()->customer->set_shipping_country($this->paypal_response['SHIPTOCOUNTRYCODE']);
+        }
+        if (isset($this->paypal_response['SHIPTOSTATE'])) {
+            WC()->customer->set_shipping_state($this->get_state_code($this->paypal_response['SHIPTOCOUNTRYCODE'], $this->paypal_response['SHIPTOSTATE']));
+        }
+        if (isset($this->paypal_response['SHIPTOZIP'])) {
+            WC()->customer->set_shipping_postcode($this->paypal_response['SHIPTOZIP']);
+        }
+
+        if ($this->billing_address == 'yes') {
+            if (isset($this->paypal_response['SHIPTOSTREET'])) {
+                WC()->customer->set_address($this->paypal_response['SHIPTOSTREET']);
+            }
+            if (isset($this->paypal_response['SHIPTOSTREET2'])) {
+                WC()->customer->set_address_2($this->paypal_response['SHIPTOSTREET2']);
+            }
+            if (isset($this->paypal_response['SHIPTOCITY'])) {
+                WC()->customer->set_city($this->paypal_response['SHIPTOCITY']);
+            }
+            if (isset($this->paypal_response['SHIPTOCOUNTRYCODE'])) {
+                WC()->customer->set_country($this->paypal_response['SHIPTOCOUNTRYCODE']);
+            }
+            if (isset($this->paypal_response['SHIPTOSTATE'])) {
+                WC()->customer->set_state($this->get_state_code($this->paypal_response['SHIPTOCOUNTRYCODE'], $this->paypal_response['SHIPTOSTATE']));
+            }
+            if (isset($this->paypal_response['SHIPTOZIP'])) {
+                WC()->customer->set_postcode($this->paypal_response['SHIPTOZIP']);
+            }
+        }
+    }
+
+    public function get_state_code($country, $state) {
+        // If not US address, then convert state to abbreviation
+        if ($country != 'US') {
+            if (isset(WC()->countries->states[WC()->customer->get_country()]) && !empty(WC()->countries->states[WC()->customer->get_country()])) {
+                $local_states = WC()->countries->states[WC()->customer->get_country()];
+                if (!empty($local_states) && in_array($state, $local_states)) {
+                    foreach ($local_states as $key => $val) {
+                        if ($val == $state) {
+                            $state = $key;
+                        }
+                    }
+                }
+            }
+        }
+        return $state;
     }
 
 }
