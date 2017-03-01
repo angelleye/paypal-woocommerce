@@ -116,6 +116,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( "pre_option_woocommerce_paypal_pro_settings", array($this, 'angelleye_paypal_pro_decrypt_gateway_api'), 10, 1);
             add_filter( "pre_option_woocommerce_paypal_pro_payflow_settings", array($this, 'angelleye_paypal_pro_payflow_decrypt_gateway_api'), 10, 1);
             add_filter( "pre_option_woocommerce_braintree_settings", array($this, 'angelleye_braintree_decrypt_gateway_api'), 10, 1);
+            add_filter( "pre_option_woocommerce_enable_guest_checkout", array($this, 'angelleye_express_checkout_woocommerce_enable_guest_checkout'), 10, 1);
             add_filter('the_title', array($this, 'angelleye_paypal_for_woocommerce_page_title'), 99, 1);
             $this->customer_id;
         }
@@ -1570,6 +1571,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     }
                 }
                 return $gateway_settings;
+            } else {
+                return $bool;
+            }
+        }
+        
+        public function angelleye_express_checkout_woocommerce_enable_guest_checkout($bool) {
+            global $wpdb;
+            $row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_enable_guest_checkout' ) );
+            if( !empty($row->option_value) && $row->option_value == 'yes' && isset(WC()->session->paypal_express_checkout) && !empty(WC()->session->paypal_express_checkout) && isset(WC()->session->ec_save_to_account) && WC()->session->ec_save_to_account == 'on') {
+               return 'no';
             } else {
                 return $bool;
             }

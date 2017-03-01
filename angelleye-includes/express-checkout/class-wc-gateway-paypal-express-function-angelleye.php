@@ -203,15 +203,12 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
 
     function angelleye_ec_save_payment_method_checkbox() {
-        $enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
-        if ($enable_guest_checkout == false || is_user_logged_in()) {
-            echo sprintf(
+        echo sprintf(
                 '<div class="angelleye_ec_save_to_accoount_box"><p class="form-row woocommerce-SavedPaymentMethods-saveNew">
                             <input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" style="width:auto;" />
                             <label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
                     </p></div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'woocommerce')
-            );
-        }
+        );
     }
 
 }

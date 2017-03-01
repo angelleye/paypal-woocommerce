@@ -290,6 +290,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public function ec_clear_session_data() {
         unset(WC()->session->paypal_express_checkout);
         unset(WC()->session->paypal_express_terms);
+        unset(WC()->session->ec_save_to_account);
     }
 
     public function ec_is_checkout() {
