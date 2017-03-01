@@ -1,5 +1,4 @@
 <?php
-
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -109,7 +108,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
     }
-    
+
     public function admin_options() {
         ?>
         <h3><?php _e('Braintree', 'paypal-for-woocommerce'); ?></h3>
@@ -119,7 +118,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             <script type="text/javascript">
                 jQuery('#woocommerce_paypal_express_testmode').change(function () {
                     sandbox = jQuery('#woocommerce_paypal_express_sandbox_api_username, #woocommerce_paypal_express_sandbox_api_password, #woocommerce_paypal_express_sandbox_api_signature').closest('tr'),
-                    production = jQuery('#woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature').closest('tr');
+                            production = jQuery('#woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature').closest('tr');
                     if (jQuery(this).is(':checked')) {
                         sandbox.show();
                         production.hide();
@@ -520,7 +519,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($description = $this->get_description()) {
             echo wpautop(wptexturize($description));
         }
-        $this->new_method_label = __( 'Create a new billing agreement', 'paypal-for-woocommerce' );
+        $this->new_method_label = __('Create a new billing agreement', 'paypal-for-woocommerce');
         if ($this->supports('tokenization') && is_checkout()) {
             $this->tokenization_script();
             $this->saved_payment_methods();
@@ -555,7 +554,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->handle_wc_api();
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -611,6 +610,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case 'get_express_checkout_details':
                     $paypal_express_request->angelleye_get_express_checkout_details();
                     if ($this->skip_final_review == 'yes') {
+                        if (!defined('WOOCOMMERCE_CHECKOUT')) {
+                            define('WOOCOMMERCE_CHECKOUT', true);
+                        }
+                        if (!defined('WOOCOMMERCE_CART')) {
+                            define('WOOCOMMERCE_CART', true);
+                        }
+                        WC()->cart->calculate_totals();
                         $order_id = WC()->checkout()->create_order();
                         if (is_wp_error($order_id)) {
                             throw new Exception($order_id->get_error_message());
@@ -619,10 +625,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'billing');
                         $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'shipping');
                         $order->set_payment_method($this->id);
-
                         update_post_meta($order_id, '_payment_method', $this->id);
                         update_post_meta($order_id, '_payment_method_title', $this->title);
-
                         update_post_meta($order_id, '_customer_user', get_current_user_id());
                         if (!empty(WC()->session->post_data['billing_phone'])) {
                             update_post_meta($order_id, '_billing_phone', WC()->session->post_data['billing_phone']);
@@ -645,7 +649,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 

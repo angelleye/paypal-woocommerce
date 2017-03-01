@@ -75,7 +75,12 @@ class WC_Gateway_Calculation_AngellEYE {
             $this->itemamt -= $this->discount_amount;
             $this->order_total -= $this->discount_amount;
         }
-        
+        if(!defined('WOOCOMMERCE_CHECKOUT')) {
+            define('WOOCOMMERCE_CHECKOUT', true);
+        } 
+        if(!defined('WOOCOMMERCE_CART')) {
+            define('WOOCOMMERCE_CART', true);
+        } 
         WC()->cart->calculate_totals();
         $wooOrderTotal = round(WC()->cart->total, $this->decimals);
         if ($wooOrderTotal != $this->order_total) {

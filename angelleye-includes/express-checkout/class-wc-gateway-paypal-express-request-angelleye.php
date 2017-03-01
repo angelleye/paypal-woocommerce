@@ -115,7 +115,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 WC()->session->shiptoname = $this->paypal_response['FIRSTNAME'] . ' ' . $this->paypal_response['LASTNAME'];
                 WC()->session->payeremail = $this->paypal_response['EMAIL'];
                 WC()->session->chosen_payment_method = get_class($this->gateway);
-                if ($this->skip_final_review == 'no') {
+                $this->enable_guest_checkout = get_option( 'woocommerce_enable_guest_checkout' ) == 'yes' ? true : false;
+		$this->must_create_account   = $this->enable_guest_checkout || is_user_logged_in() ? false : true;
+                if ($this->skip_final_review == 'no' || $this->must_create_account) {
                     wp_redirect(WC()->cart->get_checkout_url());
                     exit();
                 }
