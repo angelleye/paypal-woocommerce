@@ -614,15 +614,16 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 WC()->customer->set_city($this->paypal_response['SHIPTOCITY']);
             }
             if (isset($this->paypal_response['SHIPTOCOUNTRYCODE'])) {
-                WC()->customer->set_country($this->paypal_response['SHIPTOCOUNTRYCODE']);
+                WC()->customer->set_shipping_country($this->paypal_response['SHIPTOCOUNTRYCODE']);
             }
             if (isset($this->paypal_response['SHIPTOSTATE'])) {
-                WC()->customer->set_state($this->get_state_code($this->paypal_response['SHIPTOCOUNTRYCODE'], $this->paypal_response['SHIPTOSTATE']));
+                WC()->customer->set_shipping_state($this->get_state_code($this->paypal_response['SHIPTOCOUNTRYCODE'], $this->paypal_response['SHIPTOSTATE']));
             }
             if (isset($this->paypal_response['SHIPTOZIP'])) {
-                WC()->customer->set_postcode($this->paypal_response['SHIPTOZIP']);
+                WC()->customer->set_shipping_postcode($this->paypal_response['SHIPTOZIP']);
             }
         }
+        WC()->customer->calculated_shipping( true );
     }
 
     public function get_state_code($country, $state) {

@@ -616,19 +616,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         if (!defined('WOOCOMMERCE_CART')) {
                             define('WOOCOMMERCE_CART', true);
                         }
+                        WC()->cart->calculate_totals();
+                        WC()->cart->calculate_shipping();
+                        WC()->customer->calculated_shipping( true );
                         $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
-                        if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method'])) {
-                            foreach ($_POST['shipping_method'] as $i => $value) {
+                        if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
+                            foreach ($_POST['shipping_method'] as $i => $value)
                                 $chosen_shipping_methods[$i] = wc_clean($value);
-                            }
-                        }
-                        WC()->session->set('chosen_shipping_methods', $chosen_shipping_methods);
 
+                        WC()->session->set('chosen_shipping_methods', $chosen_shipping_methods);
                         if (WC()->cart->needs_shipping()) {
+                            // Validate Shipping Methods
                             $packages = WC()->shipping->get_packages();
                             WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
                         }
-                        WC()->cart->calculate_totals();
                         $order_id = WC()->checkout()->create_order();
                         if (is_wp_error($order_id)) {
                             throw new Exception($order_id->get_error_message());
