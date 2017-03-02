@@ -154,6 +154,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     WC()->cart->empty_cart();
                 }
                 update_post_meta($order->id, '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
+                $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']));
                 $this->angelleye_ec_save_billing_agreement($order->id);
                 WC()->cart->empty_cart();
                 wc_clear_notices();
