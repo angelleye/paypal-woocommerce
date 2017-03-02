@@ -154,6 +154,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     WC()->cart->empty_cart();
                 }
                 update_post_meta($order->id, '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
+                $this->angelleye_ec_save_billing_agreement($order->id);
                 WC()->cart->empty_cart();
                 wc_clear_notices();
                 wp_redirect($this->gateway->get_return_url($order));
@@ -623,7 +624,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 WC()->customer->set_shipping_postcode($this->paypal_response['SHIPTOZIP']);
             }
         }
-        WC()->customer->calculated_shipping( true );
+        WC()->customer->calculated_shipping(true);
     }
 
     public function get_state_code($country, $state) {
@@ -641,6 +642,58 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
         }
         return $state;
+    }
+
+    public function angelleye_ec_save_billing_agreement($order_id) {
+        if (empty($this->paypal_response)) {
+            return false;
+        }
+        $order = wc_get_order($order_id);
+        //update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
+        update_post_meta($order_id, '_first_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+        do_action('before_save_payment_token', $order_id);
+        if (isset($this->paypal_response['BILLINGAGREEMENTID']) && !empty($this->paypal_response['BILLINGAGREEMENTID']) && is_user_logged_in()) {
+            update_post_meta($order_id, 'billing_agreement_id', $this->paypal_response['BILLINGAGREEMENTID']);
+            $customer_id = $order->get_user_id();
+            $billing_agreement_id = $this->paypal_response['BILLINGAGREEMENTID'];
+            $token = new WC_Payment_Token_CC();
+            $token->set_user_id($customer_id);
+            $token->set_token($billing_agreement_id);
+            $token->set_gateway_id($this->gateway->id);
+            $token->set_card_type('PayPal Billing Agreement');
+            $token->set_last4(substr($billing_agreement_id, -4));
+            $token->set_expiry_month(date('m'));
+            $token->set_expiry_year(date('Y', strtotime('+20 years')));
+            $save_result = $token->save();
+            if ($save_result) {
+                $order->add_payment_token($token);
+            }
+        }
+        if (!empty($this->paypal_response['BILLINGAGREEMENTID'])) {
+            update_post_meta($order_id, '_billing_agreement_id', $this->paypal_response['BILLINGAGREEMENTID']);
+            update_post_meta($order_id, 'BILLINGAGREEMENTID', $this->paypal_response['BILLINGAGREEMENTID']);
+        }
+    }
+
+    public function testing() {
+        if (AngellEYE_Gateway_Paypal::angelleye_woocommerce_sellerprotection_should_cancel_order($this, $result)) {
+            $this->add_log('Order ' . $order_id . ' (' . $result['PAYMENTINFO_0_TRANSACTIONID'] . ') did not meet our Seller Protection requirements. Cancelling and refunding order.');
+            $order->add_order_note(__('Transaction did not meet our Seller Protection requirements. Cancelling and refunding order.', 'paypal-for-woocommerce'));
+            $admin_email = get_option("admin_email");
+            if ($this->email_notify_order_cancellations == true) {
+                if (isset($user_email_address) && !empty($user_email_address)) {
+                    wp_mail($user_email_address, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce') . $order_id);
+                }
+            }
+            wp_mail($admin_email, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce') . $order_id);
+            update_post_meta($order_id, '_transaction_id', $result['PAYMENTINFO_0_TRANSACTIONID']);
+            //update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
+            $this->process_refund($order_id, $order->order_total, __('There was a problem processing your order. Please contact customer support.', 'paypal-for-woocommerce'));
+            $order->cancel_order();
+            wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
+            wp_redirect(get_permalink(wc_get_page_id('cart')));
+            exit();
+        }
     }
 
 }
