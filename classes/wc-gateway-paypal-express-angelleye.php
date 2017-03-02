@@ -530,6 +530,22 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function process_payment($order_id) {
         try {
+            if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
+                $result = $this->angelleye_ex_doreference_transaction($order_id);
+                if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+                    $order = wc_get_order($order_id);
+                    $order->payment_complete($result['TRANSACTIONID']);
+                    $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
+                    WC()->cart->empty_cart();
+                    return array(
+                        'result' => 'success',
+                        'redirect' => $this->get_return_url($order)
+                    );
+                } else {
+                    $redirect_url = get_permalink(wc_get_page_id('cart'));
+                    $this->paypal_express_checkout_error_handler($request_name = 'DoReferenceTransaction', $redirect_url, $result);
+                }
+            }
             if ($this->function_helper->ec_is_express_checkout()) {
                 $return_url = add_query_arg('order_id', $order_id, $this->function_helper->ec_get_checkout_url('do_express_checkout_payment', $order_id));
                 $args = array(
@@ -556,6 +572,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } catch (Exception $ex) {
             
         }
+    }
+
+    public function angelleye_ex_doreference_transaction($order_id) {
+        require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
+        $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
+        return $paypal_response = $paypal_express_request->DoReferenceTransaction($order_id);
     }
 
     public function angelleye_express_checkout_encrypt_gateway_api($settings) {
@@ -841,6 +863,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             self::$log->add('paypal_express', $message);
         }
+    }
+    
+    public function get_user_ip() {
+        return (isset($_SERVER['HTTP_X_FORWARD_FOR']) && !empty($_SERVER['HTTP_X_FORWARD_FOR'])) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
     }
 
 }

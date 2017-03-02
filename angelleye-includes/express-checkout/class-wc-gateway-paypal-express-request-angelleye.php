@@ -212,7 +212,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $Payment['notifyurl'] = $this->gateway->notifyurl;
             }
             if ($this->gateway->send_items) {
-                $Payment['order_items'] = $this->cart_param['order_items'];
+                $Payment['order_items'] = $this->order_param['order_items'];
             } else {
                 $Payment['order_items'] = array();
             }
@@ -694,6 +694,98 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             wp_redirect(get_permalink(wc_get_page_id('cart')));
             exit();
         }
+    }
+
+    public function DoReferenceTransaction($order_id) {
+        $PayPalRequestData = array();
+        $token_id = $_POST['wc-paypal_express-payment-token'];
+        $token = WC_Payment_Tokens::get($token_id);
+        if ($token->get_user_id() !== get_current_user_id()) {
+            return;
+        }
+        $order = wc_get_order($order_id);
+        if (sizeof(WC()->cart->get_cart()) == 0) {
+            $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
+            $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
+            wc_add_notice($ec_confirm_message, "error");
+            wp_redirect(get_permalink(wc_get_page_id('cart')));
+        }
+
+        if (!empty($order_id)) {
+            $order = new WC_Order($order_id);
+            $invoice_number = preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number());
+            if ($order->customer_note) {
+                $customer_notes = wptexturize($order->customer_note);
+            } else {
+                $customer_notes = '';
+            }
+        } else {
+            $invoice_number = $order->id;
+        }
+        $DRTFields = array(
+            'referenceid' => $token->get_token(),
+            'paymentaction' => !empty($this->gateway->payment_action) ? $this->gateway->payment_action : 'Sale',
+            'returnfmfdetails' => '1',
+            'softdescriptor' => ''
+        );
+        $PayPalRequestData['DRTFields'] = $DRTFields;
+        $PaymentDetails = array(
+            'amt' => AngellEYE_Gateway_Paypal::number_format($order->order_total), // Required. Total amount of the order, including shipping, handling, and tax.
+            'currencycode' => $order->get_order_currency(), // A three-character currency code.  Default is USD.
+            'itemamt' => '', // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.  
+            'shippingamt' => '', // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
+            'insuranceamt' => '',
+            'shippingdiscount' => '',
+            'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
+            'taxamt' => '', // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order. 
+            'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays Yes and shows the amount.
+            'desc' => '', // Description of items on the order.  127 char max.
+            'custom' => '', // Free-form field for your own use.  256 char max.
+            'invnum' => $this->gateway->invoice_id_prefix . $invoice_number, // Your own invoice or tracking number.  127 char max.
+            'buttonsource' => ''     // URL for receiving Instant Payment Notifications
+        );
+        if (isset($this->gateway->notifyurl) && !empty($this->gateway->notifyurl)) {
+            $PaymentDetails['notifyurl'] = $this->gateway->notifyurl;
+        }
+        if (WC()->cart->needs_shipping()) {
+            $shipping_first_name = $order->shipping_first_name;
+            $shipping_last_name = $order->shipping_last_name;
+            $shipping_address_1 = $order->shipping_address_1;
+            $shipping_address_2 = $order->shipping_address_2;
+            $shipping_city = $order->shipping_city;
+            $shipping_state = $order->shipping_state;
+            $shipping_postcode = $order->shipping_postcode;
+            $shipping_country = $order->shipping_country;
+            $ShippingAddress = array('shiptoname' => $shipping_first_name . ' ' . $shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
+                'shiptostreet' => $shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
+                'shiptostreet2' => $shipping_address_2, // Second street address.  100 char max.
+                'shiptocity' => wc_clean(stripslashes($shipping_city)), // Required if shipping is included.  Name of city.  40 char max.
+                'shiptostate' => $shipping_state, // Required if shipping is included.  Name of state or province.  40 char max.
+                'shiptozip' => $shipping_postcode, // Required if shipping is included.  Postal code of shipping address.  20 char max.
+                'shiptocountrycode' => $shipping_country, // Required if shipping is included.  Country code of shipping address.  2 char max.
+                'shiptophonenum' => '', // Phone number for shipping address.  20 char max.
+            );
+            $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
+        }
+        $this->order_param = $this->gateway_calculation->order_calculation($order_id);
+        if ($this->gateway->send_items) {
+            $Payment['order_items'] = $this->order_param['order_items'];
+        } else {
+            $Payment['order_items'] = array();
+        }
+        $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt']);
+        $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt']);
+        $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
+        $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
+        $this->paypal_response = $this->paypal->DoReferenceTransaction($PayPalRequestData);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify);
+        WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->gateway->testmode);
+        WC_Gateway_PayPal_Express_AngellEYE::log('Endpoint: ' . $this->gateway->API_Endpoint);
+        $PayPalRequest = isset($this->paypal_response['RAWREQUEST']) ? $this->paypal_response['RAWREQUEST'] : '';
+        $PayPalResponse = isset($this->paypal_response['RAWRESPONSE']) ? $this->paypal_response['RAWRESPONSE'] : '';
+        WC_Gateway_PayPal_Express_AngellEYE::log('Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
+        WC_Gateway_PayPal_Express_AngellEYE::log('Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
+        return $this->paypal_response;
     }
 
 }
