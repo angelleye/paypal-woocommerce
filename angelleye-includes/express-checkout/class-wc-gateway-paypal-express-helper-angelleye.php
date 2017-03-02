@@ -130,7 +130,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if (isset($_REQUEST['express_checkout']) || isset($_REQUEST['express_checkout_x'])) {
                 wc_clear_notices();
                 if( isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on' ) {
-                    WC()->session->ec_save_to_account = $_POST['wc-paypal_express-new-payment-method'];
+                    WC()->session->ec_save_to_account = 'on';
                 }
                 $url = esc_url_raw(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
             }

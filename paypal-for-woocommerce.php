@@ -1,4 +1,4 @@
-<?php
+<?php 
 /**
  * @wordpress-plugin
  * Plugin Name:       PayPal for WooCommerce
@@ -605,12 +605,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 ?>
                 <!--<div class="blockUI blockOverlay angelleyeOverlay" style="display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute; background: url(<?php /*echo WC()->plugin_url(); */?>/assets/images/select2-spinner.gif) 50% 50% / 16px 16px no-repeat rgb(255, 255, 255);"></div>-->
                 <script type="text/javascript">
-                    jQuery(document).ready(function($){
-                        $(".paypal_checkout_button").click(function(){
-                            $(this).parent().find(".angelleyeOverlay").show();
-                            return true;
-                        });
-                    });
+//                    jQuery(document).ready(function($){
+//                        $(".paypal_checkout_button").click(function(){
+//                            $(this).parent().find(".angelleyeOverlay").show();
+//                            return true;
+//                        });
+//                    });
                 </script>
                 <?php
                 echo "<div class='clear'></div></div>";

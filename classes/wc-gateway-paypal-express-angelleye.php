@@ -605,6 +605,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
             switch ($_GET['pp_action']) {
                 case 'set_express_checkout':
+                    if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') || (!empty($_GET['ec_save_to_account'] && $_GET['ec_save_to_account'] == true))) {
+                        WC()->session->ec_save_to_account = 'on';
+                    }
                     $paypal_express_request->angelleye_set_express_checkout();
                     break;
                 case 'get_express_checkout_details':
@@ -618,7 +621,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }
                         WC()->cart->calculate_totals();
                         WC()->cart->calculate_shipping();
-                        WC()->customer->calculated_shipping( true );
+                        WC()->customer->calculated_shipping(true);
                         $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
                         if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
                             foreach ($_POST['shipping_method'] as $i => $value)
