@@ -53,6 +53,13 @@ jQuery(document).ready(function ($) {
         jQuery('select#paypal_pro_card_type').change();
 
         jQuery(".paypal_checkout_button").click(function () {
+            if ($("#wc-paypal_express-new-payment-method").is(':checked')) {
+                angelleye_action = $(this).attr("href");
+                angelleye_action = angelleye_action + '&ec_save_to_account=true';
+            } else {
+                angelleye_action = $(this).attr("href");
+            }
+            $(this).attr("href",angelleye_action);
             jQuery(this).parent().find(".angelleyeOverlay").show();
             return true;
         });
