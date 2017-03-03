@@ -176,9 +176,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if (!empty($order_note)) {
                 $_POST['order_comments'] = $order_note;
             }
-            $billing_phone = WC()->session->post_data['billing_phone'];
-            if (!empty($billing_phone)) {
-                $_POST['billing_phone'] = $billing_phone;
+            if( !empty(WC()->session->post_data) ) {
+                foreach (WC()->session->post_data as $key => $value) {
+                    $_POST[$key] = $value;
+                }
             }
             $this->chosen = true;
         } catch (Exception $ex) {
@@ -295,6 +296,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         unset(WC()->session->paypal_express_checkout);
         unset(WC()->session->paypal_express_terms);
         unset(WC()->session->ec_save_to_account);
+        unset(WC()->session->held_order_received_text);
+        unset(WC()->session->post_data);
+        unset(WC()->session->shiptoname);
+        unset(WC()->session->payeremail);
     }
 
     public function ec_is_checkout() {
