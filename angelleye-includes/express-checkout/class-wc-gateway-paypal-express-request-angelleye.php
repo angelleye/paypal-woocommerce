@@ -17,6 +17,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public $function_helper;
     public $confirm_order_id;
     public $order_param;
+    public $user_email_address;
 
     public function __construct($gateway) {
         try {
@@ -143,6 +144,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->angelleye_add_order_note($order);
             $this->angelleye_add_extra_order_meta($order);
             if ($this->response_helper->ec_is_response_success_or_successwithwarning($this->paypal_response)) {
+                $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
+                $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
                 $is_sandbox = $this->gateway->testmode == 'yes' ? true : false;
                 update_post_meta($order->id, 'is_sandbox', $is_sandbox);
                 if ($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] == 'Completed') {
@@ -676,19 +679,37 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         }
     }
 
-    public function testing() {
-        if (AngellEYE_Gateway_Paypal::angelleye_woocommerce_sellerprotection_should_cancel_order($this, $result)) {
-            $this->add_log('Order ' . $order_id . ' (' . $result['PAYMENTINFO_0_TRANSACTIONID'] . ') did not meet our Seller Protection requirements. Cancelling and refunding order.');
+    public function angelleye_ec_get_customer_email_address($order_id) {
+        $this->user_email_address = '';
+        if (is_user_logged_in()) {
+            $userLogined = wp_get_current_user();
+            $this->user_email_address = $userLogined->user_email;
+            update_post_meta($order_id, '_billing_email', $userLogined->user_email);
+            update_post_meta($order_id, '_customer_user', $userLogined->ID);
+        } else {
+            $_billing_email = get_post_meta($order_id, '_billing_email', true);
+            if (!empty($_billing_email)) {
+                $this->user_email_address = $_billing_email;
+            } else {
+                $this->user_email_address = WC()->session->payeremail;
+                update_post_meta($order_id, '_billing_email', WC()->session->payeremail);
+            }
+        }
+    }
+
+    public function angelleye_ec_sellerprotection_handler($order_id) {
+        $order = wc_get_order($order_id);
+        if (AngellEYE_Gateway_Paypal::angelleye_woocommerce_sellerprotection_should_cancel_order($this, $this->paypal_response)) {
+            $this->add_log('Order ' . $order_id . ' (' . $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] . ') did not meet our Seller Protection requirements. Cancelling and refunding order.');
             $order->add_order_note(__('Transaction did not meet our Seller Protection requirements. Cancelling and refunding order.', 'paypal-for-woocommerce'));
             $admin_email = get_option("admin_email");
             if ($this->email_notify_order_cancellations == true) {
-                if (isset($user_email_address) && !empty($user_email_address)) {
-                    wp_mail($user_email_address, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce') . $order_id);
+                if (isset($this->user_email_address) && !empty($this->user_email_address)) {
+                    wp_mail($this->user_email_address, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce') . $order_id);
                 }
             }
             wp_mail($admin_email, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce') . $order_id);
-            update_post_meta($order_id, '_transaction_id', $result['PAYMENTINFO_0_TRANSACTIONID']);
-            //update_post_meta($order_id, '_express_checkout_token', $this->get_session('TOKEN'));
+            update_post_meta($order_id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
             $this->process_refund($order_id, $order->order_total, __('There was a problem processing your order. Please contact customer support.', 'paypal-for-woocommerce'));
             $order->cancel_order();
             wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
