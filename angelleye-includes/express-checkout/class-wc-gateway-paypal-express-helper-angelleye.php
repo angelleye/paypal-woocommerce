@@ -172,9 +172,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $_POST['billing_' . $field] = $value;
                 }
             }
-            $order_note = $this->ec_get_session_data('order_note');
+            $order_note = WC()->session->post_data['order_comments'];
             if (!empty($order_note)) {
-                $_POST['order_comments'] = $this->ec_get_session_data('order_note');
+                $_POST['order_comments'] = $order_note;
+            }
+            $billing_phone = WC()->session->post_data['billing_phone'];
+            if (!empty($billing_phone)) {
+                $_POST['billing_phone'] = $billing_phone;
             }
             $this->chosen = true;
         } catch (Exception $ex) {
