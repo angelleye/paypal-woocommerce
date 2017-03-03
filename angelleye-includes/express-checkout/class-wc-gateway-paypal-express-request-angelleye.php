@@ -698,7 +698,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
     public function angelleye_ec_sellerprotection_handler($order_id) {
         $order = wc_get_order($order_id);
-        if (AngellEYE_Gateway_Paypal::angelleye_woocommerce_sellerprotection_should_cancel_order($this, $this->paypal_response)) {
+        if ($this->angelleye_woocommerce_sellerprotection_should_cancel_order()) {
             $this->add_log('Order ' . $order_id . ' (' . $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] . ') did not meet our Seller Protection requirements. Cancelling and refunding order.');
             $order->add_order_note(__('Transaction did not meet our Seller Protection requirements. Cancelling and refunding order.', 'paypal-for-woocommerce'));
             $admin_email = get_option("admin_email");
@@ -823,13 +823,43 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
         }
         if (wc_get_page_id('terms') > 0 && apply_filters('woocommerce_checkout_show_terms', true)) {
-            if (!$this->disable_term) {
-                return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
-            } else {
+            if ($this->disable_term) {
+                return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
+            } elseif (isset($_POST['terms']) && $_POST['terms'] == 'on') {
+                return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
+            } elseif (!empty(WC()->session->paypal_express_terms && WC()->session->paypal_express_terms == true)) {
                 return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
             }
         }
         return apply_filters('angelleye_ec_force_to_display_checkout_page', $force_to_display_checkout_page);
+    }
+
+    public function angelleye_woocommerce_sellerprotection_should_cancel_order() {
+        $order_cancellation_setting = $this->gateway->order_cancellations;
+        $txn_protection_eligibility_response = isset($this->paypal_response['PAYMENTINFO_0_PROTECTIONELIGIBILITY']) ? $this->paypal_response['PAYMENTINFO_0_PROTECTIONELIGIBILITY'] : 'ERROR!';
+        $txn_id = isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : 'ERROR!';
+        switch ($order_cancellation_setting) {
+            case 'no_seller_protection':
+                if ($txn_protection_eligibility_response != 'Eligible' && $txn_protection_eligibility_response != 'PartiallyEligible') {
+                    WC_Gateway_PayPal_Express_AngellEYE::log('Transaction ' . $txn_id . ' is BAD. Setting: no_seller_protection, Response: ' . $txn_protection_eligibility_response);
+                    return true;
+                }
+                WC_Gateway_PayPal_Express_AngellEYE::log('Transaction ' . $txn_id . ' is OK. Setting: no_seller_protection, Response: ' . $txn_protection_eligibility_response);
+                return false;
+            case 'no_unauthorized_payment_protection':
+                if ($txn_protection_eligibility_response != 'Eligible') {
+                    WC_Gateway_PayPal_Express_AngellEYE::log('Transaction ' . $txn_id . ' is BAD. Setting: no_unauthorized_payment_protection, Response: ' . $txn_protection_eligibility_response);
+                    return true;
+                }
+                WC_Gateway_PayPal_Express_AngellEYE::log('Transaction ' . $txn_id . ' is OK. Setting: no_unauthorized_payment_protection, Response: ' . $txn_protection_eligibility_response);
+                return false;
+            case 'disabled':
+                WC_Gateway_PayPal_Express_AngellEYE::log('Transaction ' . $txn_id . ' is OK. Setting: disabled, Response: ' . $txn_protection_eligibility_response);
+                return false;
+            default:
+                WC_Gateway_PayPal_Express_AngellEYE::log('ERROR! order_cancellations setting for ' . $this->gateway->method_title . ' is not valid!');
+                return true;
+        }
     }
 
 }
