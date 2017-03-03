@@ -110,12 +110,48 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function admin_options() {
+        $guest_checkout = get_option('woocommerce_enable_guest_checkout', 'yes');
+        if (wc_get_page_id('terms') > 0 && apply_filters('woocommerce_checkout_show_terms', true)) {
+            if ($guest_checkout === 'yes') {
+                $display_disable_terms = 'yes';
+            } else {
+                $display_disable_terms = 'no';
+            }
+        } else {
+            $display_disable_terms = 'no';
+        }
         ?>
-        <h3><?php _e('Braintree', 'paypal-for-woocommerce'); ?></h3>
+        <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
             <?php $this->generate_settings_html(); ?>
             <script type="text/javascript">
+                var display_disable_terms = "<?php echo $display_disable_terms; ?>";
+        <?php if ($guest_checkout === 'no') { ?>
+                    jQuery("#woocommerce_paypal_express_skip_final_review").prop("checked", false);
+                    jQuery("#woocommerce_paypal_express_skip_final_review").attr("disabled", true);
+        <?php } ?>
+                jQuery('#woocommerce_paypal_express_skip_final_review').change(function () {
+                    disable_term = jQuery('#woocommerce_paypal_express_disable_term').closest('tr');
+                    if (jQuery(this).is(':checked')) {
+                        if (display_disable_terms === 'yes') {
+                            disable_term.show();
+                        } else {
+                            disable_term.hide();
+                        }
+                    } else {
+                        disable_term.hide();
+                    }
+                }).change();
+
+                jQuery('#woocommerce_paypal_express_disable_term').change(function () {
+                    term_notice = jQuery('.terms_notice');
+                    if (jQuery(this).is(':checked')) {
+                        term_notice.hide();
+                    } else {
+                        term_notice.show();
+                    }
+                }).change();
                 jQuery('#woocommerce_paypal_express_testmode').change(function () {
                     sandbox = jQuery('#woocommerce_paypal_express_sandbox_api_username, #woocommerce_paypal_express_sandbox_api_password, #woocommerce_paypal_express_sandbox_api_signature').closest('tr'),
                             production = jQuery('#woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature').closest('tr');
@@ -570,7 +606,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->handle_wc_api();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -634,60 +670,58 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case 'get_express_checkout_details':
                     $paypal_express_request->angelleye_get_express_checkout_details();
-                    if ($this->skip_final_review == 'yes') {
-                        if (!defined('WOOCOMMERCE_CHECKOUT')) {
-                            define('WOOCOMMERCE_CHECKOUT', true);
-                        }
-                        if (!defined('WOOCOMMERCE_CART')) {
-                            define('WOOCOMMERCE_CART', true);
-                        }
-                        WC()->cart->calculate_totals();
-                        WC()->cart->calculate_shipping();
-                        WC()->customer->calculated_shipping(true);
-                        $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
-                        if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
-                            foreach ($_POST['shipping_method'] as $i => $value)
-                                $chosen_shipping_methods[$i] = wc_clean($value);
-
-                        WC()->session->set('chosen_shipping_methods', $chosen_shipping_methods);
-                        if (WC()->cart->needs_shipping()) {
-                            // Validate Shipping Methods
-                            $packages = WC()->shipping->get_packages();
-                            WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
-                        }
-                        $order_id = WC()->checkout()->create_order();
-                        if (is_wp_error($order_id)) {
-                            throw new Exception($order_id->get_error_message());
-                        }
-                        $order = wc_get_order($order_id);
-                        $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'billing');
-                        $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'shipping');
-                        $order->set_payment_method($this->id);
-                        update_post_meta($order_id, '_payment_method', $this->id);
-                        update_post_meta($order_id, '_payment_method_title', $this->title);
-                        update_post_meta($order_id, '_customer_user', get_current_user_id());
-                        if (!empty(WC()->session->post_data['billing_phone'])) {
-                            update_post_meta($order_id, '_billing_phone', WC()->session->post_data['billing_phone']);
-                        }
-                        if (!empty(WC()->session->post_data['order_comments'])) {
-                            update_post_meta($order_id, 'order_comments', WC()->session->post_data['order_comments']);
-                            $my_post = array(
-                                'ID' => $order_id,
-                                'post_excerpt' => WC()->session->post_data['order_comments'],
-                            );
-                            wp_update_post($my_post);
-                        }
-                        $_GET['order_id'] = $order_id;
-                        do_action('woocommerce_checkout_order_processed', $order_id, array());
-                        $paypal_express_request->angelleye_do_express_checkout_payment();
+                    if (!defined('WOOCOMMERCE_CHECKOUT')) {
+                        define('WOOCOMMERCE_CHECKOUT', true);
                     }
+                    if (!defined('WOOCOMMERCE_CART')) {
+                        define('WOOCOMMERCE_CART', true);
+                    }
+                    WC()->cart->calculate_totals();
+                    WC()->cart->calculate_shipping();
+                    WC()->customer->calculated_shipping(true);
+                    $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
+                    if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
+                        foreach ($_POST['shipping_method'] as $i => $value)
+                            $chosen_shipping_methods[$i] = wc_clean($value);
+
+                    WC()->session->set('chosen_shipping_methods', $chosen_shipping_methods);
+                    if (WC()->cart->needs_shipping()) {
+                        // Validate Shipping Methods
+                        $packages = WC()->shipping->get_packages();
+                        WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
+                    }
+                    $order_id = WC()->checkout()->create_order();
+                    if (is_wp_error($order_id)) {
+                        throw new Exception($order_id->get_error_message());
+                    }
+                    $order = wc_get_order($order_id);
+                    $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'billing');
+                    $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'shipping');
+                    $order->set_payment_method($this->id);
+                    update_post_meta($order_id, '_payment_method', $this->id);
+                    update_post_meta($order_id, '_payment_method_title', $this->title);
+                    update_post_meta($order_id, '_customer_user', get_current_user_id());
+                    if (!empty(WC()->session->post_data['billing_phone'])) {
+                        update_post_meta($order_id, '_billing_phone', WC()->session->post_data['billing_phone']);
+                    }
+                    if (!empty(WC()->session->post_data['order_comments'])) {
+                        update_post_meta($order_id, 'order_comments', WC()->session->post_data['order_comments']);
+                        $my_post = array(
+                            'ID' => $order_id,
+                            'post_excerpt' => WC()->session->post_data['order_comments'],
+                        );
+                        wp_update_post($my_post);
+                    }
+                    $_GET['order_id'] = $order_id;
+                    do_action('woocommerce_checkout_order_processed', $order_id, array());
+                    $paypal_express_request->angelleye_do_express_checkout_payment();
                     break;
                 case 'do_express_checkout_payment':
                     $paypal_express_request->angelleye_do_express_checkout_payment();
                     break;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -864,7 +898,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             self::$log->add('paypal_express', $message);
         }
     }
-    
+
     public function get_user_ip() {
         return (isset($_SERVER['HTTP_X_FORWARD_FOR']) && !empty($_SERVER['HTTP_X_FORWARD_FOR'])) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
     }

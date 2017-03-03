@@ -24,6 +24,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->gateway = $gateway;
             $this->skip_final_review = $this->gateway->get_option('skip_final_review', 'no');
             $this->billing_address = $this->gateway->get_option('billing_address', 'no');
+            $this->disable_term = 'yes' === $this->gateway->get_option('disable_term', 'no');
             $this->credentials = array(
                 'Sandbox' => $this->gateway->testmode == 'yes' ? TRUE : FALSE,
                 'APIUsername' => $this->gateway->api_username,
@@ -117,9 +118,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 WC()->session->shiptoname = $this->paypal_response['FIRSTNAME'] . ' ' . $this->paypal_response['LASTNAME'];
                 WC()->session->payeremail = $this->paypal_response['EMAIL'];
                 WC()->session->chosen_payment_method = get_class($this->gateway);
-                $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
-                $this->must_create_account = $this->enable_guest_checkout || is_user_logged_in() ? false : true;
-                if ($this->skip_final_review == 'no' || $this->must_create_account) {
+                if ($this->angelleye_ec_is_skip_final_review()) {
                     wp_redirect(WC()->cart->get_checkout_url());
                     exit();
                 }
@@ -757,12 +756,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->order_total), // Required. Total amount of the order, including shipping, handling, and tax.
             'currencycode' => $order->get_order_currency(), // A three-character currency code.  Default is USD.
-            'itemamt' => '', // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.  
+            'itemamt' => '', // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
             'shippingamt' => '', // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
             'insuranceamt' => '',
             'shippingdiscount' => '',
             'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
-            'taxamt' => '', // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order. 
+            'taxamt' => '', // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays Yes and shows the amount.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => '', // Free-form field for your own use.  256 char max.
@@ -811,6 +810,24 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         WC_Gateway_PayPal_Express_AngellEYE::log('Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
         WC_Gateway_PayPal_Express_AngellEYE::log('Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
         return $this->paypal_response;
+    }
+
+    public function angelleye_ec_is_skip_final_review() {
+        $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
+        $this->must_create_account = $this->enable_guest_checkout || is_user_logged_in() ? false : true;
+        $skip_final_review = true;
+        if ($this->skip_final_review == 'no') {
+            return $skip_final_review = false;
+        }
+        if ($this->must_create_account) {
+            return $skip_final_review = false;
+        }
+        if (wc_get_page_id('terms') > 0 && apply_filters('woocommerce_checkout_show_terms', true)) {
+            if (!$this->disable_term) {
+                return $skip_final_review = false;
+            }
+        }
+        return apply_filters('angelleye_ec_skip_final_review', $skip_final_review);
     }
 
 }
