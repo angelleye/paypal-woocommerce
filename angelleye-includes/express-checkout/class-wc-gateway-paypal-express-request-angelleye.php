@@ -861,5 +861,4 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 return true;
         }
     }
-
 }

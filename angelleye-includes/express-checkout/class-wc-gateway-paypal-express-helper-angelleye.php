@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -452,5 +453,4 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             echo '<div style="clear:both; margin-bottom:10px;"></div>';
         }
     }
-
 }

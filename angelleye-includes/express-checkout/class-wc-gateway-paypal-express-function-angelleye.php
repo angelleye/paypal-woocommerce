@@ -210,5 +210,4 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                     </p></div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'woocommerce')
         );
     }
-
 }
