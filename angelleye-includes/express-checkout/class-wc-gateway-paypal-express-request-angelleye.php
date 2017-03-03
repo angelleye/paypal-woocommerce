@@ -705,10 +705,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $admin_email = get_option("admin_email");
             if ($this->email_notify_order_cancellations == true) {
                 if (isset($this->user_email_address) && !empty($this->user_email_address)) {
-                    wp_mail($this->user_email_address, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce') . $order_id);
+                    $mailer = WC()->mailer();
+                    $subject = __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce');
+                    $message = $mailer->wrap_message($subject, __('Order #', 'paypal-for-woocommerce') . $order_id);
+                    $mailer->send($this->user_email_address, strip_tags($subject), $message);
+                    $mailer->send($admin_email, strip_tags($subject), $message);
                 }
             }
-            wp_mail($admin_email, __('PayPal Express Checkout payment declined due to our Seller Protection Settings', 'paypal-for-woocommerce'), __('Order #', 'paypal-for-woocommerce') . $order_id);
             update_post_meta($order_id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
             $this->process_refund($order_id, $order->order_total, __('There was a problem processing your order. Please contact customer support.', 'paypal-for-woocommerce'));
             $order->cancel_order();
