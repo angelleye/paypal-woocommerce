@@ -430,7 +430,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'custref'=>'', 				// 
 					'custcode'=>'', 			// 
 					'custip'=>$this->get_user_ip(), 				// 
-					'invnum'=>$this->invoice_id_prefix . str_replace("#","",$order->get_order_number()), 				//
+					'invnum'=> $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#","",$order->get_order_number())), 				//
 					'ponum'=>'', 				// 
 					'starttime'=>'', 			// For inquiry transaction when using CUSTREF to specify the transaction.
 					'endtime'=>'', 				// For inquiry transaction when using CUSTREF to specify the transaction.

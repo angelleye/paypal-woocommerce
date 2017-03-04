@@ -176,7 +176,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         try {
             if (!empty($this->confirm_order_id)) {
                 $order = new WC_Order($this->confirm_order_id);
-                $invoice_number = preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number());
                 if ($order->customer_note) {
                     $customer_notes = wptexturize($order->customer_note);
                 }
@@ -200,7 +199,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'handlingamt' => '',
                 'desc' => '',
                 'custom' => '',
-                'invnum' => $this->gateway->invoice_id_prefix . $invoice_number,
+                'invnum' => $this->gateway->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#","",$order->get_order_number())),
                 'notetext' => !empty($customer_notes) ? $customer_notes : '',
                 'allowedpaymentmethod' => '',
                 'paymentaction' => $this->gateway->payment_action,
@@ -735,17 +734,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             wp_redirect(get_permalink(wc_get_page_id('cart')));
         }
 
-        if (!empty($order_id)) {
-            $order = new WC_Order($order_id);
-            $invoice_number = preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number());
-            if ($order->customer_note) {
+        if ($order->customer_note) {
                 $customer_notes = wptexturize($order->customer_note);
             } else {
                 $customer_notes = '';
             }
-        } else {
-            $invoice_number = $order->id;
-        }
         $DRTFields = array(
             'referenceid' => $token->get_token(),
             'paymentaction' => !empty($this->gateway->payment_action) ? $this->gateway->payment_action : 'Sale',
@@ -765,7 +758,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays Yes and shows the amount.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => '', // Free-form field for your own use.  256 char max.
-            'invnum' => $this->gateway->invoice_id_prefix . $invoice_number, // Your own invoice or tracking number.  127 char max.
+            'invnum' => $this->gateway->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#","",$order->get_order_number())), // Your own invoice or tracking number.  127 char max.
+            
+            
+            
+            
             'buttonsource' => ''     // URL for receiving Instant Payment Notifications
         );
         if (isset($this->gateway->notifyurl) && !empty($this->gateway->notifyurl)) {

@@ -863,7 +863,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             'handlingamt' => '0.00',                    // Total handling costs for the order.  If you specify handlingamt, you must also specify itemamt.
             'desc' => '',                            // Description of the order the customer is purchasing.  127 char max.
             'custom' => apply_filters( 'ae_ppddp_custom_parameter', $customer_note , $order ),                        // Free-form field for your own use.  256 char max.
-            'invnum' => $invoice_number = $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", $order->id), // Your own invoice or tracking number
+            'invnum' => $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#","",$order->get_order_number())), // Your own invoice or tracking number
             'recurring' => ''                        // Flag to indicate a recurring transaction.  Value should be Y for recurring, or anything other than Y if it's not recurring.  To pass Y here, you must have an established billing agreement with the buyer.
         );
         
