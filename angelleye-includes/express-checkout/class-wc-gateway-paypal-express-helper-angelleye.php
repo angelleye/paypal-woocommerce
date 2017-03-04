@@ -117,7 +117,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function angelleye_paypal_express_checkout_redirect_to_paypal() {
         try {
-            if (isset($_POST['payment_method']) && 'express_checkout' === $_POST['payment_method'] && $this->function_helper->ec_notice_count('error') == 0) {
+            if (isset($_POST['payment_method']) && 'paypal_express' === $_POST['payment_method'] && $this->function_helper->ec_notice_count('error') == 0) {
                 WC()->session->post_data = $_POST;
                 $this->function_helper->ec_redirect_after_checkout();
             }

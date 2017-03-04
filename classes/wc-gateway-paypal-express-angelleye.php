@@ -559,6 +559,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
                 $result = $this->angelleye_ex_doreference_transaction($order_id);
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+                    WC()->checkout->posted = WC()->session->post_data;
+                    $_POST = WC()->session->post_data;
                     $order = wc_get_order($order_id);
                     $order->payment_complete($result['TRANSACTIONID']);
                     $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
@@ -596,6 +598,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     WC()->session->paypal_express_terms = true;
                 }
                 WC()->session->post_data = $_POST;
+                WC()->checkout->posted = WC()->session->post_data;
                 $_GET['pp_action'] = 'set_express_checkout';
                 $this->handle_wc_api();
             }
@@ -664,6 +667,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     if (!defined('WOOCOMMERCE_CART')) {
                         define('WOOCOMMERCE_CART', true);
                     }
+                    WC()->checkout->posted = WC()->session->post_data;
+                    $_POST = WC()->session->post_data;
                     WC()->cart->calculate_totals();
                     WC()->cart->calculate_shipping();
                     WC()->customer->calculated_shipping(true);

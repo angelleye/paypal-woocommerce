@@ -71,7 +71,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
             }
             if (WC()->cart->needs_payment() || is_product()) {
                 $ec_button_output = '';
-                $ec_button_link = $this->ec_get_checkout_url('ec_set_express_checkout');
+                $ec_button_link = $this->ec_get_checkout_url('set_express_checkout');
                 if ('image' === $this->express_checkout_get_option('checkout_button_style')) {
                     $ec_button_output .= '<div class="express_checkout_button"><a href="' . $ec_button_link . '" class="single_add_to_cart_button paypal_checkout_button paypal-express-checkout-button ec_clearfix">';
                     $ec_button_output .= '<input type="image" class="single_add_to_cart_button" src="https://www.paypalobjects.com/webstatic/' . $this->ec_get_locale() . '/i/buttons/checkout-logo-medium.png" width="170" height="32" style="width: 170px; height: 32px; float: right; clear: both; margin: 3px 0px 6px 0; border: none; padding: 0;" align="top" alt="' . __('Check out with PayPal', 'paypal-for-woocommerce') . '" />';
@@ -173,7 +173,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
             if (!$this->ec_is_express_checkout()) {
                 $args = array(
                     'result' => 'success',
-                    'redirect' => $this->ec_get_checkout_url('ec_set_express_checkout'),
+                    'redirect' => $this->ec_get_checkout_url('set_express_checkout'),
                 );
                 if (isset($_POST['terms']) && wc_get_page_id('terms') > 0) {
                     WC()->session->paypal_express_terms = 1;
