@@ -2,10 +2,13 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
 class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
+
     public $function_helper;
     public static $log_enabled = false;
     public static $log = false;
+
     public function __construct() {
         $this->id = 'paypal_express';
         $this->method_title = __('PayPal Express Checkout ', 'paypal-for-woocommerce');
@@ -32,6 +35,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->description = $this->get_option('description');
         $this->testmode = $this->get_option('testmode', 'yes');
         $this->debug = 'yes' === $this->get_option('debug', 'no');
+        $this->save_abandoned_checkout = 'yes' == $this->get_option('save_abandoned_checkout', 'no');
         self::$log_enabled = $this->debug;
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', 'WC-EC');
@@ -44,11 +48,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->show_paypal_credit = $this->get_option('show_paypal_credit', 'yes');
         $this->brand_name = $this->get_option('brand_name', get_bloginfo('name'));
         $this->customer_service_number = $this->get_option('customer_service_number', '');
-        $this->gift_wrap_enabled = $this->get_option('gift_wrap_enabled', '');
-        $this->gift_message_enabled = $this->get_option('gift_message_enabled', '');
-        $this->gift_receipt_enabled = $this->get_option('gift_receipt_enabled', '');
-        $this->gift_wrap_name = $this->get_option('gift_wrap_name', '');
-        $this->gift_wrap_amount = $this->get_option('gift_wrap_amount', '');
         $this->use_wp_locale_code = $this->get_option('use_wp_locale_code', 'yes');
         $this->angelleye_skip_text = $this->get_option('angelleye_skip_text', 'Skip the forms and pay faster with PayPal!');
         $this->skip_final_review = $this->get_option('skip_final_review', 'no');
@@ -104,6 +103,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
     }
+
     public function admin_options() {
         $guest_checkout = get_option('woocommerce_enable_guest_checkout', 'yes');
         if (wc_get_page_id('terms') > 0 && apply_filters('woocommerce_checkout_show_terms', true)) {
@@ -119,7 +119,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
-            <?php $this->generate_settings_html(); ?>
+        <?php $this->generate_settings_html(); ?>
             <script type="text/javascript">
                 var display_disable_terms = "<?php echo $display_disable_terms; ?>";
         <?php if ($guest_checkout === 'no') { ?>
@@ -160,6 +160,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             </script>
         </table> <?php
     }
+
     public function init_form_fields() {
         $require_ssl = '';
         if (!AngellEYE_Gateway_Paypal::is_ssl()) {
@@ -523,6 +524,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class' => 'email_notify_order_cancellations',
                 'desc_tip' => true,
             ),
+            'save_abandoned_checkout' => array(
+                'title' => __('Save abandoned checkout as Pending', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Save abandoned checkout as Pending Order', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
             'debug' => array(
                 'title' => __('Debug', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -539,9 +546,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         );
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
     }
+
     public function is_available() {
         return parent::is_available();
     }
+
     public function payment_fields() {
         if ($description = $this->get_description()) {
             echo wpautop(wptexturize($description));
@@ -554,6 +563,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             do_action('payment_fields_saved_payment_methods', $this);
         }
     }
+
     public function process_payment($order_id) {
         try {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
@@ -603,13 +613,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->handle_wc_api();
             }
         } catch (Exception $ex) {
+            
         }
     }
+
     public function angelleye_ex_doreference_transaction($order_id) {
         require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
         $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
         return $paypal_response = $paypal_express_request->DoReferenceTransaction($order_id);
     }
+
     public function angelleye_express_checkout_encrypt_gateway_api($settings) {
         if (!empty($settings['is_encrypt'])) {
             $gateway_settings_keys = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
@@ -621,6 +634,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         return $settings;
     }
+
     public static function get_button_locale_code() {
         $_supportedLocale = array(
             'en_US', 'fr_XC', 'es_XC', 'zh_XC', 'en_AU', 'de_DE', 'nl_NL',
@@ -633,6 +647,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         return $locale;
     }
+
     public static function angelleye_get_paypalimage() {
         if (self::get_button_locale_code() == 'en_US') {
             return "https://www.paypalobjects.com/webstatic/" . self::get_button_locale_code() . "/i/buttons/checkout-logo-medium.png";
@@ -640,6 +655,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             return esc_url(add_query_arg('cmd', '_dynamic-image', add_query_arg('locale', self::get_button_locale_code(), 'https://fpdbs.paypal.com/dynamicimageweb')));
         }
     }
+
     public function handle_wc_api() {
         try {
             if (!isset($_GET['pp_action'])) {
@@ -661,31 +677,35 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case 'get_express_checkout_details':
                     $paypal_express_request->angelleye_get_express_checkout_details();
-                    if (!defined('WOOCOMMERCE_CHECKOUT')) {
-                        define('WOOCOMMERCE_CHECKOUT', true);
+                    $order_id = absint(WC()->session->order_awaiting_payment);
+                    if ($order_id == 0 && $this->save_abandoned_checkout == false) {
+                        if (!defined('WOOCOMMERCE_CHECKOUT')) {
+                            define('WOOCOMMERCE_CHECKOUT', true);
+                        }
+                        if (!defined('WOOCOMMERCE_CART')) {
+                            define('WOOCOMMERCE_CART', true);
+                        }
+                        WC()->checkout->posted = WC()->session->post_data;
+                        $_POST = WC()->session->post_data;
+                        WC()->cart->calculate_totals();
+                        WC()->cart->calculate_shipping();
+                        WC()->customer->calculated_shipping(true);
+                        $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
+                        if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
+                            foreach ($_POST['shipping_method'] as $i => $value)
+                                $chosen_shipping_methods[$i] = wc_clean($value);
+                        WC()->session->set('chosen_shipping_methods', $chosen_shipping_methods);
+                        if (WC()->cart->needs_shipping()) {
+                            // Validate Shipping Methods
+                            $packages = WC()->shipping->get_packages();
+                            WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
+                        }
+                        $order_id = WC()->checkout()->create_order();
+                        if (is_wp_error($order_id)) {
+                            throw new Exception($order_id->get_error_message());
+                        }
                     }
-                    if (!defined('WOOCOMMERCE_CART')) {
-                        define('WOOCOMMERCE_CART', true);
-                    }
-                    WC()->checkout->posted = WC()->session->post_data;
-                    $_POST = WC()->session->post_data;
-                    WC()->cart->calculate_totals();
-                    WC()->cart->calculate_shipping();
-                    WC()->customer->calculated_shipping(true);
-                    $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
-                    if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
-                        foreach ($_POST['shipping_method'] as $i => $value)
-                            $chosen_shipping_methods[$i] = wc_clean($value);
-                    WC()->session->set('chosen_shipping_methods', $chosen_shipping_methods);
-                    if (WC()->cart->needs_shipping()) {
-                        // Validate Shipping Methods
-                        $packages = WC()->shipping->get_packages();
-                        WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
-                    }
-                    $order_id = WC()->checkout()->create_order();
-                    if (is_wp_error($order_id)) {
-                        throw new Exception($order_id->get_error_message());
-                    }
+
                     $order = wc_get_order($order_id);
                     $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'billing');
                     $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'shipping');
@@ -713,8 +733,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
             }
         } catch (Exception $ex) {
+            
         }
     }
+
     public function get_transaction_url($order) {
         if (!$this->supports('tokenization')) {
             $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
@@ -736,6 +758,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         return parent::get_transaction_url($order);
     }
+
     public function add_payment_method() {
         $SECFields = array(
             'returnurl' => add_query_arg(array(
@@ -776,6 +799,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->paypal_express_checkout_error_handler($request_name = 'SetExpressCheckout', $redirect_url, $result);
         }
     }
+
     public function paypal_express_checkout_token_request_handler($PayPalRequest = array(), $action_name = '') {
         if (!class_exists('Angelleye_PayPal')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
@@ -834,6 +858,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }
     }
+
     public function paypal_express_checkout_error_handler($request_name = '', $redirect_url = '', $result) {
         $ErrorCode = urldecode($result["L_ERRORCODE0"]);
         $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
@@ -876,6 +901,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
         }
     }
+
     public static function log($message) {
         if (self::$log_enabled) {
             if (empty(self::$log)) {
@@ -884,7 +910,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             self::$log->add('paypal_express', $message);
         }
     }
+
     public function get_user_ip() {
         return (isset($_SERVER['HTTP_X_FORWARD_FOR']) && !empty($_SERVER['HTTP_X_FORWARD_FOR'])) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
     }
+
 }

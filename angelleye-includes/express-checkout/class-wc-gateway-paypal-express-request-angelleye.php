@@ -25,6 +25,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->skip_final_review = $this->gateway->get_option('skip_final_review', 'no');
             $this->billing_address = $this->gateway->get_option('billing_address', 'no');
             $this->disable_term = 'yes' === $this->gateway->get_option('disable_term', 'no');
+            $this->save_abandoned_checkout = 'yes' == $this->gateway->get_option('save_abandoned_checkout', 'no');
             $this->credentials = array(
                 'Sandbox' => $this->gateway->testmode == 'yes' ? TRUE : FALSE,
                 'APIUsername' => $this->gateway->api_username,

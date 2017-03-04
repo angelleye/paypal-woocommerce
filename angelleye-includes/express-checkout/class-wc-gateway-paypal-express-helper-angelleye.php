@@ -16,7 +16,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
             $this->setting = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
             $this->enable_tokenized_payments = !empty($this->setting['enable_tokenized_payments']) ? $this->setting['enable_tokenized_payments'] : 'no';
-            
+            $this->save_abandoned_checkout = 'yes' == !empty($this->setting['save_abandoned_checkout']) ? $this->setting['enable_tokenized_payments'] : 'no';
             $this->checkout_with_pp_button_type = !empty($this->setting['checkout_with_pp_button_type']) ? $this->setting['checkout_with_pp_button_type'] : 'paypalimage';
             $this->pp_button_type_text_button = !empty($this->setting['pp_button_type_text_button']) ? $this->setting['pp_button_type_text_button'] : 'Proceed to Checkout';
             $this->pp_button_type_my_custom = !empty($this->setting['pp_button_type_my_custom']) ? $this->setting['pp_button_type_my_custom'] : '';
@@ -50,7 +50,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             $this->angelleye_skip_text = !empty($this->setting['angelleye_skip_text']) ? $this->setting['angelleye_skip_text'] : 'Skip the forms and pay faster with PayPal!';
             add_action('woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'));
-            add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99);
+            if($this->save_abandoned_checkout == false) {
+                add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99);
+            }
             add_action('woocommerce_add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
             add_action('woocommerce_checkout_billing', array($this, 'ec_set_checkout_post_data'));
             add_action('woocommerce_available_payment_gateways', array($this, 'ec_disable_gateways'));
