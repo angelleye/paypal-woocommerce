@@ -8,6 +8,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public $function_helper;
     public static $log_enabled = false;
     public static $log = false;
+    public $checkout_fields;
+    public $posted;
 
     public function __construct() {
         $this->id = 'paypal_express';
@@ -53,7 +55,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->skip_final_review = $this->get_option('skip_final_review', 'no');
         $this->disable_term = $this->get_option('disable_term', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
-        $this->billing_address = $this->get_option('billing_address', 'no');
+        $this->billing_address = 'yes' === $this->get_option('billing_address', 'no');
         $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->order_cancellations = $this->get_option('order_cancellations', 'disabled');
         $this->email_notify_order_cancellations = 'yes' === $this->get_option('email_notify_order_cancellations', 'no');
@@ -678,7 +680,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case 'get_express_checkout_details':
                     $paypal_express_request->angelleye_get_express_checkout_details();
                     $order_id = absint(WC()->session->order_awaiting_payment);
-                    if ($order_id == 0 && $this->save_abandoned_checkout == false) {
+                    if ($order_id == 0 || $this->save_abandoned_checkout == false) {
                         if (!defined('WOOCOMMERCE_CHECKOUT')) {
                             define('WOOCOMMERCE_CHECKOUT', true);
                         }
@@ -687,6 +689,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }
                         WC()->checkout->posted = WC()->session->post_data;
                         $_POST = WC()->session->post_data;
+                        $this->posted = WC()->session->post_data;
                         WC()->cart->calculate_totals();
                         WC()->cart->calculate_shipping();
                         WC()->customer->calculated_shipping(true);
@@ -704,10 +707,25 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         if (is_wp_error($order_id)) {
                             throw new Exception($order_id->get_error_message());
                         }
+                    } else {
+                        WC()->checkout->posted = WC()->session->post_data;
+                        $_POST = WC()->session->post_data;
+                        $this->posted = WC()->session->post_data;
                     }
-
                     $order = wc_get_order($order_id);
-                    $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'billing');
+                    if($this->billing_address) {
+                        $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'billing');
+                    } else {
+                        $billing_address = array();
+                        $checkout_fields['billing'] = WC()->countries->get_address_fields( WC()->checkout->get_value( 'billing_country' ), 'billing_' );
+                        if ( $checkout_fields['billing'] ) {
+				foreach ( array_keys( $checkout_fields['billing'] ) as $field ) {
+					$field_name = str_replace( 'billing_', '', $field );
+					$billing_address[ $field_name ] = $this->angelleye_ec_get_posted_address_data( $field_name );
+				}
+			}
+                        $order->set_address($billing_address, 'billing');
+                    }
                     $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'shipping');
                     $order->set_payment_method($this->id);
                     update_post_meta($order_id, '_payment_method', $this->id);
@@ -914,5 +932,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public function get_user_ip() {
         return (isset($_SERVER['HTTP_X_FORWARD_FOR']) && !empty($_SERVER['HTTP_X_FORWARD_FOR'])) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
     }
+    
+    public function angelleye_ec_get_posted_address_data( $key, $type = 'billing' ) {
+		if ( 'billing' === $type || false === $this->posted['ship_to_different_address'] ) {
+			$return = isset( $this->posted[ 'billing_' . $key ] ) ? $this->posted[ 'billing_' . $key ] : '';
+		} else {
+			$return = isset( $this->posted[ 'shipping_' . $key ] ) ? $this->posted[ 'shipping_' . $key ] : '';
+		}
+
+		// Use logged in user's billing email if neccessary
+		if ( 'email' === $key && empty( $return ) && is_user_logged_in() ) {
+			$current_user = wp_get_current_user();
+			$return       = $current_user->user_email;
+		}
+		return $return;
+	}
 
 }

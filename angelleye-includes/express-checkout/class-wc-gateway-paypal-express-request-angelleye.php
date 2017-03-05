@@ -23,7 +23,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         try {
             $this->gateway = $gateway;
             $this->skip_final_review = $this->gateway->get_option('skip_final_review', 'no');
-            $this->billing_address = $this->gateway->get_option('billing_address', 'no');
+            $this->billing_address = 'yes' === $this->gateway->get_option('billing_address', 'no');
             $this->disable_term = 'yes' === $this->gateway->get_option('disable_term', 'no');
             $this->save_abandoned_checkout = 'yes' == $this->gateway->get_option('save_abandoned_checkout', 'no');
             $this->credentials = array(
@@ -607,7 +607,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             WC()->customer->set_shipping_postcode($this->paypal_response['SHIPTOZIP']);
         }
 
-        if ($this->billing_address == 'yes') {
+        if ($this->billing_address) {
             if (isset($this->paypal_response['SHIPTOSTREET'])) {
                 WC()->customer->set_address($this->paypal_response['SHIPTOSTREET']);
             }
