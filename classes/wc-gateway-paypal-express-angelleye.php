@@ -19,10 +19,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'products',
             'refunds'
         );
-        if (substr(get_option("woocommerce_default_country"), 0, 2) != 'US' || substr(get_option("woocommerce_default_country"), 0, 2) != 'UK') {
-            $this->not_us_or_uk = true;
-        } else {
+        if (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'UK') {
             $this->not_us_or_uk = false;
+        } else {
+            $this->not_us_or_uk = true;
         }
         $this->init_form_fields();
         $this->init_settings();
