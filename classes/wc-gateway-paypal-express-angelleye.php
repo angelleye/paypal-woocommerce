@@ -19,10 +19,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'products',
             'refunds'
         );
-        if (substr(get_option("woocommerce_default_country"), 0, 2) != 'US') {
-            $this->not_us = true;
+        if (substr(get_option("woocommerce_default_country"), 0, 2) != 'US' || substr(get_option("woocommerce_default_country"), 0, 2) != 'UK') {
+            $this->not_us_or_uk = true;
         } else {
-            $this->not_us = false;
+            $this->not_us_or_uk = false;
         }
         $this->init_form_fields();
         $this->init_settings();
@@ -68,7 +68,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->notifyurl = str_replace('&amp;', '&', $this->notifyurl);
             }
         }
-        if ($this->not_us) {
+        if ($this->not_us_or_uk) {
             $this->show_paypal_credit = 'no';
         }
         if ($this->testmode == 'yes') {
@@ -376,8 +376,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Show the PayPal Credit button next to the Express Checkout button.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
-                'description' => ($this->not_us) ? __('Currently disabled because PayPal Credit is only available for U.S. merchants.', 'paypal-for-woocommerce') : "",
-                'desc_tip' => ($this->not_us) ? true : false,
+                'description' => ($this->not_us_or_uk) ? __('Currently disabled because PayPal Credit is only available for U.S. and U.K merchants.', 'paypal-for-woocommerce') : "",
+                'desc_tip' => ($this->not_us_or_uk) ? true : false,
             ),
             'use_wp_locale_code' => array(
                 'title' => __('Use WordPress Locale Code', 'paypal-for-woocommerce'),

@@ -26,13 +26,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->button_position = !empty($this->setting['button_position']) ? $this->setting['button_position'] : 'bottom';
             $this->show_on_cart = !empty($this->setting['show_on_cart']) ? $this->setting['show_on_cart'] : 'yes';
             $this->testmode = !empty($this->setting['testmode']) ? $this->setting['testmode'] : 'yes';
-            if (substr(get_option("woocommerce_default_country"), 0, 2) != 'US') {
-                $this->not_us = true;
+            if (substr(get_option("woocommerce_default_country"), 0, 2) != 'US' || substr(get_option("woocommerce_default_country"), 0, 2) != 'UK') {
+                $this->not_us_or_uk = true;
             } else {
-                $this->not_us = false;
+                $this->not_us_or_uk = false;
             }
             $this->show_paypal_credit = !empty($this->setting['show_paypal_credit']) ? $this->setting['show_paypal_credit'] : 'yes';
-            if ($this->not_us) {
+            if ($this->not_us_or_uk) {
                 $this->show_paypal_credit = 'no';
             }
             if ($this->testmode == 'yes') {
