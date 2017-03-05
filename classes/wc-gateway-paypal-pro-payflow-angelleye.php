@@ -67,6 +67,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             if($this->enable_tokenized_payments == 'yes') {
                 array_push($this->supports, "tokenization");
             }
+            $this->softdescriptor = $this->get_option('softdescriptor', '');
             $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
             $this->enable_cardholder_first_last_name = 'yes' === $this->get_option('enable_cardholder_first_last_name', 'no'); 
             $this->is_encrypt = $this->get_option('is_encrypt', 'no');
@@ -232,6 +233,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                     'Authorization' => 'Authorization',
                 ),
                 'default' => 'Sale'
+            ),
+            'softdescriptor' => array(
+                'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
             ),
             'enable_tokenized_payments' => array(
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),

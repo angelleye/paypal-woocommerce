@@ -64,6 +64,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         
         $this->hostaddr = $this->testmode == 'yes' ? $this->testurl : $this->liveurl;
+        $this->softdescriptor = $this->get_option('softdescriptor', '');
 
         if ($this->debug == 'yes')
             $this->log = new WC_Logger();
@@ -742,7 +743,13 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
-          
+            'softdescriptor' => array(
+                'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+            ),
             'testmode' => array(
                 'title' => __('PayPal sandbox', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',

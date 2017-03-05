@@ -687,6 +687,13 @@ class AngellEYE_Utility {
                 'type'        => 'text',
                 'default'     => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
             ),
+            'softdescriptor' => array(
+                'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+            ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',

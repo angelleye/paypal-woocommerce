@@ -26,6 +26,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->billing_address = 'yes' === $this->gateway->get_option('billing_address', 'no');
             $this->disable_term = 'yes' === $this->gateway->get_option('disable_term', 'no');
             $this->save_abandoned_checkout = 'yes' == $this->gateway->get_option('save_abandoned_checkout', 'no');
+            $this->softdescriptor = $this->gateway->get_option('softdescriptor', '');
             $this->credentials = array(
                 'Sandbox' => $this->gateway->testmode == 'yes' ? TRUE : FALSE,
                 'APIUsername' => $this->gateway->api_username,
@@ -209,7 +210,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'sellerid' => '',
                 'sellerusername' => '',
                 'sellerregistrationdate' => '',
-                'softdescriptor' => ''
+                'softdescriptor' => $this->softdescriptor
             );
             if (isset($this->gateway->notifyurl) && !empty($this->gateway->notifyurl)) {
                 $Payment['notifyurl'] = $this->gateway->notifyurl;
@@ -744,7 +745,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             'referenceid' => $token->get_token(),
             'paymentaction' => !empty($this->gateway->payment_action) ? $this->gateway->payment_action : 'Sale',
             'returnfmfdetails' => '1',
-            'softdescriptor' => ''
+            'softdescriptor' => $this->softdescriptor
         );
         $PayPalRequestData['DRTFields'] = $DRTFields;
         $PaymentDetails = array(

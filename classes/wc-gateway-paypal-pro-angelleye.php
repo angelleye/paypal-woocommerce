@@ -91,6 +91,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
+        $this->softdescriptor = $this->get_option('softdescriptor', '');
         $this->notifyurl = '';
         if($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl'); 
@@ -324,6 +325,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'type' => 'checkbox',
                 'description' => __('Display card holder first and last name in credit card form.', 'paypal-for-woocommerce'),
                 'default' => 'no'
+            ),
+            'softdescriptor' => array(
+                'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
             ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
@@ -972,7 +980,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'referenceid' => $token->get_token(), 
                 'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', 
                 'returnfmfdetails' => '1', 
-                'softdescriptor' => ''
+                'softdescriptor' => $this->softdescriptor
             );
             $PayPalResult = $PayPal->DoReferenceTransaction($PayPalRequestData);
         } else {

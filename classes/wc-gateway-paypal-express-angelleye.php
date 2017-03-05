@@ -91,6 +91,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->checkout_with_pp_button_type = $this->get_option('checkout_with_pp_button_type', 'paypalimage');
         $this->pp_button_type_text_button = $this->get_option('pp_button_type_text_button', 'Proceed to Checkout');
         $this->pp_button_type_my_custom = $this->get_option('pp_button_type_my_custom', $this->checkout_with_pp_button_type);
+        $this->softdescriptor = $this->get_option('softdescriptor', '');
         $this->version = "64";
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         $this->page_style = $this->get_option('page_style', '');
@@ -418,6 +419,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Customer Service Number', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls what users see for your customer service phone number on PayPal review pages.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+            ),
+            'softdescriptor' => array(
+                'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
             ),
