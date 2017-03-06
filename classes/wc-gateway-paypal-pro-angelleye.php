@@ -92,6 +92,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->softdescriptor = $this->get_option('softdescriptor', '');
+        $this->avs_cvv2_result_admin_email = 'yes' === $this->get_option('avs_cvv2_result_admin_email', 'no'); 
         $this->notifyurl = '';
         if($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl'); 
@@ -148,7 +149,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         }
         
         add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_credit_card_form_fields'), 10, 2);
-        add_action( 'woocommerce_email_before_order_table', array( $this, 'angelleye_paypal_pro_email_instructions' ), 10, 3 );
+        if( $this->avs_cvv2_result_admin_email ) {
+            add_action( 'woocommerce_email_before_order_table', array( $this, 'angelleye_paypal_pro_email_instructions' ), 10, 3 );
+        }
        
         $this->customer_id;
     }
@@ -325,7 +328,16 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'label' => __('Adds fields for "card holder name" to checkout in addition to the "billing name" fields.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => __('Display card holder first and last name in credit card form.', 'paypal-for-woocommerce'),
-                'default' => 'no'
+                'default' => 'no',
+                'desc_tip' => true,
+            ),
+            'avs_cvv2_result_admin_email' => array(
+                'title' => __('AVS / CVV2 Results in Admin Order Email', 'paypal-for-woocommerce'),
+                'label' => __('Display AVS / CVV2 Results in Admin Order Email', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Display Address Verification Result (AVS) and Card Security Code Result (CVV2) Results in Admin Order Email.', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'desc_tip' => true,
             ),
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
