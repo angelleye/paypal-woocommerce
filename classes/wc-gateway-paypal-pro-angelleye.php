@@ -1490,16 +1490,16 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $avscode = get_post_meta($order->id, '_AVSCODE', true);
             if ( ! empty( $avscode ) ) {
                 $avs_response_message = $PayPal->GetAVSCodeMessage($avscode);
-                echo '<h2 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'woocommerce' ) . '</h2>' . PHP_EOL;
+                echo '<h2 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;
                 foreach ( $bacs_accounts as $bacs_account ) {
                     echo '<ul class="wc-avs-details order_details avs_details">' . PHP_EOL;
                     $avs_details_fields = apply_filters( 'angelleye_avs_details_fields', array(
                             'avs_response_code'=> array(
-                                    'label' => __( 'AVS Response Code', 'woocommerce' ),
+                                    'label' => __( 'AVS Response Code', 'paypal-for-woocommerce' ),
                                     'value' => $avscode
                             ),
                             'avs_response_message'          => array(
-                                    'label' => __( 'AVS Response Message', 'woocommerce' ),
+                                    'label' => __( 'AVS Response Message', 'paypal-for-woocommerce' ),
                                     'value' => $avs_response_message
                             )
                     ), $order_id );
@@ -1514,15 +1514,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $cvvmatch = get_post_meta($order->id, 'CVV2MATCH', true);
             if ( ! empty( $cvvmatch ) ) {
                 $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvvmatch);
-                echo '<h2 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'woocommerce' ) . '</h2>' . PHP_EOL;
+                echo '<h2 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;
                 echo '<ul class="wc-cvv2-details order_details cvv2_details">' . PHP_EOL;
                 $cvv_details_fields = apply_filters( 'angelleye_cvv2_details_fields', array(
                         'cvv2_response_code'=> array(
-                                'label' => __( 'AVS Response Code', 'woocommerce' ),
+                                'label' => __( 'AVS Response Code', 'paypal-for-woocommerce' ),
                                 'value' => $cvvmatch
                         ),
                         'cvv2_response_message'          => array(
-                                'label' => __( 'AVS Response Message', 'woocommerce' ),
+                                'label' => __( 'AVS Response Message', 'paypal-for-woocommerce' ),
                                 'value' => $cvv2_response_message
                         )
                 ), $order_id );
