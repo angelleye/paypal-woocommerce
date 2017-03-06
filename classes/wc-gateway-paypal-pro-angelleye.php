@@ -148,6 +148,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         }
         
         add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_credit_card_form_fields'), 10, 2);
+        add_action( 'woocommerce_email_before_order_table', array( $this, 'angelleye_paypal_pro_email_instructions' ), 10, 3 );
        
         $this->customer_id;
     }
@@ -1035,7 +1036,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $avs_response_order_note .= $avs_response_code;
             $avs_response_order_note .= $avs_response_message != '' ? ' - ' . $avs_response_message : '';
             $order->add_order_note($avs_response_order_note);
-
+            update_post_meta($order->id, '_AVSCODE', $avs_response_code);
             /**
              * Add order notes for CVV2 result
              */
@@ -1046,6 +1047,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $cvv2_response_order_note .= $cvv2_response_code;
             $cvv2_response_order_note .= $cvv2_response_message != '' ? ' - ' . $cvv2_response_message : '';
             $order->add_order_note($cvv2_response_order_note);
+            update_post_meta($order->id, '_CVV2MATCH', $cvv2_response_code);
             
             $is_sandbox = $this->testmode == 'yes' ? true : false;
             update_post_meta($order->id, 'is_sandbox', $is_sandbox);
@@ -1470,5 +1472,67 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             }
         }
         return $settings;
+    }
+    
+    public function angelleye_paypal_pro_email_instructions($order, $sent_to_admin, $plain_text = false) {
+        if ( $sent_to_admin && 'paypal_pro' === $order->payment_method ) {
+            if (!class_exists('Angelleye_PayPal')) {
+                require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            }
+            $PayPalConfig = array(
+                'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+                'APIUsername' => $this->api_username,
+                'APIPassword' => $this->api_password,
+                'APISignature' => $this->api_signature,
+                'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+            );
+            $PayPal = new Angelleye_PayPal($PayPalConfig);
+            $avscode = get_post_meta($order->id, '_AVSCODE', true);
+            if ( ! empty( $avscode ) ) {
+                $avs_response_message = $PayPal->GetAVSCodeMessage($avscode);
+                echo '<h2 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'woocommerce' ) . '</h2>' . PHP_EOL;
+                foreach ( $bacs_accounts as $bacs_account ) {
+                    echo '<ul class="wc-avs-details order_details avs_details">' . PHP_EOL;
+                    $avs_details_fields = apply_filters( 'angelleye_avs_details_fields', array(
+                            'avs_response_code'=> array(
+                                    'label' => __( 'AVS Response Code', 'woocommerce' ),
+                                    'value' => $avscode
+                            ),
+                            'avs_response_message'          => array(
+                                    'label' => __( 'AVS Response Message', 'woocommerce' ),
+                                    'value' => $avs_response_message
+                            )
+                    ), $order_id );
+                    foreach ( $avs_details_fields as $field_key => $field ) {
+                            if ( ! empty( $field['value'] ) ) {
+                                    echo '<li class="' . esc_attr( $field_key ) . '">' . esc_attr( $field['label'] ) . ': <strong>' . wptexturize( $field['value'] ) . '</strong></li>' . PHP_EOL;
+                            }
+                    }
+                    echo '</ul>';
+                }
+            }
+            $cvvmatch = get_post_meta($order->id, 'CVV2MATCH', true);
+            if ( ! empty( $cvvmatch ) ) {
+                $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvvmatch);
+                echo '<h2 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'woocommerce' ) . '</h2>' . PHP_EOL;
+                echo '<ul class="wc-cvv2-details order_details cvv2_details">' . PHP_EOL;
+                $cvv_details_fields = apply_filters( 'angelleye_cvv2_details_fields', array(
+                        'cvv2_response_code'=> array(
+                                'label' => __( 'AVS Response Code', 'woocommerce' ),
+                                'value' => $cvvmatch
+                        ),
+                        'cvv2_response_message'          => array(
+                                'label' => __( 'AVS Response Message', 'woocommerce' ),
+                                'value' => $cvv2_response_message
+                        )
+                ), $order_id );
+                foreach ( $cvv_details_fields as $field_key => $field ) {
+                        if ( ! empty( $field['value'] ) ) {
+                                echo '<li class="' . esc_attr( $field_key ) . '">' . esc_attr( $field['label'] ) . ': <strong>' . wptexturize( $field['value'] ) . '</strong></li>' . PHP_EOL;
+                        }
+                }
+                echo '</ul>';
+            }
+        }
     }
 }
