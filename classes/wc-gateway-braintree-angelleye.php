@@ -539,6 +539,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $request_data['orderId'] = $order->get_order_number();
             $request_data['options'] = $this->get_braintree_options();
             $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
+            if( !empty($this->softdescriptor) ) {
+                $request_data['descriptor'] = array('name' => $this->softdescriptor);
+            }
+            
             if ($this->debug) {
                 $this->add_log('Begin Braintree_Transaction::sale request');
                 $this->add_log('Order: ' . print_r($order->get_order_number(), true));

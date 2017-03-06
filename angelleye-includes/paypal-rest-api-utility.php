@@ -40,6 +40,7 @@ class PayPal_Rest_API_Utility {
             $this->gateway = $gateway;
         }
         $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'no');
+        $this->softdescriptor = $this->get_option('softdescriptor', '');
         $this->mode = $this->testmode == 'yes' ? 'SANDBOX' : 'LIVE';
         $this->debug = 'yes' === $this->gateway->get_option('debug', 'no');
         if ($this->testmode) {
@@ -243,6 +244,9 @@ class PayPal_Rest_API_Utility {
         $this->transaction->setItemList($this->item_list);
         $this->transaction->setDescription("Payment description");
         $this->transaction->setInvoiceNumber(uniqid());
+        if( !empty($this->softdescriptor) ) {
+            $this->transaction->setSoftDescriptor($this->softdescriptor);
+        }
     }
 
     /**

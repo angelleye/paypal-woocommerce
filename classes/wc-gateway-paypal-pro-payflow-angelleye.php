@@ -444,7 +444,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'endtime'=>'', 				// For inquiry transaction when using CUSTREF to specify the transaction.
 					'securetoken'=>'', 			// Required if using secure tokens.  A value the Payflow server created upon your request for storing transaction data.  32 char
 					'partialauth'=>'', 			// Required for partial authorizations.  Set to Y to submit a partial auth.    
-					'authcode'=>'' 			// Rrequired for voice authorizations.  Returned only for approved voice authorization transactions.  AUTHCODE is the approval code received over the phone from the processing network.  6 char max
+					'authcode'=>'', 			// Rrequired for voice authorizations.  Returned only for approved voice authorization transactions.  AUTHCODE is the approval code received over the phone from the processing network.  6 char max
+                                        'merchdescr' => $this->softdescriptor
 					);
 			
 			/**
