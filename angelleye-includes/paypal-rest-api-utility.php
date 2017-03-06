@@ -40,7 +40,7 @@ class PayPal_Rest_API_Utility {
             $this->gateway = $gateway;
         }
         $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'no');
-        $this->softdescriptor = $this->get_option('softdescriptor', '');
+        $this->softdescriptor = $this->gateway->get_option('softdescriptor', '');
         $this->mode = $this->testmode == 'yes' ? 'SANDBOX' : 'LIVE';
         $this->debug = 'yes' === $this->gateway->get_option('debug', 'no');
         if ($this->testmode) {
