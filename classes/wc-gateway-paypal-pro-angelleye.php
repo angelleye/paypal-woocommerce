@@ -1491,25 +1491,23 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             if ( ! empty( $avscode ) ) {
                 $avs_response_message = $PayPal->GetAVSCodeMessage($avscode);
                 echo '<h2 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;
-                foreach ( $bacs_accounts as $bacs_account ) {
-                    echo '<ul class="wc-avs-details order_details avs_details">' . PHP_EOL;
-                    $avs_details_fields = apply_filters( 'angelleye_avs_details_fields', array(
-                            'avs_response_code'=> array(
-                                    'label' => __( 'AVS Response Code', 'paypal-for-woocommerce' ),
-                                    'value' => $avscode
-                            ),
-                            'avs_response_message'          => array(
-                                    'label' => __( 'AVS Response Message', 'paypal-for-woocommerce' ),
-                                    'value' => $avs_response_message
-                            )
-                    ), $order_id );
-                    foreach ( $avs_details_fields as $field_key => $field ) {
-                            if ( ! empty( $field['value'] ) ) {
-                                    echo '<li class="' . esc_attr( $field_key ) . '">' . esc_attr( $field['label'] ) . ': <strong>' . wptexturize( $field['value'] ) . '</strong></li>' . PHP_EOL;
-                            }
-                    }
-                    echo '</ul>';
+                echo '<ul class="wc-avs-details order_details avs_details">' . PHP_EOL;
+                $avs_details_fields = apply_filters( 'angelleye_avs_details_fields', array(
+                        'avs_response_code'=> array(
+                                'label' => __( 'AVS Response Code', 'paypal-for-woocommerce' ),
+                                'value' => $avscode
+                        ),
+                        'avs_response_message'          => array(
+                                'label' => __( 'AVS Response Message', 'paypal-for-woocommerce' ),
+                                'value' => $avs_response_message
+                        )
+                ), $order_id );
+                foreach ( $avs_details_fields as $field_key => $field ) {
+                        if ( ! empty( $field['value'] ) ) {
+                                echo '<li class="' . esc_attr( $field_key ) . '">' . esc_attr( $field['label'] ) . ': <strong>' . wptexturize( $field['value'] ) . '</strong></li>' . PHP_EOL;
+                        }
                 }
+                echo '</ul>';
             }
             $cvvmatch = get_post_meta($order->id, 'CVV2MATCH', true);
             if ( ! empty( $cvvmatch ) ) {
