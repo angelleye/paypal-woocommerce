@@ -68,6 +68,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 array_push($this->supports, "tokenization");
             }
             $this->softdescriptor = $this->get_option('softdescriptor', '');
+            $this->avs_cvv2_result_admin_email = 'yes' === $this->get_option('avs_cvv2_result_admin_email', 'no'); 
             $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
             $this->enable_cardholder_first_last_name = 'yes' === $this->get_option('enable_cardholder_first_last_name', 'no'); 
             $this->is_encrypt = $this->get_option('is_encrypt', 'no');
@@ -82,7 +83,9 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             if ($this->enable_cardholder_first_last_name) {
                 add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
             }
-            
+            if( $this->avs_cvv2_result_admin_email ) {
+                add_action( 'woocommerce_email_before_order_table', array( $this, 'angelleye_paypal_pro_payflow_email_instructions' ), 10, 3 );
+            }
             $this->customer_id;
 	}
     
@@ -239,6 +242,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'type' => 'text',
                 'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
                 'default' => '',
+                'desc_tip' => true,
+            ),
+            'avs_cvv2_result_admin_email' => array(
+                'title' => __('AVS / CVV2 Results in Admin Order Email', 'paypal-for-woocommerce'),
+                'label' => __('Display AVS / CVV2 Results in Admin Order Email', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Display Address Verification Result (AVS) and Card Security Code Result (CVV2) Results in Admin Order Email.', 'paypal-for-woocommerce'),
+                'default' => 'no',
                 'desc_tip' => true,
             ),
             'enable_tokenized_payments' => array(
@@ -567,6 +578,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				$avs_response_order_note .= sprintf(__('Address Match: %s','paypal-for-woocommerce'),$avs_address_response_code);
 				$avs_response_order_note .= "\n";
 				$avs_response_order_note .= sprintf(__('Postal Match: %s','paypal-for-woocommerce'),$avs_zip_response_code);
+                                update_post_meta($order->id, '_AVSADDR', $avs_address_response_code);
+                                update_post_meta($order->id, '_AVSZIP', $avs_zip_response_code);
 				$order->add_order_note($avs_response_order_note);
 				
 				/**
@@ -576,6 +589,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				$cvv2_response_order_note = __('Card Security Code Result','paypal-for-woocommerce');
 				$cvv2_response_order_note .= "\n";
 				$cvv2_response_order_note .= sprintf(__('CVV2 Match: %s','paypal-for-woocommerce'),$cvv2_response_code);
+                                update_post_meta($order->id, '_CVV2MATCH', $cvv2_response_code);
 				$order->add_order_note($cvv2_response_order_note);
 
                 // Payment complete
@@ -1041,5 +1055,59 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             }
         }
         return $settings;
+    }
+    
+    public function angelleye_paypal_pro_payflow_email_instructions($order, $sent_to_admin, $plain_text = false) {
+        if ( $sent_to_admin && 'paypal_pro_payflow' === $order->payment_method ) {
+            if (!class_exists('Angelleye_PayPal')) {
+                require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            }
+            $PayPalConfig = array();
+            $PayPal = new Angelleye_PayPal($PayPalConfig);
+            $avsaddr = get_post_meta($order->id, '_AVSADDR', true);
+            $avszip = get_post_meta($order->id, '_AVSZIP', true);
+            if ( ! empty( $avscode ) && !empty($avszip) ) {
+                echo '<h2 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;
+                echo '<ul class="wc-avs-details order_details avs_details">' . PHP_EOL;
+                $avs_details_fields = apply_filters( 'angelleye_avs_details_fields', array(
+                        'avs_response_code'=> array(
+                                'label' => __( 'Address Match', 'paypal-for-woocommerce' ),
+                                'value' => $avsaddr
+                        ),
+                        'avs_response_message'          => array(
+                                'label' => __( 'Postal Match', 'paypal-for-woocommerce' ),
+                                'value' => $avszip
+                        )
+                ), $order_id );
+                foreach ( $avs_details_fields as $field_key => $field ) {
+                        if ( ! empty( $field['value'] ) ) {
+                                echo '<li class="' . esc_attr( $field_key ) . '">' . esc_attr( $field['label'] ) . ': <strong>' . wptexturize( $field['value'] ) . '</strong></li>' . PHP_EOL;
+                        }
+                }
+                echo '</ul>';
+            }
+            $cvvmatch = get_post_meta($order->id, 'CVV2MATCH', true);
+            if ( ! empty( $cvvmatch ) ) {
+                $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvvmatch);
+                echo '<h2 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;
+                echo '<ul class="wc-cvv2-details order_details cvv2_details">' . PHP_EOL;
+                $cvv_details_fields = apply_filters( 'angelleye_cvv2_details_fields', array(
+                        'cvv2_response_code'=> array(
+                                'label' => __( 'AVS Response Code', 'paypal-for-woocommerce' ),
+                                'value' => $cvvmatch
+                        ),
+                        'cvv2_response_message'          => array(
+                                'label' => __( 'AVS Response Message', 'paypal-for-woocommerce' ),
+                                'value' => $cvv2_response_message
+                        )
+                ), $order_id );
+                foreach ( $cvv_details_fields as $field_key => $field ) {
+                        if ( ! empty( $field['value'] ) ) {
+                                echo '<li class="' . esc_attr( $field_key ) . '">' . esc_attr( $field['label'] ) . ': <strong>' . wptexturize( $field['value'] ) . '</strong></li>' . PHP_EOL;
+                        }
+                }
+                echo '</ul>';
+            }
+        }
     }
 }
