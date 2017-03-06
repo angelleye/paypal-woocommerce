@@ -443,7 +443,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'PAGECOLLAPSETEXTCOLOR' => ltrim($this->page_collapse_textcolor, '#'),
             'PAGEBUTTONBGCOLOR' => ltrim($this->page_button_bgcolor, '#'),
             'PAGEBUTTONTEXTCOLOR' => ltrim($this->page_button_textcolor, '#'),
-            'LABELTEXTCOLOR' => ltrim($this->settings['label_textcolor'], '#')
+            'LABELTEXTCOLOR' => ltrim($this->settings['label_textcolor'], '#'),
+            'MERCHDESCR' => $this->softdescriptor
         );
 
         //handle empty state exception e.g. Denmark
@@ -1122,6 +1123,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'SHIPTOZIP' => $order->shipping_postcode,
             'SHIPTOCOUNTRY[' . strlen($order->shipping_country) . ']' => $order->shipping_country,
             'BUTTONSOURCE' => 'AngellEYE_SP_WooCommerce',
+            'MERCHDESCR' => $this->softdescriptor
         );
         if (empty($order->shipping_state)) {
             $paypal_args['SHIPTOSTATE[' . strlen($order->shipping_city) . ']'] = $order->shipping_city;
