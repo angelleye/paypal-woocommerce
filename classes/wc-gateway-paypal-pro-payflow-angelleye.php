@@ -244,6 +244,32 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'default' => '',
                 'desc_tip' => true,
             ),
+            'credit_card_month_field' => array(
+                'title' => __('Choose Credit Card Month Field', 'paypal-for-woocommerce'),
+                'label' => __('Choose Credit Card Month Field Format.', 'paypal-for-woocommerce'),
+                'description' => __('Choose whether you wish to display Name format or Number format of Month field in the credit card form.'),
+                'type' => 'select',
+                'css'      => 'max-width:200px;',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'numbers' => 'Numbers',
+                    'names' => 'Names',
+                ),
+                'default' => 'names'
+            ),
+            'credit_card_year_field' => array(
+                'title' => __('Choose Credit Card Year Field', 'paypal-for-woocommerce'),
+                'label' => __('Choose Credit Card Year Field Format.', 'paypal-for-woocommerce'),
+                'description' => __('Choose whether you wish to display Show Two digit format or Four digit of Year field in the credit card form.'),
+                'type' => 'select',
+                'css'      => 'max-width:200px;',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'two_digit' => 'Show Two Digit Years',
+                    'four_digit' => 'Show Four Digit Years',
+                ),
+                'default' => 'four_digit'
+            ),
             'avs_cvv2_result_admin_email' => array(
                 'title' => __('AVS / CVV2 Results in Admin Order Email', 'paypal-for-woocommerce'),
                 'label' => __('Display AVS / CVV2 Results in Admin Order Email', 'paypal-for-woocommerce'),

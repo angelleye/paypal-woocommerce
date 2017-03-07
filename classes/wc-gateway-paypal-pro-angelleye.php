@@ -275,7 +275,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'title' => __('Error Display Type', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'label' => __('Display detailed or generic errors', 'paypal-for-woocommerce'),
-                'class' => 'error_display_type_option',
+                'css'      => 'max-width:150px;',
+                'class' => 'error_display_type_option, wc-enhanced-select',
                 'options' => array(
                     'detailed' => __('Detailed', 'paypal-for-woocommerce'),
                     'generic' => __('Generic', 'paypal-for-woocommerce')
@@ -288,6 +289,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
                 'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds from within the WooCommerce order when you are ready to deliver.'),
                 'type' => 'select',
+                'css'      => 'max-width:150px;',
+                'class'    => 'wc-enhanced-select',
                 'options' => array(
                     'Sale' => 'Sale',
                     'Authorization' => 'Authorization',
@@ -345,6 +348,32 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
+            ),
+            'credit_card_month_field' => array(
+                'title' => __('Choose Credit Card Month Field', 'paypal-for-woocommerce'),
+                'label' => __('Choose Credit Card Month Field Format.', 'paypal-for-woocommerce'),
+                'description' => __('Choose whether you wish to display Name format or Number format of Month field in the credit card form.'),
+                'type' => 'select',
+                'css'      => 'max-width:200px;',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'numbers' => 'Numbers',
+                    'names' => 'Names',
+                ),
+                'default' => 'names'
+            ),
+            'credit_card_year_field' => array(
+                'title' => __('Choose Credit Card Year Field', 'paypal-for-woocommerce'),
+                'label' => __('Choose Credit Card Year Field Format.', 'paypal-for-woocommerce'),
+                'description' => __('Choose whether you wish to display Show Two digit format or Four digit of Year field in the credit card form.'),
+                'type' => 'select',
+                'css'      => 'max-width:200px;',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'two_digit' => 'Show Two Digit Years',
+                    'four_digit' => 'Show Four Digit Years',
+                ),
+                'default' => 'four_digit'
             ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
