@@ -751,7 +751,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         wp_update_post($my_post);
                     }
                     $_GET['order_id'] = $order_id;
-                    do_action('woocommerce_checkout_order_processed', $order_id, array());
+                    do_action('woocommerce_checkout_order_processed', $order_id, WC()->session->post_data);
                     $paypal_express_request->angelleye_do_express_checkout_payment();
                     break;
                 case 'do_express_checkout_payment':
