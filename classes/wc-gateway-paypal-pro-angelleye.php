@@ -126,7 +126,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             array_push($this->supports, "tokenization");
         }
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
-
+        $this->credit_card_month_field = $this->get_option('credit_card_month_field', 'names');
+        $this->credit_card_year_field = $this->get_option('credit_card_year_field', 'four_digit');
         if ($this->testmode == 'yes') {
             $this->api_username = $this->get_option('sandbox_api_username');
             $this->api_password = $this->get_option('sandbox_api_password');
@@ -455,13 +456,22 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $months[date('n', $timestamp)] = date_i18n(_x('F', 'Month Names', 'paypal-for-woocommerce'), $timestamp);
         endfor;
         foreach ($months as $num => $name) {
-            $form_html .= '<option value=' . $num . '>' . $name . '</option>';
+            if($this->credit_card_month_field == 'names') {
+                $form_html .= '<option value=' . $num . '>' . $name . '</option>';
+            } else {
+                $month_value = ($num < 10) ? '0'.$num : $num;
+                $form_html .= '<option value=' . $num . '>' . $month_value . '</option>';
+            }
         }
         $form_html .= '</select>';
         $form_html .= '<select name="paypal_pro_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year ml5">';
         $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
         for ($i = date('y'); $i <= date('y') + 15; $i++) {
-            $form_html .= '<option value=' . $i . '>20' . $i . '</option>';
+            if($this->credit_card_year_field == 'four_digit') {
+                $form_html .= '<option value=' . $i . '>20' . $i . '</option>';
+            } else {
+                $form_html .= '<option value=' . $i . '>' . $i . '</option>';
+            }
         }
         $form_html .= '</select>';
         $form_html .= '</p>';
