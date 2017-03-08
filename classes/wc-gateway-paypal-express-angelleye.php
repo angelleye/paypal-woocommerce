@@ -651,7 +651,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'fr_FR', 'pt_BR', 'fr_CA', 'zh_CN', 'ru_RU', 'en_GB', 'zh_HK',
             'he_IL', 'it_IT', 'ja_JP', 'pl_PL', 'pt_PT', 'es_ES', 'sv_SE', 'zh_TW', 'tr_TR'
         );
-        $wpml_locale = $this->angelleye_ec_get_wpml_locale();
+        $wpml_locale = self::angelleye_ec_get_wpml_locale();
         if( $wpml_locale ) {
             if ( in_array( $wpml_locale, $_supportedLocale ) ) {
                 return $wpml_locale;
@@ -960,7 +960,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         return $return;
     }
 
-    public function angelleye_ec_get_wpml_locale() {
+    public static function angelleye_ec_get_wpml_locale() {
         $locale = false;
         if (defined('ICL_LANGUAGE_CODE') && function_exists('icl_object_id')) {
             global $sitepress;
