@@ -19,3 +19,6 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 .angelleye_ec_save_to_accoount_box {
     clear: both;
 }
+.angelleye_button_single .single_add_to_cart_button.button.alt {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0 !important;
+}

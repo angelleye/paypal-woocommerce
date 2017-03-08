@@ -101,14 +101,14 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $add_to_cart_action = esc_url(add_query_arg('express_checkout', '1'));
                 switch ($this->checkout_with_pp_button_type) {
                     case 'textbutton':
-                        $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="button" style="float: left; clear: both; margin: 3px 0 0 0; border: none; "'.$hide.'" class="single_add_to_cart_button paypal_checkout_button single_variation_wrap_angelleye paypal_checkout_button button alt "' . $button_dynamic_class . '" name="express_checkout"  value="' . $this->pp_button_type_text_button . '"/>';
+                        $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="button" style="float: left; clear: both; margin: 3px 0 0 0; border: none; "'.$hide.'" class="single_add_to_cart_button button alt paypal_checkout_button single_variation_wrap_angelleye paypal_checkout_button button alt "' . $button_dynamic_class . '" name="express_checkout"  value="' . $this->pp_button_type_text_button . '"/>';
                         break;
                     case "paypalimage":
                         $button_img = WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage();
-                        $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="image" src="'.$button_img.'" style="width: auto; height: auto;float: left; clear: both; margin: 3px 0 3px 0; border: none; padding: 0;"'.$hide.'" class="single_add_to_cart_button paypal_checkout_button single_variation_wrap_angelleye ' . $button_dynamic_class . '" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '"/>';
+                        $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="image" src="'.$button_img.'" style="width: auto; height: auto;float: left; clear: both; margin: 3px 0 3px 0; border: none; padding: 0;"'.$hide.'" class="single_add_to_cart_button button alt paypal_checkout_button single_variation_wrap_angelleye ' . $button_dynamic_class . '" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '"/>';
                         break;
                     case "customimage":
-                        $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="image" src="'.$this->pp_button_type_my_custom.'" style="float: left; clear: both; margin: 3px 0 3px 0; border: none; padding: 0;"'.$hide.'" class="single_add_to_cart_button paypal_checkout_button single_variation_wrap_angelleye ' . $button_dynamic_class . '" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '"/>';
+                        $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="image" src="'.$this->pp_button_type_my_custom.'" style="float: left; clear: both; margin: 3px 0 3px 0; border: none; padding: 0;"'.$hide.'" class="single_add_to_cart_button button alt paypal_checkout_button single_variation_wrap_angelleye ' . $button_dynamic_class . '" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '"/>';
                         break;
                 }
                 $ec_html_button .= '</div>';
