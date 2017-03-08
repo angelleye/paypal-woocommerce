@@ -122,7 +122,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
-        <?php $this->generate_settings_html(); ?>
+            <?php $this->generate_settings_html(); ?>
             <script type="text/javascript">
                 var display_disable_terms = "<?php echo $display_disable_terms; ?>";
         <?php if ($guest_checkout === 'no') { ?>
@@ -651,6 +651,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'fr_FR', 'pt_BR', 'fr_CA', 'zh_CN', 'ru_RU', 'en_GB', 'zh_HK',
             'he_IL', 'it_IT', 'ja_JP', 'pl_PL', 'pt_PT', 'es_ES', 'sv_SE', 'zh_TW', 'tr_TR'
         );
+        $wpml_locale = $this->angelleye_ec_get_wpml_locale();
+        if( $wpml_locale ) {
+            if ( in_array( $wpml_locale, $_supportedLocale ) ) {
+                return $wpml_locale;
+            }
+        }
         $locale = get_locale();
         if (!in_array($locale, $_supportedLocale)) {
             $locale = 'en_US';
@@ -721,17 +727,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $this->posted = WC()->session->post_data;
                     }
                     $order = wc_get_order($order_id);
-                    if($this->billing_address) {
+                    if ($this->billing_address) {
                         $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'billing');
                     } else {
                         $billing_address = array();
-                        $checkout_fields['billing'] = WC()->countries->get_address_fields( WC()->checkout->get_value( 'billing_country' ), 'billing_' );
-                        if ( $checkout_fields['billing'] ) {
-				foreach ( array_keys( $checkout_fields['billing'] ) as $field ) {
-					$field_name = str_replace( 'billing_', '', $field );
-					$billing_address[ $field_name ] = $this->angelleye_ec_get_posted_address_data( $field_name );
-				}
-			}
+                        $checkout_fields['billing'] = WC()->countries->get_address_fields(WC()->checkout->get_value('billing_country'), 'billing_');
+                        if ($checkout_fields['billing']) {
+                            foreach (array_keys($checkout_fields['billing']) as $field) {
+                                $field_name = str_replace('billing_', '', $field);
+                                $billing_address[$field_name] = $this->angelleye_ec_get_posted_address_data($field_name);
+                            }
+                        }
                         $order->set_address($billing_address, 'billing');
                     }
                     $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'shipping');
@@ -940,20 +946,34 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public function get_user_ip() {
         return (isset($_SERVER['HTTP_X_FORWARD_FOR']) && !empty($_SERVER['HTTP_X_FORWARD_FOR'])) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
     }
-    
-    public function angelleye_ec_get_posted_address_data( $key, $type = 'billing' ) {
-		if ( 'billing' === $type || false === $this->posted['ship_to_different_address'] ) {
-			$return = isset( $this->posted[ 'billing_' . $key ] ) ? $this->posted[ 'billing_' . $key ] : '';
-		} else {
-			$return = isset( $this->posted[ 'shipping_' . $key ] ) ? $this->posted[ 'shipping_' . $key ] : '';
-		}
 
-		// Use logged in user's billing email if neccessary
-		if ( 'email' === $key && empty( $return ) && is_user_logged_in() ) {
-			$current_user = wp_get_current_user();
-			$return       = $current_user->user_email;
-		}
-		return $return;
-	}
+    public function angelleye_ec_get_posted_address_data($key, $type = 'billing') {
+        if ('billing' === $type || false === $this->posted['ship_to_different_address']) {
+            $return = isset($this->posted['billing_' . $key]) ? $this->posted['billing_' . $key] : '';
+        } else {
+            $return = isset($this->posted['shipping_' . $key]) ? $this->posted['shipping_' . $key] : '';
+        }
+        if ('email' === $key && empty($return) && is_user_logged_in()) {
+            $current_user = wp_get_current_user();
+            $return = $current_user->user_email;
+        }
+        return $return;
+    }
+
+    public function angelleye_ec_get_wpml_locale() {
+        $locale = false;
+        if (defined('ICL_LANGUAGE_CODE') && function_exists('icl_object_id')) {
+            global $sitepress;
+            if (isset($sitepress)) {
+                $details = $sitepress->get_language_details(ICL_LANGUAGE_CODE);
+                $locale = $details['locale'];
+            } else if (function_exists('pll_current_language')) { 
+                $locale = pll_current_language('locale'); 
+            } else if (function_exists('pll_default_language')) {
+                $locale = pll_default_language('locale');
+            }
+        }
+        return $locale;
+    }
 
 }
