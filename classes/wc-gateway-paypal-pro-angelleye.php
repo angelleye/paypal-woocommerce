@@ -197,7 +197,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             'card_icon' => array(
                 'title' => __('Card Icon', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
+                'class' => 'button_upload',
             ),
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),

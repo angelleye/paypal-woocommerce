@@ -90,7 +90,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->show_on_cart = $this->get_option('show_on_cart', 'yes');
         $this->checkout_with_pp_button_type = $this->get_option('checkout_with_pp_button_type', 'paypalimage');
         $this->pp_button_type_text_button = $this->get_option('pp_button_type_text_button', 'Proceed to Checkout');
-        $this->pp_button_type_my_custom = $this->get_option('pp_button_type_my_custom', $this->checkout_with_pp_button_type);
+        $this->pp_button_type_my_custom = $this->get_option('pp_button_type_my_custom', self::angelleye_get_paypalimage());
         $this->softdescriptor = $this->get_option('softdescriptor', '');
         $this->version = "64";
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
@@ -297,7 +297,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Select Image', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'label' => __('Use Checkout with PayPal image button', 'paypal-for-woocommerce'),
-                'class' => 'pp_button_type_my_custom',
+                'class' => 'pp_button_type_my_custom, button_upload',
             ),
             'pp_button_type_text_button' => array(
                 'title' => __('Custom Text', 'paypal-for-woocommerce'),

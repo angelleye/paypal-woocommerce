@@ -19,7 +19,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->save_abandoned_checkout = 'yes' == !empty($this->setting['save_abandoned_checkout']) ? $this->setting['enable_tokenized_payments'] : 'no';
             $this->checkout_with_pp_button_type = !empty($this->setting['checkout_with_pp_button_type']) ? $this->setting['checkout_with_pp_button_type'] : 'paypalimage';
             $this->pp_button_type_text_button = !empty($this->setting['pp_button_type_text_button']) ? $this->setting['pp_button_type_text_button'] : 'Proceed to Checkout';
-            $this->pp_button_type_my_custom = !empty($this->setting['pp_button_type_my_custom']) ? $this->setting['pp_button_type_my_custom'] : '';
+            $this->pp_button_type_my_custom = !empty($this->setting['pp_button_type_my_custom']) ? $this->setting['pp_button_type_my_custom'] :  WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage();
             $this->show_on_product_page = !empty($this->setting['show_on_product_page']) ? $this->setting['show_on_product_page'] : 'no';
             $this->enabled = !empty($this->setting['enabled']) ? $this->setting['enabled'] : 'no';
             $this->show_on_checkout = !empty($this->setting['show_on_checkout']) ? $this->setting['show_on_checkout'] : 'top';

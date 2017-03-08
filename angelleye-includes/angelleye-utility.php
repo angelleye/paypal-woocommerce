@@ -685,7 +685,8 @@ class AngellEYE_Utility {
             'card_icon'        => array(
                 'title'       => __( 'Card Icon', 'paypal-for-woocommerce' ),
                 'type'        => 'text',
-                'default'     => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
+                'default'     => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
+                'class' => 'button_upload'
             ),
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),

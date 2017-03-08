@@ -784,7 +784,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'card_icon' => array(
                 'title' => __('Credit Card Logo Graphic', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
+                'class' => 'button_upload'
             ),
             'invoice_prefix' => array(
                 'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),

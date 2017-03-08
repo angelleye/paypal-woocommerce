@@ -273,7 +273,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'card_icon' => array(
                 'title' => __('Card Icon', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
+                'class' => 'button_upload'
             ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
