@@ -71,6 +71,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public function __construct()
         {
             require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
+            require_once plugin_dir_path(__FILE__) . 'classes/lib/IPN/class-paypal-woocommerce-ipn-handler.php';
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
             $woo_version = $this->wpbo_get_woo_version_number();
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));

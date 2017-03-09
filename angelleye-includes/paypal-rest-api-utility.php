@@ -180,7 +180,7 @@ class PayPal_Rest_API_Utility {
         $this->set_item_list();
         $this->set_detail_values();
         $this->set_amount_values($order);
-        $this->set_transaction();
+        $this->set_transaction($order);
         $this->set_payment();
     }
 
@@ -238,12 +238,13 @@ class PayPal_Rest_API_Utility {
     /**
      * @since    1.2
      */
-    public function set_transaction() {
+    public function set_transaction($order) {
         $this->transaction = new Transaction();
         $this->transaction->setAmount($this->amount);
         $this->transaction->setItemList($this->item_list);
         $this->transaction->setDescription("Payment description");
         $this->transaction->setInvoiceNumber(uniqid());
+        $this->transaction->setCustom(json_encode( array( 'order_id' => $order->id, 'order_key' => $order->order_key ) ));
         if( !empty($this->softdescriptor) ) {
             $this->transaction->setSoftDescriptor($this->softdescriptor);
         }
