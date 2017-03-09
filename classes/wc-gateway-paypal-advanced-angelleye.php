@@ -32,7 +32,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         // Define user set variables
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
-        $this->testmode = $this->get_option('testmode', 'yes');
+        $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
         $this->loginid = $this->get_option('loginid');
         $this->resellerid = $this->get_option('resellerid');
         $this->transtype = $this->get_option('transtype');
@@ -63,7 +63,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         }
 
         
-        $this->hostaddr = $this->testmode == 'yes' ? $this->testurl : $this->liveurl;
+        $this->hostaddr = $this->testmode == true ? $this->testurl : $this->liveurl;
         $this->softdescriptor = $this->get_option('softdescriptor', '');
 
         if ($this->debug == 'yes')

@@ -36,7 +36,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->testmode = 'yes' === $this->get_option('testmode', 'no');
-        $this->mode = $this->testmode == 'yes' ? "SANDBOX" : "LIVE";
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         if ($this->testmode) {
@@ -234,7 +233,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             $this->view_transaction_url = $sandbox_transaction_url;
         } else {
             if ( empty( $is_sandbox ) ) {
-                if (  $this->mode == 'SANDBOX' ) {
+                if (  $this->testmode == true ) {
                     $this->view_transaction_url = $sandbox_transaction_url;
                 } else {
                     $this->view_transaction_url = $live_transaction_url;

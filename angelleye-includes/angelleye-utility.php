@@ -50,13 +50,15 @@ class AngellEYE_Utility {
         }
         if ($this->payment_method == 'paypal_express') {
             $gateway_obj = new WC_Gateway_PayPal_Express_AngellEYE();
+            $this->testmode = 'yes' === $gateway_obj->get_option('testmode', 'yes');
         } else if($this->payment_method == 'paypal_pro') {
             $gateway_obj = new WC_Gateway_PayPal_Pro_AngellEYE();
+            $this->testmode = 'yes' === $gateway_obj->get_option('testmode', 'no');
         } else {
             return false;
         }
-        $this->testmode = $gateway_obj->get_option('testmode');
-        if ($this->testmode == 'yes') {
+        
+        if ($this->testmode == true) {
             $this->api_username = $gateway_obj->get_option('sandbox_api_username');
             $this->api_password = $gateway_obj->get_option('sandbox_api_password');
             $this->api_signature = $gateway_obj->get_option('sandbox_api_signature');
@@ -68,7 +70,7 @@ class AngellEYE_Utility {
         $this->error_email_notify = $gateway_obj->get_option('error_email_notify');
         $this->ec_debug = $gateway_obj->get_option('debug');
         $PayPalConfig = array(
-            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'Sandbox' => $this->testmode,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature
@@ -1323,6 +1325,22 @@ class AngellEYE_Utility {
             <?php _e( 'Billing Agreement Details', 'woocommerce' ); ?>
         </h3>
         <p> <?php echo $billing_agreement_id; ?></p> <?php 
+    }
+    
+    public static function angelleye_paypal_for_woocommerce_is_set_sandbox_product() {
+        $is_sandbox_set = false;
+        if (sizeof(WC()->cart->get_cart()) != 0) {
+            foreach (WC()->cart->get_cart() as $key => $value) {
+                $_product = $value['data'];
+                if (isset($_product->id) && !empty($_product->id)) {
+                    $_enable_sandbox_mode = get_post_meta($_product->id, '_enable_sandbox_mode', true);
+                    if ($_enable_sandbox_mode == 'yes') {
+                        $is_sandbox_set = true;
+                    }
+                }
+            }
+        }
+        return $is_sandbox_set;
     }
 
 }

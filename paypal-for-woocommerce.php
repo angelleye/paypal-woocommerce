@@ -849,6 +849,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         'description'   => __( 'Adds a billing agreement to the product.  The user must agree to the billing agreement on the PayPal checkout pages, and then you can process future payments for the buyer using reference transactions..', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
+                $product_type['enable_sandbox_mode'] = array(
+                        'id'            => '_enable_sandbox_mode',
+                        'wrapper_class' => '',
+                        'label'         => __( 'Enable Sandbox Mode', 'paypal-for-woocommerce' ),
+                        'description'   => __( '', 'paypal-for-woocommerce' ),
+                        'default'       => 'no'
+                );
                 return $product_type;
             } else {
                     return $product_type;
@@ -860,6 +867,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             update_post_meta( $post_id, '_no_shipping_required', $no_shipping_required );
             $_paypal_billing_agreement = isset( $_POST['_paypal_billing_agreement'] ) ? 'yes' : 'no';
             update_post_meta( $post_id, '_paypal_billing_agreement', $_paypal_billing_agreement );
+            $_enable_sandbox_mode = isset( $_POST['_enable_sandbox_mode'] ) ? 'yes' : 'no';
+            update_post_meta( $post_id, '_enable_sandbox_mode', $_enable_sandbox_mode );
         }
         
         public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true) {

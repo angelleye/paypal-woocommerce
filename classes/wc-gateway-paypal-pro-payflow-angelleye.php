@@ -37,7 +37,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->paypal_partner = $this->get_option('paypal_partner', 'PayPal');
             $this->paypal_password = $this->settings['paypal_password'];
             $this->paypal_user = $this->get_option('paypal_user', $this->paypal_vendor); 
-            $this->testmode = $this->get_option('testmode', 'no');
+            $this->testmode = 'yes' === $this->get_option('testmode', 'no');
             $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
             $this->debug = 'yes' === $this->get_option('debug', 'no'); 
             $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
@@ -51,7 +51,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
             }
             $this->icon = apply_filters('woocommerce_paypal_pro_payflow_icon', $this->icon);
-            if ($this->testmode=="yes") {
+            if ($this->testmode == true) {
                 $this->paypal_vendor = $this->get_option('sandbox_paypal_vendor');
                 $this->paypal_partner = $this->get_option('sandbox_paypal_partner', 'PayPal');
                 $this->paypal_password = $this->get_option('sandbox_paypal_password');
@@ -342,7 +342,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
 		if ( $this->enabled == "yes" ) {
 
-			if ( $this->testmode == "no" && get_option('woocommerce_force_ssl_checkout')=='no' && !class_exists( 'WordPressHTTPS' ) )
+			if ( $this->testmode == false && get_option('woocommerce_force_ssl_checkout')=='no' && !class_exists( 'WordPressHTTPS' ) )
 				return false;
 
 			// Currency check
@@ -438,7 +438,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 		 * Create PayPal_PayFlow object.
 		 */
 		$PayPalConfig = array(
-						'Sandbox' => ($this->testmode=='yes')? true:false, 
+						'Sandbox' => $this->testmode, 
 						'APIUsername' => $this->paypal_user, 
 						'APIPassword' => trim($this->paypal_password), 
 						'APIVendor' => $this->paypal_vendor, 
@@ -460,7 +460,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			/**
 			 * Parameter set by original Woo.  I can probably ditch this, but leaving it for now.
 			 */
-			$url = $this->testmode == 'yes' ? $this->testurl : $this->liveurl;
+			$url = $this->testmode == true ? $this->testurl : $this->liveurl;
 			
 			/**
 			 * PayPal PayFlow Gateway Request Params
@@ -733,7 +733,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             do_action( 'angelleye_before_fc_payment_fields', $this );
             if ( $this->description ) {
                 echo '<p>' . wp_kses_post( $this->description );
-                if($this->testmode == "yes")
+                if($this->testmode == true)
                 {
                         echo '<p>';
                         _e('NOTICE: SANDBOX (TEST) MODE ENABLED.', 'paypal-for-woocommerce');
@@ -835,7 +835,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
          * Create PayPal_PayFlow object.
          */
         $PayPalConfig = array(
-            'Sandbox' => ($this->testmode=='yes')? true:false,
+            'Sandbox' => $this->testmode,
             'APIUsername' => $this->paypal_user,
             'APIPassword' => trim($this->paypal_password),
             'APIVendor' => $this->paypal_vendor,
@@ -1024,7 +1024,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
         }
         $PayPalConfig = array(
-            'Sandbox' => ($this->testmode=='yes')? true:false,
+            'Sandbox' => $this->testmode,
             'APIUsername' => $this->paypal_user,
             'APIPassword' => trim($this->paypal_password),
             'APIVendor' => $this->paypal_vendor,

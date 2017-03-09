@@ -80,7 +80,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->api_username = $this->get_option('api_username');
         $this->api_password = $this->get_option('api_password');
         $this->api_signature = $this->get_option('api_signature');
-        $this->testmode = $this->get_option('testmode');
+        $this->testmode = 'yes' === $this->get_option('testmode', 'no');
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
         $this->error_email_notify = $this->get_option('error_email_notify');
         $this->error_display_type = $this->get_option('error_display_type'); 
@@ -108,7 +108,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $this->centinel_pwd = $this->get_option('centinel_pwd');
             if (empty($this->centinel_pid) || empty($this->centinel_mid) || empty($this->centinel_pwd))
                 $this->enable_3dsecure = false;
-            $this->centinel_url = $this->testmode == "no" ? $this->liveurl_3ds : $this->testurl_3ds;
+            $this->centinel_url = $this->testmode == false ? $this->liveurl_3ds : $this->testurl_3ds;
         }
         
         //fix ssl for image icon
@@ -128,7 +128,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         $this->credit_card_month_field = $this->get_option('credit_card_month_field', 'names');
         $this->credit_card_year_field = $this->get_option('credit_card_year_field', 'four_digit');
-        if ($this->testmode == 'yes') {
+        if ($this->testmode == true) {
             $this->api_username = $this->get_option('sandbox_api_username');
             $this->api_password = $this->get_option('sandbox_api_password');
             $this->api_signature = $this->get_option('sandbox_api_signature');
@@ -403,7 +403,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
     function is_available()
     {
         if ($this->enabled == "yes") :
-            if ($this->testmode == "no" && get_option('woocommerce_force_ssl_checkout') == 'no' && !class_exists('WordPressHTTPS')) return false;
+            if ($this->testmode == false && get_option('woocommerce_force_ssl_checkout') == 'no' && !class_exists('WordPressHTTPS')) return false;
             // Currency check
             if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_pro_supported_currencies', array('AUD', 'CAD', 'CZK', 'DKK', 'EUR', 'HUF', 'JPY', 'NOK', 'NZD', 'PLN', 'GBP', 'SGD', 'SEK', 'CHF', 'USD')))) return false;
             // Required fields check
@@ -433,7 +433,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         do_action('before_angelleye_pc_payment_fields', $this);
         if ($this->description) {
             echo '<p>' . wp_kses_post($this->description);
-            if ($this->testmode == "yes") {
+            if ($this->testmode == true) {
                 echo '<p>';
                 _e('NOTICE: SANDBOX (TEST) MODE ENABLED.', 'paypal-for-woocommerce');
                 echo '<br />';
@@ -851,7 +851,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
          * Create PayPal object.
          */
         $PayPalConfig = array(
-            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'Sandbox' => $this->testmode,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature,
@@ -1101,8 +1101,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $order->add_order_note($cvv2_response_order_note);
             update_post_meta($order->id, '_CVV2MATCH', $cvv2_response_code);
             
-            $is_sandbox = $this->testmode == 'yes' ? true : false;
-            update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+            update_post_meta($order->id, 'is_sandbox', $this->testmode);
             do_action('before_save_payment_token', $order->id);
             if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') {
                 if(!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) {
@@ -1249,7 +1248,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
          * Create PayPal object.
          */
         $PayPalConfig = array(
-            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'Sandbox' => $this->testmode,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature,
@@ -1402,7 +1401,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $this->view_transaction_url = $sandbox_transaction_url;
         } else {
             if ( empty( $is_sandbox ) ) {
-                if (  $this->testmode == 'yes' ) {
+                if (  $this->testmode == true ) {
                     $this->view_transaction_url = $sandbox_transaction_url;
                 } else {
                     $this->view_transaction_url = $live_transaction_url;
@@ -1463,7 +1462,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->validate_fields();
         $card = $this->get_posted_card();
         $PayPalConfig = array(
-            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'Sandbox' => $this->testmode,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature,
@@ -1532,7 +1531,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
             }
             $PayPalConfig = array(
-                'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+                'Sandbox' => $this->testmode,
                 'APIUsername' => $this->api_username,
                 'APIPassword' => $this->api_password,
                 'APISignature' => $this->api_signature,

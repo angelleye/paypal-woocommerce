@@ -41,7 +41,7 @@ class PayPal_Rest_API_Utility {
         }
         $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'no');
         $this->softdescriptor = $this->gateway->get_option('softdescriptor', '');
-        $this->mode = $this->testmode == 'yes' ? 'SANDBOX' : 'LIVE';
+        $this->mode = $this->testmode == true ? 'SANDBOX' : 'LIVE';
         $this->debug = 'yes' === $this->gateway->get_option('debug', 'no');
         if ($this->testmode) {
             $this->rest_client_id = $this->gateway->get_option('rest_client_id_sandbox', false);
@@ -265,7 +265,7 @@ class PayPal_Rest_API_Utility {
      * @return ApiContext
      */
     public function getAuth() {
-        $this->mode = $this->testmode == 'yes' ? 'SANDBOX' : 'LIVE';
+        $this->mode = $this->testmode == true ? 'SANDBOX' : 'LIVE';
         $auth = new ApiContext(new OAuthTokenCredential($this->rest_client_id, $this->rest_secret_id));
         $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce', 'log.LogEnabled' => true, 'log.LogLevel' => 'DEBUG', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
         return $auth;

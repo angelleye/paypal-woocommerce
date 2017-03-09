@@ -35,7 +35,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->enabled = $this->get_option('enabled');
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
-        $this->testmode = $this->get_option('testmode', 'yes');
+        $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->save_abandoned_checkout = 'yes' == $this->get_option('save_abandoned_checkout', 'no');
         self::$log_enabled = $this->debug;
@@ -73,7 +73,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($this->not_us_or_uk) {
             $this->show_paypal_credit = 'no';
         }
-        if ($this->testmode == 'yes') {
+        if ($this->testmode == true) {
             $this->API_Endpoint = "https://api-3t.sandbox.paypal.com/nvp";
             $this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
             $this->api_username = $this->get_option('sandbox_api_username');
@@ -778,7 +778,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->view_transaction_url = $sandbox_transaction_url;
             } else {
                 if (empty($is_sandbox)) {
-                    if ($this->testmode == 'yes') {
+                    if ($this->testmode == true) {
                         $this->view_transaction_url = $sandbox_transaction_url;
                     } else {
                         $this->view_transaction_url = $live_transaction_url;
@@ -837,7 +837,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
         $PayPalConfig = array(
-            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'Sandbox' => $this->testmode,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature,
