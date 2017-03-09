@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 if (!defined('ABSPATH')) {
     exit;
@@ -273,7 +273,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'DECPFields' => $DECPFields,
                 'Payments' => $Payments
             );
-            $this->paypal_response = $this->paypal->DoExpressCheckoutPayment($this->paypal_request);
+            $this->paypal_response = $this->paypal->DoExpressCheckoutPayment(apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'DoExpressCheckoutPayment');
         } catch (Exception $ex) {
             
@@ -368,7 +368,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'Payments' => $Payments,
             );
             $this->paypal_request = $this->angelleye_add_billing_agreement_param($PayPalRequestData, $this->gateway->supports('tokenization'));
-            $this->paypal_response = $this->paypal->SetExpressCheckout($this->paypal_request);
+            $this->paypal_response = $this->paypal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'SetExpressCheckout');
             return $this->paypal_response;
         } catch (Exception $ex) {

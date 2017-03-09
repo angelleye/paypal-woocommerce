@@ -567,7 +567,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                             $log['cvv2'] = '****';
                         }
                         $this->add_log('PayFlow Request: '.print_r( $log, true ) );
-			$PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+			$PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
                         
                         /**
                         *  cURL Error Handling #146 
@@ -1073,7 +1073,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             'partialauth' => '',
             'authcode' => ''
         );
-        $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+        $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_express_set_express_checkout_request_args', $PayPalRequestData));
         if(isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)) {
             if ($PayPalResult['RESULT'] == 126) {
                 wc_add_notice( __( 'The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.', 'woocommerce' ), 'error' );

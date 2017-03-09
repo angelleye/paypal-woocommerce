@@ -574,7 +574,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             /* Using Curl post necessary information to the Paypal Site to generate the secured token */
             $response = wp_remote_post($this->hostaddr, array(
                 'method' => 'POST',
-                'body' => $postData,
+                'body' => apply_filters('angelleye_woocommerce_paypal_advanced_create_secure_token_request_args', $postData),
                 'timeout' => 70,
                 'user-agent' => 'WooCommerce ' . WC_VERSION,
                 'httpversion' => '1.1',
@@ -1199,7 +1199,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $postData = trim($postData, '&');
             $response = wp_remote_post($this->hostaddr, array(
                 'method' => 'POST',
-                'body' => $postData,
+                'body' => apply_filters('angelleye_woocommerce_paypal_advanced_create_reference_transaction_request_args', $postData),
                 'timeout' => 70,
                 'user-agent' => 'WooCommerce ' . WC_VERSION,
                 'httpversion' => '1.1',

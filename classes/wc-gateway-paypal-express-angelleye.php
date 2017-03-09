@@ -846,7 +846,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $PayPal = new Angelleye_PayPal($PayPalConfig);
         if (!empty($PayPalRequest) && !empty($action_name)) {
             if ('SetExpressCheckout' == $action_name) {
-                $PayPalResult = $PayPal->SetExpressCheckout($PayPalRequest);
+                $PayPalResult = $PayPal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_set_express_checkout_request_args', $PayPalRequest));
                 AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'SetExpressCheckout', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
                 self::log('Test Mode: ' . $this->testmode);
                 self::log('Endpoint: ' . $this->API_Endpoint);

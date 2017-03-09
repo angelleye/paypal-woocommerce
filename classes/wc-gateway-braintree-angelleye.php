@@ -561,7 +561,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
             
             try {
-                $this->response = Braintree_Transaction::sale($request_data);
+                $this->response = Braintree_Transaction::sale(apply_filters('angelleye_woocommerce_braintree_sale_request_args', $request_data));
             } catch (Braintree_Exception_Authentication $e ) {
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
                 $this->add_log("Braintree_Transaction::sale Braintree_Exception_Authentication: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
@@ -1183,7 +1183,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'fax' => '',
             'website' => ''
         );
-        $result = Braintree_Customer::create($create_customer_request);
+        $result = Braintree_Customer::create(apply_filters('angelleye_woocommerce_braintree_create_customer_request_args', $create_customer_request));
         if($result->success == true) {
             if(!empty($result->customer->id)) {
                 update_user_meta($customer_id, 'braintree_customer_id', $result->customer->id);

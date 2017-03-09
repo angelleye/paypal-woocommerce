@@ -1035,9 +1035,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'returnfmfdetails' => '1', 
                 'softdescriptor' => $this->softdescriptor
             );
-            $PayPalResult = $PayPal->DoReferenceTransaction($PayPalRequestData);
+            $PayPalResult = $PayPal->DoReferenceTransaction(apply_filters('angelleye_woocommerce_paypal_pro_do_reference_transaction_request_args', $PayPalRequestData));
         } else {
-            $PayPalResult = $PayPal->DoDirectPayment($PayPalRequestData);
+            $PayPalResult = $PayPal->DoDirectPayment(apply_filters('angelleye_woocommerce_paypal_pro_do_direct_payment_request_args', $PayPalRequestData));
         }
         
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
@@ -1286,7 +1286,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $PayPalRequestData = array('RTFields' => $RTFields);
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
-        $PayPalResult = $PayPal->RefundTransaction($PayPalRequestData);
+        $PayPalResult = $PayPal->RefundTransaction(apply_filters('angelleye_woocommerce_paypal_pro_refund_request_args', $PayPalRequestData));
 
         /**
          *  cURL Error Handling #146
@@ -1490,7 +1490,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             'CCDetails' => $CCDetails, 
             'PaymentDetails' => $PaymentDetails
         );
-        $result = $PayPal->DoDirectPayment($PayPalRequestData);
+        $result = $PayPal->DoDirectPayment(apply_filters('angelleye_woocommerce_do_direct_payment_request_args', $PayPalRequestData));
         if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
             $customer_id = get_current_user_id();
             $TRANSACTIONID = $result['TRANSACTIONID'];
