@@ -27,8 +27,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->disable_term = 'yes' === $this->gateway->get_option('disable_term', 'no');
             $this->save_abandoned_checkout = 'yes' == $this->gateway->get_option('save_abandoned_checkout', 'no');
             $this->softdescriptor = $this->gateway->get_option('softdescriptor', '');
+            $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'yes');
+            if( $this->testmode == false ) {
+                $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+            }
             $this->credentials = array(
-                'Sandbox' => $this->gateway->testmode == 'yes' ? TRUE : FALSE,
+                'Sandbox' => $this->testmode,
                 'APIUsername' => $this->gateway->api_username,
                 'APIPassword' => $this->gateway->api_password,
                 'APISignature' => $this->gateway->api_signature,
@@ -147,8 +151,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if ($this->response_helper->ec_is_response_success_or_successwithwarning($this->paypal_response)) {
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
-                $is_sandbox = $this->gateway->testmode == 'yes' ? true : false;
-                update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+                update_post_meta($order->id, 'is_sandbox', $this->testmode);
                 if ($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] == 'Completed') {
                     $order->payment_complete($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                 } else {
@@ -563,7 +566,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             WC_Gateway_PayPal_Express_AngellEYE::log('Redirecting to PayPal');
             WC_Gateway_PayPal_Express_AngellEYE::log(sprintf(__('PayPal for WooCommerce Version: %s', 'paypal-for-woocommerce'), VERSION_PFW));
             WC_Gateway_PayPal_Express_AngellEYE::log(sprintf(__('WooCommerce Version: %s', 'paypal-for-woocommerce'), WC_VERSION));
-            WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->gateway->testmode);
+            WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->testmode);
             WC_Gateway_PayPal_Express_AngellEYE::log('Endpoint: ' . $this->gateway->API_Endpoint);
         }
         $PayPalRequest = isset($this->paypal_response['RAWREQUEST']) ? $this->paypal_response['RAWREQUEST'] : '';
@@ -797,7 +800,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
         $this->paypal_response = $this->paypal->DoReferenceTransaction($PayPalRequestData);
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify);
-        WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->gateway->testmode);
+        WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->testmode);
         WC_Gateway_PayPal_Express_AngellEYE::log('Endpoint: ' . $this->gateway->API_Endpoint);
         $PayPalRequest = isset($this->paypal_response['RAWREQUEST']) ? $this->paypal_response['RAWREQUEST'] : '';
         $PayPalResponse = isset($this->paypal_response['RAWRESPONSE']) ? $this->paypal_response['RAWRESPONSE'] : '';

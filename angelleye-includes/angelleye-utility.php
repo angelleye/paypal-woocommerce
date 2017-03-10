@@ -1331,7 +1331,9 @@ class AngellEYE_Utility {
     
     public static function angelleye_paypal_for_woocommerce_is_set_sandbox_product() {
         $is_sandbox_set = false;
-        if (sizeof(WC()->cart->get_cart()) != 0) {
+        global $woocommerce;
+        
+        if (isset(WC()->cart) && sizeof(WC()->cart->get_cart()) > 0) {
             foreach (WC()->cart->get_cart() as $key => $value) {
                 $_product = $value['data'];
                 if (isset($_product->id) && !empty($_product->id)) {
