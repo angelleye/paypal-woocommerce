@@ -219,10 +219,11 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                     $_no_shipping_required = get_post_meta($_product->id, '_no_shipping_required', true);
                     if( $_no_shipping_required == 'yes' ) {
                         $SECFields['noshipping'] = 1;
-                    } 
+                        return $SECFields;
+                    }   
                 }
             }
-        } 
+        }
         return $SECFields;
     }
 }
