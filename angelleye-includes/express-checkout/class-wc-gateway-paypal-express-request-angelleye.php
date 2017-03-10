@@ -31,11 +31,25 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if( $this->testmode == false ) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
+            if ($this->testmode == true) {
+                $this->API_Endpoint = "https://api-3t.sandbox.paypal.com/nvp";
+                $this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
+                $this->api_username = $this->gateway->get_option('sandbox_api_username');
+                $this->api_password = $this->gateway->get_option('sandbox_api_password');
+                $this->api_signature = $this->gateway->get_option('sandbox_api_signature');
+            } else {
+                $this->API_Endpoint = "https://api-3t.paypal.com/nvp";
+                $this->PAYPAL_URL = "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=";
+                $this->api_username = $this->gateway->get_option('api_username');
+                $this->api_password = $this->gateway->get_option('api_password');
+                $this->api_signature = $this->gateway->get_option('api_signature');
+            }
+            $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
             $this->credentials = array(
                 'Sandbox' => $this->testmode,
-                'APIUsername' => $this->gateway->api_username,
-                'APIPassword' => $this->gateway->api_password,
-                'APISignature' => $this->gateway->api_signature,
+                'APIUsername' => $this->api_username,
+                'APIPassword' => $this->api_password,
+                'APISignature' => $this->api_signature,
                 'Force_tls_one_point_two' => $this->gateway->Force_tls_one_point_two
             );
             $this->angelleye_load_paypal_class();
@@ -57,6 +71,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function angelleye_redirect() {
+        if( !empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '10486' ) {
+            $payPalURL = $this->PAYPAL_URL . WC()->session->paypal_express_checkout['token'];
+            wp_redirect($payPalURL, 302);
+            exit;
+        }
         unset(WC()->session->paypal_express_checkout);
         if (!is_ajax()) {
             wp_redirect(get_permalink(wc_get_page_id('cart')));
