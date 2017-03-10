@@ -35,6 +35,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->description = $this->get_option('description');
         $this->enabled = $this->get_option('enabled');
         $this->sandbox = 'yes' === $this->get_option('sandbox', 'yes');
+        if( $this->sandbox == false ) {
+            $this->sandbox = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+        }
         $this->environment = $this->sandbox == false ? 'production' : 'sandbox';
         $this->merchant_id = $this->sandbox == false ? $this->get_option('merchant_id') : $this->get_option('sandbox_merchant_id');
         $this->private_key = $this->sandbox == false ? $this->get_option('private_key') : $this->get_option('sandbox_private_key');

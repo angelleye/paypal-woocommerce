@@ -57,7 +57,9 @@ class AngellEYE_Utility {
         } else {
             return false;
         }
-        
+        if( $this->testmode == false ) {
+            $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+        }
         if ($this->testmode == true) {
             $this->api_username = $gateway_obj->get_option('sandbox_api_username');
             $this->api_password = $gateway_obj->get_option('sandbox_api_password');

@@ -36,6 +36,9 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->testmode = 'yes' === $this->get_option('testmode', 'no');
+        if( $this->testmode == false ) {
+            $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+        }
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         if ($this->testmode) {

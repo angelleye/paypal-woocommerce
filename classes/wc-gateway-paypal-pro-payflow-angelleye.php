@@ -38,6 +38,9 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->paypal_password = $this->settings['paypal_password'];
             $this->paypal_user = $this->get_option('paypal_user', $this->paypal_vendor); 
             $this->testmode = 'yes' === $this->get_option('testmode', 'no');
+            if( $this->testmode == false ) {
+                $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+            }
             $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
             $this->debug = 'yes' === $this->get_option('debug', 'no'); 
             $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');

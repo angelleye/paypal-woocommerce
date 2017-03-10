@@ -33,6 +33,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
+        if( $this->testmode == false ) {
+            $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+        }
         $this->loginid = $this->get_option('loginid');
         $this->resellerid = $this->get_option('resellerid');
         $this->transtype = $this->get_option('transtype');

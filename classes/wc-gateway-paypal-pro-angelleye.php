@@ -81,6 +81,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->api_password = $this->get_option('api_password');
         $this->api_signature = $this->get_option('api_signature');
         $this->testmode = 'yes' === $this->get_option('testmode', 'no');
+        if( $this->testmode == false ) {
+            $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+        }
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
         $this->error_email_notify = $this->get_option('error_email_notify');
         $this->error_display_type = $this->get_option('error_display_type'); 
