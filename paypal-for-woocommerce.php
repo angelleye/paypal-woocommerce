@@ -809,30 +809,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             return $pageURL;
         }
         
-        /*
-         *  Express Checkout - Digital / Virtual Goods - NOSHIPPING #174 
-         */
-        public static function angelleye_paypal_for_woocommerce_needs_shipping($SECFields) {
-            if (sizeof(WC()->cart->get_cart()) != 0) {
-                foreach (WC()->cart->get_cart() as $key => $value) {
-                    $_product = $value['data'];
-                    if (isset($_product->id) && !empty($_product->id) ) {
-                        $_no_shipping_required = get_post_meta($_product->id, '_no_shipping_required', true);
-                        if( $_no_shipping_required == 'yes' ) {
-                            $SECFields['noshipping'] = 1;
-                        } else {
-                            $SECFields['noshipping'] = 0;
-                            return $SECFields;
-                        }
-                    }
-                }
-            } else {
-                $SECFields['noshipping'] = 0;
-            }
-            return $SECFields;
-        }
-        
-        
         function angelleye_product_type_options_own($product_type){
             if( isset($product_type) && !empty($product_type) ) {
                 $product_type['no_shipping_required'] = array(

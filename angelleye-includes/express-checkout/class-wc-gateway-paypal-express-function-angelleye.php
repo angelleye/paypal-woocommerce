@@ -202,12 +202,27 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
         return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
     }
 
-    function angelleye_ec_save_payment_method_checkbox() {
+    public function angelleye_ec_save_payment_method_checkbox() {
         echo sprintf(
                 '<div class="angelleye_ec_save_to_accoount_box"><p class="form-row woocommerce-SavedPaymentMethods-saveNew">
                             <input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" style="width:auto;" />
                             <label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
                     </p></div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'woocommerce')
         );
+    }
+    
+    public function angelleye_paypal_for_woocommerce_needs_shipping($SECFields) {
+        if (sizeof(WC()->cart->get_cart()) != 0) {
+            foreach (WC()->cart->get_cart() as $key => $value) {
+                $_product = $value['data'];
+                if (isset($_product->id) && !empty($_product->id) ) {
+                    $_no_shipping_required = get_post_meta($_product->id, '_no_shipping_required', true);
+                    if( $_no_shipping_required == 'yes' ) {
+                        $SECFields['noshipping'] = 1;
+                    } 
+                }
+            }
+        } 
+        return $SECFields;
     }
 }

@@ -368,6 +368,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $SECFields['solutiontype'] = 'Sole';
                 $SECFields['landingpage'] = 'Login';
             }
+            $SECFields = $this->function_helper->angelleye_paypal_for_woocommerce_needs_shipping($SECFields);
             $Payments = array();
             $Payment = array(
                 'amt' => AngellEYE_Gateway_Paypal::number_format(WC()->cart->total),
