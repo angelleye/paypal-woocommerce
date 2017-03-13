@@ -832,6 +832,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         'description'   => __( '', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
+                $product_type['enable_ec_button'] = array(
+                        'id'            => '_enable_ec_button',
+                        'wrapper_class' => '',
+                        'label'         => __( 'Enable Express Checkout Button', 'paypal-for-woocommerce' ),
+                        'description'   => __( '', 'paypal-for-woocommerce' ),
+                        'default'       => 'no'
+                );
                 return $product_type;
             } else {
                     return $product_type;
@@ -845,6 +852,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             update_post_meta( $post_id, '_paypal_billing_agreement', $_paypal_billing_agreement );
             $_enable_sandbox_mode = isset( $_POST['_enable_sandbox_mode'] ) ? 'yes' : 'no';
             update_post_meta( $post_id, '_enable_sandbox_mode', $_enable_sandbox_mode );
+            $_enable_ec_button = isset( $_POST['_enable_ec_button'] ) ? 'yes' : 'no';
+            update_post_meta( $post_id, '_enable_ec_button', $_enable_ec_button );
         }
         
         public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true) {
@@ -947,6 +956,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     
                 } elseif ($pfw_bulk_action_type == 'enable_paypal_billing_agreement' || $pfw_bulk_action_type == 'disable_paypal_billing_agreement') {
                     $action_key = "_paypal_billing_agreement";
+                } elseif ($pfw_bulk_action_type == 'enable_express_checkout_button' || $pfw_bulk_action_type == 'disable_express_checkout_button') {
+                    $action_key = "_enable_ec_button";
                 }
 
                 // All Products

@@ -114,27 +114,29 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
     }
     ?>
     <?php } else { 
-            if ( !empty( $_GET['_paypal_for_woocommerce_remove_log_file'] ) || wp_verify_nonce( $_GET['_paypal_for_woocommerce_remove_log_file'], 'paypal-for-woocommerce-remove-log-file' ) ) {
-                   $paypal_for_woocommerce_logfile_path = array('paypal_credit_card_rest' => wc_get_log_file_path('paypal_credit_card_rest'),
-                    'braintree' => wc_get_log_file_path( 'braintree' ),
-                    'paypal_advanced' => wc_get_log_file_path( 'paypal_advanced' ),
-                    'paypal_express' => wc_get_log_file_path( 'paypal_express' ),
-                    'paypal-pro' => wc_get_log_file_path( 'paypal-pro' ),
-                    'paypal_payflow' => wc_get_log_file_path( 'paypal_payflow' ) 
-                );
-                $count = 0;
-                foreach ($paypal_for_woocommerce_logfile_path as $key => $value) {
-                    if ( file_exists( $value ) ) {
-                        unlink( $value );
-                        $count = $count + 1;
+            if( isset($_GET['_paypal_for_woocommerce_remove_log_file'])) {
+                if ( !empty( $_GET['_paypal_for_woocommerce_remove_log_file'] ) || wp_verify_nonce( $_GET['_paypal_for_woocommerce_remove_log_file'], 'paypal-for-woocommerce-remove-log-file' ) ) {
+                       $paypal_for_woocommerce_logfile_path = array('paypal_credit_card_rest' => wc_get_log_file_path('paypal_credit_card_rest'),
+                        'braintree' => wc_get_log_file_path( 'braintree' ),
+                        'paypal_advanced' => wc_get_log_file_path( 'paypal_advanced' ),
+                        'paypal_express' => wc_get_log_file_path( 'paypal_express' ),
+                        'paypal-pro' => wc_get_log_file_path( 'paypal-pro' ),
+                        'paypal_payflow' => wc_get_log_file_path( 'paypal_payflow' ) 
+                    );
+                    $count = 0;
+                    foreach ($paypal_for_woocommerce_logfile_path as $key => $value) {
+                        if ( file_exists( $value ) ) {
+                            unlink( $value );
+                            $count = $count + 1;
+                        }
                     }
+                    $remove_logfile_tool_url = remove_query_arg( '_paypal_for_woocommerce_remove_log_file' );
+                    wp_redirect( esc_url_raw( add_query_arg( 'count', $count, $remove_logfile_tool_url ) ) );
+                    exit;
                 }
-                $remove_logfile_tool_url = remove_query_arg( '_paypal_for_woocommerce_remove_log_file' );
-                wp_redirect( esc_url_raw( add_query_arg( 'count', $count, $remove_logfile_tool_url ) ) );
-                exit;
-            }
-            if( !empty($_GET['count']) && $_GET['count'] > 0) {
-                 echo '<div class="updated"><p>' . __( 'Logfile has been successfully deleted.', 'paypal-for-woocommerce' ) . '</p></div>';
+                if( !empty($_GET['count']) && $_GET['count'] > 0) {
+                     echo '<div class="updated"><p>' . __( 'Logfile has been successfully deleted.', 'paypal-for-woocommerce' ) . '</p></div>';
+                }
             }
             
         ?>
@@ -153,6 +155,8 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                                 <option value="disable_no_shipping"><?php echo __('Disable No shipping required', 'paypal-for-woocommerce'); ?></option>
                                 <option value="enable_paypal_billing_agreement"><?php echo __('Enable PayPal Billing Agreement', 'paypal-for-woocommerce'); ?></option>
                                 <option value="disable_paypal_billing_agreement"><?php echo __('Disable PayPal Billing Agreement', 'paypal-for-woocommerce'); ?></option>
+                                <option value="enable_express_checkout_button"><?php echo __('Enable Express Checkout Button', 'paypal-for-woocommerce'); ?></option>
+                                <option value="disable_express_checkout_button"><?php echo __('Disable Express Checkout Button', 'paypal-for-woocommerce'); ?></option>
                             </select>
                         </div>
                     </div>
@@ -238,7 +242,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
         <div class="wrap">
             <div class="angelleye-paypal-for-woocommerce-shipping-tools-wrap">
                 <div><br></div>
-                <p><a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'paypal_for_woocommerce_remove_log_file' ), 'paypal-for-woocommerce-remove-log-file', '_paypal_for_woocommerce_remove_log_file' ) ); ?>" class="delete_template button"><?php _e( 'Clear All Log Files', 'paypal-for-woocommerce' ); ?></a><span><?php echo str_repeat('&nbsp;', 3); echo __( 'This will remove all the log file of PayPal for WooCoomerce plugin.', 'paypal-for-woocommerce' ); ?> </span></p>
+                <p><a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'paypal_for_woocommerce_remove_log_file', 'true' ), 'paypal-for-woocommerce-remove-log-file', '_paypal_for_woocommerce_remove_log_file' ) ); ?>" class="delete_template button"><?php _e( 'Clear All Log Files', 'paypal-for-woocommerce' ); ?></a><span><?php echo str_repeat('&nbsp;', 3); echo __( 'This will remove all the log file of PayPal for WooCoomerce plugin.', 'paypal-for-woocommerce' ); ?> </span></p>
             </div>
         </div>
         <?php 

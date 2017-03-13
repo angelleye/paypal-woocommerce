@@ -203,7 +203,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
 
     public function angelleye_ec_save_payment_method_checkbox() {
-        echo sprintf(
+        return sprintf(
                 '<div class="angelleye_ec_save_to_accoount_box"><p class="form-row woocommerce-SavedPaymentMethods-saveNew">
                             <input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" style="width:auto;" />
                             <label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
