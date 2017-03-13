@@ -16,7 +16,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
             $this->setting = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
             $this->enable_tokenized_payments = !empty($this->setting['enable_tokenized_payments']) ? $this->setting['enable_tokenized_payments'] : 'no';
-            $this->save_abandoned_checkout = 'yes' == !empty($this->setting['save_abandoned_checkout']) ? $this->setting['enable_tokenized_payments'] : 'no';
+            $this->save_abandoned_checkout = 'yes' === !empty($this->setting['save_abandoned_checkout']) ? $this->setting['enable_tokenized_payments'] : 'no';
             $this->checkout_with_pp_button_type = !empty($this->setting['checkout_with_pp_button_type']) ? $this->setting['checkout_with_pp_button_type'] : 'paypalimage';
             $this->pp_button_type_text_button = !empty($this->setting['pp_button_type_text_button']) ? $this->setting['pp_button_type_text_button'] : 'Proceed to Checkout';
             $this->pp_button_type_my_custom = !empty($this->setting['pp_button_type_my_custom']) ? $this->setting['pp_button_type_my_custom'] :  WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage();
@@ -25,7 +25,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->show_on_checkout = !empty($this->setting['show_on_checkout']) ? $this->setting['show_on_checkout'] : 'top';
             $this->button_position = !empty($this->setting['button_position']) ? $this->setting['button_position'] : 'bottom';
             $this->show_on_cart = !empty($this->setting['show_on_cart']) ? $this->setting['show_on_cart'] : 'yes';
-            $this->testmode = !empty($this->setting['testmode']) ? $this->setting['testmode'] : 'yes';
+            $this->testmode = 'yes' === !empty($this->setting['testmode']) ? $this->setting['testmode'] : 'yes';
+            if( $this->testmode == false ) {
+                $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+            }
             if (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'UK') {
                 $this->not_us_or_uk = false;
             } else {
@@ -35,7 +38,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if ($this->not_us_or_uk) {
                 $this->show_paypal_credit = 'no';
             }
-            if ($this->testmode == 'yes') {
+            if ($this->testmode == true) {
                 $this->API_Endpoint = "https://api-3t.sandbox.paypal.com/nvp";
                 $this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
                 $this->api_username = !empty($this->setting['sandbox_api_username']) ? $this->setting['sandbox_api_username'] : '';
@@ -65,6 +68,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_filter('woocommerce_thankyou_order_received_text', array($this, 'ec_order_received_text'), 10, 2);
             add_action('wp_enqueue_scripts', array($this, 'ec_enqueue_scripts_product_page'));
             add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'));
+            add_filter('woocommerce_is_sold_individually', array($this, 'angelleye_woocommerce_is_sold_individually'), 10, 2);
             if ($this->is_express_checkout_credentials_is_set()) {
                 if ($this->button_position == 'bottom' || $this->button_position == 'both') {
                     add_action('woocommerce_proceed_to_checkout', array($this, 'woocommerce_paypal_express_checkout_button_angelleye'), 22);
@@ -480,5 +484,17 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             echo '</div>';
             echo '<div style="clear:both; margin-bottom:10px;"></div>';
         }
+    }
+    
+    public function angelleye_woocommerce_is_sold_individually($return, $data) {
+        if (isset($_REQUEST['express_checkout']) || isset($_REQUEST['express_checkout_x'])) {
+            foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+		$_product = $values['data'];
+		if( $data->id == $_product->id ) {
+			return true;
+		}
+            }
+        }
+        return $return;
     }
 }

@@ -35,12 +35,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->enabled = $this->get_option('enabled');
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
+        $this->prevent_to_add_additional_item = 'yes' === $this->get_option('prevent_to_add_additional_item', 'no');
         $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
         if( $this->testmode == false ) {
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
         $this->debug = 'yes' === $this->get_option('debug', 'no');
-        $this->save_abandoned_checkout = 'yes' == $this->get_option('save_abandoned_checkout', 'no');
+        $this->save_abandoned_checkout = 'yes' === $this->get_option('save_abandoned_checkout', 'no');
         self::$log_enabled = $this->debug;
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', 'WC-EC');
@@ -505,6 +506,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('This will override any URL configured in your PayPal account profile.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'angelleye_enable_notifyurl',
+                'desc_tip' => true,
+            ),
+            'prevent_to_add_additional_item' => array(
+                'title' => __('Prevent to add additional item', 'paypal-for-woocommerce'),
+                'label' => __('Prevent to add additional item when clicking EC button.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('This will prevent to add additional item when clicking EC button.', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => '',
                 'desc_tip' => true,
             ),
             'notifyurl' => array(
