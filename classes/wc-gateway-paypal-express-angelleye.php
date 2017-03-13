@@ -677,16 +677,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function handle_wc_api() {
         try {
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
+            $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
             if (!isset($_GET['pp_action'])) {
                 return;
             }
-            if (WC()->cart->cart_contents_total <= 0) {
+            if (WC()->cart->cart_contents_total <= 0 && WC()->cart->total <= 0) {
                 wc_add_notice(__('your order amount is zero, We were unable to process your order, please try again.', 'paypal-for-woocommerce'), 'error');
-                wp_redirect(WC()->cart->get_cart_url());
+                $paypal_express_request->angelleye_redirect();
                 exit;
             }
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
-            $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
+            
             switch ($_GET['pp_action']) {
                 case 'set_express_checkout':
                     if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
