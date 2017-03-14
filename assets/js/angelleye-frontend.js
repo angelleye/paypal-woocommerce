@@ -17,10 +17,15 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-
-
     if (angelleye_frontend.is_cart == "yes") {
         $(".paypal_checkout_button").click(function () {
+            $('.woocommerce').block({
+                message: null,
+                overlayCSS: {
+                    background: '#fff',
+                    opacity: 0.6
+                }
+            });
             var angelleye_action;
             if ($("#wc-paypal_express-new-payment-method").is(':checked')) {
                 angelleye_action = $(this).attr("href");
@@ -28,45 +33,34 @@ jQuery(document).ready(function ($) {
             } else {
                 angelleye_action = $(this).attr("href");
             }
-            $(this).attr("href",angelleye_action);
-            $(this).parent().find(".angelleyeOverlay").show();
-            
+            $(this).attr("href", angelleye_action);
         });
     }
     if (angelleye_frontend.is_checkout == "yes") {
-        jQuery("form.checkout").on('change', 'select#paypal_pro_card_type', function () {
-            var card_type = jQuery("#paypal_pro_card_type").val();
-            var csc = jQuery("#paypal_pro_card_csc").parent();
-            if (card_type == "Visa" || card_type == "MasterCard" || card_type == "Discover" || card_type == "AmEx") {
-                csc.fadeIn("fast");
-            } else {
-                csc.fadeOut("fast");
-            }
-            if (card_type == "Visa" || card_type == "MasterCard" || card_type == "Discover") {
-                jQuery('.paypal_pro_card_csc_description').text(angelleye_frontend.three_digits);
-            } else if (card_type == "AmEx") {
-                jQuery('.paypal_pro_card_csc_description').text(angelleye_frontend.four_digits);
-            } else {
-                jQuery('.paypal_pro_card_csc_description').text('');
-            }
-        });
-        jQuery('select#paypal_pro_card_type').change();
-
+        var is_set_class = $("div").is(".express-provided-address");
+        if (is_set_class) {
+            jQuery('#express_checkout_button_chekout_page').hide();
+            jQuery('#express_checkout_button_text').hide();
+            jQuery('.woocommerce-message').hide();
+            jQuery('#checkout_paypal_message').hide();
+        }
         jQuery(".paypal_checkout_button").click(function () {
+            $('.woocommerce').block({
+                message: null,
+                overlayCSS: {
+                    background: '#fff',
+                    opacity: 0.6
+                }
+            });
             if ($("#wc-paypal_express-new-payment-method").is(':checked')) {
                 angelleye_action = $(this).attr("href");
                 angelleye_action = angelleye_action + '&ec_save_to_account=true';
             } else {
                 angelleye_action = $(this).attr("href");
             }
-            $(this).attr("href",angelleye_action);
-            jQuery(this).parent().find(".angelleyeOverlay").show();
+            $(this).attr("href", angelleye_action);
             return true;
         });
     }
-    // Let themes/plugins override our event handlers
-    // NOTE: The jQuery .on() function attached to listen to the event below MUST
-    // be included somewhere on the page itself...so it gets registered before we load
-    // asyncronous JavaScript resources. Otherwise your function listening might not fire.
     $(".paypal_checkout_button").trigger('angelleye_paypal_checkout_button_js_loaded');
 });
