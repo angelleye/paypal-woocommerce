@@ -96,6 +96,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->softdescriptor = $this->get_option('softdescriptor', '');
         $this->avs_cvv2_result_admin_email = 'yes' === $this->get_option('avs_cvv2_result_admin_email', 'no'); 
+        $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->notifyurl = '';
         if($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl'); 
@@ -330,6 +331,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'type' => 'text',
                 'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
                 'class' => 'angelleye_notifyurl'
+            ),
+            'fraud_management_filters' => array(
+                'title' => __('Fraud Management Filters ', 'paypal-for-woocommerce'),
+                'label' => '',
+                'description' => __('Allows you to Place order On Hold for further review or Ignore warnings and proceed as usual.', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => '',
+                'options' => array(
+                    'ignore_warnings_and_proceed_as_usual' => __('Ignore warnings and proceed as usual', 'paypal-for-woocommerce'),
+                    'place_order_on_hold_for_further_review' => __('Place order On Hold for further review', 'paypal-for-woocommerce'),
+                ),
+                'default' => 'place_order_on_hold_for_further_review',
+                'desc_tip' => true,
             ),
             'enable_cardholder_first_last_name' => array(
                 'title' => __('Enable Cardholder Name', 'paypal-for-woocommerce'),
@@ -1126,18 +1140,29 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             }
             
             // Payment complete
-            if ($this->payment_action == "Sale") {
-                $order->payment_complete($PayPalResult['TRANSACTIONID']);
+            if($PayPalResult['ACK'] == 'SuccessWithWarning' && !empty($PayPalResult['L_ERRORCODE0']) ) {
+                if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && $PayPalResult['L_ERRORCODE0'] == '11610') {
+                    $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
+                    $order->update_status('on-hold', $error);
+                } elseif (!empty($PayPalResult['L_ERRORCODE0'])) {
+                    $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
+                    $order->add_order_note('ERROR MESSAGE: ' . $error);
+                } else {
+                    $order->payment_complete($PayPalResult['TRANSACTIONID']);
+                }
             } else {
+                $order->payment_complete($PayPalResult['TRANSACTIONID']);
+            }
+            
+            if ($this->payment_action == "Authorization") {
                 update_post_meta( $order->id, '_first_transaction_id', $PayPalResult['TRANSACTIONID'] );
                 $payment_order_meta = array('_transaction_id' => $PayPalResult['TRANSACTIONID'], '_payment_action' => $this->payment_action);
                 AngellEYE_Utility::angelleye_add_order_meta($order->id, $payment_order_meta);
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                 $angelleye_utility = new AngellEYE_Utility(null, null);
                 $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['TRANSACTIONID']);
-                $order->payment_complete($PayPalResult['TRANSACTIONID']);
                 $order->add_order_note('Payment Action: ' . $this->payment_action);
-            }
+            } 
 
             // Remove cart
             WC()->cart->empty_cart();

@@ -68,4 +68,9 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
         }
     }
 
+    public function ec_is_response_successwithwarning($paypal_response) {
+        if (strtoupper($paypal_response['ACK']) == 'SUCCESSWITHWARNING') {
+            return true;
+        }
+    }
 }

@@ -77,6 +77,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->is_encrypt = $this->get_option('is_encrypt', 'no');
             $this->credit_card_month_field = $this->get_option('credit_card_month_field', 'names');
             $this->credit_card_year_field = $this->get_option('credit_card_year_field', 'four_digit');
+            $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
             /* 1.6.6 */
             add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
 
@@ -248,6 +249,19 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'type' => 'text',
                 'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
                 'default' => '',
+                'desc_tip' => true,
+            ),
+            'fraud_management_filters' => array(
+                'title' => __('Fraud Management Filters ', 'paypal-for-woocommerce'),
+                'label' => '',
+                'description' => __('Allows you to Place order On Hold for further review or Ignore warnings and proceed as usual.', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => '',
+                'options' => array(
+                    'ignore_warnings_and_proceed_as_usual' => __('Ignore warnings and proceed as usual', 'paypal-for-woocommerce'),
+                    'place_order_on_hold_for_further_review' => __('Place order On Hold for further review', 'paypal-for-woocommerce'),
+                ),
+                'default' => 'place_order_on_hold_for_further_review',
                 'desc_tip' => true,
             ),
             'credit_card_month_field' => array(
@@ -675,7 +689,12 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         }
                     }
                 }
-                $order->payment_complete($PayPalResult['PNREF']);
+                if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && $PayPalResult['RESULT'] == 126) {
+                    $order->update_status('on-hold', $PayPalResult['RESPMSG']);
+                } else {
+                    $order->payment_complete($PayPalResult['PNREF']);
+                }
+                
 
                 // Remove cart
                 WC()->cart->empty_cart();

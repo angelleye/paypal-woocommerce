@@ -68,6 +68,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->notifyurl = '';
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->cancel_page_id = $this->get_option('cancel_page', '');
+        $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         if ($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl');
             if (isset($this->notifyurl) && !empty($this->notifyurl)) {
@@ -536,6 +537,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'disabled' => __('Do not cancel any orders', 'paypal-for-woocommerce'),
                 ),
                 'default' => 'disabled',
+                'desc_tip' => true,
+            ),
+            'fraud_management_filters' => array(
+                'title' => __('Fraud Management Filters ', 'paypal-for-woocommerce'),
+                'label' => '',
+                'description' => __('Allows you to Place order On Hold for further review or Ignore warnings and proceed as usual.', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => '',
+                'options' => array(
+                    'ignore_warnings_and_proceed_as_usual' => __('Ignore warnings and proceed as usual', 'paypal-for-woocommerce'),
+                    'place_order_on_hold_for_further_review' => __('Place order On Hold for further review', 'paypal-for-woocommerce'),
+                ),
+                'default' => 'place_order_on_hold_for_further_review',
                 'desc_tip' => true,
             ),
             'email_notify_order_cancellations' => array(

@@ -28,6 +28,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->save_abandoned_checkout = 'yes' === $this->gateway->get_option('save_abandoned_checkout', 'no');
             $this->softdescriptor = $this->gateway->get_option('softdescriptor', '');
             $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'yes');
+            $this->fraud_management_filters = $this->gateway->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
             if( $this->testmode == false ) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
@@ -167,7 +168,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->angelleye_do_express_checkout_payment_request();
             $this->angelleye_add_order_note($order);
             $this->angelleye_add_extra_order_meta($order);
-            if ($this->response_helper->ec_is_response_success_or_successwithwarning($this->paypal_response)) {
+            if($this->response_helper->ec_is_response_success($this->paypal_response)) {
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
                 update_post_meta($order->id, 'is_sandbox', $this->testmode);
@@ -175,6 +176,30 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $order->payment_complete($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                 } else {
                     $this->update_payment_status_by_paypal_responce($this->confirm_order_id, $this->paypal_response);
+                    update_post_meta($order->id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+                    $order->reduce_order_stock();
+                    WC()->cart->empty_cart();
+                }
+                update_post_meta($order->id, '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
+                $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']));
+                $this->angelleye_ec_save_billing_agreement($order->id);
+                WC()->cart->empty_cart();
+                wc_clear_notices();
+                wp_redirect($this->gateway->get_return_url($order));
+                exit();
+            } elseif ($this->response_helper->ec_is_response_successwithwarning($this->paypal_response)) {
+                $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
+                $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
+                update_post_meta($order->id, 'is_sandbox', $this->testmode);
+                if ($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] == 'Completed') {
+                    $order->payment_complete($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+                } else {
+                    if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && (!empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '11610')) {
+                        $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
+                        $order->update_status('on-hold', $error);
+                    } else {
+                        $this->update_payment_status_by_paypal_responce($this->confirm_order_id, $this->paypal_response);
+                    }
                     update_post_meta($order->id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                     $order->reduce_order_stock();
                     WC()->cart->empty_cart();
