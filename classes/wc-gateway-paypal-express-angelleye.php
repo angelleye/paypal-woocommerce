@@ -37,14 +37,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->description = $this->get_option('description');
         $this->prevent_to_add_additional_item = 'yes' === $this->get_option('prevent_to_add_additional_item', 'no');
         $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
-        if( $this->testmode == false ) {
+        if ($this->testmode == false) {
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->save_abandoned_checkout = 'yes' === $this->get_option('save_abandoned_checkout', 'no');
         self::$log_enabled = $this->debug;
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
-        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', 'WC-EC');
         $this->show_on_checkout = $this->get_option('show_on_checkout', 'top');
         $this->paypal_account_optional = $this->get_option('paypal_account_optional', 'no');
         $this->error_display_type = $this->get_option('error_display_type', 'detailed');
@@ -69,6 +68,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->cancel_page_id = $this->get_option('cancel_page', '');
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
+        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', 'WC-EC');
         if ($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl');
             if (isset($this->notifyurl) && !empty($this->notifyurl)) {
@@ -570,7 +570,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'debug' => array(
                 'title' => __('Debug', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => sprintf(__('Enable logging<code>%s</code>', 'paypal-for-woocommerce'), wc_get_log_file_path('paypal_express')),
+                'label' => sprintf(__('Enable logging<code>%s</code>', 'paypal-for-woocommerce'), version_compare(WC_VERSION, '3.0', '<') ? wc_get_log_file_path('paypal_express') : WC_Log_Handler_File::get_log_file_path('paypal_express')),
                 'default' => 'no'
             ),
             'is_encrypt' => array(
@@ -679,8 +679,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'he_IL', 'it_IT', 'ja_JP', 'pl_PL', 'pt_PT', 'es_ES', 'sv_SE', 'zh_TW', 'tr_TR'
         );
         $wpml_locale = self::angelleye_ec_get_wpml_locale();
-        if( $wpml_locale ) {
-            if ( in_array( $wpml_locale, $_supportedLocale ) ) {
+        if ($wpml_locale) {
+            if (in_array($wpml_locale, $_supportedLocale)) {
                 return $wpml_locale;
             }
         }
@@ -711,7 +711,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $paypal_express_request->angelleye_redirect();
                 exit;
             }
-            
+
             switch ($_GET['pp_action']) {
                 case 'set_express_checkout':
                     if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
@@ -734,7 +734,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $this->posted = WC()->session->post_data;
                         WC()->cart->calculate_totals();
                         WC()->cart->calculate_shipping();
-                        WC()->customer->calculated_shipping(true);
+                        if (version_compare(WC_VERSION, '3.0', '<')) {
+                            WC()->customer->calculated_shipping(true);
+                        } else {
+                            WC()->customer->set_calculated_shipping(true);
+                        }
+                        
                         $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
                         if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
                             foreach ($_POST['shipping_method'] as $i => $value)
@@ -745,7 +750,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $packages = WC()->shipping->get_packages();
                             WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
                         }
-                        $order_id = WC()->checkout()->create_order();
+                        if (empty($this->posted)) {
+                            $this->posted = array('payment_method' => get_class($this));
+                        }
+                        $order_id = WC()->checkout()->create_order($this->posted);
                         if (is_wp_error($order_id)) {
                             throw new Exception($order_id->get_error_message());
                         }
@@ -770,14 +778,30 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                     $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'shipping');
                     $order->set_payment_method($this->id);
-                    update_post_meta($order_id, '_payment_method', $this->id);
-                    update_post_meta($order_id, '_payment_method_title', $this->title);
-                    update_post_meta($order_id, '_customer_user', get_current_user_id());
+                    $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                    if ($old_wc) {
+                        update_post_meta($order_id, '_payment_method', $this->id);
+                        update_post_meta($order_id, '_payment_method_title', $this->title);
+                        update_post_meta($order_id, '_customer_user', get_current_user_id());
+                    } else {
+                        $order->update_meta_data('_payment_method', $this->id);
+                        $order->update_meta_data('_payment_method_title', $this->title);
+                        $order->update_meta_data('_customer_user', get_current_user_id());
+                    }
                     if (!empty(WC()->session->post_data['billing_phone'])) {
-                        update_post_meta($order_id, '_billing_phone', WC()->session->post_data['billing_phone']);
+                        if ($old_wc) {
+                            update_post_meta($order_id, '_billing_phone', WC()->session->post_data['billing_phone']);
+                        } else {
+                            $order->update_meta_data('_billing_phone', WC()->session->post_data['billing_phone']);
+                        }
                     }
                     if (!empty(WC()->session->post_data['order_comments'])) {
-                        update_post_meta($order_id, 'order_comments', WC()->session->post_data['order_comments']);
+                        if ($old_wc) {
+                            update_post_meta($order_id, 'order_comments', WC()->session->post_data['order_comments']);
+                        } else {
+                            $order->update_meta_data('order_comments', WC()->session->post_data['order_comments']);
+                        }
                         $my_post = array(
                             'ID' => $order_id,
                             'post_excerpt' => WC()->session->post_data['order_comments'],
@@ -801,7 +825,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!$this->supports('tokenization')) {
             $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
             $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
-            $is_sandbox = get_post_meta($order->id, 'is_sandbox', true);
+            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+            $is_sandbox = $old_wc ? get_post_meta($order->id, 'is_sandbox', true) : $order->get_meta('is_sandbox', true);
             if ($is_sandbox == true) {
                 $this->view_transaction_url = $sandbox_transaction_url;
             } else {
@@ -962,12 +987,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
-    public static function log($message) {
+    public static function log($message, $level = 'info') {
         if (self::$log_enabled) {
-            if (empty(self::$log)) {
-                self::$log = new WC_Logger();
+            if (version_compare(WC_VERSION, '3.0', '<')) {
+                if (empty(self::$log)) {
+                    self::$log = new WC_Logger();
+                }
+                self::$log->add('paypal_express', $message);
+            } else {
+                if (empty(self::$log)) {
+                    self::$log = wc_get_logger();
+                }
+                self::$log->log($level, $message, array('source' => 'paypal_express'));
             }
-            self::$log->add('paypal_express', $message);
         }
     }
 
@@ -995,8 +1027,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (isset($sitepress)) {
                 $details = $sitepress->get_language_details(ICL_LANGUAGE_CODE);
                 $locale = $details['locale'];
-            } else if (function_exists('pll_current_language')) { 
-                $locale = pll_current_language('locale'); 
+            } else if (function_exists('pll_current_language')) {
+                $locale = pll_current_language('locale');
             } else if (function_exists('pll_default_language')) {
                 $locale = pll_default_language('locale');
             }

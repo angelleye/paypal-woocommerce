@@ -620,7 +620,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $this->centinel_client->add("TransactionType", 'C');
             $this->centinel_client->add('OrderNumber', $order_id);
             $this->centinel_client->add('Amount', $order->get_total() * 100);
-            $this->centinel_client->add('CurrencyCode', $this->iso4217[$order->get_order_currency()]);
+            $this->centinel_client->add('CurrencyCode', $this->iso4217[version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()]);
             $this->centinel_client->add('TransactionMode', 'S');
             $this->centinel_client->add('ProductCode', 'PHY');
             $this->centinel_client->add('CardNumber', $card->number);
@@ -631,23 +631,23 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             WC()->session->set('CardExpYear', $card->exp_year);
             $this->centinel_client->add('CardCode', $card->cvc);
             WC()->session->set('CardCode', $card->cvc);
-            $this->centinel_client->add('BillingFirstName', $order->billing_first_name);
-            $this->centinel_client->add('BillingLastName', $order->billing_last_name);
-            $this->centinel_client->add('BillingAddress1', $order->billing_address_1);
-            $this->centinel_client->add('BillingAddress2', $order->billing_address_2);
-            $this->centinel_client->add('BillingCity', $order->billing_city);
-            $this->centinel_client->add('BillingState', $order->billing_state);
-            $this->centinel_client->add('BillingPostalCode', $order->billing_postcode);
-            $this->centinel_client->add('BillingCountryCode', $order->billing_country);
-            $this->centinel_client->add('BillingPhone', $order->billing_phone);
-            $this->centinel_client->add('ShippingFirstName', $order->shipping_first_name);
-            $this->centinel_client->add('ShippingLastName', $order->shipping_last_name);
-            $this->centinel_client->add('ShippingAddress1', $order->shipping_address_1);
-            $this->centinel_client->add('ShippingAddress2', $order->shipping_address_2);
-            $this->centinel_client->add('ShippingCity', $order->shipping_city);
-            $this->centinel_client->add('ShippingState', $order->shipping_state);
-            $this->centinel_client->add('ShippingPostalCode', $order->shipping_postcode);
-            $this->centinel_client->add('ShippingCountryCode', $order->shipping_country);
+            $this->centinel_client->add('BillingFirstName', $order->get_billing_first_name());
+            $this->centinel_client->add('BillingLastName', $order->get_billing_last_name());
+            $this->centinel_client->add('BillingAddress1', $order->get_billing_address_1());
+            $this->centinel_client->add('BillingAddress2', $order->get_billing_address_2());
+            $this->centinel_client->add('BillingCity', $order->get_billing_city());
+            $this->centinel_client->add('BillingState', $order->get_billing_state());
+            $this->centinel_client->add('BillingPostalCode', $order->get_billing_postcode());
+            $this->centinel_client->add('BillingCountryCode', $order->get_billing_country());
+            $this->centinel_client->add('BillingPhone', $order->get_billing_phone());
+            $this->centinel_client->add('ShippingFirstName', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name());
+            $this->centinel_client->add('ShippingLastName', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name());
+            $this->centinel_client->add('ShippingAddress1', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1());
+            $this->centinel_client->add('ShippingAddress2', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2());
+            $this->centinel_client->add('ShippingCity', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city());
+            $this->centinel_client->add('ShippingState', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state());
+            $this->centinel_client->add('ShippingPostalCode', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode());
+            $this->centinel_client->add('ShippingCountryCode', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country());
 
             // Items
             $item_loop = 0;
@@ -880,8 +880,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $GLOBALS['wp_rewrite'] = new WP_Rewrite();
         }
 
-        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro-card-cardholder-first']) ? wc_clean($_POST['paypal_pro-card-cardholder-first']) : $order->billing_first_name;
-        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro-card-cardholder-last']) ? wc_clean($_POST['paypal_pro-card-cardholder-last']) : $order->billing_last_name;
+        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro-card-cardholder-first']) ? wc_clean($_POST['paypal_pro-card-cardholder-first']) : $order->get_billing_first_name();
+        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro-card-cardholder-last']) ? wc_clean($_POST['paypal_pro-card-cardholder-last']) : $order->get_billing_last_name();
 
         $card_exp = $card_exp_month . $card_exp_year;
 
@@ -905,42 +905,44 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         );
 
         $PayerInfo = array(
-            'email' => $order->billing_email,                                // Email address of payer.
+            'email' => $order->get_billing_email(),                                // Email address of payer.
             'firstname' => $firstname,                            // Required.  Payer's first name.
             'lastname' => $lastname                            // Required.  Payer's last name.
         );
 
         $BillingAddress = array(
-            'street' => $order->billing_address_1,                        // Required.  First street address.
-            'street2' => $order->billing_address_2,                        // Second street address.
-            'city' => $order->billing_city,                            // Required.  Name of City.
-            'state' => $order->billing_state,                            // Required. Name of State or Province.
-            'countrycode' => $order->billing_country,                    // Required.  Country code.
-            'zip' => $order->billing_postcode,                            // Required.  Postal code of payer.
-            'phonenum' => $order->billing_phone                        // Phone Number of payer.  20 char max.
+            'street' => $order->get_billing_address_1(),                        // Required.  First street address.
+            'street2' => $order->get_billing_address_2(),                        // Second street address.
+            'city' => $order->get_billing_city(),                            // Required.  Name of City.
+            'state' => $order->get_billing_state(),                            // Required. Name of State or Province.
+            'countrycode' => $order->get_billing_country(),                    // Required.  Country code.
+            'zip' => $order->get_billing_postcode(),                            // Required.  Postal code of payer.
+            'phonenum' => $order->get_billing_phone()                        // Phone Number of payer.  20 char max.
         );
 
+        $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
+        $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
         $ShippingAddress = array(
-            'shiptoname' => $order->shipping_first_name . ' ' . $order->shipping_last_name,                    // Required if shipping is included.  Person's name associated with this address.  32 char max.
-            'shiptostreet' => $order->shipping_address_1,                    // Required if shipping is included.  First street address.  100 char max.
-            'shiptostreet2' => $order->shipping_address_2,                    // Second street address.  100 char max.
-            'shiptocity' => $order->shipping_city,                    // Required if shipping is included.  Name of city.  40 char max.
-            'shiptostate' => $order->shipping_state,                    // Required if shipping is included.  Name of state or province.  40 char max.
-            'shiptozip' => $order->shipping_postcode,                        // Required if shipping is included.  Postal code of shipping address.  20 char max.
-            'shiptocountry' => $order->shipping_country,                    // Required if shipping is included.  Country code of shipping address.  2 char max.
-            'shiptophonenum' => $order->shipping_phone                    // Phone number for shipping address.  20 char max.
+            'shiptoname' => $shipping_first_name . ' ' . $shipping_last_name,                    // Required if shipping is included.  Person's name associated with this address.  32 char max.
+            'shiptostreet' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1(),                    // Required if shipping is included.  First street address.  100 char max.
+            'shiptostreet2' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2(),                    // Second street address.  100 char max.
+            'shiptocity' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city(),                    // Required if shipping is included.  Name of city.  40 char max.
+            'shiptostate' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state(),                    // Required if shipping is included.  Name of state or province.  40 char max.
+            'shiptozip' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode(),                        // Required if shipping is included.  Postal code of shipping address.  20 char max.
+            'shiptocountry' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country(),                    // Required if shipping is included.  Country code of shipping address.  2 char max.
+            'shiptophonenum' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone()                    // Phone number for shipping address.  20 char max.
         );
-
-        $customer_note = $order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '';
+        $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
+        $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
         
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()),                            // Required.  Total amount of order, including shipping, handling, and tax.
-            'currencycode' => $order->get_order_currency(),                    // Required.  Three-letter currency code.  Default is USD.
+            'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),                    // Required.  Three-letter currency code.  Default is USD.
             'insuranceamt' => '',                    // Total shipping insurance costs for this order.
             'shipdiscamt' => '0.00',                    // Shipping discount for the order, specified as a negative number.
             'handlingamt' => '0.00',                    // Total handling costs for the order.  If you specify handlingamt, you must also specify itemamt.
             'desc' => '',                            // Description of the order the customer is purchasing.  127 char max.
-            'custom' => apply_filters( 'ae_ppddp_custom_parameter', json_encode( array( 'order_id' => $order->id, 'order_key' => $order->order_key ) ) , $order ),                        // Free-form field for your own use.  256 char max.
+            'custom' => apply_filters( 'ae_ppddp_custom_parameter', json_encode( array( 'order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->order_key : $order->get_order_key() ) ) , $order ),                        // Free-form field for your own use.  256 char max.
             'invnum' => $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#","",$order->get_order_number())), // Your own invoice or tracking number
             'recurring' => ''                        // Flag to indicate a recurring transaction.  Value should be Y for recurring, or anything other than Y if it's not recurring.  To pass Y here, you must have an established billing agreement with the buyer.
         );
@@ -1088,8 +1090,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             /* Checkout Note */
             if (isset($_POST) && !empty($_POST['order_comments'])) {
                 // Update post 37
+                $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
                 $checkout_note = array(
-                    'ID' => $order->id,
+                    'ID' => $order_id,
                     'post_excerpt' => $_POST['order_comments'],
                 );
                 wp_update_post($checkout_note);
@@ -1105,7 +1108,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $avs_response_order_note .= $avs_response_code;
             $avs_response_order_note .= $avs_response_message != '' ? ' - ' . $avs_response_message : '';
             $order->add_order_note($avs_response_order_note);
-            update_post_meta($order->id, '_AVSCODE', $avs_response_code);
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+            if ($old_wc) {
+                update_post_meta($order_id, '_AVSCODE', $avs_response_code);
+            } else {
+                 $order->update_meta_data('_AVSCODE', $avs_response_code);
+            }
             /**
              * Add order notes for CVV2 result
              */
@@ -1116,10 +1125,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $cvv2_response_order_note .= $cvv2_response_code;
             $cvv2_response_order_note .= $cvv2_response_message != '' ? ' - ' . $cvv2_response_message : '';
             $order->add_order_note($cvv2_response_order_note);
-            update_post_meta($order->id, '_CVV2MATCH', $cvv2_response_code);
-            
-            update_post_meta($order->id, 'is_sandbox', $this->testmode);
-            do_action('before_save_payment_token', $order->id);
+            if ($old_wc) {
+                update_post_meta($order_id, '_CVV2MATCH', $cvv2_response_code);
+                update_post_meta($order_id, 'is_sandbox', $this->testmode);
+            } else {
+                $order->update_meta_data('_CVV2MATCH', $cvv2_response_code);
+                $order->update_meta_data('is_sandbox', $this->testmode);
+            }
+            do_action('before_save_payment_token', $order_id);
             if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') {
                 if(!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) {
                     $customer_id =  $order->get_user_id();
@@ -1155,9 +1168,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             }
             
             if ($this->payment_action == "Authorization") {
-                update_post_meta( $order->id, '_first_transaction_id', $PayPalResult['TRANSACTIONID'] );
+                if ($old_wc) {
+                    update_post_meta($order_id, '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
+                } else {
+                    $order->update_meta_data('_first_transaction_id', $PayPalResult['TRANSACTIONID']);
+                }
                 $payment_order_meta = array('_transaction_id' => $PayPalResult['TRANSACTIONID'], '_payment_action' => $this->payment_action);
-                AngellEYE_Utility::angelleye_add_order_meta($order->id, $payment_order_meta);
+                AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                 $angelleye_utility = new AngellEYE_Utility(null, null);
                 $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['TRANSACTIONID']);
@@ -1185,9 +1202,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 $message .= __('Error Code: ', 'paypal-for-woocommerce') . $error_code . "\n";
                 $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $long_message . "\n";
                 $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
-                $message .= __('Order ID: ') . $order->id . "\n";
-                $message .= __('Customer Name: ') . $order->billing_first_name . ' ' . $order->billing_last_name . "\n";
-                $message .= __('Customer Email: ') . $order->billing_email . "\n";
+                $message .= __('Order ID: ') . $order_id . "\n";
+                $message .= __('Customer Name: ') . $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() . "\n";
+                $message .= __('Customer Email: ') . $order->get_billing_email() . "\n";
 
                 $pc_error_email_message = apply_filters('ae_ppddp_error_email_message', $message, $error_code, $long_message);
                 $pc_error_email_subject = apply_filters('ae_ppddp_error_email_subject', "PayPal Pro Error Notification", $error_code, $long_message);
@@ -1298,7 +1315,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             'invoiceid' => '',                                // Your own invoice tracking number.
             'refundtype' => $order->get_total() == $amount ? 'Full' : 'Partial',                            // Required.  Type of refund.  Must be Full, Partial, or Other.
             'amt' => AngellEYE_Gateway_Paypal::number_format($amount),                                    // Refund Amt.  Required if refund type is Partial.
-            'currencycode' => $order->get_order_currency(),                            // Three-letter currency code.  Required for Partial Refunds.  Do not use for full refunds.
+            'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),                            // Three-letter currency code.  Required for Partial Refunds.  Do not use for full refunds.
             'note' => $reason,                                    // Custom memo about the refund.  255 char max.
             'retryuntil' => '',                            // Maximum time until you must retry the refund.  Note:  this field does not apply to point-of-sale transactions.
             'refundsource' => '',                            // Type of PayPal funding source (balance or eCheck) that can be used for auto refund.  Values are:  any, default, instant, eCheck
@@ -1424,7 +1441,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
     public function get_transaction_url( $order ) {
         $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
         $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
-        $is_sandbox = get_post_meta($order->id, 'is_sandbox', true);
+        $old_wc = version_compare( WC_VERSION, '3.0', '<' );
+        $is_sandbox = $old_wc ? get_post_meta( $order->id, 'is_sandbox', true ) : $order->get_meta( 'is_sandbox', true );
         if ( $is_sandbox  == true ) {
             $this->view_transaction_url = $sandbox_transaction_url;
         } else {
@@ -1554,7 +1572,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
     }
     
     public function angelleye_paypal_pro_email_instructions($order, $sent_to_admin, $plain_text = false) {
-        if ( $sent_to_admin && 'paypal_pro' === $order->payment_method ) {
+        $payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        if ( $sent_to_admin && 'paypal_pro' === $payment_method ) {
             if (!class_exists('Angelleye_PayPal')) {
                 require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
             }
@@ -1566,7 +1585,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 'Force_tls_one_point_two' => $this->Force_tls_one_point_two
             );
             $PayPal = new Angelleye_PayPal($PayPalConfig);
-            $avscode = get_post_meta($order->id, '_AVSCODE', true);
+            $old_wc = version_compare( WC_VERSION, '3.0', '<' );
+            $avscode = $old_wc ? get_post_meta( $order->id, '_AVSCODE', true ) : $order->get_meta( '_AVSCODE', true );
             if ( ! empty( $avscode ) ) {
                 $avs_response_message = $PayPal->GetAVSCodeMessage($avscode);
                 echo '<h2 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;
@@ -1588,7 +1608,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 }
                 echo '</ul>';
             }
-            $cvvmatch = get_post_meta($order->id, 'CVV2MATCH', true);
+            $old_wc = version_compare( WC_VERSION, '3.0', '<' );
+            $cvvmatch = $old_wc ? get_post_meta( $order->id, 'CVV2MATCH', true ) : $order->get_meta( 'CVV2MATCH', true );
             if ( ! empty( $cvvmatch ) ) {
                 $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvvmatch);
                 echo '<h2 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;

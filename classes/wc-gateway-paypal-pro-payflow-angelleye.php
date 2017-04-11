@@ -432,6 +432,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 	 */
     function do_payment( $order, $card_number, $card_exp, $card_csc, $centinelPAResStatus = '', $centinelEnrolled = '', $centinelCavv = '', $centinelEciFlag = '', $centinelXid = '')
 	{
+        $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
 		/*
 		 * Display message to user if session has expired.
 		 */
@@ -482,11 +483,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			/**
 			 * PayPal PayFlow Gateway Request Params
 			 */
+                        $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
+                        $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
                         
-                        $customer_note = $order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '';
-                        
-                        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro_payflow-card-cardholder-first']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']) : $order->billing_first_name;
-                        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro_payflow-card-cardholder-last']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']) : $order->billing_last_name;
+                        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro_payflow-card-cardholder-first']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']) : $order->get_billing_first_name();
+                        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro_payflow-card-cardholder-last']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']) : $order->get_billing_last_name();
                         
 			$PayPalRequestData = array(
 					'tender'=>'C', 				// Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
@@ -494,12 +495,12 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'acct'=>$card_number, 				// Required for credit card transaction.  Credit card or purchase card number.
 					'expdate'=>$card_exp, 				// Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
 					'amt'=> AngellEYE_Gateway_Paypal::number_format($order->get_total()), 					// Required.  Amount of the transaction.  Must have 2 decimal places. 
-					'currency'=>$order->get_order_currency(), // 
+					'currency'=>version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // 
 					'dutyamt'=>'', 				//
 					'freightamt'=>'', 			//
 					'taxamt'=>'', 				//
 					'taxexempt'=>'', 			// 
-					'custom' =>  apply_filters( 'ae_pppf_custom_parameter', json_encode( array( 'order_id' => $order->id, 'order_key' => $order->order_key ) ) , $order ),                        // Free-form field for your own use. 
+					'custom' =>  apply_filters( 'ae_pppf_custom_parameter', json_encode( array( 'order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->order_key : $order->get_order_key() ) ) , $order ),                        // Free-form field for your own use. 
 					'comment1'=> apply_filters( 'ae_pppf_comment1_parameter', '' , $order ), 			// Merchant-defined value for reporting and auditing purposes.  128 char max
 					'comment2'=> apply_filters( 'ae_pppf_comment2_parameter', '' , $order ), 			// Merchant-defined value for reporting and auditing purposes.  128 char max
 					'cvv2'=>$card_csc, 				// A code printed on the back of the card (or front for Amex)
@@ -507,16 +508,16 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'swipe'=>'', 				// Required for card-present transactions.  Used to pass either Track 1 or Track 2, but not both.
 					'orderid'=> $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number()), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
 					'orderdesc'=>'Order ' . $order->get_order_number() . ' on ' . get_bloginfo( 'name' ), //
-					'billtoemail'=>$order->billing_email, 			// Account holder's email address.
+					'billtoemail'=>$order->get_billing_email(), 			// Account holder's email address.
 					'billtophonenum'=>'', 		// Account holder's phone number.
 					'billtofirstname'=> $firstname, 		// Account holder's first name.
 					'billtomiddlename'=>'', 	// Account holder's middle name.
 					'billtolastname'=> $lastname, 		// Account holder's last name.
-					'billtostreet'=>$order->billing_address_1.' '.$order->billing_address_2, 		// The cardholder's street address (number and street name).  150 char max
-					'billtocity'=>$order->billing_city, 			// Bill to city.  45 char max
-					'billtostate'=>$order->billing_state, 			// Bill to state.  
-					'billtozip'=>$order->billing_postcode, 			// Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
-					'billtocountry'=>$order->billing_country, 		// Bill to Country.  3 letter country code.
+					'billtostreet'=>$order->get_billing_address_1().' '.$order->get_billing_address_2(), 		// The cardholder's street address (number and street name).  150 char max
+					'billtocity'=>$order->get_billing_city(), 			// Bill to city.  45 char max
+					'billtostate'=>$order->get_billing_state(), 			// Bill to state.  
+					'billtozip'=>$order->get_billing_postcode(), 			// Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
+					'billtocountry'=>$order->get_billing_country(), 		// Bill to Country.  3 letter country code.
 					'origid'=>'', 				// Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.  
 					'custref'=>'', 				// 
 					'custcode'=>'', 			// 
@@ -534,15 +535,18 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			/**
 			 * Shipping info
 			 */
-			if($order->shipping_address_1)
+			if($order->get_shipping_address_1())
 			{
-                $PayPalRequestData['SHIPTOFIRSTNAME']   = $order->shipping_first_name;
-                $PayPalRequestData['SHIPTOLASTNAME']    = $order->shipping_last_name;
-                $PayPalRequestData['SHIPTOSTREET']      = $order->shipping_address_1 . ' ' . $order->shipping_address_2;
-                $PayPalRequestData['SHIPTOCITY']        = $order->shipping_city;
-                $PayPalRequestData['SHIPTOSTATE']       = $order->shipping_state;
-                $PayPalRequestData['SHIPTOCOUNTRY']     = $order->shipping_country;
-                $PayPalRequestData['SHIPTOZIP']         = $order->shipping_postcode;
+
+                 $shipping_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1();
+                $shipping_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2();
+                $PayPalRequestData['SHIPTOFIRSTNAME']   = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
+                $PayPalRequestData['SHIPTOLASTNAME']    = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
+                $PayPalRequestData['SHIPTOSTREET']      = $shipping_address_1 . ' ' . $shipping_address_2;
+                $PayPalRequestData['SHIPTOCITY']        = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city();
+                $PayPalRequestData['SHIPTOSTATE']       = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state();
+                $PayPalRequestData['SHIPTOCOUNTRY']     = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country();
+                $PayPalRequestData['SHIPTOZIP']         = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode();
             }
 
             $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
@@ -623,7 +627,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				{
                                 
                                 if( isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF']) ) {
-                                    add_post_meta($order->id, 'PPREF', $PayPalResult['PPREF']);
+                                    
+                                    add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
                                     $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s) (PPREF: %s)','paypal-for-woocommerce'),$PayPalResult['PNREF'], $PayPalResult['PPREF']));
                                 } else {
                                     $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s)','paypal-for-woocommerce'),$PayPalResult['PNREF']));
@@ -632,7 +637,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                                 if (isset($_POST) && !empty($_POST['order_comments'])) {
                                     // Update post 37
                                     $checkout_note = array(
-                                        'ID' => $order->id,
+                                        'ID' => $order_id,
                                         'post_excerpt' => $_POST['order_comments'],
                                     );
                                     wp_update_post($checkout_note);
@@ -650,8 +655,15 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				$avs_response_order_note .= sprintf(__('Address Match: %s','paypal-for-woocommerce'),$avs_address_response_code);
 				$avs_response_order_note .= "\n";
 				$avs_response_order_note .= sprintf(__('Postal Match: %s','paypal-for-woocommerce'),$avs_zip_response_code);
-                                update_post_meta($order->id, '_AVSADDR', $avs_address_response_code);
-                                update_post_meta($order->id, '_AVSZIP', $avs_zip_response_code);
+                                
+                                $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                                if ($old_wc) {
+                                    update_post_meta($order_id, '_AVSADDR', $avs_address_response_code);
+                                    update_post_meta($order_id, '_AVSZIP', $avs_zip_response_code);
+                                } else {
+                                    $order->update_meta_data('_AVSADDR', $avs_address_response_code);
+                                    $order->update_meta_data('_AVSZIP', $avs_zip_response_code);
+                                }
 				$order->add_order_note($avs_response_order_note);
 				
 				/**
@@ -661,12 +673,18 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 				$cvv2_response_order_note = __('Card Security Code Result','paypal-for-woocommerce');
 				$cvv2_response_order_note .= "\n";
 				$cvv2_response_order_note .= sprintf(__('CVV2 Match: %s','paypal-for-woocommerce'),$cvv2_response_code);
-                                update_post_meta($order->id, '_CVV2MATCH', $cvv2_response_code);
+                                
+                                if ($old_wc) {
+                                    update_post_meta($order_id, '_CVV2MATCH', $cvv2_response_code);
+                                } else {
+                                    $order->update_meta_data('_CVV2MATCH', $cvv2_response_code);
+                                }
+                                
 				$order->add_order_note($cvv2_response_order_note);
 
                 // Payment complete
                 //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
-                do_action('before_save_payment_token', $order->id);               
+                do_action('before_save_payment_token', $order_id);               
                 if(!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] == 'new') {
                     if(!empty($_POST['wc-paypal_pro_payflow-new-payment-method']) && $_POST['wc-paypal_pro_payflow-new-payment-method'] == true) {
                         $customer_id =  $order->get_user_id();
@@ -730,9 +748,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					$message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
 					$message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] ."\n" : "\n";
                                         $message .= __( 'User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
-                    $message .= __( 'Order ID: ' ).$order->id ."\n";
-                    $message .= __( 'Customer Name: ' ).$order->billing_first_name.' '.$order->billing_last_name."\n";
-                    $message .= __( 'Customer Email: ' ).$order->billing_email."\n";
+                    $message .= __( 'Order ID: ' ).$order_id ."\n";
+                    $message .= __( 'Customer Name: ' ).$order->get_billing_first_name().' '.$order->get_billing_last_name()."\n";
+                    $message .= __( 'Customer Email: ' ).$order->get_billing_email()."\n";
 	                $message = apply_filters( 'ae_pppf_error_email_message', $message );
 	                $subject = apply_filters( 'ae_pppf_error_email_subject', "PayPal Pro Error Notification" );
 					wp_mail( $admin_email, $subject, $message );
@@ -870,7 +888,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             'TRXTYPE' => 'C', //  S=Sale, A= Auth, C=Credit, D=Delayed Capture, V=Void
             'ORIGID' => $order->get_transaction_id(),
             'AMT' => $amount,
-            'CURRENCY' => $order->get_order_currency()
+            'CURRENCY' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()
         );
     
         $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
@@ -1144,15 +1162,18 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
     }
     
     public function angelleye_paypal_pro_payflow_email_instructions($order, $sent_to_admin, $plain_text = false) {
-        if ( $sent_to_admin && 'paypal_pro_payflow' === $order->payment_method ) {
+        $payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        if ( $sent_to_admin && 'paypal_pro_payflow' === $payment_method ) {
             if (!class_exists('Angelleye_PayPal')) {
                 require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
             }
             $PayPalConfig = array();
             $PayPal = new Angelleye_PayPal($PayPalConfig);
-            $avsaddr = get_post_meta($order->id, '_AVSADDR', true);
-            $avszip = get_post_meta($order->id, '_AVSZIP', true);
-            if ( ! empty( $avscode ) && !empty($avszip) ) {
+            $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
+            $old_wc = version_compare( WC_VERSION, '3.0', '<' );
+            $avsaddr = $old_wc ? get_post_meta( $order->id, '_AVSADDR', true ) : $order->get_meta( '_AVSADDR', true );
+            $avsaddr = $old_wc ? get_post_meta( $order->id, '_AVSZIP', true ) : $order->get_meta( '_AVSZIP', true );                        
+            if ( ! empty( $avsaddr ) && !empty($avszip) ) {
                 echo '<h2 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;
                 echo '<ul class="wc-avs-details order_details avs_details">' . PHP_EOL;
                 $avs_details_fields = apply_filters( 'angelleye_avs_details_fields', array(
@@ -1172,7 +1193,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 }
                 echo '</ul>';
             }
-            $cvvmatch = get_post_meta($order->id, 'CVV2MATCH', true);
+            $cvvmatch = $old_wc ? get_post_meta( $order->id, 'CVV2MATCH', true ) : $order->get_meta( 'CVV2MATCH', true );
             if ( ! empty( $cvvmatch ) ) {
                 $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvvmatch);
                 echo '<h2 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;

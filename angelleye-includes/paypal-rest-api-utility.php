@@ -61,6 +61,8 @@ class PayPal_Rest_API_Utility {
      */
     public function create_payment($order, $card_data) {
         global $woocommerce;
+        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+        $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
         try {
             $this->set_trnsaction_obj_value($order, $card_data);
             try {
@@ -80,41 +82,44 @@ class PayPal_Rest_API_Utility {
                     'redirect' => ''
                 );
             }
-            
+
             if ($this->payment->state == "approved") {
                 $transactions = $this->payment->getTransactions();
                 $relatedResources = $transactions[0]->getRelatedResources();
                 $sale = $relatedResources[0]->getSale();
                 $saleId = $sale->getId();
-                do_action('before_save_payment_token', $order->id);
+                do_action('before_save_payment_token', $order_id);
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
-                if(!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] == 'new') {
-                    if(!empty($_POST['wc-paypal_credit_card_rest-new-payment-method']) && $_POST['wc-paypal_credit_card_rest-new-payment-method'] == true) {
+                if (!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] == 'new') {
+                    if (!empty($_POST['wc-paypal_credit_card_rest-new-payment-method']) && $_POST['wc-paypal_credit_card_rest-new-payment-method'] == true) {
                         try {
                             $this->card->create($this->getAuth());
-                            $customer_id =  $order->get_user_id();
+                            $customer_id = $order->get_user_id();
                             $creditcard_id = $this->card->getId();
                             $token = new WC_Payment_Token_CC();
-                            $token->set_user_id( $customer_id );
-                            $token->set_token( $creditcard_id );
-                            $token->set_gateway_id( $this->payment_method );
-                            $token->set_card_type( $this->card->type );
-                            $token->set_last4( substr( $this->card->number, -4 ) );
-                            $token->set_expiry_month( $this->card->expire_month );
-                            $token->set_expiry_year( $this->card->expire_year );
+                            $token->set_user_id($customer_id);
+                            $token->set_token($creditcard_id);
+                            $token->set_gateway_id($this->payment_method);
+                            $token->set_card_type($this->card->type);
+                            $token->set_last4(substr($this->card->number, -4));
+                            $token->set_expiry_month($this->card->expire_month);
+                            $token->set_expiry_year($this->card->expire_year);
                             $save_result = $token->save();
-                            if ( $save_result ) {
-                                    $order->add_payment_token( $token );
+                            if ($save_result) {
+                                $order->add_payment_token($token);
                             }
                         } catch (Exception $ex) {
-
+                            
                         }
-                        
                     }
                 }
                 $order->payment_complete($saleId);
                 $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-                update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+                if ($old_wc) {
+                    update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+                } else {
+                    $order->update_meta_data('is_sandbox', $is_sandbox);
+                }
                 WC()->cart->empty_cart();
                 $return_url = $order->get_checkout_order_received_url();
                 if (is_ajax()) {
@@ -160,9 +165,9 @@ class PayPal_Rest_API_Utility {
      * @param type $card_data
      */
     public function set_trnsaction_obj_value($order, $card_data) {
-        if(!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
-            $token_id = wc_clean( $_POST['wc-paypal_credit_card_rest-payment-token'] );
-            $token = WC_Payment_Tokens::get( $token_id );
+        if (!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
+            $token_id = wc_clean($_POST['wc-paypal_credit_card_rest-payment-token']);
+            $token = WC_Payment_Tokens::get($token_id);
             $this->CreditCardToken = new CreditCardToken();
             $this->CreditCardToken->setCreditCardId($token->get_token());
             $this->fundingInstrument = new FundingInstrument();
@@ -172,7 +177,7 @@ class PayPal_Rest_API_Utility {
             $this->fundingInstrument = new FundingInstrument();
             $this->fundingInstrument->setCreditCard($this->card);
         }
-        
+
         $this->payer = new Payer();
         $this->payer->setPaymentMethod("credit_card");
         $this->payer->setFundingInstruments(array($this->fundingInstrument));
@@ -193,7 +198,7 @@ class PayPal_Rest_API_Utility {
         foreach ($this->payment_data['order_items'] as $item) {
             $this->item = new Item();
             $this->item->setName($item['name']);
-            $this->item->setCurrency($order->get_order_currency());
+            $this->item->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
             $this->item->setQuantity($item['qty']);
             $this->item->setPrice($item['amt']);
             array_push($this->order_item, $this->item);
@@ -230,7 +235,7 @@ class PayPal_Rest_API_Utility {
      */
     public function set_amount_values($order) {
         $this->amount = new Amount();
-        $this->amount->setCurrency($order->get_order_currency());
+        $this->amount->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
         $this->amount->setTotal($this->number_format($order->get_total(), $order));
         $this->amount->setDetails($this->details);
     }
@@ -244,8 +249,8 @@ class PayPal_Rest_API_Utility {
         $this->transaction->setItemList($this->item_list);
         $this->transaction->setDescription("Payment description");
         $this->transaction->setInvoiceNumber(uniqid());
-        $this->transaction->setCustom(json_encode( array( 'order_id' => $order->id, 'order_key' => $order->order_key ) ));
-        if( !empty($this->softdescriptor) ) {
+        $this->transaction->setCustom(json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key())));
+        if (!empty($this->softdescriptor)) {
             $this->transaction->setSoftDescriptor($this->softdescriptor);
         }
     }
@@ -333,7 +338,7 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_card_first_name($order) {
-        $this->card->setFirstName($order->billing_first_name);
+        $this->card->setFirstName($order->get_billing_first_name());
     }
 
     /**
@@ -341,14 +346,14 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_card_set_last_name($order) {
-        $this->card->setLastName($order->billing_last_name);
+        $this->card->setLastName($order->get_billing_last_name());
     }
 
     /**
      * @since    1.2
      */
     public function create_transaction_method_obj() {
-        
+
         $this->card = new CreditCard();
         $this->order_item = array();
         $this->send_items = true;
@@ -466,7 +471,7 @@ class PayPal_Rest_API_Utility {
         }
         $sale = Sale::get($order->get_transaction_id(), $this->getAuth());
         $this->amount = new Amount();
-        $this->amount->setCurrency($order->get_order_currency());
+        $this->amount->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
         $this->amount->setTotal($this->number_format($amount, $order));
         $refund = new Refund();
         $refund->setAmount($this->amount);
@@ -519,7 +524,7 @@ class PayPal_Rest_API_Utility {
      */
     public function round($price, $order) {
         $precision = 2;
-        if (!$this->currency_has_decimals($order->get_order_currency())) {
+        if (!$this->currency_has_decimals(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency())) {
             $precision = 0;
         }
         return round($price, $precision);
@@ -533,12 +538,12 @@ class PayPal_Rest_API_Utility {
      */
     public function number_format($price, $order) {
         $decimals = 2;
-        if (!$this->currency_has_decimals($order->get_order_currency())) {
+        if (!$this->currency_has_decimals(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency())) {
             $decimals = 0;
         }
         return number_format($price, $decimals, '.', '');
     }
-    
+
     public function save_credit_card($card_data) {
         $customer_id = get_current_user_id();
         $this->card = new CreditCard();
@@ -547,53 +552,51 @@ class PayPal_Rest_API_Utility {
         $this->set_card_expire_month($card_data);
         $this->set_card_expire_year($card_data);
         $this->set_card_cvv($card_data);
-        
-        $billtofirstname = (get_user_meta( $customer_id, 'billing_first_name', true )) ? get_user_meta( $customer_id, 'billing_first_name', true ) : get_user_meta( $customer_id, 'shipping_first_name', true );
-        $billtolastname = (get_user_meta( $customer_id, 'billing_last_name', true )) ? get_user_meta( $customer_id, 'billing_last_name', true ) : get_user_meta( $customer_id, 'shipping_last_name', true );
-        
+
+        $billtofirstname = (get_user_meta($customer_id, 'billing_first_name', true)) ? get_user_meta($customer_id, 'billing_first_name', true) : get_user_meta($customer_id, 'shipping_first_name', true);
+        $billtolastname = (get_user_meta($customer_id, 'billing_last_name', true)) ? get_user_meta($customer_id, 'billing_last_name', true) : get_user_meta($customer_id, 'shipping_last_name', true);
+
         $this->card->setFirstName($billtofirstname);
         $this->card->setLastName($billtolastname);
-        $this->card->setMerchantId(get_bloginfo('name').'_'.$customer_id.'_'.uniqid());
-        $this->card->setExternalCardId($card_data->number.'_'.uniqid());
-        $this->card->setExternalCustomerId($card_data->number.'_'.$customer_id.'_'.uniqid());
-        
+        $this->card->setMerchantId(get_bloginfo('name') . '_' . $customer_id . '_' . uniqid());
+        $this->card->setExternalCardId($card_data->number . '_' . uniqid());
+        $this->card->setExternalCustomerId($card_data->number . '_' . $customer_id . '_' . uniqid());
+
         try {
             $this->card->create($this->getAuth());
-            if($this->card->state == 'ok') {
+            if ($this->card->state == 'ok') {
                 $customer_id = get_current_user_id();
                 $creditcard_id = $this->card->getId();
                 $token = new WC_Payment_Token_CC();
-                $token->set_user_id( $customer_id );
-                $token->set_token( $creditcard_id );
-                $token->set_gateway_id( $this->payment_method );
-                $token->set_card_type( $this->card->type );
-                $token->set_last4( substr( $this->card->number, -4 ) );
-                $token->set_expiry_month( $this->card->expire_month );
-                $token->set_expiry_year( $this->card->expire_year );
+                $token->set_user_id($customer_id);
+                $token->set_token($creditcard_id);
+                $token->set_gateway_id($this->payment_method);
+                $token->set_card_type($this->card->type);
+                $token->set_last4(substr($this->card->number, -4));
+                $token->set_expiry_month($this->card->expire_month);
+                $token->set_expiry_year($this->card->expire_year);
                 $save_result = $token->save();
-                if ( $save_result ) {
+                if ($save_result) {
                     return array(
                         'result' => 'success',
-                        'redirect' => wc_get_account_endpoint_url( 'payment-methods' )
+                        'redirect' => wc_get_account_endpoint_url('payment-methods')
                     );
-                    
                 }
             } else {
-                    wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-                    return array(
-                        'result' => 'fail',
-                        'redirect' => wc_get_account_endpoint_url( 'payment-methods' )
-                    );
-            }
-        } catch (Exception $ex) {
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-                $this->add_log($ex->getMessage());
                 return array(
                     'result' => 'fail',
-                    'redirect' => ''
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
                 );
+            }
+        } catch (Exception $ex) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log($ex->getMessage());
+            return array(
+                'result' => 'fail',
+                'redirect' => ''
+            );
         }
-        
     }
 
 }

@@ -170,11 +170,19 @@ class WC_Gateway_PayPal_Express_listner_AngellEYE {
             if ('completed' === strtolower($posted['payment_status'])) {
                 $order->payment_complete($order, (!empty($posted['txn_id']) ? wc_clean($posted['txn_id']) : ''), __('IPN payment completed', 'woocommerce'));
                 if (!empty($posted['mc_fee'])) {
-                    update_post_meta($order->id, 'PayPal Transaction Fee', wc_clean($posted['mc_fee']));
+                    if (version_compare( WC_VERSION, '3.0', '<' )) {
+                        update_post_meta($order_id, 'PayPal Transaction Fee', wc_clean($posted['mc_fee']));
+                    } else {
+                        $order->update_meta_data('PayPal Transaction Fee', wc_clean($posted['mc_fee']));
+                    }
                 }
             } else {
                 $order->update_status('on-hold', ($posted['pending_reason']) ? $posted['pending_reason'] : '');
-                $order->reduce_order_stock();
+                if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
+                    $order->reduce_order_stock();
+                } else {
+                    wc_reduce_stock_levels($order->get_id());
+                }
                 WC()->cart->empty_cart();
             }
         } catch (Exception $ex) {

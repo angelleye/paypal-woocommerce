@@ -106,8 +106,8 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
         if (sizeof(WC()->cart->get_cart()) != 0) {
             foreach (WC()->cart->get_cart() as $key => $value) {
                 $_product = $value['data'];
-                if (isset($_product->id) && !empty($_product->id) ) {
-                    $_no_shipping_required = get_post_meta($_product->id, '_no_shipping_required', true);
+                if ( !$_product->get_id() ) {
+                    $_no_shipping_required = get_post_meta($_product->get_id(), '_no_shipping_required', true);
                     if( $_no_shipping_required == 'yes' ) {
                         $SECFields['noshipping'] = 1;
                         return $SECFields;

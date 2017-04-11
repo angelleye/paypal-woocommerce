@@ -545,7 +545,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
                     $sku = $_product->get_sku();
                     $item['name'] = html_entity_decode($_product->get_title(), ENT_NOQUOTES, 'UTF-8');
-                    if ($_product->product_type == 'variation') {
+                    if ($_product->is_type('variation')) {
                         if (empty($sku)) {
                             $sku = $_product->parent->get_sku();
                         }
@@ -901,7 +901,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 if (sizeof(WC()->cart->get_cart()) != 0) {
                     foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
                         $_product = $values['data'];
-                        if( $product_id == $_product->id || $variation_id == $_product->id) {
+                        if( $product_id == $_product->get_id() || $variation_id == $_product->get_id()) {
                             wp_redirect(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
                             exit();
                         }
