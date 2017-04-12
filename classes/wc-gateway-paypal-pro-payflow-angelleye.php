@@ -489,7 +489,16 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro_payflow-card-cardholder-first']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']) : $order->get_billing_first_name();
                         $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro_payflow-card-cardholder-last']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']) : $order->get_billing_last_name();
                         
-			$PayPalRequestData = array(
+                        $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
+                        $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
+                        $billtostreet = $billing_address_1 . ' ' . $billing_address_2;
+                        $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
+                        $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
+                        $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
+                        $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
+                        $billing_email = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email();
+
+                        $PayPalRequestData = array(
 					'tender'=>'C', 				// Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
 					'trxtype'=> $this->payment_action == 'Authorization' ? 'A' : 'S', 				// Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
 					'acct'=>$card_number, 				// Required for credit card transaction.  Credit card or purchase card number.
@@ -508,16 +517,16 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					'swipe'=>'', 				// Required for card-present transactions.  Used to pass either Track 1 or Track 2, but not both.
 					'orderid'=> $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number()), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
 					'orderdesc'=>'Order ' . $order->get_order_number() . ' on ' . get_bloginfo( 'name' ), //
-					'billtoemail'=>$order->get_billing_email(), 			// Account holder's email address.
+					'billtoemail'=>$billing_email, 			// Account holder's email address.
 					'billtophonenum'=>'', 		// Account holder's phone number.
 					'billtofirstname'=> $firstname, 		// Account holder's first name.
 					'billtomiddlename'=>'', 	// Account holder's middle name.
 					'billtolastname'=> $lastname, 		// Account holder's last name.
-					'billtostreet'=>$order->get_billing_address_1().' '.$order->get_billing_address_2(), 		// The cardholder's street address (number and street name).  150 char max
-					'billtocity'=>$order->get_billing_city(), 			// Bill to city.  45 char max
-					'billtostate'=>$order->get_billing_state(), 			// Bill to state.  
-					'billtozip'=>$order->get_billing_postcode(), 			// Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
-					'billtocountry'=>$order->get_billing_country(), 		// Bill to Country.  3 letter country code.
+					'billtostreet'=> $billtostreet, 		// The cardholder's street address (number and street name).  150 char max
+					'billtocity'=>$billing_city, 			// Bill to city.  45 char max
+					'billtostate'=>$billing_state, 			// Bill to state.  
+					'billtozip'=>$billing_postcode, 			// Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
+					'billtocountry'=>$billing_country, 		// Bill to Country.  3 letter country code.
 					'origid'=>'', 				// Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.  
 					'custref'=>'', 				// 
 					'custcode'=>'', 			// 
@@ -749,8 +758,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 					$message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] ."\n" : "\n";
                                         $message .= __( 'User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
                     $message .= __( 'Order ID: ' ).$order_id ."\n";
-                    $message .= __( 'Customer Name: ' ).$order->get_billing_first_name().' '.$order->get_billing_last_name()."\n";
-                    $message .= __( 'Customer Email: ' ).$order->get_billing_email()."\n";
+                    $message .= __( 'Customer Name: ' ).$firstname.' '.$lastname."\n";
+                    $message .= __( 'Customer Email: ' ).$billing_email."\n";
 	                $message = apply_filters( 'ae_pppf_error_email_message', $message );
 	                $subject = apply_filters( 'ae_pppf_error_email_subject', "PayPal Pro Error Notification" );
 					wp_mail( $admin_email, $subject, $message );

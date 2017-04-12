@@ -480,16 +480,27 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $request_data = array();
             $this->angelleye_braintree_lib();
             $card = $this->get_posted_card();
+            
+            $billing_company = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_company : $order->get_billing_company();
+            $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
+            $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
+            $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
+            $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
+            $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
+            $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
+            $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
+            $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
+        
             $request_data['billing'] = array(
-                'firstName' => $order->get_billing_first_name(),
-                'lastName' => $order->get_billing_last_name(),
-                'company' => $order->get_billing_company(),
-                'streetAddress' => $order->get_billing_address_1(),
-                'extendedAddress' => $order->get_billing_address_2(),
-                'locality' => $order->get_billing_city(),
-                'region' => $order->get_billing_state(),
-                'postalCode' => $order->get_billing_postcode(),
-                'countryCodeAlpha2' => $order->get_billing_country(),
+                'firstName' => $billing_first_name,
+                'lastName' => $billing_last_name,
+                'company' => $billing_company,
+                'streetAddress' => $billing_address_1,
+                'extendedAddress' => $billing_address_2,
+                'locality' => $billing_city,
+                'region' => $billing_state,
+                'postalCode' => $billing_postcode,
+                'countryCodeAlpha2' => $billing_country,
             );
             
             $request_data['shipping'] = array(
@@ -505,11 +516,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             );
             if ($this->enable_braintree_drop_in == false) {
                 if ((!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') || empty($_POST['wc-braintree-payment-token'])) {
+                    $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
+                    $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
                     $request_data['creditCard'] = array(
                         'number' => $card->number,
                         'expirationDate' => $card->exp_month . '/' . $card->exp_year,
                         'cvv' => $card->cvc,
-                        'cardholderName' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name()
+                        'cardholderName' => $billing_first_name . ' ' . $billing_last_name
                     );
                 } else if (is_user_logged_in() && (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] != 'new')) {
                     $customer_id = get_current_user_id();
@@ -528,11 +541,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $request_data['customerId'] = $braintree_customer_id;
                 } else {
                     $request_data['customer'] = array(
-                        'firstName' => $order->get_billing_first_name(),
-                        'lastName' => $order->get_billing_last_name(),
-                        'company' => $order->get_billing_company(),
-                        'phone' => $order->get_billing_phone(),
-                        'email' => $order->get_billing_email(),
+                        'firstName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name(),
+                        'lastName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name(),
+                        'company' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_company : $order->get_billing_company(),
+                        'phone' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone(),
+                        'email' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email(),
                     );
                 }
             }

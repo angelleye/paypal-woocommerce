@@ -631,15 +631,26 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             WC()->session->set('CardExpYear', $card->exp_year);
             $this->centinel_client->add('CardCode', $card->cvc);
             WC()->session->set('CardCode', $card->cvc);
-            $this->centinel_client->add('BillingFirstName', $order->get_billing_first_name());
-            $this->centinel_client->add('BillingLastName', $order->get_billing_last_name());
-            $this->centinel_client->add('BillingAddress1', $order->get_billing_address_1());
-            $this->centinel_client->add('BillingAddress2', $order->get_billing_address_2());
-            $this->centinel_client->add('BillingCity', $order->get_billing_city());
-            $this->centinel_client->add('BillingState', $order->get_billing_state());
-            $this->centinel_client->add('BillingPostalCode', $order->get_billing_postcode());
-            $this->centinel_client->add('BillingCountryCode', $order->get_billing_country());
-            $this->centinel_client->add('BillingPhone', $order->get_billing_phone());
+            
+            $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
+            $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
+            $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
+            $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
+            $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
+            $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
+            $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
+            $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
+            $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
+        
+            $this->centinel_client->add('BillingFirstName', $billing_first_name);
+            $this->centinel_client->add('BillingLastName', $billing_last_name);
+            $this->centinel_client->add('BillingAddress1', $billing_address_1);
+            $this->centinel_client->add('BillingAddress2', $billing_address_2);
+            $this->centinel_client->add('BillingCity', $billing_city);
+            $this->centinel_client->add('BillingState', $billing_state);
+            $this->centinel_client->add('BillingPostalCode', $billing_postcode);
+            $this->centinel_client->add('BillingCountryCode', $billing_country);
+            $this->centinel_client->add('BillingPhone', $billing_phone);
             $this->centinel_client->add('ShippingFirstName', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name());
             $this->centinel_client->add('ShippingLastName', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name());
             $this->centinel_client->add('ShippingAddress1', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1());
@@ -880,8 +891,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $GLOBALS['wp_rewrite'] = new WP_Rewrite();
         }
 
-        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro-card-cardholder-first']) ? wc_clean($_POST['paypal_pro-card-cardholder-first']) : $order->get_billing_first_name();
-        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro-card-cardholder-last']) ? wc_clean($_POST['paypal_pro-card-cardholder-last']) : $order->get_billing_last_name();
+        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro-card-cardholder-first']) ? wc_clean($_POST['paypal_pro-card-cardholder-first']) : version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
+        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro-card-cardholder-last']) ? wc_clean($_POST['paypal_pro-card-cardholder-last']) : version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_last_name();
 
         $card_exp = $card_exp_month . $card_exp_year;
 
@@ -904,20 +915,32 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             'issuenumber' => ''                            // Issue number of Maestro or Solo card.  Two numeric digits max.
         );
 
+        
+        $billing_company = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_company : $order->get_billing_company();
+        $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
+        $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
+        $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
+        $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
+        $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
+        $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
+        $billing_email = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email();
+        $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
+        
+        
         $PayerInfo = array(
-            'email' => $order->get_billing_email(),                                // Email address of payer.
+            'email' => $billing_email,                                // Email address of payer.
             'firstname' => $firstname,                            // Required.  Payer's first name.
             'lastname' => $lastname                            // Required.  Payer's last name.
         );
 
         $BillingAddress = array(
-            'street' => $order->get_billing_address_1(),                        // Required.  First street address.
-            'street2' => $order->get_billing_address_2(),                        // Second street address.
-            'city' => $order->get_billing_city(),                            // Required.  Name of City.
-            'state' => $order->get_billing_state(),                            // Required. Name of State or Province.
-            'countrycode' => $order->get_billing_country(),                    // Required.  Country code.
-            'zip' => $order->get_billing_postcode(),                            // Required.  Postal code of payer.
-            'phonenum' => $order->get_billing_phone()                        // Phone Number of payer.  20 char max.
+            'street' => $billing_address_1,                        // Required.  First street address.
+            'street2' => $billing_address_2,                        // Second street address.
+            'city' => $billing_city,                            // Required.  Name of City.
+            'state' => $billing_state,                            // Required. Name of State or Province.
+            'countrycode' => $billing_country,                    // Required.  Country code.
+            'zip' => $billing_postcode,                            // Required.  Postal code of payer.
+            'phonenum' => $billing_phone                        // Phone Number of payer.  20 char max.
         );
 
         $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
@@ -932,6 +955,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             'shiptocountry' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country(),                    // Required if shipping is included.  Country code of shipping address.  2 char max.
             'shiptophonenum' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone()                    // Phone number for shipping address.  20 char max.
         );
+        
         $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
         $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
         
@@ -1203,8 +1227,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $long_message . "\n";
                 $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
                 $message .= __('Order ID: ') . $order_id . "\n";
-                $message .= __('Customer Name: ') . $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() . "\n";
-                $message .= __('Customer Email: ') . $order->get_billing_email() . "\n";
+                $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
+                $message .= __('Customer Email: ') . $billing_email . "\n";
 
                 $pc_error_email_message = apply_filters('ae_ppddp_error_email_message', $message, $error_code, $long_message);
                 $pc_error_email_subject = apply_filters('ae_ppddp_error_email_subject', "PayPal Pro Error Notification", $error_code, $long_message);

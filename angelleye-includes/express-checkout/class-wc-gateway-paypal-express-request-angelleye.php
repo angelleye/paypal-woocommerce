@@ -882,7 +882,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             wc_add_notice($ec_confirm_message, "error");
             wp_redirect(get_permalink(wc_get_page_id('cart')));
         }
-        $customer_notes = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
+        $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
+        $customer_notes = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
         $DRTFields = array(
             'referenceid' => $token->get_token(),
             'paymentaction' => !empty($this->gateway->payment_action) ? $this->gateway->payment_action : 'Sale',

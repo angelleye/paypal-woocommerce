@@ -338,7 +338,7 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_card_first_name($order) {
-        $this->card->setFirstName($order->get_billing_first_name());
+        $this->card->setFirstName(version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name());
     }
 
     /**
@@ -346,7 +346,7 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_card_set_last_name($order) {
-        $this->card->setLastName($order->get_billing_last_name());
+        $this->card->setLastName(version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name());
     }
 
     /**
