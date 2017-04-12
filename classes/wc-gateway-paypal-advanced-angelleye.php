@@ -42,7 +42,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->transtype = $this->get_option('transtype');
         $this->password = $this->get_option('password');
         $this->debug = $this->get_option('debug');
-        $this->invoice_prefix = $this->get_option('invoice_prefix');
+        $this->invoice_id_prefix = $this->get_option('invoice_prefix', 'WC-PPADV');
         $this->page_collapse_bgcolor = $this->get_option('page_collapse_bgcolor');
         $this->page_collapse_textcolor = $this->get_option('page_collapse_textcolor');
         $this->page_button_bgcolor = $this->get_option('page_button_bgcolor');

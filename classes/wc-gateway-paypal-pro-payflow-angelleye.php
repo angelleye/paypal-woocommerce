@@ -486,8 +486,17 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
                         $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
                         
-                        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro_payflow-card-cardholder-first']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']) : $order->get_billing_first_name();
-                        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro_payflow-card-cardholder-last']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']) : $order->get_billing_last_name();
+                        if(!empty($_POST['paypal_pro-card-cardholder-first'])) {
+                            $firstname = wc_clean($_POST['paypal_pro-card-cardholder-first']);
+                        } else {
+                            $firstname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
+                        }       
+
+                        if(!empty($_POST['paypal_pro-card-cardholder-last'])) {
+                            $lastname = wc_clean($_POST['paypal_pro-card-cardholder-last']);
+                        } else {
+                            $lastname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
+                        }
                         
                         $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
                         $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
@@ -544,10 +553,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 			/**
 			 * Shipping info
 			 */
-			if($order->get_shipping_address_1())
+                        $shipping_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1();
+			if($shipping_address_1)
 			{
 
-                 $shipping_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1();
+                 
                 $shipping_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2();
                 $PayPalRequestData['SHIPTOFIRSTNAME']   = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
                 $PayPalRequestData['SHIPTOLASTNAME']    = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();

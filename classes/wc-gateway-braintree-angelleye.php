@@ -1152,10 +1152,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function braintree_save_payment_method($customer_id, $result) {
-        if (!empty($result->creditCard)) {
+        if (!empty($result->paymentMethod)) {
+            $braintree_method = $result->paymentMethod;
+        } elseif ($result->creditCard) {
             $braintree_method = $result->creditCard;
         } else {
-            $braintree_method = $braintree_method;
+            wp_redirect(wc_get_account_endpoint_url('payment-methods'));
+            exit;
         }
         update_user_meta($customer_id, 'braintree_customer_id', $braintree_method->customerId);
         $payment_method_token = $braintree_method->token;

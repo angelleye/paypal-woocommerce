@@ -891,8 +891,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $GLOBALS['wp_rewrite'] = new WP_Rewrite();
         }
 
-        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro-card-cardholder-first']) ? wc_clean($_POST['paypal_pro-card-cardholder-first']) : version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
-        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro-card-cardholder-last']) ? wc_clean($_POST['paypal_pro-card-cardholder-last']) : version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_last_name();
+        if(!empty($_POST['paypal_pro-card-cardholder-first'])) {
+            $firstname = wc_clean($_POST['paypal_pro-card-cardholder-first']);
+        } else {
+            $firstname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
+        }       
+           
+        if(!empty($_POST['paypal_pro-card-cardholder-last'])) {
+            $lastname = wc_clean($_POST['paypal_pro-card-cardholder-last']);
+        } else {
+            $lastname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
+        }
 
         $card_exp = $card_exp_month . $card_exp_year;
 
@@ -1610,6 +1619,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             );
             $PayPal = new Angelleye_PayPal($PayPalConfig);
             $old_wc = version_compare( WC_VERSION, '3.0', '<' );
+            $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
             $avscode = $old_wc ? get_post_meta( $order->id, '_AVSCODE', true ) : $order->get_meta( '_AVSCODE', true );
             if ( ! empty( $avscode ) ) {
                 $avs_response_message = $PayPal->GetAVSCodeMessage($avscode);
