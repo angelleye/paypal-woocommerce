@@ -167,7 +167,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->confirm_order_id = esc_attr($_GET['order_id']);
             $order = new WC_Order($this->confirm_order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $this->angelleye_do_express_checkout_payment_request();
             $this->angelleye_add_order_note($order);
             $this->angelleye_add_extra_order_meta($order);
@@ -334,14 +334,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 array_push($Payments, $Payment);
             }
             if (WC()->cart->needs_shipping()) {
-                $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
-                $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
-                $shipping_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1();
-                $shipping_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2();
-                $shipping_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city();
-                $shipping_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state();
-                $shipping_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode();
-                $shipping_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country();
+                $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
+                $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
+                $shipping_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_1 : $order->get_shipping_address_1();
+                $shipping_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_2 : $order->get_shipping_address_2();
+                $shipping_city = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_city : $order->get_shipping_city();
+                $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
+                $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
+                $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
                 $Payment = array('shiptoname' => $shipping_first_name . ' ' . $shipping_last_name,
                     'shiptostreet' => $shipping_address_1,
                     'shiptostreet2' => $shipping_address_2,
@@ -464,24 +464,22 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_add_billing_agreement_param($PayPalRequestData, $tokenization) {
         try {
             if (sizeof(WC()->cart->get_cart()) != 0) {
-                foreach (WC()->cart->get_cart() as $key => $value) {
-                    $_product = $value['data'];
-                    if (!$_product->get_id()) {
-                        $_paypal_billing_agreement = get_post_meta($_product->get_id(), '_paypal_billing_agreement', true);
-                        if ($_paypal_billing_agreement == 'yes' || ( isset(WC()->session->ec_save_to_account) && WC()->session->ec_save_to_account == 'on')) {
-                            $BillingAgreements = array();
-                            $Item = array(
-                                'l_billingtype' => '',
-                                'l_billingtype' => 'MerchantInitiatedBilling',
-                                'l_billingagreementdescription' => '',
-                                'l_paymenttype' => '',
-                                'l_paymenttype' => 'Any',
-                                'l_billingagreementcustom' => ''
-                            );
-                            array_push($BillingAgreements, $Item);
-                            $PayPalRequestData['BillingAgreements'] = $BillingAgreements;
-                            return $PayPalRequestData;
-                        }
+                foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+                    $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
+                    $_paypal_billing_agreement = get_post_meta($product_id, '_paypal_billing_agreement', true);
+                    if ($_paypal_billing_agreement == 'yes' || ( isset(WC()->session->ec_save_to_account) && WC()->session->ec_save_to_account == 'on')) {
+                        $BillingAgreements = array();
+                        $Item = array(
+                            'l_billingtype' => '',
+                            'l_billingtype' => 'MerchantInitiatedBilling',
+                            'l_billingagreementdescription' => '',
+                            'l_paymenttype' => '',
+                            'l_paymenttype' => 'Any',
+                            'l_billingagreementcustom' => ''
+                        );
+                        array_push($BillingAgreements, $Item);
+                        $PayPalRequestData['BillingAgreements'] = $BillingAgreements;
+                        return $PayPalRequestData;
                     }
                 }
             }
@@ -565,7 +563,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function angelleye_add_extra_order_meta($order) {
-        $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (!empty($this->gateway->payment_action) && $this->gateway->payment_action != 'Sale') {
             $payment_order_meta = array('_transaction_id' => $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->gateway->payment_action, '_express_checkout_token' => WC()->session->paypal_express_checkout['token'], '_first_transaction_id' => $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
             AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
@@ -910,14 +908,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $PaymentDetails['notifyurl'] = $this->gateway->notifyurl;
         }
         if (WC()->cart->needs_shipping()) {
-            $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
-            $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
-            $shipping_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1();
-            $shipping_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2();
-            $shipping_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city();
-            $shipping_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state();
-            $shipping_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode();
-            $shipping_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country();
+            $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
+            $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
+            $shipping_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_1 : $order->get_shipping_address_1();
+            $shipping_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_2 : $order->get_shipping_address_2();
+            $shipping_city = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_city : $order->get_shipping_city();
+            $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
+            $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
+            $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
             $ShippingAddress = array('shiptoname' => $shipping_first_name . ' ' . $shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
                 'shiptostreet' => $shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
                 'shiptostreet2' => $shipping_address_2, // Second street address.  100 char max.

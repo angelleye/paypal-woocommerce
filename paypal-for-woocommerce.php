@@ -899,9 +899,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public function angelleye_woocommerce_add_to_cart_sold_individually_quantity($qtyone, $quantity, $product_id, $variation_id, $cart_item_data) {
             if( (isset($_REQUEST['express_checkout']) && $_REQUEST['express_checkout'] == 1) && (isset($_REQUEST['add-to-cart']) && !empty($_REQUEST['add-to-cart'])) ) {
                 if (sizeof(WC()->cart->get_cart()) != 0) {
-                    foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-                        $_product = $values['data'];
-                        if( $product_id == $_product->get_id() || $variation_id == $_product->get_id()) {
+                    foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+                        $cart_product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
+                        if( $product_id == $cart_product_id || $variation_id == $cart_product_id) {
                             wp_redirect(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
                             exit();
                         }

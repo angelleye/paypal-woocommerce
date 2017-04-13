@@ -104,15 +104,13 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     
     public function angelleye_paypal_for_woocommerce_needs_shipping($SECFields) {
         if (sizeof(WC()->cart->get_cart()) != 0) {
-            foreach (WC()->cart->get_cart() as $key => $value) {
-                $_product = $value['data'];
-                if ( !$_product->get_id() ) {
-                    $_no_shipping_required = get_post_meta($_product->get_id(), '_no_shipping_required', true);
-                    if( $_no_shipping_required == 'yes' ) {
-                        $SECFields['noshipping'] = 1;
-                        return $SECFields;
-                    }   
-                }
+            foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+                $product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
+                $_no_shipping_required = get_post_meta($product_id, '_no_shipping_required', true);
+                if( $_no_shipping_required == 'yes' ) {
+                    $SECFields['noshipping'] = 1;
+                    return $SECFields;
+                }   
             }
         }
         return $SECFields;

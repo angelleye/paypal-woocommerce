@@ -1361,13 +1361,12 @@ class AngellEYE_Utility {
     public static function angelleye_paypal_for_woocommerce_is_set_sandbox_product() {
         $is_sandbox_set = false;
         if (isset(WC()->cart) && sizeof(WC()->cart->get_cart()) > 0) {
-            foreach (WC()->cart->get_cart() as $key => $value) {
-                $_product = $value['data'];
-                if (!$_product->get_id()) {
-                    $_enable_sandbox_mode = get_post_meta($_product->get_id(), '_enable_sandbox_mode', true);
-                    if ($_enable_sandbox_mode == 'yes') {
-                        $is_sandbox_set = true;
-                    }
+            foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+                $product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
+                $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
+                if ($_enable_sandbox_mode == 'yes') {
+                    $is_sandbox_set = true;
+                    return $is_sandbox_set;
                 }
             }
         }
