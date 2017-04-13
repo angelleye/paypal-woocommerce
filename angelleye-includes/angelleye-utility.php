@@ -831,7 +831,7 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_paypal_for_woocommerce_order_action_meta_box($post_type, $post) {
-        if (isset($post->ID) && !empty($post->ID)) {
+        if (isset($post->ID) && !empty($post->ID) && $post_type == 'shop_order') {
             if ($this->angelleye_is_display_paypal_transaction_details($post->ID)) {
                 add_meta_box('angelleye-pw-order-action', __('PayPal Transaction History', 'paypal-for-woocommerce'), array($this, 'angelleye_paypal_for_woocommerce_order_action_callback'), 'shop_order', 'normal', 'high', null);
             }
