@@ -493,10 +493,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 * Set shipping and tax values.
                 */
                 if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                    $shipping = $order->get_total_shipping() + $order->get_shipping_tax();
+                    $shipping = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax();
                     $tax = 0;
                 } else {
-                    $shipping = $order->get_total_shipping();
+                    $shipping = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total();
                     $tax = $order->get_total_tax();
                 }
 

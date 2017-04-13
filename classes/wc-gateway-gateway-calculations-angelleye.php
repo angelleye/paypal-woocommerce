@@ -127,7 +127,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $roundedPayPalTotal += round($amount * $values['qty'], $this->decimals);
             }
             $this->taxamt = round($order->get_total_tax(), $this->decimals);
-            $this->shippingamt = round($order->get_total_shipping(), $this->decimals);
+            $this->shippingamt = round( ( version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() ), $this->decimals );
             $this->itemamt = round($order->get_subtotal(), $this->decimals);
             $this->order_total = round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
             if ($this->itemamt == $this->discount_amount) {
