@@ -100,8 +100,14 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 if ($this->enable_tokenized_payments == 'yes') {
                     $ec_html_button .= $this->function_helper->angelleye_ec_save_payment_method_checkbox();
                 }
-                $ec_html_button .= '<div class="angelleye_button_single">';
                 $_product = wc_get_product($post->ID);
+                if ( $_product->is_type( 'simple' ) && (version_compare( WC_VERSION, '3.0', '<' ) == false)) {
+                    ?>
+                    <input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" />
+                    <?php
+                }
+                $ec_html_button .= '<div class="angelleye_button_single">';
+                
                 $button_dynamic_class = 'single_variation_wrap_angelleye_' . $product->get_id();
                 $hide = '';
                 if ($_product->is_type('variation') || $_product->is_type('external') || $_product->get_price() == 0 || $_product->get_price() == '') {
