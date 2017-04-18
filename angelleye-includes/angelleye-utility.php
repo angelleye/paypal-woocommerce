@@ -103,7 +103,7 @@ class AngellEYE_Utility {
         global $post;
         $order_id = $post->ID;
         if (!is_object($order_id)) {
-            $order = wc_get_order($order);
+            $order = wc_get_order($order_id);
         }
         $paypal_payment_action = array();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
@@ -626,10 +626,13 @@ class AngellEYE_Utility {
             return false;
         }
         $order_id = $post->ID;
+        if (!is_object($order_id)) {
+            $order = wc_get_order($order_id);
+        }
         $payment_action = '';
         if ($current->id == 'paypal_express' || $current->id == 'paypal_pro') {
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $payment_action = $old_wc ? get_post_meta($order->id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
+            $payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
             if ($payment_action == 'Sale' || $payment_action == 'DoCapture' || empty($payment_action)) {
                 return $boolean;
             } else {
