@@ -118,7 +118,7 @@ class PayPal_Rest_API_Utility {
                 if ($old_wc) {
                     update_post_meta($order->id, 'is_sandbox', $is_sandbox);
                 } else {
-                    $order->update_meta_data('is_sandbox', $is_sandbox);
+                    update_post_meta( $order->get_id(), 'is_sandbox', $is_sandbox );
                 }
                 WC()->cart->empty_cart();
                 $return_url = $order->get_checkout_order_received_url();

@@ -173,7 +173,7 @@ class WC_Gateway_PayPal_Express_listner_AngellEYE {
                     if (version_compare( WC_VERSION, '3.0', '<' )) {
                         update_post_meta($order_id, 'PayPal Transaction Fee', wc_clean($posted['mc_fee']));
                     } else {
-                        $order->update_meta_data('PayPal Transaction Fee', wc_clean($posted['mc_fee']));
+                        update_post_meta( $order->get_id(), 'PayPal Transaction Fee', wc_clean($posted['mc_fee']) );
                     }
                 }
             } else {

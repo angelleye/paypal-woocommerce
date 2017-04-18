@@ -93,7 +93,7 @@ class PayPal_WooCoomerce_IPN_Handler {
                 if ($old_wc) {
                     update_post_meta($order_id, 'PayPal Transaction Fee', wc_clean($posted['mc_fee']));
                 } else {
-                    $order->update_meta_data('PayPal Transaction Fee', wc_clean($posted['mc_fee']));
+                    update_post_meta( $order->get_id(), 'PayPal Transaction Fee', wc_clean($posted['mc_fee']) );
                 }
             }
         } else {
@@ -198,28 +198,28 @@ class PayPal_WooCoomerce_IPN_Handler {
             if ($old_wc) {
                 update_post_meta($order_id, 'Payer PayPal address', wc_clean($posted['payer_email']));
             } else {
-                $order->update_meta_data('Payer PayPal address', wc_clean($posted['payer_email']));
+                update_post_meta( $order->get_id(), 'Payer PayPal address', wc_clean($posted['payer_email']) );
             }
         }
         if (!empty($posted['first_name'])) {
             if ($old_wc) {
                 update_post_meta($order_id, 'Payer first name', wc_clean($posted['first_name']));
             } else {
-                $order->update_meta_data('Payer first name', wc_clean($posted['first_name']));
+                update_post_meta( $order->get_id(), 'Payer first name', wc_clean($posted['first_name']) );
             }
         }
         if (!empty($posted['last_name'])) {
             if ($old_wc) {
                 update_post_meta($order_id, 'Payer last name', wc_clean($posted['last_name']));
             } else {
-                $order->update_meta_data('Payer last name', wc_clean($posted['last_name']));
+                update_post_meta( $order->get_id(), 'Payer last name', wc_clean($posted['last_name']) );
             }
         }
         if (!empty($posted['payment_type'])) {
             if ($old_wc) {
                 update_post_meta($order_id, 'Payment type', wc_clean($posted['payment_type']));
             } else {
-                $order->update_meta_data('Payment type', wc_clean($posted['payment_type']));
+                update_post_meta( $order->get_id(), 'Payment type', wc_clean($posted['payment_type']) );
             }
         }
     }

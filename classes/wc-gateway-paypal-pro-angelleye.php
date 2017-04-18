@@ -1146,7 +1146,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             if ($old_wc) {
                 update_post_meta($order_id, '_AVSCODE', $avs_response_code);
             } else {
-                 $order->update_meta_data('_AVSCODE', $avs_response_code);
+                update_post_meta($order->get_id(), '_AVSCODE', $avs_response_code);
             }
             /**
              * Add order notes for CVV2 result
@@ -1162,8 +1162,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 update_post_meta($order_id, '_CVV2MATCH', $cvv2_response_code);
                 update_post_meta($order_id, 'is_sandbox', $this->testmode);
             } else {
-                $order->update_meta_data('_CVV2MATCH', $cvv2_response_code);
-                $order->update_meta_data('is_sandbox', $this->testmode);
+                update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
+                update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
             }
             do_action('before_save_payment_token', $order_id);
             if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') {
@@ -1204,7 +1204,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 if ($old_wc) {
                     update_post_meta($order_id, '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
                 } else {
-                    $order->update_meta_data('_first_transaction_id', $PayPalResult['TRANSACTIONID']);
+                    update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
                 }
                 $payment_order_meta = array('_transaction_id' => $PayPalResult['TRANSACTIONID'], '_payment_action' => $this->payment_action);
                 AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
@@ -1475,7 +1475,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
         $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
         $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
         $old_wc = version_compare( WC_VERSION, '3.0', '<' );
-        $is_sandbox = $old_wc ? get_post_meta( $order->id, 'is_sandbox', true ) : $order->get_meta( 'is_sandbox', true );
+        $is_sandbox = $old_wc ? get_post_meta( $order->id, 'is_sandbox', true ) : get_post_meta($order->get_id(), 'is_sandbox', true);
         if ( $is_sandbox  == true ) {
             $this->view_transaction_url = $sandbox_transaction_url;
         } else {
@@ -1620,7 +1620,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
             $PayPal = new Angelleye_PayPal($PayPalConfig);
             $old_wc = version_compare( WC_VERSION, '3.0', '<' );
             $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
-            $avscode = $old_wc ? get_post_meta( $order->id, '_AVSCODE', true ) : $order->get_meta( '_AVSCODE', true );
+            $avscode = $old_wc ? get_post_meta( $order->id, '_AVSCODE', true ) : get_post_meta($order->get_id(), '_AVSCODE', true);
             if ( ! empty( $avscode ) ) {
                 $avs_response_message = $PayPal->GetAVSCodeMessage($avscode);
                 echo '<h2 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;
@@ -1643,7 +1643,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC
                 echo '</ul>';
             }
             $old_wc = version_compare( WC_VERSION, '3.0', '<' );
-            $cvvmatch = $old_wc ? get_post_meta( $order->id, 'CVV2MATCH', true ) : $order->get_meta( 'CVV2MATCH', true );
+            $cvvmatch = $old_wc ? get_post_meta( $order->id, 'CVV2MATCH', true ) : get_post_meta($order->get_id(), 'CVV2MATCH', true);
             if ( ! empty( $cvvmatch ) ) {
                 $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvvmatch);
                 echo '<h2 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;

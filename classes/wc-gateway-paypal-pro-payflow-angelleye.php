@@ -680,8 +680,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                                     update_post_meta($order_id, '_AVSADDR', $avs_address_response_code);
                                     update_post_meta($order_id, '_AVSZIP', $avs_zip_response_code);
                                 } else {
-                                    $order->update_meta_data('_AVSADDR', $avs_address_response_code);
-                                    $order->update_meta_data('_AVSZIP', $avs_zip_response_code);
+                                    update_post_meta($order->get_id(), '_AVSADDR', $avs_address_response_code);
+                                    update_post_meta($order->get_id(), '_AVSZIP', $avs_zip_response_code);
                                 }
 				$order->add_order_note($avs_response_order_note);
 				
@@ -696,7 +696,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                                 if ($old_wc) {
                                     update_post_meta($order_id, '_CVV2MATCH', $cvv2_response_code);
                                 } else {
-                                    $order->update_meta_data('_CVV2MATCH', $cvv2_response_code);
+                                    update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
                                 }
                                 
 				$order->add_order_note($cvv2_response_order_note);
@@ -1190,8 +1190,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             $PayPal = new Angelleye_PayPal($PayPalConfig);
             $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
             $old_wc = version_compare( WC_VERSION, '3.0', '<' );
-            $avsaddr = $old_wc ? get_post_meta( $order->id, '_AVSADDR', true ) : $order->get_meta( '_AVSADDR', true );
-            $avsaddr = $old_wc ? get_post_meta( $order->id, '_AVSZIP', true ) : $order->get_meta( '_AVSZIP', true );                        
+            $avsaddr = $old_wc ? get_post_meta( $order->id, '_AVSADDR', true ) : get_post_meta($order->get_id(), '_AVSADDR', true);
+            $avsaddr = $old_wc ? get_post_meta( $order->id, '_AVSZIP', true ) : get_post_meta($order->get_id(), '_AVSZIP', true);
             if ( ! empty( $avsaddr ) && !empty($avszip) ) {
                 echo '<h2 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;
                 echo '<ul class="wc-avs-details order_details avs_details">' . PHP_EOL;
@@ -1212,7 +1212,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 }
                 echo '</ul>';
             }
-            $cvvmatch = $old_wc ? get_post_meta( $order->id, 'CVV2MATCH', true ) : $order->get_meta( 'CVV2MATCH', true );
+            $cvvmatch = $old_wc ? get_post_meta( $order->id, 'CVV2MATCH', true ) : get_post_meta($order->get_id(), 'CVV2MATCH', true);
             if ( ! empty( $cvvmatch ) ) {
                 $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvvmatch);
                 echo '<h2 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'paypal-for-woocommerce' ) . '</h2>' . PHP_EOL;

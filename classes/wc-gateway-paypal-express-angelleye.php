@@ -806,22 +806,22 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         update_post_meta($order_id, '_payment_method_title', $this->title);
                         update_post_meta($order_id, '_customer_user', get_current_user_id());
                     } else {
-                        $order->update_meta_data('_payment_method', $this->id);
-                        $order->update_meta_data('_payment_method_title', $this->title);
-                        $order->update_meta_data('_customer_user', get_current_user_id());
+                        update_post_meta( $order->get_id(), '_payment_method', $this->id );
+                        update_post_meta( $order->get_id(), '_payment_method_title', $this->title );
+                        update_post_meta( $order->get_id(), '_customer_user', get_current_user_id() );
                     }
                     if (!empty(WC()->session->post_data['billing_phone'])) {
                         if ($old_wc) {
                             update_post_meta($order_id, '_billing_phone', WC()->session->post_data['billing_phone']);
                         } else {
-                            $order->update_meta_data('_billing_phone', WC()->session->post_data['billing_phone']);
+                            update_post_meta($order->get_id(), '_billing_phone', WC()->session->post_data['billing_phone']);
                         }
                     }
                     if (!empty(WC()->session->post_data['order_comments'])) {
                         if ($old_wc) {
                             update_post_meta($order_id, 'order_comments', WC()->session->post_data['order_comments']);
                         } else {
-                            $order->update_meta_data('order_comments', WC()->session->post_data['order_comments']);
+                            update_post_meta($order->get_id(), 'order_comments', WC()->session->post_data['order_comments']);
                         }
                         $my_post = array(
                             'ID' => $order_id,
@@ -847,7 +847,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
             $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $is_sandbox = $old_wc ? get_post_meta($order->id, 'is_sandbox', true) : $order->get_meta('is_sandbox', true);
+            $is_sandbox = $old_wc ? get_post_meta($order->id, 'is_sandbox', true) : get_post_meta($order->get_id(), 'is_sandbox', true);
             if ($is_sandbox == true) {
                 $this->view_transaction_url = $sandbox_transaction_url;
             } else {

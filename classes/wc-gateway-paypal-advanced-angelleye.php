@@ -190,7 +190,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      */
     private function success_handler($order, $order_id, $silent_post) {
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        $_secure_token = $old_wc ? get_post_meta($order->id, '_secure_token', true) : $order->get_meta('_secure_token', true);
+        $_secure_token = $old_wc ? get_post_meta($order->id, '_secure_token', true) : get_post_meta($order->get_id(), '_secure_token', true);
         if ($_secure_token == $_REQUEST['SECURETOKEN']) {
             if ($this->debug == 'yes') {
                 $this->log->add('paypal_advanced', __('Relay Response Tokens Match', 'paypal-for-woocommerce'));
@@ -216,7 +216,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $order->payment_complete($_POST['PNREF']);
             do_action('before_save_payment_token', $order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $is_save_payment_method = $old_wc ? get_post_meta($order->id, '_is_save_payment_method', true) : $order->get_meta('_is_save_payment_method', true);
+            $is_save_payment_method = $old_wc ? get_post_meta($order->id, '_is_save_payment_method', true) : get_post_meta($order->get_id(), '_is_save_payment_method', true);
             if ($is_save_payment_method == 'yes') {
                 $customer_id = $order->get_user_id();
                 $TRANSACTIONID = $_POST['PNREF'];
@@ -914,7 +914,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             if ($old_wc) {
                 update_post_meta($order_id, '_is_save_payment_method', 'yes');
             } else {
-                $order->update_meta_data('_is_save_payment_method', 'yes');
+                update_post_meta( $order->get_id(), '_is_save_payment_method', 'yes' );
             }
         }
         if (!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') {
@@ -949,8 +949,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     update_post_meta($order_id, '_secure_token_id', $this->secure_token_id);
                     update_post_meta($order_id, '_secure_token', $this->securetoken);
                 } else {
-                    $order->update_meta_data('_secure_token_id', $this->secure_token_id);
-                    $order->update_meta_data('_secure_token', $this->securetoken);
+                    update_post_meta( $order->get_id(), '_secure_token_id', $this->secure_token_id );
+                    update_post_meta( $order->get_id(), '_secure_token', $this->securetoken );
                 }
 
                 //Log
@@ -1070,8 +1070,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         //get the tokens
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        $this->secure_token_id = $old_wc ? get_post_meta($order->id, '_secure_token_id', true) : $order->get_meta('_secure_token_id', true);
-        $this->securetoken = $old_wc ? get_post_meta($order->id, '_secure_token', true) : $order->get_meta('_secure_token', true);
+        $this->secure_token_id = $old_wc ? get_post_meta($order->id, '_secure_token_id', true) : get_post_meta($order->get_id(), '_secure_token_id', true);
+        $this->securetoken = $old_wc ? get_post_meta($order->id, '_secure_token', true) : get_post_meta($order->get_id(), '_secure_token', true);
 
         //Log the browser and its version
         if ($this->debug == 'yes')

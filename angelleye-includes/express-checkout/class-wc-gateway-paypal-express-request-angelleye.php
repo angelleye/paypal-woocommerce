@@ -177,7 +177,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if ($old_wc) {
                     update_post_meta($order->id, 'is_sandbox', $this->testmode);
                 } else {
-                    $order->update_meta_data('is_sandbox', $this->testmode);
+                    update_post_meta( $order->get_id(), 'is_sandbox', $this->testmode );
                 }
                 if ($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] == 'Completed') {
                     $order->payment_complete($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
@@ -186,7 +186,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     if ($old_wc) {
                         update_post_meta($order->id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                     } else {
-                        $order->update_meta_data('_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+                        update_post_meta( $order->get_id(), '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] );
                     }
                     if ($old_wc) {
                         $order->reduce_order_stock();
@@ -198,7 +198,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if ($old_wc) {
                     update_post_meta($order->id, '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 } else {
-                    $order->update_meta_data('_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
+                    update_post_meta( $order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                 }
                 $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']));
                 $this->angelleye_ec_save_billing_agreement($order_id);
@@ -212,7 +212,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if ($old_wc) {
                     update_post_meta($order->id, 'is_sandbox', $this->testmode);
                 } else {
-                    $order->update_meta_data('is_sandbox', $this->testmode);
+                    update_post_meta( $order->get_id(), 'is_sandbox', $this->testmode );
                 }
 
                 if ($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] == 'Completed') {
@@ -227,7 +227,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     if ($old_wc) {
                         update_post_meta($order->id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                     } else {
-                        $order->update_meta_data('_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+                        update_post_meta( $order->get_id(), '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] );
                     }
 
                     if ($old_wc) {
@@ -240,7 +240,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if ($old_wc) {
                     update_post_meta($order->id, '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 } else {
-                    $order->update_meta_data('_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
+                    update_post_meta( $order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                 }
 
                 $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']));
@@ -770,14 +770,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if ($old_wc) {
             update_post_meta($order->id, '_first_transaction_id', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
         } else {
-            $order->update_meta_data('_first_transaction_id', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
+            update_post_meta( $order->get_id(), '_first_transaction_id', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
         }
         do_action('before_save_payment_token', $order_id);
         if (isset($this->paypal_response['BILLINGAGREEMENTID']) && !empty($this->paypal_response['BILLINGAGREEMENTID']) && is_user_logged_in()) {
             if ($old_wc) {
                 update_post_meta($order->id, 'billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
             } else {
-                $order->update_meta_data('billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
+                update_post_meta( $order->get_id(), 'billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '' );
             }
             $customer_id = $order->get_user_id();
             $billing_agreement_id = $this->paypal_response['BILLINGAGREEMENTID'];
@@ -798,12 +798,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if ($old_wc) {
                 update_post_meta($order->id, '_billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
             } else {
-                $order->update_meta_data('_billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
+                update_post_meta( $order->get_id(), '_billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '' );
             }
             if ($old_wc) {
                 update_post_meta($order->id, 'BILLINGAGREEMENTID', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
             } else {
-                $order->update_meta_data('BILLINGAGREEMENTID', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
+                update_post_meta( $order->get_id(), 'BILLINGAGREEMENTID', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '' );
             }
         }
     }
@@ -819,8 +819,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 update_post_meta($order_id, '_billing_email', $userLogined->user_email);
                 update_post_meta($order_id, '_customer_user', $userLogined->ID);
             } else {
-                $order->update_meta_data('_customer_user', $userLogined->ID);
-                $order->update_meta_data('_billing_email', $userLogined->user_email);
+                update_post_meta( $order->get_id(), '_customer_user', $userLogined->ID );
+                update_post_meta( $order->get_id(), '_billing_email', $userLogined->user_email );
             }
         } else {
             $_billing_email = get_post_meta($order_id, '_billing_email', true);
@@ -831,7 +831,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if ($old_wc) {
                     update_post_meta($order_id, '_billing_email', WC()->session->payeremail);
                 } else {
-                    $order->update_meta_data('_billing_email', WC()->session->payeremail);
+                    update_post_meta( $order->get_id(), '_billing_email', WC()->session->payeremail );
                 }
             }
         }
@@ -856,7 +856,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if ($old_wc) {
                 update_post_meta($order_id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
             } else {
-                $order->update_meta_data('_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+                update_post_meta( $order->get_id(), '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] );
             }
             $this->gateway->process_refund($order_id, $order->get_total(), __('There was a problem processing your order. Please contact customer support.', 'paypal-for-woocommerce'));
             $order->update_status('cancelled');

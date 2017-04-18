@@ -624,7 +624,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 if ($old_wc) {
                     update_post_meta($order_id, 'is_sandbox', $this->sandbox);
                 } else {
-                    $order->update_meta_data('is_sandbox', $this->sandbox);
+                    update_post_meta( $order->get_id(), 'is_sandbox', $this->sandbox );
                 }
                 $order->payment_complete($this->response->transaction->id);
                 do_action('before_save_payment_token', $order_id);
@@ -1002,7 +1002,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             return false;
         }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        $is_sandbox = $old_wc ? get_post_meta($order->id, 'is_sandbox', true) : $order->get_meta('is_sandbox', true);
+        $is_sandbox = $old_wc ? get_post_meta($order->id, 'is_sandbox', true) : get_post_meta($order->get_id(), 'is_sandbox', true);
         if ($is_sandbox == true) {
             $server = "sandbox.braintreegateway.com";
         } else {
