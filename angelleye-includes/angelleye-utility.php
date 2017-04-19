@@ -458,7 +458,7 @@ class AngellEYE_Utility {
         if (isset($transaction_id) && !empty($transaction_id)) {
             $DRFields = array(
                 'authorizationid' => $transaction_id, // Required. The value of a previously authorized transaction ID returned by PayPal.
-                'amt' => $AMT, // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
+                'amt' => self::number_format($AMT), // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
                 'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // Three-character currency code.
                 'msgsubid' => ''      // A message ID used for idempotence to uniquely identify a message.
             );
@@ -532,7 +532,7 @@ class AngellEYE_Utility {
         if (isset($transaction_id) && !empty($transaction_id)) {
             $DRFields = array(
                 'TRANSACTIONID' => $transaction_id, // Required. The value of a previously authorized transaction ID returned by PayPal.
-                'AMT' => $_POST['_regular_price'], // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
+                'AMT' => self::number_format($_POST['_regular_price']), // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
                 'CURRENCYCODE' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()
             );
             $PayPalRequestData = array('DAFields' => $DRFields);
