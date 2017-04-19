@@ -225,13 +225,13 @@ class AngellEYE_Utility {
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order = wc_get_order($order_id);
         $transaction_time = $old_wc ? get_post_meta($order_id, '_trans_date', true) : get_post_meta($order->get_id(), '_trans_date', true);
-        return floor(( time() - $transaction_time ) / 3600) > 720;
+        return floor(( time() - strtotime($transaction_time) ) / 3600) > 720;
     }
 
     public function has_authorization_inside_honor_period($transaction_id) {
         $transaction_post_is = $this->get_post_by_title($transaction_id);
         $transaction_time = get_post_meta($transaction_post_is, '_trans_date', true);
-        return floor(( time() - $transaction_time ) / 3600) > 72;
+        return floor(( time() - strtotime($transaction_time) ) / 3600) > 72;
     }
 
     /**
@@ -944,7 +944,7 @@ class AngellEYE_Utility {
                     </tr>
                     <tr>
                         <td><?php echo __('Total Capture:', 'paypal-for-woocommerce'); ?></td>
-                        <td><?php echo get_woocommerce_currency_symbol() . $this->total_DoCapture; ?></td>
+                        <td><?php echo $this->total_DoCapture .' '. get_woocommerce_currency_symbol() ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -975,7 +975,7 @@ class AngellEYE_Utility {
                         <tr>
                             <td><?php echo $post->post_title; ?></td>
                             <td><?php echo esc_attr(get_post_meta($post->ID, 'TIMESTAMP', true)); ?></th>       
-                            <td><?php echo get_woocommerce_currency_symbol() . esc_attr(get_post_meta($post->ID, 'AMT', true)); ?></td>
+                            <td><?php echo esc_attr(get_post_meta($post->ID, 'AMT', true)) .' '. get_woocommerce_currency_symbol(); ?></td>
             <?php $PENDINGREASON = esc_attr(get_post_meta($post->ID, 'PENDINGREASON', true)); ?>
                             <td <?php echo ($PENDINGREASON) ? sprintf('title="%s"', $PENDINGREASON) : ""; ?> ><?php echo esc_attr(get_post_meta($post->ID, 'PAYMENTSTATUS', true)); ?></td>
                             <td><?php echo esc_attr(get_post_meta($post->ID, 'payment_action', true)); ?> </td>
