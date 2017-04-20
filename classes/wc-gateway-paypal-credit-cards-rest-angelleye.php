@@ -52,7 +52,9 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->testmode = 'yes' === $this->get_option('testmode', 'no');
-        $this->mode = $this->testmode == 'yes' ? "SANDBOX" : "LIVE";
+        if( $this->testmode == false ) {
+            $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+        }
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         if ($this->testmode) {
@@ -62,6 +64,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             $this->rest_client_id = $this->get_option('rest_client_id', false);
             $this->rest_secret_id = $this->get_option('rest_secret_id', false);
         }
+        $this->softdescriptor = $this->get_option('softdescriptor', '');
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_notices', array($this, 'checks'));
@@ -233,10 +236,10 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
     public function add_rest_api_utility() {
         if (empty($this->paypal_rest_api)) {
             if (class_exists('PayPal_Rest_API_Utility')) {
-                $this->paypal_rest_api = new PayPal_Rest_API_Utility();
+                $this->paypal_rest_api = new PayPal_Rest_API_Utility($this);
             } else {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/paypal-rest-api-utility.php' );
-                $this->paypal_rest_api = new PayPal_Rest_API_Utility();
+                $this->paypal_rest_api = new PayPal_Rest_API_Utility($this);
             }
         }
     }
@@ -244,12 +247,13 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
     public function get_transaction_url($order) {
         $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
         $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
-        $is_sandbox = get_post_meta($order->id, 'is_sandbox', true);
+        $old_wc = version_compare( WC_VERSION, '3.0', '<' );
+        $is_sandbox = $old_wc ? get_post_meta( $order->id, 'is_sandbox', true ) : get_post_meta($order->get_id(), 'is_sandbox', true);
         if ($is_sandbox == true) {
             $this->view_transaction_url = $sandbox_transaction_url;
         } else {
             if (empty($is_sandbox)) {
-                if ($this->mode == 'SANDBOX') {
+                if (  $this->testmode == true ) {
                     $this->view_transaction_url = $sandbox_transaction_url;
                 } else {
                     $this->view_transaction_url = $live_transaction_url;

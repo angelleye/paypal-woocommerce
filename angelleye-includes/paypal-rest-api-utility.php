@@ -32,15 +32,16 @@ class PayPal_Rest_API_Utility {
     public $gateway;
     public $CreditCardToken;
 
-    public function __construct() {
+    public function __construct($gateway) {
         $this->add_paypal_rest_api_lib();
         $this->create_transaction_method_obj();
         $this->payment_method = (isset($_POST['payment_method'])) ? $_POST['payment_method'] : 'paypal_credit_card_rest';
         if ($this->payment_method == 'paypal_credit_card_rest') {
-            $this->gateway = new WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE();
+            $this->gateway = $gateway;
         }
         $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'no');
-        $this->mode = $this->testmode == 'yes' ? 'SANDBOX' : 'LIVE';
+        $this->softdescriptor = $this->gateway->get_option('softdescriptor', '');
+        $this->mode = $this->testmode == true ? 'SANDBOX' : 'LIVE';
         $this->debug = 'yes' === $this->gateway->get_option('debug', 'no');
         if ($this->testmode) {
             $this->rest_client_id = $this->gateway->get_option('rest_client_id_sandbox', false);
@@ -60,6 +61,8 @@ class PayPal_Rest_API_Utility {
      */
     public function create_payment($order, $card_data) {
         global $woocommerce;
+        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+        $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
         try {
             $this->set_trnsaction_obj_value($order, $card_data);
             try {
@@ -93,7 +96,7 @@ class PayPal_Rest_API_Utility {
                 $relatedResources = $transactions[0]->getRelatedResources();
                 $sale = $relatedResources[0]->getSale();
                 $saleId = $sale->getId();
-                do_action('before_save_payment_token', $order->id);
+                do_action('before_save_payment_token', $order_id);
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
                 if ((!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] == 'new') || $this->is_subscription($order->id)) {
                     if ((!empty($_POST['wc-paypal_credit_card_rest-new-payment-method']) && $_POST['wc-paypal_credit_card_rest-new-payment-method'] == true) || $this->is_subscription($order->id)) {
@@ -121,7 +124,11 @@ class PayPal_Rest_API_Utility {
                 }
                 $order->payment_complete($saleId);
                 $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-                update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+                if ($old_wc) {
+                    update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+                } else {
+                    update_post_meta( $order->get_id(), 'is_sandbox', $is_sandbox );
+                }
                 if (!empty($order->subscription_renewal)) {
                     return true;
                 }
@@ -157,6 +164,7 @@ class PayPal_Rest_API_Utility {
                 return true;
             }
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log($ex->getData());
             return array(
                 'result' => 'fail',
                 'redirect' => ''
@@ -169,6 +177,7 @@ class PayPal_Rest_API_Utility {
                 return true;
             }
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log($ex->getMessage());
             return array(
                 'result' => 'fail',
                 'redirect' => ''
@@ -201,6 +210,7 @@ class PayPal_Rest_API_Utility {
             $this->fundingInstrument = new FundingInstrument();
             $this->fundingInstrument->setCreditCard($this->card);
         }
+
         $this->payer = new Payer();
         $this->payer->setPaymentMethod("credit_card");
         $this->payer->setFundingInstruments(array($this->fundingInstrument));
@@ -209,7 +219,7 @@ class PayPal_Rest_API_Utility {
             $this->set_item_list();
             $this->set_detail_values();
             $this->set_amount_values($order);
-            $this->set_transaction();
+        $this->set_transaction($order);
             $this->set_payment();
         }
     }
@@ -223,7 +233,7 @@ class PayPal_Rest_API_Utility {
         foreach ($this->payment_data['order_items'] as $item) {
             $this->item = new Item();
             $this->item->setName($item['name']);
-            $this->item->setCurrency($order->get_order_currency());
+            $this->item->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
             $this->item->setQuantity($item['qty']);
             $this->item->setPrice($item['amt']);
             array_push($this->order_item, $this->item);
@@ -260,7 +270,7 @@ class PayPal_Rest_API_Utility {
      */
     public function set_amount_values($order) {
         $this->amount = new Amount();
-        $this->amount->setCurrency($order->get_order_currency());
+        $this->amount->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
         $this->amount->setTotal($this->number_format($order->get_total(), $order));
         $this->amount->setDetails($this->details);
     }
@@ -268,12 +278,16 @@ class PayPal_Rest_API_Utility {
     /**
      * @since    1.2
      */
-    public function set_transaction() {
+    public function set_transaction($order) {
         $this->transaction = new Transaction();
         $this->transaction->setAmount($this->amount);
         $this->transaction->setItemList($this->item_list);
         $this->transaction->setDescription("Payment description");
         $this->transaction->setInvoiceNumber(uniqid());
+        $this->transaction->setCustom(json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key())));
+        if (!empty($this->softdescriptor)) {
+            $this->transaction->setSoftDescriptor($this->softdescriptor);
+        }
     }
 
     /**
@@ -291,7 +305,7 @@ class PayPal_Rest_API_Utility {
      * @return ApiContext
      */
     public function getAuth() {
-        $this->mode = $this->testmode == 'yes' ? 'SANDBOX' : 'LIVE';
+        $this->mode = $this->testmode == true ? 'SANDBOX' : 'LIVE';
         $auth = new ApiContext(new OAuthTokenCredential($this->rest_client_id, $this->rest_secret_id));
         $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce', 'log.LogEnabled' => true, 'log.LogLevel' => 'DEBUG', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
         return $auth;
@@ -359,7 +373,7 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_card_first_name($order) {
-        $this->card->setFirstName($order->billing_first_name);
+        $this->card->setFirstName(version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name());
     }
 
     /**
@@ -367,7 +381,7 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_card_set_last_name($order) {
-        $this->card->setLastName($order->billing_last_name);
+        $this->card->setLastName(version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name());
     }
 
     /**
@@ -492,7 +506,7 @@ class PayPal_Rest_API_Utility {
         }
         $sale = Sale::get($order->get_transaction_id(), $this->getAuth());
         $this->amount = new Amount();
-        $this->amount->setCurrency($order->get_order_currency());
+        $this->amount->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
         $this->amount->setTotal($this->number_format($amount, $order));
         $refund = new Refund();
         $refund->setAmount($this->amount);
@@ -545,7 +559,7 @@ class PayPal_Rest_API_Utility {
      */
     public function round($price, $order) {
         $precision = 2;
-        if (!$this->currency_has_decimals($order->get_order_currency())) {
+        if (!$this->currency_has_decimals(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency())) {
             $precision = 0;
         }
         return round($price, $precision);
@@ -559,7 +573,7 @@ class PayPal_Rest_API_Utility {
      */
     public function number_format($price, $order) {
         $decimals = 2;
-        if (!$this->currency_has_decimals($order->get_order_currency())) {
+        if (!$this->currency_has_decimals(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency())) {
             $decimals = 0;
         }
         return number_format($price, $decimals, '.', '');

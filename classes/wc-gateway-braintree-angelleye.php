@@ -49,16 +49,20 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
-        $this->enabled = $this->get_option('enabled', 'no');
-        $this->sandbox = $this->get_option('sandbox');
-        $this->environment = $this->sandbox == 'no' ? 'production' : 'sandbox';
-        $this->merchant_id = $this->sandbox == 'no' ? $this->get_option('merchant_id') : $this->get_option('sandbox_merchant_id');
-        $this->private_key = $this->sandbox == 'no' ? $this->get_option('private_key') : $this->get_option('sandbox_private_key');
-        $this->public_key = $this->sandbox == 'no' ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
+        $this->enabled = $this->get_option('enabled');
+        $this->sandbox = 'yes' === $this->get_option('sandbox', 'yes');
+        if ($this->sandbox == false) {
+            $this->sandbox = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+        }
+        $this->environment = $this->sandbox == false ? 'production' : 'sandbox';
+        $this->merchant_id = $this->sandbox == false ? $this->get_option('merchant_id') : $this->get_option('sandbox_merchant_id');
+        $this->private_key = $this->sandbox == false ? $this->get_option('private_key') : $this->get_option('sandbox_private_key');
+        $this->public_key = $this->sandbox == false ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
         $this->enable_braintree_drop_in = $this->get_option('enable_braintree_drop_in') === "yes" ? true : false;
-        $this->merchant_account_id = $this->sandbox == 'no' ? $this->get_option('merchant_account_id') : $this->get_option('sandbox_merchant_account_id');
+        $this->merchant_account_id = $this->sandbox == false ? $this->get_option('merchant_account_id') : $this->get_option('sandbox_merchant_account_id');
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
+        $this->softdescriptor = $this->get_option('softdescriptor', '');
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
@@ -105,7 +109,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (version_compare(phpversion(), '5.2.1', '<')) {
             echo '<div class="error"><p>' . sprintf(__('Braintree Error: Braintree requires PHP 5.2.1 and above. You are using version %s.', 'paypal-for-woocommerce'), phpversion()) . '</p></div>';
         }
-        if ('no' == get_option('woocommerce_force_ssl_checkout') && !class_exists('WordPressHTTPS') && $this->enable_braintree_drop_in == false && $this->sandbox == 'no') {
+        if ('no' == get_option('woocommerce_force_ssl_checkout') && !class_exists('WordPressHTTPS') && $this->enable_braintree_drop_in == false && $this->sandbox == false) {
             echo '<div class="error"><p>' . sprintf(__('Braintree is enabled, but the <a href="%s">force SSL option</a> is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - Braintree custome credit card UI will only work in sandbox mode.', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout')) . '</p></div>';
         }
         $this->add_dependencies_admin_notices();
@@ -277,10 +281,18 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
+            'softdescriptor' => array(
+                'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+            ),
             'card_icon' => array(
                 'title' => __('Card Icon', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__)))
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
+                'class' => 'button_upload'
             ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
@@ -405,6 +417,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         braintreeResponseHandler(obj);
                     }
                 });
+
                 function is_angelleye_braintree_selected() {
                     if (jQuery('#payment_method_braintree').is(':checked')) {
                         return true;
@@ -484,6 +497,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public function angelleye_do_payment($order) {
         $success = true;
         global $woocommerce;
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $old_wc = version_compare(WC_VERSION, '3.0', '<');
         try {
             if ($this->enable_braintree_drop_in) {
                 $payment_method_nonce = self::get_posted_variable('braintree_token');
@@ -496,35 +511,49 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $request_data = array();
             $this->angelleye_braintree_lib();
             $card = $this->get_posted_card();
+            
+            $billing_company = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_company : $order->get_billing_company();
+            $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
+            $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
+            $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
+            $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
+            $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
+            $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
+            $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
+            $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
+        
             $request_data['billing'] = array(
-                'firstName' => $order->billing_first_name,
-                'lastName' => $order->billing_last_name,
-                'company' => $order->billing_company,
-                'streetAddress' => $order->billing_address_1,
-                'extendedAddress' => $order->billing_address_2,
-                'locality' => $order->billing_city,
-                'region' => $order->billing_state,
-                'postalCode' => $order->billing_postcode,
-                'countryCodeAlpha2' => $order->billing_country,
+                'firstName' => $billing_first_name,
+                'lastName' => $billing_last_name,
+                'company' => $billing_company,
+                'streetAddress' => $billing_address_1,
+                'extendedAddress' => $billing_address_2,
+                'locality' => $billing_city,
+                'region' => $billing_state,
+                'postalCode' => $billing_postcode,
+                'countryCodeAlpha2' => $billing_country,
             );
+            
             $request_data['shipping'] = array(
-                'firstName' => $order->shipping_first_name,
-                'lastName' => $order->shipping_last_name,
-                'company' => $order->shipping_company,
-                'streetAddress' => $order->shipping_address_1,
-                'extendedAddress' => $order->shipping_address_2,
-                'locality' => $order->shipping_city,
-                'region' => $order->shipping_state,
-                'postalCode' => $order->shipping_postcode,
-                'countryCodeAlpha2' => $order->shipping_country,
+                'firstName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name(),
+                'lastName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name(),
+                'company' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_company : $order->get_shipping_company(),
+                'streetAddress' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1(),
+                'extendedAddress' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2(),
+                'locality' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city(),
+                'region' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state(),
+                'postalCode' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode(),
+                'countryCodeAlpha2' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country(),
             );
             if ($this->enable_braintree_drop_in == false) {
                 if( (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') || empty($_POST['wc-braintree-payment-token'])) {
+                    $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
+                    $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
                         $request_data['creditCard'] = array(
                             'number' => $card->number,
                             'expirationDate' => $card->exp_month . '/' . $card->exp_year,
                             'cvv' => $card->cvc,
-                            'cardholderName' => $order->billing_first_name . ' ' . $order->billing_last_name
+                        'cardholderName' => $billing_first_name . ' ' . $billing_last_name
                         );
                 } else if( is_user_logged_in() && (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] != 'new') ) {
                         $customer_id = get_current_user_id();
@@ -544,11 +573,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $request_data['customerId'] = $braintree_customer_id;
                 } else {
                     $request_data['customer'] = array(
-                        'firstName' => $order->billing_first_name,
-                        'lastName' => $order->billing_last_name,
-                        'company' => $order->billing_company,
-                        'phone' => $order->billing_phone,
-                        'email' => $order->billing_email,
+                        'firstName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name(),
+                        'lastName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name(),
+                        'company' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_company : $order->get_billing_company(),
+                        'phone' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone(),
+                        'email' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email(),
                     );
                 }
             }
@@ -559,6 +588,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $request_data['orderId'] = $order->get_order_number();
             $request_data['options'] = $this->get_braintree_options();
             $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
+            if (!empty($this->softdescriptor)) {
+                $request_data['descriptor'] = array('name' => $this->softdescriptor);
+            }
+
             if ($this->debug) {
                 $this->add_log('Begin Braintree_Transaction::sale request');
                 $this->add_log('Order: ' . print_r($order->get_order_number(), true));
@@ -574,8 +607,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }
                 $this->add_log('Braintree_Transaction::sale Reuest Data ' . print_r($log, true));
             }
+
             try {
-                $this->response = Braintree_Transaction::sale($request_data);
+                $this->response = Braintree_Transaction::sale(apply_filters('angelleye_woocommerce_braintree_sale_request_args', $request_data));
             } catch (Braintree_Exception_Authentication $e) {
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
                 $this->add_log("Braintree_Transaction::sale Braintree_Exception_Authentication: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
@@ -601,14 +635,17 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->add_log('Error: Unable to complete transaction. Reason: ' . $e->getMessage());
                 return $success = false;
             }
+
             if (!$this->response->success) {
                 $notice = sprintf(__('Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'paypal-for-woocommerce'), $this->response->message);
                 wc_add_notice($notice, 'error');
                 $this->add_log("Error: Unable to complete transaction. Reason: {$this->response->message}");
                 return $success = false;
             }
+
             $this->add_log('Braintree_Transaction::sale Response code: ' . print_r($this->get_status_code(), true));
             $this->add_log('Braintree_Transaction::sale Response message: ' . print_r($this->get_status_message(), true));
+
             $maybe_settled_later = array(
                 'settling',
                 'settlement_pending',
@@ -616,20 +653,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             );
 
             if (in_array($this->response->transaction->status, $maybe_settled_later)) {
-                $is_sandbox = $this->sandbox == 'no' ? false : true;
-                update_post_meta($order->id, 'is_sandbox', $is_sandbox);
-                do_action('before_save_payment_token', $order->id);
-                if (isset($_POST['wc-braintree-payment-token']) && 'new' == $_POST['wc-braintree-payment-token']) {
-                    if ((!empty($_POST['wc-braintree-new-payment-method']) && $_POST['wc-braintree-new-payment-method'] == true) || $this->is_subscription($order->id)) {
-                        $result = $this->add_payment_method($zero_amount_payment = true);
-                        if ($result['result'] == 'success') {
-                            $is_sandbox = $this->sandbox == 'no' ? false : true;
-                            update_post_meta($order->id, 'is_sandbox', $is_sandbox);
-                            $payment_tokens_id = (!empty($result['_payment_tokens_id'])) ? $result['_payment_tokens_id'] : '';
-                            $this->save_payment_token($order, $payment_tokens_id);
-                        }
+                if ($old_wc) {
+                    update_post_meta($order_id, 'is_sandbox', $this->sandbox);
+                } else {
+                    update_post_meta( $order->get_id(), 'is_sandbox', $this->sandbox );
                     }
-                } else if ($this->enable_braintree_drop_in && $this->is_subscription($order->id)) {
+                $order->payment_complete($this->response->transaction->id);
+                do_action('before_save_payment_token', $order_id);
+                if ((!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') || ( $this->enable_braintree_drop_in && $this->supports('tokenization'))) {
+                    if ((!empty($_POST['wc-braintree-new-payment-method']) && $_POST['wc-braintree-new-payment-method'] == true) || ($this->enable_braintree_drop_in && $this->supports('tokenization'))) {
                     try {
                         $transaction = Braintree_Transaction::find($this->response->transaction->id);
                         if (!empty($transaction->creditCard) && !empty($transaction->customer['id'])) {
@@ -644,16 +676,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 $token->set_gateway_id($this->id);
                                 $token->set_card_type($transaction->creditCard['cardType']);
                                 $token->set_last4($transaction->creditCard['last4']);
-                                $token->set_expiry_month(date('m'));
-                                $token->set_expiry_year(date('Y', strtotime('+2 years')));
+                                    $token->set_expiry_month($transaction->creditCard['expirationMonth']);
+                                    $token->set_expiry_year($transaction->creditCard['expirationYear']);
                                 $save_result = $token->save();
                                 $this->save_payment_token($order, $payment_method_token);
                                 if ($save_result) {
                                     $order->add_payment_token($token);
                                 }
                             } else {
-                                $this->save_payment_token($order, $payment_method_token);
-                                $order->add_payment_token($payment_method_token);
+                                    $order->add_payment_token($wc_existing_token);
                             }
                         }
                     } catch (Braintree_Exception_NotFound $e) {
@@ -704,7 +735,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (!$order || !$order->get_transaction_id()) {
             return false;
         }
+
         $this->angelleye_braintree_lib();
+
         try {
             $transaction = Braintree_Transaction::find($order->get_transaction_id());
         } catch (Braintree_Exception_NotFound $e) {
@@ -1014,12 +1047,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (empty($transaction_id)) {
             return false;
         }
-        $is_sandbox = get_post_meta($order->id, 'is_sandbox', true);
+        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+        $is_sandbox = $old_wc ? get_post_meta($order->id, 'is_sandbox', true) : get_post_meta($order->get_id(), 'is_sandbox', true);
         if ($is_sandbox == true) {
             $server = "sandbox.braintreegateway.com";
         } else {
             if (empty($is_sandbox)) {
-                if ($this->sandbox == 'yes') {
+                if ($this->sandbox == true) {
                     $server = "sandbox.braintreegateway.com";
                 } else {
                     $server = "braintreegateway.com";
@@ -1108,7 +1142,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enable_braintree_drop_in) {
             $payment_method_nonce = self::get_posted_variable('braintree_token');
             if (!empty($payment_method_nonce)) {
-                $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce, 'options' => array('failOnDuplicatePaymentMethod' => false));
+                $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce, 'options' => array('failOnDuplicatePaymentMethod' => true));
                 if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
                     $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
                 }
@@ -1191,7 +1225,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (!empty($result->creditCard)) {
             $braintree_method = $result->creditCard;
         } else {
-            $braintree_method = $result->paymentMethod;
+            wp_redirect(wc_get_account_endpoint_url('payment-methods'));
+            exit;
         }
         update_user_meta($customer_id, 'braintree_customer_id', $braintree_method->customerId);
         $payment_method_token = $braintree_method->token;
@@ -1255,7 +1290,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'fax' => '',
             'website' => ''
         );
-        $result = Braintree_Customer::create($create_customer_request);
+        $result = Braintree_Customer::create(apply_filters('angelleye_woocommerce_braintree_create_customer_request_args', $create_customer_request));
         if ($result->success == true) {
             if (!empty($result->customer->id)) {
                 update_user_meta($customer_id, 'braintree_customer_id', $result->customer->id);
@@ -1445,4 +1480,5 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         return $settings;
     }
+
 }
