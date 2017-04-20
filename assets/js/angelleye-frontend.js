@@ -62,5 +62,9 @@ jQuery(document).ready(function ($) {
             return true;
         });
     }
+		// Let themes/plugins override our event handlers
+		// NOTE: The jQuery .on() function attached to listen to the event below MUST
+		// be included somewhere on the page itself...so it gets registered before we load
+		// asyncronous JavaScript resources. Otherwise your function listening might not fire.
     $(".paypal_checkout_button").trigger('angelleye_paypal_checkout_button_js_loaded');
 });

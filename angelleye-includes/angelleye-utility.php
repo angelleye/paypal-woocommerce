@@ -935,6 +935,7 @@ class AngellEYE_Utility {
                 </script>
             <?php
         }
+            
         ?>
             <table class="widefat angelleye_order_action_table" style="width: 190px;float: right;">
                 <tbody>
@@ -1345,6 +1346,7 @@ class AngellEYE_Utility {
             return $output;
         }
 
+    
         public function angelleye_paypal_for_woocommerce_billing_agreement_details($order) {
             if (!is_object($order)) {
                 $order = wc_get_order($order);

@@ -60,7 +60,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
     	
     	protected $plugin_screen_hook_suffix = null;
     	protected $plugin_slug = 'paypal-for-woocommerce';
-    	
+    	private $subscription_support_enabled = false;
         /**
          * General class constructor where we'll setup our actions, hooks, and shortcodes.
          *
@@ -70,6 +70,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public $customer_id = '';
         public function __construct()
         {
+            
             require_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
             require_once plugin_dir_path(__FILE__) . 'classes/lib/IPN/class-paypal-woocommerce-ipn-handler.php';
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
@@ -278,6 +279,23 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
             }
 
+            //remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_paypal_express_checkout_button', 12 );
+            
+            if(version_compare($woo_version,'2.6','>=')) {
+                if(AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
+                    if( isset($pp_settings['button_position']) && ($pp_settings['button_position'] == 'bottom' || $pp_settings['button_position'] == 'both')){
+                        add_action( 'woocommerce_proceed_to_checkout', array( 'WC_Gateway_PayPal_Express_AngellEYE', 'woocommerce_paypal_express_checkout_button_angelleye'), 22 );
+                    }
+                }
+            }
+            
+            if(version_compare($woo_version,'2.6','>=')) {
+                add_action( 'woocommerce_before_cart', array( 'WC_Gateway_PayPal_Express_AngellEYE', 'woocommerce_before_cart'), 12 );
+            }
+            remove_action( 'init', 'woocommerce_paypal_express_review_order_page') ;
+            remove_shortcode( 'woocommerce_review_order');
+            add_shortcode( 'woocommerce_review_order', array($this, 'get_woocommerce_review_order_angelleye' ));
+        
             require_once('classes/wc-gateway-paypal-pro-payflow-angelleye.php');
             require_once('classes/wc-gateway-paypal-pro-angelleye.php');
             require_once('classes/wc-gateway-braintree-angelleye.php');
@@ -394,12 +412,34 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          *
          */
         function angelleye_add_paypal_pro_gateway( $methods ) {
+            if ( class_exists( 'WC_Subscriptions_Order' ) && function_exists( 'wcs_create_renewal_order' ) ) {
+                $this->subscription_support_enabled = true;
+            }
             foreach ($methods as $key=>$method){
                 if (in_array($method, array('WC_Gateway_PayPal_Pro', 'WC_Gateway_PayPal_Pro_Payflow', 'WC_Gateway_PayPal_Express'))) {
                     unset($methods[$key]);
                     break;
                 }
             }
+            if( $this->subscription_support_enabled ) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-pro-payflow-subscriptions-angelleye.php' );
+                require_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-advanced-subscriptions-angelleye.php');
+                require_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-express-subscriptions-angelleye.php');
+                require_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-pro-subscriptions-angelleye.php');
+                $methods[] = 'WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE';
+                $methods[] = 'WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE';
+                $methods[] = 'WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE';
+                $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
+                if (version_compare(phpversion(), '5.4.0', '>=')) {
+                    require_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-braintree-subscriptions-angelleye.php');
+                    $methods[] = 'WC_Gateway_Braintree_Subscriptions_AngellEYE';
+                }
+                if (version_compare(phpversion(), '5.3.0', '>=')) {
+                    $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE';
+                }
+            } else {
+                $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
+                $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
             $methods[] = 'WC_Gateway_PayPal_Pro_AngellEYE';
             $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
             $methods[] = 'WC_Gateway_PayPal_Express_AngellEYE';
@@ -409,6 +449,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
             if (version_compare(phpversion(), '5.3.0', '>=')) {
                 $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE';
+            }
             }
             return $methods;
         }
@@ -424,6 +465,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         /**
+       
          * Donate function
          */
         function donate_message() {
@@ -577,12 +619,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         'number' => $fee->id, // Item number. 127 char max.
                         'qty' => 1, // Item qty on order. Any positive integer.
                     );
-
-                    /**
-                     * The gift wrap amount actually has its own parameter in
-                     * DECP, so we don't want to include it as one of the line
-                     * items.
-                     */
                     if ($Item['number'] != 'gift-wrap') {
                         array_push($PaymentOrderItems, $Item);
                         $ITEMAMT += self::round($fee->amount);
@@ -681,7 +717,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
 
             if (empty($ITEMAMT)) {
+                if ($order){
+                    $cart_fees = $order->get_fees();
+                } else {
                 $cart_fees = WC()->cart->get_fees();
+                }
                 if( isset($cart_fees[0]->id) && $cart_fees[0]->id == 'gift-wrap' ) {
                     $giftwrapamount = isset($cart_fees[0]->amount)  ? $cart_fees[0]->amount : 0;
                 } else {
@@ -1163,6 +1203,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
 		return number_format( $price, $decimals, '.', '' );
 	}
+        
+        public function angelleye_paypal_express_checkout_process_checkout_fields() {
+            $this->set_session('checkout_form_post_data', serialize($_POST));
+        }
         
         private function set_session($key, $value) {
             WC()->session->$key = $value;

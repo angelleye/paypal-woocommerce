@@ -12,6 +12,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
      */
     protected $paypal_rest_api;
     public $customer_id;
+
     function __construct() {
         $this->id = 'paypal_credit_card_rest';
         $this->has_fields = true;
@@ -31,7 +32,22 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $this->icon = apply_filters('woocommerce_paypal_credit_card_rest_icon', $this->icon);
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if($this->enable_tokenized_payments == 'yes') {
-            array_push($this->supports, "tokenization");
+            $this->supports = array(
+                'subscriptions',
+                'products',
+                'refunds',
+                'subscription_cancellation',
+                'subscription_reactivation',
+                'subscription_suspension',
+                'subscription_amount_changes',
+                'subscription_payment_method_change', // Subs 1.n compatibility.
+                'subscription_payment_method_change_customer',
+                'subscription_payment_method_change_admin',
+                'subscription_date_changes',
+                'multiple_subscriptions',
+                'add_payment_method',
+                'tokenization'
+            );
         }
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
@@ -248,9 +264,11 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         }
         return parent::get_transaction_url( $order );
     }
+
     public function field_name( $name ) {
 	return ' name="' . esc_attr( $this->id . '-' . $name ) . '" ';
     }
+
     public function angelleye_paypal_credit_card_rest_credit_card_form_fields($default_fields, $current_gateway_id) {
         if($current_gateway_id == $this->id) {
 		$fields = array(
@@ -280,6 +298,26 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         return $result;
     }
     
+    public function process_subscription_payment($order) {
+        $this->add_rest_api_utility();
+        $card = $this->paypal_rest_api->get_posted_card();
+        $this->paypal_rest_api->create_payment_with_zero_amount($order, $card);
+    }
+
+    public function send_failed_order_email($order_id) {
+        $emails = WC()->mailer()->get_emails();
+        if (!empty($emails) && !empty($order_id)) {
+            $emails['WC_Email_Failed_Order']->trigger($order_id);
+        }
+    }
+
+    public function save_payment_token($order, $payment_tokens_id) {
+        // Store source in the order
+        if (!empty($payment_tokens_id)) {
+            update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
+        }
+    }
+
     public function angelleye_paypal_credit_card_rest_encrypt_gateway_api($settings) {
         if( !empty($settings['is_encrypt']) ) {
             $gateway_settings_key_array = array('rest_client_id_sandbox', 'rest_secret_id_sandbox', 'rest_client_id', 'rest_secret_id');
