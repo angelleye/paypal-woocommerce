@@ -185,7 +185,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         $inquiry_result_arr = array(); //stores the response in array format
         parse_str($response['body'], $inquiry_result_arr);
-        if ($inquiry_result_arr['RESULT'] == 0 && ($inquiry_result_arr['RESPMSG'] == 'Approved' || $inquiry_result_arr['RESPMSG'] == 'Verified')) {
+
+        if ($inquiry_result_arr['RESULT'] == 0 && $inquiry_result_arr['RESPMSG'] == 'Approved') {
             $order->add_order_note(sprintf(__('Received result of Inquiry Transaction for the  (Order: %s) and is successful', 'paypal-for-woocommerce'), $order->get_order_number()));
             return 'Approved';
         } else {
@@ -333,18 +334,18 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     public function relay_response() {
 
         //define a variable to indicate whether it is a silent post or return
-        if (isset($_REQUEST['silent']) && $_REQUEST['silent'] == 'true')
+        if (isset($_REQUEST['silent']) && $_REQUEST['silent'] == 'true') {
             $silent_post = true;
-        else
+        } else {
             $silent_post = false;
-
+        }
 
         //log the event
-        if ($silent_post === true && $this->debug == 'yes')
-            $this->log->add('paypal_advanced', sprintf(__('Silent Relay Response Triggered: %s', 'paypal-for-woocommerce'), print_r($_REQUEST, true)));
-        else if ($this->debug == 'yes')
-            $this->log->add('paypal_advanced', sprintf(__('Relay Response Triggered: %s', 'paypal-for-woocommerce'), print_r($_REQUEST, true)));
-
+        if ($silent_post === true) {
+            $this->add_log(sprintf(__('Silent Relay Response Triggered: %s', 'paypal-for-woocommerce'), print_r($_REQUEST, true)));
+        } else {
+            $this->add_log(sprintf(__('Relay Response Triggered: %s', 'paypal-for-woocommerce'), print_r($_REQUEST, true)));
+        }
         //if valid request
         if (!isset($_REQUEST['INVOICE'])) { // Redirect to homepage, if any invalid request or hack
             //if not silent post redirect it to home page otherwise just exit
@@ -364,41 +365,43 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         if ($status == 'processing' || $status == 'completed') {
             // Log
-            if ($this->debug == "yes")
+            if ($this->debug == "yes") {
                 $this->log->add('paypal_advanced', sprintf(__('Redirecting to Thank You Page for order %s', 'paypal-for-woocommerce'), $order->get_order_number()));
+            }
 
             //redirect to the thanks page, if not silent post
-            if ($silent_post === false)
+            if ($silent_post === false) {
                 $this->redirect_to($this->get_return_url($order));
             }
 
-        //define RESULT, if not provided in case of cancel, define with -1
-        if (isset($_REQUEST['cancel_ec_trans']) && $_REQUEST['cancel_ec_trans'] == 'true') {
-            $_REQUEST['RESULT'] = -1;
-        }
-        //handle the successful transaction
-        switch ($_REQUEST['RESULT']) {
+            //define RESULT, if not provided in case of cancel, define with -1
+            if (isset($_REQUEST['cancel_ec_trans']) && $_REQUEST['cancel_ec_trans'] == 'true') {
+                $_REQUEST['RESULT'] = -1;
+            }
+            //handle the successful transaction
+            switch ($_REQUEST['RESULT']) {
 
-            case 0 :
-                //handle exceptional cases
-                if ($_REQUEST['RESPMSG'] == 'Approved' || $_REQUEST['RESPMSG'] == 'Verified') {
-                    $this->success_handler($order, $order_id, $silent_post);
-                } else if ($_REQUEST['RESPMSG'] == 'Declined') {
+                case 0 :
+                    //handle exceptional cases
+                    if ($_REQUEST['RESPMSG'] == 'Approved' || $_REQUEST['RESPMSG'] == 'Verified') {
+                        $this->success_handler($order, $order_id, $silent_post);
+                    } else if ($_REQUEST['RESPMSG'] == 'Declined') {
+                        $this->decline_handler($order, $order_id, $silent_post);
+                    } else {
+                        $this->error_handler($order, $order_id, $silent_post);
+                    }
+                    break;
+                case 12:
                     $this->decline_handler($order, $order_id, $silent_post);
-                } else {
+                    break;
+                case -1:
+                    $this->cancel_handler($order, $order_id);
+                    break;
+                default:
+                    //handles error order
                     $this->error_handler($order, $order_id, $silent_post);
-                }
-                break;
-            case 12:
-                $this->decline_handler($order, $order_id, $silent_post);
-                break;
-            case -1:
-                $this->cancel_handler($order, $order_id);
-                break;
-            default:
-                //handles error order
-                $this->error_handler($order, $order_id, $silent_post);
-                break;
+                    break;
+            }
         }
     }
 
@@ -408,13 +411,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @param order an WC_ORDER Object
      * @return secure_token as string
      */
-    function get_secure_token($order) {
+    public function get_secure_token($order) {
         static $length_error = 0;
-
-        // Log
-        if ($this->debug == 'yes')
-            $this->log->add('paypal_advanced', sprintf(__('Requesting for the Secured Token for the order %s', 'paypal-for-woocommerce'), $order->get_order_number()));
-
+        $this->add_log(sprintf(__('Requesting for the Secured Token for the order %s', 'paypal-for-woocommerce'), $order->get_order_number()));
         // Generate unique id
         $this->secure_token_id = uniqid(substr($_SERVER['HTTP_HOST'], 0, 9), true);
 
@@ -422,12 +421,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $paypal_args = array();
 
         //override the layout with mobile template, if browsed from mobile if the exitsing layout is C or MINLAYOUT
-        if (($this->layout == 'MINLAYOUT' || $this->layout == 'C') && $this->mobilemode == "yes") {
+        if (($this->layout == 'MINLAYOUT' || $this->layout == 'C') && $this->mobilemode == true) {
             $template = wp_is_mobile() ? "MOBILE" : $this->layout;
         } else {
             $template = $this->layout;
         }
-        $this->transtype = ($order->get_total() == 0 ) ? 'A' : $this->transtype; 
         $this->transtype = ($order->get_total() == 0 ) ? 'A' : $this->transtype;
         $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
         $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
@@ -526,7 +524,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
                 if ($length_error <= 1) {
                     foreach ($order->get_items() as $item) {
-                        if ($item['qty'])
+                        if ($item['qty']) {
                             $item_names[] = $item['name'] . ' x ' . $item['qty'];
                         }
                     }
@@ -548,11 +546,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
                 //determine ITEMAMT
                 $paypal_args['ITEMAMT'] = $paypal_args['L_COST0'] * $paypal_args['L_QTY0'];
-            
+            }
         } else {
 
-
-            // Tax
+            
+             // Tax
             $paypal_args['TAXAMT'] = $order->get_total_tax();
 
             //ITEM AMT, total amount
@@ -605,11 +603,12 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             foreach ($paypal_args as $key => $val) {
 
                 $postData .= '&' . $key . '=' . $val;
-                if (strpos($key, 'PWD') === 0)
+                if (strpos($key, 'PWD') === 0) {
                     $logData .= '&PWD=XXXX';
-                else
+                } else {
                     $logData .= '&' . $key . '=' . $val;
                 }
+            }
 
             $postData = trim($postData, '&');
 
@@ -652,22 +651,16 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 return $arr['SECURETOKEN'];
             }
         } catch (Exception $e) {
-
             if ($order->has_status(array('pending', 'failed'))) {
                 $this->send_failed_order_email($order->id);
             }
-            if ($this->debug == 'yes')
-                $this->log->add('paypal_advanced', sprintf(__('Secured Token generation failed for the order %s with error: %s', 'paypal-for-woocommerce'), $order->get_order_number(), $e->getMessage()));
-
+            $this->add_log(sprintf(__('Secured Token generation failed for the order %s with error: %s', 'paypal-for-woocommerce'), $order->get_order_number(), $e->getMessage()));
             if ($arr['RESULT'] != 7) {
                 wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . $e->getMessage() . '"', 'error');
                 $length_error = 0;
                 return;
             } else {
-
-                if ($this->debug == 'yes')
-                    $this->log->add('paypal_advanced', sprintf(__('Secured Token generation failed for the order %s with error: %s', 'paypal-for-woocommerce'), $order->get_order_number(), $e->getMessage()));
-
+                $this->add_log(sprintf(__('Secured Token generation failed for the order %s with error: %s', 'paypal-for-woocommerce'), $order->get_order_number(), $e->getMessage()));
                 $length_error++;
                 return $this->get_secure_token($order);
             }
@@ -1100,10 +1093,14 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $order = new WC_Order($order_id);
 
         //get the tokens
-        $this->secure_token_id = get_post_meta($order->id, '_secure_token_id', true);
-        $this->securetoken = get_post_meta($order->id, '_secure_token', true);
-        $this->add_log(sprintf(__('Browser Info: %s', 'paypal-for-woocommerce'), $_SERVER['HTTP_USER_AGENT']));
-        $location = 'https://payflowlink.paypal.com?mode=' . $PF_MODE . '&amp;SECURETOKEN=' . $this->securetoken . '&amp;SECURETOKENID=' . $this->secure_token_id;
+        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+        $this->secure_token_id = $old_wc ? get_post_meta($order->id, '_secure_token_id', true) : get_post_meta($order->get_id(), '_secure_token_id', true);
+        $this->securetoken = $old_wc ? get_post_meta($order->id, '_secure_token', true) : get_post_meta($order->get_id(), '_secure_token', true);
+
+        //Log the browser and its version
+        if ($this->debug == 'yes')
+            $this->log->add('paypal_advanced', sprintf(__('Browser Info: %s', 'paypal-for-woocommerce'), $_SERVER['HTTP_USER_AGENT']));
+
         //display the form in IFRAME, if it is layout C, otherwise redirect to paypal site
         if ($this->layout == 'MINLAYOUT' || $this->layout == 'C') {
             //define the url
@@ -1153,8 +1150,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function create_reference_transaction($token, $order) {
-        static $length_error = 0;
-        $this->transtype = ($order->get_total() == 0) ? 'A' : $this->transtype;
         
         $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
         $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
@@ -1229,7 +1224,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             if (sizeof($order->get_items()) > 0) {
                 if ($length_error <= 1) {
                     foreach ($order->get_items() as $item) {
-                        if ($item['qty'])
+                        if ($item['qty']) {
                             $item_names[] = $item['name'] . ' x ' . $item['qty'];
                         }
                     }
@@ -1249,6 +1244,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     $paypal_args['L_COST0'] = number_format($order->get_total() - round(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2), 2, '.', '');
                 }
                 $paypal_args['ITEMAMT'] = $paypal_args['L_COST0'] * $paypal_args['L_QTY0'];
+            }
         } else {
             $paypal_args['TAXAMT'] = $order->get_total_tax();
             $paypal_args['ITEMAMT'] = 0;
