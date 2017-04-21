@@ -56,7 +56,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             $this->angelleye_load_paypal_class();
             if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
-                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-gateway-calculations-angelleye.php' );
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
             }
             $this->gateway_calculation = new WC_Gateway_Calculation_AngellEYE();
             if (!class_exists('WC_Gateway_PayPal_Express_Response_AngellEYE')) {

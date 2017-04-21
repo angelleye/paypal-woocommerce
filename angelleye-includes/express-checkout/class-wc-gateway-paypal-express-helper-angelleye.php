@@ -100,7 +100,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 if ($this->enable_tokenized_payments == 'yes') {
                     $ec_html_button .= $this->function_helper->angelleye_ec_save_payment_method_checkbox();
                 }
-                $_product = wc_get_product($post->ID);
+                $_product = wc_get_product($product->get_id());
                 if ( $_product->is_type( 'simple' ) && (version_compare( WC_VERSION, '3.0', '<' ) == false)) {
                     ?>
                     <input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" />

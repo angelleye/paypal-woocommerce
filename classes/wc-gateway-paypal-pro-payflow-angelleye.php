@@ -124,7 +124,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
                 $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
             } else {
-                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/wc-gateway-calculations-angelleye.php' );
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
                 $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
             }
             if ($this->enable_cardholder_first_last_name) {
