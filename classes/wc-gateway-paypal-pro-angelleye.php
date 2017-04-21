@@ -125,7 +125,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'refunds'
         );
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
-        if ($this->enable_tokenized_payments == 'yes') {
+        if($this->enable_tokenized_payments == 'yes') {
             $this->supports = array(
                 'subscriptions',
                 'products',
@@ -915,7 +915,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
          */
         $DPFields = array(
             'paymentaction' => ($order->get_total() > 0) ? $this->payment_action : 'Authorization', // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
-            'ipaddress' => $this->get_user_ip(), // Required.  IP address of the payer's browser.
+            'ipaddress' => $this->get_user_ip(),                            // Required.  IP address of the payer's browser.
             'returnfmfdetails' => '1'                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
         );
 
@@ -1595,13 +1595,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
         }
     }
-
+    
     public function process_subscription_payment($order) {
-        if (!class_exists('Angelleye_PayPal')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
-        }
-        $PayPalConfig = array(
-                'Sandbox' => $this->testmode,
+            if (!class_exists('Angelleye_PayPal')) {
+                require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            }
+            $PayPalConfig = array(
+            'Sandbox' => $this->testmode,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature,
@@ -1628,15 +1628,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 foreach ( $avs_details_fields as $field_key => $field ) {
                         if ( ! empty( $field['value'] ) ) {
                                 echo '<li class="' . esc_attr( $field_key ) . '">' . esc_attr( $field['label'] ) . ': <strong>' . wptexturize( $field['value'] ) . '</strong></li>' . PHP_EOL;
+
+    
+
+                }
+                echo '</ul>';
+            }
+            }
     }
 
-    public function send_failed_order_email($order_id) {
-        $emails = WC()->mailer()->get_emails();
-        if (!empty($emails) && !empty($order_id)) {
-            $emails['WC_Email_Failed_Order']->trigger($order_id);
-        }
-                echo '</ul>';
-    }
 
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
@@ -1644,6 +1644,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
+
 
     public function angelleye_paypal_pro_encrypt_gateway_api($settings) {
         if( !empty($settings['is_encrypt']) ) {

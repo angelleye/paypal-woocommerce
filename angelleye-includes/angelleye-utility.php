@@ -933,10 +933,10 @@ class AngellEYE_Utility {
                     });
                 })(jQuery);
                 </script>
-                <?php
-            }
+            <?php
+        }
             
-            ?>
+        ?>
             <table class="widefat angelleye_order_action_table" style="width: 190px;float: right;">
                 <tbody>
                     <tr>
@@ -1348,9 +1348,9 @@ class AngellEYE_Utility {
 
     
     public function angelleye_paypal_for_woocommerce_billing_agreement_details($order) {
-        if (!is_object($order)) {
-            $order = wc_get_order($order);
-        }
+            if (!is_object($order)) {
+                $order = wc_get_order($order);
+            }
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $billing_agreement_id = $old_wc ? get_post_meta($order->id, '_billing_agreement_id', true) : get_post_meta($order->get_id(), '_billing_agreement_id', true);
         if( empty($billing_agreement_id) ) {
@@ -1377,5 +1377,4 @@ class AngellEYE_Utility {
         }
         return $is_sandbox_set;
     }
-
 }

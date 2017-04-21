@@ -283,7 +283,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . urldecode($_POST['RESPMSG']) . '"', 'error');
 
         //redirect to the checkout page, if not silent post
-        if ($silent_post === false)
+        if ($silent_post === false) {
             $this->redirect_to($order->get_checkout_payment_url(true));
         }
     }
@@ -348,7 +348,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         //if valid request
         if (!isset($_REQUEST['INVOICE'])) { // Redirect to homepage, if any invalid request or hack
             //if not silent post redirect it to home page otherwise just exit
-            if ($silent_post === false)
+            if ($silent_post === false) {
                 wp_redirect(home_url('/'));
                 exit;
             }
@@ -373,7 +373,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             }
 
         //define RESULT, if not provided in case of cancel, define with -1
-        if (isset($_REQUEST['cancel_ec_trans']) && $_REQUEST['cancel_ec_trans'] == 'true')
+        if (isset($_REQUEST['cancel_ec_trans']) && $_REQUEST['cancel_ec_trans'] == 'true') {
             $_REQUEST['RESULT'] = -1;
         }
         //handle the successful transaction
@@ -428,6 +428,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $template = $this->layout;
         }
         $this->transtype = ($order->get_total() == 0 ) ? 'A' : $this->transtype; 
+        $this->transtype = ($order->get_total() == 0 ) ? 'A' : $this->transtype;
         $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
         $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
         $shipping_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1();
@@ -524,7 +525,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             if (sizeof($order->get_items()) > 0) {
 
                 if ($length_error <= 1) {
-                    foreach ($order->get_items() as $item)
+                    foreach ($order->get_items() as $item) {
                         if ($item['qty'])
                             $item_names[] = $item['name'] . ' x ' . $item['qty'];
                         }
@@ -547,7 +548,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
                 //determine ITEMAMT
                 $paypal_args['ITEMAMT'] = $paypal_args['L_COST0'] * $paypal_args['L_QTY0'];
-            }
+            
         } else {
 
 
@@ -637,6 +638,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             }
             if (empty($response['body'])) {
                 throw new Exception(__('Empty response.', 'paypal-for-woocommerce'));
+            }
 
             /* Parse and assign to array */
 
@@ -945,8 +947,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             if (!empty($order->subscription_renewal)) {
                 $payment_tokens_id = get_post_meta($order->id, '_payment_tokens_id', true);
             } else {
-                $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
-                $token = WC_Payment_Tokens::get($token_id);
+            $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
+            $token = WC_Payment_Tokens::get($token_id);
                 $payment_tokens_id = $token->get_token();
             }
             $this->create_reference_transaction($payment_tokens_id, $order);
@@ -955,7 +957,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 $order->payment_complete($payment_tokens_id);
                 $this->save_payment_token($order, $payment_tokens_id);
                 if (empty($order->subscription_renewal)) {
-                    WC()->cart->empty_cart();
+                WC()->cart->empty_cart();
                 }
                 $order->add_order_note(sprintf(__('Payment completed for the  (Order: %s)', 'paypal-for-woocommerce'), $order->get_order_number()));
                 if ($this->debug == 'yes') {
@@ -1062,7 +1064,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if (empty($response['body'])) {
             throw new Exception(__('Empty response.', 'paypal-for-woocommerce'));
         }
-        // Parse and assign to array
+        // Parse and assign to array 
         $refund_result_arr = array(); //stores the response in array format
         parse_str($response['body'], $refund_result_arr);
 
@@ -1226,7 +1228,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $item_names = array();
             if (sizeof($order->get_items()) > 0) {
                 if ($length_error <= 1) {
-                    foreach ($order->get_items() as $item)
+                    foreach ($order->get_items() as $item) {
                         if ($item['qty'])
                             $item_names[] = $item['name'] . ' x ' . $item['qty'];
                         }
@@ -1247,7 +1249,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     $paypal_args['L_COST0'] = number_format($order->get_total() - round(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2), 2, '.', '');
                 }
                 $paypal_args['ITEMAMT'] = $paypal_args['L_COST0'] * $paypal_args['L_QTY0'];
-            }
         } else {
             $paypal_args['TAXAMT'] = $order->get_total_tax();
             $paypal_args['ITEMAMT'] = 0;

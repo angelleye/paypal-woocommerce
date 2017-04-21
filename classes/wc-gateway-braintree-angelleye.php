@@ -554,15 +554,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             'expirationDate' => $card->exp_month . '/' . $card->exp_year,
                             'cvv' => $card->cvc,
                         'cardholderName' => $billing_first_name . ' ' . $billing_last_name
-                        );
-                } else if( is_user_logged_in() && (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] != 'new') ) {
-                        $customer_id = get_current_user_id();
-                        $token_id = wc_clean( $_POST['wc-braintree-payment-token'] );
-                        $token = WC_Payment_Tokens::get( $token_id );
-                        $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
-                        $request_data['paymentMethodToken'] = $token->get_token();
+                    );
+                } else if (is_user_logged_in() && (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] != 'new')) {
+                    $customer_id = get_current_user_id();
+                    $token_id = wc_clean($_POST['wc-braintree-payment-token']);
+                    $token = WC_Payment_Tokens::get($token_id);
+                    $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
+                    $request_data['paymentMethodToken'] = $token->get_token();
                     
-                } 
+                }
             } else {
                 $request_data['paymentMethodNonce'] = $payment_method_nonce;
             }
@@ -657,7 +657,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     update_post_meta($order_id, 'is_sandbox', $this->sandbox);
                 } else {
                     update_post_meta( $order->get_id(), 'is_sandbox', $this->sandbox );
-                    }
+                }
                 $order->payment_complete($this->response->transaction->id);
                 do_action('before_save_payment_token', $order_id);
                 if ((!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') || ( $this->enable_braintree_drop_in && $this->supports('tokenization'))) {
@@ -676,15 +676,22 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 $token->set_gateway_id($this->id);
                                 $token->set_card_type($transaction->creditCard['cardType']);
                                 $token->set_last4($transaction->creditCard['last4']);
-                                    $token->set_expiry_month($transaction->creditCard['expirationMonth']);
-                                    $token->set_expiry_year($transaction->creditCard['expirationYear']);
+                                $token->set_expiry_month($transaction->creditCard['expirationMonth']);
+                                $token->set_expiry_year($transaction->creditCard['expirationYear']);
                                 $save_result = $token->save();
                                 $this->save_payment_token($order, $payment_method_token);
                                 if ($save_result) {
                                     $order->add_payment_token($token);
+                                    $save_result = $token->save();
+                                    $this->save_payment_token($order, $payment_method_token);
+                                    if ($save_result) {
+                                        $order->add_payment_token($token);
+                                    }
+                                } else {
+                                    $order->add_payment_token($wc_existing_token);
                                 }
                             } else {
-                                    $order->add_payment_token($wc_existing_token);
+                                $order->add_payment_token($wc_existing_token);
                             }
                         }
                     } catch (Braintree_Exception_NotFound $e) {
@@ -706,6 +713,18 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             $payment_tokens_id = $token->get_token();
                             $this->save_payment_token($order, $payment_tokens_id);
                         }
+                } else if ($this->is_subscription($order->id)) {
+                    if (isset($_POST['wc-braintree-payment-token']) && 'new' !== $_POST['wc-braintree-payment-token']) {
+                        $token_id = wc_clean($_POST['wc-braintree-payment-token']);
+                        $token = WC_Payment_Tokens::get($token_id);
+                        if ($token->get_user_id() !== get_current_user_id()) {
+                            throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
+                        } else {
+                            $is_sandbox = $this->sandbox == 'no' ? false : true;
+                            update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+                            $payment_tokens_id = $token->get_token();
+                            $this->save_payment_token($order, $payment_tokens_id);
+                        }
                     }
                 }
                 $order->payment_complete($this->response->transaction->id);
@@ -715,13 +734,18 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->add_log(sprintf('Info: unhandled transaction id = %s, status = %s', $this->response->transaction->id, $this->response->transaction->status));
                 $order->update_status('on-hold', sprintf(__('Transaction was submitted to PayPal Braintree but not handled by WooCommerce order, transaction_id: %s, status: %s. Order was put in-hold.', 'paypal-for-woocommerce'), $this->response->transaction->id, $this->response->transaction->status));
             }
-        } catch (Exception $ex) {
+                }
+            }
+        }     catch (Exception $ex) {
             wc_add_notice($ex->getMessage(), 'error');
             return $success = false;
         }
         return $success;
-    }
+    
+        }
 
+                
+    
     public function get_braintree_options() {
         return array('submitForSettlement' => true, 'storeInVaultOnSuccess' => 'true');
     }
@@ -1187,8 +1211,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
             $this->add_log("Braintree_ClientToken::generate Exception: Request times out.");
             if ($zero_amount_payment == false) {
-                wp_redirect(wc_get_account_endpoint_url('payment-methods'));
-                exit;
+            wp_redirect(wc_get_account_endpoint_url('payment-methods'));
+            exit;
             } else {
                 return false;
             }
@@ -1269,8 +1293,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     '_payment_tokens_id' => $payment_method_token,
                     'redirect' => wc_get_account_endpoint_url('payment-methods')
                 );
-            }
-        }
+            } 
+        } 
     }
 
     public function braintree_create_customer($customer_id) {

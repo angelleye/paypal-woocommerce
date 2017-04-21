@@ -31,7 +31,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         }
         $this->icon = apply_filters('woocommerce_paypal_credit_card_rest_icon', $this->icon);
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
-        if ($this->enable_tokenized_payments == 'yes') {
+        if($this->enable_tokenized_payments == 'yes') {
             $this->supports = array(
                 'subscriptions',
                 'products',
@@ -265,8 +265,8 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         return parent::get_transaction_url($order);
     }
 
-    public function field_name($name) {
-        return ' name="' . esc_attr($this->id . '-' . $name) . '" ';
+    public function field_name( $name ) {
+	return ' name="' . esc_attr( $this->id . '-' . $name ) . '" ';
     }
 
     public function angelleye_paypal_credit_card_rest_credit_card_form_fields($default_fields, $current_gateway_id) {

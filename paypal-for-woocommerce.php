@@ -278,36 +278,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } else {
                 add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
             }
-            
-            //remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_paypal_express_checkout_button', 12 );
-            
-            if(version_compare($woo_version,'2.6','>=')) {
-                if(AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
-                    if( isset($pp_settings['button_position']) && ($pp_settings['button_position'] == 'bottom' || $pp_settings['button_position'] == 'both')){
-                        add_action( 'woocommerce_proceed_to_checkout', array( 'WC_Gateway_PayPal_Express_AngellEYE', 'woocommerce_paypal_express_checkout_button_angelleye'), 22 );
-                    }
-                }
-            }
-            
-            if(version_compare($woo_version,'2.6','>=')) {
-                add_action( 'woocommerce_before_cart', array( 'WC_Gateway_PayPal_Express_AngellEYE', 'woocommerce_before_cart'), 12 );
-            }
-            remove_action( 'init', 'woocommerce_paypal_express_review_order_page') ;
-            remove_shortcode( 'woocommerce_review_order');
-            add_shortcode( 'woocommerce_review_order', array($this, 'get_woocommerce_review_order_angelleye' ));
-        
-            require_once('classes/wc-gateway-paypal-pro-payflow-angelleye.php');
-            require_once('classes/wc-gateway-paypal-pro-angelleye.php');
-            require_once('classes/wc-gateway-braintree-angelleye.php');
-            require_once('classes/wc-gateway-paypal-express-angelleye.php');
-            require_once('classes/wc-gateway-paypal-advanced-angelleye.php');
-            include_once plugin_dir_path(__FILE__) . 'angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye.php';
-            new Angelleye_PayPal_Express_Checkout_Helper();
 
-            if (version_compare(phpversion(), '5.3.0', '>=')) {
-                require_once('classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
-            }
-        }
 
         /**
          * Admin Script
@@ -440,7 +411,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } else {
                 $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
                 $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
-                $methods[] = 'WC_Gateway_PayPal_Pro_AngellEYE';
+
+            $methods[] = 'WC_Gateway_PayPal_Pro_AngellEYE';
+
             $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
                 $methods[] = 'WC_Gateway_PayPal_Express_AngellEYE';
                 if (version_compare(phpversion(), '5.4.0', '>=')) {
@@ -450,6 +423,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 if (version_compare(phpversion(), '5.3.0', '>=')) {
                     $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE';
                 }
+            }
             }
             return $methods;
         }
@@ -524,7 +498,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
 
         public static function calculate($order, $send_items = false){
-
             $PaymentOrderItems = array();
             $ctr = $giftwrapamount = $total_items = $total_discount = $total_tax = $shipping = 0;
             $ITEMAMT = 0;
@@ -541,7 +514,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $shipping = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total();
                     $tax = $order->get_total_tax();
                 }
-
                 if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
                     $tax = $order->get_total_tax();
                 }
@@ -555,20 +527,18 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                  */
                 if(get_option('woocommerce_prices_include_tax' ) == 'yes')
                 {
-                    $shipping = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
-                    $tax = 0;
+                    $shipping 		= WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
+                    $tax			= 0;
                 }
                 else
                 {
-                    $shipping = WC()->cart->shipping_total;
-                    $tax = WC()->cart->get_taxes_total();
+                    $shipping 		= WC()->cart->shipping_total;
+                    $tax 			= WC()->cart->get_taxes_total();
                 }
-
                 if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
                     $tax = WC()->cart->get_taxes_total();
                 }
             }
-
             if ($send_items) {
                 foreach ($items as $item) {
                     /*
@@ -584,19 +554,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         $qty = absint($item['quantity']);
                         $meta = WC()->cart->get_item_data($item, true);
                     }
-
                     $sku = $_product->get_sku();
                     $item['name'] = html_entity_decode($_product->get_title(), ENT_NOQUOTES, 'UTF-8');
                     if ($_product->is_type('variation')) {
                         if (empty($sku)) {
                             $sku = $_product->parent->get_sku();
                         }
-
                         if (!empty($meta)) {
                             $item['name'] .= " - " . str_replace(", \n", " - ", $meta);
                         }
                     }
-
                     $Item = array(
                         'name' => $item['name'], // Item name. 127 char max.
                         'desc' => '', // Item description. 127 char max.
@@ -607,44 +574,45 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     array_push($PaymentOrderItems, $Item);
                     $ITEMAMT += self::round( $item['line_subtotal'] / $qty ) * $qty;
                 }
-
                 /**
                  * Add custom Woo cart fees as line items
                  */
                 foreach (WC()->cart->get_fees() as $fee) {
-                        $Item = array(
-                            'name' => $fee->name, // Item name. 127 char max.
-                            'desc' => '', // Item description. 127 char max.
-                            'amt' => self::number_format($fee->amount, 2, '.', ''), // Cost of item.
-                            'number' => $fee->id, // Item number. 127 char max.
-                            'qty' => 1, // Item qty on order. Any positive integer.
-                        );
-                        if ($Item['number'] != 'gift-wrap') {
-                            array_push($PaymentOrderItems, $Item);
-                            $ITEMAMT += self::round($fee->amount);
-                        } else {
-                            $giftwrapamount = self::round($fee->amount);
-                        }
-
-                        $ctr++;
+                    $Item = array(
+                        'name' => $fee->name, // Item name. 127 char max.
+                        'desc' => '', // Item description. 127 char max.
+                        'amt' => self::number_format($fee->amount, 2, '.', ''), // Cost of item.
+                        'number' => $fee->id, // Item number. 127 char max.
+                        'qty' => 1, // Item qty on order. Any positive integer.
+                    );
+                    /**
+                     * The gift wrap amount actually has its own parameter in
+                     * DECP, so we don't want to include it as one of the line
+                     * items.
+                     */
+                    if ($Item['number'] != 'gift-wrap') {
+                        array_push($PaymentOrderItems, $Item);
+                        $ITEMAMT += self::round($fee->amount);
+                    } else {
+                        $giftwrapamount = self::round($fee->amount);
                     }
-
+                    $ctr++;
+                }
                 //caculate discount
                 if ($order){
                     if (!AngellEYE_Gateway_Paypal::is_wc_version_greater_2_3()) {
                         if ($order->get_cart_discount() > 0) {
                             foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
-                        $Item = array(
+                                $Item = array(
                                     'name' => 'Cart Discount',
                                     'number' => $code,
                                     'qty' => '1',
                                     'amt' => '-' . self::number_format(WC()->cart->coupon_discount_amounts[$code])
-                        );
-                         array_push($PaymentOrderItems, $Item);
+                                );
+                                array_push($PaymentOrderItems, $Item);
                             }
                             $total_discount -= $order->get_cart_discount();
                         }
-
                         if ($order->get_order_discount() > 0) {
                             foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
                                 $Item = array(
@@ -654,9 +622,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                     'amt' => '-' . self::number_format(WC()->cart->coupon_discount_amounts[$code])
                                 );
                                 array_push($PaymentOrderItems, $Item);
-                    }
+                            }
                             $total_discount -= $order->get_order_discount();
-                }
+                        }
                     } else {
                         if ($order->get_total_discount() > 0) {
                             $Item = array(
@@ -681,9 +649,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                             array_push($PaymentOrderItems, $Item);
                             $total_discount -= self::number_format(WC()->cart->coupon_discount_amounts[$code]);
                         }
-
                     }
-
                     if (!AngellEYE_Gateway_Paypal::is_wc_version_greater_2_3()) {
                         if ( !empty( WC()->cart->applied_coupons ) ) {
                             foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
@@ -696,32 +662,21 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                 array_push($PaymentOrderItems, $Item);
                                 $total_discount -= self::number_format(WC()->cart->coupon_discount_amounts[$code]);
                             }
-
                         }
                     }
                 }
             }
-
-
-
             if( $tax > 0) {
                 $tax = self::number_format($tax);
             }
-
             if( $shipping > 0) {
                 $shipping = self::number_format($shipping);
             }
-
             if( $total_discount ) {
                 $total_discount = self::round($total_discount);
             }
-
             if (empty($ITEMAMT)) {
-                if ($order){
-                    $cart_fees = $order->get_fees();
-                } else {
-                    $cart_fees = WC()->cart->get_fees();
-                }
+                $cart_fees = WC()->cart->get_fees();
                 if( isset($cart_fees[0]->id) && $cart_fees[0]->id == 'gift-wrap' ) {
                     $giftwrapamount = isset($cart_fees[0]->amount)  ? $cart_fees[0]->amount : 0;
                 } else {
@@ -731,8 +686,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } else {
                 $Payment['itemamt'] = self::number_format($ITEMAMT + $total_discount);
             }
-
-
             /*
              * Set tax
              */
@@ -741,7 +694,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } else {
                 $Payment['taxamt'] = 0;
             }
-
             /*
              * Set shipping
              */
@@ -750,9 +702,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } else {
                 $Payment['shippingamt'] = 0;
             }
-
             $Payment['order_items'] = $PaymentOrderItems;
-
             // Rounding amendment
             if (trim(self::number_format($order_total)) !== trim(self::number_format($Payment['itemamt'] + $giftwrapamount + $tax + $shipping))) {
                 $diffrence_amount = AngellEYE_Gateway_Paypal::get_diffrent($order_total, $Payment['itemamt'] + $tax + $shipping);
@@ -767,10 +717,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     if ($send_items) {
                         $Payment['order_items'][0]['amt'] = abs(self::number_format($Payment['order_items'][0]['amt'] + $diffrence_amount / $Payment['order_items'][0]['qty']));
                     }
-
                 }
             }
-
             return $Payment;
         }
 

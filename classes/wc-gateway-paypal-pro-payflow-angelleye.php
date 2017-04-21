@@ -7,133 +7,130 @@
  */
 class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 
-    /**
-     * __construct function.
-     *
-     * @access public
-     * @return void
-     */
-    public $customer_id;
-    function __construct() {
-        $this->id = 'paypal_pro_payflow';
-        $this->method_title = __('PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce');
-        $this->method_description = __('PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce');
-        $this->has_fields = true;
-        $this->allowed_currencies = apply_filters('woocommerce_paypal_pro_allowed_currencies', array('USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD', 'NZD'));
+	/**
+	 * __construct function.
+	 *
+	 * @access public
+	 * @return void
+	 */
+        public $customer_id;
+	function __construct() {
+            $this->id = 'paypal_pro_payflow';
+            $this->method_title	= __( 'PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce' );
+            $this->method_description = __( 'PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce' );
+            $this->has_fields = true;
 
-        // Load the form fields
-        $this->init_form_fields();
+            $this->allowed_currencies = apply_filters('woocommerce_paypal_pro_allowed_currencies', array('USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD', 'NZD'));
 
-        // Load the settings.
-        $this->init_settings();
 
-            $this->liveurl = 'https://payflowpro.paypal.com';
-            $this->testurl = 'https://pilot-payflowpro.paypal.com';
-            $this->allowed_currencies   = apply_filters( 'woocommerce_paypal_pro_payflow_supported_currencies', array( 'USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD', 'NZD' ) );
+            // Load the form fields
+            $this->init_form_fields();
 
-        // Load the form fields
-        $this->init_form_fields();
+            // Load the settings.
+            $this->init_settings();
 
-        // Load the settings.
-        $this->init_settings();
+            // Get setting values
+            $this->title = $this->get_option('title');
+            $this->description = $this->get_option('description');
+            $this->enabled = $this->get_option('enabled');
+            $this->paypal_vendor = $this->get_option('paypal_vendor');
+            $this->paypal_partner = $this->get_option('paypal_vendor', 'PayPal');
+            $this->paypal_password = $this->get_option('paypal_password');
+            $this->paypal_user = $this->get_option('paypal_user', $this->paypal_vendor);
+            $this->testmode = 'yes' === $this->get_option('testmode', 'no');
 
-        // Get setting values
-        $this->title = $this->get_option('title');
-        $this->description = $this->get_option('description');
-        $this->enabled = $this->get_option('enabled');
-        $this->paypal_vendor = $this->get_option('paypal_vendor');
-        $this->paypal_partner = $this->get_option('paypal_vendor', 'PayPal');
-        $this->paypal_password = $this->get_option('paypal_password');
-        $this->paypal_user = $this->get_option('paypal_user', $this->paypal_vendor);
-        $this->testmode = 'yes' === $this->get_option('testmode', 'no');
             if( $this->testmode == false ) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
-        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
-        $this->debug = 'yes' === $this->get_option('debug', 'no');
-        $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
-            $this->error_display_type = $this->get_option('error_display_type', 'no');
-            $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
-        $this->payment_action = $this->get_option('payment_action', 'Sale');
+            $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
+            $this->debug = 'yes' === $this->get_option('debug', 'no');
+            $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
+                $this->error_display_type = $this->get_option('error_display_type', 'no');
+                $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
+            $this->payment_action = $this->get_option('payment_action', 'Sale');
 
-        //fix ssl for image icon
-        $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__))));
-        if (is_ssl()) {
-            $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
-        }
-        $this->icon = apply_filters('woocommerce_paypal_pro_payflow_icon', $this->icon);
-        if ($this->testmode == true) {
-            $this->paypal_vendor = $this->get_option('sandbox_paypal_vendor');
-            $this->paypal_partner = $this->get_option('sandbox_paypal_partner', 'PayPal');
-            $this->paypal_password = $this->get_option('sandbox_paypal_password');
-            $this->paypal_user = $this->get_option('sandbox_paypal_user', $this->paypal_vendor);
-        }
+            //fix ssl for image icon
+            $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__))));
+            if (is_ssl()) {
+                $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
+            }
+            $this->icon = apply_filters('woocommerce_paypal_pro_payflow_icon', $this->icon);
+            if ($this->testmode == true) {
+                $this->paypal_vendor = $this->get_option('sandbox_paypal_vendor');
+                $this->paypal_partner = $this->get_option('sandbox_paypal_partner', 'PayPal');
+                $this->paypal_password = $this->get_option('sandbox_paypal_password');
+                $this->paypal_user = $this->get_option('sandbox_paypal_user', $this->paypal_vendor);
+            }
 
-        $this->supports = array(
-            'products',
-            'refunds'
-        );
-
-        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
-        if ($this->enable_tokenized_payments == 'yes') {
             $this->supports = array(
-                'subscriptions',
                 'products',
-                'refunds',
-                'subscription_cancellation',
-                'subscription_reactivation',
-                'subscription_suspension',
-                'subscription_amount_changes',
-                'subscription_payment_method_change', // Subs 1.n compatibility.
-                'subscription_payment_method_change_customer',
-                'subscription_payment_method_change_admin',
-                'subscription_date_changes',
-                'multiple_subscriptions',
-                'add_payment_method',
-                'tokenization'
+                'refunds'
             );
-        }
+
+            $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+            if($this->enable_tokenized_payments == 'yes') {
+                $this->supports = array(
+                    'subscriptions',
+                    'products',
+                    'refunds',
+                    'subscription_cancellation',
+                    'subscription_reactivation',
+                    'subscription_suspension',
+                    'subscription_amount_changes',
+                    'subscription_payment_method_change', // Subs 1.n compatibility.
+                    'subscription_payment_method_change_customer',
+                    'subscription_payment_method_change_admin',
+                    'subscription_date_changes',
+                    'multiple_subscriptions',
+                    'add_payment_method',
+                    'tokenization'
+                );
+            }
+
             $this->softdescriptor = $this->get_option('softdescriptor', '');
             $this->avs_cvv2_result_admin_email = 'yes' === $this->get_option('avs_cvv2_result_admin_email', 'no'); 
-        $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
-        $this->enable_cardholder_first_last_name = 'yes' === $this->get_option('enable_cardholder_first_last_name', 'no');
-        $this->is_encrypt = $this->get_option('is_encrypt', 'no');
+            $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
+            $this->enable_cardholder_first_last_name = 'yes' === $this->get_option('enable_cardholder_first_last_name', 'no');
+            $this->is_encrypt = $this->get_option('is_encrypt', 'no');
             $this->credit_card_month_field = $this->get_option('credit_card_month_field', 'names');
             $this->credit_card_year_field = $this->get_option('credit_card_year_field', 'four_digit');
             $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
-        /* 1.6.6 */
-        add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
+            /* 1.6.6 */
+            add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
 
-        /* 2.0.0 */
-        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+            /* 2.0.0 */
+            add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
-        add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_payflow_credit_card_form_fields'), 10, 2);
-        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_pro_payflow_encrypt_gateway_api'), 10, 1);
-        if ($this->enable_cardholder_first_last_name) {
-            add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
-        }
-        if( $this->avs_cvv2_result_admin_email ) {
-           add_action( 'woocommerce_email_before_order_table', array( $this, 'angelleye_paypal_pro_payflow_email_instructions' ), 10, 3 );
-         }
-        $this->enable_automated_account_creation_for_guest_checkouts = 'yes' === $this->get_option('enable_automated_account_creation_for_guest_checkouts', 'no');
-        $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
-        if ($this->supports('tokenization') && is_checkout() && $this->enable_guest_checkout && !is_user_logged_in() && $this->enable_automated_account_creation_for_guest_checkouts) {
-            $this->enable_automated_account_creation_for_guest_checkouts = true;
-            add_action('woocommerce_after_checkout_validation', array($this, 'enable_automated_account_creation_for_guest_checkouts'), 10, 1);
-        } else {
-            $this->enable_automated_account_creation_for_guest_checkouts = false;
-        }
-        $this->customer_id;
-        if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
-            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
-        } else {
-            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/wc-gateway-calculations-angelleye.php' );
-            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
-        }
-        if ($this->enable_cardholder_first_last_name) {
-            add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
-        }
-    }
+
+            add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_payflow_credit_card_form_fields'), 10, 2);
+            add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_pro_payflow_encrypt_gateway_api'), 10, 1);
+            if ($this->enable_cardholder_first_last_name) {
+                add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
+            }
+            if( $this->avs_cvv2_result_admin_email ) {
+                add_action( 'woocommerce_email_before_order_table', array( $this, 'angelleye_paypal_pro_payflow_email_instructions' ), 10, 3 );
+            }
+
+            $this->enable_automated_account_creation_for_guest_checkouts = 'yes' === $this->get_option('enable_automated_account_creation_for_guest_checkouts', 'no');
+            $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
+            if ($this->supports('tokenization') && is_checkout() && $this->enable_guest_checkout && !is_user_logged_in() && $this->enable_automated_account_creation_for_guest_checkouts) {
+                $this->enable_automated_account_creation_for_guest_checkouts = true;
+                add_action('woocommerce_after_checkout_validation', array($this, 'enable_automated_account_creation_for_guest_checkouts'), 10, 1);
+            } else {
+                $this->enable_automated_account_creation_for_guest_checkouts = false;
+            }
+
+            $this->customer_id;
+            if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
+                $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+            } else {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/wc-gateway-calculations-angelleye.php' );
+                $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+            }
+            if ($this->enable_cardholder_first_last_name) {
+                add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
+            }
+	}
     
     
     public function add_log($message) {
@@ -233,9 +230,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce' ),
                 'default' => ''
             ),
-            'sandbox_paypal_partner' => array(
-                'title' => __('Sandbox PayPal Partner', 'paypal-for-woocommerce'),
-                'type' => 'text',
+
+            'sandbox_paypal_partner'  => array(
+                'title'       => __( 'Sandbox PayPal Partner', 'paypal-for-woocommerce' ),
+                'type'        => 'text',
                 'description' => __('The ID provided to you by the authorized PayPal Reseller who registered you for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank.', 'paypal-for-woocommerce'),
                 'default' => 'PayPal'
             ),
@@ -261,19 +259,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'title' => __('Sandbox PayPal Partner', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('The ID provided to you by the authorized PayPal Reseller who registered you for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank.', 'paypal-for-woocommerce'),
-                'default' => 'PayPal'
-            ),
-            'paypal_vendor' => array(
-                'title' => __('Live PayPal Vendor', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('Your merchant login ID that you created when you registered for the account.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'paypal_password' => array(
-                'title' => __('Live PayPal Password', 'paypal-for-woocommerce'),
-                'type' => 'password',
-                'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
-                'default' => ''
             ),
             'paypal_user' => array(
                 'title' => __('Live PayPal User', 'paypal-for-woocommerce'),
@@ -418,19 +403,21 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
      *
      * This method no is used anywhere??? put above but need a fix below
      */
-    function is_available() {
+    public function is_available() {
 
-        if ($this->enabled == "yes") {
+        if ( $this->enabled == "yes" ) {
             if (!is_ssl() && !$this->testmode) {
+                        return false;
+            }
+            // Currency check
+            if ( ! in_array( get_woocommerce_currency(), $this->allowed_currencies ) ) {
                 return false;
+            }
 
-			// Currency check
-			if ( ! in_array( get_woocommerce_currency(), $this->allowed_currencies ) )
+            // Required fields check
+            if ( ! $this->paypal_vendor || ! $this->paypal_password ) {
                 return false;
-
-			// Required fields check
-			if ( ! $this->paypal_vendor || ! $this->paypal_password )
-                return false;
+            }
 
             return true;
         }
@@ -460,7 +447,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         if ($card_exp_month < 10) {
             $card_exp_month = '0' . $card_exp_month;
         }
-		// Do payment with paypal
+        // Do payment with paypal
         return $this->do_payment($order, $card_number, $card_exp_month . $card_exp_year, $card_cvc);
     }
 
@@ -501,22 +488,64 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
         $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+        return $this->do_payment( $order, $card_number, $card_exp_month . $card_exp_year, $card_cvc );
+	}
+
+	/**
+	 * do_payment
+	 *
+	 * Process the PayFlow transaction with PayPal.
+	 *
+	 * @access public
+	 * @param mixed $order
+	 * @param mixed $card_number
+	 * @param mixed $card_exp
+	 * @param mixed $card_csc
+	 * @param string $centinelPAResStatus (default: '')
+	 * @param string $centinelEnrolled (default: '')
+	 * @param string $centinelCavv (default: '')
+	 * @param string $centinelEciFlag (default: '')
+	 * @param string $centinelXid (default: '')
+	 * @return void
+	 */
+    function do_payment($order, $card_number, $card_exp, $card_csc) {
+        if (!class_exists('Angelleye_PayPal')) {
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+        }
+        if(!class_exists('Angelleye_PayPal_PayFlow' )) {
+            require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');	
+        }
+		
+        /**
+         * Create PayPal_PayFlow object.
+         */
+        $PayPalConfig = array(
+                'Sandbox' => $this->testmode, 
+                'APIUsername' => $this->paypal_user, 
+                'APIPassword' => trim($this->paypal_password), 
+                'APIVendor' => $this->paypal_vendor, 
+                'APIPartner' => $this->paypal_partner,
+                'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+          );
+        $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+
         try {
             $customer_note = $order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '';
             $firstname = isset($_POST['paypal_pro-card-cardholder-first']) && !empty($_POST['paypal_pro_payflow-card-cardholder-first']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']) : $order->billing_first_name;
             $lastname = isset($_POST['paypal_pro-card-cardholder-last']) && !empty($_POST['paypal_pro_payflow-card-cardholder-last']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']) : $order->billing_last_name;
+
             $PayPalRequestData = array(
-                'tender' => 'C', // Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
-        	'trxtype'=> $this->payment_action == 'Authorization' ? 'A' : 'S', 				// Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
-                'acct' => $card_number, // Required for credit card transaction.  Credit card or purchase card number.
-                'expdate' => $card_exp, // Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
-                'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()), // Required.  Amount of the transaction.  Must have 2 decimal places.
-					'currency'=>version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // 
+                'tender'=>'C', 				// Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
+                'trxtype'=> $this->payment_action == 'Authorization' ? 'A' : 'S', 				// Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
+                'acct'=>$card_number, 				// Required for credit card transaction.  Credit card or purchase card number.
+                'expdate'=>$card_exp, 				// Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
+                'amt'=> AngellEYE_Gateway_Paypal::number_format($order->get_total()), 					// Required.  Amount of the transaction.  Must have 2 decimal places. 
+                'currency'=>version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // 
                 'dutyamt' => '', //
                 'freightamt' => '', //
                 'taxamt' => '', //
                 'taxexempt' => '', //
-					'custom' =>  apply_filters( 'ae_pppf_custom_parameter', json_encode( array( 'order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->order_key : $order->get_order_key() ) ) , $order ),                        // Free-form field for your own use. 
+                'custom' =>  apply_filters( 'ae_pppf_custom_parameter', json_encode( array( 'order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->order_key : $order->get_order_key() ) ) , $order ),                        // Free-form field for your own use. 
 		'comment1'=> apply_filters( 'ae_pppf_comment1_parameter', '' , $order ), 			// Merchant-defined value for reporting and auditing purposes.  128 char max
                 'comment2' => apply_filters('ae_pppf_comment2_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'cvv2' => $card_csc, // A code printed on the back of the card (or front for Amex)
@@ -524,36 +553,36 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'swipe' => '', // Required for card-present transactions.  Used to pass either Track 1 or Track 2, but not both.
                 'orderid' => $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number()), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
                 'orderdesc' => 'Order ' . $order->get_order_number() . ' on ' . get_bloginfo('name'), //
-					'billtoemail'=>$billing_email, 			// Account holder's email address.
+                'billtoemail'=>$billing_email, 			// Account holder's email address.
                 'billtophonenum' => '', // Account holder's phone number.
                 'billtofirstname' => $firstname, // Account holder's first name.
                 'billtomiddlename' => '', // Account holder's middle name.
                 'billtolastname' => $lastname, // Account holder's last name.
-					'billtostreet'=> $billtostreet, 		// The cardholder's street address (number and street name).  150 char max
-					'billtocity'=>$billing_city, 			// Bill to city.  45 char max
-					'billtostate'=>$billing_state, 			// Bill to state.  
-					'billtozip'=>$billing_postcode, 			// Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
-					'billtocountry'=>$billing_country, 		// Bill to Country.  3 letter country code.
+                'billtostreet'=> $billtostreet, 		// The cardholder's street address (number and street name).  150 char max
+                'billtocity'=>$billing_city, 			// Bill to city.  45 char max
+                'billtostate'=>$billing_state, 			// Bill to state.  
+                'billtozip'=>$billing_postcode, 			// Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
+                'billtocountry'=>$billing_country, 		// Bill to Country.  3 letter country code.
                 'origid' => '', // Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.
                 'custref' => '', //
                 'custcode' => '', //
                 'custip' => $this->get_user_ip(), //
-					'invnum'=> $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#","",$order->get_order_number())), 				//
+                'invnum'=> $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#","",$order->get_order_number())), 				//
                 'ponum' => '', //
                 'starttime' => '', // For inquiry transaction when using CUSTREF to specify the transaction.
                 'endtime' => '', // For inquiry transaction when using CUSTREF to specify the transaction.
                 'securetoken' => '', // Required if using secure tokens.  A value the Payflow server created upon your request for storing transaction data.  32 char
                 'partialauth' => '', // Required for partial authorizations.  Set to Y to submit a partial auth.
-					'authcode'=>'', 			// Rrequired for voice authorizations.  Returned only for approved voice authorization transactions.  AUTHCODE is the approval code received over the phone from the processing network.  6 char max
-                                        'merchdescr' => $this->softdescriptor
+                'authcode'=>'', 			// Rrequired for voice authorizations.  Returned only for approved voice authorization transactions.  AUTHCODE is the approval code received over the phone from the processing network.  6 char max
+                'merchdescr' => $this->softdescriptor
             );
 			
             /**
              * Shipping info
              */
-                        $shipping_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1();
-			if($shipping_address_1)
-			{
+            $shipping_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1();
+            if($shipping_address_1)
+            {
 
                  
                 $shipping_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2();
@@ -594,12 +623,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
         
+
             $log = $PayPalRequestData;
-            if (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] != 'new') {
-                $token_id = wc_clean($_POST['wc-paypal_pro_payflow-payment-token']);
-                $token = WC_Payment_Tokens::get($token_id);
-                $PayPalRequestData['origid'] = $token->get_token();
-                $PayPalRequestData['expdate'] = '';
+            if(!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] != 'new') {
+                 $token_id = wc_clean( $_POST['wc-paypal_pro_payflow-payment-token'] );
+                 $token = WC_Payment_Tokens::get( $token_id );
+                 $PayPalRequestData['origid'] = $token->get_token();
+                 $PayPalRequestData['expdate'] = '';
             } else {
                 $log['acct'] = '****';
                 $log['cvv2'] = '****';
@@ -607,8 +637,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             if (!empty($order->subscription_renewal)) {
                 $PayPalRequestData['origid'] = get_post_meta($order->id, '_payment_tokens', true);
             }
-            $this->add_log('PayFlow Request: ' . print_r($log, true));
-			$PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
+            $this->add_log('PayFlow Request: '.print_r( $log, true ) );
+            $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
                         
             /**
              *  cURL Error Handling #146
@@ -626,19 +656,19 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
              * Error check
              */
             if (empty($PayPalResult['RAWRESPONSE'])) {
-                $fc_empty_response = apply_filters('ae_pppf_paypal_response_empty_message', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult);
-                throw new Exception($fc_empty_response);
-            }
+                $fc_empty_response = apply_filters( 'ae_pppf_paypal_response_empty_message', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult );
+                throw new Exception( $fc_empty_response );
+			}
 
-            /**
-             * Check for errors or fraud filter warnings and proceed accordingly.
-             */
+			/**
+			 * Check for errors or fraud filter warnings and proceed accordingly.
+			 */
             if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)) {
                 // Add order note
                 if ($PayPalResult['RESULT'] == 126) {
-                    $order->add_order_note($PayPalResult['RESPMSG']);
-                    $order->add_order_note($PayPalResult['PREFPSMSG']);
-                    $order->add_order_note("The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.");
+                    $order->add_order_note( $PayPalResult['RESPMSG']);
+                    $order->add_order_note( $PayPalResult['PREFPSMSG']);
+                    $order->add_order_note( "The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.");
                 }
 				else
 				{
@@ -781,11 +811,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             if ($order->has_status(array('pending', 'failed'))) {
                 $this->send_failed_order_email($order->id);
             }
-		catch(Exception $e)
-		{
             $fc_connect_error = apply_filters('angelleye_fc_connect_error', $e->getMessage(), $e);
             wc_add_notice($fc_connect_error, "error");
-            return;
+            return;   
         }
     }
 
@@ -807,41 +835,40 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         do_action('payment_fields_saved_payment_methods', $this);
     }
     
-    
     public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {
         $form_html = "";
-        $form_html .= '<p class="form-row form-row-first">';
-        $form_html .= '<label for="cc-expire-month">' . __("Expiration Date", 'paypal-for-woocommerce') . '<span class="required">*</span></label>';
-        $form_html .= '<select name="paypal_pro_payflow_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month mr5">';
-        $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
-        $months = array();
-        for ($i = 1; $i <= 12; $i++) :
-            $timestamp = mktime(0, 0, 0, $i, 1);
-            $months[date('n', $timestamp)] = date_i18n(_x('F', 'Month Names', 'paypal-for-woocommerce'), $timestamp);
-        endfor;
-        foreach ($months as $num => $name) {
+            $form_html .= '<p class="form-row form-row-first">';
+            $form_html .= '<label for="cc-expire-month">' . __("Expiration Date", 'paypal-for-woocommerce') . '<span class="required">*</span></label>';
+            $form_html .= '<select name="paypal_pro_payflow_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month mr5">';
+            $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
+            $months = array();
+            for ($i = 1; $i <= 12; $i++) :
+                $timestamp = mktime(0, 0, 0, $i, 1);
+                $months[date('n', $timestamp)] = date_i18n(_x('F', 'Month Names', 'paypal-for-woocommerce'), $timestamp);
+            endfor;
+            foreach ($months as $num => $name) {
                 if($this->credit_card_month_field == 'names') {
-            $form_html .= '<option value=' . $num . '>' . $name . '</option>';
+                    $form_html .= '<option value=' . $num . '>' . $name . '</option>';
                 } else {
                     $month_value = ($num < 10) ? '0'.$num : $num;
                     $form_html .= '<option value=' . $num . '>' . $month_value . '</option>';
                 }
-        }
-        $form_html .= '</select>';
-        $form_html .= '<select name="paypal_pro_payflow_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year ml5">';
-        $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
-        for ($i = date('y'); $i <= date('y') + 15; $i++) {
+            }
+            $form_html .= '</select>';
+            $form_html .= '<select name="paypal_pro_payflow_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year ml5">';
+            $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
+            for ($i = date('y'); $i <= date('y') + 15; $i++) {
                 if($this->credit_card_year_field == 'four_digit') {
-            $form_html .= '<option value=' . $i . '>20' . $i . '</option>';
+                    $form_html .= '<option value=' . $i . '>20' . $i . '</option>';
                 } else {
                     $form_html .= '<option value=' . $i . '>' . $i . '</option>';
                 }
-        }
-        $form_html .= '</select>';
-        $form_html .= '</p>';
-        return $form_html;
-    }
-
+            }
+            $form_html .= '</select>';
+            $form_html .= '</p>';
+            return $form_html;
+	}
+        
 
     /**
      * Get user's IP address
@@ -1425,8 +1452,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         $emails = WC()->mailer()->get_emails();
         if (!empty($emails) && !empty($order_id)) {
             $emails['WC_Email_Failed_Order']->trigger($order_id);
-        }
+         }
     }
+    
+
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
         if (!empty($payment_tokens_id)) {
@@ -1450,6 +1479,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 foreach ( $cvv_details_fields as $field_key => $field ) {
                         if ( ! empty( $field['value'] ) ) {
                                 echo '<li class="' . esc_attr( $field_key ) . '">' . esc_attr( $field['label'] ) . ': <strong>' . wptexturize( $field['value'] ) . '</strong></li>' . PHP_EOL;
+                        }
+                }
+            }
     }
 
     public function angelleye_paypal_pro_payflow_encrypt_gateway_api($settings) {

@@ -215,10 +215,10 @@ class PayPal_Rest_API_Utility {
         $this->payer->setPaymentMethod("credit_card");
         $this->payer->setFundingInstruments(array($this->fundingInstrument));
         if ($order->get_total() > 0) {
-            $this->set_item($order);
-            $this->set_item_list();
-            $this->set_detail_values();
-            $this->set_amount_values($order);
+        $this->set_item($order);
+        $this->set_item_list();
+        $this->set_detail_values();
+        $this->set_amount_values($order);
         $this->set_transaction($order);
             $this->set_payment();
         }
