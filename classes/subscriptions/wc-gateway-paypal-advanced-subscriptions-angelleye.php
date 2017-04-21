@@ -54,12 +54,13 @@ class WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE extends WC_Gateway_PayP
     }
 
     public function save_payment_token($order, $payment_tokens_id) {
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         parent::save_payment_token($order, $payment_tokens_id);
         // Also store it on the subscriptions being purchased or paid for in the order
-        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order->id)) {
-            $subscriptions = wcs_get_subscriptions_for_order($order->id);
-        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order->id)) {
-            $subscriptions = wcs_get_subscriptions_for_renewal_order($order->id);
+        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
+            $subscriptions = wcs_get_subscriptions_for_order($order_id);
+        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order_id)) {
+            $subscriptions = wcs_get_subscriptions_for_renewal_order($order_id);
         } else {
             $subscriptions = array();
         }

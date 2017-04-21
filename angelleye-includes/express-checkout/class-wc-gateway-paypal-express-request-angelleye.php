@@ -175,7 +175,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
                 if ($old_wc) {
-                    update_post_meta($order->id, 'is_sandbox', $this->testmode);
+                    update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 } else {
                     update_post_meta( $order->get_id(), 'is_sandbox', $this->testmode );
                 }
@@ -184,7 +184,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 } else {
                     $this->update_payment_status_by_paypal_responce($this->confirm_order_id, $this->paypal_response);
                     if ($old_wc) {
-                        update_post_meta($order->id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+                        update_post_meta($order_id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                     } else {
                         update_post_meta( $order->get_id(), '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] );
                     }
@@ -196,7 +196,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     WC()->cart->empty_cart();
                 }
                 if ($old_wc) {
-                    update_post_meta($order->id, '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
+                    update_post_meta($order_id, '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 } else {
                     update_post_meta( $order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                 }
@@ -210,7 +210,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
                 if ($old_wc) {
-                    update_post_meta($order->id, 'is_sandbox', $this->testmode);
+                    update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 } else {
                     update_post_meta( $order->get_id(), 'is_sandbox', $this->testmode );
                 }
@@ -225,7 +225,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $this->update_payment_status_by_paypal_responce($this->confirm_order_id, $this->paypal_response);
                     }
                     if ($old_wc) {
-                        update_post_meta($order->id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+                        update_post_meta($order_id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                     } else {
                         update_post_meta( $order->get_id(), '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] );
                     }
@@ -238,7 +238,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     WC()->cart->empty_cart();
                 }
                 if ($old_wc) {
-                    update_post_meta($order->id, '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
+                    update_post_meta($order_id, '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 } else {
                     update_post_meta( $order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                 }

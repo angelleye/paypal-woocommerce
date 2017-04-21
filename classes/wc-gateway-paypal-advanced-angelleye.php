@@ -426,6 +426,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         } else {
             $template = $this->layout;
         }
+       
         $this->transtype = ($order->get_total() == 0 ) ? 'A' : $this->transtype;
         $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
         $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
@@ -652,7 +653,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             }
         } catch (Exception $e) {
             if ($order->has_status(array('pending', 'failed'))) {
-                $this->send_failed_order_email($order->id);
+                $this->send_failed_order_email($order_id);
             }
             $this->add_log(sprintf(__('Secured Token generation failed for the order %s with error: %s', 'paypal-for-woocommerce'), $order->get_order_number(), $e->getMessage()));
             if ($arr['RESULT'] != 7) {
@@ -938,7 +939,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         }
         if ((!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') || !empty($order->subscription_renewal)) {
             if (!empty($order->subscription_renewal)) {
-                $payment_tokens_id = get_post_meta($order->id, '_payment_tokens_id', true);
+                $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
             } else {
             $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
@@ -1212,12 +1213,12 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'MERCHDESCR' => $this->softdescriptor
         );
         if (!empty($order->subscription_renewal)) {
-            $paypal_args['origid'] = get_post_meta($order->id, '_payment_tokens_id', true);
+            $paypal_args['origid'] = get_post_meta($order_id, '_payment_tokens_id', true);
         }
-        if (empty($order->shipping_state)) {
-            $paypal_args['SHIPTOSTATE[' . strlen($order->shipping_city) . ']'] = $order->shipping_city;
+        if (empty($shipping_state)) {
+            $paypal_args['SHIPTOSTATE[' . strlen($shipping_state) . ']'] = $shipping_state;
         } else {
-            $paypal_args['SHIPTOSTATE[' . strlen($order->shipping_state) . ']'] = $order->shipping_state;
+            $paypal_args['SHIPTOSTATE[' . strlen($shipping_state) . ']'] = $shipping_state;
         }
         if (($order->prices_include_tax == 'yes' || $order->get_total_discount() > 0 || $length_error > 1) && $order->get_subtotal() > 0) {
             $item_names = array();
@@ -1399,9 +1400,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
                     $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
                     $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
-                    $message .= __('Order ID: ') . $order->id . "\n";
-                    $message .= __('Customer Name: ') . $order->billing_first_name . ' ' . $order->billing_last_name . "\n";
-                    $message .= __('Customer Email: ') . $order->billing_email . "\n";
                     $message = apply_filters('ae_pppf_error_email_message', $message);
                     $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Payments Pro (PayFlow) Error Notification");
                     wp_mail($admin_email, $subject, $message);
@@ -1422,8 +1420,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
+        $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
+            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
 

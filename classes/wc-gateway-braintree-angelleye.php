@@ -1293,6 +1293,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public function subscription_process_payment($order_id) {
         $this->angelleye_braintree_lib();
         $order = new WC_Order($order_id);
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (isset($_POST['wc-braintree-payment-token']) && 'new' !== $_POST['wc-braintree-payment-token']) {
             $token_id = wc_clean($_POST['wc-braintree-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
@@ -1300,7 +1301,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
             } else {
                 $is_sandbox = $this->sandbox == 'no' ? false : true;
-                update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+                update_post_meta($order_id, 'is_sandbox', $is_sandbox);
                 $payment_tokens_id = $token->get_token();
                 $this->save_payment_token($order, $payment_tokens_id);
                 $order->payment_complete($payment_tokens_id);
@@ -1320,7 +1321,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $result = $this->add_payment_method($zero_amount_payment = true);
             if ($result['result'] == 'success') {
                 $is_sandbox = $this->sandbox == 'no' ? false : true;
-                update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+                update_post_meta($order_id, 'is_sandbox', $is_sandbox);
                 $payment_tokens_id = (!empty($result['_payment_tokens_id'])) ? $result['_payment_tokens_id'] : '';
                 $this->save_payment_token($order, $payment_tokens_id);
                 $order->payment_complete($payment_tokens_id);
@@ -1354,8 +1355,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
+            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
 
@@ -1364,32 +1366,46 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function process_subscription_payment($order, $amount) {
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $request_data = array();
         $this->angelleye_braintree_lib();
+        
+        $billing_company = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_company : $order->get_billing_company();
+        $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
+        $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
+        $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
+        $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
+        $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
+        $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
+        $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
+        $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
+                
         $request_data['billing'] = array(
-            'firstName' => $order->billing_first_name,
-            'lastName' => $order->billing_last_name,
-            'company' => $order->billing_company,
-            'streetAddress' => $order->billing_address_1,
-            'extendedAddress' => $order->billing_address_2,
-            'locality' => $order->billing_city,
-            'region' => $order->billing_state,
-            'postalCode' => $order->billing_postcode,
-            'countryCodeAlpha2' => $order->billing_country,
+            'firstName' => $billing_first_name,
+            'lastName' => $billing_last_name,
+            'company' => $billing_company,
+            'streetAddress' => $billing_address_1,
+            'extendedAddress' => $billing_address_2,
+            'locality' => $billing_city,
+            'region' => $billing_state,
+            'postalCode' => $billing_postcode,
+            'countryCodeAlpha2' => $billing_country,
         );
+
         $request_data['shipping'] = array(
-            'firstName' => $order->shipping_first_name,
-            'lastName' => $order->shipping_last_name,
-            'company' => $order->shipping_company,
-            'streetAddress' => $order->shipping_address_1,
-            'extendedAddress' => $order->shipping_address_2,
-            'locality' => $order->shipping_city,
-            'region' => $order->shipping_state,
-            'postalCode' => $order->shipping_postcode,
-            'countryCodeAlpha2' => $order->shipping_country,
+            'firstName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name(),
+            'lastName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name(),
+            'company' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_company : $order->get_shipping_company(),
+            'streetAddress' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1(),
+            'extendedAddress' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2(),
+            'locality' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city(),
+            'region' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state(),
+            'postalCode' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode(),
+            'countryCodeAlpha2' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country(),
         );
+        
         if (!empty($order->subscription_renewal)) {
-            $request_data['paymentMethodToken'] = get_post_meta($order->id, '_payment_tokens_id', true);
+            $request_data['paymentMethodToken'] = get_post_meta($order_id, '_payment_tokens_id', true);
         }
         if (is_user_logged_in()) {
             $customer_id = get_current_user_id();
@@ -1398,11 +1414,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $request_data['customerId'] = $braintree_customer_id;
             } else {
                 $request_data['customer'] = array(
-                    'firstName' => $order->billing_first_name,
-                    'lastName' => $order->billing_last_name,
-                    'company' => $order->billing_company,
-                    'phone' => $order->billing_phone,
-                    'email' => $order->billing_email,
+                    'firstName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name(),
+                    'lastName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name(),
+                    'company' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_company : $order->get_billing_company(),
+                    'phone' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone(),
+                    'email' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email(),
                 );
             }
         }
@@ -1451,7 +1467,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         );
         if (in_array($this->response->transaction->status, $maybe_settled_later)) {
             $is_sandbox = $this->sandbox == 'no' ? false : true;
-            update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+            update_post_meta($order_id, 'is_sandbox', $is_sandbox);
             $order->payment_complete($this->response->transaction->id);
             $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $this->response->transaction->id));
         } else {

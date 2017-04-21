@@ -79,7 +79,7 @@ class PayPal_Rest_API_Utility {
                     'redirect' => ''
                 );
             } catch (Exception $ex) {
-                $this->send_failed_order_email($order->id);
+                $this->send_failed_order_email($order_id);
                 $this->add_log($ex->getMessage());
                 if (!empty($order->subscription_renewal)) {
                     return true;
@@ -98,8 +98,8 @@ class PayPal_Rest_API_Utility {
                 $saleId = $sale->getId();
                 do_action('before_save_payment_token', $order_id);
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
-                if ((!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] == 'new') || $this->is_subscription($order->id)) {
-                    if ((!empty($_POST['wc-paypal_credit_card_rest-new-payment-method']) && $_POST['wc-paypal_credit_card_rest-new-payment-method'] == true) || $this->is_subscription($order->id)) {
+                if ((!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] == 'new') || $this->is_subscription($order_id)) {
+                    if ((!empty($_POST['wc-paypal_credit_card_rest-new-payment-method']) && $_POST['wc-paypal_credit_card_rest-new-payment-method'] == true) || $this->is_subscription($order_id)) {
                         try {
                             $this->card->create($this->getAuth());
                             $customer_id = $order->get_user_id();
@@ -146,7 +146,7 @@ class PayPal_Rest_API_Utility {
                     exit;
                 }
             } else {
-                $this->send_failed_order_email($order->id);
+                $this->send_failed_order_email($order_id);
                 if (!empty($order->subscription_renewal)) {
                     return true;
                 }
@@ -158,7 +158,7 @@ class PayPal_Rest_API_Utility {
                 );
             }
         } catch (PayPal\Exception\PayPalConnectionException $ex) {
-            $this->send_failed_order_email($order->id);
+            $this->send_failed_order_email($order_id);
             $this->add_log($ex->getData());
             if (!empty($order->subscription_renewal)) {
                 return true;
@@ -171,7 +171,7 @@ class PayPal_Rest_API_Utility {
             );
             exit;
         } catch (Exception $ex) {
-            $this->send_failed_order_email($order->id);
+            $this->send_failed_order_email($order_id);
             $this->add_log($ex->getMessage());
             if (!empty($order->subscription_renewal)) {
                 return true;
@@ -191,6 +191,7 @@ class PayPal_Rest_API_Utility {
      * @param type $card_data
      */
     public function set_trnsaction_obj_value($order, $card_data) {
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
             $token_id = wc_clean($_POST['wc-paypal_credit_card_rest-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
@@ -200,7 +201,7 @@ class PayPal_Rest_API_Utility {
             $this->fundingInstrument->setCreditCardToken($this->CreditCardToken);
             $this->save_payment_token($order, $token->get_token());
         } else if (!empty($order->subscription_renewal)) {
-            $payment_tokens = get_post_meta($order->id, '_payment_tokens_id', true);
+            $payment_tokens = get_post_meta($order_id, '_payment_tokens_id', true);
             $this->CreditCardToken = new CreditCardToken();
             $this->CreditCardToken->setCreditCardId($payment_tokens);
             $this->fundingInstrument = new FundingInstrument();
@@ -625,7 +626,6 @@ class PayPal_Rest_API_Utility {
                 );
             }
         } catch (Exception $ex) {
-            $this->send_failed_order_email($order->id);
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
             $this->add_log($ex->getMessage());
             return array(
@@ -641,13 +641,14 @@ class PayPal_Rest_API_Utility {
 
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
+            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
         }
-        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order->id)) {
-            $subscriptions = wcs_get_subscriptions_for_order($order->id);
-        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order->id)) {
-            $subscriptions = wcs_get_subscriptions_for_renewal_order($order->id);
+        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
+            $subscriptions = wcs_get_subscriptions_for_order($order_id);
+        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order_id)) {
+            $subscriptions = wcs_get_subscriptions_for_renewal_order($order_id);
         } else {
             $subscriptions = array();
         }
@@ -660,6 +661,7 @@ class PayPal_Rest_API_Utility {
 
     public function create_payment_with_zero_amount($order, $card_data) {
         global $woocommerce;
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         try {
             $this->set_trnsaction_obj_value($order, $card_data);
             try {
@@ -692,7 +694,7 @@ class PayPal_Rest_API_Utility {
             }
             $order->payment_complete($creditcard_id);
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-            update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+            update_post_meta($order_id, 'is_sandbox', $is_sandbox);
             if (!empty($order->subscription_renewal)) {
                 return true;
             }
@@ -710,7 +712,7 @@ class PayPal_Rest_API_Utility {
                 exit;
             }
         } catch (PayPal\Exception\PayPalConnectionException $ex) {
-            $this->send_failed_order_email($order->id);
+            $this->send_failed_order_email($order_id);
             $this->add_log($ex->getData());
             if (!empty($order->subscription_renewal)) {
                 return true;
@@ -722,7 +724,7 @@ class PayPal_Rest_API_Utility {
             );
             exit;
         } catch (Exception $ex) {
-            $this->send_failed_order_email($order->id);
+            $this->send_failed_order_email($order_id);
             $this->add_log($ex->getMessage());
             if (!empty($order->subscription_renewal)) {
                 return true;
