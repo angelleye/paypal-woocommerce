@@ -29,7 +29,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->init_form_fields();
         $this->init_settings();
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
-        if($this->enable_tokenized_payments == 'yes') {
+        if ($this->enable_tokenized_payments == 'yes') {
             $this->supports = array(
                 'subscriptions',
                 'products',
@@ -183,7 +183,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             </script>
         </table> <?php
     }
-    
+
     /**
      * get_icon function.
      *
@@ -195,7 +195,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($this->show_paypal_credit == 'yes') {
             $image_path = plugins_url('/assets/images/paypal-credit-card-logos.png', plugin_basename(dirname(__FILE__)));
         }
-        if(  $this->checkout_with_pp_button_type == 'customimage' ) {
+        if ($this->checkout_with_pp_button_type == 'customimage') {
             $image_path = $this->pp_button_type_my_custom;
         }
         if (is_ssl()) {
@@ -757,8 +757,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case 'get_express_checkout_details':
                     $paypal_express_request->angelleye_get_express_checkout_details();
-                    $order_id = absint(WC()->session->order_awaiting_payment);
-                    if ($order_id == 0 || $this->save_abandoned_checkout == false) {
+                    $order_id = absint(WC()->session->get('order_awaiting_payment'));
+                    $cart_hash = md5(json_encode(wc_clean(WC()->cart->get_cart_for_session())) . WC()->cart->total);
+                    if (($order_id && ( $order = wc_get_order($order_id) ) && $order->has_cart_hash($cart_hash) && $order->has_status(array('pending', 'failed'))) == false) {
                         if (!defined('WOOCOMMERCE_CHECKOUT')) {
                             define('WOOCOMMERCE_CHECKOUT', true);
                         }
@@ -775,7 +776,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         } else {
                             WC()->customer->set_calculated_shipping(true);
                         }
-                        
+
                         $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
                         if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
                             foreach ($_POST['shipping_method'] as $i => $value)
@@ -787,12 +788,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
                         }
                         if (empty($this->posted)) {
-                            $this->posted = array('payment_method' => get_class($this));
+                            $this->posted = array('payment_method' => $this->id);
                         }
                         $order_id = WC()->checkout()->create_order($this->posted);
                         if (is_wp_error($order_id)) {
                             throw new Exception($order_id->get_error_message());
                         }
+                        do_action('woocommerce_checkout_order_processed', $order_id, $this->posted);
                     } else {
                         WC()->checkout->posted = WC()->session->post_data;
                         $_POST = WC()->session->post_data;
@@ -821,9 +823,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         update_post_meta($order_id, '_payment_method_title', $this->title);
                         update_post_meta($order_id, '_customer_user', get_current_user_id());
                     } else {
-                        update_post_meta( $order->get_id(), '_payment_method', $this->id );
-                        update_post_meta( $order->get_id(), '_payment_method_title', $this->title );
-                        update_post_meta( $order->get_id(), '_customer_user', get_current_user_id() );
+                        update_post_meta($order->get_id(), '_payment_method', $this->id);
+                        update_post_meta($order->get_id(), '_payment_method_title', $this->title);
+                        update_post_meta($order->get_id(), '_customer_user', get_current_user_id());
                     }
                     if (!empty(WC()->session->post_data['billing_phone'])) {
                         if ($old_wc) {
@@ -845,7 +847,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         wp_update_post($my_post);
                     }
                     $_GET['order_id'] = $order_id;
-                    do_action('woocommerce_checkout_order_processed', $order_id, WC()->session->post_data);
+
                     $paypal_express_request->angelleye_do_express_checkout_payment();
                     break;
                 case 'do_express_checkout_payment':

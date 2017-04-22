@@ -805,6 +805,29 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } else {
                 update_post_meta( $order->get_id(), 'BILLINGAGREEMENTID', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '' );
             }
+            if ($old_wc) {
+                update_post_meta($order->id, '_payment_tokens_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
+            } else {
+                update_post_meta( $order->get_id(), '_payment_tokens_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '' );
+            }
+            $this->save_payment_token($order, isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
+        }
+    }
+    
+    public function save_payment_token($order, $payment_tokens_id) {
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        // Also store it on the subscriptions being purchased or paid for in the order
+        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
+            $subscriptions = wcs_get_subscriptions_for_order($order_id);
+        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order_id)) {
+            $subscriptions = wcs_get_subscriptions_for_renewal_order($order_id);
+        } else {
+            $subscriptions = array();
+        }
+        if (!empty($subscriptions)) {
+            foreach ($subscriptions as $subscription) {
+                update_post_meta($subscription->id, '_payment_tokens_id', $payment_tokens_id);
+            }
         }
     }
 
@@ -952,9 +975,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
         $this->must_create_account = $this->enable_guest_checkout || is_user_logged_in() ? false : true;
         $force_to_display_checkout_page = true;
-        if ($this->skip_final_review == 'no') {
-            return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
-        }
         if ($this->must_create_account) {
             return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
         }
@@ -966,6 +986,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } elseif (!empty(WC()->session->paypal_express_terms && WC()->session->paypal_express_terms == true)) {
                 return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
             }
+        }
+        if ($this->skip_final_review == 'yes') {
+            return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
         }
         return apply_filters('angelleye_ec_force_to_display_checkout_page', $force_to_display_checkout_page);
     }
