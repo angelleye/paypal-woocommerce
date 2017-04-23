@@ -361,7 +361,12 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $order = new WC_Order($order_id);
 
         //check for the status of the order, if completed or processing, redirect to thanks page. This case happens when silentpost is on
-        $status = isset($order->status) ? $order->status : $order->get_status();
+        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+        if($old_wc) {
+            $status = isset($order->status) ? $order->status : $order->get_status();
+        } else {
+            $status = $order->get_status();
+        }
 
         if ($status == 'processing' || $status == 'completed') {
             // Log
@@ -517,7 +522,10 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $paypal_args['SILENTPOSTURL[' . strlen($silentposturl) . ']'] = $silentposturl;
 
         // If prices include tax or have order discounts, send the whole order as a single item
-        if (($order->prices_include_tax == 'yes' || $order->get_total_discount() > 0 || $length_error > 1) && $order->get_subtotal() > 0) {
+        $is_prices_include_tax = version_compare(WC_VERSION, '3.0', '<') ? 'yes' === $order->prices_include_tax : $order->get_prices_include_tax();
+        
+        
+        if (($is_prices_include_tax  || $order->get_total_discount() > 0 || $length_error > 1) && $order->get_subtotal() > 0) {
 
             // Don't pass items - paypal borks tax due to prices including tax. PayPal has no option for tax inclusive pricing sadly. Pass 1 item for the order items overall
             $item_names = array();
@@ -1153,7 +1161,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function create_reference_transaction($token, $order) {
-        
+        static $length_error = 0;
         $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
         $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
         $shipping_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1();
@@ -1222,7 +1230,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         } else {
             $paypal_args['SHIPTOSTATE[' . strlen($shipping_state) . ']'] = $shipping_state;
         }
-        if (($order->prices_include_tax == 'yes' || $order->get_total_discount() > 0 || $length_error > 1) && $order->get_subtotal() > 0) {
+        $is_prices_include_tax = version_compare(WC_VERSION, '3.0', '<') ? 'yes' === $order->prices_include_tax : $order->get_prices_include_tax();
+        if (($is_prices_include_tax || $order->get_total_discount() > 0 || $length_error > 1) && $order->get_subtotal() > 0) {
             $item_names = array();
             if (sizeof($order->get_items()) > 0) {
                 if ($length_error <= 1) {
