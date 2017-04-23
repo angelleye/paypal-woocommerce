@@ -497,6 +497,15 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
         try {
             
+            $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
+            $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
+            $billtostreet = $billing_address_1 . ' ' . $billing_address_2;
+            $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
+            $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
+            $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
+            $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
+            $billing_email = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email();
+            
             if(!empty($_POST['paypal_pro_payflow-card-cardholder-first'])) {
                 $firstname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']);
             } else {

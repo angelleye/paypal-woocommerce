@@ -378,6 +378,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             if (isset($_REQUEST['cancel_ec_trans']) && $_REQUEST['cancel_ec_trans'] == 'true') {
                 $_REQUEST['RESULT'] = -1;
             }
+        }
             //handle the successful transaction
             switch ($_REQUEST['RESULT']) {
 
@@ -402,7 +403,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     $this->error_handler($order, $order_id, $silent_post);
                     break;
             }
-        }
+        
     }
 
     /**
@@ -1105,6 +1106,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         //display the form in IFRAME, if it is layout C, otherwise redirect to paypal site
         if ($this->layout == 'MINLAYOUT' || $this->layout == 'C') {
             //define the url
+            $location = 'https://payflowlink.paypal.com?mode=' . $PF_MODE . '&SECURETOKEN=' . $this->securetoken . '&SECURETOKENID=' . $this->secure_token_id;
             $this->add_log(sprintf(__('Show payment form(IFRAME) for the order %s as it is configured to use Layout C', 'paypal-for-woocommerce'), $order->get_order_number()));
             //display the form
             ?>

@@ -1183,6 +1183,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     $token->set_last4( substr( $PayPalRequestData['CCDetails']['acct'], -4 ) );
                     $token->set_expiry_month( substr( $PayPalRequestData['CCDetails']['expdate'], 0,2 ) );
                     $token->set_expiry_year( substr( $PayPalRequestData['CCDetails']['expdate'], 2,5 ) );
+                    $this->save_payment_token($order, $TRANSACTIONID);
                     $save_result = $token->save();
                     if ($save_result) {
                         $order->add_payment_token($token);
@@ -1930,6 +1931,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     $token->set_expiry_month(date('m'));
                     $token->set_expiry_year(date('Y', strtotime('+2 years')));
                     $save_result = $token->save();
+                    $this->save_payment_token($order, $TRANSACTIONID);
                     if ($save_result) {
                         $order->add_payment_token($token);
                     }

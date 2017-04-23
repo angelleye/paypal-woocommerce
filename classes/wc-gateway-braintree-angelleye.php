@@ -692,8 +692,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         $this->add_log("Braintree_Transaction::find Braintree_Exception_NotFound: " . $e->getMessage());
                         return new WP_Error(404, $e->getMessage());
                     } catch (Exception $ex) {
-                        $this->add_log("Braintree_Transaction::find Exception: " . $e->getMessage());
-                        return new WP_Error(404, $e->getMessage());
+                        $this->add_log("Braintree_Transaction::find Exception: " . $ex->getMessage());
+                        return new WP_Error(404, $ex->getMessage());
                     }
                          }
                     }
