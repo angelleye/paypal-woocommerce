@@ -930,7 +930,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         );
 
         
-        $billing_company = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_company : $order->get_billing_company();
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
         $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
         $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
@@ -1173,10 +1173,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             do_action('before_save_payment_token', $order_id);
             if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') {
                 if(!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) {
-                    $customer_id =  $order->get_user_id();
                     $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
                     $token = new WC_Payment_Token_CC();
-                    $token->set_user_id( $customer_id );
+                    if ( is_user_logged_in() ) {
+            		$token->set_user_id( get_current_user_id() );
+                    }
                     $token->set_token( $TRANSACTIONID );
                     $token->set_gateway_id( $this->id );
                     $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
@@ -1192,13 +1193,18 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
 
             // Payment complete
-            if($PayPalResult['ACK'] == 'SuccessWithWarning' && !empty($PayPalResult['L_ERRORCODE0']) ) {
+            if($PayPalResult['ACK'] == 'SuccessWithWarning' && !empty($PayPalResult['L_ERRORCODE0'])) {
                 if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && $PayPalResult['L_ERRORCODE0'] == '11610') {
                     $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
                     $order->update_status('on-hold', $error);
+                } elseif ($PayPalResult['L_ERRORCODE0'] == '10574') {
+                    $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
+                    $order->add_order_note('ERROR MESSAGE: ' . $error);
+                    $order->payment_complete($PayPalResult['TRANSACTIONID']);
                 } elseif (!empty($PayPalResult['L_ERRORCODE0'])) {
                     $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
                     $order->add_order_note('ERROR MESSAGE: ' . $error);
+                    $order->update_status('on-hold', $error);
                 } else {
                     $order->payment_complete($PayPalResult['TRANSACTIONID']);
                 }

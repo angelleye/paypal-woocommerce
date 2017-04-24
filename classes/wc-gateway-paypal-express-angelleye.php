@@ -742,7 +742,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (!isset($_GET['pp_action'])) {
                 return;
             }
-            if (WC()->cart->cart_contents_total <= 0 && WC()->cart->total <= 0) {
+            $cart_contains_subscription = false;
+            if (class_exists('WC_Subscriptions_Order') && class_exists('WC_Subscriptions_Cart')) {
+                $cart_contains_subscription = WC_Subscriptions_Cart::cart_contains_subscription();
+            }
+            if (WC()->cart->cart_contents_total <= 0 && WC()->cart->total <= 0 && $cart_contains_subscription == false) {
                 wc_add_notice(__('your order amount is zero, We were unable to process your order, please try again.', 'paypal-for-woocommerce'), 'error');
                 $paypal_express_request->angelleye_redirect();
                 exit;

@@ -27,7 +27,7 @@ class WC_Gateway_PayPal_Express_Subscriptions_AngellEYE extends WC_Gateway_PayPa
             if ($order->get_total() > 0) {
                 parent::process_payment($order_id);
             } else {
-                parent::process_subscription_payment($order);
+                parent::process_payment($order_id);
             }
         } else {
             return parent::process_payment($order_id);
