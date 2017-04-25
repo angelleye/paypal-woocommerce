@@ -614,26 +614,32 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 } catch (Braintree_Exception_Authentication $e) {
                     wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
                     $this->add_log("Braintree_Transaction::sale Braintree_Exception_Authentication: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+                    $order->add_order_note("Braintree_Transaction::sale Braintree_Exception_Authentication: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
                     return $success = false;
                 } catch (Braintree_Exception_Authorization $e) {
                     wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
                     $this->add_log("Braintree_Transaction::sale Braintree_Exception_Authorization: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+                    $order->add_order_note("Braintree_Transaction::sale Braintree_Exception_Authorization: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
                     return $success = false;
                 } catch (Braintree_Exception_DownForMaintenance $e) {
                     wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
                     $this->add_log("Braintree_Transaction::sale Braintree_Exception_DownForMaintenance: Request times out.");
+                    $order->add_order_note("Braintree_Transaction::sale Braintree_Exception_DownForMaintenance: Request times out.");
                     return $success = false;
                 } catch (Braintree_Exception_ServerError $e) {
                     wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
                     $this->add_log("Braintree_Transaction::sale Braintree_Exception_ServerError " . $e->getMessage());
+                    $order->add_order_note("Braintree_Transaction::sale Braintree_Exception_ServerError " . $e->getMessage());
                     return $success = false;
                 } catch (Braintree_Exception_SSLCertificate $e) {
                     wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
                     $this->add_log("Braintree_Transaction::sale Braintree_Exception_SSLCertificate " . $e->getMessage());
+                    $order->add_order_note("Braintree_Transaction::sale Braintree_Exception_SSLCertificate " . $e->getMessage());
                     return $success = false;
                 } catch (Exception $e) {
                     wc_add_notice(__('Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment.', 'paypal-for-woocommerce'), 'error');
                     $this->add_log('Error: Unable to complete transaction. Reason: ' . $e->getMessage());
+                    $order->add_order_note("Error: Unable to complete transaction. Reason: " . $e->getMessage());
                     return $success = false;
                 }
 
@@ -641,6 +647,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $notice = sprintf(__('Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'paypal-for-woocommerce'), $this->response->message);
                     wc_add_notice($notice, 'error');
                     $this->add_log("Error: Unable to complete transaction. Reason: {$this->response->message}");
+                    $order->add_order_note("Error: Unable to complete transaction. Reason: {$this->response->message}");
                     return $success = false;
                 }
 
