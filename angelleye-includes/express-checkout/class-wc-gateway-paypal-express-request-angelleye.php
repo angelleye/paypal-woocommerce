@@ -178,11 +178,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
-                if ($old_wc) {
-                    update_post_meta($order_id, 'is_sandbox', $this->testmode);
-                } else {
-                    update_post_meta( $order->get_id(), 'is_sandbox', $this->testmode );
-                }
+                update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 if( empty($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS']) ) {
                     $this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] = '';
                 }
@@ -776,18 +772,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         }
         $order = wc_get_order($order_id);
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        if ($old_wc) {
-            update_post_meta($order->id, '_first_transaction_id', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
-        } else {
-            update_post_meta( $order->get_id(), '_first_transaction_id', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
-        }
+        update_post_meta( $order_id, '_first_transaction_id', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
         do_action('before_save_payment_token', $order_id);
         if (isset($this->paypal_response['BILLINGAGREEMENTID']) && !empty($this->paypal_response['BILLINGAGREEMENTID']) && is_user_logged_in()) {
-            if ($old_wc) {
-                update_post_meta($order->id, 'billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
-            } else {
-                update_post_meta( $order->get_id(), 'billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '' );
-            }
+            update_post_meta($order_id, 'billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
             $customer_id = $order->get_user_id();
             $billing_agreement_id = $this->paypal_response['BILLINGAGREEMENTID'];
             $token = new WC_Payment_Token_CC();
@@ -804,21 +792,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
         }
         if (!empty($this->paypal_response['BILLINGAGREEMENTID'])) {
-            if ($old_wc) {
-                update_post_meta($order->id, '_billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
-            } else {
-                update_post_meta( $order->get_id(), '_billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '' );
-            }
-            if ($old_wc) {
-                update_post_meta($order->id, 'BILLINGAGREEMENTID', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
-            } else {
-                update_post_meta( $order->get_id(), 'BILLINGAGREEMENTID', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '' );
-            }
-            if ($old_wc) {
-                update_post_meta($order->id, '_payment_tokens_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
-            } else {
-                update_post_meta( $order->get_id(), '_payment_tokens_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '' );
-            }
+            update_post_meta($order_id, '_billing_agreement_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
+            update_post_meta($order_id, 'BILLINGAGREEMENTID', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
+            update_post_meta($order_id, '_payment_tokens_id', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
             $this->save_payment_token($order, isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
         }
     }
