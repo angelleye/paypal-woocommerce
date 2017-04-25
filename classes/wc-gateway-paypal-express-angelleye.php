@@ -973,6 +973,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $token->set_last4(substr($billing_agreement_id, -4));
                             $token->set_expiry_month(date('m'));
                             $token->set_expiry_year(date('Y', strtotime('+20 year')));
+                            
                             $save_result = $token->save();
                             wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                             exit();
@@ -1078,4 +1079,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         return $locale;
     }
 
+    public function free_signup_order_payment($order_id) {
+        $order = new WC_Order($order_id);
+        $this->log('Processing order #' . $order_id);
+        if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
+            $token_id = wc_clean($_POST['wc-paypal_express-payment-token']);
+            $token = WC_Payment_Tokens::get($token_id);
+            $order->payment_complete($token->get_token());
+            update_post_meta($order_id, '_first_transaction_id', $token->get_token());
+            $order->add_order_note('Payment Action: ' . $this->payment_action);
+            WC()->cart->empty_cart();
+            return array(
+                'result' => 'success',
+                'redirect' => $this->get_return_url($order)
+            );
+        }
+    }
 }

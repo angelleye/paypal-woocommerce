@@ -24,10 +24,10 @@ class WC_Gateway_PayPal_Express_Subscriptions_AngellEYE extends WC_Gateway_PayPa
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
         if ($this->is_subscription($order_id)) {
-            if ($order->get_total() > 0) {
-                parent::process_payment($order_id);
+            if ($this->free_signup_with_token_payment_tokenization($order_id) == true) {
+                return parent::free_signup_order_payment($order_id);
             } else {
-                parent::process_payment($order_id);
+                return parent::process_payment($order_id);
             }
         } else {
             return parent::process_payment($order_id);
@@ -68,6 +68,16 @@ class WC_Gateway_PayPal_Express_Subscriptions_AngellEYE extends WC_Gateway_PayPa
 
     public function update_failing_payment_method($subscription, $renewal_order) {
         update_post_meta($subscription->id, '_payment_tokens_id', $renewal_order->payment_tokens_id);
+    }
+    
+    public function free_signup_with_token_payment_tokenization($order_id) {
+        if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
+            $order = new WC_Order($order_id);
+            if ($order->get_total() == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

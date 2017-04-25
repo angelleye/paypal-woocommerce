@@ -1186,6 +1186,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $billing_email = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email();
         $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
         
+        $this->transtype = ($order->get_total() == 0 ) ? 'A' : $this->transtype;
+        
         $paypal_args = array();
         $paypal_args = array(
             'VERBOSITY' => 'HIGH',

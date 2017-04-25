@@ -25,7 +25,7 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
         if ($this->is_subscription($order_id)) {
             $order = new WC_Order($order_id);
             if ($order->get_total() == 0) {
-                parent::subscription_process_payment($order_id);
+                return parent::subscription_process_payment($order_id);
             } else {
                 return parent::process_payment($order_id);
             }

@@ -1088,7 +1088,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             unset($PayPalRequestData['DPFields']);
             $PayPalRequestData['DRTFields'] = array(
                 'referenceid' => $token->get_token(),
-                'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale',
+                'paymentaction' => ($order->get_total() > 0) ? $this->payment_action : 'Authorization',
                 'returnfmfdetails' => '1',
                 'softdescriptor' => $this->softdescriptor
             );
@@ -1707,7 +1707,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
          * Generate PayPal request
          */
         $DPFields = array(
-            'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
+            'paymentaction' => ($order->get_total() > 0) ? $this->payment_action : 'Authorization', // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
             'ipaddress' => $this->get_user_ip(), // Required.  IP address of the payer's browser.
             'returnfmfdetails' => '1'                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
         );
@@ -1867,7 +1867,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             unset($PayPalRequestData['DPFields']);
             $PayPalRequestData['DRTFields'] = array(
                 'referenceid' => $token->get_token(),
-                'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale',
+                'paymentaction' => ($order->get_total() > 0) ? $this->payment_action : 'Authorization',
                 'returnfmfdetails' => '1',
                 'softdescriptor' => ''
             );
@@ -2006,6 +2006,23 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
         if (!empty($payment_tokens_id)) {
             update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+        }
+    }
+    
+    public function free_signup_order_payment($order_id) {
+        $order = new WC_Order($order_id);
+        $this->log('Processing order #' . $order_id);
+        if (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') {
+            $token_id = wc_clean($_POST['wc-paypal_pro-payment-token']);
+            $token = WC_Payment_Tokens::get($token_id);
+            $order->payment_complete($token->get_token());
+            update_post_meta($order_id, '_first_transaction_id', $token->get_token());
+            $order->add_order_note('Payment Action: ' . $this->payment_action);
+            WC()->cart->empty_cart();
+            return array(
+                'result' => 'success',
+                'redirect' => $this->get_return_url($order)
+            );
         }
     }
 }
