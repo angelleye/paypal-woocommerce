@@ -1358,7 +1358,7 @@ class AngellEYE_Utility {
         }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
-        $billing_agreement_id = $old_wc ? get_post_meta($order_id, '_billing_agreement_id', true) : get_post_meta($order->get_id(), '_billing_agreement_id', true);
+        $billing_agreement_id = $old_wc ? get_post_meta($order_id, 'BILLINGAGREEMENTID', true) : get_post_meta($order->get_id(), 'BILLINGAGREEMENTID', true);
         if( empty($billing_agreement_id) ) {
             return false;
         }
