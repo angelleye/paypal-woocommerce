@@ -368,7 +368,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             ),
             'avs_cvv2_result_admin_email' => array(
                 'title' => __('AVS / CVV2 Results in Admin Order Email', 'paypal-for-woocommerce'),
-                'label' => __('Display AVS / CVV2 Results in Admin Order Email', 'paypal-for-woocommerce'),
+                'label' => __('Adds the AVS / CVV2 results to the admin order email notification.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => __('Display Address Verification Result (AVS) and Card Security Code Result (CVV2) Results in Admin Order Email.', 'paypal-for-woocommerce'),
                 'default' => 'no',
