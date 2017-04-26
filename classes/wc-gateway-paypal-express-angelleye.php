@@ -628,12 +628,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($description = $this->get_description()) {
             echo wpautop(wptexturize($description));
         }
-        $this->new_method_label = __('Create a new billing agreement', 'paypal-for-woocommerce');
-        if ($this->supports('tokenization') && is_checkout()) {
-            $this->tokenization_script();
-            $this->saved_payment_methods();
-            $this->save_payment_method_checkbox();
-            do_action('payment_fields_saved_payment_methods', $this);
+        if($this->function_helper->ec_is_express_checkout() == false) {
+            $this->new_method_label = __('Create a new billing agreement', 'paypal-for-woocommerce');
+            if ($this->supports('tokenization') && is_checkout()) {
+                $this->tokenization_script();
+                $this->saved_payment_methods();
+                $this->save_payment_method_checkbox();
+                do_action('payment_fields_saved_payment_methods', $this);
+            }
         }
     }
 
@@ -746,6 +748,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (class_exists('WC_Subscriptions_Order') && class_exists('WC_Subscriptions_Cart')) {
                 $cart_contains_subscription = WC_Subscriptions_Cart::cart_contains_subscription();
             }
+            if (!defined('WOOCOMMERCE_CHECKOUT')) {
+                define('WOOCOMMERCE_CHECKOUT', true);
+            }
+            if (!defined('WOOCOMMERCE_CART')) {
+                define('WOOCOMMERCE_CART', true);
+            }
+            WC()->cart->calculate_totals();
+            WC()->cart->calculate_shipping();
+            if (version_compare(WC_VERSION, '3.0', '<')) {
+                WC()->customer->calculated_shipping(true);
+            } else {
+                WC()->customer->set_calculated_shipping(true);
+            }
+
             if (WC()->cart->cart_contents_total <= 0 && WC()->cart->total <= 0 && $cart_contains_subscription == false) {
                 wc_add_notice(__('your order amount is zero, We were unable to process your order, please try again.', 'paypal-for-woocommerce'), 'error');
                 $paypal_express_request->angelleye_redirect();
@@ -764,23 +780,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $order_id = absint(WC()->session->get('order_awaiting_payment'));
                     $cart_hash = md5(json_encode(wc_clean(WC()->cart->get_cart_for_session())) . WC()->cart->total);
                     if (($order_id && ( $order = wc_get_order($order_id) ) && $order->has_cart_hash($cart_hash) && $order->has_status(array('pending', 'failed'))) == false) {
-                        if (!defined('WOOCOMMERCE_CHECKOUT')) {
-                            define('WOOCOMMERCE_CHECKOUT', true);
-                        }
-                        if (!defined('WOOCOMMERCE_CART')) {
-                            define('WOOCOMMERCE_CART', true);
-                        }
                         WC()->checkout->posted = WC()->session->post_data;
                         $_POST = WC()->session->post_data;
                         $this->posted = WC()->session->post_data;
-                        WC()->cart->calculate_totals();
-                        WC()->cart->calculate_shipping();
-                        if (version_compare(WC_VERSION, '3.0', '<')) {
-                            WC()->customer->calculated_shipping(true);
-                        } else {
-                            WC()->customer->set_calculated_shipping(true);
-                        }
-
                         $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
                         if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
                             foreach ($_POST['shipping_method'] as $i => $value)
