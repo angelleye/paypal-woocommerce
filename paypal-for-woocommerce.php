@@ -827,21 +827,21 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         'id'            => '_paypal_billing_agreement',
                         'wrapper_class' => '',
                         'label'         => __( 'Enable PayPal Billing Agreement', 'paypal-for-woocommerce' ),
-                        'description'   => __( 'Adds a billing agreement to the product.  The user must agree to the billing agreement on the PayPal checkout pages, and then you can process future payments for the buyer using reference transactions..', 'paypal-for-woocommerce' ),
+                        'description'   => __( 'Adds a billing agreement to the product.  The user must agree to the billing agreement on the PayPal checkout pages, and then you can process future payments for the buyer using reference transactions.', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
                 $product_type['enable_sandbox_mode'] = array(
                         'id'            => '_enable_sandbox_mode',
                         'wrapper_class' => '',
                         'label'         => __( 'Enable Sandbox Mode', 'paypal-for-woocommerce' ),
-                        'description'   => __( '', 'paypal-for-woocommerce' ),
+                        'description'   => __( 'If this product is included in the cart the order will be processed in the PayPal sandbox for testing purposes.', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
                 $product_type['enable_ec_button'] = array(
                         'id'            => '_enable_ec_button',
                         'wrapper_class' => '',
                         'label'         => __( 'Enable Express Checkout Button', 'paypal-for-woocommerce' ),
-                        'description'   => __( '', 'paypal-for-woocommerce' ),
+                        'description'   => __( 'Adds the PayPal Express Checkout button to the product page allowing buyers to checkout directly from the product page.', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
                 return $product_type;
