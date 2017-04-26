@@ -120,6 +120,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.4.0 - xx.xx.2017=
 * Feature - WooCommerce Sequential Orders compatibility. ([#145](https://github.com/angelleye/paypal-woocommerce/issues/145))
 * Feature - Filter hooks for PayPal buttons. ([#588](https://github.com/angelleye/paypal-woocommerce/issues/588))
+* Feature - Adds error message to the WooCommerce order notes for failed Braintree transactions. ([#647](https://github.com/angelleye/paypal-woocommerce/issues/647))
 * Tweak - Adjustments to improve compatibility with WPML. ([#387](https://github.com/angelleye/paypal-woocommerce/issues/387))
 
 = 1.3.3 - 02.03.2017 =
