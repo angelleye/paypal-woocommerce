@@ -122,6 +122,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Filter hooks for PayPal buttons. ([#588](https://github.com/angelleye/paypal-woocommerce/issues/588))
 * Feature - Adds error message to the WooCommerce order notes for failed Braintree transactions. ([#647](https://github.com/angelleye/paypal-woocommerce/issues/647))
 * Tweak - Adjustments to improve compatibility with WPML. ([#387](https://github.com/angelleye/paypal-woocommerce/issues/387))
+* Tweak - Adds PayPal Credit option for UK orders. ([#638](https://github.com/angelleye/paypal-woocommerce/issues/638))
 
 = 1.3.3 - 02.03.2017 =
 * Fix - Resolves PHP failures happening when out-dated versions of PHP and/or WooCommerce are installed. ([#635](https://github.com/angelleye/paypal-woocommerce/issues/635))
