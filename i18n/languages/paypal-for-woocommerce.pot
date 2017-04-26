@@ -522,7 +522,12 @@ msgstr ""
 #: classes/wc-gateway-braintree-angelleye.php:222
 #: classes/wc-gateway-braintree-angelleye.php:251
 msgid ""
+<<<<<<< HEAD
+"NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,
+\n"
+=======
 "NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,\n"
+>>>>>>> a504adb5f69668ff8cb21bb72d2416554c402ed0
 "                                 and clicking Settings > Processing and scrolling to the bottom of the page."
 msgstr ""
 

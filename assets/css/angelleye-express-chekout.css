@@ -1,0 +1,83 @@
+#express_checkout_button_product_page {
+    float: left;
+    display: inline-block;
+    clear: both;
+    margin-top: 20px;
+}
+#express_checkout_button_product_page .express_checkout_button {
+    float: left;
+}
+#express_checkout_button_product_page .express_checkout_button_cradit_card {
+    float: left;   
+}
+.express-checkout .ex-show-address-fields {
+    float: right
+}
+.express-checkout .express-provided.hidden {
+    display: none !important
+}
+.express-checkout.express-hide-terms .terms label[for="terms"],
+.express-checkout.express-hide-terms .terms #terms {
+    display: none !important
+}
+.express-checkout #payment .payment_methods {
+    display: none
+}
+.ec_clearfix:before,
+.ec_clearfix:after {
+    content: " ";
+    display: table
+}
+.ec_clearfix:after {
+    clear: both
+}
+/*#payment ul.wc_payment_methods li.payment_method_express_checkout img {
+    height: 24px;
+    width: 40px;
+}*/
+.express_checkout_button_chekout_page {
+    content: " ";
+    display: table;
+}
+#express_checkout_button_chekout_page {
+    display: inline-block;
+}
+#express_checkout_button_chekout_page .express_checkout_button {
+    float: left;
+}
+#express_checkout_button_chekout_page .express_checkout_button_cradit_card {
+    float: left;
+    margin-left: 10px;
+}
+.express-checkout .express-provided.hidden.form-row-first+.form-row-last:not(.express-provided) {
+    width: auto;
+    float: none
+}
+#express_checkout_button_text {
+    padding-bottom: 20px;
+    font-size: 20px;
+    color: #1982d1;
+}
+
+.single_add_to_cart_button:disabled[disabled]{
+cursor: not-allowed;
+    opacity: .5;
+}
+#express_checkout_button_product_page .express_checkout_button a input.disabled {
+    color: inherit;
+    cursor: not-allowed;
+    opacity: 0.5;
+    padding: 0.618em 1em;
+}
+#express_checkout_button_product_page .express_checkout_button_cradit_card a input.disabled {
+    color: inherit;
+    cursor: not-allowed;
+    opacity: 0.5;
+    padding: 0.618em 1em;
+}
+p.woocommerce-SavedPaymentMethods-saveNew {
+    margin-bottom: 8px;
+}
+.angelleye_ec_save_to_accoount_box {
+    clear: both;
+}

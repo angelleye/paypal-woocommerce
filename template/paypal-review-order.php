@@ -5,6 +5,13 @@
 
 global $woocommerce;
 $checked = get_option('woocommerce_enable_guest_checkout');
+if(class_exists('WC_Subscriptions_Cart')) {
+    if ( WC_Subscriptions_Cart::cart_contains_subscription() ) {
+        $checked = "no";
+    }
+}
+
+
 $checkout_form_data = maybe_unserialize(WC()->session->checkout_form);
 $hide_button = false;
 ### After PayPal payment method confirmation, user is redirected back to this page with token and Payer ID ###

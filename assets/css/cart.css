@@ -7,3 +7,30 @@
     border: none; padding: 0;
     box-shadow: none;
 }
+p.woocommerce-SavedPaymentMethods-saveNew {
+    margin-bottom: 8px;
+}
+.angelleye_ec_save_to_accoount_box {
+    clear: both;
+}
+.ec_checkout_page_button_type_customimage {
+     border: medium none;
+    height: auto;
+    margin: 3px 0 4px;
+    padding: 0;
+    width: auto;
+}
+
+.ec_checkout_page_button_type_paypalimage {
+    width: auto; height: auto; margin: 3px 5px 3px 0; border: none; padding: 0;
+}
+.paypal_checkout_button.button.alt.ec_checkout_page_button_type_textbutton {
+    border: medium none;
+    margin: 3px 5px 3px 0;
+}
+.ec_checkout_page_button_type_pc {
+    width: 148px; height: 26px; border: none; padding: 0; margin: 0;
+}
+.angelleyeOverlay {
+    display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute;
+}
