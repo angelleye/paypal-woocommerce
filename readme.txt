@@ -124,6 +124,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjustments to improve compatibility with WPML. ([#387](https://github.com/angelleye/paypal-woocommerce/issues/387))
 * Tweak - Adds PayPal Credit option for UK orders. ([#638](https://github.com/angelleye/paypal-woocommerce/issues/638))
 * Tweak - Improves the experience for adding a custom image to payment gateways. ([#575](https://github.com/angelleye/paypal-woocommerce/issues/575))
+* Tweak - Disables PayPal Express Checkout button on variable product pages until variations / options are selected. ([#555](https://github.com/angelleye/paypal-woocommerce/issues/555))
 
 = 1.3.3 - 02.03.2017 =
 * Fix - Resolves PHP failures happening when out-dated versions of PHP and/or WooCommerce are installed. ([#635](https://github.com/angelleye/paypal-woocommerce/issues/635))
