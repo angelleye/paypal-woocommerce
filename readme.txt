@@ -117,6 +117,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.0 - xx.xx.2017=
+* Feature - WooCommerce Sequential Orders compatibility. ([#145](https://github.com/angelleye/paypal-woocommerce/issues/145))
+
 = 1.3.3 - 02.03.2017 =
 * Fix - Resolves PHP failures happening when out-dated versions of PHP and/or WooCommerce are installed. ([#635](https://github.com/angelleye/paypal-woocommerce/issues/635))
 
