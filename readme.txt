@@ -134,6 +134,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adds PayPal Credit option for UK orders. ([#638](https://github.com/angelleye/paypal-woocommerce/issues/638))
 * Tweak - Improves the experience for adding a custom image to payment gateways. ([#575](https://github.com/angelleye/paypal-woocommerce/issues/575))
 * Tweak - Disables PayPal Express Checkout button on variable product pages until variations / options are selected. ([#555](https://github.com/angelleye/paypal-woocommerce/issues/555))
+* Tweak - Removes duplicate custom field for Billing Agreement ID. ([#648](https://github.com/angelleye/paypal-woocommerce/issues/648))
 * Fix - Resolves an issue where multiple orders would show up in WooCommerce when PayPal error 10486 would occur. ([#589](https://github.com/angelleye/paypal-woocommerce/issues/589))
 
 = 1.3.3 - 02.03.2017 =
