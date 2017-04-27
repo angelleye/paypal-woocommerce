@@ -126,6 +126,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds an option to include AVS / CVV2 results in admin order email notifications for credit card gateways. ([#611])https://github.com/angelleye/paypal-woocommerce/issues/611))
 * Feature - Adds custom CSS class for PayPal buttons / links. ([#644](https://github.com/angelleye/paypal-woocommerce/issues/644))
 * Feature - Gift Cards Pro Compatibility. ([#550](https://github.com/angelleye/paypal-woocommerce/issues/550))
+* Feature - Adds filter hook for PayPal API requests so you can adjust request parameters to suit your needs. ([#510](https://github.com/angelleye/paypal-woocommerce/issues/510))
 * Tweak - Adjustments to improve compatibility with WPML. ([#387](https://github.com/angelleye/paypal-woocommerce/issues/387))
 * Tweak - Adds PayPal Credit option for UK orders. ([#638](https://github.com/angelleye/paypal-woocommerce/issues/638))
 * Tweak - Improves the experience for adding a custom image to payment gateways. ([#575](https://github.com/angelleye/paypal-woocommerce/issues/575))
