@@ -598,9 +598,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
             ),
             'save_abandoned_checkout' => array(
-                'title' => __('Save abandoned checkout as Pending', 'paypal-for-woocommerce'),
+                'title' => __('Save Abandoned Checkouts', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Save abandoned checkout as Pending Order', 'paypal-for-woocommerce'),
+                'label' => __('If a buyer clicks to pay with PayPal, but they never return from PayPal, this will save the order as pending with all available details to that point.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
             'debug' => array(
