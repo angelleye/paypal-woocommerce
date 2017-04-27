@@ -546,10 +546,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
             ),
             'prevent_to_add_additional_item' => array(
-                'title' => __('Prevent to add additional item', 'paypal-for-woocommerce'),
-                'label' => __('Prevent to add additional item when clicking EC button.', 'paypal-for-woocommerce'),
+                'title' => __('Prevent Adding Extra Item', 'paypal-for-woocommerce'),
+                'label' => __('Prevent adding an addition unit to the shopping cart when the Express Checkout button is pushed from the product page.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('This will prevent to add additional item when clicking EC button.', 'paypal-for-woocommerce'),
+                'description' => __('By default, clicking the PayPal Express Checkout button from the product page adds 1 unit of that item to the cart before sending the user to PayPal.  This option will disable that, and send the user without adding an additional unit.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => '',
                 'desc_tip' => true,
