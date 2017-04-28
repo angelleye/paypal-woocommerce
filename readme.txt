@@ -136,7 +136,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds the ability to set PayPal sandbox / test mode at the product level. ([#204](https://github.com/angelleye/paypal-woocommerce/issues/204))
 * Feature - Adds options for how to handle orders where PayPal Fraud Management Filters are flagged. ([#618](https://github.com/angelleye/paypal-woocommerce/issues/618))
 * Feature - Compatibility with a variety of plugins that did not work well previously. ([#218])https://github.com/angelleye/paypal-woocommerce/issues/218)) ([#240](https://github.com/angelleye/paypal-woocommerce/issues/240)) ([#356](https://github.com/angelleye/paypal-woocommerce/issues/356)) ([#568](https://github.com/angelleye/paypal-woocommerce/issues/568)) ([#577](https://github.com/angelleye/paypal-woocommerce/issues/577)) ([#646](https://github.com/angelleye/paypal-woocommerce/issues/646))
-* Tweak - Adjustments to improve compatibility with WPML. ([#387](https://github.com/angelleye/paypal-woocommerce/issues/387))
+* Tweak - Adjustments to improve compatibility with WPML. ([#387](https://github.com/angelleye/paypal-woocommerce/issues/387)) ([#641](https://github.com/angelleye/paypal-woocommerce/issues/641))
 * Tweak - Adds PayPal Credit option for UK orders. ([#638](https://github.com/angelleye/paypal-woocommerce/issues/638))
 * Tweak - Improves the experience for adding a custom image to payment gateways. ([#575](https://github.com/angelleye/paypal-woocommerce/issues/575))
 * Tweak - Disables PayPal Express Checkout button on variable product pages until variations / options are selected. ([#555](https://github.com/angelleye/paypal-woocommerce/issues/555))
