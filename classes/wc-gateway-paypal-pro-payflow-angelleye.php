@@ -313,8 +313,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'desc_tip' => true,
             ),
             'credit_card_month_field' => array(
-                'title' => __('Choose Credit Card Month Field', 'paypal-for-woocommerce'),
-                'label' => __('Choose Credit Card Month Field Format.', 'paypal-for-woocommerce'),
+                'title' => __('Credit Card Month Format', 'paypal-for-woocommerce'),
+                'label' => __('Credit Card Month Display Format.', 'paypal-for-woocommerce'),
                 'description' => __('Choose whether you wish to display Name format or Number format of Month field in the credit card form.'),
                 'type' => 'select',
                 'css'      => 'max-width:200px;',
@@ -326,9 +326,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'default' => 'names'
             ),
             'credit_card_year_field' => array(
-                'title' => __('Choose Credit Card Year Field', 'paypal-for-woocommerce'),
-                'label' => __('Choose Credit Card Year Field Format.', 'paypal-for-woocommerce'),
-                'description' => __('Choose whether you wish to display Show Two digit format or Four digit of Year field in the credit card form.'),
+                'title' => __('Credit Card Year Format', 'paypal-for-woocommerce'),
+                'label' => __('Credit Card Year Display Format.', 'paypal-for-woocommerce'),
+                'description' => __('Choose whether you wish to display two digit format or four digit of Year field in the credit card form.'),
                 'type' => 'select',
                 'css'      => 'max-width:200px;',
                 'class'    => 'wc-enhanced-select',
