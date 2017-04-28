@@ -16,7 +16,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->method_title = __('PayPal Express Checkout ', 'paypal-for-woocommerce');
         $this->method_description = __('PayPal Express Checkout is designed to make the checkout experience for buyers using PayPal much more quick and easy than filling out billing and shipping forms.  Customers will be taken directly to PayPal to sign in and authorize the payment, and are then returned back to your store to choose a shipping method, review the final order total, and complete the payment.', 'paypal-for-woocommerce');
         $this->has_fields = false;
-        $this->order_button_text = __('Proceed to PayPal', 'paypal-for-woocommerce');
+        
         $this->supports = array(
             'products',
             'refunds'
@@ -125,6 +125,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-function-angelleye.php' );
         }
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
+        $this->order_button_text = ($this->function_helper->ec_is_express_checkout() == false) ?  __('Proceed to PayPal', 'paypal-for-woocommerce') :  __( 'Place order', 'paypal-for-woocommerce' );
     }
 
     public function admin_options() {
