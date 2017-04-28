@@ -134,6 +134,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds Soft Descriptor setting to credit card gateways so you can set what shows on customer credit card statements. ([#634](https://github.com/angelleye/paypal-woocommerce/issues/634))
 * Feature - Adds options for how to display CC month / year on the checkout form for direct credit card gateways. ([#617](https://github.com/angelleye/paypal-woocommerce/issues/617))
 * Feature - Adds the ability to set PayPal sandbox / test mode at the product level. ([#204](https://github.com/angelleye/paypal-woocommerce/issues/204))
+* Feature - Adds options for how to handle orders where PayPal Fraud Management Filters are flagged. ([#618](https://github.com/angelleye/paypal-woocommerce/issues/618))
 * Tweak - Adjustments to improve compatibility with WPML. ([#387](https://github.com/angelleye/paypal-woocommerce/issues/387))
 * Tweak - Adds PayPal Credit option for UK orders. ([#638](https://github.com/angelleye/paypal-woocommerce/issues/638))
 * Tweak - Improves the experience for adding a custom image to payment gateways. ([#575](https://github.com/angelleye/paypal-woocommerce/issues/575))
