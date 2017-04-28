@@ -348,12 +348,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'fraud_management_filters' => array(
                 'title' => __('Fraud Management Filters ', 'paypal-for-woocommerce'),
                 'label' => '',
-                'description' => __('Allows you to Place order On Hold for further review or Ignore warnings and proceed as usual.', 'paypal-for-woocommerce'),
+                'description' => __('Choose how you would like to handle orders when Fraud Management Filters are flagged.', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => '',
                 'options' => array(
-                    'ignore_warnings_and_proceed_as_usual' => __('Ignore warnings and proceed as usual', 'paypal-for-woocommerce'),
-                    'place_order_on_hold_for_further_review' => __('Place order On Hold for further review', 'paypal-for-woocommerce'),
+                    'ignore_warnings_and_proceed_as_usual' => __('Ignore warnings and proceed as usual.', 'paypal-for-woocommerce'),
+                    'place_order_on_hold_for_further_review' => __('Place order On Hold for further review.', 'paypal-for-woocommerce'),
                 ),
                 'default' => 'place_order_on_hold_for_further_review',
                 'desc_tip' => true,
