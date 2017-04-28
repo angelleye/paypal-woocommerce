@@ -295,7 +295,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('he value entered here will be displayed on the buyer\'s credit card statement.', 'paypal-for-woocommerce'),
+                'description' => __('The value entered here will be displayed on the buyer\'s credit card statement.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
             ),
