@@ -466,7 +466,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
+                'description' => __('The value entered here will be displayed on the buyer\'s credit card statement.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
             ),

@@ -727,7 +727,7 @@ class AngellEYE_Utility {
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('If you provide a value in this field, the value display on the buyer\'s statement', 'paypal-for-woocommerce'),
+                'description' => __('he value entered here will be displayed on the buyer\'s credit card statement.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
             ),
