@@ -1174,7 +1174,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         private function set_session($key, $value) {
-            WC()->session->$key = $value;
             WC()->session->set( $key, $value );
         }
         public function http_api_curl_ec_add_curl_parameter($handle, $r, $url ) {

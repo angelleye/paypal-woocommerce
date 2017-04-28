@@ -667,7 +667,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'redirect' => $return_url,
                 );
                 if (isset($_POST['terms']) && wc_get_page_id('terms') > 0) {
-                    WC()->session->get( 'paypal_express_terms', true );
+                    WC()->session->set( 'paypal_express_terms', true );
                 }
                 if (is_ajax()) {
                     if ($this->function_helper->ec_is_version_gte_2_4()) {
