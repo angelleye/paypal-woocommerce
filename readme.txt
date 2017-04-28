@@ -131,6 +131,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - WooCommerce MailChimp compatibility. ([#592](https://github.com/angelleye/paypal-woocommerce/issues/592))
 * Feature - Adds the ability to enable / disable the PayPal Express Checkout button at the product level. ([#425](https://github.com/angelleye/paypal-woocommerce/issues/425))
 * Feature - Specify whether or not Express Checkout shortcut buttons add an additional unit to the cart before redirecting to PayPal or not. ([#355](https://github.com/angelleye/paypal-woocommerce/issues/355))
+* Feature - Adds Soft Descriptor setting to credit card gateways so you can set what shows on customer credit card statements. ([#634](https://github.com/angelleye/paypal-woocommerce/issues/634))
 * Tweak - Adjustments to improve compatibility with WPML. ([#387](https://github.com/angelleye/paypal-woocommerce/issues/387))
 * Tweak - Adds PayPal Credit option for UK orders. ([#638](https://github.com/angelleye/paypal-woocommerce/issues/638))
 * Tweak - Improves the experience for adding a custom image to payment gateways. ([#575](https://github.com/angelleye/paypal-woocommerce/issues/575))
