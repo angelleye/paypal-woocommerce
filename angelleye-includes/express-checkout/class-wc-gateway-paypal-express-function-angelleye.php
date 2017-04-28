@@ -49,7 +49,8 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
 
     public function ec_is_express_checkout() {
-        return isset(WC()->session->paypal_express_checkout);
+        $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+        return isset($paypal_express_checkout);
     }
 
     public function ec_notice_count($notice_type = '') {
@@ -67,7 +68,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                     'redirect' => $this->ec_get_checkout_url('set_express_checkout'),
                 );
                 if (isset($_POST['terms']) && wc_get_page_id('terms') > 0) {
-                    WC()->session->paypal_express_terms = 1;
+                    WC()->session->set( 'paypal_express_terms', 1);
                 }
                 if (is_ajax()) {
                     if ($this->ec_is_version_gte_2_4()) {

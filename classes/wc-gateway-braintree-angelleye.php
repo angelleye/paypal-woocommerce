@@ -486,7 +486,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'redirect' => $this->get_return_url($order)
             );
         } else {
-            WC()->session->reload_checkout = true;
+            WC()->session->set( 'reload_checkout', true );
             return array(
                 'result' => 'fail',
                 'redirect' => ''
@@ -1344,7 +1344,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     exit;
                 }
             } else {
-                WC()->session->reload_checkout = true;
+                WC()->session->set( 'reload_checkout', true );
                 return array(
                     'result' => 'fail',
                     'redirect' => ''

@@ -645,8 +645,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
                 $result = $this->angelleye_ex_doreference_transaction($order_id);
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
-                    WC()->checkout->posted = WC()->session->post_data;
-                    $_POST = WC()->session->post_data;
+                    WC()->checkout->posted = WC()->session->get( 'post_data' );
+                    $_POST = WC()->session->get( 'post_data' );
                     $order = wc_get_order($order_id);
                     $order->payment_complete($result['TRANSACTIONID']);
                     $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
@@ -667,7 +667,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'redirect' => $return_url,
                 );
                 if (isset($_POST['terms']) && wc_get_page_id('terms') > 0) {
-                    WC()->session->paypal_express_terms = true;
+                    WC()->session->get( 'paypal_express_terms', true );
                 }
                 if (is_ajax()) {
                     if ($this->function_helper->ec_is_version_gte_2_4()) {
@@ -681,10 +681,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 exit;
             } else {
                 if (isset($_POST['terms']) && wc_get_page_id('terms') > 0) {
-                    WC()->session->paypal_express_terms = true;
+                    WC()->session->set( 'paypal_express_terms', true );
                 }
-                WC()->session->post_data = $_POST;
-                WC()->checkout->posted = WC()->session->post_data;
+                WC()->session->set( 'post_data', $_POST);
+                WC()->checkout->posted = $_POST;
                 $_GET['pp_action'] = 'set_express_checkout';
                 $this->handle_wc_api();
             }
@@ -772,7 +772,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             switch ($_GET['pp_action']) {
                 case 'set_express_checkout':
                     if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
-                        WC()->session->ec_save_to_account = 'on';
+                        WC()->session->set( 'ec_save_to_account', 'on' );
                     }
                     $paypal_express_request->angelleye_set_express_checkout();
                     break;
@@ -781,9 +781,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $order_id = absint(WC()->session->get('order_awaiting_payment'));
                     $cart_hash = md5(json_encode(wc_clean(WC()->cart->get_cart_for_session())) . WC()->cart->total);
                     if (($order_id && ( $order = wc_get_order($order_id) ) && $order->has_cart_hash($cart_hash) && $order->has_status(array('pending', 'failed'))) == false) {
-                        WC()->checkout->posted = WC()->session->post_data;
-                        $_POST = WC()->session->post_data;
-                        $this->posted = WC()->session->post_data;
+                        WC()->checkout->posted = WC()->session->get( 'post_data' );
+                        $_POST = WC()->session->get( 'post_data' );
+                        $this->posted = WC()->session->get( 'post_data' );
                         $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
                         if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
                             foreach ($_POST['shipping_method'] as $i => $value)
@@ -803,13 +803,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }
                         do_action('woocommerce_checkout_order_processed', $order_id, $this->posted);
                     } else {
-                        WC()->checkout->posted = WC()->session->post_data;
-                        $_POST = WC()->session->post_data;
-                        $this->posted = WC()->session->post_data;
+                        WC()->checkout->posted = WC()->session->get( 'post_data' );
+                        $_POST = WC()->session->get( 'post_data' );
+                        $this->posted = WC()->session->get( 'post_data' );
                     }
                     $order = wc_get_order($order_id);
                     if ($this->billing_address) {
-                        $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'billing');
+                        $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+                        $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
+                        $order->set_address($shipping_details, 'billing');
                     } else {
                         $billing_address = array();
                         $checkout_fields['billing'] = WC()->countries->get_address_fields(WC()->checkout->get_value('billing_country'), 'billing_');
@@ -821,7 +823,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }
                         $order->set_address($billing_address, 'billing');
                     }
-                    $order->set_address(WC()->session->paypal_express_checkout['shipping_details'], 'shipping');
+                    $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+                    $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
+                    $order->set_address($shipping_details, 'shipping');
                     $order->set_payment_method($this->id);
                     $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
                     $old_wc = version_compare(WC_VERSION, '3.0', '<');
@@ -834,22 +838,23 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         update_post_meta($order->get_id(), '_payment_method_title', $this->title);
                         update_post_meta($order->get_id(), '_customer_user', get_current_user_id());
                     }
-                    if (!empty(WC()->session->post_data['billing_phone'])) {
+                    $post_data = WC()->session->get( 'post_data' );
+                    if (!empty($post_data['billing_phone'])) {
                         if ($old_wc) {
-                            update_post_meta($order_id, '_billing_phone', WC()->session->post_data['billing_phone']);
+                            update_post_meta($order_id, '_billing_phone', $post_data['billing_phone']);
                         } else {
-                            update_post_meta($order->get_id(), '_billing_phone', WC()->session->post_data['billing_phone']);
+                            update_post_meta($order->get_id(), '_billing_phone', $post_data['billing_phone']);
                         }
                     }
-                    if (!empty(WC()->session->post_data['order_comments'])) {
+                    if (!empty($post_data['order_comments'])) {
                         if ($old_wc) {
-                            update_post_meta($order_id, 'order_comments', WC()->session->post_data['order_comments']);
+                            update_post_meta($order_id, 'order_comments', $post_data['order_comments']);
                         } else {
-                            update_post_meta($order->get_id(), 'order_comments', WC()->session->post_data['order_comments']);
+                            update_post_meta($order->get_id(), 'order_comments', $post_data['order_comments']);
                         }
                         $my_post = array(
                             'ID' => $order_id,
-                            'post_excerpt' => WC()->session->post_data['order_comments'],
+                            'post_excerpt' => $post_data['order_comments'],
                         );
                         wp_update_post($my_post);
                     }

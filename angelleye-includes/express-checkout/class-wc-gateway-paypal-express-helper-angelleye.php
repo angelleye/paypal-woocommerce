@@ -136,7 +136,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function angelleye_paypal_express_checkout_redirect_to_paypal() {
         try {
-            WC()->session->post_data = $_POST;
+            WC()->session->set( 'post_data', $_POST);
             if (isset($_POST['payment_method']) && 'paypal_express' === $_POST['payment_method'] && $this->function_helper->ec_notice_count('error') == 0) {
                 $this->function_helper->ec_redirect_after_checkout();
             }
@@ -150,7 +150,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if (isset($_REQUEST['express_checkout']) || isset($_REQUEST['express_checkout_x'])) {
                 wc_clear_notices();
                 if( isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on' ) {
-                    WC()->session->ec_save_to_account = 'on';
+                    WC()->session->set( 'ec_save_to_account', 'on');
                 }
                 $url = esc_url_raw(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
             }
@@ -162,11 +162,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_get_session_data($key = '') {
         try {
-            $session_data = null;
-            if (empty($key)) {
-                $session_data = WC()->session->paypal_express_checkout;
-            } elseif (isset(WC()->session->paypal_express_checkout[$key])) {
-                $session_data = WC()->session->paypal_express_checkout[$key];
+            $session_data = WC()->session->get( 'paypal_express_checkout' );
+            if (isset($session_data[$key])) {
+                $session_data = $session_data[$key];
             }
             return $session_data;
         } catch (Exception $ex) {
@@ -192,12 +190,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $_POST['billing_' . $field] = $value;
                 }
             }
-            $order_note = WC()->session->post_data['order_comments'];
-            if (!empty($order_note)) {
-                $_POST['order_comments'] = $order_note;
-            }
-            if( !empty(WC()->session->post_data) ) {
-                foreach (WC()->session->post_data as $key => $value) {
+            $post_data = WC()->session->get( 'post_data' );
+            $_POST['order_comments'] = isset($post_data['order_comments']) ? $post_data['order_comments'] : '';
+            if( !empty($post_data) ) {
+                foreach ($post_data as $key => $value) {
                     $_POST[$key] = $value;
                 }
             }
@@ -277,9 +273,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_add_body_class($classes) {
         try {
+            $paypal_express_terms = WC()->session->get( 'paypal_express_terms' );
             if ($this->ec_is_checkout() && $this->function_helper->ec_is_express_checkout()) {
                 $classes[] = 'express-checkout';
-                if ($this->show_on_checkout && isset(WC()->session->paypal_express_terms)) {
+                if ($this->show_on_checkout && isset($paypal_express_terms)) {
                     $classes[] = 'express-hide-terms';
                 }
             }
@@ -306,7 +303,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if (!$this->ec_is_available() || !$this->function_helper->ec_is_express_checkout()) {
             return $checked_default;
         }
-        if ($this->show_on_checkout && isset(WC()->session->paypal_express_terms)) {
+        $paypal_express_terms = WC()->session->get( 'paypal_express_terms' );
+        if ($this->show_on_checkout && isset($paypal_express_terms)) {
             $checked_default = true;
         }
         return $checked_default;
@@ -327,8 +325,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function ec_order_received_text($text, $order) {
-        if ($order && $order->has_status('on-hold') && isset(WC()->session->held_order_received_text)) {
-            $text = WC()->session->held_order_received_text;
+        $held_order_received_text = WC()->session->get( 'held_order_received_text' );
+        if ($order && $order->has_status('on-hold') && isset($held_order_received_text)) {
+            $text = $held_order_received_text;
             unset(WC()->session->held_order_received_text);
         }
         return $text;

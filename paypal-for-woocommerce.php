@@ -1175,6 +1175,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         private function set_session($key, $value) {
             WC()->session->$key = $value;
+            WC()->session->set( $key, $value );
         }
         public function http_api_curl_ec_add_curl_parameter($handle, $r, $url ) {
             $Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
@@ -1308,7 +1309,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public function angelleye_express_checkout_woocommerce_enable_guest_checkout($bool) {
             global $wpdb;
             $row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_enable_guest_checkout' ) );
-            if( !empty($row->option_value) && $row->option_value == 'yes' && isset(WC()->session->paypal_express_checkout) && !empty(WC()->session->paypal_express_checkout) && isset(WC()->session->ec_save_to_account) && WC()->session->ec_save_to_account == 'on') {
+            $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+            $ec_save_to_account = WC()->session->get( 'ec_save_to_account' );
+            if( !empty($row->option_value) && $row->option_value == 'yes' && isset($paypal_express_checkout) && !empty($paypal_express_checkout) && isset($ec_save_to_account) && $ec_save_to_account == 'on') {
                return 'no';
             } else {
                 return $bool;
@@ -1332,7 +1335,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woocommerce_page_title($page_title) {
-            if ('Checkout' == $page_title && !empty(WC()->session->paypal_express_checkout)) {
+            $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+            if ('Checkout' == $page_title && !empty($paypal_express_checkout)) {
                 remove_filter('the_title', array($this, 'angelleye_paypal_for_woocommerce_page_title'));
                 return 'Review Order';
             } else {
