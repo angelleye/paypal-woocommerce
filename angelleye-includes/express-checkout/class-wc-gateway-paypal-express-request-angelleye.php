@@ -360,7 +360,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     'shiptostate' => $shipping_state,
                     'shiptozip' => $shipping_postcode,
                     'shiptocountrycode' => $shipping_country,
-                    'shiptophonenum' => ( $paypal_express_checkout['billing_phone'] ) ? $paypal_express_checkout['billing_phone'] : '',
+                    'shiptophonenum' => isset($paypal_express_checkout['billing_phone'] ) ? $paypal_express_checkout['billing_phone'] : '',
                 );
                 array_push($Payments, $Payment);
             }

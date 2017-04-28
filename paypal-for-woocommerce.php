@@ -1307,6 +1307,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function angelleye_express_checkout_woocommerce_enable_guest_checkout($bool) {
             global $wpdb;
+            if (sizeof(WC()->session) == 0) {
+                return false;
+            }
             $row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_enable_guest_checkout' ) );
             $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
             $ec_save_to_account = WC()->session->get( 'ec_save_to_account' );

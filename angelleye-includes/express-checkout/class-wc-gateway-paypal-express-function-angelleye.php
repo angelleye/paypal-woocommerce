@@ -49,6 +49,9 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
 
     public function ec_is_express_checkout() {
+        if (sizeof(WC()->session) == 0) {
+                return false;
+            }
         $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
         return isset($paypal_express_checkout);
     }
