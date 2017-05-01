@@ -1336,6 +1336,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woocommerce_page_title($page_title) {
+            if (sizeof(WC()->session) == 0) {
+                return $page_title;
+            }
             $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
             if ('Checkout' == $page_title && !empty($paypal_express_checkout)) {
                 remove_filter('the_title', array($this, 'angelleye_paypal_for_woocommerce_page_title'));
