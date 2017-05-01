@@ -72,7 +72,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         {
             
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
-            include_once plugin_dir_path(__FILE__) . 'classes/lib/IPN/class-paypal-woocommerce-ipn-handler.php';
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
             $woo_version = $this->wpbo_get_woo_version_number();
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
@@ -1337,6 +1336,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woocommerce_page_title($page_title) {
+            if (sizeof(WC()->session) == 0) {
+                return $page_title;
+            }
             $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
             if ('Checkout' == $page_title && !empty($paypal_express_checkout)) {
                 remove_filter('the_title', array($this, 'angelleye_paypal_for_woocommerce_page_title'));
