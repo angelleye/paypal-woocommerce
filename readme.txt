@@ -3,8 +3,8 @@ Contributors: angelleye
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
-Tested up to: 4.7
-Stable tag: 1.3.3
+Tested up to: 4.7.4
+Stable tag: 1.4.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -24,6 +24,7 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
  * PayPal REST Credit Card Payments
  * PayPal Braintree Credit Card Payments
  * Fully Supports WooCommerce Payment Tokens!
+ * Compatible with WooCommerce Subscriptions!
  
 [youtube https://www.youtube.com/watch?v=svq9ovWGp7I]
 
@@ -31,6 +32,9 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
 
 = WooCommerce Payment Tokens Compatibility =
 Fully supports WooCommerce payment tokens, so buyers can choose to save their payment method to their account with your site for quicker checkout in the future.
+
+= WooCommerce Subscriptions Compatibility =
+If you are using WooCommerce Subscriptions to manage subscription profiles you will be able to accept any of our PayPal payment gateways for subscription sign-up and payments.
 
 = FREE PayPal Payments Pro Account =
 By using our plugin we can get you hooked up with PayPal Payments Pro with no monthly fee! (U.S. and Canada merchants only) [Contact us](https://www.angelleye.com/contact-us) for details.
