@@ -119,6 +119,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.0 - xx.xx.2017=
 * Feature - WooCommerce 3.0 compatibility. ([#653](https://github.com/angelleye/paypal-woocommerce/issues/653))
+* Feature - WooCommerce Subscriptions compatibility. ([#10](https://github.com/angelleye/paypal-woocommerce/issues/10))
 * Feature - Major overhaul to Express Checkout integration inside WooCommerce. ([#630](https://github.com/angelleye/paypal-woocommerce/issues/630)) ([#560](https://github.com/angelleye/paypal-woocommerce/issues/560)) ([#447](https://github.com/angelleye/paypal-woocommerce/issues/447)) ([#616](https://github.com/angelleye/paypal-woocommerce/issues/616)) ([#639](https://github.com/angelleye/paypal-woocommerce/issues/639)) ([#584](https://github.com/angelleye/paypal-woocommerce/issues/584)) ([#464](https://github.com/angelleye/paypal-woocommerce/issues/464)) ([#360](https://github.com/angelleye/paypal-woocommerce/issues/360)) ([#596](https://github.com/angelleye/paypal-woocommerce/issues/596)) ([#594](https://github.com/angelleye/paypal-woocommerce/issues/594)) ([#549](https://github.com/angelleye/paypal-woocommerce/issues/549))
 * Feature - WooCommerce Subscriptions compatibility. ([#105](https://github.com/angelleye/paypal-woocommerce/issues/105))
 * Feature - WooCommerce Sequential Orders compatibility. ([#145](https://github.com/angelleye/paypal-woocommerce/issues/145))
