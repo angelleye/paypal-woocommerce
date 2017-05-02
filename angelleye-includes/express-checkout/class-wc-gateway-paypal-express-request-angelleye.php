@@ -228,7 +228,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $order->payment_complete($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                 } else {
                     if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && (!empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '11610')) {
-                        $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
+                        $error = !empty($this->paypal_response['L_LONGMESSAGE0']) ? $this->paypal_response['L_LONGMESSAGE0'] : $this->paypal_response['L_SHORTMESSAGE0'];
                         $order->update_status('on-hold', $error);
                     } else {
                         $this->update_payment_status_by_paypal_responce($this->confirm_order_id, $this->paypal_response);
@@ -1014,6 +1014,53 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 WC_Gateway_PayPal_Express_AngellEYE::log('ERROR! order_cancellations setting for ' . $this->gateway->method_title . ' is not valid!');
                 return true;
         }
+    }
+    
+    public function angelleye_process_refund($order_id, $amount = null, $reason = '') {
+        $order = wc_get_order($order_id);
+        WC_Gateway_PayPal_Express_AngellEYE::log('Begin Refund');
+        WC_Gateway_PayPal_Express_AngellEYE::log('Transaction ID: ' . print_r($order->get_transaction_id(), true));
+        if (!$order || !$order->get_transaction_id()) {
+            return false;
+        }
+        if ($reason) {
+            if (255 < strlen($reason)) {
+                $reason = substr($reason, 0, 252) . '...';
+            }
+            $reason = html_entity_decode($reason, ENT_NOQUOTES, 'UTF-8');
+        }
+        $RTFields = array(
+            'transactionid' => $order->get_transaction_id(),
+            'refundtype' => $order->get_total() == $amount ? 'Full' : 'Partial',
+            'amt' => AngellEYE_Gateway_Paypal::number_format($amount), 
+            'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
+            'note' => $reason,
+        );
+        $PayPalRequestData = array('RTFields' => $RTFields);
+        WC_Gateway_PayPal_Express_AngellEYE::log('Refund Request: ' . print_r($PayPalRequestData, true));
+        $this->paypal_response = $this->paypal->RefundTransaction($PayPalRequestData);
+        
+        
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'RefundTransaction', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify);
+        WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->testmode);
+        WC_Gateway_PayPal_Express_AngellEYE::log('Endpoint: ' . $this->gateway->API_Endpoint);
+        $PayPalRequest = isset($this->paypal_response['RAWREQUEST']) ? $this->paypal_response['RAWREQUEST'] : '';
+        $PayPalResponse = isset($this->paypal_response['RAWRESPONSE']) ? $this->paypal_response['RAWRESPONSE'] : '';
+        WC_Gateway_PayPal_Express_AngellEYE::log('Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
+        WC_Gateway_PayPal_Express_AngellEYE::log('Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
+        if ($this->paypal->APICallSuccessful( $this->paypal_response['ACK'])) {
+            $order->add_order_note('Refund Transaction ID:' . $this->paypal_response['REFUNDTRANSACTIONID']);
+            $max_remaining_refund = wc_format_decimal( $order->get_total() - $order->get_total_refunded() );
+            if ( !$max_remaining_refund > 0 ) {
+                $order->update_status('refunded');
+            }
+            if (ob_get_length()) ob_end_clean();
+            return true;
+        } else {
+            $ec_message = apply_filters( 'ae_ppec_refund_error_message', $this->paypal_response['L_LONGMESSAGE0'], $this->paypal_response['L_ERRORCODE0'], $this->paypal_response );
+            return new WP_Error('ec_refund-error', $ec_message);
+        }       
+
     }
 
 }

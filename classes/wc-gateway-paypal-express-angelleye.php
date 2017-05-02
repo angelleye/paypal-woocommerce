@@ -1102,4 +1102,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
         }
     }
+    
+    /**
+     * Process a refund if supported
+     * @param  int $order_id
+     * @param  float $amount
+     * @param  string $reason
+     * @return  bool|wp_error True or false based on success, or a WP_Error object
+     */
+    public function process_refund($order_id, $amount = null, $reason = '') {
+        require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
+        $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
+        $bool = $paypal_express_request->angelleye_process_refund($order_id, $amount, $reason);
+        if($bool == true) {
+            return true;
+        }
+    }
 }
