@@ -35,7 +35,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '1.3.1');
+    define('VERSION_PFW', '1.4.0');
 }
 
 /**
@@ -66,13 +66,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          *
          */
         
-        const VERSION_PFW = '1.4.0';
         public $customer_id = '';
         public function __construct()
         {
             
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
-            $plugin_admin = new AngellEYE_Utility($this->plugin_slug, self::VERSION_PFW);
+            $plugin_admin = new AngellEYE_Utility($this->plugin_slug, VERSION_PFW);
             $woo_version = $this->wpbo_get_woo_version_number();
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
             if(version_compare($woo_version,'2.6','>=')) {
@@ -276,7 +275,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if (version_compare(phpversion(), '5.3.0', '>=')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
             }
-            new Angelleye_PayPal_Express_Checkout_Helper();
+            new Angelleye_PayPal_Express_Checkout_Helper(VERSION_PFW);
             /**
              * Check current WooCommerce version to ensure compatibility.
              */

@@ -9,10 +9,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public $setting;
     public $function_helper;
 
-    public function __construct() {
+    public function __construct($version) {
         try {
             global $wpdb;
-            $this->version = '1.0.1';
+            $this->version = $version;
             $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
             $this->setting = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
             $this->enable_tokenized_payments = !empty($this->setting['enable_tokenized_payments']) ? $this->setting['enable_tokenized_payments'] : 'no';

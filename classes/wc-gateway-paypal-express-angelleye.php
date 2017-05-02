@@ -699,6 +699,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function angelleye_express_checkout_encrypt_gateway_api($settings) {
+        if( !empty($settings['sandbox_api_password'])) {
+            $api_password = $settings['sandbox_api_password'];
+        } else {
+            $api_password = $settings['api_password'];
+        }
+        if(strlen($api_password) > 35 ) {
+            return $settings;
+        }
         if (!empty($settings['is_encrypt'])) {
             $gateway_settings_keys = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
             foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
