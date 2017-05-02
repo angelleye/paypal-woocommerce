@@ -123,6 +123,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.1 - 05.02.2017 =
 * Fix - Resolves a problem with voiding authorizations. ([#660](https://github.com/angelleye/paypal-woocommerce/issues/660))
+* Fix - Resolves a problem with PayFlow credentials getting saved incorrectly. ([#661](https://github.com/angelleye/paypal-woocommerce/issues/661))
 
 = 1.4.0 - 05.01.2017=
 * Feature - WooCommerce 3.0 compatibility. ([#653](https://github.com/angelleye/paypal-woocommerce/issues/653))
