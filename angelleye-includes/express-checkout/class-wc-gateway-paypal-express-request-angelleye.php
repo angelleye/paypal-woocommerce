@@ -179,6 +179,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             $this->angelleye_add_order_note($order);
             $this->angelleye_add_extra_order_meta($order);
+            if($this->gateway->payment_action != 'Sale') {
+                AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($this->paypal_response, $order, $this->gateway->payment_action);
+            }
             if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
