@@ -97,7 +97,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             
             add_action( 'admin_enqueue_scripts', array( $this , 'admin_scripts' ) );
             add_action( 'admin_print_styles', array( $this , 'admin_styles' ) );
-           add_action( 'admin_init', array( $this, 'angelleye_check_version' ), 5 );
+           
            add_action( 'admin_menu', array( $this, 'angelleye_admin_menu_own' ) );
             add_action( 'product_type_options', array( $this, 'angelleye_product_type_options_own' ), 10, 1);
             add_action( 'woocommerce_process_product_meta', array( $this, 'angelleye_woocommerce_process_product_meta_own' ), 10, 1 );
@@ -262,8 +262,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         //init function
-        function init(){
-            global $pp_settings;
+        public function init(){
             if (!class_exists("WC_Payment_Gateway")) return;
             load_plugin_textdomain( 'paypal-for-woocommerce', FALSE, basename( dirname( __FILE__ ) ) . '/i18n/languages/' );
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye.php';
@@ -474,43 +473,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
        
-               public function angelleye_check_version() {
-        	
-        	$paypal_for_woocommerce_version = get_option('paypal_for_woocommerce_version');
-        	if( empty($paypal_for_woocommerce_version) ) {
-        		
-        		// PayFlow
-                $woocommerce_paypal_pro_payflow_settings = get_option('woocommerce_paypal_pro_payflow_settings');
-                if( isset($woocommerce_paypal_pro_payflow_settings) && !empty($woocommerce_paypal_pro_payflow_settings)) {
-                	
-                	if( !isset($woocommerce_paypal_pro_payflow_settings['payment_action']) && empty($woocommerce_paypal_pro_payflow_settings['payment_action'])) {
-                		$woocommerce_paypal_pro_payflow_settings['payment_action'] = 'Sale';
-                	}
-                	
-                	if( !isset($woocommerce_paypal_pro_payflow_settings['send_items']) && empty($woocommerce_paypal_pro_payflow_settings['send_items']) ) {
-                		$woocommerce_paypal_pro_payflow_settings['send_items'] = 'yes';
-                	}
-                	
-                	update_option('woocommerce_paypal_pro_payflow_settings', $woocommerce_paypal_pro_payflow_settings);
-                }
-                
-                // DoDirectPayment
-                $woocommerce_paypal_pro_settings = get_option('woocommerce_paypal_pro_settings');
-                if( isset($woocommerce_paypal_pro_settings) && !empty($woocommerce_paypal_pro_settings)) {
-                	
-                	if( !isset($woocommerce_paypal_pro_settings['payment_action']) && empty($woocommerce_paypal_pro_settings['payment_action']) ) {
-                		$woocommerce_paypal_pro_settings['payment_action'] = 'Sale';
-                	}
-                	
-                	if( !isset($woocommerce_paypal_pro_settings['send_items']) && empty($woocommerce_paypal_pro_settings['send_items']) ) {
-                		$woocommerce_paypal_pro_settings['send_items'] = 'yes';
-                	}
-                	
-                	update_option('woocommerce_paypal_pro_settings', $woocommerce_paypal_pro_settings);
-                }
-                    update_option('paypal_for_woocommerce_version', VERSION_PFW);
-        	}
-        }
+               
 
 
         public static function calculate($order, $send_items = false){

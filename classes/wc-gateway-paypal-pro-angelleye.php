@@ -158,8 +158,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
         // Hooks
         add_action('woocommerce_api_wc_gateway_paypal_pro_angelleye', array($this, 'handle_3dsecure'));
-        /* 1.6.6 */
-        add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         /* 2.0.0 */
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_pro_encrypt_gateway_api'), 10, 1);

@@ -95,8 +95,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->credit_card_month_field = $this->get_option('credit_card_month_field', 'names');
             $this->credit_card_year_field = $this->get_option('credit_card_year_field', 'four_digit');
             $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
-            /* 1.6.6 */
-            add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
 
             /* 2.0.0 */
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
@@ -1499,13 +1497,21 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
     }
 
     public function angelleye_paypal_pro_payflow_encrypt_gateway_api($settings) {
+        if( !empty($settings['sandbox_paypal_partner'])) {
+            $paypal_partner = $settings['sandbox_paypal_partner'];
+        } else {
+            $paypal_partner = $settings['paypal_partner'];
+        }
+        if(strlen($paypal_partner) > 28 ) {
+            return $settings;
+        }
+        
         if( !empty($settings['is_encrypt']) ) {
             $gateway_settings_keys = array('sandbox_paypal_vendor', 'sandbox_paypal_password', 'sandbox_paypal_user', 'sandbox_paypal_partner', 'paypal_vendor', 'paypal_password', 'paypal_user', 'paypal_partner');
             foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
                 if( !empty( $settings[$gateway_settings_value]) ) {
                     $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
                 }
-                echo '</ul>';
             }
         }
         return $settings;
