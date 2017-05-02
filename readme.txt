@@ -126,7 +126,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves a problem with credentials getting saved incorrectly. ([#661](https://github.com/angelleye/paypal-woocommerce/issues/661)) ([#663](https://github.com/angelleye/paypal-woocommerce/issues/663))
 * Fix - Resolves a problem processing refunds through WooCommerce with some gateways. ([#664](https://github.com/angelleye/paypal-woocommerce/issues/664))
 
-= 1.4.0 - 05.01.2017=
+= 1.4.0 - 05.01.2017 =
 * Feature - WooCommerce 3.0 compatibility. ([#653](https://github.com/angelleye/paypal-woocommerce/issues/653))
 * Feature - WooCommerce Subscriptions compatibility. ([#10](https://github.com/angelleye/paypal-woocommerce/issues/10))
 * Feature - Major overhaul to Express Checkout integration inside WooCommerce. ([#630](https://github.com/angelleye/paypal-woocommerce/issues/630)) ([#560](https://github.com/angelleye/paypal-woocommerce/issues/560)) ([#447](https://github.com/angelleye/paypal-woocommerce/issues/447)) ([#616](https://github.com/angelleye/paypal-woocommerce/issues/616)) ([#639](https://github.com/angelleye/paypal-woocommerce/issues/639)) ([#584](https://github.com/angelleye/paypal-woocommerce/issues/584)) ([#464](https://github.com/angelleye/paypal-woocommerce/issues/464)) ([#360](https://github.com/angelleye/paypal-woocommerce/issues/360)) ([#596](https://github.com/angelleye/paypal-woocommerce/issues/596)) ([#594](https://github.com/angelleye/paypal-woocommerce/issues/594)) ([#549](https://github.com/angelleye/paypal-woocommerce/issues/549))
