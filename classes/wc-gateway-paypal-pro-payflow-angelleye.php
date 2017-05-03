@@ -33,20 +33,15 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->title = $this->get_option('title');
             $this->description = $this->get_option('description');
             $this->enabled = $this->get_option('enabled');
-            $this->paypal_vendor = $this->get_option('paypal_vendor');
-            $this->paypal_partner = $this->get_option('paypal_vendor', 'PayPal');
-            $this->paypal_password = $this->get_option('paypal_password');
-            $this->paypal_user = $this->get_option('paypal_user', $this->paypal_vendor);
             $this->testmode = 'yes' === $this->get_option('testmode', 'no');
-
             if( $this->testmode == false ) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
             $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
             $this->debug = 'yes' === $this->get_option('debug', 'no');
             $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
-                $this->error_display_type = $this->get_option('error_display_type', 'no');
-                $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
+            $this->error_display_type = $this->get_option('error_display_type', 'no');
+            $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
             $this->payment_action = $this->get_option('payment_action', 'Sale');
 
             //fix ssl for image icon
@@ -55,6 +50,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
             }
             $this->icon = apply_filters('woocommerce_paypal_pro_payflow_icon', $this->icon);
+            $this->paypal_partner = $this->get_option('paypal_partner', 'PayPal');
+            $this->paypal_vendor = $this->get_option('paypal_vendor');
+            $this->paypal_user = $this->get_option('paypal_user', $this->paypal_vendor);
+            $this->paypal_password = $this->get_option('paypal_password');
             if ($this->testmode == true) {
                 $this->paypal_vendor = $this->get_option('sandbox_paypal_vendor');
                 $this->paypal_partner = $this->get_option('sandbox_paypal_partner', 'PayPal');
