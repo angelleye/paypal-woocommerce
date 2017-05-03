@@ -124,9 +124,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
                 $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
             }
-            if ($this->enable_cardholder_first_last_name) {
-                add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
-            }
+            
 	}
     
     
