@@ -70,6 +70,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_action('wp_enqueue_scripts', array($this, 'ec_enqueue_scripts_product_page'));
             add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'));
             add_filter('woocommerce_is_sold_individually', array($this, 'angelleye_woocommerce_is_sold_individually'), 10, 2);
+            add_filter('woocommerce_ship_to_different_address_checked', array($this, 'angelleye_ship_to_different_address_checked'), 10,1);
             if ($this->is_express_checkout_credentials_is_set()) {
                 if ($this->button_position == 'bottom' || $this->button_position == 'both') {
                     add_action('woocommerce_proceed_to_checkout', array($this, 'woocommerce_paypal_express_checkout_button_angelleye'), 22);
@@ -215,6 +216,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                             $checkout_fields['billing']['billing_' . $field]['class'][] = 'hidden';
                         }
                     }
+//                    if (isset($checkout_fields['shipping']) && isset($checkout_fields['shipping']['billing_' . $field])) {
+//                        $required = isset($checkout_fields['billing']['billing_' . $field]['required']) && $checkout_fields['billing']['billing_' . $field]['required'];
+//                        if (!$required || $required && $value) {
+//                            $checkout_fields['billing']['billing_' . $field]['class'][] = 'express-provided';
+//                            $checkout_fields['billing']['billing_' . $field]['class'][] = 'hidden';
+//                        }
+//                    }
                 }
             }
             return $checkout_fields;
@@ -488,5 +496,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
         }
         return $return;
+    }
+    
+    public function angelleye_ship_to_different_address_checked($bool) {
+        $post_data = WC()->session->get( 'post_data' );
+        if(!empty($post_data['ship_to_different_address']) && $post_data['ship_to_different_address'] == '1') {
+            return 1;
+        }
+        return $bool;
     }
 }
