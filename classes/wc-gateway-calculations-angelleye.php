@@ -43,23 +43,27 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             foreach (WC()->cart->cart_contents as $cart_item_key => $values) {
                 $amount = round($values['line_subtotal'] / $values['quantity'], $this->decimals);
                 if (version_compare(WC_VERSION, '3.0', '<')) {
+                    $product = $values['data'];
                     $name = $values['data']->post->post_title;
-                    $description = $values['data']->post->post_content;
                 } else {
                     $product = $values['data'];
                     $name = $product->get_name();
-                    $description = $product->get_description();
+                }
+                $product_sku  = null;
+                // Check if the product exists.
+                if ( is_object( $product ) ) {
+                    $product_sku  = $product->get_sku();
                 }
                 $item = array(
                     'name' => $name,
-                    'desc' => $description,
+                    'desc' => '',
                     'qty' => $values['quantity'],
                     'amt' => $amount,
+                    'number' => $product_sku
                 );
                 $this->order_items[] = $item;
                 $roundedPayPalTotal += round($amount * $values['quantity'], $this->decimals);
             }
-
 
             $this->taxamt = round(WC()->cart->tax_total + WC()->cart->shipping_tax_total, $this->decimals);
             $this->shippingamt = round(WC()->cart->shipping_total, $this->decimals);
@@ -117,11 +121,19 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $roundedPayPalTotal = 0;
             $this->discount_amount = round($order->get_total_discount(), $this->decimals);
             foreach ($order->get_items() as $cart_item_key => $values) {
+                $product = $order->get_product_from_item( $values );
+                $product_sku  = null;
+                // Check if the product exists.
+                if ( is_object( $product ) ) {
+                    $product_sku  = $product->get_sku();
+                }
                 $amount = round($values['line_subtotal'] / $values['qty'], $this->decimals);
                 $item = array(
                     'name' => $values['name'],
+                    'desc' => '',
                     'qty' => $values['qty'],
                     'amt' => $amount,
+                    'number' => $product_sku,
                 );
                 $this->order_items[] = $item;
                 $roundedPayPalTotal += round($amount * $values['qty'], $this->decimals);
