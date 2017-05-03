@@ -802,7 +802,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         'wrapper_class' => '',
                         'label'         => __( 'Enable Express Checkout Button', 'paypal-for-woocommerce' ),
                         'description'   => __( 'Adds the PayPal Express Checkout button to the product page allowing buyers to checkout directly from the product page.', 'paypal-for-woocommerce' ),
-                        'default'       => 'yes'
+                        'default'       => 'no'
                 );
                 return $product_type;
             } else {
