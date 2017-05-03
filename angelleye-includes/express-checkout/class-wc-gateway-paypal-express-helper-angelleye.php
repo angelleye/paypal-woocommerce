@@ -127,8 +127,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         break;
                 }
                 $ec_html_button .= '</div>';
+                echo apply_filters('angelleye_ec_product_page_buy_now_button', $ec_html_button);
             }
-            echo apply_filters('angelleye_ec_product_page_buy_now_button', $ec_html_button);
+            
         } catch (Exception $ex) {
 
         }
