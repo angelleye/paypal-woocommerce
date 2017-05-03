@@ -122,7 +122,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.2 - 05.03.2017 =
-* Fix - Further adjustments to resolve API credential issues ([#668](https://github.com/angelleye/paypal-woocommerce/issues/668))
+* Fix - Further adjustments to resolve API credential issues. ([#668](https://github.com/angelleye/paypal-woocommerce/issues/668))
+* Fix - Removes duplicate cardholder name fields on checkout form. ([#669](https://github.com/angelleye/paypal-woocommerce/issues/669))
 
 = 1.4.1 - 05.02.2017 =
 * Fix - Resolves a problem with voiding authorizations. ([#660](https://github.com/angelleye/paypal-woocommerce/issues/660))
