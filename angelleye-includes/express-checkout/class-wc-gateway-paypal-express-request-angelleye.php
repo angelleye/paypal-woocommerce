@@ -1049,7 +1049,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
             } elseif (isset($_POST['terms']) && $_POST['terms'] == 'on') {
                 return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
-            } elseif (!empty($paypal_express_terms && $paypal_express_terms == true)) {
+            } elseif ( !empty($paypal_express_terms) && $paypal_express_terms == true ) {
                 return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
             }
         }
