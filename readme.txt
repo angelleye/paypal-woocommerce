@@ -130,6 +130,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves a PHP parsing error in Express Checkout with some orders. ([#674](https://github.com/angelleye/paypal-woocommerce/issues/674))
 * Fix - Resolves an issue with line items being passed in Express Checkout. ([#676](https://github.com/angelleye/paypal-woocommerce/issues/676))
 * Fix - Resolves issue with checkout button styling on some themes. ([#665](https://github.com/angelleye/paypal-woocommerce/issues/665))
+* Fix - Resolves PHP error on call_user_func_array(). ([#679](https://github.com/angelleye/paypal-woocommerce/issues/679))
 
 = 1.4.1 - 05.02.2017 =
 * Fix - Resolves a problem with voiding authorizations. ([#660](https://github.com/angelleye/paypal-woocommerce/issues/660))
