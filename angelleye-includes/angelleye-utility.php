@@ -1383,4 +1383,12 @@ class AngellEYE_Utility {
         }
         return $is_sandbox_set;
     }
+    
+    public static function angelleye_set_address( $order_id, $address, $type = 'billing' ) {
+        foreach ( $address as $key => $value ) {
+            update_post_meta( $order_id, "_{$type}_" . $key, $value );
+        }
+    }
+    
+    
 }
