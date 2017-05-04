@@ -15,6 +15,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->version = $version;
             $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
             $this->setting = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
+            $paypal_pro_row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_pro_settings'));
+            $this->paypal_pro_setting = isset($paypal_pro_row->option_value) ? maybe_unserialize($paypal_pro_row->option_value) : array();
+            $this->paypal_pro_enabled = !empty($this->paypal_pro_setting['enabled']) ? $this->paypal_pro_setting['enabled'] : 'no';
+            $paypal_flow_row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_pro_payflow_settings'));
+            $this->paypal_flow_setting = isset($paypal_flow_row->option_value) ? maybe_unserialize($paypal_flow_row->option_value) : array();
+            $this->paypal_flow_enabled = !empty($this->paypal_flow_setting['enabled']) ? $this->paypal_flow_setting['enabled'] : 'no';
             $this->enable_tokenized_payments = !empty($this->setting['enable_tokenized_payments']) ? $this->setting['enable_tokenized_payments'] : 'no';
             $this->save_abandoned_checkout = 'yes' === !empty($this->setting['save_abandoned_checkout']) ? $this->setting['enable_tokenized_payments'] : 'no';
             $this->checkout_with_pp_button_type = !empty($this->setting['checkout_with_pp_button_type']) ? $this->setting['checkout_with_pp_button_type'] : 'paypalimage';
@@ -69,6 +75,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_filter('woocommerce_thankyou_order_received_text', array($this, 'ec_order_received_text'), 10, 2);
             add_action('wp_enqueue_scripts', array($this, 'ec_enqueue_scripts_product_page'));
             add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'));
+            add_action( 'woocommerce_before_cart', array( $this, 'woocommerce_before_cart'), 12 );
             add_filter('woocommerce_is_sold_individually', array($this, 'angelleye_woocommerce_is_sold_individually'), 10, 2);
             add_filter('woocommerce_ship_to_different_address_checked', array($this, 'angelleye_ship_to_different_address_checked'), 10,1);
             if ($this->is_express_checkout_credentials_is_set()) {
@@ -504,5 +511,37 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             return 1;
         }
         return $bool;
+    }
+    
+    public function woocommerce_before_cart() {
+        $payment_gateways_count = 0;
+        echo "<style>table.cart td.actions .input-text, table.cart td.actions .button, table.cart td.actions .checkout-button {margin-bottom: 0.53em !important}</style>";
+        if ($this->enabled == 'yes' && 0 < WC()->cart->total) {
+            $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+            unset($payment_gateways['paypal_pro']);
+            unset($payment_gateways['paypal_pro_payflow']);
+            if ( $this->show_on_checkout == 'regular') {
+                $payment_gateways_count = 1;
+            }
+            if (empty($payment_gateways) || $this->enabled == 'yes' && (count($payment_gateways) == $payment_gateways_count)) {
+                if ($this->paypal_pro_enabled == 'yes' || $this->paypal_flow_enabled == 'yes') {
+                    $checkout_button_display_text = $this->show_on_cart == 'yes' ? __('Pay with Credit Card', 'paypal-for-woocommerce') : __('Proceed to Checkout','paypal-for-woocommerce');
+                    echo '<script type="text/javascript">
+                                jQuery(document).ready(function(){
+                                    if (jQuery(".checkout-button").is("input")) {
+                                        jQuery(".checkout-button").val("' . $checkout_button_display_text . '");
+                                    } else {
+                                        jQuery(".checkout-button").html("<span>' . $checkout_button_display_text . '</span>");
+                                    }
+                                });
+                              </script>';
+                } elseif ($this->show_on_cart == 'yes') {
+                    echo '<style> input.checkout-button,
+                                 a.checkout-button {
+                                    display: none !important;
+                                }</style>';
+                }
+            }
+        }
     }
 }
