@@ -1463,13 +1463,55 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
          }
     }
     
-
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
-        $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+            update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
         }
+        return $settings;
+    }
+    
+    
+    public function angelleye_paypal_pro_payflow_encrypt_gateway_api($settings) {
+        if( !empty($settings['sandbox_paypal_partner'])) {
+            $paypal_partner = $settings['sandbox_paypal_partner'];
+        } else {
+            $paypal_partner = $settings['paypal_partner'];
+        }
+        if(strlen($paypal_partner) > 28 ) {
+            return $settings;
+        }
+        
+        if( !empty($settings['is_encrypt']) ) {
+            $gateway_settings_keys = array('sandbox_paypal_vendor', 'sandbox_paypal_password', 'sandbox_paypal_user', 'sandbox_paypal_partner', 'paypal_vendor', 'paypal_password', 'paypal_user', 'paypal_partner');
+            foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
+                if( !empty( $settings[$gateway_settings_value]) ) {
+                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
+                }
+            }
+        }
+        return $settings;
+    }
+    
+    public function angelleye_paypal_pro_payflow_email_instructions($order, $sent_to_admin, $plain_text = false) {
+        $payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        if ( $sent_to_admin && 'paypal_pro_payflow' === $payment_method ) {
+            // Store source in the order
+            if (!class_exists('Angelleye_PayPal')) {
+                require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            }
+            $PayPalConfig = array(
+                'Sandbox' => $this->testmode,
+                'APIUsername' => $this->api_username,
+                'APIPassword' => $this->api_password,
+                'APISignature' => $this->api_signature,
+                'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+            );
+            $PayPal = new Angelleye_PayPal($PayPalConfig);
+            $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
+            if (!empty($payment_tokens_id)) {
+                update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+            }
             $cvvmatch = $old_wc ? get_post_meta( $order->id, 'CVV2MATCH', true ) : get_post_meta($order->get_id(), 'CVV2MATCH', true);
             if ( ! empty( $cvvmatch ) ) {
                 $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvvmatch);
@@ -1491,27 +1533,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         }
                 }
             }
+        }
     }
 
-    public function angelleye_paypal_pro_payflow_encrypt_gateway_api($settings) {
-        if( !empty($settings['sandbox_paypal_partner'])) {
-            $paypal_partner = $settings['sandbox_paypal_partner'];
-        } else {
-            $paypal_partner = $settings['paypal_partner'];
-        }
-        if(strlen($paypal_partner) > 28 ) {
-            return $settings;
-        }
-        
-        if( !empty($settings['is_encrypt']) ) {
-            $gateway_settings_keys = array('sandbox_paypal_vendor', 'sandbox_paypal_password', 'sandbox_paypal_user', 'sandbox_paypal_partner', 'paypal_vendor', 'paypal_password', 'paypal_user', 'paypal_partner');
-            foreach ($gateway_settings_keys as $gateway_settings_key => $gateway_settings_value) {
-                if( !empty( $settings[$gateway_settings_value]) ) {
-                    $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
-                }
-            }
-        }
-        return $settings;
-    }
 }
 
