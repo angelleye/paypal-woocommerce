@@ -786,8 +786,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case 'get_express_checkout_details':
                     $paypal_express_request->angelleye_get_express_checkout_details();
                     $order_id = absint(WC()->session->get('order_awaiting_payment'));
-                    $cart_hash = md5(json_encode(wc_clean(WC()->cart->get_cart_for_session())) . WC()->cart->total);
-                    if (($order_id && ( $order = wc_get_order($order_id) ) && $order->has_cart_hash($cart_hash) && $order->has_status(array('pending', 'failed'))) == false) {
+                    if ( $order_id > 0 && ( $order = wc_get_order( $order_id ) ) && $order->has_status( array( 'pending', 'failed' ) ) ) {
                         WC()->checkout->posted = WC()->session->get( 'post_data' );
                         $_POST = WC()->session->get( 'post_data' );
                         $this->posted = WC()->session->get( 'post_data' );
