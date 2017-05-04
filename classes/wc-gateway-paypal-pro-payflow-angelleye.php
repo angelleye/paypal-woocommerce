@@ -1500,14 +1500,18 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             if (!class_exists('Angelleye_PayPal')) {
                 require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
             }
+            if (!class_exists('Angelleye_PayPal_PayFlow')) {
+                require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
+            }
             $PayPalConfig = array(
                 'Sandbox' => $this->testmode,
-                'APIUsername' => $this->api_username,
-                'APIPassword' => $this->api_password,
-                'APISignature' => $this->api_signature,
+                'APIUsername' => $this->paypal_user,
+                'APIPassword' => trim($this->paypal_password),
+                'APIVendor' => $this->paypal_vendor,
+                'APIPartner' => $this->paypal_partner,
                 'Force_tls_one_point_two' => $this->Force_tls_one_point_two
             );
-            $PayPal = new Angelleye_PayPal($PayPalConfig);
+            $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
             $old_wc = version_compare( WC_VERSION, '3.0', '<' );
             $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
             $cvvmatch = $old_wc ? get_post_meta( $order->id, '_CVV2MATCH', true ) : get_post_meta($order->get_id(), '_CVV2MATCH', true);
