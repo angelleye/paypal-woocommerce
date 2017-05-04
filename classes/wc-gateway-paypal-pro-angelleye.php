@@ -86,7 +86,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
         $this->error_email_notify = $this->get_option('error_email_notify');
         $this->error_display_type = $this->get_option('error_display_type'); 
-        $this->enable_3dsecure = 'yes' === $this->get_option('enable_3dsecure', 'no');
+        //$this->enable_3dsecure = 'yes' === $this->get_option('enable_3dsecure', 'no');
+        $this->enable_3dsecure = false;
         $this->liability_shift = 'yes' === $this->get_option('liability_shift', 'no');
         $this->debug = 'yes' === $this->get_option('debug', 'no'); 
         $this->payment_action = $this->get_option('payment_action', 'Sale');
@@ -256,38 +257,38 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'password',
                 'default' => ''
             ),
-            'enable_3dsecure' => array(
-                'title' => __('3DSecure', 'paypal-for-woocommerce'),
-                'label' => __('Enable 3DSecure', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)', 'paypal-for-woocommerce'),
-                'default' => 'no'
-            ),
-            'centinel_pid' => array(
-                'title' => __('Centinel PID', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Processor ID.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'centinel_mid' => array(
-                'title' => __('Centinel MID', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Merchant ID.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'centinel_pwd' => array(
-                'title' => __('Transaction Password', 'paypal-for-woocommerce'),
-                'type' => 'password',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Transaction Password.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'liability_shift' => array(
-                'title' => __('Liability Shift', 'paypal-for-woocommerce'),
-                'label' => __('Require liability shift', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce'),
-                'default' => 'no'
-            ),
+//            'enable_3dsecure' => array(
+//                'title' => __('3DSecure', 'paypal-for-woocommerce'),
+//                'label' => __('Enable 3DSecure', 'paypal-for-woocommerce'),
+//                'type' => 'checkbox',
+//                'description' => __('Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)', 'paypal-for-woocommerce'),
+//                'default' => 'no'
+//            ),
+//            'centinel_pid' => array(
+//                'title' => __('Centinel PID', 'paypal-for-woocommerce'),
+//                'type' => 'text',
+//                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Processor ID.', 'paypal-for-woocommerce'),
+//                'default' => ''
+//            ),
+//            'centinel_mid' => array(
+//                'title' => __('Centinel MID', 'paypal-for-woocommerce'),
+//                'type' => 'text',
+//                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Merchant ID.', 'paypal-for-woocommerce'),
+//                'default' => ''
+//            ),
+//            'centinel_pwd' => array(
+//                'title' => __('Transaction Password', 'paypal-for-woocommerce'),
+//                'type' => 'password',
+//                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Transaction Password.', 'paypal-for-woocommerce'),
+//                'default' => ''
+//            ),
+//            'liability_shift' => array(
+//                'title' => __('Liability Shift', 'paypal-for-woocommerce'),
+//                'label' => __('Require liability shift', 'paypal-for-woocommerce'),
+//                'type' => 'checkbox',
+//                'description' => __('Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce'),
+//                'default' => 'no'
+//            ),
             'error_display_type' => array(
                 'title' => __('Error Display Type', 'paypal-for-woocommerce'),
                 'type' => 'select',
