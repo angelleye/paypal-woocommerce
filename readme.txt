@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
 Tested up to: 4.7.4
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -121,7 +121,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.2 - 05.03.2017 =
+= 1.4.2 - 05.05.2017 =
 * Tweak - Adjustments for backwards compatibility with WooCommerce 2.6. ([#680](https://github.com/angelleye/paypal-woocommerce/issues/680)) ([#681](https://github.com/angelleye/paypal-woocommerce/issues/681))
 * Tweak - Sets product level Express Checkout option to disabled by default. ([#670](https://github.com/angelleye/paypal-woocommerce/issues/670))
 * Fix - Resolves an issue where Express Checkout buttons were not displaying where they should be. ([#662](https://github.com/angelleye/paypal-woocommerce/issues/662))
