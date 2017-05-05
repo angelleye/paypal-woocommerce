@@ -621,6 +621,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function is_available() {
+        if (AngellEYE_Utility::is_express_checkout_credentials_is_set() == false) {
+            return false;
+        }
+        if(!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
+           return false;
+        }
+        if( $this->show_on_checkout != 'regular' && $this->show_on_checkout != 'both') {
+            return false;
+        }
         return parent::is_available();
     }
 
