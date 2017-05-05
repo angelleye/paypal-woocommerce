@@ -78,7 +78,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_action( 'woocommerce_before_cart', array( $this, 'woocommerce_before_cart'), 12 );
             add_filter('woocommerce_is_sold_individually', array($this, 'angelleye_woocommerce_is_sold_individually'), 10, 2);
             add_filter('woocommerce_ship_to_different_address_checked', array($this, 'angelleye_ship_to_different_address_checked'), 10,1);
-            if ($this->is_express_checkout_credentials_is_set()) {
+            if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
                 if ($this->button_position == 'bottom' || $this->button_position == 'both') {
                     add_action('woocommerce_proceed_to_checkout', array($this, 'woocommerce_paypal_express_checkout_button_angelleye'), 22);
                 }
@@ -373,18 +373,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
     }
 
-    public function is_express_checkout_credentials_is_set() {
-        if ('yes' != $this->enabled) {
-            return false;
-        }
-        if (!$this->api_username || !$this->api_password || !$this->api_signature) {
-            return false;
-        }
-        return true;
-    }
-
     public function top_cart_button() {
-        if ($this->is_express_checkout_credentials_is_set()) {
+        if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
             $top_cart_button_html = '';
             if ($this->button_position == 'top' || $this->button_position == 'both') {
                 do_action('angelleye_ec_before_top_cart_button', $this);
@@ -454,7 +444,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             define('WOOCOMMERCE_CART', true);
         }
         WC()->cart->calculate_totals(); 
-        if (!$this->is_express_checkout_credentials_is_set()) {
+        if (AngellEYE_Utility::is_express_checkout_credentials_is_set() == false) {
             return false;
         }
         if (!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
