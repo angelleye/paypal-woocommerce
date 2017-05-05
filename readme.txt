@@ -124,7 +124,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.4.2 - 05.03.2017 =
 * Tweak - Adjustments for backwards compatibility with WooCommerce 2.6. ([#680](https://github.com/angelleye/paypal-woocommerce/issues/680)) ([#681](https://github.com/angelleye/paypal-woocommerce/issues/681))
 * Tweak - Sets product level Express Checkout option to disabled by default. ([#670](https://github.com/angelleye/paypal-woocommerce/issues/670))
-* Fix - Resolves an issue where Express Checkout buttons were not displaying where they should be. ([#662](https://github.com/angelleye/paypal-woocommerce/issues/662)) ([#665](https://github.com/angelleye/paypal-woocommerce/issues/665))
+* Fix - Resolves an issue where Express Checkout buttons were not displaying where they should be. ([#662](https://github.com/angelleye/paypal-woocommerce/issues/662))
 * Fix - Further adjustments to resolve API credential issues. ([#668](https://github.com/angelleye/paypal-woocommerce/issues/668))
 * Fix - Removes duplicate cardholder name fields on checkout form. ([#669](https://github.com/angelleye/paypal-woocommerce/issues/669))
 * Fix - Resolves an issue where the Express Checkout buttons were not always displaying when they should. ([#672](https://github.com/angelleye/paypal-woocommerce/issues/672))
