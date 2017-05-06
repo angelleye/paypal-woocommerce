@@ -36,13 +36,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if( $this->testmode == false ) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
-            if (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'UK') {
-                $this->not_us_or_uk = false;
+            if (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'GB') {
+                $this->is_us_or_uk = true;
             } else {
-                $this->not_us_or_uk = true;
+                $this->is_us_or_uk = false;
             }
             $this->show_paypal_credit = !empty($this->setting['show_paypal_credit']) ? $this->setting['show_paypal_credit'] : 'yes';
-            if ($this->not_us_or_uk) {
+            if ($this->is_us_or_uk == false) {
                 $this->show_paypal_credit = 'no';
             }
             if ($this->testmode == true) {
