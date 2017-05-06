@@ -811,7 +811,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
                         }
                         if (empty($this->posted)) {
-                            $this->posted = array('payment_method' => $this->id);
+                            $this->posted = array();
+                            $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+                            if( !empty($paypal_express_checkout['shipping_details']['email'])) {
+                                $this->posted['billing_email'] = $paypal_express_checkout['shipping_details']['email'];
+                            }
+                            if( !empty($paypal_express_checkout['shipping_details']['first_name'])) {
+                                $this->posted['billing_first_name'] = $paypal_express_checkout['shipping_details']['first_name'];
+                            }
+                            if( !empty($paypal_express_checkout['shipping_details']['last_name'])) {
+                                $this->posted['billing_last_name'] = $paypal_express_checkout['shipping_details']['last_name'];
+                            }
+                            $this->posted['payment_method'] = $this->id;
+                             
                         }
                         $order_id = WC()->checkout()->create_order($this->posted);
                         if (is_wp_error($order_id)) {
@@ -838,7 +850,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
                         }
                         if (empty($this->posted)) {
-                            $this->posted = array('payment_method' => $this->id);
+                            $this->posted = array();
+                            $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+                            if( !empty($paypal_express_checkout['shipping_details']['email'])) {
+                                $this->posted['billing_email'] = $paypal_express_checkout['shipping_details']['email'];
+                            }
+                            if( !empty($paypal_express_checkout['shipping_details']['first_name'])) {
+                                $this->posted['billing_first_name'] = $paypal_express_checkout['shipping_details']['first_name'];
+                            }
+                            if( !empty($paypal_express_checkout['shipping_details']['last_name'])) {
+                                $this->posted['billing_last_name'] = $paypal_express_checkout['shipping_details']['last_name'];
+                            }
+                            $this->posted['payment_method'] = $this->id;
                         }
                         $order_id = WC()->checkout()->create_order($this->posted);
                         if (is_wp_error($order_id)) {
