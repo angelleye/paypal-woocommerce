@@ -487,7 +487,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $button_img = $this->pp_button_type_my_custom;
                     $ec_top_checkout_button .= '<div id="paypal_ec_button">';
                     $ec_top_checkout_button .= '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
-                    $ec_top_checkout_button .= "<img src='{$button_img}' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+                    $ec_top_checkout_button .= "<img src='{$button_img}' class='ec_checkout_page_button_type_paypalimage' width='150' border='0' alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
                     $ec_top_checkout_button .= "</a>";
                     $ec_top_checkout_button .= '</div>';
                     break;
@@ -495,7 +495,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if ($this->show_paypal_credit == 'yes') {
                 $paypal_credit_button_markup = '<div id="paypal_ec_paypal_credit_button">';
                 $paypal_credit_button_markup .= '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))))) . '" >';
-                $paypal_credit_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' alt='Check out with PayPal Credit'/>";
+                $paypal_credit_button_markup .= "<img src='https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png' class='ec_checkout_page_button_type_paypalimage' alt='Check out with PayPal Credit'/>";
                 $paypal_credit_button_markup .= '</a>';
                 $paypal_credit_button_markup .= '</div>';
                 $ec_top_checkout_button .= $paypal_credit_button_markup;

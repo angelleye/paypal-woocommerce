@@ -326,6 +326,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         function frontend_scripts() {
             global $pp_settings;
+            global $post;
+            $_enable_ec_button = '';
+            if( !empty($post) ) {
+                $_enable_ec_button = get_post_meta($post->ID, '_enable_ec_button', true);
+                if($_enable_ec_button == 'no') {
+                    return;
+                }
+            }
             wp_register_script( 'angelleye_frontend', plugins_url( '/assets/js/angelleye-frontend.js' , __FILE__ ), array( 'jquery' ), WC_VERSION, true );
             $translation_array = array(
                 'is_product' => is_product()? "yes" : "no",
@@ -344,7 +352,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if ( ! is_admin() && is_checkout() ) {
                 wp_enqueue_style( 'ppe_checkout', plugins_url( 'assets/css/checkout.css' , __FILE__ ) );
             }
-            if ( ! is_admin() && is_single() && @$pp_settings['enabled']=='yes' && @$pp_settings['show_on_product_page']=='yes'){
+            if ( ! is_admin() && is_single() && @$pp_settings['enabled']=='yes' && (@$pp_settings['show_on_product_page']=='yes' || $_enable_ec_button == 'yes')) {
                 wp_enqueue_style( 'ppe_single', plugins_url( 'assets/css/single.css' , __FILE__ ) );
                 wp_enqueue_script('angelleye_button');
             }
