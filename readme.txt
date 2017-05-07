@@ -128,6 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves some CSS styling issues with Express Checkout buttons. ([#689](https://github.com/angelleye/paypal-woocommerce/issues/689))
 * Fix - Resolves a problem with PayPal Credit showing up for UK merchants. ([#690](https://github.com/angelleye/paypal-woocommerce/issues/690))
 * Fix - Resolves an issue where error details were not getting included in admin error email notifications as expected. ([#695](https://github.com/angelleye/paypal-woocommerce/issues/695))
+* Fix - Resolves a tax calculation issue in Express Checkout. ([#699](https://github.com/angelleye/paypal-woocommerce/issues/699))
 
 = 1.4.2 - 05.05.2017 =
 * Tweak - Adjustments for backwards compatibility with WooCommerce 2.6. ([#680](https://github.com/angelleye/paypal-woocommerce/issues/680)) ([#681](https://github.com/angelleye/paypal-woocommerce/issues/681))
