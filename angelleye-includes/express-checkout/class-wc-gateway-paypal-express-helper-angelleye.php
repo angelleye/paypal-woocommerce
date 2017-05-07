@@ -292,6 +292,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_add_body_class($classes) {
         try {
+            if (sizeof(WC()->session) == 0) {
+                return $classes;
+            }
             $paypal_express_terms = WC()->session->get( 'paypal_express_terms' );
             if ($this->ec_is_checkout() && $this->function_helper->ec_is_express_checkout()) {
                 $classes[] = 'express-checkout';
@@ -319,6 +322,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function ec_terms_express_checkout($checked_default) {
+        if (sizeof(WC()->session) == 0) {
+            return $checked_default;
+        }
         if (!$this->ec_is_available() || !$this->function_helper->ec_is_express_checkout()) {
             return $checked_default;
         }
@@ -521,6 +527,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
     
     public function angelleye_ship_to_different_address_checked($bool) {
+        if (sizeof(WC()->session) == 0) {
+            return $bool;
+        }
         $post_data = WC()->session->get( 'post_data' );
         if(!empty($post_data['ship_to_different_address']) && $post_data['ship_to_different_address'] == '1') {
             return 1;
