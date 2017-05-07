@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
 if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
 
     class WC_Gateway_Calculation_AngellEYE {
-
         public $order_total;
         public $taxamt;
         public $shippingamt;
@@ -17,8 +16,10 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
         public $payment;
         public $discount_amount;
         public $decimals;
+        public $is_adjust;
 
         public function __construct() {
+            $this->is_adjust = false;
             $is_zdp_currency = in_array(get_woocommerce_currency(), $this->zdp_currencies);
             if ($is_zdp_currency) {
                 $this->decimals = 0;
@@ -49,10 +50,9 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     $product = $values['data'];
                     $name = $product->get_name();
                 }
-                $product_sku  = null;
-                // Check if the product exists.
-                if ( is_object( $product ) ) {
-                    $product_sku  = $product->get_sku();
+                $product_sku = null;
+                if (is_object($product)) {
+                    $product_sku = $product->get_sku();
                 }
                 $item = array(
                     'name' => $name,
@@ -64,7 +64,6 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->order_items[] = $item;
                 $roundedPayPalTotal += round($amount * $values['quantity'], $this->decimals);
             }
-
             $this->taxamt = round(WC()->cart->tax_total + WC()->cart->shipping_tax_total, $this->decimals);
             $this->shippingamt = round(WC()->cart->shipping_total, $this->decimals);
             $this->itemamt = round(WC()->cart->cart_contents_total, $this->decimals) + $this->discount_amount;
@@ -87,12 +86,6 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->itemamt -= $this->discount_amount;
                 $this->order_total -= $this->discount_amount;
             }
-            $wooOrderTotal = round(WC()->cart->total, $this->decimals);
-            if ($wooOrderTotal != $this->order_total) {
-                $this->taxamt += $wooOrderTotal - $this->order_total;
-                $this->order_total = $wooOrderTotal;
-            }
-            $this->taxamt = round($this->taxamt, $this->decimals);
             if (!is_numeric($this->shippingamt)) {
                 $this->shippingamt = 0;
             }
@@ -114,11 +107,10 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $roundedPayPalTotal = 0;
             $this->discount_amount = round($order->get_total_discount(), $this->decimals);
             foreach ($order->get_items() as $cart_item_key => $values) {
-                $product = $order->get_product_from_item( $values );
-                $product_sku  = null;
-                // Check if the product exists.
-                if ( is_object( $product ) ) {
-                    $product_sku  = $product->get_sku();
+                $product = $order->get_product_from_item($values);
+                $product_sku = null;
+                if (is_object($product)) {
+                    $product_sku = $product->get_sku();
                 }
                 $amount = round($values['line_subtotal'] / $values['qty'], $this->decimals);
                 $item = array(
@@ -132,7 +124,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $roundedPayPalTotal += round($amount * $values['qty'], $this->decimals);
             }
             $this->taxamt = round($order->get_total_tax(), $this->decimals);
-            $this->shippingamt = round( ( version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() ), $this->decimals );
+            $this->shippingamt = round(( version_compare(WC_VERSION, '3.0', '<') ? $order->get_total_shipping() : $order->get_shipping_total()), $this->decimals);
             $this->itemamt = round($order->get_subtotal(), $this->decimals);
             $this->order_total = round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
             if ($this->itemamt == $this->discount_amount) {
@@ -153,12 +145,6 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     $this->order_total -= $this->discount_amount;
                 }
             }
-            $wooOrderTotal = round($order->get_total(), $this->decimals);
-            if ($wooOrderTotal != $this->order_total) {
-                $this->taxamt += $wooOrderTotal - $this->order_total;
-                $this->order_total = $wooOrderTotal;
-            }
-            $this->taxamt = round($this->taxamt, $this->decimals);
             if (!is_numeric($this->shippingamt)) {
                 $this->shippingamt = 0;
             }
@@ -186,8 +172,25 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 } elseif ($this->taxamt > 0) {
                     $this->taxamt += round($cartItemAmountDifference, $this->decimals);
                 } else {
-                    $this->order_items[0]['amt'] = $this->order_items[0]['amt'] + round($cartItemAmountDifference, $this->decimals);
-                    $this->order_total += round($cartItemAmountDifference, $this->decimals);
+                    if (count($this->order_items) == 1 && (!empty($this->order_items[0]['qty']) && $this->order_items[0]['qty'] > 1 )) {
+                        unset($this->order_items);
+                        $this->order_total = WC()->cart->total;
+                        $this->itemamt = WC()->cart->total;
+                    } else {
+                        foreach ($this->order_items as $key => $value) {
+                            if ($value['qty'] == 1) {
+                                $this->order_items[$key]['amt'] = $this->order_items[$key]['amt'] + round($cartItemAmountDifference, $this->decimals);
+                                $this->order_total += round($cartItemAmountDifference, $this->decimals);
+                                $this->itemamt += round($cartItemAmountDifference, $this->decimals);
+                                $this->is_adjust = true;
+                            }
+                        }
+                        if ($this->is_adjust == false ) {
+                            unset($this->order_items);
+                            $this->order_total = WC()->cart->total;
+                            $this->itemamt = WC()->cart->total;
+                        }
+                    }
                 }
             }
         }
@@ -207,15 +210,28 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 } elseif ($this->taxamt > 0) {
                     $this->taxamt += round($cartItemAmountDifference, $this->decimals);
                 } else {
-                    $this->order_items[0]['amt'] = $this->order_items[0]['amt'] + round($cartItemAmountDifference, $this->decimals);
-                    $this->order_total += round($cartItemAmountDifference, $this->decimals);
+                    if (count($this->order_items) == 1 && (!empty($this->order_items[0]['qty']) && $this->order_items[0]['qty'] > 1 )) {
+                        unset($this->order_items);
+                        $this->order_total = WC()->cart->total;
+                        $this->itemamt = WC()->cart->total;
+                    } else {
+                        foreach ($this->order_items as $key => $value) {
+                            if ($value['qty'] == 1) {
+                                $this->order_items[$key]['amt'] = $this->order_items[$key]['amt'] + round($cartItemAmountDifference, $this->decimals);
+                                $this->order_total += round($cartItemAmountDifference, $this->decimals);
+                                $this->itemamt += round($cartItemAmountDifference, $this->decimals);
+                                $this->is_adjust = true;
+                            }
+                        }
+                        if ($this->is_adjust == false) {
+                            unset($this->order_items);
+                            $this->order_total = WC()->cart->total;
+                            $this->itemamt = WC()->cart->total;
+                        }
+                    }
                 }
             }
         }
 
     }
-
-    
-
-    
 endif;
