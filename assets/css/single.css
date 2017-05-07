@@ -55,3 +55,9 @@ form.cart div.angelleye_button_single input {
 .product_meta {
     clear: both;
 }
+form.cart div.angelleye_button_single input.ec_product_page_button_type_textbutton {
+    width: auto;
+}
+.paypal_checkout_button.button.alt.ec_checkout_page_button_type_textbutton {
+    margin: 3px 0 3px 0; 
+}
