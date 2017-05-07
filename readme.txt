@@ -125,6 +125,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Various adjustments to the new Express Checkout integration. ([#686](https://github.com/angelleye/paypal-woocommerce/issues/686))
 * Fix - Resolves an issue with Express Checkout showing up in the mini-cart. ([#687](https://github.com/angelleye/paypal-woocommerce/issues/687))
 * Fix - Resolves a problem where Express Checkout shows up on the checkout page even when disabled there. ([#688](https://github.com/angelleye/paypal-woocommerce/issues/688))
+* Fix - Resolves some CSS styling issues with Express Checkout buttons. ([#689](https://github.com/angelleye/paypal-woocommerce/issues/689))
 
 = 1.4.2 - 05.05.2017 =
 * Tweak - Adjustments for backwards compatibility with WooCommerce 2.6. ([#680](https://github.com/angelleye/paypal-woocommerce/issues/680)) ([#681](https://github.com/angelleye/paypal-woocommerce/issues/681))
