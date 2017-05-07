@@ -80,13 +80,4 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 }
 .angelleye_ec_save_to_accoount_box {
     clear: both;
-}
-
-.ec_checkout_page_button_type_paypalimage {
-    width: auto;
-    height: auto;
-    margin: 3px 5px 3px 0;
-    border: none;
-    padding: 0;
-}
-                    
+}                 
