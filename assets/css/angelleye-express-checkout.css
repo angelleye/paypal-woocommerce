@@ -96,7 +96,7 @@ div.widget_shopping_cart_content a.paypal_checkout_button image {
      padding: 0;
 }
 
-div.widget_shopping_cart_content a.paypal_checkout_button .ec_checkout_page_button_type_paypalimage {
+div.widget_shopping_cart_content a.paypal_checkout_button .ec_checkout_page_button_type_paypalimage, div.widget_shopping_cart_content a.paypal_checkout_button .ec_checkout_page_button_type_customimage {
     border: medium none;
     box-shadow: none;
     height: auto;
