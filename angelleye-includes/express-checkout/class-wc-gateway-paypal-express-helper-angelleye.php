@@ -106,9 +106,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         try {
             global $product;
             $is_ec_button_enable_product_level = get_post_meta($product->get_id(), '_enable_ec_button', true);
-            if( empty($is_ec_button_enable_product_level) ) {
-                $is_ec_button_enable_product_level = 'yes';
-            }
             if( $this->enabled == 'yes' && $this->show_on_product_page == 'yes' && $is_ec_button_enable_product_level == 'yes') {
                 $ec_html_button = '';
                 if ($this->enable_tokenized_payments == 'yes') {
