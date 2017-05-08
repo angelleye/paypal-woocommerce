@@ -29,6 +29,7 @@ p.woocommerce-SavedPaymentMethods-saveNew {
     padding: 0;
     width: auto;
     background: rgba(0, 0, 0, 0) none repeat scroll 0 0 !important;
+    box-shadow: none;
 }
 .single_add_to_cart_button.button.alt.paypal_checkout_button.single_variation_wrap_angelleye.paypal_checkout_button.button.alt.ec_product_page_button_type_textbutton {
     float: left; 

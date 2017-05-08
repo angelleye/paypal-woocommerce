@@ -104,12 +104,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function buy_now_button() {
         try {
-            global $post, $product;
-            $_enable_ec_button = get_post_meta($product->get_id(), '_enable_ec_button', true);
-            if($_enable_ec_button == 'no') {
-                return;
-            }
-            if ($this->enabled == 'yes' && ($this->show_on_product_page == 'yes' || $_enable_ec_button == 'yes')) {
+            global $product;
+            $is_ec_button_enable_product_level = get_post_meta($product->get_id(), '_enable_ec_button', true);
+            if( $this->enabled == 'yes' && $this->show_on_product_page == 'yes' && $is_ec_button_enable_product_level == 'yes') {
                 $ec_html_button = '';
                 if ($this->enable_tokenized_payments == 'yes') {
                     $ec_html_button .= $this->function_helper->angelleye_ec_save_payment_method_checkbox();
@@ -121,7 +118,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     <?php
                 }
                 $ec_html_button .= '<div class="angelleye_button_single">';
-                
                 $button_dynamic_class = 'single_variation_wrap_angelleye_' . $product->get_id();
                 $hide = '';
                 if ($_product->is_type('variation') || $_product->is_type('external') || $_product->get_price() == 0 || $_product->get_price() == '') {
@@ -143,7 +139,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $ec_html_button .= '</div>';
                 echo apply_filters('angelleye_ec_product_page_buy_now_button', $ec_html_button);
             }
-            
         } catch (Exception $ex) {
 
         }

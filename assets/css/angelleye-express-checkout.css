@@ -80,4 +80,30 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 }
 .angelleye_ec_save_to_accoount_box {
     clear: both;
-}                 
+}   
+
+
+div.widget_shopping_cart_content a.paypal_checkout_button {
+    border: medium none;
+    clear: both;
+    float: left;
+    box-shadow: none;
+}
+
+div.widget_shopping_cart_content a.paypal_checkout_button image {
+    box-shadow: none;
+    max-width: 100%;
+     padding: 0;
+}
+
+div.widget_shopping_cart_content a.paypal_checkout_button .ec_checkout_page_button_type_paypalimage, div.widget_shopping_cart_content a.paypal_checkout_button .ec_checkout_page_button_type_customimage {
+    border: medium none;
+    box-shadow: none;
+    height: auto;
+    margin: 3px 5px 3px 0;
+    padding: 0;
+    width: auto;
+}
+div.widget_shopping_cart_content a.paypal_checkout_button img.ec_checkout_page_button_type_pc {
+    box-shadow: none;
+}
