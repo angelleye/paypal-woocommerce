@@ -127,6 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves a problem where Express Checkout shows up on the checkout page even when disabled there. ([#688](https://github.com/angelleye/paypal-woocommerce/issues/688))
 * Fix - Resolves some CSS styling issues with Express Checkout buttons. ([#689](https://github.com/angelleye/paypal-woocommerce/issues/689))
 * Fix - Resolves a problem with PayPal Credit showing up for UK merchants. ([#690](https://github.com/angelleye/paypal-woocommerce/issues/690))
+* Fix - Resolves an issue in Express Checkout where tokens would come up invalid. ([#691](https://github.com/angelleye/paypal-woocommerce/issues/691))
 * Fix - Resolves an issue where error details were not getting included in admin error email notifications as expected. ([#695](https://github.com/angelleye/paypal-woocommerce/issues/695))
 * Fix - Resolves a PHP error, call to a member function get(). ([#697](https://github.com/angelleye/paypal-woocommerce/issues/697))
 * Fix - Resolves issue where QTY is not always passing correctly. ([#698](https://github.com/angelleye/paypal-woocommerce/issues/698))
