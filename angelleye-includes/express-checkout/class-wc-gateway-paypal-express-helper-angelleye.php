@@ -22,7 +22,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->paypal_flow_setting = isset($paypal_flow_row->option_value) ? maybe_unserialize($paypal_flow_row->option_value) : array();
             $this->paypal_flow_enabled = !empty($this->paypal_flow_setting['enabled']) ? $this->paypal_flow_setting['enabled'] : 'no';
             $this->enable_tokenized_payments = !empty($this->setting['enable_tokenized_payments']) ? $this->setting['enable_tokenized_payments'] : 'no';
-            $this->save_abandoned_checkout = 'yes' === !empty($this->setting['save_abandoned_checkout']) ? $this->setting['enable_tokenized_payments'] : 'no';
+            $this->save_abandoned_checkout_value = !empty($this->setting['save_abandoned_checkout']) ? $this->setting['enable_tokenized_payments'] : 'no';
+            $this->save_abandoned_checkout = 'yes' === $this->save_abandoned_checkout_value;
             $this->checkout_with_pp_button_type = !empty($this->setting['checkout_with_pp_button_type']) ? $this->setting['checkout_with_pp_button_type'] : 'paypalimage';
             $this->pp_button_type_text_button = !empty($this->setting['pp_button_type_text_button']) ? $this->setting['pp_button_type_text_button'] : 'Proceed to Checkout';
             $this->pp_button_type_my_custom = !empty($this->setting['pp_button_type_my_custom']) ? $this->setting['pp_button_type_my_custom'] :  WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage();
@@ -31,8 +32,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->show_on_checkout = !empty($this->setting['show_on_checkout']) ? $this->setting['show_on_checkout'] : 'top';
             $this->button_position = !empty($this->setting['button_position']) ? $this->setting['button_position'] : 'bottom';
             $this->show_on_cart = !empty($this->setting['show_on_cart']) ? $this->setting['show_on_cart'] : 'yes';
-            $this->prevent_to_add_additional_item = 'yes' === !empty($this->setting['prevent_to_add_additional_item']) ? $this->setting['prevent_to_add_additional_item'] : 'no';
-            $this->testmode = 'yes' === !empty($this->setting['testmode']) ? $this->setting['testmode'] : 'yes';
+            $this->prevent_to_add_additional_item_value = !empty($this->setting['prevent_to_add_additional_item']) ? $this->setting['prevent_to_add_additional_item'] : 'no';
+            $this->prevent_to_add_additional_item = 'yes' === $this->prevent_to_add_additional_item_value;
+            $this->testmode_value = !empty($this->setting['testmode']) ? $this->setting['testmode'] : 'yes';
+            $this->testmode = 'yes' === $this->testmode_value;
             if( $this->testmode == false ) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
