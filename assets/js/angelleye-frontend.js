@@ -17,24 +17,25 @@ jQuery(document).ready(function ($){
        		}
         });
     }
-    
-    $(".paypal_checkout_button").click(function(){
-        $('.woocommerce').block({
-            message: null,
-            overlayCSS: {
-                background: '#fff',
-                opacity: 0.6
+    if (angelleye_frontend.is_cart == "yes"){
+        $(".paypal_checkout_button").click(function(){
+            $('.woocommerce').block({
+                message: null,
+                overlayCSS: {
+                    background: '#fff',
+                    opacity: 0.6
+                }
+            });
+            var angelleye_action;
+            if ($("#wc-paypal_express-new-payment-method").is(':checked')) {
+                angelleye_action = $(this).attr("href");
+                angelleye_action = angelleye_action + '&ec_save_to_account=true';
+            } else {
+                angelleye_action = $(this).attr("href");
             }
+            $(this).attr("href", angelleye_action);
         });
-        var angelleye_action;
-        if ($("#wc-paypal_express-new-payment-method").is(':checked')) {
-            angelleye_action = $(this).attr("href");
-            angelleye_action = angelleye_action + '&ec_save_to_account=true';
-        } else {
-            angelleye_action = $(this).attr("href");
-        }
-        $(this).attr("href", angelleye_action);
-    });
+    }
     
     if (angelleye_frontend.is_checkout == "yes"){
         var is_set_class = $("div").is(".express-provided-address");
