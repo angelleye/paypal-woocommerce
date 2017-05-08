@@ -549,6 +549,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
             unset($payment_gateways['paypal_pro']);
             unset($payment_gateways['paypal_pro_payflow']);
+            if( $this->show_on_checkout != 'regular' && $this->show_on_checkout != 'both' && empty($payment_gateways)) {
+                $payment_gateways = 1;
+            }
             if ($this->enabled == 'yes' && count($payment_gateways) == 1) {
                 if ($this->paypal_pro_enabled == 'yes' || $this->paypal_flow_enabled == 'yes') {
                     $checkout_button_display_text = $this->show_on_cart == 'yes' ? __('Pay with Credit Card', 'paypal-for-woocommerce') : __('Proceed to Checkout','paypal-for-woocommerce');
