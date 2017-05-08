@@ -75,10 +75,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_redirect() {
         if (!empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '10486') {
             $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
-            $token = isset($paypal_express_checkout['token']) ? $paypal_express_checkout['token'] : '';
-            $payPalURL = $this->PAYPAL_URL . $token;
-            wp_redirect($payPalURL, 302);
-            exit;
+            if( !empty($paypal_express_checkout['token'] ) ) {
+                $payPalURL = $this->PAYPAL_URL . $paypal_express_checkout['token'];
+                wp_redirect($payPalURL, 302);
+                exit;
+            } 
         }
         unset(WC()->session->paypal_express_checkout);
         if (!is_ajax()) {
@@ -130,8 +131,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_get_express_checkout_details() {
         try {
             if (!isset($_GET['token'])) {
-                // todo
-                // need to display notice and redirect to cart page.
+                $this->angelleye_redirect();
             }
             $token = esc_attr($_GET['token']);
             $this->paypal_response = $this->paypal->GetExpresscheckoutDetails($token);
@@ -178,6 +178,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_do_express_checkout_payment_request();
             } else {
                 $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
+                if(empty($paypal_express_checkout['token'])) {
+                    $this->angelleye_redirect();
+                }
                 $this->paypal_response = $this->paypal->CreateBillingAgreement($paypal_express_checkout['token']);
             }
             $this->angelleye_add_order_note($order);
@@ -285,6 +288,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
             $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
+            if( empty($paypal_express_checkout['token'])) {
+                $this->angelleye_redirect();
+            }
             $DECPFields = array(
                 'token' => $paypal_express_checkout['token'],
                 'payerid' => (!empty($paypal_express_checkout['payer_id']) ) ? $paypal_express_checkout['payer_id'] : null,
