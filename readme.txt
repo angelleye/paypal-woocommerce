@@ -123,6 +123,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.3 - 05.09.2017 =
 * Tweak - Adjusts placement of "save payment method" option in Express Checkout. ([#704](https://github.com/angelleye/paypal-woocommerce/issues/704))
+* Tweak - Adds Cancel button to Express Checkout review page. ([#705](https://github.com/angelleye/paypal-woocommerce/issues/705))
 * Fix - Various adjustments to the new Express Checkout integration. ([#686](https://github.com/angelleye/paypal-woocommerce/issues/686))
 * Fix - Resolves an issue with Express Checkout showing up in the mini-cart. ([#687](https://github.com/angelleye/paypal-woocommerce/issues/687))
 * Fix - Resolves a problem where Express Checkout shows up on the checkout page even when disabled there. ([#688](https://github.com/angelleye/paypal-woocommerce/issues/688))
