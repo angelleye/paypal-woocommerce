@@ -127,3 +127,6 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
     margin: 0 0 6px;
     padding: 0px;
 }
+.button.alt.angelleye_cancel {
+    float: left;
+}

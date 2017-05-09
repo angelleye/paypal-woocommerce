@@ -787,6 +787,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
 
             switch ($_GET['pp_action']) {
+                case 'cancel_order':
+                    $this->function_helper->ec_clear_session_data();
+                     $cancel_url = !empty($this->cancel_page_id) ? get_permalink($this->cancel_page_id) : WC()->cart->get_cart_url();
+                     wp_safe_redirect( $cancel_url );
+                     exit;
                 case 'set_express_checkout':
                     if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
                         WC()->session->set( 'ec_save_to_account', 'on' );
