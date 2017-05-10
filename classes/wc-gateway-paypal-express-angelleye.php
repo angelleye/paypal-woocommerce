@@ -83,7 +83,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->cancel_page_id = $this->get_option('cancel_page', '');
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
-        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', 'WC-EC');
+        $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
         if ($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl');
             if (isset($this->notifyurl) && !empty($this->notifyurl)) {
