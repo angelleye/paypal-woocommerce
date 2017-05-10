@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($) {
-    if (angelleye_admin.shop_based_us=="no") {
+    if (angelleye_admin.shop_based_us_or_uk=="no") {
         jQuery("#woocommerce_paypal_express_show_paypal_credit").attr("disabled",true);
         jQuery("label[for='woocommerce_paypal_express_show_paypal_credit']").css('color','#666');
     }

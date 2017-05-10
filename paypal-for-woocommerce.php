@@ -302,7 +302,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $translation_array = array(
                 'is_ssl' => AngellEYE_Gateway_Paypal::is_ssl()? "yes":"no",
                 'choose_image' => __('Choose Image', 'paypal-for-woocommerce'),
-                'shop_based_us' => (substr(get_option("woocommerce_default_country"),0,2) == 'US')? "yes":"no"
+                'shop_based_us_or_uk' => (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'GB')? "yes":"no"
 
             );
             wp_localize_script( 'angelleye_admin', 'angelleye_admin', $translation_array );
