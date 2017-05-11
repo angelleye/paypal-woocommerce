@@ -123,6 +123,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.4 - 05.xx.2017 =
 * Fix - Resolves an issue where "Invalid Payment Method" was coming up for some Express Checkout orders. ([#710](https://github.com/angelleye/paypal-woocommerce/issues/710))
+* Fix - Resolves issue where PayPal Credit was still not available for UK merchants. ([#709](https://github.com/angelleye/paypal-woocommerce/issues/709))
 
 = 1.4.3 - 05.09.2017 =
 * Tweak - Adjusts placement of "save payment method" option in Express Checkout. ([#704](https://github.com/angelleye/paypal-woocommerce/issues/704))
