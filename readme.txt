@@ -121,6 +121,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.4 - 05.xx.2017 =
+* Fix - Resolves an issue where "Invalid Payment Method" was coming up for some Express Checkout orders. ([#710](https://github.com/angelleye/paypal-woocommerce/issues/710))
+
 = 1.4.3 - 05.09.2017 =
 * Tweak - Adjusts placement of "save payment method" option in Express Checkout. ([#704](https://github.com/angelleye/paypal-woocommerce/issues/704))
 * Tweak - Adds Cancel button to Express Checkout review page. ([#705](https://github.com/angelleye/paypal-woocommerce/issues/705))
