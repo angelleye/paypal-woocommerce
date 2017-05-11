@@ -54,12 +54,12 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->sandbox == false) {
             $this->sandbox = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
+        $this->merchant_account_id = '';
         $this->environment = $this->sandbox == false ? 'production' : 'sandbox';
         $this->merchant_id = $this->sandbox == false ? $this->get_option('merchant_id') : $this->get_option('sandbox_merchant_id');
         $this->private_key = $this->sandbox == false ? $this->get_option('private_key') : $this->get_option('sandbox_private_key');
         $this->public_key = $this->sandbox == false ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
         $this->enable_braintree_drop_in = $this->get_option('enable_braintree_drop_in') === "yes" ? true : false;
-        $this->merchant_account_id = $this->sandbox == false ? $this->get_option('merchant_account_id') : $this->get_option('sandbox_merchant_account_id');
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->softdescriptor = $this->get_option('softdescriptor', '');
@@ -85,8 +85,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             <?php $this->generate_settings_html(); ?>
             <script type="text/javascript">
                 jQuery('#woocommerce_braintree_sandbox').change(function () {
-                    sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id, #woocommerce_braintree_sandbox_merchant_account_id').closest('tr'),
-                            production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id, #woocommerce_braintree_merchant_account_id').closest('tr');
+                    sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id').closest('tr'),
+                            production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id').closest('tr');
                     if (jQuery(this).is(':checked')) {
                         sandbox.show();
                         production.hide();
@@ -236,14 +236,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => '',
                 'desc_tip' => true
             ),
-            'sandbox_merchant_account_id' => array(
-                'type' => 'text',
-                'default' => '',
-                'title' => __('Sandbox Merchant Account Id', 'paypal-for-woocommerce'),
-                'tool_tip' => true,
-                'description' => __('NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,
-                                 and clicking Settings > Processing and scrolling to the bottom of the page.', 'paypal-for-woocommerce')
-            ),
             'public_key' => array(
                 'title' => __('Live Public Key', 'paypal-for-woocommerce'),
                 'type' => 'password',
@@ -264,14 +256,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true
-            ),
-            'merchant_account_id' => array(
-                'type' => 'text',
-                'default' => '',
-                'title' => __('Live Merchant Account Id', 'paypal-for-woocommerce'),
-                'tool_tip' => true,
-                'description' => __('NOTE: Not to be confused with the API key Merchant ID. The Merchant Account ID determines the currency that the payment is settled in. You can find your Merchant Account Id by logging into Braintree,
-                                 and clicking Settings > Processing and scrolling to the bottom of the page.', 'paypal-for-woocommerce')
             ),
             'enable_tokenized_payments' => array(
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
@@ -324,6 +308,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 if (is_user_logged_in()) {
                     $customer_id = get_current_user_id();
                     $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
+                    $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
                     if (!empty($braintree_customer_id) && !empty($this->merchant_account_id)) {
                         $clientToken = Braintree_ClientToken::generate(array('customerId' => $braintree_customer_id, 'merchantAccountId' => $this->merchant_account_id));
                     } else if (!empty($braintree_customer_id)) {
@@ -583,6 +568,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     }
                 }
                 $request_data['amount'] = number_format($order->get_total(), 2, '.', '');
+                $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id($order_id);
                 if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
                     $request_data['merchantAccountId'] = $this->merchant_account_id;
                 }
@@ -803,7 +789,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_braintree_lib() {
         try {
-            require_once( 'lib/Braintree/Braintree.php' );
+            require_once( 'lib/lib/Braintree.php' );
             Braintree_Configuration::environment($this->environment);
             Braintree_Configuration::merchantId($this->merchant_id);
             Braintree_Configuration::publicKey($this->public_key);
@@ -1139,6 +1125,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $payment_method_nonce = self::get_posted_variable('braintree_token');
             if (!empty($payment_method_nonce)) {
                 $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce, 'options' => array('failOnDuplicatePaymentMethod' => true));
+                $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
                 if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
                     $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
                 }
@@ -1150,6 +1137,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $card = $this->get_posted_card();
             $payment_method_request = array('customerId' => $braintree_customer_id, 'cvv' => $card->cvc, 'expirationDate' => $card->exp_month . '/' . $card->exp_year, 'number' => $card->number);
+            $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
             if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
                 $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
             }
@@ -1430,6 +1418,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
         }
         $request_data['amount'] = number_format($order->get_total(), 2, '.', '');
+        $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id($order_id);
         if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
             $request_data['merchantAccountId'] = $this->merchant_account_id;
         }
@@ -1485,7 +1474,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_braintree_encrypt_gateway_api($settings) {
         if( !empty($settings['is_encrypt']) ) {
-            $gateway_settings_key_array = array('sandbox_public_key', 'sandbox_private_key', 'sandbox_merchant_id', 'sandbox_merchant_account_id', 'public_key', 'private_key', 'merchant_id', 'merchant_account_id');
+            $gateway_settings_key_array = array('sandbox_public_key', 'sandbox_private_key', 'sandbox_merchant_id', 'public_key', 'private_key', 'merchant_id');
             foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
                 if( !empty( $settings[$gateway_settings_value]) ) {
                     $settings[$gateway_settings_value] = AngellEYE_Utility::crypting($settings[$gateway_settings_value], $action = 'e');
@@ -1493,6 +1482,42 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
         }
         return $settings;
+    }
+    
+    public function angelleye_braintree_get_merchant_account_id($order_id = null) {
+        try {
+            $this->angelleye_braintree_lib();
+            $currencycode = '';
+            if(is_null($order_id)) {
+                $currencycode = get_woocommerce_currency();
+            } else {
+                $order = wc_get_order($order_id);
+                $currencycode = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+            }
+            try {
+                $gateway = Braintree_Configuration::gateway();
+                $merchantAccountIterator = $gateway->merchantAccount()->all();
+                foreach($merchantAccountIterator as $merchantAccount) {
+                    if($currencycode == $merchantAccount->currencyIsoCode) {
+                        $this->merchant_account_id = $merchantAccount->id;
+                        return $this->merchant_account_id;
+                    }
+                }
+            } catch (Braintree_Exception_NotFound $e) {
+               return '';
+            } catch (Braintree_Exception_Authentication $e) {
+                return '';
+            } catch (Braintree_Exception_Authorization $e) {
+                return '';
+            } catch (Braintree_Exception_DownForMaintenance $e) {
+                return '';
+            } catch (Exception $e) {
+                return '';
+            }
+        } catch (Exception $ex) {
+            
+        }
+        
     }
 
 }

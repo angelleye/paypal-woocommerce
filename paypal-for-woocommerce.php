@@ -1289,7 +1289,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_braintree_settings' ) );
             $gateway_settings = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
             if( !empty($row->option_value) && !empty($gateway_settings['is_encrypt'])) {
-                $gateway_settings_key_array = array('sandbox_public_key', 'sandbox_private_key', 'sandbox_merchant_id', 'sandbox_merchant_account_id', 'public_key', 'private_key', 'merchant_id', 'merchant_account_id');
+                $gateway_settings_key_array = array('sandbox_public_key', 'sandbox_private_key', 'sandbox_merchant_id', 'public_key', 'private_key', 'merchant_id');
                 foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
                     if( !empty( $gateway_settings[$gateway_settings_value]) ) {
                         $gateway_settings[$gateway_settings_value] = AngellEYE_Utility::crypting($gateway_settings[$gateway_settings_value], $action = 'd');
