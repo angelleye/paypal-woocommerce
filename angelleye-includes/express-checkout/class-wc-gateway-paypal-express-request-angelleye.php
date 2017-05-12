@@ -402,6 +402,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         try {
             $Payments = array();
             $cancel_url = !empty($this->gateway->cancel_page_id) ? get_permalink($this->gateway->cancel_page_id) : WC()->cart->get_cart_url();
+            if($cancel_url == false) {
+                $cancel_url = WC()->cart->get_cart_url();
+            }
             $this->cart_param = $this->gateway_calculation->cart_calculation();
             $SECFields = array(
                 'maxamt' => '',
