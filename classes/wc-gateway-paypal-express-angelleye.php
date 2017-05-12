@@ -653,13 +653,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function process_payment($order_id) {
+        $order = wc_get_order($order_id);
         try {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
                 $result = $this->angelleye_ex_doreference_transaction($order_id);
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                     WC()->checkout->posted = WC()->session->get( 'post_data' );
                     $_POST = WC()->session->get( 'post_data' );
-                    $order = wc_get_order($order_id);
                     $order->payment_complete($result['TRANSACTIONID']);
                     $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
                     WC()->cart->empty_cart();
@@ -674,6 +674,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             if ($this->function_helper->ec_is_express_checkout()) {
                 $return_url = add_query_arg('order_id', $order_id, $this->function_helper->ec_get_checkout_url('do_express_checkout_payment', $order_id));
+                $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+                $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
+                if( $old_wc ) {
+                    AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
+                } else {
+                    $order->set_address($shipping_details, 'shipping');
+                }
                 $args = array(
                     'result' => 'success',
                     'redirect' => $return_url,
