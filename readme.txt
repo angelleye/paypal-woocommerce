@@ -122,6 +122,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.4 - 05.xx.2017 =
+* Tweak - Braintree MID functionality improvements. ([#565](https://github.com/angelleye/paypal-woocommerce/issues/565))
 * Tweak - Removes default value for invoice prefix in Express Checkout. ([#708](https://github.com/angelleye/paypal-woocommerce/issues/708))
 * Tweak - Adjustments to cancel button on Express Checkout review page. ([#714](https://github.com/angelleye/paypal-woocommerce/issues/714))
 * Fix - Resolves an issue where "Invalid Payment Method" was coming up for some Express Checkout orders. ([#710](https://github.com/angelleye/paypal-woocommerce/issues/710))
