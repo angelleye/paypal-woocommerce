@@ -121,6 +121,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.5 - 05.xx.2017 =
+* Fix - Resolves an issue where the shipping address from PayPal would sometimes not get saved in the WC order depending on specific settings. ([#https://github.com/angelleye/paypal-woocommerce/issues/722))
+
 = 1.4.4 - 05.12.2017 =
 * Tweak - Braintree MID functionality improvements. ([#565](https://github.com/angelleye/paypal-woocommerce/issues/565))
 * Tweak - Removes default value for invoice prefix in Express Checkout. ([#708](https://github.com/angelleye/paypal-woocommerce/issues/708))
