@@ -350,19 +350,19 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_enqueue_scripts_product_page() {
         try {
-            wp_enqueue_style('angelleye-express-checkout-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . '/assets/css/angelleye-express-checkout.css', array(), $this->version, 'all');
+            wp_enqueue_style('angelleye-express-checkout-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/angelleye-express-checkout.css', array(), $this->version, 'all');
             if (is_checkout()) {
-                wp_enqueue_script('angelleye-express-checkout-js', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . '/assets/js/angelleye-express-checkout.js', array(), $this->version, 'all');
-                wp_enqueue_script('angelleye-express-checkout-custom', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . '/assets/js/angelleye-express-checkout-custom.js', array(), $this->version, 'all');
+                wp_enqueue_script('angelleye-express-checkout-js', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-express-checkout.js', array(), $this->version, 'all');
+                wp_enqueue_script('angelleye-express-checkout-custom', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-express-checkout-custom.js', array(), $this->version, 'all');
                 wp_localize_script('angelleye-express-checkout-js', 'is_page_name', 'checkout_page');
                 wp_localize_script('angelleye-express-checkout-custom', 'is_page_name', 'checkout_page');
             }
             if (is_product()) {
-                wp_enqueue_script('angelleye-express-checkout-custom', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . '/assets/js/angelleye-express-checkout-custom.js', array(), $this->version, 'all');
+                wp_enqueue_script('angelleye-express-checkout-custom', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-express-checkout-custom.js', array(), $this->version, 'all');
                 wp_localize_script('angelleye-express-checkout-custom', 'is_page_name', 'single_product_page');
             }
             if (is_cart()) {
-                wp_enqueue_script('angelleye-express-checkout-custom', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . '/assets/js/angelleye-express-checkout-custom.js', array(), $this->version, 'all');
+                wp_enqueue_script('angelleye-express-checkout-custom', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-express-checkout-custom.js', array(), $this->version, 'all');
                 wp_localize_script('angelleye-express-checkout-custom', 'is_page_name', 'cart_page');
             }
             return true;
