@@ -102,6 +102,12 @@ class AngellEYE_Utility {
     public function angelleye_woocommerce_order_actions($order_actions = array()) {
         global $post;
         $order_id = $post->ID;
+        if( empty($post->ID) ) {
+           return false;
+        }
+        if($post->post_type != 'shop_order') {
+            return false;
+        }
         if (!is_object($order_id)) {
             $order = wc_get_order($order_id);
         }
@@ -627,6 +633,9 @@ class AngellEYE_Utility {
         if( empty($post->ID) ) {
            return false;
         }
+        if($post->post_type != 'shop_order') {
+            return false;
+        }
         $order_id = $post->ID;
         if (!is_object($order_id)) {
             $order = wc_get_order($order_id);
@@ -1040,6 +1049,12 @@ class AngellEYE_Utility {
     }
 
     public function save($post_id, $post) {
+        if( empty($post->ID) ) {
+           return false;
+        }
+        if($post->post_type != 'shop_order') {
+            return false;
+        }
         $order = wc_get_order($post_id);
         if (empty($this->payment_method)) {
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
@@ -1129,6 +1144,10 @@ class AngellEYE_Utility {
     public function angelleye_express_checkout_transaction_capture_dropdownbox($post_id) {
         global $wpdb;
         $order = wc_get_order($post_id);
+        if( empty($order) ) {
+           return false;
+        }
+        
         wp_reset_postdata();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
@@ -1294,6 +1313,9 @@ class AngellEYE_Utility {
 
     public function angelleye_is_display_paypal_transaction_details($post_id) {
         $order = wc_get_order($post_id);
+        if( empty($order)) {
+            return false;
+        }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
         $_payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
@@ -1316,6 +1338,12 @@ class AngellEYE_Utility {
     public function angelleye_set_payment_method() {
         if( empty($this->payment_method) || $this->payment_method == false) {
             global $post;
+            if( empty($post->ID) ) {
+                return false;
+            }
+            if($post->post_type != 'shop_order') {
+                return false;
+            }
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order = wc_get_order($post->ID);
             $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
@@ -1330,6 +1358,9 @@ class AngellEYE_Utility {
             if( !empty($results[0]->post_id) ) {
                 $old_wc = version_compare(WC_VERSION, '3.0', '<');
                 $order = wc_get_order($results[0]->post_id);
+                if( empty($order) ) {
+                    return false;
+                }
                 $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
                 $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
             }

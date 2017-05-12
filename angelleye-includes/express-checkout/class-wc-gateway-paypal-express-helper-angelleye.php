@@ -389,7 +389,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
           if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
              $mini_cart_button_html = '';
              $mini_cart_button_html .= $this->woocommerce_paypal_express_checkout_button_angelleye($return = true);
-             $mini_cart_button_html .= "<div class='clear'></div></div>";
+             $mini_cart_button_html .= "<div class='clear'></div>";
              echo apply_filters('angelleye_ec_mini_cart_button_html', $mini_cart_button_html);
           }
      }
