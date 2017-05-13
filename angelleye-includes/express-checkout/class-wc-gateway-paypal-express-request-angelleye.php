@@ -405,10 +405,31 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if($cancel_url == false) {
                 $cancel_url = WC()->cart->get_cart_url();
             }
-            $this->cart_param = $this->gateway_calculation->cart_calculation();
+            $order_total = '';
+            $returnurl = urldecode(add_query_arg('pp_action', 'get_express_checkout_details', WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
+            if( !empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true && !empty($_GET['key'])) {
+                if (version_compare(WC_VERSION, '3.0', '<')) {
+                    $order_id = woocommerce_get_order_id_by_order_key($_GET['key']);
+                } else {
+                    $order_id = wc_get_order_id_by_order_key($_GET['key']);
+                }
+                $this->cart_param = $this->gateway_calculation->order_calculation($order_id);
+                $order = wc_get_order($order_id);
+                $order_total = $order->get_total();
+                $returnurl = urldecode( add_query_arg( array(
+                    'pp_action' => 'get_express_checkout_details',
+                    'pay_for_order' => true,
+                    'key' => $_GET['key'],
+                    'order_id' => $order_id,
+                ), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE') ) );
+                
+            } else {
+                $this->cart_param = $this->gateway_calculation->cart_calculation();
+                $order_total = WC()->cart->total;
+            }
             $SECFields = array(
                 'maxamt' => '',
-                'returnurl' => urldecode(add_query_arg('pp_action', 'get_express_checkout_details', WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE'))),
+                'returnurl' => $returnurl,
                 'cancelurl' => urldecode($cancel_url),
                 'callback' => '',
                 'callbacktimeout' => '',
@@ -460,75 +481,95 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
             $SECFields = $this->function_helper->angelleye_paypal_for_woocommerce_needs_shipping($SECFields);
             $Payment = array(
-                'amt' => AngellEYE_Gateway_Paypal::number_format(WC()->cart->total),
+                'amt' => AngellEYE_Gateway_Paypal::number_format($order_total),
                 'currencycode' => get_woocommerce_currency(),
                 'custom' => apply_filters('ae_ppec_custom_parameter', ''),
                 'notetext' => '',
                 'paymentaction' => ($this->gateway->payment_action == 'Authorization' || WC()->cart->total == 0 ) ? 'Authorization' : $this->gateway->payment_action,
             );
-            $post_data = WC()->session->get('post_data');
-            if (!empty($post_data) && WC()->cart->needs_shipping()) {
-                $SECFields['addroverride'] = 1;
-                if ($post_data['ship_to_different_address']) {
-                    $Payment['shiptoname'] = $post_data['shipping_first_name'] . ' ' . $post_data['shipping_last_name'];
-                    $Payment['shiptostreet'] = $post_data['shipping_address_1'];
-                    $Payment['shiptostreet2'] = $post_data['shipping_address_2'];
-                    $Payment['shiptocity'] = wc_clean(stripslashes($post_data['shipping_city']));
-                    $Payment['shiptostate'] = $post_data['shipping_state'];
-                    $Payment['shiptozip'] = $post_data['shipping_postcode'];
-                    $Payment['shiptocountrycode'] = $post_data['shipping_country'];
-                } else {
-                    $Payment['shiptoname'] = $post_data['billing_first_name'] . ' ' . $post_data['billing_last_name'];
-                    $Payment['shiptostreet'] = $post_data['billing_address_1'];
-                    $Payment['shiptostreet2'] = $post_data['billing_address_2'];
-                    $Payment['shiptocity'] = wc_clean(stripslashes($post_data['billing_city']));
-                    $Payment['shiptostate'] = $post_data['billing_state'];
-                    $Payment['shiptozip'] = $post_data['billing_postcode'];
-                    $Payment['shiptocountrycode'] = $post_data['billing_country'];
-                    $Payment['shiptophonenum'] = $post_data['billing_phone'];
+            
+            if( empty($_GET['pay_for_order']) ) {
+            
+                $post_data = WC()->session->get('post_data');
+                if (!empty($post_data) && WC()->cart->needs_shipping()) {
+                    $SECFields['addroverride'] = 1;
+                    if ($post_data['ship_to_different_address']) {
+                        $Payment['shiptoname'] = $post_data['shipping_first_name'] . ' ' . $post_data['shipping_last_name'];
+                        $Payment['shiptostreet'] = $post_data['shipping_address_1'];
+                        $Payment['shiptostreet2'] = $post_data['shipping_address_2'];
+                        $Payment['shiptocity'] = wc_clean(stripslashes($post_data['shipping_city']));
+                        $Payment['shiptostate'] = $post_data['shipping_state'];
+                        $Payment['shiptozip'] = $post_data['shipping_postcode'];
+                        $Payment['shiptocountrycode'] = $post_data['shipping_country'];
+                    } else {
+                        $Payment['shiptoname'] = $post_data['billing_first_name'] . ' ' . $post_data['billing_last_name'];
+                        $Payment['shiptostreet'] = $post_data['billing_address_1'];
+                        $Payment['shiptostreet2'] = $post_data['billing_address_2'];
+                        $Payment['shiptocity'] = wc_clean(stripslashes($post_data['billing_city']));
+                        $Payment['shiptostate'] = $post_data['billing_state'];
+                        $Payment['shiptozip'] = $post_data['billing_postcode'];
+                        $Payment['shiptocountrycode'] = $post_data['billing_country'];
+                        $Payment['shiptophonenum'] = $post_data['billing_phone'];
+                    }
+                } elseif (is_user_logged_in()) {
+                    if (version_compare(WC_VERSION, '3.0', '<')) {
+                        $firstname = WC()->customer->firstname;
+                    } else {
+                        $firstname = WC()->customer->get_shipping_first_name();
+                    }
+                    if (version_compare(WC_VERSION, '3.0', '<')) {
+                        $lastname = WC()->customer->lastname;
+                    } else {
+                        $lastname = WC()->customer->get_shipping_last_name();
+                    }
+                    $shiptostreet = WC()->customer->get_shipping_address();
+                    $shiptostreet_two = WC()->customer->get_shipping_address_2();
+                    $shipping_city = WC()->customer->get_shipping_city();
+                    $shipping_country = WC()->customer->get_shipping_country();
+                    $shipping_state = WC()->customer->get_shipping_state();
+                    $shipping_postcode = WC()->customer->get_shipping_postcode();
+                    if (version_compare(WC_VERSION, '3.0', '<')) {
+                        $billing_shiptostreet = WC()->customer->get_address();
+                        $billing_shiptostreet_two = WC()->customer->get_address_2();
+                        $billing_city = WC()->customer->get_city();
+                        $billing_country = WC()->customer->get_country();
+                        $billing_state = WC()->customer->get_state();
+                        $billing_postcode = WC()->customer->get_postcode();
+                        $billing_phone = '';
+                    } else {
+                        $billing_shiptostreet = WC()->customer->get_billing_address_1();
+                        $billing_shiptostreet_two = WC()->customer->get_billing_address_2();
+                        $billing_city = WC()->customer->get_billing_city();
+                        $billing_country = WC()->customer->get_billing_country();
+                        $billing_state = WC()->customer->get_billing_state();
+                        $billing_postcode = WC()->customer->get_billing_postcode();
+                        $billing_phone = WC()->customer->get_billing_phone();
+                    }
+                    $Payment['shiptoname'] = $firstname . ' ' . $lastname;
+                    $Payment['shiptostreet'] = !empty($shiptostreet) ? wc_clean(stripslashes($shiptostreet)) : wc_clean(stripslashes($billing_shiptostreet));
+                    $Payment['shiptostreet2'] = !empty($shiptostreet_two) ? wc_clean(stripslashes($shiptostreet_two)) : wc_clean(stripslashes($billing_shiptostreet_two));
+                    $Payment['shiptocity'] = !empty($shipping_city) ? wc_clean(stripslashes($shipping_city)) : wc_clean(stripslashes($billing_city));
+                    $Payment['shiptostate'] = !empty($shipping_state) ? wc_clean(stripslashes($shipping_state)) : wc_clean(stripslashes($billing_state));
+                    $Payment['shiptozip'] = !empty($shipping_postcode) ? wc_clean(stripslashes($shipping_postcode)) : wc_clean(stripslashes($billing_postcode));
+                    $Payment['shiptocountrycode'] = !empty($shipping_country) ? wc_clean(stripslashes($shipping_country)) : wc_clean(stripslashes($billing_country));
+                    $Payment['shiptophonenum'] = !empty($billing_phone) ? wc_clean(stripslashes($billing_phone)) : '';
                 }
-            } elseif (is_user_logged_in()) {
-                if (version_compare(WC_VERSION, '3.0', '<')) {
-                    $firstname = WC()->customer->firstname;
-                } else {
-                    $firstname = WC()->customer->get_shipping_first_name();
-                }
-                if (version_compare(WC_VERSION, '3.0', '<')) {
-                    $lastname = WC()->customer->lastname;
-                } else {
-                    $lastname = WC()->customer->get_shipping_last_name();
-                }
-                $shiptostreet = WC()->customer->get_shipping_address();
-                $shiptostreet_two = WC()->customer->get_shipping_address_2();
-                $shipping_city = WC()->customer->get_shipping_city();
-                $shipping_country = WC()->customer->get_shipping_country();
-                $shipping_state = WC()->customer->get_shipping_state();
-                $shipping_postcode = WC()->customer->get_shipping_postcode();
-                if (version_compare(WC_VERSION, '3.0', '<')) {
-                    $billing_shiptostreet = WC()->customer->get_address();
-                    $billing_shiptostreet_two = WC()->customer->get_address_2();
-                    $billing_city = WC()->customer->get_city();
-                    $billing_country = WC()->customer->get_country();
-                    $billing_state = WC()->customer->get_state();
-                    $billing_postcode = WC()->customer->get_postcode();
-                    $billing_phone = '';
-                } else {
-                    $billing_shiptostreet = WC()->customer->get_billing_address_1();
-                    $billing_shiptostreet_two = WC()->customer->get_billing_address_2();
-                    $billing_city = WC()->customer->get_billing_city();
-                    $billing_country = WC()->customer->get_billing_country();
-                    $billing_state = WC()->customer->get_billing_state();
-                    $billing_postcode = WC()->customer->get_billing_postcode();
-                    $billing_phone = WC()->customer->get_billing_phone();
-                }
-                $Payment['shiptoname'] = $firstname . ' ' . $lastname;
-                $Payment['shiptostreet'] = !empty($shiptostreet) ? wc_clean(stripslashes($shiptostreet)) : wc_clean(stripslashes($billing_shiptostreet));
-                $Payment['shiptostreet2'] = !empty($shiptostreet_two) ? wc_clean(stripslashes($shiptostreet_two)) : wc_clean(stripslashes($billing_shiptostreet_two));
-                $Payment['shiptocity'] = !empty($shipping_city) ? wc_clean(stripslashes($shipping_city)) : wc_clean(stripslashes($billing_city));
-                $Payment['shiptostate'] = !empty($shipping_state) ? wc_clean(stripslashes($shipping_state)) : wc_clean(stripslashes($billing_state));
-                $Payment['shiptozip'] = !empty($shipping_postcode) ? wc_clean(stripslashes($shipping_postcode)) : wc_clean(stripslashes($billing_postcode));
-                $Payment['shiptocountrycode'] = !empty($shipping_country) ? wc_clean(stripslashes($shipping_country)) : wc_clean(stripslashes($billing_country));
-                $Payment['shiptophonenum'] = !empty($billing_phone) ? wc_clean(stripslashes($billing_phone)) : '';
+            } else {
+                $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
+                $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
+                $shipping_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_1 : $order->get_shipping_address_1();
+                $shipping_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_2 : $order->get_shipping_address_2();
+                $shipping_city = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_city : $order->get_shipping_city();
+                $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
+                $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
+                $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
+                $Payment['shiptoname'] = $shipping_first_name . ' ' . $shipping_last_name;
+                $Payment['shiptostreet'] = $shipping_address_1;
+                $Payment['shiptostreet2'] = $shipping_address_2;
+                $Payment['shiptocity'] = wc_clean(stripslashes($shipping_city));
+                $Payment['shiptostate'] = $shipping_state;
+                $Payment['shiptozip'] = $shipping_postcode;
+                $Payment['shiptocountrycode'] = $shipping_country;
             }
             if ($this->gateway->send_items) {
                 $Payment['order_items'] = $this->cart_param['order_items'];
