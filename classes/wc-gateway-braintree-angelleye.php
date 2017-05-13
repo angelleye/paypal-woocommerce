@@ -62,7 +62,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->enable_braintree_drop_in = $this->get_option('enable_braintree_drop_in') === "yes" ? true : false;
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
-        $this->softdescriptor = $this->get_option('softdescriptor', '');
+        $this->softdescriptor_value = $this->get_option('softdescriptor', '');
+        $this->softdescriptor = $this->get_softdescriptor();
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
@@ -268,7 +269,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('The value entered here will be displayed on the buyer\'s credit card statement.', 'paypal-for-woocommerce'),
+                'description' => __('The value entered here will be displayed on the buyer\'s credit card statement. Company name/DBA section must be either 3, 7 or 12 characters and the product descriptor can be up to 18, 14, or 9 characters respectively (with an * in between for a total descriptor name of 22 characters).', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
             ),
@@ -1519,5 +1520,44 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         
     }
-
+    
+    public function get_softdescriptor() {
+        if( !empty($this->softdescriptor_value) ) {
+            $softdescriptor_array = explode('*',$this->softdescriptor_value);
+            if(!empty($softdescriptor_array[0]) && !empty($softdescriptor_array[1])) {
+                $company_name_len = strlen( $softdescriptor_array[0] );
+                $company_name = $softdescriptor_array[0];
+                if($company_name_len == 3 || $company_name_len == 7 || $company_name_len == 12) {
+                    
+                } else {
+                    if($company_name_len > 12) {
+                        $company_name = substr($company_name, 0, 12);
+                    } elseif ($company_name_len > 7) {
+                        $company_name = substr($company_name, 0, 7);
+                    } elseif($company_name_len > 3) {
+                        $company_name = substr($company_name, 0, 3);
+                    }
+                }
+                $company_name = trim($company_name);
+                $company_name_new_len = strlen( $company_name );
+                $product_descriptor = '';
+                if( !empty($softdescriptor_array[1]) ) {
+                    $product_descriptor = $softdescriptor_array[1];
+                } 
+                $product_descriptor = '* '.trim($product_descriptor);
+                $softdescriptor = $company_name . $product_descriptor;
+                $softdescriptor_len = $company_name_new_len + strlen($product_descriptor);
+                if($softdescriptor_len > 22) {
+                    $softdescriptor = substr($softdescriptor, 0, 22);
+                } else {
+                    $diff = 22 - $softdescriptor_len;
+                    for($i = 0; $i < $diff; $i ++) {
+                            $softdescriptor .= ' ';
+                    }
+                }
+                return $softdescriptor;
+            }
+        }
+        return '';
+    }
 }
