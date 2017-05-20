@@ -65,7 +65,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->angelleye_skip_text = !empty($this->setting['angelleye_skip_text']) ? $this->setting['angelleye_skip_text'] : 'Skip the forms and pay faster with PayPal!';
             add_action('woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'));
             if($this->save_abandoned_checkout == false) {
-                add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99);
+                add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 2);
             }
             add_action('woocommerce_add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
             add_action('woocommerce_checkout_billing', array($this, 'ec_set_checkout_post_data'));
@@ -145,14 +145,34 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
     }
 
-    public function angelleye_paypal_express_checkout_redirect_to_paypal() {
-        try {
-            WC()->session->set( 'post_data', $_POST);
-            if (isset($_POST['payment_method']) && 'paypal_express' === $_POST['payment_method'] && $this->function_helper->ec_notice_count('error') == 0) {
-                $this->function_helper->ec_redirect_after_checkout();
+    public function angelleye_paypal_express_checkout_redirect_to_paypal($data, $errors) {
+        foreach ( $errors->get_error_messages() as $message ) {
+            wc_add_notice( $message, 'error' );
+        }
+        if ( empty( $posted_data['woocommerce_checkout_update_totals'] ) && 0 === wc_notice_count( 'error' ) ) {
+            try {
+                WC()->session->set( 'post_data', $_POST);
+                if (isset($_POST['payment_method']) && 'paypal_express' === $_POST['payment_method'] && $this->function_helper->ec_notice_count('error') == 0) {
+                    $this->function_helper->ec_redirect_after_checkout();
+                }
+            } catch (Exception $ex) {
             }
-        } catch (Exception $ex) {
-
+        } else {
+            if ( is_ajax() ) {
+                if ( ! isset( WC()->session->reload_checkout ) ) {
+                    ob_start();
+                    wc_print_notices();
+                    $messages = ob_get_clean();
+                }
+                $response = array(
+                    'result'   => 'failure',
+                    'messages' => isset( $messages ) ? $messages : '',
+                    'refresh'  => isset( WC()->session->refresh_totals ),
+                    'reload'   => isset( WC()->session->reload_checkout ),
+                );
+                unset( WC()->session->refresh_totals, WC()->session->reload_checkout );
+                wp_send_json( $response );
+            }
         }
     }
 

@@ -489,11 +489,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             
             if( empty($_GET['pay_for_order']) ) {
-            
                 $post_data = WC()->session->get('post_data');
-                if (!empty($post_data) && WC()->cart->needs_shipping()) {
+                if (!empty($post_data)) {
                     $SECFields['addroverride'] = 1;
-                    if ($post_data['ship_to_different_address']) {
+                    if ( !empty($post_data['ship_to_different_address'])) {
                         $Payment['shiptoname'] = $post_data['shipping_first_name'] . ' ' . $post_data['shipping_last_name'];
                         $Payment['shiptostreet'] = $post_data['shipping_address_1'];
                         $Payment['shiptostreet2'] = $post_data['shipping_address_2'];
