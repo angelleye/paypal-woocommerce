@@ -127,6 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue with Braintree Credit Card Statement Name option. ([#724](https://github.com/angelleye/paypal-woocommerce/issues/724))
 * Fix - Resolves an issue that was causing Express Checkout to fail when used through a pending / saved order in WooCommerce. ([#728](https://github.com/angelleye/paypal-woocommerce/issues/728))
 * Fix - Resolves an issue keeping form validation on the WC checkout page from triggering when Express Checkout is used. ([#735](https://github.com/angelleye/paypal-woocommerce/issues/735))
+* Fix - Resolves an issue where the login option for the site was not available when paying with Express Checkout. ([#737](https://github.com/angelleye/paypal-woocommerce/issues/737))
 
 = 1.4.4 - 05.12.2017 =
 * Tweak - Braintree MID functionality improvements. ([#565](https://github.com/angelleye/paypal-woocommerce/issues/565))
