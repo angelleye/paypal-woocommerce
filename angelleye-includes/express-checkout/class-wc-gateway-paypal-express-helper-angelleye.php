@@ -246,13 +246,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                             $checkout_fields['billing']['billing_' . $field]['class'][] = 'hidden';
                         }
                     }
-//                    if (isset($checkout_fields['shipping']) && isset($checkout_fields['shipping']['billing_' . $field])) {
-//                        $required = isset($checkout_fields['billing']['billing_' . $field]['required']) && $checkout_fields['billing']['billing_' . $field]['required'];
-//                        if (!$required || $required && $value) {
-//                            $checkout_fields['billing']['billing_' . $field]['class'][] = 'express-provided';
-//                            $checkout_fields['billing']['billing_' . $field]['class'][] = 'hidden';
-//                        }
-//                    }
                 }
             }
             return $checkout_fields;
@@ -408,7 +401,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     
      public function mini_cart_button() {
           if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
-             $this->woocommerce_before_cart();
              $mini_cart_button_html = '';
              $mini_cart_button_html .= $this->woocommerce_paypal_express_checkout_button_angelleye($return = true);
              $mini_cart_button_html .= "<div class='clear'></div>";
@@ -573,16 +565,16 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $checkout_button_display_text = $this->show_on_cart == 'yes' ? __('Pay with Credit Card', 'paypal-for-woocommerce') : __('Proceed to Checkout','paypal-for-woocommerce');
                     echo '<script type="text/javascript">
                                 jQuery(document).ready(function(){
-                                    if (jQuery(".checkout-button, .button.checkout.wc-forward").is("input")) {
-                                        jQuery(".checkout-button, .button.checkout.wc-forward").val("' . $checkout_button_display_text . '");
+                                    if (jQuery(".checkout-button").is("input")) {
+                                        jQuery(".checkout-button").val("' . $checkout_button_display_text . '");
                                     } else {
-                                        jQuery(".checkout-button, .button.checkout.wc-forward").html("<span>' . $checkout_button_display_text . '</span>");
+                                        jQuery(".checkout-button").html("<span>' . $checkout_button_display_text . '</span>");
                                     }
                                 });
                               </script>';
                 } elseif ($this->show_on_cart == 'yes') {
                     echo '<style> input.checkout-button,
-                                 a.checkout-button, .button.checkout.wc-forward {
+                                 a.checkout-button {
                                     display: none !important;
                                 }</style>';
                 }
@@ -594,7 +586,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if($this->function_helper->ec_is_express_checkout()) {
             $order_button_text = __('Cancel order', 'paypal-for-woocommerce');
             $cancel_order_url = add_query_arg('pp_action', 'cancel_order', WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE'));
-            $order_button_hrml .= apply_filters( 'angelleye_review_order_cance_button_html', '<a class="button alt angelleye_cancel" name="woocommerce_checkout_place_order" href="' . esc_attr( $cancel_order_url ) . '" >' .$order_button_text. '</a>' );
+            $order_button_hrml = apply_filters( 'angelleye_review_order_cance_button_html', '<a class="button alt angelleye_cancel" name="woocommerce_checkout_place_order" href="' . esc_attr( $cancel_order_url ) . '" >' .$order_button_text. '</a>'. $order_button_hrml );
         }
         return $order_button_hrml;
     }
