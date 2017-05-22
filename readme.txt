@@ -133,6 +133,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue with addresses being passed around incorrectly when using Express Checkout . ([#742](https://github.com/angelleye/paypal-woocommerce/issues/742))
 * Fix - Resolves an issue where the mini-cart was still displaying a Proceed to Checkout button even with Express Checkout is the only gateway enabled. ([#747](https://github.com/angelleye/paypal-woocommerce/issues/747))
 * Fix - Resolves an issue where custom fields were not populating like before. ([#733](https://github.com/angelleye/paypal-woocommerce/issues/733))
+* Fix - Resolves PHP notices shown in logs depending on how error reporting settings are configured. ([#738](https://github.com/angelleye/paypal-woocommerce/issues/738))
 
 = 1.4.4 - 05.12.2017 =
 * Tweak - Braintree MID functionality improvements. ([#565](https://github.com/angelleye/paypal-woocommerce/issues/565))
