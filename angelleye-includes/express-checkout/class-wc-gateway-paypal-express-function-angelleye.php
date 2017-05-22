@@ -99,10 +99,11 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
 
     public function angelleye_ec_save_payment_method_checkbox() {
         return sprintf(
-                '<div class="angelleye_ec_save_to_accoount_box"><p class="form-row woocommerce-SavedPaymentMethods-saveNew">
-                            <input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" style="width:auto;" />
-                            <label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
-                    </p></div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'woocommerce')
+                '<div class="angelleye_ec_save_to_accoount_box">
+                    <p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+                        <label for="wc-%1$s-new-payment-method"><input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" />%2$s</label>
+                    </p>
+                </div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'woocommerce')
         );
     }
     

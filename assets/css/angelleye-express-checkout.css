@@ -107,15 +107,11 @@ div.widget_shopping_cart_content a.paypal_checkout_button .ec_checkout_page_butt
 div.widget_shopping_cart_content a.paypal_checkout_button img.ec_checkout_page_button_type_pc {
     box-shadow: none;
 }
-.form-row.woocommerce-SavedPaymentMethods-saveNew > input {
-    float: none;
-}
+
 p.woocommerce-SavedPaymentMethods-saveNew {
     width: 100%;
 }
-.form-row.woocommerce-SavedPaymentMethods-saveNew > label {
-    padding: 0.236em 3px;
-}
+
 .angelleye_ec_save_to_accoount_box {
     clear: both;
     display: block;
@@ -129,4 +125,24 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
 }
 .button.alt.angelleye_cancel {
     float: left;
+}
+.form-row.woocommerce-SavedPaymentMethods-saveNew > label {
+    display: inline-block;
+    margin: 0.25em 0 0.5em;
+    vertical-align: middle;
+    cursor: pointer;
+}
+.form-row.woocommerce-SavedPaymentMethods-saveNew input#wc-paypal_express-new-payment-method {
+    margin-bottom: -1px;
+    display: inline-block;
+    height: 16px;
+    line-height: 0;
+    margin: -4px 4px 0 0;
+    min-width: 16px;
+    outline: 0 none;
+    padding: 0;
+    text-align: center;
+    float: none;
+    vertical-align: middle;
+    width: 16px;
 }
