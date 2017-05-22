@@ -8,11 +8,16 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
 
     public function ec_get_shipping_details($response) {
         try {
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/NameParser.php' );
+            $parser = new FullNameParser();
             $details = array();
-            if (isset($response['FIRSTNAME'])) {
+            if (isset($response['SHIPTONAME'])) {
+                $split_name = $parser->split_full_name($response['SHIPTONAME']);
+                $shipping_first_name = $split_name['fname'];
+                $shipping_last_name = $split_name['lname'];
                 $details = array(
-                    'first_name' => $response['FIRSTNAME'],
-                    'last_name' => isset($response['LASTNAME']) ? $response['LASTNAME'] : '',
+                    'first_name' => isset($shipping_first_name) ? $shipping_first_name : $response['FIRSTNAME'],
+                    'last_name' => isset($shipping_last_name) ? $shipping_last_name : $response['LASTNAME'],
                     'company' => isset($response['BUSINESS']) ? $response['BUSINESS'] : '',
                     'email' => isset($response['EMAIL']) ? $response['EMAIL'] : '',
                     'phone' => isset($response['PHONENUM']) ? $response['PHONENUM'] : '',
