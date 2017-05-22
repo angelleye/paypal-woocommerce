@@ -246,13 +246,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                             $checkout_fields['billing']['billing_' . $field]['class'][] = 'hidden';
                         }
                     }
-//                    if (isset($checkout_fields['shipping']) && isset($checkout_fields['shipping']['billing_' . $field])) {
-//                        $required = isset($checkout_fields['billing']['billing_' . $field]['required']) && $checkout_fields['billing']['billing_' . $field]['required'];
-//                        if (!$required || $required && $value) {
-//                            $checkout_fields['billing']['billing_' . $field]['class'][] = 'express-provided';
-//                            $checkout_fields['billing']['billing_' . $field]['class'][] = 'hidden';
-//                        }
-//                    }
                 }
             }
             return $checkout_fields;
@@ -594,7 +587,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if($this->function_helper->ec_is_express_checkout()) {
             $order_button_text = __('Cancel order', 'paypal-for-woocommerce');
             $cancel_order_url = add_query_arg('pp_action', 'cancel_order', WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE'));
-            $order_button_hrml .= apply_filters( 'angelleye_review_order_cance_button_html', '<a class="button alt angelleye_cancel" name="woocommerce_checkout_place_order" href="' . esc_attr( $cancel_order_url ) . '" >' .$order_button_text. '</a>' );
+            $order_button_hrml = apply_filters( 'angelleye_review_order_cance_button_html', '<a class="button alt angelleye_cancel" name="woocommerce_checkout_place_order" href="' . esc_attr( $cancel_order_url ) . '" >' .$order_button_text. '</a>'. $order_button_hrml );
         }
         return $order_button_hrml;
     }
