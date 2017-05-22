@@ -401,6 +401,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     
      public function mini_cart_button() {
           if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
+             $this->woocommerce_before_cart();
              $mini_cart_button_html = '';
              $mini_cart_button_html .= $this->woocommerce_paypal_express_checkout_button_angelleye($return = true);
              $mini_cart_button_html .= "<div class='clear'></div>";
@@ -565,16 +566,16 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $checkout_button_display_text = $this->show_on_cart == 'yes' ? __('Pay with Credit Card', 'paypal-for-woocommerce') : __('Proceed to Checkout','paypal-for-woocommerce');
                     echo '<script type="text/javascript">
                                 jQuery(document).ready(function(){
-                                    if (jQuery(".checkout-button").is("input")) {
-                                        jQuery(".checkout-button").val("' . $checkout_button_display_text . '");
+                                    if (jQuery(".checkout-button, .button.checkout.wc-forward").is("input")) {
+                                        jQuery(".checkout-button, .button.checkout.wc-forward").val("' . $checkout_button_display_text . '");
                                     } else {
-                                        jQuery(".checkout-button").html("<span>' . $checkout_button_display_text . '</span>");
+                                        jQuery(".checkout-button, .button.checkout.wc-forward").html("<span>' . $checkout_button_display_text . '</span>");
                                     }
                                 });
                               </script>';
                 } elseif ($this->show_on_cart == 'yes') {
                     echo '<style> input.checkout-button,
-                                 a.checkout-button {
+                                 a.checkout-button, .button.checkout.wc-forward {
                                     display: none !important;
                                 }</style>';
                 }
