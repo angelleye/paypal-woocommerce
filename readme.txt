@@ -124,7 +124,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.4.5 - 05.xx.2017 =
 * Tweak - Adjusts CSS for Cancel Order button on Express Checkout review page. ([#748](https://github.com/angelleye/paypal-woocommerce/issues/748))
 * Fix - Resolves an issue where the shipping address from PayPal would sometimes not get saved in the WC order depending on specific settings. ([#https://github.com/angelleye/paypal-woocommerce/issues/722))
-* Fix - Resolves an extra / in a stylesheet. ([#717](https://github.com/angelleye/paypal-woocommerce/issues/717))
+* Fix - Resolves an issue caused by an extra / in a stylesheet. ([#717](https://github.com/angelleye/paypal-woocommerce/issues/717))
 * Fix - Resolves an issue with Braintree Credit Card Statement Name option. ([#724](https://github.com/angelleye/paypal-woocommerce/issues/724))
 * Fix - Resolves an issue that was causing Express Checkout to fail when used through a pending / saved order in WooCommerce. ([#728](https://github.com/angelleye/paypal-woocommerce/issues/728))
 * Fix - Resolves an issue keeping form validation on the WC checkout page from triggering when Express Checkout is used. ([#735](https://github.com/angelleye/paypal-woocommerce/issues/735))
