@@ -146,3 +146,31 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
     vertical-align: middle;
     width: 16px;
 }
+.angelleye_button_single a.paypal_checkout_button img.ppcreditlogo.ec_checkout_page_button_type_pc  {
+    border: medium none;
+    clear: both;
+    height: auto;
+    margin: 5px 5px;
+    padding: 0;
+    width: auto;
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0 !important;
+    box-shadow: none;
+}
+.angelleye_button_single {
+    clear: both;
+    float: left;
+}
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 1024px) {
+      .angelleye_button_single a.paypal_checkout_button img.ppcreditlogo.ec_checkout_page_button_type_pc {
+          margin: 0px;
+      }
+}
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 1080px) {
+      .angelleye_button_single a.paypal_checkout_button img.ppcreditlogo.ec_checkout_page_button_type_pc {
+          margin: 0px;
+      }
+}

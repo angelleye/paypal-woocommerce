@@ -76,7 +76,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_filter('woocommerce_terms_is_checked_default', array($this, 'ec_terms_express_checkout'));
             add_action('woocommerce_cart_emptied', array($this, 'ec_clear_session_data'));
             add_filter('woocommerce_thankyou_order_received_text', array($this, 'ec_order_received_text'), 10, 2);
-            add_action('wp_enqueue_scripts', array($this, 'ec_enqueue_scripts_product_page'));
+            add_action('wp_enqueue_scripts', array($this, 'ec_enqueue_scripts_product_page'), 0);
             add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'));
             if($this->show_on_cart == 'yes') {
                 add_action( 'woocommerce_after_mini_cart', array($this, 'mini_cart_button'));
@@ -134,6 +134,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     case "customimage":
                         $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="image" src="'.$this->pp_button_type_my_custom.'" style="'.$hide.'" class="single_add_to_cart_button button alt paypal_checkout_button single_variation_wrap_angelleye ec_product_page_button_type_customimage ' . $button_dynamic_class . '" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '"/>';
                         break;
+                }
+                if ($this->show_paypal_credit == 'yes') {
+                    $paypal_credit_button_markup = '<a class="paypal_checkout_button" href="' . esc_url(add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))))) . '" >';
+                    $paypal_credit_button_markup .= '<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png" width="148" height="26" class="ppcreditlogo ec_checkout_page_button_type_pc"  align="top" alt="' . __('Check out with PayPal Credit', 'paypal-for-woocommerce') . '" />';
+                    $paypal_credit_button_markup .= '</a>';
+                    $ec_html_button .= $paypal_credit_button_markup;
                 }
                 $ec_html_button .= '</div>';
                 if ($this->enable_tokenized_payments == 'yes') {
