@@ -711,8 +711,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 // Payment complete
                 //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
                 do_action('before_save_payment_token', $order_id);               
-                if(!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] == 'new') {
-                    if(!empty($_POST['wc-paypal_pro_payflow-new-payment-method']) && $_POST['wc-paypal_pro_payflow-new-payment-method'] == true) {
+                if( (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] == 'new') || !empty($order->subscription_renewal)) {
+                    if( (!empty($_POST['wc-paypal_pro_payflow-new-payment-method']) && $_POST['wc-paypal_pro_payflow-new-payment-method'] == true) || !empty($order->subscription_renewal)) {
                         $customer_id =  $order->get_user_id();
                         $TRANSACTIONID = $PayPalResult['PNREF'];
                         $this->are_reference_transactions_enabled($TRANSACTIONID);

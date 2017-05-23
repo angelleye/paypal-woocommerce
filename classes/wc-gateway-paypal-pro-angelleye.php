@@ -1170,8 +1170,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
             }
             do_action('before_save_payment_token', $order_id);
-            if(!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') {
-                if(!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) {
+            if( ( !empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') || !empty($order->subscription_renewal)) {
+                if( (!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) || !empty($order->subscription_renewal)) {
                     $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
                     $token = new WC_Payment_Token_CC();
                     if ( is_user_logged_in() ) {
@@ -1931,8 +1931,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $order->add_order_note($cvv2_response_order_note);
             $is_sandbox = $this->testmode == 'yes' ? true : false;
             update_post_meta($order_id, 'is_sandbox', $is_sandbox);
-            if (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') {
-                if (!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) {
+            if ( (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') || !empty($order->subscription_renewal)) {
+                if ( (!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) || !empty($order->subscription_renewal)) {
                     $customer_id = $order->get_user_id();
                     $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
                     $token = new WC_Payment_Token_CC();

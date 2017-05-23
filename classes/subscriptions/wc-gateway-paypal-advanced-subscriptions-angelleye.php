@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 class WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE extends WC_Gateway_PayPal_Advanced_AngellEYE {
-
+    public $wc_pre_30;
     public function __construct() {
         parent::__construct();
         if (class_exists('WC_Subscriptions_Order')) {
@@ -15,6 +15,7 @@ class WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE extends WC_Gateway_PayP
             add_action('wcs_resubscribe_order_created', array($this, 'delete_resubscribe_meta'), 10);
             add_action('woocommerce_subscription_failing_payment_method_updated_stripe', array($this, 'update_failing_payment_method'), 10, 2);
         }
+        $this->wc_pre_30 = version_compare( WC_VERSION, '3.0.0', '<' );
     }
 
     protected function is_subscription($order_id) {
@@ -30,14 +31,15 @@ class WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE extends WC_Gateway_PayP
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
-        parent::process_payment($renewal_order->id);
+        parent::process_payment($renewal_order);
     }
 
     public function add_subscription_payment_meta($payment_meta, $subscription) {
+        $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
         $payment_meta[$this->id] = array(
             'post_meta' => array(
                 '_payment_tokens_id' => array(
-                    'value' => get_post_meta($subscription->id, '_payment_tokens_id', true),
+                    'value' => get_post_meta($subscription_id, '_payment_tokens_id', true),
                     'label' => 'Payment Tokens ID',
                 )
             )
@@ -66,17 +68,20 @@ class WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE extends WC_Gateway_PayP
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                update_post_meta($subscription->id, '_payment_tokens_id', $payment_tokens_id);
+                $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
+                update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
             }
         }
     }
 
     public function delete_resubscribe_meta($resubscribe_order) {
-        delete_post_meta($resubscribe_order->id, '_payment_tokens_id');
+        $resubscribe_order_id = $this->wc_pre_30 ? $resubscribe_order->id : $resubscribe_order->get_id();
+        delete_post_meta($resubscribe_order_id, '_payment_tokens_id');
     }
 
     public function update_failing_payment_method($subscription, $renewal_order) {
-        update_post_meta($subscription->id, '_payment_tokens_id', $renewal_order->payment_tokens_id);
+        $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
+        update_post_meta($subscription_id, '_payment_tokens_id', $renewal_order->payment_tokens_id);
     }
 
 }

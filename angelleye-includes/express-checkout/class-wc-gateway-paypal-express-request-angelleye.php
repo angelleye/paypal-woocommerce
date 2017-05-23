@@ -942,6 +942,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
+                $subscription_id = version_compare( WC_VERSION, '3.0', '<' ) ? $subscription->id : $subscription->get_id();
                 update_post_meta($subscription->id, '_payment_tokens_id', $payment_tokens_id);
             }
         }

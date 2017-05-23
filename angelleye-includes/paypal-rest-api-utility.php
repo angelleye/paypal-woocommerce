@@ -654,7 +654,8 @@ class PayPal_Rest_API_Utility {
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                update_post_meta($subscription->id, '_payment_tokens_id', $payment_tokens_id);
+                $subscription_id = version_compare(WC_VERSION, '3.0', '<') ? $subscriptions->id : $subscriptions->get_id();
+                update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
             }
         }
     }

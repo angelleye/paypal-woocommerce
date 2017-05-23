@@ -654,11 +654,12 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     update_post_meta( $order->get_id(), 'is_sandbox', $this->sandbox );
                 }
                 $order->payment_complete($this->response->transaction->id);
+                $transaction = Braintree_Transaction::find($this->response->transaction->id);
+                $this->save_payment_token($order, $transaction->creditCard['token']);
                 do_action('before_save_payment_token', $order_id);
                 if ((!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') || ( $this->enable_braintree_drop_in && $this->supports('tokenization'))) {
                     if ((!empty($_POST['wc-braintree-new-payment-method']) && $_POST['wc-braintree-new-payment-method'] == true) || ($this->enable_braintree_drop_in && $this->supports('tokenization'))) {
                     try {
-                        $transaction = Braintree_Transaction::find($this->response->transaction->id);
                         if (!empty($transaction->creditCard) && !empty($transaction->customer['id'])) {
                             $customer_id = $order->get_user_id();
                             update_user_meta($customer_id, 'braintree_customer_id', $transaction->customer['id']);
@@ -674,13 +675,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 $token->set_expiry_month($transaction->creditCard['expirationMonth']);
                                 $token->set_expiry_year($transaction->creditCard['expirationYear']);
                                 $save_result = $token->save();
-                                $this->save_payment_token($order, $payment_method_token);
-                                        if ($save_result) {
-                                            $order->add_payment_token($token);
-                                        }
-                                    } else {
-                                        $order->add_payment_token($wc_existing_token);
-                            }
+                                
+                                if ($save_result) {
+                                    $order->add_payment_token($token);
+                                }
+                             } else {
+                                 $order->add_payment_token($wc_existing_token);
+                             }
                         }
                     } catch (Braintree_Exception_NotFound $e) {
                         $this->add_log("Braintree_Transaction::find Braintree_Exception_NotFound: " . $e->getMessage());
