@@ -145,7 +145,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                 <form id="woocommerce_paypal-for-woocommerce_options_form_bulk_tool_shipping" autocomplete="off" action="<?php echo admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=tools'); ?>" method="post">
                     <a name="pfw-t1"></a>
                     <h3><?php echo __('Bulk Edit Tool for Products', 'paypal-for-woocommerce'); ?></h3>
-                    <div><?php echo __('Select from the options below to enable / disable No shipping required or PayPal Billing Agreement on multiple products at once.', 'paypal-for-woocommerce'); ?></div>
+                    <div><?php echo __('Select from the options below to enable / disable No shipping required, PayPal Billing Agreement, Enable Express Checkout Button on multiple products at once.', 'paypal-for-woocommerce'); ?></div>
                     <div class="angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section pfw-bulk-action-type">
                         <label for="pfw-bulk-action-type"><?php echo __('Action', 'paypal-for-woocommerce'); ?></label>
                         <div>
