@@ -70,7 +70,7 @@ class PayPal_Rest_API_Utility {
                 $this->payment->create($this->getAuth());
             } catch (PayPal\Exception\PayPalConnectionException $ex) {
                 $this->add_log($ex->getMessage());
-                if (!empty($order->subscription_renewal)) {
+                if ($this->is_subscription($order_id)) {
                     return true;
                 }
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
@@ -81,7 +81,7 @@ class PayPal_Rest_API_Utility {
             } catch (Exception $ex) {
                 $this->send_failed_order_email($order_id);
                 $this->add_log($ex->getMessage());
-                if (!empty($order->subscription_renewal)) {
+                if ($this->is_subscription($order_id)) {
                     return true;
                 }
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
@@ -129,7 +129,7 @@ class PayPal_Rest_API_Utility {
                 } else {
                     update_post_meta( $order->get_id(), 'is_sandbox', $is_sandbox );
                 }
-                if (!empty($order->subscription_renewal)) {
+                if ($this->is_subscription($order_id)) {
                     return true;
                 }
                 WC()->cart->empty_cart();
@@ -147,7 +147,7 @@ class PayPal_Rest_API_Utility {
                 }
             } else {
                 $this->send_failed_order_email($order_id);
-                if (!empty($order->subscription_renewal)) {
+                if ($this->is_subscription($order_id)) {
                     return true;
                 }
                 wc_add_notice(__('Error Payment state:' . $this->payment->state, 'paypal-for-woocommerce'), 'error');
@@ -160,7 +160,7 @@ class PayPal_Rest_API_Utility {
         } catch (PayPal\Exception\PayPalConnectionException $ex) {
             $this->send_failed_order_email($order_id);
             $this->add_log($ex->getData());
-            if (!empty($order->subscription_renewal)) {
+            if ($this->is_subscription($order_id)) {
                 return true;
             }
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
@@ -173,7 +173,7 @@ class PayPal_Rest_API_Utility {
         } catch (Exception $ex) {
             $this->send_failed_order_email($order_id);
             $this->add_log($ex->getMessage());
-            if (!empty($order->subscription_renewal)) {
+            if ($this->is_subscription($order_id)) {
                 return true;
             }
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
@@ -200,7 +200,7 @@ class PayPal_Rest_API_Utility {
             $this->fundingInstrument = new FundingInstrument();
             $this->fundingInstrument->setCreditCardToken($this->CreditCardToken);
             $this->save_payment_token($order, $token->get_token());
-        } else if (!empty($order->subscription_renewal)) {
+        } else if ($this->is_subscription($order_id)) {
             $payment_tokens = get_post_meta($order_id, '_payment_tokens_id', true);
             $this->CreditCardToken = new CreditCardToken();
             $this->CreditCardToken->setCreditCardId($payment_tokens);
@@ -696,7 +696,7 @@ class PayPal_Rest_API_Utility {
             $order->payment_complete($creditcard_id);
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
             update_post_meta($order_id, 'is_sandbox', $is_sandbox);
-            if (!empty($order->subscription_renewal)) {
+            if ($this->is_subscription($order_id)) {
                 return true;
             }
             WC()->cart->empty_cart();
@@ -715,7 +715,7 @@ class PayPal_Rest_API_Utility {
         } catch (PayPal\Exception\PayPalConnectionException $ex) {
             $this->send_failed_order_email($order_id);
             $this->add_log($ex->getData());
-            if (!empty($order->subscription_renewal)) {
+            if ($this->is_subscription($order_id)) {
                 return true;
             }
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
@@ -727,7 +727,7 @@ class PayPal_Rest_API_Utility {
         } catch (Exception $ex) {
             $this->send_failed_order_email($order_id);
             $this->add_log($ex->getMessage());
-            if (!empty($order->subscription_renewal)) {
+            if ($this->is_subscription($order_id)) {
                 return true;
             }
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');

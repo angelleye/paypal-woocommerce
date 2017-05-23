@@ -613,7 +613,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $log['acct'] = '****';
                 $log['cvv2'] = '****';
             }
-            if (!empty($order->subscription_renewal)) {
+            if ($this->is_subscription($order_id)) {
                 $PayPalRequestData['origid'] = get_post_meta($order_id, '_payment_tokens', true);
             }
             $this->add_log('PayFlow Request: '.print_r( $log, true ) );
@@ -711,8 +711,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 // Payment complete
                 //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
                 do_action('before_save_payment_token', $order_id);               
-                if( (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] == 'new') || !empty($order->subscription_renewal)) {
-                    if( (!empty($_POST['wc-paypal_pro_payflow-new-payment-method']) && $_POST['wc-paypal_pro_payflow-new-payment-method'] == true) || !empty($order->subscription_renewal)) {
+                if( (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] == 'new') || $this->is_subscription($order_id)) {
+                    if( (!empty($_POST['wc-paypal_pro_payflow-new-payment-method']) && $_POST['wc-paypal_pro_payflow-new-payment-method'] == true) || $this->is_subscription($order_id)) {
                         $customer_id =  $order->get_user_id();
                         $TRANSACTIONID = $PayPalResult['PNREF'];
                         $this->are_reference_transactions_enabled($TRANSACTIONID);
@@ -1294,7 +1294,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             if ($this->send_items) {
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
-            if (!empty($order->subscription_renewal)) {
+            if ($this->is_subscription($order_id)) {
                 $PayPalRequestData['origid'] = get_post_meta($order_id, '_payment_tokens_id', true);
             }
             $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
@@ -1349,7 +1349,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $order->payment_complete($PayPalResult['PNREF']);
                 $this->save_payment_token($order, $PayPalResult['PNREF']);
                 $this->are_reference_transactions_enabled($PayPalResult['PNREF']);
-                if (!empty($order->subscription_renewal)) {
+                if ($this->is_subscription($order_id)) {
                     return true;
                 }
             } else {

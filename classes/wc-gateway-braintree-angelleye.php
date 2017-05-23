@@ -1401,7 +1401,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'countryCodeAlpha2' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country(),
         );
         
-        if (!empty($order->subscription_renewal)) {
+        if ($this->is_subscription($order_id)) {
             $request_data['paymentMethodToken'] = get_post_meta($order_id, '_payment_tokens_id', true);
         }
         if (is_user_logged_in()) {

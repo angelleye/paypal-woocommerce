@@ -1170,8 +1170,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
             }
             do_action('before_save_payment_token', $order_id);
-            if( ( !empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') || !empty($order->subscription_renewal)) {
-                if( (!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) || !empty($order->subscription_renewal)) {
+            if( ( !empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') || $this->is_subscription($order_id) ) {
+                if( (!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) || $this->is_subscription($order_id)) {
                     $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
                     $token = new WC_Payment_Token_CC();
                     if ( is_user_logged_in() ) {
@@ -1189,8 +1189,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                         $order->add_payment_token($token);
                     }
                 }
+            } else {
+                if( $this->is_subscription($order_id) ) {
+                    $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
+                    $this->save_payment_token($order, $TRANSACTIONID);
+                }
             }
-
+            
             // Payment complete
             if($PayPalResult['ACK'] == 'SuccessWithWarning' && !empty($PayPalResult['L_ERRORCODE0'])) {
                 if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && $PayPalResult['L_ERRORCODE0'] == '11610') {
@@ -1931,8 +1936,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $order->add_order_note($cvv2_response_order_note);
             $is_sandbox = $this->testmode == 'yes' ? true : false;
             update_post_meta($order_id, 'is_sandbox', $is_sandbox);
-            if ( (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') || !empty($order->subscription_renewal)) {
-                if ( (!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) || !empty($order->subscription_renewal)) {
+            if ( (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') || $this->is_subscription($order_id)) {
+                if ( (!empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) || $this->is_subscription($order_id)) {
                     $customer_id = $order->get_user_id();
                     $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
                     $token = new WC_Payment_Token_CC();
@@ -2019,10 +2024,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     public function free_signup_order_payment($order_id) {
         $order = new WC_Order($order_id);
         $this->log('Processing order #' . $order_id);
-        if (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') {
+        if ( (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') || $this->is_subscription($order_id)) {
             $token_id = wc_clean($_POST['wc-paypal_pro-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
             $order->payment_complete($token->get_token());
+            $this->save_payment_token($order, $token->get_token());
             update_post_meta($order_id, '_first_transaction_id', $token->get_token());
             $order->add_order_note('Payment Action: ' . $this->payment_action);
             WC()->cart->empty_cart();
@@ -2030,6 +2036,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'result' => 'success',
                 'redirect' => $this->get_return_url($order)
             );
-        }
+        } 
     }
+    
+    
 }
