@@ -946,12 +946,12 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 update_post_meta( $order->get_id(), '_is_save_payment_method', 'yes' );
             }
         }
-        if ((!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') || $this->is_subscription($order_id)) {
+        if (!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') {
             if ($this->is_subscription($order_id)) {
                 $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
             } else {
-            $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
-            $token = WC_Payment_Tokens::get($token_id);
+                $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
+                $token = WC_Payment_Tokens::get($token_id);
                 $payment_tokens_id = $token->get_token();
             }
             $this->create_reference_transaction($payment_tokens_id, $order);
