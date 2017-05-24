@@ -122,6 +122,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.5 - 05.xx.2017 =
+* Tweak - Adds a note to the settings panel about the new product-level option for enabling Express Checkout. ([#729](https://github.com/angelleye/paypal-woocommerce/issues/729))
 * Tweak - Adds PayPal Credit button to product details pages when Express Checkout and Credit are enabled (previously only showed up on cart and checkout pages.) ([#741](https://github.com/angelleye/paypal-woocommerce/issues/741))
 * Tweak - Adjusts CSS for Cancel Order button on Express Checkout review page. ([#748](https://github.com/angelleye/paypal-woocommerce/issues/748))
 * Fix - Resolves an issue where the shipping address from PayPal would sometimes not get saved in the WC order depending on specific settings. ([#https://github.com/angelleye/paypal-woocommerce/issues/722))
