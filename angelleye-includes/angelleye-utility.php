@@ -92,7 +92,7 @@ class AngellEYE_Utility {
                     add_action('woocommerce_order_action_' . $hook_name, array($this, 'angelleye_' . $hook_name));
                 }
             }
-            add_filter('woocommerce_payment_gateway_supports', array($this, 'angelleye_woocommerce_payment_gateway_supports'), 10, 3);
+           add_filter('woocommerce_payment_gateway_supports', array($this, 'angelleye_woocommerce_payment_gateway_supports'), 10, 3);
         }
 
         add_action( 'woocommerce_process_shop_order_meta', array($this, 'save' ), 50, 2);
@@ -631,10 +631,10 @@ class AngellEYE_Utility {
     public function angelleye_woocommerce_payment_gateway_supports($boolean, $feature, $current) {
         global $post;
         if( empty($post->ID) ) {
-           return false;
+           return $boolean;
         }
         if($post->post_type != 'shop_order') {
-            return false;
+            return $boolean;
         }
         $order_id = $post->ID;
         if (!is_object($order_id)) {
