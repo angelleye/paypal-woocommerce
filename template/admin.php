@@ -145,14 +145,14 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                 <form id="woocommerce_paypal-for-woocommerce_options_form_bulk_tool_shipping" autocomplete="off" action="<?php echo admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=tools'); ?>" method="post">
                     <a name="pfw-t1"></a>
                     <h3><?php echo __('Bulk Edit Tool for Products', 'paypal-for-woocommerce'); ?></h3>
-                    <div><?php echo __('Select from the options below to enable / disable No shipping required, PayPal Billing Agreement, Enable Express Checkout Button on multiple products at once.', 'paypal-for-woocommerce'); ?></div>
+                    <div><?php echo __('Use the options below to enable/disable product-level settings for all products at once or a filtered sub-set of products.', 'paypal-for-woocommerce'); ?></div>
                     <div class="angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section pfw-bulk-action-type">
                         <label for="pfw-bulk-action-type"><?php echo __('Action', 'paypal-for-woocommerce'); ?></label>
                         <div>
                             <select name="pfw_bulk_action_type" id="pfw-bulk-action-type" required="required">
-                                <option value=""><?php echo __('- Select option', 'paypal-for-woocommerce'); ?></option>
-                                <option value="enable_no_shipping"><?php echo __('Enable No shipping required', 'paypal-for-woocommerce'); ?></option>
-                                <option value="disable_no_shipping"><?php echo __('Disable No shipping required', 'paypal-for-woocommerce'); ?></option>
+                                <option value=""><?php echo __('- Select...', 'paypal-for-woocommerce'); ?></option>
+                                <option value="enable_no_shipping"><?php echo __('Enable No Shipping Required', 'paypal-for-woocommerce'); ?></option>
+                                <option value="disable_no_shipping"><?php echo __('Disable No Shipping Required', 'paypal-for-woocommerce'); ?></option>
                                 <option value="enable_paypal_billing_agreement"><?php echo __('Enable PayPal Billing Agreement', 'paypal-for-woocommerce'); ?></option>
                                 <option value="disable_paypal_billing_agreement"><?php echo __('Disable PayPal Billing Agreement', 'paypal-for-woocommerce'); ?></option>
                                 <option value="enable_express_checkout_button"><?php echo __('Enable Express Checkout Button', 'paypal-for-woocommerce'); ?></option>
@@ -164,11 +164,11 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                         <label for="pfw-bulk-action-target-type"><?php echo __('Target', 'paypal-for-woocommerce'); ?></label>
                         <div>
                             <select name="pfw_bulk_action_target_type" id="pfw-bulk-action-target-type" required="required">
-                                <option value=""><?php echo __('- Select option', 'paypal-for-woocommerce'); ?></option>
-                                <option value="all"><?php echo __('All products', 'paypal-for-woocommerce'); ?></option>
-                                <option value="all_downloadable"><?php echo __('All downloadable', 'paypal-for-woocommerce'); ?></option>
-                                <option value="all_virtual"><?php echo __('All virtual', 'paypal-for-woocommerce'); ?></option>
-                                <option value="featured"><?php echo __('Featured products', 'paypal-for-woocommerce'); ?></option>
+                                <option value=""><?php echo __('- Select...', 'paypal-for-woocommerce'); ?></option>
+                                <option value="all"><?php echo __('All Products', 'paypal-for-woocommerce'); ?></option>
+                                <option value="all_downloadable"><?php echo __('All Downloadable Products', 'paypal-for-woocommerce'); ?></option>
+                                <option value="all_virtual"><?php echo __('All Virtual Products', 'paypal-for-woocommerce'); ?></option>
+                                <option value="featured"><?php echo __('Featured Products', 'paypal-for-woocommerce'); ?></option>
                                 <option value="where"><?php echo __('Where...', 'paypal-for-woocommerce'); ?></option>
                             </select>
                         </div>
@@ -247,7 +247,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
         </div>
         <?php 
         wc_enqueue_js( "jQuery( 'a.delete_template' ).click( function() {
-                if ( window.confirm('" . esc_js( __( 'Are you sure you want to delete all the logfile of PayPal for WooCoomerce plugin?', 'paypal-for-woocommerce' ) ) . "') ) {
+                if ( window.confirm('" . esc_js( __( 'Are you sure you want to delete all logs from the PayPal for WooCoomerce plugin?', 'paypal-for-woocommerce' ) ) . "') ) {
                         return true;
                 }
 
