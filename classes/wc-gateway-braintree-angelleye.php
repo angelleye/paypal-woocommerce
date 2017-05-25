@@ -653,7 +653,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     update_post_meta( $order->get_id(), 'is_sandbox', $this->sandbox );
                 }
-                $order->payment_complete($this->response->transaction->id);
                 $transaction = Braintree_Transaction::find($this->response->transaction->id);
                 $this->save_payment_token($order, $transaction->creditCard['token']);
                 do_action('before_save_payment_token', $order_id);
