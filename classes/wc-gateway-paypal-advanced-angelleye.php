@@ -230,12 +230,16 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if ($inq_result == 'Approved') {//if approved
             // Payment complete
             $this->save_payment_token($order, $_POST['PNREF']);
-            $order->payment_complete($_POST['PNREF']);
+            
             do_action('before_save_payment_token', $order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $is_save_payment_method = $old_wc ? get_post_meta($order->id, '_is_save_payment_method', true) : get_post_meta($order->get_id(), '_is_save_payment_method', true);
             if ($is_save_payment_method == 'yes') {
-                $customer_id = $order->get_user_id();
+                if ( 0 != $order->get_user_id() ) {
+                    $customer_id = $order->get_user_id();
+                } else {
+                    $customer_id = get_current_user_id();
+                }
                 $TRANSACTIONID = $_POST['PNREF'];
                 $token = new WC_Payment_Token_CC();
                 $token->set_user_id($customer_id);
@@ -250,9 +254,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     $order->add_payment_token($token);
                 }
             }
+            
+            $order->payment_complete($_POST['PNREF']);
             // Remove cart
             WC()->cart->empty_cart();
-
+            
             // Add order note
             $order->add_order_note(sprintf(__('Payment completed for the  (Order: %s)', 'paypal-for-woocommerce'), $order->get_order_number()));
 
@@ -948,10 +954,14 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         }
         if (!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') {
             if ($this->is_subscription($order_id)) {
+                $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
+                $token = WC_Payment_Tokens::get($token_id);
+                $order->add_payment_token($token);
                 $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
             } else {
                 $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
+                $order->add_payment_token($token);
                 $payment_tokens_id = $token->get_token();
             }
             $this->create_reference_transaction($payment_tokens_id, $order);
@@ -959,8 +969,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             if ($inq_result == 'Approved') {
                 $order->payment_complete($payment_tokens_id);
                 $this->save_payment_token($order, $payment_tokens_id);
-                if (empty($order->subscription_renewal)) {
-                WC()->cart->empty_cart();
+                if (!$this->is_subscription($order_id)) {
+                    WC()->cart->empty_cart();
                 }
                 $order->add_order_note(sprintf(__('Payment completed for the  (Order: %s)', 'paypal-for-woocommerce'), $order->get_order_number()));
                 if ($this->debug == 'yes') {

@@ -710,13 +710,21 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
                 // Payment complete
                 //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
-                do_action('before_save_payment_token', $order_id);               
-                if( (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] == 'new') || $this->is_subscription($order_id)) {
-                    if( (!empty($_POST['wc-paypal_pro_payflow-new-payment-method']) && $_POST['wc-paypal_pro_payflow-new-payment-method'] == true) || $this->is_subscription($order_id)) {
-                        $customer_id =  $order->get_user_id();
-                        $TRANSACTIONID = $PayPalResult['PNREF'];
-                        $this->are_reference_transactions_enabled($TRANSACTIONID);
+                do_action('before_save_payment_token', $order_id);   
+                if(AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
+                    $TRANSACTIONID = $PayPalResult['PNREF'];
+                    $this->are_reference_transactions_enabled($TRANSACTIONID);
+                    if( !empty($_POST['wc-'.$this->id.'-payment-token']) && $_POST['wc-'.$this->id.'-payment-token'] != 'new' ) {
+                        $token_id = wc_clean( $_POST['wc-'.$this->id.'-payment-token'] );
+                        $token = WC_Payment_Tokens::get( $token_id );
+                        $order->add_payment_token($token);
+                    } else {
                         $token = new WC_Payment_Token_CC();
+                        if ( 0 != $order->get_user_id() ) {
+                            $customer_id = $order->get_user_id();
+                        } else {
+                            $customer_id = get_current_user_id();
+                        }
                         $token->set_user_id($customer_id);
                         $token->set_token($TRANSACTIONID);
                         $token->set_gateway_id($this->id);

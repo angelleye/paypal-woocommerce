@@ -98,11 +98,19 @@ class PayPal_Rest_API_Utility {
                 $saleId = $sale->getId();
                 do_action('before_save_payment_token', $order_id);
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
-                if (!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] == 'new') {
-                    if (!empty($_POST['wc-paypal_credit_card_rest-new-payment-method']) && $_POST['wc-paypal_credit_card_rest-new-payment-method'] == true) {
-                        try {
+                if(AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
+                    try {
+                        if( !empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new' ) {
+                            $token_id = wc_clean( $_POST['wc-paypal_credit_card_rest-payment-token'] );
+                            $token = WC_Payment_Tokens::get( $token_id );
+                            $order->add_payment_token($token);
+                        } else {
+                            if ( 0 != $order->get_user_id() ) {
+                                $customer_id = $order->get_user_id();
+                            } else {
+                                $customer_id = get_current_user_id();
+                            }
                             $this->card->create($this->getAuth());
-                            $customer_id = $order->get_user_id();
                             $creditcard_id = $this->card->getId();
                             $this->save_payment_token($order, $creditcard_id);
                             $token = new WC_Payment_Token_CC();
@@ -117,9 +125,9 @@ class PayPal_Rest_API_Utility {
                             if ($save_result) {
                                 $order->add_payment_token($token);
                             }
-                        } catch (Exception $ex) {
-                            
                         }
+                    } catch (Exception $ex) {
+
                     }
                 }
                 $order->payment_complete($saleId);
@@ -674,7 +682,11 @@ class PayPal_Rest_API_Utility {
                     $order->add_payment_token($token);
                 } else {
                     $this->card->create($this->getAuth());
-                    $customer_id = $order->get_user_id();
+                    if ( 0 != $order->get_user_id() ) {
+                        $customer_id = $order->get_user_id();
+                    } else {
+                        $customer_id = get_current_user_id();
+                    }
                     $creditcard_id = $this->card->getId();
                     $this->save_payment_token($order, $creditcard_id);
                     $token = new WC_Payment_Token_CC();

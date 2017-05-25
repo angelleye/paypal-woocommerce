@@ -908,7 +908,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         do_action('before_save_payment_token', $order_id);
         if (isset($this->paypal_response['BILLINGAGREEMENTID']) && !empty($this->paypal_response['BILLINGAGREEMENTID']) && is_user_logged_in()) {
             update_post_meta($order_id, 'BILLINGAGREEMENTID', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
-            $customer_id = $order->get_user_id();
+            if ( 0 != $order->get_user_id() ) {
+                $customer_id = $order->get_user_id();
+            } else {
+                $customer_id = get_current_user_id();
+            }
             $billing_agreement_id = $this->paypal_response['BILLINGAGREEMENTID'];
             $token = new WC_Payment_Token_CC();
             $token->set_user_id($customer_id);
