@@ -98,7 +98,7 @@ class PayPal_Rest_API_Utility {
                 $saleId = $sale->getId();
                 do_action('before_save_payment_token', $order_id);
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
-                if(AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
+                if(AngellEYE_Utility::angelleye_is_save_payment_token($this->gateway, $order_id)) {
                     try {
                         if( !empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new' ) {
                             $token_id = wc_clean( $_POST['wc-paypal_credit_card_rest-payment-token'] );
