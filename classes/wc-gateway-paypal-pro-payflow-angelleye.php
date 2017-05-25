@@ -1561,6 +1561,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             }
         }
     }
+    
+    public function is_subscription($order_id) {
+        return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
+    }
 
 }
 

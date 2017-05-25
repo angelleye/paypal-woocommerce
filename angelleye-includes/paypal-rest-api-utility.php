@@ -635,7 +635,7 @@ class PayPal_Rest_API_Utility {
         }
     }
 
-    function is_subscription($order_id) {
+    public function is_subscription($order_id) {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
     }
 
