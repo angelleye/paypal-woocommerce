@@ -1423,5 +1423,39 @@ class AngellEYE_Utility {
         }
     }
     
+    public static function angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() {
+        if (!function_exists('WC')) {
+            return false;
+        }
+        $cart = WC()->cart;
+        if (empty($cart)) {
+            return false;
+        }
+        $has_autoship_items = false;
+        foreach ($cart->get_cart() as $item) {
+            if (isset($item['wc_autoship_frequency'])) {
+                $has_autoship_items = true;
+                break;
+            }
+        }
+        return $has_autoship_items = true;
+    }
+    
+    public static function angelleye_is_save_payment_token($current, $order_id) {
+        if( ( !empty($_POST['wc-'.$current->id.'-payment-token']) && $_POST['wc-'.$current->id.'-payment-token'] == 'new') || self::is_subscription($order_id) || self::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() ) {
+            if( (!empty($_POST['wc-'.$current->id.'-new-payment-method']) && $_POST['wc-'.$current->id.'-new-payment-method'] == true) || $this->is_subscription($order_id) || self::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static function is_subscription($order_id) {
+        return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
+    }
+    
+    
+
+    
     
 }

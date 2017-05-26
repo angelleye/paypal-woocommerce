@@ -191,6 +191,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
+                $this->angelleye_ec_save_billing_agreement($order_id);
                 update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 if (empty($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'])) {
                     $this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] = '';
@@ -222,7 +223,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     update_post_meta($order->get_id(), 'paypal_email', $payeremail);
                 }
                 $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : ''));
-                $this->angelleye_ec_save_billing_agreement($order_id);
+                
                 WC()->cart->empty_cart();
                 wc_clear_notices();
                 wp_redirect($this->gateway->get_return_url($order));
@@ -230,6 +231,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } elseif ($this->response_helper->ec_is_response_successwithwarning($this->paypal_response)) {
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
+                $this->angelleye_ec_save_billing_agreement($order_id);
                 if ($old_wc) {
                     update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 } else {
@@ -265,7 +267,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 }
 
                 $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']));
-                $this->angelleye_ec_save_billing_agreement($order_id);
+                
                 WC()->cart->empty_cart();
                 wc_clear_notices();
                 wp_redirect($this->gateway->get_return_url($order));
@@ -602,7 +604,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
                     $_paypal_billing_agreement = get_post_meta($product_id, '_paypal_billing_agreement', true);
                     $ec_save_to_account = WC()->session->get('ec_save_to_account');
-                    if ($_paypal_billing_agreement == 'yes' || ( isset($ec_save_to_account) && $ec_save_to_account == 'on')) {
+                    if ($_paypal_billing_agreement == 'yes' || ( isset($ec_save_to_account) && $ec_save_to_account == 'on') || AngellEYE_Utility::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
                         $BillingAgreements = array();
                         $Item = array(
                             'l_billingtype' => '',
@@ -908,7 +910,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         do_action('before_save_payment_token', $order_id);
         if (isset($this->paypal_response['BILLINGAGREEMENTID']) && !empty($this->paypal_response['BILLINGAGREEMENTID']) && is_user_logged_in()) {
             update_post_meta($order_id, 'BILLINGAGREEMENTID', isset($this->paypal_response['BILLINGAGREEMENTID']) ? $this->paypal_response['BILLINGAGREEMENTID'] : '');
-            $customer_id = $order->get_user_id();
+            if ( 0 != $order->get_user_id() ) {
+                $customer_id = $order->get_user_id();
+            } else {
+                $customer_id = get_current_user_id();
+            }
             $billing_agreement_id = $this->paypal_response['BILLINGAGREEMENTID'];
             $token = new WC_Payment_Token_CC();
             $token->set_user_id($customer_id);

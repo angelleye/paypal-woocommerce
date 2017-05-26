@@ -1170,13 +1170,20 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
             }
             do_action('before_save_payment_token', $order_id);
-            if( !empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] == 'new') {
-                if( !empty($_POST['wc-paypal_pro-new-payment-method']) && $_POST['wc-paypal_pro-new-payment-method'] == true) {
+            if(AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
+                if( !empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new' ) {
+                      $token_id = wc_clean( $_POST['wc-paypal_pro-payment-token'] );
+                      $token = WC_Payment_Tokens::get( $token_id );
+                      $order->add_payment_token($token);
+                } else {
                     $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
                     $token = new WC_Payment_Token_CC();
-                    if ( is_user_logged_in() ) {
-            		$token->set_user_id( get_current_user_id() );
+                    if ( 0 != $order->get_user_id() ) {
+                        $customer_id = $order->get_user_id();
+                    } else {
+                        $customer_id = get_current_user_id();
                     }
+                    $token->set_user_id($customer_id);
                     $token->set_token( $TRANSACTIONID );
                     $token->set_gateway_id( $this->id );
                     $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
@@ -1186,7 +1193,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     $this->save_payment_token($order, $TRANSACTIONID);
                     $save_result = $token->save();
                     if ($save_result) {
-                        $order->add_payment_token($token);
+                       $order->add_payment_token($token);
                     }
                 }
             } else {
@@ -1934,6 +1941,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             );
         } 
     }
+    
+    public function is_subscription($order_id) {
+        return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
+    }
+
     
     
 }
