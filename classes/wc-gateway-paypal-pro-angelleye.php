@@ -876,7 +876,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
          * Check if the PayPal class has already been established.
          */
         if (!class_exists('Angelleye_PayPal')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
 
         /*
@@ -1340,7 +1340,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
          * Check if the PayPal class has already been established.
          */
         if (!class_exists('Angelleye_PayPal')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
 
         /*
@@ -1558,7 +1558,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function add_payment_method() {
         if (!class_exists('Angelleye_PayPal')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
         $this->validate_fields();
         $card = $this->get_posted_card();
@@ -1638,7 +1638,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
         if ( $sent_to_admin && 'paypal_pro' === $payment_method ) {
             if (!class_exists('Angelleye_PayPal')) {
-                require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
             }
             $PayPalConfig = array(
             'Sandbox' => $this->testmode,

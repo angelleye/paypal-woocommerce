@@ -471,10 +471,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
         
         if (!class_exists('Angelleye_PayPal')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
         if(!class_exists('Angelleye_PayPal_PayFlow' )) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');	
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );	
         }
 		
         /**
@@ -745,7 +745,19 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && $PayPalResult['RESULT'] == 126) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                 } else {
-                $order->payment_complete($PayPalResult['PNREF']);
+                    $order->payment_complete($PayPalResult['PNREF']);
+                    if ($this->payment_action == "Authorization") {
+                        if ($old_wc) {
+                            update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
+                        } else {
+                            update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['PNREF']);
+                        }
+                        $payment_order_meta = array('_transaction_id' => $PayPalResult['PNREF'], '_payment_action' => $this->payment_action);
+                        AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
+                        AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
+                        $angelleye_utility = new AngellEYE_Utility(null, null);
+                        $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
+                    }
                 }
                 
 
@@ -902,10 +914,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
          * Check if the PayPal_PayFlow class has already been established.
          */
         if (!class_exists('Angelleye_PayPal')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
         if (!class_exists('Angelleye_PayPal_PayFlow')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
         }
 
         /**
@@ -1094,10 +1106,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
     public function add_payment_method() {
         $customer_id = get_current_user_id();
         if (!class_exists('Angelleye_PayPal')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
         if (!class_exists('Angelleye_PayPal_PayFlow')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
         }
         $PayPalConfig = array(
             'Sandbox' => $this->testmode,
@@ -1188,10 +1200,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
     public function process_subscription_payment($order, $amount) {
         $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
         if (!class_exists('Angelleye_PayPal')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
         if (!class_exists('Angelleye_PayPal_PayFlow')) {
-            require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
         }
         $PayPalConfig = array(
             'Sandbox' => $this->testmode,
@@ -1355,6 +1367,18 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
                 $order->payment_complete($PayPalResult['PNREF']);
+                if ($this->payment_action == "Authorization") {
+                    if ($old_wc) {
+                        update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
+                    } else {
+                        update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['PNREF']);
+                    }
+                    $payment_order_meta = array('_transaction_id' => $PayPalResult['PNREF'], '_payment_action' => $this->payment_action);
+                    AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
+                    AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
+                    $angelleye_utility = new AngellEYE_Utility(null, null);
+                    $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
+                }
                 $this->save_payment_token($order, $PayPalResult['PNREF']);
                 $this->are_reference_transactions_enabled($PayPalResult['PNREF']);
                 if ($this->is_subscription($order_id)) {
@@ -1392,10 +1416,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             if ($are_reference_transactions_enabled == 'no') {
                 $customer_id = get_current_user_id();
                 if (!class_exists('Angelleye_PayPal')) {
-                    require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+                    require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
                 }
                 if (!class_exists('Angelleye_PayPal_PayFlow')) {
-                    require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
+                    require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
                 }
                 $PayPalConfig = array(
                     'Sandbox' => $this->testmode,
@@ -1506,10 +1530,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         if ( $sent_to_admin && 'paypal_pro_payflow' === $payment_method ) {
             // Store source in the order
             if (!class_exists('Angelleye_PayPal')) {
-                require_once('lib/angelleye/paypal-php-library/includes/paypal.class.php');
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
             }
             if (!class_exists('Angelleye_PayPal_PayFlow')) {
-                require_once('lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php');
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
             }
             $PayPalConfig = array(
                 'Sandbox' => $this->testmode,
