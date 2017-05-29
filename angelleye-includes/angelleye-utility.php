@@ -28,11 +28,18 @@ class AngellEYE_Utility {
     public $total_DoReauthorization;
     public $max_authorize_amount;
     public $remain_authorize_amount;
+    public $payflow_transstate;
 
     public function __construct($plugin_name, $version) {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->load_dependencies();
+        $this->payflow_transstate = array('0' => 'Account Verification', '1' => 'General error state', '3' => 'Authorization approved', '4' => 'Partial capture',
+            '6' => 'Settlement pending', '7' => 'Settlement in progress', '8' => 'Settled successfully', '9' => 'Authorization captured', '10' => 'Capture failed',
+            '11' => 'Failed to settle', '12' => 'Unsettled transaction because of incorrect account information', '14' => 'For various reasons, the batch containing this transaction failed settlement',
+            '15' => 'Settlement incomplete due to a charge back', '16' => 'Merchant ACH settlement failed; (need to manually collect it)', '106' => 'Unknown Status Transaction - Transactions not settled',
+            '206' => 'Transactions on hold pending customer intervention'
+            );
     }
 
     public function add_ec_angelleye_paypal_php_library() {
@@ -84,6 +91,7 @@ class AngellEYE_Utility {
             $this->paypal = new Angelleye_PayPal($PayPalConfig);
         } elseif ($this->payment_method == 'paypal_pro_payflow') {
             $gateway_obj = new WC_Gateway_PayPal_Pro_PayFlow_AngellEYE();
+            $this->ec_debug = $gateway_obj->get_option('debug');
             $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
             $this->testmode = 'yes' === $gateway_obj->get_option('testmode', 'no');
             $this->paypal_partner = $gateway_obj->get_option('paypal_partner', 'PayPal');
@@ -637,12 +645,13 @@ class AngellEYE_Utility {
         }
     }
 
-    public function ec_add_log($message) {
+    public function ec_add_log($message, $level = 'info' ) {
         if ($this->ec_debug == 'yes') {
             if (empty($this->log)) {
-                $this->log = new WC_Logger();
+                $this->log = wc_get_logger();
             }
             $this->log->add(str_replace("_", "-", $this->payment_method), $message);
+            $this->log->log( $level, $message, array( 'source' => $this->payment_method ) );
         }
     }
 
@@ -716,10 +725,14 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_write_request_response_api_log($PayPalResult) {
-        $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
-        $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
-        $this->ec_add_log('Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
-        $this->ec_add_log('Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
+        if( $this->payment_method != 'paypal_pro_payflow' ) {
+            $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+            $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+            $this->ec_add_log('Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
+            $this->ec_add_log('Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
+        } else {
+            $this->ec_add_log('LOG: ' . print_r($PayPalResult, true));
+        }
     }
 
     public static function angelleye_paypal_credit_card_rest_setting_fields() {
@@ -926,7 +939,7 @@ class AngellEYE_Utility {
         $posts_array = get_posts($args);
         foreach ($posts_array as $post_data):
             $payment_status = get_post_meta($post_data->ID, 'PAYMENTSTATUS', true);
-            if (isset($post->post_title) && !empty($post_data->post_title) && isset($payment_status) && $payment_status == 'Pending') {
+            if (isset($post->post_title) && !empty($post_data->post_title)) {
                 $this->angelleye_get_transactionDetails($post_data->post_title);
             }
         endforeach;
@@ -1059,18 +1072,21 @@ class AngellEYE_Utility {
                                 }
                                 ?></td>
                             <td><?php echo get_woocommerce_currency_symbol() . '' . esc_attr(get_post_meta($post->ID, 'AMT', true)); ?></td>
-                            <?php $PENDINGREASON = esc_attr(get_post_meta($post->ID, 'PENDINGREASON', true)); ?>
+                            <?php $PENDINGREASON = esc_attr(get_post_meta($post->ID, 'PENDINGREASON', true)); 
+                            if( empty($PENDINGREASON) ) {
+                                $TRANSSTATE = esc_attr(get_post_meta($post->ID, 'TRANSSTATE', true));
+                                if( !empty($this->payflow_transstate[$TRANSSTATE] )) {
+                                    $PENDINGREASON = $this->payflow_transstate[$TRANSSTATE];
+                                }
+                            }
+                            
+                            ?>
                             <td <?php echo ($PENDINGREASON) ? sprintf('title="%s"', $PENDINGREASON) : ""; ?> >
                                 <?php
                                 $PAYMENTSTATUS = get_post_meta($post->ID, 'PAYMENTSTATUS', true);
                                 if (!empty($PAYMENTSTATUS)) {
                                     echo esc_attr($PAYMENTSTATUS);
-                                } else {
-                                    $RESPMSG = get_post_meta($post->ID, 'RESPMSG', true);
-                                    if (!empty($RESPMSG)) {
-                                        echo esc_attr($RESPMSG);
-                                    }
-                                }
+                                } 
                                 ?>
                             </td>
                             <td><?php echo esc_attr(get_post_meta($post->ID, 'payment_action', true)); ?> </td>
@@ -1344,19 +1360,27 @@ class AngellEYE_Utility {
             }
         } else {
             $get_transactionDetails_result = $this->inquiry_transaction($transaction_id);
+            $this->angelleye_write_request_response_api_log($get_transactionDetails_result);
             if ($get_transactionDetails_result['RESULT'] == 0 && ($get_transactionDetails_result['RESPMSG'] == 'Approved' || $get_transactionDetails_result['RESPMSG'] == 'Verified')) {
-                if ($get_transactionDetails_result['TRANSSTATE'] == 3) {
+                if ($get_transactionDetails_result['TRANSSTATE'] == 3 ) {
                     $get_transactionDetails_result['PAYMENTSTATUS'] = 'Pending';
                 } elseif ($get_transactionDetails_result['TRANSSTATE'] > 1000) {
                     $get_transactionDetails_result['PAYMENTSTATUS'] = 'Voided';
-                } else {
-                    $get_transactionDetails_result['PAYMENTSTATUS'] = $get_transactionDetails_result['TRANSSTATE'];
-                }
+                } elseif ($get_transactionDetails_result['TRANSSTATE'] == 4 || $get_transactionDetails_result['TRANSSTATE'] == 9) {
+                    $get_transactionDetails_result['PAYMENTSTATUS'] = 'Completed';
+                } elseif ($get_transactionDetails_result['TRANSSTATE'] == 6 || $get_transactionDetails_result['TRANSSTATE'] == 7 || $get_transactionDetails_result['TRANSSTATE'] == 0) {
+                    $get_transactionDetails_result['PAYMENTSTATUS'] = 'Completed';
+                } 
+               
                 $AUTHORIZATIONID = $this->get_post_by_title($transaction_id);
                 if (!empty($get_transactionDetails_result['AMT'])) {
                     update_post_meta($AUTHORIZATIONID, 'AMT', $get_transactionDetails_result['AMT']);
                 }
-                update_post_meta($AUTHORIZATIONID, 'PAYMENTSTATUS', $get_transactionDetails_result['PAYMENTSTATUS']);
+                
+                if( !empty($get_transactionDetails_result['PAYMENTSTATUS']) ) {
+                    update_post_meta($AUTHORIZATIONID, 'PAYMENTSTATUS', $get_transactionDetails_result['PAYMENTSTATUS']);
+                }
+                update_post_meta($AUTHORIZATIONID, 'TRANSSTATE', $get_transactionDetails_result['TRANSSTATE']);
             }
         }
     }
@@ -1651,25 +1675,19 @@ class AngellEYE_Utility {
                 $this->angelleye_get_transactionDetails($transaction_id);
                 $payment_order_meta = array('_transaction_id' => $transaction_id);
                 self::angelleye_add_order_meta($order_id, $payment_order_meta);
-                self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_delayed_capture_result, $order, 'DoVoid');
+                self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_delayed_capture_result, $order, 'DoCapture');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
-                $ErrorCode = urldecode($do_delayed_capture_result["L_ERRORCODE0"]);
-                $ErrorShortMsg = urldecode($do_delayed_capture_result["L_SHORTMESSAGE0"]);
-                $ErrorLongMsg = urldecode($do_delayed_capture_result["L_LONGMESSAGE0"]);
-                $ErrorSeverityCode = urldecode($do_delayed_capture_result["L_SEVERITYCODE0"]);
+                $ErrorCode = urldecode($do_delayed_capture_result["RESULT"]);
+                $ErrorLongMsg = urldecode($do_delayed_capture_result["RESPMSG"]);
                 $this->ec_add_log(__('PayPal Delayed Capture API call failed. ', 'paypal-for-woocommerce'));
                 $this->ec_add_log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
-                $this->ec_add_log(__('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg);
                 $this->ec_add_log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
-                $this->ec_add_log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
                 $order->add_order_note(__('PayPal Delayed Capture API call failed. ', 'paypal-for-woocommerce') .
                         ' ( Detailed Error Message: ' . $ErrorLongMsg . ", " .
-                        ' Short Error Message: ' . $ErrorShortMsg . ' )' .
-                        ' Error Code: ' . $ErrorCode . ' )' .
-                        ' Error Severity Code: ' . $ErrorSeverityCode . ' )'
+                        ' Error Code: ' . $ErrorCode . ' )' 
                 );
-                $this->call_error_email_notifications($subject = 'DoVoid failed', $method_name = 'Delayed Capture', $resArray = $do_delayed_capture_result);
+                //$this->call_error_email_notifications($subject = 'Delayed Capture failed', $method_name = 'Delayed Capture', $resArray = $do_delayed_capture_result);
             }
         }
     
@@ -1705,24 +1723,20 @@ class AngellEYE_Utility {
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_void_result, $order, 'DoVoid');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
-                $ErrorCode = urldecode($do_void_result["L_ERRORCODE0"]);
-                $ErrorShortMsg = urldecode($do_void_result["L_SHORTMESSAGE0"]);
-                $ErrorLongMsg = urldecode($do_void_result["L_LONGMESSAGE0"]);
-                $ErrorSeverityCode = urldecode($do_void_result["L_SEVERITYCODE0"]);
+                $ErrorCode = urldecode($do_void_result["RESULT"]);
+                $ErrorLongMsg = urldecode($do_void_result["RESPMSG"]);
                 $this->ec_add_log(__('PayPal DoVoid API call failed. ', 'paypal-for-woocommerce'));
                 $this->ec_add_log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
-                $this->ec_add_log(__('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg);
                 $this->ec_add_log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
-                $this->ec_add_log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
                 $order->add_order_note(__('PayPal DoVoid API call failed. ', 'paypal-for-woocommerce') .
                         ' ( Detailed Error Message: ' . $ErrorLongMsg . ", " .
-                        ' Short Error Message: ' . $ErrorShortMsg . ' )' .
-                        ' Error Code: ' . $ErrorCode . ' )' .
-                        ' Error Severity Code: ' . $ErrorSeverityCode . ' )'
+                        ' Error Code: ' . $ErrorCode . ' )' 
                 );
-                $this->call_error_email_notifications($subject = 'DoVoid failed', $method_name = 'DoVoid', $resArray = $do_void_result);
+                //$this->call_error_email_notifications($subject = 'DoVoid failed', $method_name = 'DoVoid', $resArray = $do_void_result);
             }
         }
     }
+    
+    
 
 }
