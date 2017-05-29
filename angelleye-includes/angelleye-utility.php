@@ -1555,18 +1555,14 @@ class AngellEYE_Utility {
     }
 
     public static function angelleye_is_save_payment_token($current, $order_id) {
-<<<<<<< HEAD
-        if ((!empty($_POST['wc-' . $current->id . '-payment-token']) && $_POST['wc-' . $current->id . '-payment-token'] == 'new') || self::is_subscription($order_id) || self::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
-            if ((!empty($_POST['wc-' . $current->id . '-new-payment-method']) && $_POST['wc-' . $current->id . '-new-payment-method'] == true) || self::is_subscription($order_id) || self::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
-=======
         if( ( !empty($_POST['wc-'.$current->id.'-payment-token']) && $_POST['wc-'.$current->id.'-payment-token'] == 'new') || self::is_subscription($order_id) || self::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() ) {
             if( (!empty($_POST['wc-'.$current->id.'-new-payment-method']) && $_POST['wc-'.$current->id.'-new-payment-method'] == true) || self::is_subscription($order_id) || self::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
->>>>>>> 997d136b978d49e94144d3fb224fbd65b97a7a14
                 return true;
             }
         }
         return false;
     }
+    
 
     public static function is_subscription($order_id) {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
