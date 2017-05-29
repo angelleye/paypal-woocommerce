@@ -247,7 +247,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 foreach ($this->ec_get_session_data('shipping_details') as $field => $value) {
                     if (isset($checkout_fields['billing']) && isset($checkout_fields['billing']['billing_' . $field])) {
                         $required = isset($checkout_fields['billing']['billing_' . $field]['required']) && $checkout_fields['billing']['billing_' . $field]['required'];
-                        if (!$required || $required && $value) {
+                        if (!$required || $required && !empty($value)) {
                             $checkout_fields['billing']['billing_' . $field]['class'][] = 'express-provided';
                             $checkout_fields['billing']['billing_' . $field]['class'][] = 'hidden';
                         }
