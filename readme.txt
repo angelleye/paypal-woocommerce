@@ -1,5 +1,5 @@
 ﻿=== PayPal for WooCommerce ===
-Contributors: angelleye
+Contributors: angelleye, angelleyesupport
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
