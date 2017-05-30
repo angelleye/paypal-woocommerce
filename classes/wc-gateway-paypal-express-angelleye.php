@@ -838,6 +838,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             WC()->session->set('chosen_shipping_methods', $chosen_shipping_methods);
                             if (WC()->cart->needs_shipping()) {
                                 // Validate Shipping Methods
+                                WC()->shipping->get_shipping_methods();
                                 $packages = WC()->shipping->get_packages();
                                 WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
                             }
@@ -877,6 +878,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             WC()->session->set('chosen_shipping_methods', $chosen_shipping_methods);
                             if (WC()->cart->needs_shipping()) {
                                 // Validate Shipping Methods
+                                WC()->shipping->get_shipping_methods();
                                 $packages = WC()->shipping->get_packages();
                                 WC()->checkout()->shipping_methods = WC()->session->get('chosen_shipping_methods');
                             }
