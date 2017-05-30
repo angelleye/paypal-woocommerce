@@ -1152,7 +1152,7 @@ class AngellEYE_Utility {
             $metakey = str_replace('PAYMENTINFO_0_', '', $metakey);
             update_post_meta($post_id, $metakey, $metavalue);
         }
-        $post_id_value = self::get_post_id_by_meta_key_and_meta_value('TRANSACTIONID', $response['AUTHORIZATIONID']);
+        $post_id_value = self::get_post_id_by_meta_key_and_meta_value('TRANSACTIONID', $TRANSACTIONID);
         if (!empty($post_id_value)) {
             $AMT = get_post_meta($post_id_value, 'AMT', true);
             update_post_meta($post_id, 'AMT', $AMT);
@@ -1412,14 +1412,15 @@ class AngellEYE_Utility {
             $order = wc_get_order($order_id);
         }
         $percentage = 115;
-        $new_percentage_amount = self::round(($percentage / 100) * $order->get_total());
+        $new_percentage_amount = self::number_format(($percentage / 100) * $order->get_total());
         $diff_percentage_amount = self::round($new_percentage_amount - $order->get_total());
         if ($diff_percentage_amount > 75) {
             $max_authorize_amount = self::round($order->get_total() + 75);
         } else {
-            $max_authorize_amount = $new_percentage_amount;
+            $max_authorize_amount = self::round($new_percentage_amount - 0.01);;
         }
-        $this->max_authorize_amount = self::number_format($max_authorize_amount);
+        $this->max_authorize_amount = self::round($max_authorize_amount);
+        
     }
 
     public function angelleye_remain_authorize_amount() {
