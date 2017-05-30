@@ -140,6 +140,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves PHP notices shown in logs depending on how error reporting settings are configured. ([#738](https://github.com/angelleye/paypal-woocommerce/issues/738))
 * Fix - Resolves issues with Woo Subscriptions compatibility on some versions. ([#740](https://github.com/angelleye/paypal-woocommerce/issues/740))
 * Fix - Resolves an issue with Autoship compatibility. ([#749](https://github.com/angelleye/paypal-woocommerce/issues/749)) ([#752](https://github.com/angelleye/paypal-woocommerce/issues/752))
+* Fix - Resolves issue with sales tax calculations in Express Checkout. ([#753](https://github.com/angelleye/paypal-woocommerce/issues/753))
 
 = 1.4.4 - 05.12.2017 =
 * Tweak - Braintree MID functionality improvements. ([#565](https://github.com/angelleye/paypal-woocommerce/issues/565))
