@@ -86,6 +86,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_filter('woocommerce_ship_to_different_address_checked', array($this, 'angelleye_ship_to_different_address_checked'), 10,1);
             add_filter('woocommerce_order_button_html', array($this, 'angelleye_woocommerce_order_button_html'), 10, 1);
             add_filter( 'woocommerce_coupons_enabled', array($this, 'angelleye_woocommerce_coupons_enabled'), 10, 1);
+            add_action( 'woocommerce_cart_shipping_packages', array( $this, 'maybe_add_shipping_information' ) );
             if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
                 if ($this->button_position == 'bottom' || $this->button_position == 'both') {
                     add_action('woocommerce_proceed_to_checkout', array($this, 'woocommerce_paypal_express_checkout_button_angelleye'), 22);
@@ -604,5 +605,20 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         } else {
             return $is_coupons_enabled;
         }
+    }
+    
+    public function maybe_add_shipping_information($packages) {
+        if ($this->function_helper->ec_is_express_checkout() || $this->ec_get_session_data('shipping_details')) {
+            $destination = $this->ec_get_session_data('shipping_details');
+            if( !empty($destination) ) {
+                $packages[0]['destination']['country']   = $destination['country'];
+                $packages[0]['destination']['state']     = $destination['state'];
+                $packages[0]['destination']['postcode']  = $destination['postcode'];
+                $packages[0]['destination']['city']      = $destination['city'];
+                $packages[0]['destination']['address']   = $destination['address_1'];
+                $packages[0]['destination']['address_2'] = $destination['address_2'];
+            }
+        }
+        return $packages;
     }
 }
