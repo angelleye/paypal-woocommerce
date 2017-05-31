@@ -295,8 +295,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public function admin_scripts()
         {
             global $post;
-            $payment_method = get_post_meta($post->ID, '_payment_method', true);
-            $payment_action = get_post_meta($post->ID, '_payment_action', true);
+            if( !empty($post->ID) ) {
+                $payment_method = get_post_meta($post->ID, '_payment_method', true);
+                $payment_action = get_post_meta($post->ID, '_payment_action', true);
+            } else {
+                $payment_method = '';
+                $payment_action = '';
+            }
             $dir = plugin_dir_path( __FILE__ );
             wp_enqueue_media();
             wp_enqueue_script( 'jquery');

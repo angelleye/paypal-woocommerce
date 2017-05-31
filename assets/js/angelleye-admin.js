@@ -243,8 +243,9 @@ jQuery(document).ready(function ($) {
                 jQuery('#angelleye_payment_action').change(function(){
                     
                     if(jQuery(this).val() == 'DoCapture') {
-                        jQuery("#angelleye_paypal_capture_transaction_dropdown").show();
-                        
+                        if(angelleye_admin.payment_action == 'Order') {
+                            jQuery("#angelleye_paypal_capture_transaction_dropdown").show();
+                        }
                     } else {
                         jQuery("#angelleye_paypal_capture_transaction_dropdown").hide();
                     }
