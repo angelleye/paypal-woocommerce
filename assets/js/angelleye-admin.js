@@ -222,6 +222,7 @@ jQuery(document).ready(function ($) {
             });
             
             jQuery('.angelleye_enable_notifyurl').change(function () {
+                
                     var express_notifyurl = jQuery('.angelleye_notifyurl').closest('tr');
                     if (jQuery(this).is(':checked')) {
                         express_notifyurl.show();
@@ -240,16 +241,25 @@ jQuery(document).ready(function ($) {
                 }).change();
                 
                 jQuery('#angelleye_payment_action').change(function(){
+                    
                     if(jQuery(this).val() == 'DoCapture') {
                         jQuery("#angelleye_paypal_capture_transaction_dropdown").show();
+                        
                     } else {
                         jQuery("#angelleye_paypal_capture_transaction_dropdown").hide();
                     }
+                    
                     if(jQuery(this).val() == 'DoAuthorization') {
                         jQuery(".angelleye_authorization_box").show();
                     } else {
                         jQuery(".angelleye_authorization_box").hide();
                     }
+                    
+                    if(jQuery(this).val() == 'DoCapture') {
+                        if(angelleye_admin.payment_action != 'Order') {
+                            jQuery(".angelleye_authorization_box").show();
+                        }
+                    } 
                     
                     if(jQuery(this).val() == 'DoVoid') {
                         jQuery("#angelleye_paypal_dovoid_transaction_dropdown").show();

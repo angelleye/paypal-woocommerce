@@ -294,6 +294,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         public function admin_scripts()
         {
+            global $post;
+            $payment_method = get_post_meta($post->ID, '_payment_method', true);
+            $payment_action = get_post_meta($post->ID, '_payment_action', true);
             $dir = plugin_dir_path( __FILE__ );
             wp_enqueue_media();
             wp_enqueue_script( 'jquery');
@@ -302,7 +305,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $translation_array = array(
                 'is_ssl' => AngellEYE_Gateway_Paypal::is_ssl()? "yes":"no",
                 'choose_image' => __('Choose Image', 'paypal-for-woocommerce'),
-                'shop_based_us_or_uk' => (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'GB')? "yes":"no"
+                'shop_based_us_or_uk' => (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'GB')? "yes":"no",
+                'payment_method' => $payment_method,
+                'payment_action' => $payment_action
 
             );
             wp_localize_script( 'angelleye_admin', 'angelleye_admin', $translation_array );

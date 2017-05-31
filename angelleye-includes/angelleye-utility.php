@@ -252,6 +252,8 @@ class AngellEYE_Utility {
                                         if ($this->total_Pending_DoAuthorization == 0) {
                                             unset($paypal_payment_action['DoCapture']);
                                         }
+                                if (!is_object($order_id)) {
+                                    $order = wc_get_order($order_id);
                                     }
                                     if ($this->total_Pending_DoAuthorization == 0 && $this->total_Completed_DoAuthorization > 0 || $this->total_Pending_DoAuthorization == $this->total_DoCapture) {
                                         unset($paypal_payment_action['DoVoid']);
@@ -330,7 +332,7 @@ class AngellEYE_Utility {
             $transaction_id = $_POST['angelleye_paypal_capture_transaction_dropdown'];
         } else {
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $transaction_id = $old_wc ? get_post_meta($order_id, '_transaction_id', true) : get_post_meta($order->get_id(), '_transaction_id', true);
+            $transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
         }
         remove_action('woocommerce_order_action_wc_paypal_express_docapture', array($this, 'angelleye_wc_paypal_express_docapture'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
@@ -352,7 +354,7 @@ class AngellEYE_Utility {
         }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $transaction_id = $old_wc ? get_post_meta($order_id, '_transaction_id', true) : get_post_meta($order->get_id(), '_transaction_id', true);
+        $transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
         remove_action('woocommerce_order_action_wc_paypal_pro_docapture', array($this, 'angelleye_wc_paypal_pro_docapture'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
         $this->pfw_do_capture($order, $transaction_id, null);
@@ -362,11 +364,13 @@ class AngellEYE_Utility {
         $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('DoCapture API call');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        if ($capture_total == null)
+        if( !empty($_POST['_regular_price'])) {
+            $AMT = self::number_format($_POST['_regular_price']);
+        } elseif ($capture_total == null) {
             $AMT = $this->get_amount_by_transaction_id($transaction_id);
-        else
+        } else {
             $AMT = $capture_total;
-
+        }
         $DataArray = array(
             'AUTHORIZATIONID' => $transaction_id,
             'AMT' => $AMT,
@@ -958,6 +962,11 @@ class AngellEYE_Utility {
         endforeach;
         $order = wc_get_order($post->ID);
 
+            $payment_method = get_post_meta($post->ID, '_payment_method', true);
+            $payment_action = get_post_meta($post->ID, '_payment_action', true);
+            
+             
+            
         if (empty($this->angelleye_woocommerce_order_actions)) {
             $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions();
         }
@@ -980,6 +989,7 @@ class AngellEYE_Utility {
                     endforeach;
                     ?>
                 </select>
+            
                 <div class="angelleye_authorization_box" style="display: none;">
                     <?php
                     $payment_method = get_post_meta($post->ID, '_payment_method', true);
@@ -1032,6 +1042,7 @@ class AngellEYE_Utility {
                 </script>
                 <?php
             }
+            
             ?>
             <table class="widefat angelleye_order_action_table" style="width: 190px;float: right;">
                 <tbody>
@@ -1528,6 +1539,7 @@ class AngellEYE_Utility {
         return $output;
     }
 
+    
     public function angelleye_paypal_for_woocommerce_billing_agreement_details($order) {
         if (!is_object($order)) {
             $order = wc_get_order($order);
