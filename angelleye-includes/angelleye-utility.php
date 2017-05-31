@@ -267,6 +267,7 @@ class AngellEYE_Utility {
                         }
                     }
             }
+            }
         }
         if (isset($paypal_payment_action) && !empty($paypal_payment_action)) {
             foreach ($paypal_payment_action as $key => $value) {
