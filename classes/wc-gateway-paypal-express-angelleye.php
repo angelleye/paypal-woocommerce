@@ -1165,17 +1165,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public static function angelleye_ec_get_wpml_locale() {
         $locale = false;
-        if (defined('ICL_LANGUAGE_CODE') && function_exists('icl_object_id')) {
+        if(defined('ICL_LANGUAGE_CODE') && function_exists('icl_object_id')){
             global $sitepress;
-            if (isset($sitepress)) {
-                $details = $sitepress->get_language_details(ICL_LANGUAGE_CODE);
-                $locale = $details['locale'];
-            } else if (function_exists('pll_current_language')) {
-                $locale = pll_current_language('locale');
-            } else if (function_exists('pll_default_language')) {
-                $locale = pll_default_language('locale');
+            if ( isset( $sitepress )) { // avoids a fatal error with Polylang
+                $locale = $sitepress->get_current_language();
+            } else if ( function_exists( 'pll_current_language' ) ) { // adds Polylang support
+                $locale = pll_current_language('locale'); //current selected language requested on the broswer
+            } else if ( function_exists( 'pll_default_language' ) ) {
+                $locale = pll_default_language('locale'); //default lanuage of the blog
             }
-        }
+        } 
         return $locale;
     }
 
