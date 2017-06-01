@@ -50,11 +50,12 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     $product = $values['data'];
                     $name = $product->get_name();
                 }
+                $name = $this->clean_product_title($name);
                 $product_sku = null;
                 if (is_object($product)) {
                     $product_sku = $product->get_sku();
                 }
-                $name = strip_tags($name);
+                
                 $item = array(
                     'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
                     'desc' => '',
@@ -118,7 +119,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 } else {
                     $name = $values['name'];
                 }
-                $name = strip_tags($name);
+                $name = $this->clean_product_title($name);
                 $amount = round($values['line_subtotal'] / $values['qty'], $this->decimals);
                 $item = array(
                     'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
@@ -238,6 +239,13 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     }
                 }
             }
+        }
+        
+        public function clean_product_title($product_title) {
+            $product_title = strip_tags($product_title);
+            $product_title = str_replace(array("&#8211;", "&#8211"), array("-"), $product_title);
+            $product_title = str_replace('&', '-', $product_title);
+            return $product_title;
         }
 
     }
