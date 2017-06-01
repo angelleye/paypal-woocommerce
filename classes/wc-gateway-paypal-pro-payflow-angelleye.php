@@ -128,12 +128,12 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 	}
     
     
-    public function add_log($message) {
+    public function add_log($message, $level = 'info') {
         if ($this->debug) {
             if (!isset($this->log)) {
-                $this->log = new WC_Logger();
+                $this->log = wc_get_logger();
             }
-            $this->log->add('paypal_payflow', $message);
+            $this->log->log( $level, $message, array( 'source' => 'paypal_pro_payflow' ) );
         }
     }
 	
@@ -185,7 +185,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'checkbox',
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
-                'description' => sprintf(__('Log PayPal events inside <code>%s</code>', 'paypal-for-woocommerce'), wc_get_log_file_path('paypal_payflow')),
+                'description' => sprintf(__('Log PayPal events inside <code>%s</code>', 'paypal-for-woocommerce'), wc_get_log_file_path('paypal_pro_payflow')),
             ),
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),

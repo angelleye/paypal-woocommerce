@@ -537,27 +537,36 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                      * Get product data from WooCommerce
                      */
                     if ($order) {
-                        $_product = $order->get_product_from_item($item);
-                        $qty = absint($item['qty']);
-                        $item_meta = new WC_Order_Item_Meta($item,$_product);
-                        $meta = $item_meta->display(true, true);
-                    } else {
-                        $_product = $item['data'];
+                        $product = $order->get_product_from_item($item);
+                        $sku = null;
+                        if (is_object($product)) {
+                            $sku = $product->get_sku();
+                        }
+                        if( empty($item['name']) ) {
+                            $name = 'Item';
+                        } else {
+                            $name = $item['name'];
+                        }
+                        $name = self::clean_product_title($name);
                         $qty = absint($item['quantity']);
-                        $meta = WC()->cart->get_item_data($item, true);
-                    }
-                    $sku = $_product->get_sku();
-                    $item['name'] = html_entity_decode($_product->get_title(), ENT_NOQUOTES, 'UTF-8');
-                    if ($_product->is_type('variation')) {
-                        if (empty($sku)) {
-                            $sku = $_product->parent->get_sku();
+                    } else {
+                        if (version_compare(WC_VERSION, '3.0', '<')) {
+                            $product = $item['data'];
+                            $name = $item['data']->post->post_title;
+                        } else {
+                            $product = $item['data'];
+                            $name = $product->get_name();
                         }
-                        if (!empty($meta)) {
-                            $item['name'] .= " - " . str_replace(", \n", " - ", $meta);
+                        $name = self::clean_product_title($name);
+                        $sku = null;
+                        if (is_object($product)) {
+                            $sku = $product->get_sku();
                         }
+                        $qty = absint($item['quantity']);
                     }
+                    
                     $Item = array(
-                        'name' => $item['name'], // Item name. 127 char max.
+                        'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ), // Item name. 127 char max.
                         'desc' => '', // Item description. 127 char max.
                         'amt' => self::number_format(self::round( $item['line_subtotal'] / $qty)), // Cost of item.
                         'number' => $sku, // Item number.  127 char max.
@@ -1322,6 +1331,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } else {
                 return $page_title;
             }
+        }
+        
+        public static function clean_product_title($product_title) {
+            $product_title = strip_tags($product_title);
+            $product_title = str_replace(array("&#8211;", "&#8211"), array("-"), $product_title);
+            $product_title = str_replace('&', '-', $product_title);
+            return $product_title;
         }
     }
 }

@@ -672,7 +672,6 @@ class AngellEYE_Utility {
             if (empty($this->log)) {
                 $this->log = wc_get_logger();
             }
-            $this->log->add(str_replace("_", "-", $this->payment_method), $message);
             $this->log->log($level, $message, array('source' => $this->payment_method));
         }
     }
