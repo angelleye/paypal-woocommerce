@@ -54,8 +54,9 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 if (is_object($product)) {
                     $product_sku = $product->get_sku();
                 }
+                $name = strip_tags($name);
                 $item = array(
-                    'name' => $name,
+                    'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
                     'desc' => '',
                     'qty' => $values['quantity'],
                     'amt' => $amount,
@@ -112,9 +113,15 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 if (is_object($product)) {
                     $product_sku = $product->get_sku();
                 }
+                if( empty($values['name']) ) {
+                    $name = 'Item';
+                } else {
+                    $name = $values['name'];
+                }
+                $name = strip_tags($name);
                 $amount = round($values['line_subtotal'] / $values['qty'], $this->decimals);
                 $item = array(
-                    'name' => $values['name'],
+                    'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
                     'desc' => '',
                     'qty' => $values['qty'],
                     'amt' => $amount,
