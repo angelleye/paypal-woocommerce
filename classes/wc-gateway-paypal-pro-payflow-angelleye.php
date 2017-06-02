@@ -596,9 +596,10 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
              */
             $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
             $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
-            $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
+            
 
             if ($this->send_items) {
+                $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
         
@@ -1310,8 +1311,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
              */
             $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
             $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
-            $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
+            
             if ($this->send_items) {
+                $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
             if ($this->is_subscription($order_id)) {
