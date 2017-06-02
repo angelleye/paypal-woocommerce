@@ -72,7 +72,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_action('woocommerce_available_payment_gateways', array($this, 'ec_disable_gateways'));
             add_filter('body_class', array($this, 'ec_add_body_class'));
             add_action('woocommerce_checkout_fields', array($this, 'ec_display_checkout_fields'));
-            add_action('woocommerce_before_checkout_billing_form', array($this, 'ec_formatted_billing_address'), 9);
+            add_action('woocommerce_checkout_billing', array($this, 'ec_formatted_billing_address'), 9);
+            add_action('woocommerce_checkout_shipping', array($this, 'ec_formatted_shipping_address'), 9);
             add_filter('woocommerce_terms_is_checked_default', array($this, 'ec_terms_express_checkout'));
             add_action('woocommerce_cart_emptied', array($this, 'ec_clear_session_data'));
             add_filter('woocommerce_thankyou_order_received_text', array($this, 'ec_order_received_text'), 10, 2);
@@ -262,6 +263,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function ec_formatted_address($type) {
+        $post_data = WC()->session->get( 'post_data' );
+        if( !empty($post_data) ) {
+            $_POST = $post_data;
+        }
         try {
             if (!$this->function_helper->ec_is_express_checkout()) {
                 return;
@@ -329,7 +334,42 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function ec_formatted_billing_address() {
-        $this->ec_formatted_address('billing');
+        if($this->function_helper->ec_is_express_checkout()) {
+            echo '<h3>' . _e( 'Billing details', 'woocommerce' ) . '</h3>';
+            $post_data = WC()->session->get( 'post_data' );
+            if(!empty($post_data['ship_to_different_address']) && $post_data['ship_to_different_address'] == '1') {
+                $this->ec_formatted_address('billing');
+            } else {
+                $this->ec_formatted_address('shipping');
+            }
+            
+        ?>
+        <style type="text/css">
+            .woocommerce-billing-fields > h3 {
+                display: none;
+            }
+        </style>
+        <?php
+        }
+    }
+    
+    public function ec_formatted_shipping_address() {
+        if($this->function_helper->ec_is_express_checkout()) {
+            echo '<h3>' . _e( 'Shipping details', 'woocommerce' ) . '</h3>';
+            $post_data = WC()->session->get( 'post_data' );
+            if(!empty($post_data['ship_to_different_address']) && $post_data['ship_to_different_address'] == '1') {
+                $this->ec_formatted_address('shipping');
+            } else {
+                $this->ec_formatted_address('billing');
+            }
+            ?>
+            <style type="text/css">
+                .woocommerce-shipping-fields {
+                    display: none;
+                }
+            </style>
+            <?php
+        }
     }
 
     public function ec_terms_express_checkout($checked_default) {

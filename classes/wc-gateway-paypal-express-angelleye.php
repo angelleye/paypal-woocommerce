@@ -660,7 +660,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
                 $result = $this->angelleye_ex_doreference_transaction($order_id);
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
-                    WC()->checkout->posted = WC()->session->get( 'post_data' );
                     $_POST = WC()->session->get( 'post_data' );
                     $order->payment_complete($result['TRANSACTIONID']);
                     $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
@@ -714,7 +713,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     WC()->session->set( 'paypal_express_terms', true );
                 }
                 WC()->session->set( 'post_data', $_POST);
-                WC()->checkout->posted = $_POST;
                 $_GET['pp_action'] = 'set_express_checkout';
                 $this->handle_wc_api();
             }
@@ -828,7 +826,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     if( !empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true ) {
                     } else {
                         if ( $order_id > 0 && ( $order = wc_get_order( $order_id ) ) && $order->has_status( array( 'pending', 'failed' ) ) ) {
-                            WC()->checkout->posted = WC()->session->get( 'post_data' );
                             $_POST = WC()->session->get( 'post_data' );
                             $this->posted = WC()->session->get( 'post_data' );
                             $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
@@ -863,12 +860,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             }
                             do_action('woocommerce_checkout_order_processed', $order_id, $this->posted);
                         } else {
-                            WC()->checkout->posted = WC()->session->get( 'post_data' );
                             $_POST = WC()->session->get( 'post_data' );
                             $this->posted = WC()->session->get( 'post_data' );
                         }
                         if ( $order_id == 0 ) {
-                            WC()->checkout->posted = WC()->session->get( 'post_data' );
                             $_POST = WC()->session->get( 'post_data' );
                             $this->posted = WC()->session->get( 'post_data' );
                             $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
