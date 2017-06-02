@@ -335,7 +335,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_formatted_billing_address() {
         if($this->function_helper->ec_is_express_checkout()) {
-            echo '<h3>' . _e( 'Billing details', 'woocommerce' ) . '</h3>';
+            echo '<h3>' . __( 'Billing details', 'paypal-for-woocommerce' ) . '</h3>';
             $post_data = WC()->session->get( 'post_data' );
             if(!empty($post_data['ship_to_different_address']) && $post_data['ship_to_different_address'] == '1') {
                 $this->ec_formatted_address('billing');
@@ -355,7 +355,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     
     public function ec_formatted_shipping_address() {
         if($this->function_helper->ec_is_express_checkout()) {
-            echo '<h3>' . _e( 'Shipping details', 'woocommerce' ) . '</h3>';
+            echo '<h3>' . __( 'Shipping details', 'paypal-for-woocommerce' ) . '</h3>';
             $post_data = WC()->session->get( 'post_data' );
             if(!empty($post_data['ship_to_different_address']) && $post_data['ship_to_different_address'] == '1') {
                 $this->ec_formatted_address('shipping');

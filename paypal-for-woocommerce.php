@@ -566,7 +566,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     }
                     
                     $Item = array(
-                        'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ), // Item name. 127 char max.
+                        'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'paypal-for-woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ), // Item name. 127 char max.
                         'desc' => '', // Item description. 127 char max.
                         'amt' => self::number_format(self::round( $item['line_subtotal'] / $qty)), // Cost of item.
                         'number' => $sku, // Item number.  127 char max.

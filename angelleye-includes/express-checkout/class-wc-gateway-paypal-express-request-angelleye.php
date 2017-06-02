@@ -753,7 +753,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         } else {
             $ErrorSeverityCode = '';
         }
-        $order->add_order_note(sprintf(__('PayPal %s API call failed:', 'woocommerce') . __('Detailed Error Message:', 'woocommerce') . PHP_EOL . __('Short Error Message:', 'woocommerce') . PHP_EOL . __('Error Code:', 'woocommerce') . PHP_EOL . __('Error Severity Code:', 'woocommerce'), $paypal_action_name, $ErrorLongMsg, $ErrorShortMsg, $ErrorCode, $ErrorSeverityCode));
+        $order->add_order_note(sprintf(__('PayPal %s API call failed:', 'paypal-for-woocommerce') . __('Detailed Error Message:', 'paypal-for-woocommerce') . PHP_EOL . __('Short Error Message:', 'paypal-for-woocommerce') . PHP_EOL . __('Error Code:', 'paypal-for-woocommerce') . PHP_EOL . __('Error Severity Code:', 'paypal-for-woocommerce'), $paypal_action_name, $ErrorLongMsg, $ErrorShortMsg, $ErrorCode, $ErrorSeverityCode));
     }
 
     public function angelleye_write_error_log_and_send_email_notification($paypal_action_name) {
@@ -780,7 +780,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if ($this->gateway->error_email_notify) {
             $mailer = WC()->mailer();
             $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'PayPal Express Checkout Error Notification');
-            $message = sprintf(__('PayPal %s API call failed', 'woocommerce') . PHP_EOL . __('Detailed Error Message: %s', 'woocommerce') . PHP_EOL . __('Short Error Message: %s', 'woocommerce') . PHP_EOL . __('Error Code: %s', 'woocommerce') . PHP_EOL . __('Error Severity Code: %s', 'woocommerce'), $paypal_action_name, $ErrorLongMsg, $ErrorShortMsg, $ErrorCode, $ErrorSeverityCode);
+            $message = sprintf(__('PayPal %s API call failed', 'paypal-for-woocommerce') . PHP_EOL . __('Detailed Error Message: %s', 'paypal-for-woocommerce') . PHP_EOL . __('Short Error Message: %s', 'paypal-for-woocommerce') . PHP_EOL . __('Error Code: %s', 'paypal-for-woocommerce') . PHP_EOL . __('Error Severity Code: %s', 'paypal-for-woocommerce'), $paypal_action_name, $ErrorLongMsg, $ErrorShortMsg, $ErrorCode, $ErrorSeverityCode);
             $message = apply_filters('ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
             $message = $mailer->wrap_message($error_email_notify_subject, $message);
             $mailer->send(get_option('admin_email'), strip_tags($error_email_notify_subject), $message);

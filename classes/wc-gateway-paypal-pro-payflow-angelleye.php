@@ -1040,13 +1040,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         if ($current_gateway_id == $this->id) {
             $fields = array(
                 'card-number-field' => '<p class="form-row form-row-wide">
-                            <label for="' . esc_attr($this->id) . '-card-number">' . __('Card number', 'woocommerce') . ' <span class="required">*</span></label>
+                            <label for="' . esc_attr($this->id) . '-card-number">' . __('Card number', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
                             <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
                         </p>',
                 'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox(),
                 '<p class="form-row form-row-last">
-                            <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'woocommerce') . ' <span class="required">*</span></label>
-                            <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
+                            <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Card Security Code', 'paypal-for-woocommerce') . ' <span class="required">*</span></label>
+                            <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
                         </p>'
             );
             return $fields;
@@ -1165,7 +1165,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_express_set_express_checkout_request_args', $PayPalRequestData));
         if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || $PayPalResult['RESULT'] == 126)) {
             if ($PayPalResult['RESULT'] == 126) {
-                wc_add_notice(__('The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.', 'woocommerce'), 'error');
+                wc_add_notice(__('The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.', 'paypal-for-woocommerce'), 'error');
                 wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                 exit();
             } else {
@@ -1193,7 +1193,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 }
             }
         } else {
-            wc_add_notice(__($PayPalResult['RESPMSG'], 'woocommerce'), 'error');
+            wc_add_notice(__($PayPalResult['RESPMSG'], 'paypal-for-woocommerce'), 'error');
             wp_redirect(wc_get_account_endpoint_url('payment-methods'));
             exit();
         }

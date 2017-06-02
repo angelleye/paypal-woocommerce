@@ -1558,7 +1558,7 @@ class AngellEYE_Utility {
         }
         ?>
         <h3>
-            <?php _e('Billing Agreement Details', 'woocommerce'); ?>
+            <?php _e('Billing Agreement Details', 'paypal-for-woocommerce'); ?>
         </h3>
         <p> <?php echo $billing_agreement_id; ?></p> <?php
     }

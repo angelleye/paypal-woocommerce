@@ -57,7 +57,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 }
                 
                 $item = array(
-                    'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
+                    'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'paypal-for-woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
                     'desc' => '',
                     'qty' => $values['quantity'],
                     'amt' => $amount,
@@ -122,7 +122,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $name = AngellEYE_Gateway_Paypal::clean_product_title($name);
                 $amount = round($values['line_subtotal'] / $values['qty'], $this->decimals);
                 $item = array(
-                    'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
+                    'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'paypal-for-woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
                     'desc' => '',
                     'qty' => $values['qty'],
                     'amt' => $amount,

@@ -103,7 +103,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                     <p class="form-row woocommerce-SavedPaymentMethods-saveNew">
                         <label for="wc-%1$s-new-payment-method"><input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" />%2$s</label>
                     </p>
-                </div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'woocommerce')
+                </div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'paypal-for-woocommerce')
         );
     }
     

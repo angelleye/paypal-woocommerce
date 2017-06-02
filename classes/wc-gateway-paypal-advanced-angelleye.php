@@ -603,7 +603,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     }
                 }
             } else {
-                $paypal_args['L_NAME0'] = sprintf(__('Shipping via %s', 'woocommerce'), $order->get_shipping_method());
+                $paypal_args['L_NAME0'] = sprintf(__('Shipping via %s', 'paypal-for-woocommerce'), $order->get_shipping_method());
                 $paypal_args['L_QTY0'] = 1;
                 $paypal_args['L_COST0'] = number_format(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2, '.', '');
                 $paypal_args['ITEMAMT'] = number_format(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2, '.', '');
@@ -1295,7 +1295,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     }
                 }
             } else {
-                $paypal_args['L_NAME0'] = sprintf(__('Shipping via %s', 'woocommerce'), $order->get_shipping_method());
+                $paypal_args['L_NAME0'] = sprintf(__('Shipping via %s', 'paypal-for-woocommerce'), $order->get_shipping_method());
                 $paypal_args['L_QTY0'] = 1;
                 $paypal_args['L_COST0'] = number_format(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2, '.', '');
                 $paypal_args['ITEMAMT'] = number_format(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2, '.', '');
