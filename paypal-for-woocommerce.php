@@ -578,26 +578,40 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 /**
                  * Add custom Woo cart fees as line items
                  */
-                foreach (WC()->cart->get_fees() as $fee) {
-                    $Item = array(
-                        'name' => $fee->name, // Item name. 127 char max.
-                        'desc' => '', // Item description. 127 char max.
-                        'amt' => self::number_format($fee->amount, 2, '.', ''), // Cost of item.
-                        'number' => $fee->id, // Item number. 127 char max.
-                        'qty' => 1, // Item qty on order. Any positive integer.
-                    );
-                    /**
-                     * The gift wrap amount actually has its own parameter in
-                     * DECP, so we don't want to include it as one of the line
-                     * items.
-                     */
-                    if ($Item['number'] != 'gift-wrap') {
-                        array_push($PaymentOrderItems, $Item);
-                        $ITEMAMT += self::round($fee->amount);
-                    } else {
-                        $giftwrapamount = self::round($fee->amount);
+                if ($order){
+                    foreach ($order->get_fees() as $fee_item_id => $fee_item) {
+                        $Item = array(
+                            'name' => $fee_item->get_name(), // Item name. 127 char max.
+                            'desc' => '', // Item description. 127 char max.
+                            'amt' => wc_format_decimal( $order->get_line_total( $fee_item ), 2 ), // Cost of item.
+                            'number' => $fee_item_id, // Item number. 127 char max.
+                            'qty' => 1, // Item qty on order. Any positive integer.
+                        );
+                        if ($Item['number'] != 'gift-wrap') {
+                            array_push($PaymentOrderItems, $Item);
+                            $ITEMAMT += self::round($Item['amt']);
+                        } else {
+                            $giftwrapamount = self::round($Item['amt']);
+                        }
+                        $ctr++;
                     }
-                    $ctr++;
+                } else {
+                    foreach (WC()->cart->get_fees() as $fee) {
+                        $Item = array(
+                            'name' => $fee->name, // Item name. 127 char max.
+                            'desc' => '', // Item description. 127 char max.
+                            'amt' => self::number_format($fee->amount, 2, '.', ''), // Cost of item.
+                            'number' => $fee->id, // Item number. 127 char max.
+                            'qty' => 1, // Item qty on order. Any positive integer.
+                        );
+                        if ($Item['number'] != 'gift-wrap') {
+                            array_push($PaymentOrderItems, $Item);
+                            $ITEMAMT += self::round($fee->amount);
+                        } else {
+                            $giftwrapamount = self::round($fee->amount);
+                        }
+                        $ctr++;
+                    }
                 }
                 //caculate discount
                 if ($order){
