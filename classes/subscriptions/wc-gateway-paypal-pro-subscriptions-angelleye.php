@@ -18,7 +18,7 @@ class WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE extends WC_Gateway_PayPal_Pr
         $this->wc_pre_30 = version_compare( WC_VERSION, '3.0.0', '<' );
     }
 
-    protected function is_subscription($order_id) {
+    public function is_subscription($order_id) {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
     }
 
