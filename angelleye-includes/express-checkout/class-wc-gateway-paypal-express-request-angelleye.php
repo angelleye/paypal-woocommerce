@@ -897,19 +897,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         }
     }
 
-    public function get_state_code($country, $state) {
-        // If not US address, then convert state to abbreviation
-        if ($country != 'US') {
-            if (isset(WC()->countries->states[WC()->customer->get_country()]) && !empty(WC()->countries->states[WC()->customer->get_country()])) {
-                $local_states = WC()->countries->states[WC()->customer->get_country()];
-                if (!empty($local_states) && in_array($state, $local_states)) {
-                    foreach ($local_states as $key => $val) {
-                        if ($val == $state) {
-                            $state = $key;
-                        }
-                    }
-                }
-            }
+    public function get_state_code($cc, $state) {
+        if ( 'US' === $cc ) {
+            return $state;
+        }
+        $states = WC()->countries->get_states( $cc );
+        if ( isset( $states[ $state ] ) ) {
+            return $states[ $state ];
         }
         return $state;
     }
