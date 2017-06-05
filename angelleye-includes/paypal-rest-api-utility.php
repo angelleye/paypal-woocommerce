@@ -70,7 +70,7 @@ class PayPal_Rest_API_Utility {
                 $this->payment->create($this->getAuth());
             } catch (PayPal\Exception\PayPalConnectionException $ex) {
                 $this->add_log($ex->getMessage());
-                if ($this->is_subscription($order_id)) {
+                if ($this->is_renewal($order_id)) {
                     return true;
                 }
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
@@ -81,7 +81,7 @@ class PayPal_Rest_API_Utility {
             } catch (Exception $ex) {
                 $this->send_failed_order_email($order_id);
                 $this->add_log($ex->getMessage());
-                if ($this->is_subscription($order_id)) {
+                if ($this->is_renewal($order_id)) {
                     return true;
                 }
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
@@ -137,7 +137,7 @@ class PayPal_Rest_API_Utility {
                 } else {
                     update_post_meta( $order->get_id(), 'is_sandbox', $is_sandbox );
                 }
-                if ($this->is_subscription($order_id)) {
+                if ($this->is_renewal($order_id)) {
                     return true;
                 }
                 WC()->cart->empty_cart();
@@ -208,7 +208,7 @@ class PayPal_Rest_API_Utility {
             $this->fundingInstrument = new FundingInstrument();
             $this->fundingInstrument->setCreditCardToken($this->CreditCardToken);
             $this->save_payment_token($order, $token->get_token());
-        } else if ($this->is_subscription($order_id)) {
+        } else if ($this->is_renewal($order_id)) {
             $payment_tokens = get_post_meta($order_id, '_payment_tokens_id', true);
             $this->CreditCardToken = new CreditCardToken();
             $this->CreditCardToken->setCreditCardId($payment_tokens);
@@ -662,7 +662,7 @@ class PayPal_Rest_API_Utility {
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                $subscription_id = version_compare(WC_VERSION, '3.0', '<') ? $subscriptions->id : $subscriptions->get_id();
+                $subscription_id = version_compare(WC_VERSION, '3.0', '<') ? $subscription->id : $subscription->get_id();
                 update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
             }
         }
@@ -708,7 +708,7 @@ class PayPal_Rest_API_Utility {
             $order->payment_complete($creditcard_id);
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
             update_post_meta($order_id, 'is_sandbox', $is_sandbox);
-            if ($this->is_subscription($order_id)) {
+            if ($this->is_renewal($order_id)) {
                 return true;
             }
             WC()->cart->empty_cart();
@@ -727,7 +727,7 @@ class PayPal_Rest_API_Utility {
         } catch (PayPal\Exception\PayPalConnectionException $ex) {
             $this->send_failed_order_email($order_id);
             $this->add_log($ex->getData());
-            if ($this->is_subscription($order_id)) {
+            if ($this->is_renewal($order_id)) {
                 return true;
             }
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
@@ -739,7 +739,7 @@ class PayPal_Rest_API_Utility {
         } catch (Exception $ex) {
             $this->send_failed_order_email($order_id);
             $this->add_log($ex->getMessage());
-            if ($this->is_subscription($order_id)) {
+            if ($this->is_renewal($order_id)) {
                 return true;
             }
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
@@ -756,6 +756,10 @@ class PayPal_Rest_API_Utility {
         if (!empty($emails) && !empty($order_id)) {
             $emails['WC_Email_Failed_Order']->trigger($order_id);
         }
+    }
+    
+    public function is_renewal($order_id) {
+        return ( function_exists('wcs_order_contains_subscription') && wcs_order_contains_renewal($order_id)  );
     }
 
 }

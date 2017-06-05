@@ -18,7 +18,7 @@ class WC_Gateway_PayPal_Express_Subscriptions_AngellEYE extends WC_Gateway_PayPa
         $this->wc_pre_30 = version_compare( WC_VERSION, '3.0.0', '<' );
     }
 
-    protected function is_subscription($order_id) {
+    public function is_subscription($order_id) {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
     }
 
@@ -38,9 +38,9 @@ class WC_Gateway_PayPal_Express_Subscriptions_AngellEYE extends WC_Gateway_PayPa
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
         $renewal_order_id = $this->wc_pre_30 ? $renewal_order->id : $renewal_order->get_id();
         if ($renewal_order->get_total() > 0) {
-            parent::process_payment($renewal_order_id);
+            parent::process_subscription_payment($renewal_order_id);
         } else {
-            parent::process_subscription_payment($renewal_order);
+            parent::process_subscription_payment($renewal_order_id);
         }
     }
 

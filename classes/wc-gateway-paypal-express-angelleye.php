@@ -653,8 +653,28 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
+    public function process_subscription_payment($order_id) {
+        $order = wc_get_order($order_id);
+        if ($this->is_subscription($order_id)) {
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
+            $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
+            $result = $paypal_express_request->DoReferenceTransaction($order_id);
+            if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+                $order->payment_complete($result['TRANSACTIONID']);
+                $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
+                return array(
+                    'result' => 'success',
+                    'redirect' => $this->get_return_url($order)
+                );
+            } else {
+                $redirect_url = get_permalink(wc_get_page_id('cart'));
+                $this->paypal_express_checkout_error_handler($request_name = 'DoReferenceTransaction', $redirect_url, $result);
+            }
+        }
+    }
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
+        
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         try {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
@@ -1204,5 +1224,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if($bool == true) {
             return true;
         }
+    }
+    
+    public function is_subscription($order_id) {
+        return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
     }
 }
