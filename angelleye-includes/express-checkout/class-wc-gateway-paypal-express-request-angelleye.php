@@ -1023,22 +1023,18 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
     public function DoReferenceTransaction($order_id) {
         $PayPalRequestData = array();
-        $token_id = $_POST['wc-paypal_express-payment-token'];
-        $token = WC_Payment_Tokens::get($token_id);
-        if ($token->get_user_id() !== get_current_user_id()) {
-            return;
+        $referenceid = get_post_meta($order_id, '_payment_tokens_id', true);
+        if( !empty($_POST['wc-paypal_express-payment-token'])) {
+            $token_id = $_POST['wc-paypal_express-payment-token'];
+            $token = WC_Payment_Tokens::get($token_id);
+            $referenceid = $token->get_token();
         }
+        
         $order = wc_get_order($order_id);
-        if (sizeof(WC()->cart->get_cart()) == 0) {
-            $ms = sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"');
-            $ec_confirm_message = apply_filters('angelleye_ec_confirm_message', $ms);
-            wc_add_notice($ec_confirm_message, "error");
-            wp_redirect(get_permalink(wc_get_page_id('cart')));
-        }
         $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
         $customer_notes = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
         $DRTFields = array(
-            'referenceid' => $token->get_token(),
+            'referenceid' => $referenceid,
             'paymentaction' => ($this->gateway->payment_action == 'Authorization' || $order->get_total() == 0 ) ? 'Authorization' : $this->gateway->payment_action,
             'returnfmfdetails' => '1',
             'softdescriptor' => $this->softdescriptor
@@ -1062,7 +1058,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if (isset($this->gateway->notifyurl) && !empty($this->gateway->notifyurl)) {
             $PaymentDetails['notifyurl'] = $this->gateway->notifyurl;
         }
-        if (WC()->cart->needs_shipping()) {
+        if ($order->needs_shipping_address()) {
             $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
             $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
             $shipping_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_1 : $order->get_shipping_address_1();
@@ -1200,5 +1196,4 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             return new WP_Error('ec_refund-error', $ec_message);
         }
     }
-
 }
