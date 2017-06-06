@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
-Tested up to: 4.7.4
-Stable tag: 1.4.4
+Tested up to: 4.7.5
+Stable tag: 1.4.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -121,7 +121,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.5 - 05.xx.2017 =
+= 1.4.5 - 06.06.2017 =
 * Tweak - Adds a note to the settings panel about the new product-level option for enabling Express Checkout. ([#729](https://github.com/angelleye/paypal-woocommerce/issues/729))
 * Tweak - Adds PayPal Credit button to product details pages when Express Checkout and Credit are enabled (previously only showed up on cart and checkout pages.) ([#741](https://github.com/angelleye/paypal-woocommerce/issues/741))
 * Tweak - Adjusts CSS for Cancel Order button on Express Checkout review page. ([#748](https://github.com/angelleye/paypal-woocommerce/issues/748))
