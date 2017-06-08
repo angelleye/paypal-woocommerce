@@ -155,8 +155,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_paypal_express_checkout_redirect_to_paypal($data, $errors) {
-        foreach ( $errors->get_error_messages() as $message ) {
-            wc_add_notice( $message, 'error' );
+        if( !empty($errors) ) {
+            foreach ( $errors->get_error_messages() as $message ) {
+                wc_add_notice( $message, 'error' );
+            }
         }
         if ( empty( $posted_data['woocommerce_checkout_update_totals'] ) && 0 === wc_notice_count( 'error' ) ) {
             try {
