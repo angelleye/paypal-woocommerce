@@ -497,7 +497,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $SECFields['solutiontype'] = 'Sole';
                 $SECFields['landingpage'] = 'Login';
             }
-
             $SECFields = $this->function_helper->angelleye_paypal_for_woocommerce_needs_shipping($SECFields);
             $Payment = array(
                 'amt' => AngellEYE_Gateway_Paypal::number_format($order_total),
@@ -510,24 +509,40 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if( empty($_GET['pay_for_order']) ) {
                 $post_data = WC()->session->get('post_data');
                 if (!empty($post_data)) {
-                    $SECFields['addroverride'] = 1;
+                    $SECFields['addroverride'] = WC()->cart->needs_shipping() ? 1 : 0;
                     if ( !empty($post_data['ship_to_different_address'])) {
-                        $Payment['shiptoname'] = $post_data['shipping_first_name'] . ' ' . $post_data['shipping_last_name'];
-                        $Payment['shiptostreet'] = $post_data['shipping_address_1'];
-                        $Payment['shiptostreet2'] = $post_data['shipping_address_2'];
-                        $Payment['shiptocity'] = wc_clean(stripslashes($post_data['shipping_city']));
-                        $Payment['shiptostate'] = $post_data['shipping_state'];
-                        $Payment['shiptozip'] = $post_data['shipping_postcode'];
-                        $Payment['shiptocountrycode'] = $post_data['shipping_country'];
+                        $shiptoname = '';
+                        if( !empty($post_data['shipping_first_name']) && !empty($post_data['shipping_last_name'])) {
+                            $shiptoname = $post_data['shipping_first_name'] . ' ' . $post_data['shipping_last_name'];
+                        } elseif (!empty($post_data['shipping_first_name'])) {
+                            $shiptoname = $post_data['shipping_first_name'];
+                        } elseif (!empty($post_data['shipping_last_name'])) {
+                            $shiptoname = $post_data['shipping_last_name'];
+                        }
+                        $Payment['shiptoname'] = $shiptoname;
+                        $Payment['shiptostreet'] = !empty($post_data['shipping_address_1']) ? $post_data['shipping_address_1'] : '';
+                        $Payment['shiptostreet2'] = !empty($post_data['shipping_address_2']) ? $post_data['shipping_address_2'] : '';
+                        $Payment['shiptocity'] = !empty($post_data['shipping_city']) ? wc_clean(stripslashes($post_data['shipping_city'])) : ''; 
+                        $Payment['shiptostate'] = !empty($post_data['shipping_state']) ? $post_data['shipping_state'] : '';
+                        $Payment['shiptozip'] = !empty($post_data['shipping_postcode']) ? $post_data['shipping_postcode'] : '';
+                        $Payment['shiptocountrycode'] = !empty($post_data['shipping_country']) ? $post_data['shipping_country'] : '';
                     } else {
-                        $Payment['shiptoname'] = $post_data['billing_first_name'] . ' ' . $post_data['billing_last_name'];
-                        $Payment['shiptostreet'] = $post_data['billing_address_1'];
-                        $Payment['shiptostreet2'] = $post_data['billing_address_2'];
-                        $Payment['shiptocity'] = wc_clean(stripslashes($post_data['billing_city']));
-                        $Payment['shiptostate'] = $post_data['billing_state'];
-                        $Payment['shiptozip'] = $post_data['billing_postcode'];
-                        $Payment['shiptocountrycode'] = $post_data['billing_country'];
-                        $Payment['shiptophonenum'] = $post_data['billing_phone'];
+                        $shiptoname = '';
+                        if( !empty($post_data['billing_first_name']) && !empty($post_data['billing_last_name'])) {
+                            $shiptoname = $post_data['billing_first_name'] . ' ' . $post_data['billing_last_name'];
+                        } elseif (!empty($post_data['billing_first_name'])) {
+                            $shiptoname = $post_data['billing_first_name'];
+                        } elseif (!empty($post_data['billing_last_name'])) {
+                            $shiptoname = $post_data['billing_last_name'];
+                        }
+                        $Payment['shiptoname'] = $shiptoname;
+                        $Payment['shiptostreet'] = !empty($post_data['billing_address_1']) ? $post_data['billing_address_1'] : '';
+                        $Payment['shiptostreet2'] = !empty($post_data['billing_address_2']) ? $post_data['billing_address_2'] : ''; 
+                        $Payment['shiptocity'] = !empty($post_data['billing_city']) ? wc_clean(stripslashes($post_data['billing_city'])) : ''; 
+                        $Payment['shiptostate'] = !empty($post_data['billing_state']) ? $post_data['billing_state'] : '';
+                        $Payment['shiptozip'] = !empty($post_data['billing_postcode']) ? $post_data['billing_postcode'] : '';
+                        $Payment['shiptocountrycode'] = !empty($post_data['billing_country']) ? $post_data['billing_country'] : '';
+                        $Payment['shiptophonenum'] = !empty($post_data['billing_phone']) ? $post_data['billing_phone'] : '';
                     }
                 } elseif (is_user_logged_in()) {
                     if (version_compare(WC_VERSION, '3.0', '<')) {
@@ -603,6 +618,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'Payments' => $Payments,
             );
             $this->paypal_request = $this->angelleye_add_billing_agreement_param($PayPalRequestData, $this->gateway->supports('tokenization'));
+            $this->paypal_request = AngellEYE_Utility::angelleye_express_checkout_validate_shipping_address($this->paypal_request);
             $this->paypal_response = $this->paypal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'SetExpressCheckout');
             return $this->paypal_response;
