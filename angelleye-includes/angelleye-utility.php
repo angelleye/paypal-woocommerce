@@ -1811,5 +1811,18 @@ class AngellEYE_Utility {
             }
         }
     }
+    
+    public static function angelleye_express_checkout_validate_shipping_address($paypal_request) {
+        if( !empty($paypal_request['SECFields']['addroverride']) && $paypal_request['SECFields']['addroverride'] == 1 ) {
+            $address_required_field = array('shiptoname', 'shiptostreet', 'shiptostreet2', 'shiptocity', 'shiptostate', 'shiptozip', 'shiptocountrycode');
+            foreach ($address_required_field as $key => $value) {
+                if( empty($paypal_request['Payments'][0][$value]) ) {
+                    unset($paypal_request['SECFields']['addroverride']);
+                    return $paypal_request;
+                }
+            }
+        }
+        return $paypal_request;
+    }
 
 }
