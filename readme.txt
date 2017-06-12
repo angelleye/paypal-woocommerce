@@ -123,6 +123,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.6 - 06.xx.2017 =
 * Fix - Resolves a PHP fatal error. ([#762](https://github.com/angelleye/paypal-woocommerce/issues/762))
+* Fix - More adjustments to Express Checkout shipping address. ([#765](https://github.com/angelleye/paypal-woocommerce/issues/765))
 
 = 1.4.5 - 06.06.2017 =
 * Tweak - Adds a note to the settings panel about the new product-level option for enabling Express Checkout. ([#729](https://github.com/angelleye/paypal-woocommerce/issues/729))
