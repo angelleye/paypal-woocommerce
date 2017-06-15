@@ -132,7 +132,7 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function angelleye_admin_order_process_payment($post_id, $post) {
-        if (!empty($_POST['angelleye_admin_order_payment_process_submit_button']) && $_POST['angelleye_admin_order_payment_process_submit_button'] == 'Place order') {
+        if (!empty($_POST['angelleye_admin_order_payment_process_submit_button']) && $_POST['angelleye_admin_order_payment_process_submit_button'] == 'Process Reference Transaction') {
             if (wp_verify_nonce($_POST['angelleye_admin_order_payment_process_sec'], 'angelleye_admin_order_payment_process_sec')) {
                 if (empty($post_id)) {
                     return false;
