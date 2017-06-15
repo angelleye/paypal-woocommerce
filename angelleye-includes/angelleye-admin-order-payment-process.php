@@ -21,8 +21,8 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function angelleye_add_meta_box() {
-        add_meta_box('angelleye_admin_order_payment_process', __('Proceed to payment', 'paypal-for-woocommerce'), array($this, 'admin_order_payment_process'), 'shop_order', 'side', 'high');
-        add_meta_box('angelleye_admin_order_reference_order', __('Reference Order actions', 'paypal-for-woocommerce'), array($this, 'admin_order_reference_order'), 'shop_order', 'side', 'high');
+        add_meta_box('angelleye_admin_order_payment_process', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_payment_process'), 'shop_order', 'side', 'high');
+        add_meta_box('angelleye_admin_order_reference_order', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_reference_order'), 'shop_order', 'side', 'high');
     }
 
     public function angelleye_hide_reference_order_metabox() {
@@ -100,7 +100,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!empty($reason_message)) {
             $is_disable = 'disabled';
         }
-        echo '<div class="wrap angelleye_admin_payment_process">' . $reason_message . '<input type="hidden" name="angelleye_admin_order_payment_process_sec" value="' . wp_create_nonce('angelleye_admin_order_payment_process_sec') . '" /><input type="submit" ' . $is_disable . ' id="angelleye_admin_order_payment_process_submit_button" value="Place order" name="angelleye_admin_order_payment_process_submit_button" class="button button-primary"></div>';
+        echo '<div class="wrap angelleye_admin_payment_process">' . $reason_message . '<input type="hidden" name="angelleye_admin_order_payment_process_sec" value="' . wp_create_nonce('angelleye_admin_order_payment_process_sec') . '" /><input type="submit" ' . $is_disable . ' id="angelleye_admin_order_payment_process_submit_button" value="Process Reference Transaction" name="angelleye_admin_order_payment_process_submit_button" class="button button-primary"></div>';
     }
 
     public function angelleye_create_order_button($reason_message) {
