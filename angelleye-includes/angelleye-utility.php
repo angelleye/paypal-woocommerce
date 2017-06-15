@@ -256,7 +256,7 @@ class AngellEYE_Utility {
                                     if ($this->total_Completed_DoAuthorization == $this->total_Pending_DoAuthorization || $this->total_Pending_DoAuthorization == 0 || $this->total_Pending_DoAuthorization == $this->total_DoCapture || $this->total_DoCapture == $order->get_total() - $order->get_total_refunded()) {
                                         
                                     }
-                                    if ($this->total_DoCapture == ($order->get_total() - $order->get_total_refunded() - $this->total_DoVoid)) {
+                                    if ($this->total_DoCapture >= ($order->get_total() - $order->get_total_refunded() - $this->total_DoVoid)) {
                                         unset($paypal_payment_action['DoCapture']);
                                     }
                                     if ($this->total_DoCapture > 0 || $this->total_DoVoid > 0) {
