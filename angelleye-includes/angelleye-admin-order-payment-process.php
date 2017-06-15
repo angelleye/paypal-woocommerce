@@ -318,10 +318,10 @@ class AngellEYE_Admin_Order_Payment_Process {
             }
         }
         if ($this->angelleye_is_order_need_payment($order) == false) {
-            $reason_array[] = __('Order total must be greater than zero an amount for payment process.', 'paypal-for-woocommerce');
+            $reason_array[] = __('Order total must be greater than zero to process a reference transaction.', 'paypal-for-woocommerce');
         }
         if (!empty($reason_array)) {
-            $reason_array[] = __("don't forget to press update button after done with above thing.", 'paypal-for-woocommerce');
+            $reason_array[] = __("Add item(s) to the order and calculate your totals, then press Update, and then Process Reference Transaction.", 'paypal-for-woocommerce');
         }
         return $reason_array;
     }
