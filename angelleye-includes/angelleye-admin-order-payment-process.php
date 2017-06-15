@@ -13,8 +13,8 @@ class AngellEYE_Admin_Order_Payment_Process {
     public function __construct() {
         if (is_admin() && !defined('DOING_AJAX')) {
             add_action('add_meta_boxes', array($this, 'angelleye_add_meta_box'), 99);
-            add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_admin_create_reference_order'), 51, 2);
-            add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_admin_order_process_payment'), 51, 2);
+            add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_admin_create_reference_order'), 10, 2);
+            add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_admin_order_process_payment'), 10, 2);
             add_action('angelleye_admin_create_reference_order_action_hook', array($this, 'angelleye_admin_create_reference_order_action'), 10, 1);
             add_action('angelleye_admin_order_process_payment_action_hook', array($this, 'angelleye_admin_order_process_payment_action'), 10, 1);
         }
@@ -108,8 +108,8 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!empty($reason_message)) {
             $is_disable = 'disabled';
         }
-        $checkbox = '<br><label><input type="checkbox" name="copy_items_to_new_invoice">Copy items to new invoice?</label><br>';
-        echo '<div class="wrap angelleye_create_reference_order_section">' . $reason_message . '<input type="hidden" name="angelleye_create_reference_order_sec" value="' . wp_create_nonce('angelleye_create_reference_order_sec') . '" /><input type="submit" ' . $is_disable . ' id="angelleye_create_reference_order_submit_button" value="Create New Reference Order" name="angelleye_create_reference_order_submit_button" class="button button-primary">' . $checkbox . '</div>';
+        $checkbox = '<br><label><input type="checkbox" name="copy_items_to_new_invoice">Copy items to new order?</label><br>';
+        echo '<div class="wrap angelleye_create_reference_order_section">' . $reason_message . '<input type="hidden" name="angelleye_create_reference_order_sec" value="' . wp_create_nonce('angelleye_create_reference_order_sec') . '" /><input type="submit" ' . $is_disable . ' id="angelleye_create_reference_order_submit_button" value="Create Reference Transaction Order" name="angelleye_create_reference_order_submit_button" class="button button-primary">' . $checkbox . '</div>';
     }
 
     public function angelleye_is_order_status_pending($order) {
@@ -117,7 +117,7 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function angelleye_admin_create_reference_order($post_id, $post) {
-        if (!empty($_POST['angelleye_create_reference_order_submit_button']) && $_POST['angelleye_create_reference_order_submit_button'] == 'Create New Reference Order') {
+        if (!empty($_POST['angelleye_create_reference_order_submit_button']) && $_POST['angelleye_create_reference_order_submit_button'] == 'Create Reference Transaction Order') {
             if (wp_verify_nonce($_POST['angelleye_create_reference_order_sec'], 'angelleye_create_reference_order_sec')) {
                 if (empty($post_id)) {
                     return false;
@@ -244,7 +244,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!empty($_POST['copy_items_to_new_invoice']) && $_POST['copy_items_to_new_invoice'] == 'on') {
             $this->angelleye_update_order_meta($order, $new_order);
         }
-        $order->add_order_note('Order Created: Create New Reference Order', 0, false);
+        $order->add_order_note('Order Created: Create Reference Transaction Order', 0, false);
         $new_order->save();
         $new_order->calculate_totals();
         wp_redirect(get_edit_post_link($new_order_id, 'url'));

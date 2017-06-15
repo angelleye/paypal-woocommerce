@@ -240,6 +240,13 @@ jQuery(document).ready(function ($) {
                     }
                 }).change();
                 
+                
+                
+                jQuery("#angelleye_payment_submit_button").click(function () {
+                    jQuery("#angelleye-pw-order-action").block({message:null,overlayCSS:{background:"#fff",opacity:.6}})
+                });
+                
+                
                 jQuery('#angelleye_payment_action').change(function(){
                     
                     if(jQuery(this).val() == 'DoCapture') {

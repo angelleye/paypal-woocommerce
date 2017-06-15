@@ -44,6 +44,11 @@ table.angelleye_order_action_table td {
     list-style: decimal outside none;
     margin: 10px;
 }
+
+.wrap.angelleye_create_reference_order_submit_button {
+    margin: 10px;
+}
+
 #angelleye_admin_payment_submit_button {
     margin-bottom: 10px;
 }
