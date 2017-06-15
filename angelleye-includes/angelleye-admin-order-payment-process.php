@@ -108,8 +108,8 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!empty($reason_message)) {
             $is_disable = 'disabled';
         }
-        $checkbox = '<br><label><input type="checkbox" name="copy_items_to_new_invoice">Copy items to new invoice?</label><br>';
-        echo '<div class="wrap angelleye_create_reference_order_section">' . $reason_message . '<input type="hidden" name="angelleye_create_reference_order_sec" value="' . wp_create_nonce('angelleye_create_reference_order_sec') . '" /><input type="submit" ' . $is_disable . ' id="angelleye_create_reference_order_submit_button" value="Create New Reference Order" name="angelleye_create_reference_order_submit_button" class="button button-primary">' . $checkbox . '</div>';
+        $checkbox = '<br><label><input type="checkbox" name="copy_items_to_new_invoice">Copy items to new order?</label><br>';
+        echo '<div class="wrap angelleye_create_reference_order_section">' . $reason_message . '<input type="hidden" name="angelleye_create_reference_order_sec" value="' . wp_create_nonce('angelleye_create_reference_order_sec') . '" /><input type="submit" ' . $is_disable . ' id="angelleye_create_reference_order_submit_button" value="Create Reference Transaction Order" name="angelleye_create_reference_order_submit_button" class="button button-primary">' . $checkbox . '</div>';
     }
 
     public function angelleye_is_order_status_pending($order) {
