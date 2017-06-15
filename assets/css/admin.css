@@ -40,3 +40,10 @@ table.angelleye_order_action_table td {
 .final_review_notice {
     color: #dc3232;
 }
+.wrap.angelleye_admin_order_process > ul {
+    list-style: decimal outside none;
+    margin: 10px;
+}
+#angelleye_admin_payment_submit_button {
+    margin-bottom: 10px;
+}

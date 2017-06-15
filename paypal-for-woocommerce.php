@@ -71,6 +71,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         {
             
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
+            if( is_admin() ) {
+                include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-admin-order-payment-process.php';
+                $admin_order_payment = new AngellEYE_Admin_Order_Payment_Process();
+            }
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, VERSION_PFW);
             $woo_version = $this->wpbo_get_woo_version_number();
             add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));

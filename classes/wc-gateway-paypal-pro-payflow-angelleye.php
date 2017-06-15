@@ -1198,8 +1198,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             exit();
         }
     }
-    public function process_subscription_payment($order, $amount) {
+    public function process_subscription_payment($order, $amount, $payment_token = null) {
         $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
+         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         if (!class_exists('Angelleye_PayPal')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
@@ -1236,8 +1237,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
             $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
             $billing_email = version_compare( WC_VERSION, '3.0', '<' ) ? $billing_email : $order->get_billing_email();
-        
-            $customer_note = $order->customer_note ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $order->customer_note), 0, 256) : '';
+            $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
+            $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
             $PayPalRequestData = array(
                 'tender' => 'C', // Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
                 'trxtype' => ($this->payment_action == 'Authorization' || $order->get_total() == 0 ) ? 'A' : 'S', // Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
@@ -1319,6 +1320,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             if ($this->is_subscription($order_id)) {
                 $PayPalRequestData['origid'] = get_post_meta($order_id, '_payment_tokens_id', true);
             }
+            if( !empty($payment_token) ) {
+                $PayPalRequestData['origid'] = $payment_token;
+            }
             $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
 
             $this->add_log('PayFlow Endpoint: ' . $PayPal->APIEndPoint);
@@ -1336,9 +1340,9 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 } else {
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
                         add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
-                        $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
                     } else {
-                        $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
                     }
                     /* Checkout Note */
                     if (isset($_POST) && !empty($_POST['order_comments'])) {
@@ -1502,7 +1506,6 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
         if (!empty($payment_tokens_id)) {
             update_post_meta($order->id, '_payment_tokens_id', $payment_tokens_id);
         }
-        return $settings;
     }
     
     

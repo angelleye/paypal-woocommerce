@@ -139,22 +139,22 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_woocommerce_order_actions($order_actions = array()) {
-        global $post;
-        $order_id = $post->ID;
-        if (empty($post->ID)) {
-            return false;
+        global $post, $thepostid, $theorder;
+        if ( ! is_int( $thepostid ) ) {
+            $thepostid = $post->ID;
         }
-        if ($post->post_type != 'shop_order') {
-            return false;
+
+        if ( ! is_object( $theorder ) ) {
+          $theorder = wc_get_order( $thepostid );
         }
-        if (!is_object($order_id)) {
-            $order = wc_get_order($order_id);
-        }
+
+        $order = $theorder;
+         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $paypal_payment_action = array();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
         $payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
-        if ((isset($this->payment_method) && !empty($this->payment_method)) && (isset($payment_action) && !empty($payment_action)) && !$this->has_authorization_expired($post->ID)) {
+        if ((isset($this->payment_method) && !empty($this->payment_method)) && (isset($payment_action) && !empty($payment_action)) && !$this->has_authorization_expired($order_id)) {
             switch ($this->payment_method) {
                 case 'paypal_express': {
                         $paypal_payment_action = array();
@@ -947,8 +947,18 @@ class AngellEYE_Utility {
         }
     }
 
-    public function angelleye_paypal_for_woocommerce_order_action_callback($post) {
+    public function angelleye_get_order_transaction_id($post) {
+        
+        if ($post->post_type != 'shop_order') {
+            return false;
+        }
+        $order = wc_get_order($post->ID);
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $transaction_id = get_post_meta($order_id, '_transaction_id', true);
+        return ( !empty($transaction_id) ) ? $transaction_id : false;
+    }
 
+    public function angelleye_paypal_for_woocommerce_order_action_callback($post) {
         $args = array(
             'post_type' => 'paypal_transaction',
             'posts_per_page' => -1,
@@ -957,20 +967,25 @@ class AngellEYE_Utility {
             'order' => 'ASC',
             'post_status' => 'any'
         );
+        $order = wc_get_order($post->ID);
+
+        $payment_method = get_post_meta($post->ID, '_payment_method', true);
+        $payment_action = get_post_meta($post->ID, '_payment_action', true);
+            
+        $transaction_id = $this->angelleye_get_order_transaction_id($post);
         $posts_array = get_posts($args);
         foreach ($posts_array as $post_data):
             $payment_status = get_post_meta($post_data->ID, 'PAYMENTSTATUS', true);
+            //$payment_status = get_post_meta($post->ID, 'post_status', true);
+            if($transaction_id == $post_data->post_title && $payment_method == 'paypal_pro_payflow') {
+                if($payment_status == 'Voided') {
+                    $order->update_status('cancelled', '', true);
+                }
+            }
             if (isset($post->post_title) && !empty($post_data->post_title) && $payment_status != 'Completed') {
                 $this->angelleye_get_transactionDetails($post_data->post_title);
             }
         endforeach;
-        $order = wc_get_order($post->ID);
-
-            $payment_method = get_post_meta($post->ID, '_payment_method', true);
-            $payment_action = get_post_meta($post->ID, '_payment_action', true);
-            
-             
-            
         if (empty($this->angelleye_woocommerce_order_actions)) {
             $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions();
         }
@@ -1181,23 +1196,25 @@ class AngellEYE_Utility {
     }
 
     public function save($post_id, $post) {
-        if (empty($post->ID)) {
-            return false;
-        }
-        if ($post->post_type != 'shop_order') {
-            return false;
-        }
-        $order = wc_get_order($post_id);
-        if (empty($this->payment_method)) {
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-            $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
-        }
-        if (!empty($_POST['angelleye_payment_action'])) {
-            $action = wc_clean($_POST['angelleye_payment_action']);
-            $hook_name = 'wc_' . $this->payment_method . '_' . strtolower($action);
-            if (!did_action('woocommerce_order_action_' . sanitize_title($hook_name))) {
-                do_action('woocommerce_order_action_' . sanitize_title($hook_name), $order);
+        if (!empty($_POST['save']) && $_POST['save'] == 'Submit') {
+            if (empty($post->ID)) {
+                return false;
+            }
+            if ($post->post_type != 'shop_order') {
+                return false;
+            }
+            $order = wc_get_order($post_id);
+            if (empty($this->payment_method)) {
+                $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
+            }
+            if (!empty($_POST['angelleye_payment_action'])) {
+                $action = wc_clean($_POST['angelleye_payment_action']);
+                $hook_name = 'wc_' . $this->payment_method . '_' . strtolower($action);
+                if (!did_action('woocommerce_order_action_' . sanitize_title($hook_name))) {
+                    do_action('woocommerce_order_action_' . sanitize_title($hook_name), $order);
+                }
             }
         }
     }
@@ -1715,6 +1732,7 @@ class AngellEYE_Utility {
     }
 
     public function call_paypal_pro_payflow_do_void($order) {
+        $is_used_first_transaction_id = false;
         $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('DoVoid API call');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
@@ -1723,6 +1741,7 @@ class AngellEYE_Utility {
         } else {
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
+            $is_used_first_transaction_id = true;
         }
         if (isset($transaction_id) && !empty($transaction_id)) {
             $PayPalRequestData = array(
@@ -1743,6 +1762,7 @@ class AngellEYE_Utility {
                 self::angelleye_add_order_meta($order_id, $payment_order_meta);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_void_result, $order, 'DoVoid');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
+                $order->update_status('cancelled', '', true);
             } else {
                 $ErrorCode = urldecode($do_void_result["RESULT"]);
                 $ErrorLongMsg = urldecode($do_void_result["RESPMSG"]);
