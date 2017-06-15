@@ -968,7 +968,7 @@ class AngellEYE_Utility {
             'post_status' => 'any'
         );
         $order = wc_get_order($post->ID);
-
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $payment_method = get_post_meta($post->ID, '_payment_method', true);
         $payment_action = get_post_meta($post->ID, '_payment_action', true);
             
@@ -1011,6 +1011,7 @@ class AngellEYE_Utility {
             
                 <div class="angelleye_authorization_box" style="display: none;">
                     <?php
+                    $remain_capture = 0;
                     $payment_method = get_post_meta($post->ID, '_payment_method', true);
                     $remain_authorize_amount_text = '';
                     if ($payment_method == 'paypal_express') {
@@ -1019,9 +1020,17 @@ class AngellEYE_Utility {
                         } else {
                             $remain_authorize_amount_text = '';
                         }
+                    } elseif ($payment_method == 'paypal_pro_payflow') {
+                        $this->total_DoVoid = self::get_total('DoVoid', '', $order_id);
+                        $this->total_DoCapture = self::get_total('DoCapture', 'Completed', $order_id);
+                        $remain_capture = $order->get_total() - ( $this->total_DoVoid + $this->total_DoCapture );
+                        $remain_capture = self::number_format($remain_capture);
                     }
+                    
+                    
                     ?>
-                    <input type="text" placeholder="Enter amount <?php echo $remain_authorize_amount_text; ?>" id="_regular_price" name="_regular_price" class="short wc_input_price text-box" style="width: 220px">
+                    
+                    <input type="text" placeholder="Enter amount <?php echo $remain_capture; ?>" id="_regular_price" name="_regular_price" <?php if($remain_capture > 0 ) { echo "value='$remain_capture'"; } ?>class="short wc_input_price text-box" style="width: 220px">
                 </div>
                 <?php $this->angelleye_express_checkout_transaction_capture_dropdownbox($post->ID); ?>
                 <input type="submit" id="angelleye_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
@@ -1711,11 +1720,12 @@ class AngellEYE_Utility {
                         ' Delayed Capture AUTHORIZATIONID: ' . $transaction_id . ' )'
                 );
 
-                $payment_order_meta = array('_transaction_id' => $transaction_id);
+                $payment_order_meta = array('_transaction_id' => $do_delayed_capture_result['PNREF']);
                 self::angelleye_add_order_meta($order_id, $payment_order_meta);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_delayed_capture_result, $order, 'DoCapture');
                 $this->angelleye_get_transactionDetails($transaction_id);
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
+                
             } else {
                 $ErrorCode = urldecode($do_delayed_capture_result["RESULT"]);
                 $ErrorLongMsg = urldecode($do_delayed_capture_result["RESPMSG"]);

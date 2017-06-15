@@ -70,12 +70,16 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function admin_order_reference_order($post) {
+        $is_disable_button = false;
         $order_id = $post->ID;
         $order = wc_get_order($order_id);
         if ($this->angelleye_is_order_need_payment($order) && $this->angelleye_is_admin_order_payment_method_available($order) == true && $this->angelleye_is_order_created_by_create_new_reference_order($order) == false) {
             $reason_array = $this->angelleye_get_reason_why_place_order_button_not_available($order);
+            if( count($reason_array) > 1 ) {
+                $is_disable_button = true;
+            }
             $reason_message = $this->angelleye_reason_array_to_nice_message($reason_array);
-            $this->angelleye_create_order_button($reason_message);
+            $this->angelleye_create_order_button($reason_message, $is_disable_button);
             $this->angelleye_show_reference_order_metabox();
         } else {
             $this->angelleye_hide_reference_order_metabox();
@@ -83,29 +87,33 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function admin_order_payment_process($post) {
+        $is_disable_button = false;
         $order_id = $post->ID;
         $order = wc_get_order($order_id);
         if ($this->angelleye_is_order_created_by_create_new_reference_order($order) && $this->angelleye_is_order_status_pending($order) == true) {
             $reason_array = $this->angelleye_get_reason_why_place_order_button_not_available($order);
+            if( count($reason_array) > 1 ) {
+                $is_disable_button = true;
+            }
             $reason_message = $this->angelleye_reason_array_to_nice_message($reason_array);
-            $this->angelleye_place_order_button($reason_message);
+            $this->angelleye_place_order_button($reason_message, $is_disable_button);
             $this->angelleye_show_order_payment_metabox();
         } else {
             $this->angelleye_hide_order_payment_metabox();
         }
     }
 
-    public function angelleye_place_order_button($reason_message) {
+    public function angelleye_place_order_button($reason_message, $is_disable_button) {
         $is_disable = '';
-        if (!empty($reason_message)) {
+        if ($is_disable_button == true) {
             $is_disable = 'disabled';
         }
         echo '<div class="wrap angelleye_admin_payment_process">' . $reason_message . '<input type="hidden" name="angelleye_admin_order_payment_process_sec" value="' . wp_create_nonce('angelleye_admin_order_payment_process_sec') . '" /><input type="submit" ' . $is_disable . ' id="angelleye_admin_order_payment_process_submit_button" value="Process Reference Transaction" name="angelleye_admin_order_payment_process_submit_button" class="button button-primary"></div>';
     }
 
-    public function angelleye_create_order_button($reason_message) {
+    public function angelleye_create_order_button($reason_message, $is_disable_button) {
         $is_disable = '';
-        if (!empty($reason_message)) {
+        if ($is_disable_button == true) {
             $is_disable = 'disabled';
         }
         $checkbox = '<br><label><input type="checkbox" name="copy_items_to_new_invoice">Copy items to new order?</label><br>';
@@ -320,9 +328,9 @@ class AngellEYE_Admin_Order_Payment_Process {
         if ($this->angelleye_is_order_need_payment($order) == false) {
             $reason_array[] = __('Order total must be greater than zero to process a reference transaction.', 'paypal-for-woocommerce');
         }
-        if (!empty($reason_array)) {
-            $reason_array[] = __("Make any necessary adjustments to the item(s) on the order and calculate totals.  Remember to click Update if any adjustments were made, and then click Process Reference Transaction.", 'paypal-for-woocommerce');
-        }
+        
+        $reason_array[] = __("Make any necessary adjustments to the item(s) on the order and calculate totals.  Remember to click Update if any adjustments were made, and then click Process Reference Transaction.", 'paypal-for-woocommerce');
+        
         return $reason_array;
     }
 
