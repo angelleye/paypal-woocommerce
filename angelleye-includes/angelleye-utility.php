@@ -1041,7 +1041,14 @@ class AngellEYE_Utility {
 
                         //Asking confirm for the capture
                         $('#angelleye_payment_submit_button').on('click', function () {
-                            return confirm('Are you sure?');
+                            var r = confirm('Are you sure?');
+                            if (r == true) {
+                                jQuery("#angelleye-pw-order-action").block({message:null,overlayCSS:{background:"#fff",opacity:.6}})
+                                return r;
+                            } else {
+                                jQuery("#angelleye-pw-order-action").unblock();
+                                return r;
+                            }
                         })
 
                         MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
