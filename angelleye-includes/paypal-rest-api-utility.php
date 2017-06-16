@@ -762,4 +762,58 @@ class PayPal_Rest_API_Utility {
         return ( function_exists('wcs_order_contains_subscription') && wcs_order_contains_renewal($order_id)  );
     }
 
+    public function admin_process_payment($order, $token_id) {
+        try {
+            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $this->CreditCardToken = new CreditCardToken();
+            $this->CreditCardToken->setCreditCardId($token_id);
+            $this->fundingInstrument = new FundingInstrument();
+            $this->fundingInstrument->setCreditCardToken($this->CreditCardToken);
+            $this->payer = new Payer();
+            $this->payer->setPaymentMethod("credit_card");
+            $this->payer->setFundingInstruments(array($this->fundingInstrument));
+            $this->set_item($order);
+            $this->set_item_list();
+            $this->set_detail_values();
+            $this->set_amount_values($order);
+            $this->set_transaction($order);
+            $this->set_payment();
+        } catch (Exception $ex) {
+
+        }
+        
+        try {
+            $this->add_log(print_r($this->payment, true));
+            $this->payment->create($this->getAuth());
+        } catch (PayPal\Exception\PayPalConnectionException $ex) {
+            $this->add_log($ex->getMessage());
+
+        } catch (Exception $ex) {
+            $this->send_failed_order_email($order_id);
+            $this->add_log($ex->getMessage());
+
+        }
+
+        if ($this->payment->state == "approved") {
+            $transactions = $this->payment->getTransactions();
+            $relatedResources = $transactions[0]->getRelatedResources();
+            $sale = $relatedResources[0]->getSale();
+            $saleId = $sale->getId();
+            do_action('before_save_payment_token', $order_id);
+            $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
+            $order->payment_complete($saleId);
+            $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
+            if ($old_wc) {
+                update_post_meta($order->id, 'is_sandbox', $is_sandbox);
+            } else {
+                update_post_meta( $order->get_id(), 'is_sandbox', $is_sandbox );
+            }
+        } else {
+            $this->send_failed_order_email($order_id);
+            $this->add_log(__('Error Payment state:' . $this->payment->state, 'paypal-for-woocommerce'));
+        }
+        
+    }
+
 }

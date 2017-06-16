@@ -45,7 +45,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'tokenization'
             );
         }
-        $this->enabled = 'yes' === $this->get_option('enabled', 'no');
+        $this->is_enabled = 'yes' === $this->get_option('enabled', 'no');
+        $this->enabled = $this->get_option('enabled', 'no');
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
@@ -104,7 +105,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @return void
      * */
     public function checks() {
-        if (!$this->is_valid_currency() || $this->enabled == false) {
+        if (!$this->is_valid_currency() || $this->is_enabled == false) {
             return;
         }
         if (!$this->loginid) {
@@ -146,7 +147,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @param int $order_id
      * @return result code of the inquiry transaction
      */
-    private function inquiry_transaction($order, $order_id) {
+    public function inquiry_transaction($order, $order_id) {
 
         //inquire transaction, whether it is really paid or not
         $paypal_args = array(
@@ -691,7 +692,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     public function is_available() {
 
         //if enabled checkbox is checked
-        if ($this->enabled == true) {
+        if ($this->is_enabled == true) {
             if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_advanced_allowed_currencies', array('USD', 'CAD')))) {
                 return false;
             }

@@ -1362,7 +1362,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
     }
 
-    public function process_subscription_payment($order, $amount) {
+    public function process_subscription_payment($order, $amount, $payment_token = null) {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $request_data = array();
         $this->angelleye_braintree_lib();
@@ -1403,6 +1403,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         
         if ($this->is_subscription($order_id)) {
             $request_data['paymentMethodToken'] = get_post_meta($order_id, '_payment_tokens_id', true);
+        }
+        if( !empty($payment_token) ) {
+            $request_data['paymentMethodToken'] = $payment_token;
         }
         if (is_user_logged_in()) {
             $customer_id = get_current_user_id();
