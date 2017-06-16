@@ -74,7 +74,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         $order_id = $post->ID;
         $order = wc_get_order($order_id);
         if ($this->angelleye_is_order_need_payment($order) && $this->angelleye_is_admin_order_payment_method_available($order) == true && $this->angelleye_is_order_created_by_create_new_reference_order($order) == false) {
-            $reason_array = $this->angelleye_get_reason_why_place_order_button_not_available($order);
+            $reason_array = $this->angelleye_get_reason_why_create_reference_transaction_order_button_not_available($order);
             if( count($reason_array) > 1 ) {
                 $is_disable_button = true;
             }
@@ -91,7 +91,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         $order_id = $post->ID;
         $order = wc_get_order($order_id);
         if ($this->angelleye_is_order_created_by_create_new_reference_order($order) && $this->angelleye_is_order_status_pending($order) == true) {
-            $reason_array = $this->angelleye_get_reason_why_place_order_button_not_available($order);
+            $reason_array = $this->angelleye_get_reason_why_process_reference_transaction_button_not_available($order);
             if( count($reason_array) > 1 ) {
                 $is_disable_button = true;
             }
@@ -311,10 +311,9 @@ class AngellEYE_Admin_Order_Payment_Process {
         return ($order->get_payment_method() == 'paypal_pro_payflow') ? true : false;
     }
 
-    public function angelleye_get_reason_why_place_order_button_not_available($order) {
+    public function angelleye_get_reason_why_process_reference_transaction_button_not_available($order) {
         $reason_array = array();
         $token_list = $this->angelleye_is_usable_reference_transaction_avilable($order);
-
         if ($this->angelleye_is_order_user_selected($order) == false) {
             $reason_array[] = __('Customer must be selected for order.', 'paypal-for-woocommerce');
         }
@@ -328,11 +327,30 @@ class AngellEYE_Admin_Order_Payment_Process {
         if ($this->angelleye_is_order_need_payment($order) == false) {
             $reason_array[] = __('Order total must be greater than zero to process a reference transaction.', 'paypal-for-woocommerce');
         }
-        
         $reason_array[] = __("Make any necessary adjustments to the item(s) on the order and calculate totals.  Remember to click Update if any adjustments were made, and then click Process Reference Transaction.", 'paypal-for-woocommerce');
-        
         return $reason_array;
     }
+    
+  public function angelleye_get_reason_why_create_reference_transaction_order_button_not_available($order) {
+        $reason_array = array();
+        $token_list = $this->angelleye_is_usable_reference_transaction_avilable($order);
+        if ($this->angelleye_is_order_user_selected($order) == false) {
+            $reason_array[] = __('Customer must be selected for order.', 'paypal-for-woocommerce');
+        }
+        if ($this->angelleye_is_order_payment_method_selected($order) == false) {
+            $reason_array[] = __('Payment method is not available for payment process, Please select Payment method from Billing details section.', 'paypal-for-woocommerce');
+        } else {
+            if (empty($token_list) && $this->angelleye_is_order_user_selected($order) == true) {
+                $reason_array[] = __('Payment Token Or Reference transaction ID is not available for payment process.', 'paypal-for-woocommerce');
+            }
+        }
+        if ($this->angelleye_is_order_need_payment($order) == false) {
+            $reason_array[] = __('Order total must be greater than zero to process a reference transaction.', 'paypal-for-woocommerce');
+        }
+        return $reason_array;
+    }
+    
+    
 
     public function angelleye_reason_array_to_nice_message($reason_array) {
         $reason_message = '';
