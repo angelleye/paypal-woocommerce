@@ -669,10 +669,17 @@ class AngellEYE_Utility {
 
     public function ec_add_log($message, $level = 'info') {
         if ($this->ec_debug == 'yes') {
-            if (empty($this->log)) {
-                $this->log = wc_get_logger();
+            if (version_compare(WC_VERSION, '3.0', '<')) {
+                if (empty($this->log)) {
+                    $this->log = new WC_Logger();
+                }
+                $this->log->add($this->payment_method, $message);
+            } else {
+                if (empty($this->log)) {
+                    $this->log = wc_get_logger();
+                }
+                $this->log->log($level, $message, array('source' => $this->payment_method));
             }
-            $this->log->log($level, $message, array('source' => $this->payment_method));
         }
     }
 

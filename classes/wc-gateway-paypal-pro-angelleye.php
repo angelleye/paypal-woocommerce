@@ -444,12 +444,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     /**
      * Add a log entry
      */
-    public function log($message) {
+    public function log($message, $level = 'info') {
         if ($this->debug) {
-            if (!isset($this->log)) {
-                $this->log = new WC_Logger();
+            if (version_compare(WC_VERSION, '3.0', '<')) {
+                if (empty($this->log)) {
+                    $this->log = new WC_Logger();
+                }
+                $this->log->add('paypal-pro', $message);
+            } else {
+                if (empty($this->log)) {
+                    $this->log = wc_get_logger();
+                }
+                $this->log->log($level, $message, array('source' => 'paypal-pro'));
             }
-            $this->log->add('paypal-pro', $message);
         }
     }
 
