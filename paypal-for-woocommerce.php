@@ -1309,6 +1309,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function angelleye_express_checkout_woocommerce_enable_guest_checkout($bool) {
             global $wpdb;
+            $return = $bool;
             if (sizeof(WC()->session) == 0) {
                 return false;
             }
@@ -1316,10 +1317,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
             $ec_save_to_account = WC()->session->get( 'ec_save_to_account' );
             if( !empty($row->option_value) && $row->option_value == 'yes' && isset($paypal_express_checkout) && !empty($paypal_express_checkout) && isset($ec_save_to_account) && $ec_save_to_account == 'on') {
-               return 'no';
+               $return =  'no';
             } else {
-                return $bool;
+                $return =  $bool;
             }
+            return apply_filters( 'woocommerce_enable_guest_checkout', $return);
         }
         public function angelleye_braintree_decrypt_gateway_api($bool) {
             global $wpdb;

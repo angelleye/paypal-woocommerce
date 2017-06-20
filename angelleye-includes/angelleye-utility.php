@@ -193,7 +193,7 @@ class AngellEYE_Utility {
                                 if (!is_object($order_id)) {
                                     $order = wc_get_order($order_id);
                                 }
-                                if ($this->total_DoCapture > 0) {
+                                if ($this->total_DoCapture > 0 || $this->total_Pending_DoAuthorization == 0) {
                                     unset($paypal_payment_action['DoVoid']);
                                 }
                                 if ($order->get_total() == $this->total_DoVoid || $this->total_Completed_DoAuthorization == $order->get_total() || $order->get_total() == $this->total_DoCapture || $this->total_DoCapture == $order->get_total() - $order->get_total_refunded()) {

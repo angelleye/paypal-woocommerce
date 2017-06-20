@@ -536,6 +536,12 @@ class AngellEYE_Admin_Order_Payment_Process {
             $PayPalRequestData = $this->angelleye_reference_transaction_request_ec_pp_pf($order, $token_id);
             $result = $this->paypal->DoReferenceTransaction($PayPalRequestData);
             if (!empty($result['ACK']) && ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning')) {
+                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                if ($this->gateway_settings['payment_action'] != 'Sale') {
+                    $payment_order_meta = array('_transaction_id' => $result['TRANSACTIONID'], '_payment_action' => $this->gateway_settings['payment_action'], '_first_transaction_id' => $result['TRANSACTIONID']);
+                    AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
+                }
+                AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($result, $order, $this->gateway_settings['payment_action']);
                 $order->payment_complete($result['TRANSACTIONID']);
                 $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->payment_method, $result['TRANSACTIONID']));
             } else {
