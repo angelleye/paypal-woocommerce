@@ -66,6 +66,18 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->order_items[] = $item;
                 $roundedPayPalTotal += round($amount * $values['quantity'], $this->decimals);
             }
+            foreach (WC()->cart->get_fees() as $cart_item_key => $fee_values) {
+                 $fee_item = array(
+                    'name' => html_entity_decode( wc_trim_string( $fee_values->name ? $fee_values->name : __( 'Fee', 'paypal-for-woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
+                    'desc' => '',
+                    'qty' => 1,
+                    'amt' => $fee_values->amount,
+                    'number' => ''
+                );
+                $this->order_items[] = $fee_item;
+                $roundedPayPalTotal += round($amount * 1, $this->decimals);
+                
+            }
             $this->taxamt = round(WC()->cart->tax_total + WC()->cart->shipping_tax_total, $this->decimals);
             $this->shippingamt = round(WC()->cart->shipping_total, $this->decimals);
             $this->itemamt = round(WC()->cart->cart_contents_total, $this->decimals) + $this->discount_amount;
@@ -130,6 +142,19 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 );
                 $this->order_items[] = $item;
                 $roundedPayPalTotal += round($amount * $values['qty'], $this->decimals);
+            }
+            foreach ( $order->get_fees() as $cart_item_key =>  $fee_values) {
+                $fee_item_name = version_compare(WC_VERSION, '3.0', '<') ? $fee_values['name'] : $fee_values->get_name();
+                $amount = $order->get_line_total( $fee_values );
+                $fee_item = array(
+                    'name' => html_entity_decode( wc_trim_string( $fee_item_name ? $fee_item_name : __( 'Fee', 'paypal-for-woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
+                    'desc' => '',
+                    'qty' => 1,
+                    'amt' => $amount,
+                    'number' => ''
+                );
+                $this->order_items[] = $fee_item;
+                $roundedPayPalTotal += round($amount * 1, $this->decimals);
             }
             $this->taxamt = round($order->get_total_tax(), $this->decimals);
             $this->shippingamt = round(( version_compare(WC_VERSION, '3.0', '<') ? $order->get_total_shipping() : $order->get_shipping_total()), $this->decimals);
