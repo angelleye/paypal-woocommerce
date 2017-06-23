@@ -172,6 +172,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
        
         $this->customer_id;
+        
+        if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+        } else {
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+        }
     }
 
     /**
@@ -444,12 +451,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     /**
      * Add a log entry
      */
-    public function log($message) {
+    public function log($message, $level = 'info') {
         if ($this->debug) {
-            if (!isset($this->log)) {
-                $this->log = new WC_Logger();
+            if (version_compare(WC_VERSION, '3.0', '<')) {
+                if (empty($this->log)) {
+                    $this->log = new WC_Logger();
+                }
+                $this->log->add('paypal-pro', $message);
+            } else {
+                if (empty($this->log)) {
+                    $this->log = wc_get_logger();
+                }
+                $this->log->log($level, $message, array('source' => 'paypal-pro'));
             }
-            $this->log->add('paypal-pro', $message);
         }
     }
 
@@ -987,8 +1001,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if (isset($this->notifyurl) && !empty($this->notifyurl)) {
             $PaymentDetails['notifyurl'] = $this->notifyurl;
         }
-
-        $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
+        $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         $OrderItems = array();
         if ($this->send_items) {
             foreach ($PaymentData['order_items'] as $item) {
@@ -1704,7 +1717,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
         }
-        $this->gateway_calculation = new WC_Gateway_Calculation_AngellEYE();
+        $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
         $PayPalConfig = array(
             'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
             'APIUsername' => $this->api_username,
@@ -1776,8 +1789,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if (isset($this->notifyurl) && !empty($this->notifyurl)) {
             $PaymentDetails['notifyurl'] = $this->notifyurl;
         }
-        $PaymentData = $this->gateway_calculation->order_calculation($order_id);
-        //$PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
+        $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         $OrderItems = array();
         if ($this->send_items) {
             foreach ($PaymentData['order_items'] as $item) {

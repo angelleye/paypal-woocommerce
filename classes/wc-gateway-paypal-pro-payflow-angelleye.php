@@ -130,10 +130,17 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
     
     public function add_log($message, $level = 'info') {
         if ($this->debug) {
-            if (!isset($this->log)) {
-                $this->log = wc_get_logger();
+            if (version_compare(WC_VERSION, '3.0', '<')) {
+                if (empty($this->log)) {
+                    $this->log = new WC_Logger();
+                }
+                $this->log->add('paypal_pro_payflow', $message);
+            } else {
+                if (empty($this->log)) {
+                    $this->log = wc_get_logger();
+                }
+                $this->log->log($level, $message, array('source' => 'paypal_pro_payflow'));
             }
-            $this->log->log( $level, $message, array( 'source' => 'paypal_pro_payflow' ) );
         }
     }
 	
@@ -574,7 +581,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 $PayPalRequestData['SHIPTOZIP']         = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode();
             }
 
-            $PaymentData = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
+            $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
             $OrderItems = array();
             if ($this->send_items) {
                 $item_loop = 0;
@@ -610,12 +617,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                  $token = WC_Payment_Tokens::get( $token_id );
                  $PayPalRequestData['origid'] = $token->get_token();
                  $PayPalRequestData['expdate'] = '';
+                 $log['origid'] = $token->get_token();
             } else {
                 $log['acct'] = '****';
                 $log['cvv2'] = '****';
             }
             if ($this->is_subscription($order_id)) {
                 $PayPalRequestData['origid'] = get_post_meta($order_id, '_payment_tokens', true);
+                $log['origid'] = get_post_meta($order_id, '_payment_tokens', true);
             }
             $this->add_log('PayFlow Request: '.print_r( $log, true ) );
             $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
