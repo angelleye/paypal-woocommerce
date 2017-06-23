@@ -644,7 +644,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
                     $_paypal_billing_agreement = get_post_meta($product_id, '_paypal_billing_agreement', true);
                     $ec_save_to_account = WC()->session->get('ec_save_to_account');
-                    if ($_paypal_billing_agreement == 'yes' || ( isset($ec_save_to_account) && $ec_save_to_account == 'on') || AngellEYE_Utility::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
+                    if ($_paypal_billing_agreement == 'yes' || ( isset($ec_save_to_account) && $ec_save_to_account == 'on') || AngellEYE_Utility::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() || AngellEYE_Utility::is_cart_contains_subscription() == true) {
                         $BillingAgreements = array();
                         $Item = array(
                             'l_billingtype' => '',
@@ -818,7 +818,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $error_display_type_message = sprintf(__('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce'));
         }
         $error_display_type_message = apply_filters('ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg);
-        wc_add_notice($error_display_type_message, 'error');
+        if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+             wc_add_notice($error_display_type_message, 'error');
+        }
     }
 
     public function angelleye_write_paypal_request_log($paypal_action_name) {
@@ -838,7 +840,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_ec_load_customer_data_using_ec_details() {
         if (!empty($this->paypal_response['SHIPTOCOUNTRYCODE'])) {
             if (!array_key_exists($this->paypal_response['SHIPTOCOUNTRYCODE'], WC()->countries->get_allowed_countries())) {
-                wc_add_notice(sprintf(__('We do not sell in your country, please try again with another address.', 'paypal-for-woocommerce')), 'error');
+                if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                     wc_add_notice(sprintf(__('We do not sell in your country, please try again with another address.', 'paypal-for-woocommerce')), 'error');
+                }
                 wp_redirect(get_permalink(wc_get_page_id('cart')));
                 exit;
             }
@@ -1041,7 +1045,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             $this->gateway->process_refund($order_id, $order->get_total(), __('There was a problem processing your order. Please contact customer support.', 'paypal-for-woocommerce'));
             $order->update_status('cancelled');
-            wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
+            if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                 wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
+            }
             wp_redirect(get_permalink(wc_get_page_id('cart')));
             exit();
         }

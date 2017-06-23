@@ -802,10 +802,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (!isset($_GET['pp_action'])) {
                 return;
             }
-            $cart_contains_subscription = false;
-            if (class_exists('WC_Subscriptions_Order') && class_exists('WC_Subscriptions_Cart')) {
-                $cart_contains_subscription = WC_Subscriptions_Cart::cart_contains_subscription();
-            }
             if (!defined('WOOCOMMERCE_CHECKOUT')) {
                 define('WOOCOMMERCE_CHECKOUT', true);
             }
@@ -820,9 +816,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 WC()->customer->set_calculated_shipping(true);
             }
 
-            if (WC()->cart->cart_contents_total <= 0 && WC()->cart->total <= 0 && $cart_contains_subscription == false) {
+            if (WC()->cart->cart_contents_total <= 0 && WC()->cart->total <= 0 && AngellEYE_Utility::is_cart_contains_subscription() == false) {
                 if( empty($_GET['pay_for_order']) ) {
+                    if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
                     wc_add_notice(__('your order amount is zero, We were unable to process your order, please try again.', 'paypal-for-woocommerce'), 'error');
+                    }
                     $paypal_express_request->angelleye_redirect();
                     exit;
                 }
@@ -1133,7 +1131,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $error_display_type_message = sprintf(__('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce'));
         }
         $error_display_type_message = apply_filters('ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg);
-        wc_add_notice($error_display_type_message, 'error');
+        if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+            wc_add_notice($error_display_type_message, 'error');
+        }
         if (!is_ajax()) {
             wp_redirect($redirect_url);
             exit;

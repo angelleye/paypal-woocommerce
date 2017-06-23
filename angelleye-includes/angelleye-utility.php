@@ -1825,4 +1825,12 @@ class AngellEYE_Utility {
         return $paypal_request;
     }
 
+    public static function is_cart_contains_subscription() {
+        $cart_contains_subscription = false;
+        if (class_exists('WC_Subscriptions_Order') && class_exists('WC_Subscriptions_Cart')) {
+            $cart_contains_subscription = WC_Subscriptions_Cart::cart_contains_subscription();
+        }
+        return $cart_contains_subscription;
+    }
+
 }
