@@ -16,6 +16,9 @@
 .express-checkout .express-provided.hidden {
     display: none !important
 }
+.express-checkout #order_payment_heading {
+    display: none;
+}
 .express-checkout.express-hide-terms .terms label[for="terms"],
 .express-checkout.express-hide-terms .terms #terms {
     display: none !important
