@@ -429,6 +429,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function top_cart_button() {
         if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
+            if( $this->angelleye_is_hide_ec_button() == true) {
+                return false;
+            }
             $top_cart_button_html = '';
             if ($this->button_position == 'top' || $this->button_position == 'both') {
                 do_action('angelleye_ec_before_top_cart_button', $this);
@@ -443,6 +446,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     
      public function mini_cart_button() {
           if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
+             if( $this->angelleye_is_hide_ec_button() == true) {
+                return false;
+            }
              $this->woocommerce_before_cart();
              $mini_cart_button_html = '';
              $mini_cart_button_html .= $this->woocommerce_paypal_express_checkout_button_angelleye($return = true);
@@ -459,6 +465,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             define('WOOCOMMERCE_CART', true);
         }
         WC()->cart->calculate_totals();
+        if( $this->angelleye_is_hide_ec_button() == true) {
+            return false;
+        }
         if (!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
             return false;
         }
@@ -512,6 +521,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             return false;
         }
         if (!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
+            return false;
+        }
+        if( $this->angelleye_is_hide_ec_button() == true) {
             return false;
         }
         if (WC()->cart->total > 0) {
@@ -655,5 +667,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
         }
         return $packages;
+    }
+    
+    public function angelleye_is_hide_ec_button() {
+        if( AngellEYE_Utility::is_cart_contains_subscription() == true && $this->enable_tokenized_payments == 'no' ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
