@@ -16,10 +16,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->method_title = __('PayPal Express Checkout ', 'paypal-for-woocommerce');
         $this->method_description = __('PayPal Express Checkout is designed to make the checkout experience for buyers using PayPal much more quick and easy than filling out billing and shipping forms.  Customers will be taken directly to PayPal to sign in and authorize the payment, and are then returned back to your store to choose a shipping method, review the final order total, and complete the payment.', 'paypal-for-woocommerce');
         $this->has_fields = false;
-        
         $this->supports = array(
             'products',
-            'refunds'
+            'refunds',
+            'subscriptions',
+            'subscription_cancellation',
+            'subscription_reactivation',
+            'subscription_suspension',
+            'subscription_amount_changes',
+            'subscription_payment_method_change', // Subs 1.n compatibility.
+            'subscription_payment_method_change_customer',
+            'subscription_payment_method_change_admin',
+            'subscription_date_changes',
+            'multiple_subscriptions',
         );
         if (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'GB') {
             $this->is_us_or_uk = true;
@@ -647,7 +656,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if ($this->supports('tokenization') && is_checkout()) {
                 $this->tokenization_script();
                 $this->saved_payment_methods();
-                $this->save_payment_method_checkbox();
+                 if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                    $this->save_payment_method_checkbox();
+                 }
                 do_action('payment_fields_saved_payment_methods', $this);
             }
         }

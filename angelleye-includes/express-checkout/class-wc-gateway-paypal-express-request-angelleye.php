@@ -1138,6 +1138,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if ($this->must_create_account) {
             return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
         }
+        if(AngellEYE_Utility::is_cart_contains_subscription() == true) {
+            return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
+        }
         $paypal_express_terms = WC()->session->get('paypal_express_terms');
         if (wc_get_page_id('terms') > 0 && apply_filters('woocommerce_checkout_show_terms', true)) {
             if ($this->disable_term) {

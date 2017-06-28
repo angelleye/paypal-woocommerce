@@ -1839,5 +1839,4 @@ class AngellEYE_Utility {
         }
         return $cart_contains_subscription;
     }
-
 }
