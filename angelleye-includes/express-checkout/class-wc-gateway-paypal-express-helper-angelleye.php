@@ -92,6 +92,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_filter('woocommerce_order_button_html', array($this, 'angelleye_woocommerce_order_button_html'), 10, 1);
             add_filter( 'woocommerce_coupons_enabled', array($this, 'angelleye_woocommerce_coupons_enabled'), 10, 1);
             add_action( 'woocommerce_cart_shipping_packages', array( $this, 'maybe_add_shipping_information' ) );
+            add_action( 'admin_notices', array($this, 'angelleye_billing_agreement_notice') );
             if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
                 if ($this->button_position == 'bottom' || $this->button_position == 'both') {
                     add_action('woocommerce_proceed_to_checkout', array($this, 'woocommerce_paypal_express_checkout_button_angelleye'), 22);
@@ -655,5 +656,11 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
         }
         return $packages;
+    }
+    
+    public function angelleye_billing_agreement_notice() {
+        if (AngellEYE_Utility::is_display_angelleye_billing_agreement_notice($this) == true) {
+            echo '<div class="error"><p>' . sprintf(__("Express Checkout billing agreements / reference transactions require specific approval by PayPal. Please contact PayPal to enable this feature before using it on your site. <a href=%s>%s</a>", 'paypal-for-woocommerce'), '"' . esc_url(add_query_arg("ignore_billing_agreement_notice", 0)) . '"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+        }
     }
 }

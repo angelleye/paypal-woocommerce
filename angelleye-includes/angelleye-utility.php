@@ -1839,4 +1839,30 @@ class AngellEYE_Utility {
         }
         return $cart_contains_subscription;
     }
+    
+    public static function is_display_angelleye_billing_agreement_notice($express_checkout) {
+        global $product;
+        global $post;
+        $is_display = false;
+        if(get_user_meta(get_current_user_id(), 'ignore_billing_agreement_notice')) {
+            return $is_display;
+        }
+        if (function_exists('get_current_screen')) {
+            $screen = get_current_screen();
+            if ('product' == $screen->post_type && 'post' == $screen->base) {
+                $_paypal_billing_agreement = get_post_meta($post->ID, '_paypal_billing_agreement', true);
+                if( $_paypal_billing_agreement == 'yes') {
+                    return $is_display = true;
+                }
+                $product = wc_get_product( $post->ID );
+                if( class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::is_subscription( $product ) ) {
+                    return $is_display = true;
+                } 
+            }
+        }
+        if( $express_checkout->enabled == 'yes' && (!empty($_GET['page']) && $_GET['page'] == 'wc-settings' ) && (!empty($_GET['tab']) && $_GET['tab'] == 'checkout' ) && $express_checkout->enable_tokenized_payments == 'yes' ) {
+             return $is_display = true;
+        }
+        return $is_display;
+    }
 }
