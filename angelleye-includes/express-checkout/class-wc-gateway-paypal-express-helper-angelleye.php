@@ -105,6 +105,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-function-angelleye.php' );
             }
             $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
+            if( $this->function_helper->ec_is_express_checkout() ) {
+                remove_all_actions('woocommerce_review_order_before_payment');
+            }
             $this->is_order_completed = true;
         } catch (Exception $ex) {
 
