@@ -1847,6 +1847,9 @@ class AngellEYE_Utility {
         if(get_user_meta(get_current_user_id(), 'ignore_billing_agreement_notice')) {
             return $is_display;
         }
+        if( $express_checkout->enabled == 'no' ) {
+             return $is_display;
+        }
         if (function_exists('get_current_screen')) {
             $screen = get_current_screen();
             if ('product' == $screen->post_type && 'post' == $screen->base) {
