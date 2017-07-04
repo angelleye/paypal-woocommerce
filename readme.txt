@@ -121,7 +121,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.6 - 06.xx.2017 =
+= 1.4.5.1 - 07.xx.2017 =
+* Tweak - Ensures a Billing Agreement is always included with Express Checkout for Woo Subscription products. ([#789](https://github.com/angelleye/paypal-woocommerce/issues/789))
 * Fix - Resolves a PHP fatal error. ([#762](https://github.com/angelleye/paypal-woocommerce/issues/762))
 * Fix - More adjustments to Express Checkout shipping address. ([#765](https://github.com/angelleye/paypal-woocommerce/issues/765))
 
