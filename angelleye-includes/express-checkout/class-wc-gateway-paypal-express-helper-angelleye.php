@@ -663,7 +663,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     
     public function angelleye_billing_agreement_notice() {
         if (AngellEYE_Utility::is_display_angelleye_billing_agreement_notice($this) == true) {
-            echo '<div class="error"><p>' . sprintf(__("Express Checkout billing agreements / reference transactions require specific approval by PayPal. Please contact PayPal to enable this feature before using it on your site. <a href=%s>%s</a>", 'paypal-for-woocommerce'), '"' . esc_url(add_query_arg("ignore_billing_agreement_notice", 0)) . '"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+            echo '<div class="error"><p>' . sprintf(__("PayPal Express Checkout Billing Agreements / Reference Transactions require specific approval by PayPal. Please contact PayPal to enable this feature before using it on your site. <a href=%s>%s</a>", 'paypal-for-woocommerce'), '"' . esc_url(add_query_arg("ignore_billing_agreement_notice", 0)) . '"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
         }
     }
 }
