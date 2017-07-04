@@ -529,7 +529,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         } elseif (!empty($post_data['shipping_last_name'])) {
                             $shiptoname = $post_data['shipping_last_name'];
                         }
-                        $Payment['shiptoname'] = $shiptoname;
+                        
+                        if( !empty($post_data['shipping_company']) ) {
+                            $shipping_company = $post_data['shipping_company'];
+                            $Payment['shiptoname'] = $shipping_company .' - '. $shiptoname;
+                        } else {
+                            $Payment['shiptoname'] = $shiptoname;
+                        }
+                        
                         $Payment['shiptostreet'] = !empty($post_data['shipping_address_1']) ? $post_data['shipping_address_1'] : '';
                         $Payment['shiptostreet2'] = !empty($post_data['shipping_address_2']) ? $post_data['shipping_address_2'] : '';
                         $Payment['shiptocity'] = !empty($post_data['shipping_city']) ? wc_clean(stripslashes($post_data['shipping_city'])) : ''; 
@@ -545,7 +552,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         } elseif (!empty($post_data['billing_last_name'])) {
                             $shiptoname = $post_data['billing_last_name'];
                         }
-                        $Payment['shiptoname'] = $shiptoname;
+                        
+                        if( !empty($post_data['billing_company']) ) {
+                            $billing_company = $post_data['billing_company'];
+                            $Payment['shiptoname'] = $billing_company .' - '. $shiptoname;
+                        } else {
+                            $Payment['shiptoname'] = $shiptoname;
+                        }
+                        
                         $Payment['shiptostreet'] = !empty($post_data['billing_address_1']) ? $post_data['billing_address_1'] : '';
                         $Payment['shiptostreet2'] = !empty($post_data['billing_address_2']) ? $post_data['billing_address_2'] : ''; 
                         $Payment['shiptocity'] = !empty($post_data['billing_city']) ? wc_clean(stripslashes($post_data['billing_city'])) : ''; 
