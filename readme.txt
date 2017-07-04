@@ -128,6 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves a PHP fatal error. ([#762](https://github.com/angelleye/paypal-woocommerce/issues/762))
 * Fix - More adjustments to Express Checkout shipping address. ([#765](https://github.com/angelleye/paypal-woocommerce/issues/765))
 * Fix - Resolves some PHP warnings / failures. ([#781](https://github.com/angelleye/paypal-woocommerce/issues/781))
+* Fix - Resolves a conflict between our "PayPal for WooCommerce" and "PayPal Plus for WooCommerce" review screens. ([#779](https://github.com/angelleye/paypal-woocommerce/issues/779))
 
 = 1.4.5 - 06.06.2017 =
 * Tweak - Adds a note to the settings panel about the new product-level option for enabling Express Checkout. ([#729](https://github.com/angelleye/paypal-woocommerce/issues/729))
