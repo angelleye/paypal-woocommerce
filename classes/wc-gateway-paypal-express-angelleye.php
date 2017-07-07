@@ -712,7 +712,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
                     AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
                 }
-                if ($this->billing_address) {
+                $post_data = WC()->session->get('post_data');
+                if ($this->billing_address && empty($post_data)) {
                     $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
                     $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
                     AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'billing');
@@ -927,7 +928,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             do_action('woocommerce_checkout_order_processed', $order_id, $this->posted);
                         }
                         $order = wc_get_order($order_id);
-                        if ($this->billing_address) {
+                        $post_data = WC()->session->get('post_data');
+                        if ($this->billing_address && empty($post_data)) {
                             $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
                             $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
                             AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'billing');
