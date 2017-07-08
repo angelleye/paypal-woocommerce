@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
 Tested up to: 4.7.5
-Stable tag: 1.4.5
+Stable tag: 1.4.5.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -121,7 +121,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.5.1 - 07.xx.2017 =
+= 1.4.5.1 - 07.07.2017 =
 * Tweak - Adds shipping company name from WooCommerce checkout page to PayPal shipping address (name). ([#792](https://github.com/angelleye/paypal-woocommerce/issues/792))
 * Tweak - Adds custom class for calculating totals in all gateways to avoid conflicts with WC and PayPal calculations. ([#767](https://github.com/angelleye/paypal-woocommerce/issues/767))
 * Tweak - Ensures a Billing Agreement is always included with Express Checkout for Woo Subscription products. ([#789](https://github.com/angelleye/paypal-woocommerce/issues/789))
