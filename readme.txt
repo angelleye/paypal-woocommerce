@@ -126,6 +126,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adds custom class for calculating totals in all gateways to avoid conflicts with WC and PayPal calculations. ([#767](https://github.com/angelleye/paypal-woocommerce/issues/767))
 * Tweak - Ensures a Billing Agreement is always included with Express Checkout for Woo Subscription products. ([#789](https://github.com/angelleye/paypal-woocommerce/issues/789))
 * Tweak - Adds an admin notice any time your settings would require a PayPal Express Checkout Billing agreement. ([#788](https://github.com/angelleye/paypal-woocommerce/issues/788))
+* Tweak - Ignores option to "Set billing to the same as shipping" when the WooCommerce checkout page is used with Express Checkout. ([#796](https://github.com/angelleye/paypal-woocommerce/issues/796))
 * Fix - Resolves a PHP fatal error. ([#762](https://github.com/angelleye/paypal-woocommerce/issues/762))
 * Fix - More adjustments to Express Checkout shipping address. ([#765](https://github.com/angelleye/paypal-woocommerce/issues/765))
 * Fix - Resolves some PHP warnings / failures. ([#781](https://github.com/angelleye/paypal-woocommerce/issues/781))
