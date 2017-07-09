@@ -8,7 +8,7 @@ Stable tag: 1.4.5.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Developed by an Ace Certified PayPal Developer, Official PayPal Partner, PayPal Ambassador, and 3-time PayPal Star Developer Award Winner.
+Upgrade your WooCommerce PayPal experience for free!  Developed by an Ace Certified PayPal Developer, Official PayPal Partner, PayPal Ambassador, and 3-time PayPal Star Developer Award Winner.
 
 == Description ==
 
