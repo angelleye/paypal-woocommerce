@@ -1302,7 +1302,7 @@ class AngellEYE_Utility {
         }
         $this->angelleye_get_transactionDetails($_first_transaction_id);
         $_payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
-        if (isset($_payment_action) && !empty($_payment_action) && $_payment_action == 'Order') {
+        if (isset($_payment_action) && !empty($_payment_action)) {
             if (($this->max_authorize_amount <= $this->total_DoVoid) || ($this->total_Pending_DoAuthorization == 0 && $this->total_Completed_DoAuthorization == 0 && $this->total_DoVoid == $order->get_total())) {
                 $order->update_status('cancelled');
             }
