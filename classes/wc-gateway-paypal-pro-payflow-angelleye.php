@@ -755,8 +755,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && $PayPalResult['RESULT'] == 126) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                 } else {
-                    $order->payment_complete($PayPalResult['PNREF']);
                     if ($this->payment_action == "Authorization") {
+                        $order->update_status('on-hold');
                         if ($old_wc) {
                             update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
                         } else {
@@ -767,6 +767,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                         AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                         $angelleye_utility = new AngellEYE_Utility(null, null);
                         $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
+                    } else {
+                        $order->payment_complete($PayPalResult['PNREF']);
                     }
                 }
                 
