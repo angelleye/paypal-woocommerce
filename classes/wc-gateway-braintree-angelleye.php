@@ -828,11 +828,19 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         return array('curl', 'dom', 'hash', 'openssl', 'SimpleXML', 'xmlwriter');
     }
 
-    public function add_log($message) {
-        if ($this->debug == 'yes') {
-            if (empty($this->log))
-                $this->log = new WC_Logger();
-            $this->log->add('braintree', $message);
+    public function add_log($message, $level = 'info') {
+         if ($this->debug) {
+            if (version_compare(WC_VERSION, '3.0', '<')) {
+                if (empty($this->log)) {
+                    $this->log = new WC_Logger();
+                }
+                $this->log->add('braintree', $message);
+            } else {
+                if (empty($this->log)) {
+                    $this->log = wc_get_logger();
+                }
+                $this->log->log($level, $message, array('source' => 'braintree'));
+            }
         }
     }
 

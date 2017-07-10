@@ -98,13 +98,18 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
 
     public function angelleye_ec_save_payment_method_checkbox() {
-        return sprintf(
-                '<div class="angelleye_ec_save_to_accoount_box">
-                    <p class="form-row woocommerce-SavedPaymentMethods-saveNew">
-                        <label for="wc-%1$s-new-payment-method"><input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" />%2$s</label>
-                    </p>
-                </div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'paypal-for-woocommerce')
-        );
+        if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+            return sprintf(
+                    '<div class="angelleye_ec_save_to_accoount_box">
+                        <p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+                            <label for="wc-%1$s-new-payment-method"><input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" />%2$s</label>
+                        </p>
+                    </div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'paypal-for-woocommerce')
+            );
+        } else {
+            return '';
+        }
+        
     }
     
     public function angelleye_paypal_for_woocommerce_needs_shipping($SECFields) {

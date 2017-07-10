@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           1.4.5
+ * Version:           1.4.5.1
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -35,7 +35,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '1.4.5');
+    define('VERSION_PFW', '1.4.5.1');
 }
 
 /**
@@ -204,7 +204,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $user_id = $current_user->ID;
             
             /* If user clicks to ignore the notice, add that to their user meta */
-            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice');
+            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice');
             
             foreach ($notices as $notice) {
                 if ( isset($_GET[$notice]) && '0' == $_GET[$notice] ) {
@@ -260,7 +260,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     echo '</div>';
                 }
             }
-            
             $this->angelleye_paypal_plus_notice($user_id);
         }
 
@@ -475,7 +474,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Donate function
          */
         function donate_message() {
-            if (@$_GET['page']=='wc-settings' && @$_GET['tab']=='checkout' && in_array( @$_GET['section'], array('wc_gateway_paypal_express_angelleye', 'wc_gateway_paypal_pro_angelleye', 'wc_gateway_paypal_pro_payflow_angelleye')) && !get_user_meta(get_current_user_id(), 'ignore_pp_donate') ) {
+            if (@$_GET['page']=='wc-settings' && @$_GET['tab']=='checkout' && in_array( @$_GET['section'], array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'braintree', 'paypal_advanced', 'paypal_credit_card_rest')) && !get_user_meta(get_current_user_id(), 'ignore_pp_donate') ) {
                 ?>
                 <div class="updated welcome-panel notice" id="paypal-for-woocommerce-donation">
                     <div style="float:left; margin: 19px 16px 19px 0;" id="plugin-icon-paypal-for-woocommerce" ></div>
@@ -490,275 +489,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
        
-               
-
-
-        public static function calculate($order, $send_items = false){
-            $PaymentOrderItems = array();
-            $ctr = $giftwrapamount = $total_items = $total_discount = $total_tax = $shipping = 0;
-            $ITEMAMT = 0;
-            if ($order) {
-                $order_total = $order->get_total();
-                $items = $order->get_items();
-                /*
-                * Set shipping and tax values.
-                */
-                if (get_option('woocommerce_prices_include_tax') == 'yes') {
-                    $shipping = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax();
-                    $tax = 0;
-                } else {
-                    $shipping = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total();
-                    $tax = $order->get_total_tax();
-                }
-                if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
-                    $tax = $order->get_total_tax();
-                }
-            }
-            else {
-                //if empty order we get data from cart
-                $order_total = WC()->cart->total;
-                $items = WC()->cart->get_cart();
-                /**
-                 * Get shipping and tax.
-                 */
-                if(get_option('woocommerce_prices_include_tax' ) == 'yes')
-                {
-                    $shipping 		= WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
-                    $tax			= 0;
-                }
-                else
-                {
-                    $shipping 		= WC()->cart->shipping_total;
-                    $tax 			= WC()->cart->get_taxes_total();
-                }
-                if('yes' === get_option( 'woocommerce_calc_taxes' ) && 'yes' === get_option( 'woocommerce_prices_include_tax' )) {
-                    $tax = WC()->cart->get_taxes_total();
-                }
-            }
-            if ($send_items) {
-                foreach ($items as $item) {
-                    /*
-                     * Get product data from WooCommerce
-                     */
-                    if ($order) {
-                        $product = $order->get_product_from_item($item);
-                        $sku = null;
-                        if (is_object($product)) {
-                            $sku = $product->get_sku();
-                        }
-                        if( empty($item['name']) ) {
-                            $name = 'Item';
-                        } else {
-                            $name = $item['name'];
-                        }
-                        $name = self::clean_product_title($name);
-                        $qty = absint($item['quantity']);
-                    } else {
-                        if (version_compare(WC_VERSION, '3.0', '<')) {
-                            $product = $item['data'];
-                            $name = $item['data']->post->post_title;
-                        } else {
-                            $product = $item['data'];
-                            $name = $product->get_name();
-                        }
-                        $name = self::clean_product_title($name);
-                        $sku = null;
-                        if (is_object($product)) {
-                            $sku = $product->get_sku();
-                        }
-                        $qty = absint($item['quantity']);
-                    }
-                    
-                    $Item = array(
-                        'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'paypal-for-woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ), // Item name. 127 char max.
-                        'desc' => '', // Item description. 127 char max.
-                        'amt' => self::number_format(self::round( $item['line_subtotal'] / $qty)), // Cost of item.
-                        'number' => $sku, // Item number.  127 char max.
-                        'qty' => $qty, // Item qty on order.  Any positive integer.
-                    );
-                    array_push($PaymentOrderItems, $Item);
-                    $ITEMAMT += self::round( $item['line_subtotal'] / $qty ) * $qty;
-                }
-                /**
-                 * Add custom Woo cart fees as line items
-                 */
-                if ($order){
-                    foreach ($order->get_fees() as $fee_item_id => $fee_item) {
-                        $Item = array(
-                            'name' => $fee_item->get_name(), // Item name. 127 char max.
-                            'desc' => '', // Item description. 127 char max.
-                            'amt' => wc_format_decimal( $order->get_line_total( $fee_item ), 2 ), // Cost of item.
-                            'number' => $fee_item_id, // Item number. 127 char max.
-                            'qty' => 1, // Item qty on order. Any positive integer.
-                        );
-                        if ($Item['number'] != 'gift-wrap') {
-                            array_push($PaymentOrderItems, $Item);
-                            $ITEMAMT += self::round($Item['amt']);
-                        } else {
-                            $giftwrapamount = self::round($Item['amt']);
-                        }
-                        $ctr++;
-                    }
-                } else {
-                    foreach (WC()->cart->get_fees() as $fee) {
-                        $Item = array(
-                            'name' => $fee->name, // Item name. 127 char max.
-                            'desc' => '', // Item description. 127 char max.
-                            'amt' => self::number_format($fee->amount, 2, '.', ''), // Cost of item.
-                            'number' => $fee->id, // Item number. 127 char max.
-                            'qty' => 1, // Item qty on order. Any positive integer.
-                        );
-                        if ($Item['number'] != 'gift-wrap') {
-                            array_push($PaymentOrderItems, $Item);
-                            $ITEMAMT += self::round($fee->amount);
-                        } else {
-                            $giftwrapamount = self::round($fee->amount);
-                        }
-                        $ctr++;
-                    }
-                }
-                //caculate discount
-                if ($order){
-                    if (!AngellEYE_Gateway_Paypal::is_wc_version_greater_2_3()) {
-                        if ($order->get_cart_discount() > 0) {
-                            foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
-                                $Item = array(
-                                    'name' => 'Cart Discount',
-                                    'number' => $code,
-                                    'qty' => '1',
-                                    'amt' => '-' . self::number_format(WC()->cart->coupon_discount_amounts[$code])
-                                );
-                                array_push($PaymentOrderItems, $Item);
-                            }
-                            $total_discount -= $order->get_cart_discount();
-                        }
-                        if ($order->get_order_discount() > 0) {
-                            foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
-                                $Item = array(
-                                    'name' => 'Order Discount',
-                                    'number' => $code,
-                                    'qty' => '1',
-                                    'amt' => '-' . self::number_format(WC()->cart->coupon_discount_amounts[$code])
-                                );
-                                array_push($PaymentOrderItems, $Item);
-                            }
-                            $total_discount -= $order->get_order_discount();
-                        }
-                    } else {
-                        if ($order->get_total_discount() > 0) {
-                            $Item = array(
-                                'name'      => 'Total Discount',
-                                'qty'       => 1,
-                                'amt'       => - self::number_format($order->get_total_discount()),
-                                'number'    => implode(", ", $order->get_used_coupons())
-                            );
-                            array_push($PaymentOrderItems, $Item);
-                            $total_discount -= $order->get_total_discount();
-                        }
-                    }
-                } else {
-                    if ( !empty( WC()->cart->applied_coupons ) ) {
-                        foreach (WC()->cart->get_coupons('cart') as $code => $coupon) {
-                            $Item = array(
-                                'name' => 'Cart Discount',
-                                'qty' => '1',
-                                'number'=> $code,
-                                'amt' => '-' . self::number_format(WC()->cart->coupon_discount_amounts[$code])
-                            );
-                            array_push($PaymentOrderItems, $Item);
-                            $total_discount -= self::number_format(WC()->cart->coupon_discount_amounts[$code]);
-                        }
-                    }
-                    if (!AngellEYE_Gateway_Paypal::is_wc_version_greater_2_3()) {
-                        if ( !empty( WC()->cart->applied_coupons ) ) {
-                            foreach (WC()->cart->get_coupons('order') as $code => $coupon) {
-                                $Item = array(
-                                    'name' => 'Order Discount',
-                                    'qty' => '1',
-                                    'number'=> $code,
-                                    'amt' => '-' . self::number_format(WC()->cart->coupon_discount_amounts[$code])
-                                );
-                                array_push($PaymentOrderItems, $Item);
-                                $total_discount -= self::number_format(WC()->cart->coupon_discount_amounts[$code]);
-                            }
-                        }
-                    }
-                }
-            }
-            if( $tax > 0) {
-                $tax = self::number_format($tax);
-            }
-            if( $shipping > 0) {
-                $shipping = self::number_format($shipping);
-            }
-            if( $total_discount ) {
-                $total_discount = self::round($total_discount);
-            }
-            if (empty($ITEMAMT)) {
-                $cart_fees = WC()->cart->get_fees();
-                if( isset($cart_fees[0]->id) && $cart_fees[0]->id == 'gift-wrap' ) {
-                    $giftwrapamount = isset($cart_fees[0]->amount)  ? $cart_fees[0]->amount : 0;
-                } else {
-                    $giftwrapamount = 0;
-                }
-                $Payment['itemamt'] = $order_total - $tax - $shipping - $giftwrapamount;
-            } else {
-                $Payment['itemamt'] = self::number_format($ITEMAMT + $total_discount);
-            }
-            /*
-             * Set tax
-             */
-            if ($tax > 0) {
-                $Payment['taxamt'] = self::number_format($tax);       // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
-            } else {
-                $Payment['taxamt'] = 0;
-            }
-            /*
-             * Set shipping
-             */
-            if ($shipping > 0) {
-                $Payment['shippingamt'] = self::number_format($shipping);      // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
-            } else {
-                $Payment['shippingamt'] = 0;
-            }
-            $Payment['order_items'] = $PaymentOrderItems;
-            // Rounding amendment
-            if (trim(self::number_format($order_total)) !== trim(self::number_format($Payment['itemamt'] + $giftwrapamount + $tax + $shipping))) {
-                $diffrence_amount = AngellEYE_Gateway_Paypal::get_diffrent($order_total, $Payment['itemamt'] + $tax + $shipping);
-                if($shipping > 0) {
-                    $Payment['shippingamt'] = abs(self::number_format($shipping + $diffrence_amount));
-                } elseif ($tax > 0) {
-                    $Payment['taxamt'] = abs(self::number_format($tax + $diffrence_amount));
-                } else {
-                    //make change to itemamt
-                    $Payment['itemamt'] = abs(self::number_format($Payment['itemamt'] + $diffrence_amount));
-                    //also make change to the first item
-                    if ($send_items) {
-                        $Payment['order_items'][0]['amt'] = abs(self::number_format($Payment['order_items'][0]['amt'] + $diffrence_amount / $Payment['order_items'][0]['qty']));
-                    }
-                }
-            }
-            return $Payment;
-        }
-
-        public static function get_diffrent($amout_1, $amount_2) {
-            $diff_amount = $amout_1 - $amount_2;
-            return $diff_amount;
-        }
-        public static function cut_off($number) {
-            $parts = explode(".", $number);
-            $newnumber = $parts[0] . "." . $parts[1][0] . $parts[1][1];
-            return $newnumber;
-        }
-
-        public static function is_wc_version_greater_2_3() {
-            return AngellEYE_Gateway_Paypal::get_wc_version() && version_compare(AngellEYE_Gateway_Paypal::get_wc_version(), '2.3', '>=');
-        }
-
-        public static function get_wc_version() {
-            return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
-        }
-
         /**
          * Check if site is SSL ready
          *
@@ -1323,6 +1053,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
             return apply_filters( 'woocommerce_enable_guest_checkout', $return);
         }
+        
         public function angelleye_braintree_decrypt_gateway_api($bool) {
             global $wpdb;
             $row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_braintree_settings' ) );

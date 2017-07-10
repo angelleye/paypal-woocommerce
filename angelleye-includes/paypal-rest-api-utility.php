@@ -50,6 +50,13 @@ class PayPal_Rest_API_Utility {
             $this->rest_client_id = $this->gateway->get_option('rest_client_id', false);
             $this->rest_secret_id = $this->gateway->get_option('rest_secret_id', false);
         }
+        
+        if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+        } else {
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+        }
     }
 
     /**
@@ -238,7 +245,8 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_item($order) {
-        $this->payment_data = AngellEYE_Gateway_Paypal::calculate($order, $this->send_items);
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->payment_data = $this->calculation_angelleye->order_calculation($order_id);
         foreach ($this->payment_data['order_items'] as $item) {
             $this->item = new Item();
             $this->item->setName($item['name']);

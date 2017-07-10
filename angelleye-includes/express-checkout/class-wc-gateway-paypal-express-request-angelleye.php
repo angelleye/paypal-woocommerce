@@ -203,6 +203,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($this->paypal_response, $order, $this->gateway->payment_action);
             }
             if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
+                $post_data = WC()->session->get('post_data');
+                if( empty($post_data) ) {
+                    apply_filters( 'woocommerce_payment_successful_result', array('result' => 'success'), $order_id );
+                }
+                do_action( 'woocommerce_before_pay_action', $order );
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
                 $this->angelleye_ec_save_billing_agreement($order_id);
@@ -243,6 +248,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 wp_redirect($this->gateway->get_return_url($order));
                 exit();
             } elseif ($this->response_helper->ec_is_response_successwithwarning($this->paypal_response)) {
+                $post_data = WC()->session->get('post_data');
+                if( empty($post_data) ) {
+                    apply_filters( 'woocommerce_payment_successful_result', array('result' => 'success'), $order_id );
+                }
+                do_action( 'woocommerce_before_pay_action', $order );
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
                 $this->angelleye_ec_save_billing_agreement($order_id);
@@ -280,7 +290,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     update_post_meta($order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                 }
 
-                $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']));
+                $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']));
                 
                 WC()->cart->empty_cart();
                 wc_clear_notices();
@@ -519,7 +529,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         } elseif (!empty($post_data['shipping_last_name'])) {
                             $shiptoname = $post_data['shipping_last_name'];
                         }
-                        $Payment['shiptoname'] = $shiptoname;
+                        
+                        if( !empty($post_data['shipping_company']) ) {
+                            $shipping_company = $post_data['shipping_company'];
+                            $Payment['shiptoname'] = $shipping_company .' - '. $shiptoname;
+                        } else {
+                            $Payment['shiptoname'] = $shiptoname;
+                        }
+                        
                         $Payment['shiptostreet'] = !empty($post_data['shipping_address_1']) ? $post_data['shipping_address_1'] : '';
                         $Payment['shiptostreet2'] = !empty($post_data['shipping_address_2']) ? $post_data['shipping_address_2'] : '';
                         $Payment['shiptocity'] = !empty($post_data['shipping_city']) ? wc_clean(stripslashes($post_data['shipping_city'])) : ''; 
@@ -535,7 +552,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         } elseif (!empty($post_data['billing_last_name'])) {
                             $shiptoname = $post_data['billing_last_name'];
                         }
-                        $Payment['shiptoname'] = $shiptoname;
+                        
+                        if( !empty($post_data['billing_company']) ) {
+                            $billing_company = $post_data['billing_company'];
+                            $Payment['shiptoname'] = $billing_company .' - '. $shiptoname;
+                        } else {
+                            $Payment['shiptoname'] = $shiptoname;
+                        }
+                        
                         $Payment['shiptostreet'] = !empty($post_data['billing_address_1']) ? $post_data['billing_address_1'] : '';
                         $Payment['shiptostreet2'] = !empty($post_data['billing_address_2']) ? $post_data['billing_address_2'] : ''; 
                         $Payment['shiptocity'] = !empty($post_data['billing_city']) ? wc_clean(stripslashes($post_data['billing_city'])) : ''; 
@@ -634,7 +658,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
                     $_paypal_billing_agreement = get_post_meta($product_id, '_paypal_billing_agreement', true);
                     $ec_save_to_account = WC()->session->get('ec_save_to_account');
-                    if ($_paypal_billing_agreement == 'yes' || ( isset($ec_save_to_account) && $ec_save_to_account == 'on') || AngellEYE_Utility::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
+                    if ($_paypal_billing_agreement == 'yes' || ( isset($ec_save_to_account) && $ec_save_to_account == 'on') || AngellEYE_Utility::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() || AngellEYE_Utility::is_cart_contains_subscription() == true) {
                         $BillingAgreements = array();
                         $Item = array(
                             'l_billingtype' => '',
@@ -808,7 +832,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $error_display_type_message = sprintf(__('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce'));
         }
         $error_display_type_message = apply_filters('ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg);
-        wc_add_notice($error_display_type_message, 'error');
+        if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+             wc_add_notice($error_display_type_message, 'error');
+        }
     }
 
     public function angelleye_write_paypal_request_log($paypal_action_name) {
@@ -828,7 +854,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_ec_load_customer_data_using_ec_details() {
         if (!empty($this->paypal_response['SHIPTOCOUNTRYCODE'])) {
             if (!array_key_exists($this->paypal_response['SHIPTOCOUNTRYCODE'], WC()->countries->get_allowed_countries())) {
-                wc_add_notice(sprintf(__('We do not sell in your country, please try again with another address.', 'paypal-for-woocommerce')), 'error');
+                if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                     wc_add_notice(sprintf(__('We do not sell in your country, please try again with another address.', 'paypal-for-woocommerce')), 'error');
+                }
                 wp_redirect(get_permalink(wc_get_page_id('cart')));
                 exit;
             }
@@ -1031,7 +1059,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             $this->gateway->process_refund($order_id, $order->get_total(), __('There was a problem processing your order. Please contact customer support.', 'paypal-for-woocommerce'));
             $order->update_status('cancelled');
-            wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
+            if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                 wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
+            }
             wp_redirect(get_permalink(wc_get_page_id('cart')));
             exit();
         }
@@ -1120,6 +1150,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $this->must_create_account = $this->enable_guest_checkout || is_user_logged_in() ? false : true;
         $force_to_display_checkout_page = true;
         if ($this->must_create_account) {
+            return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
+        }
+        if(AngellEYE_Utility::is_cart_contains_subscription() == true) {
             return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
         }
         $paypal_express_terms = WC()->session->get('paypal_express_terms');
