@@ -1224,22 +1224,22 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 } elseif ($PayPalResult['L_ERRORCODE0'] == '10574') {
                     $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
                     $order->add_order_note('ERROR MESSAGE: ' . $error);
-                    $order->payment_complete($PayPalResult['TRANSACTIONID']);
+                    $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
                 } elseif (!empty($PayPalResult['L_ERRORCODE0'])) {
                     $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
                     $order->add_order_note('ERROR MESSAGE: ' . $error);
                     $order->update_status('on-hold', $error);
                 } else {
-                    $order->payment_complete($PayPalResult['TRANSACTIONID']);
+                    $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
                 }
             } else {
-                $order->payment_complete($PayPalResult['TRANSACTIONID']);
+                $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
             }
             
             if ($this->payment_action == "Authorization") {
                 if ($old_wc) {
                     update_post_meta($order_id, '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
-            } else {
+                } else {
                     update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
                 }
                 $payment_order_meta = array('_transaction_id' => $PayPalResult['TRANSACTIONID'], '_payment_action' => $this->payment_action);
@@ -1247,7 +1247,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                 $angelleye_utility = new AngellEYE_Utility(null, null);
                 $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['TRANSACTIONID']);
-                $order->payment_complete($PayPalResult['TRANSACTIONID']);
+                $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
                 $order->add_order_note('Payment Action: ' . $this->payment_action);
             }
 
@@ -1958,6 +1958,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
     }
 
+    public function angelleye_update_status($order, $transaction_id ) {
+        if( $this->payment_action == 'Sale') {
+            $order->payment_complete($transaction_id);
+        } else {
+            $order->update_status('on-hold');
+        }
+    }
     
     
 }
