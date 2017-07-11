@@ -64,6 +64,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->softdescriptor_value = $this->get_option('softdescriptor', '');
         $this->softdescriptor = $this->get_softdescriptor();
+        $this->fraud_tool = $this->get_option('fraud_tool', 'basic');
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
@@ -73,6 +74,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         add_action('admin_notices', array($this, 'checks'));
         add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_braintree_credit_card_form_fields'), 10, 2);
         $this->customer_id;
+        if( $this->fraud_tool == 'advanced' ) {
+            add_filter( 'clean_url', array( $this, 'adjust_fraud_script_tag' ) );
+            add_action( 'wp_print_footer_scripts', array( $this, 'render_fraud_js' ), 1 );
+        }
     }
 
     /**
@@ -292,6 +297,22 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'hidden',
                 'default' => 'yes',
                 'class' => ''
+            ),
+            'advanced' => array(
+		'title'       => __( 'Fraud Settings', 'paypal-for-woocommerce' ),
+		'type'        => 'title',
+		'description' => '',
+            ),
+            'fraud_tool' => array(
+                'title'    => __( 'Fraud Tool', 'paypal-for-woocommerce' ),
+                'type'     => 'select',
+                'class'    => 'js-fraud-tool',
+                'default'     => 'basic',
+                'desc_tip' => __( 'Select the fraud tool you want to use. Basic is enabled by default and requires no additional configuration. Advanced requires you to enable advanced fraud tools in your Braintree control panel. To use Kount Direct you must contact Braintree support.', 'paypal-for-woocommerce' ),
+                'options'  => array(
+                                'basic'    => __( 'Basic', 'paypal-for-woocommerce' ),
+                                'advanced' => __( 'Advanced', 'paypal-for-woocommerce' ),
+                            )
             )
         );
     }
@@ -413,9 +434,12 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }
                 function braintreeResponseHandler(obj) {
                     var $form = jQuery('form.checkout, #order_review, #add_payment_method'),
-                            ccForm = jQuery('#braintree-cc-form');
+                    ccForm = jQuery('#braintree-cc-form');
                     if (obj.nonce) {
                         jQuery('.woocommerce-error, .braintree-token', ccForm).remove();
+                        if(jQuery('#device_data').length){
+                            ccForm.append('<input type="hidden" id="device_data" name="device_data" value="' + jQuery('#device_data').val() + '"/>');
+                        }
                         ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + obj.nonce + '"/>');
                         $form.submit();
                     }
@@ -520,6 +544,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     'postalCode' => $billing_postcode,
                     'countryCodeAlpha2' => $billing_country,
                 );
+                
+                if( $this->fraud_tool == 'advanced' ) {
+                    $device_data = self::get_posted_variable('device_data');
+                    if( !empty($device_data) ) {
+                        $device_data = wp_unslash( $device_data );
+                        $request_data['deviceData'] = $device_data;
+                    }
+                }
 
                 $request_data['shipping'] = array(
                     'firstName' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name(),
@@ -631,13 +663,17 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }
 
                 if (!$this->response->success) {
+                    if( $this->has_risk_data() ) {
+                        $order->add_order_note(sprintf(__('Risk decision for this transaction %s, Risk ID for this transaction: %s', 'paypal-for-woocommerce'), $this->get_risk_decision(), $this->get_risk_id()));
+                        update_post_meta($order_id, 'risk_id', $this->get_risk_id());
+                        update_post_meta($order_id, 'risk_decision', $this->get_risk_decision());
+                    } 
                     $notice = sprintf(__('Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'paypal-for-woocommerce'), $this->response->message);
                     wc_add_notice($notice, 'error');
                     $this->add_log("Error: Unable to complete transaction. Reason: {$this->response->message}");
                     $order->add_order_note("Error: Unable to complete transaction. Reason: {$this->response->message}");
                     return $success = false;
                 }
-
                 $this->add_log('Braintree_Transaction::sale Response code: ' . print_r($this->get_status_code(), true));
                 $this->add_log('Braintree_Transaction::sale Response message: ' . print_r($this->get_status_message(), true));
 
@@ -1026,7 +1062,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             return;
         }
         if ($this->enable_braintree_drop_in) {
-            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/js/braintree-2.29.0.min.js', array(), WC_VERSION, false);
+            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/v2/braintree.js', array(), WC_VERSION, false);
+        }
+        if( $this->fraud_tool == 'advanced' ) {
+            wp_enqueue_script( 'braintree-data', 'https://js.braintreegateway.com/v1/braintree-data.js', array( 'braintree-gateway' ), WC_VERSION, true );
         }
     }
 
@@ -1569,4 +1608,50 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         return '';
     }
+    
+    public function adjust_fraud_script_tag( $url ) {
+        if (strpos($url, 'braintree-data.js') !== false) {
+            $url = "{$url}' async='true";
+        }
+        return $url;
+    }
+    
+    public function render_fraud_js() {
+        $environment = 'BraintreeData.environments.' . $this->environment;
+            
+           ?>
+            <script>
+                jQuery( function ( $ ) {
+                    var form_id;
+                	if ( $( 'form.checkout' ).length ) {
+                            form_id = $( 'form.checkout' ).attr( 'id' ) || 'checkout';
+                            if ( 'checkout' === form_id ) {
+                                $( 'form.checkout' ).attr( 'id', form_id );
+                            }
+
+                        } else if ( $( 'form#order_review' ).length ) {
+                            form_id = 'order_review'
+                        } else if ( $( 'form#add_payment_method' ).length ) {
+                            form_id = 'add_payment_method'
+                        }
+                        if ( !form_id ) {
+                            return;
+                        }
+                        window.onBraintreeDataLoad = function () {
+                                BraintreeData.setup( '<?php echo esc_js( $this->merchant_id ); ?>', form_id, <?php echo esc_js( $environment ); ?> );
+                        }
+		} );
+		</script>
+		<?php
+	}
+        
+        public function has_risk_data() {
+            return isset( $this->response->transaction->riskData );
+	}
+	public function get_risk_id() {
+            return ! empty( $this->response->transaction->riskData->id ) ? $this->response->transaction->riskData->id : null;
+	}
+	public function get_risk_decision() {
+            return ! empty( $this->response->transaction->riskData->decision ) ? $this->response->transaction->riskData->decision : null;
+	}
 }
