@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($){
-    if (angelleye_frontend.is_product == "yes"){
+    if (angelleye_frontend.is_product == "yes" && angelleye_frontend.enable_in_context_checkout_flow == 'no'){
         jQuery("#paypal_ec_button_product input, input.single_variation_wrap_angelleye").click(function(){
        		if (!$('.woocommerce-variation-add-to-cart').hasClass('woocommerce-variation-add-to-cart-disabled')) {
 	            $( '.cart' ).block({

@@ -65,7 +65,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->api_signature = !empty($this->setting['api_signature']) ? $this->setting['api_signature'] : '';
             }
             $this->angelleye_skip_text = !empty($this->setting['angelleye_skip_text']) ? $this->setting['angelleye_skip_text'] : 'Skip the forms and pay faster with PayPal!';
-            add_action('woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'));
+            add_action('woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'), 10);
             if($this->save_abandoned_checkout == false) {
                 if (version_compare(WC_VERSION, '3.0', '<')) {
                     add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 1);
@@ -95,7 +95,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_filter( 'woocommerce_coupons_enabled', array($this, 'angelleye_woocommerce_coupons_enabled'), 10, 1);
             add_action( 'woocommerce_cart_shipping_packages', array( $this, 'maybe_add_shipping_information' ) );
             add_action( 'admin_notices', array($this, 'angelleye_billing_agreement_notice') );
-            add_action( 'wc_ajax_wc_ppec_update_shipping_costs', array( $this, 'wc_ajax_update_shipping_costs' ) );
+            add_action( 'wc_ajax_wc_angeleye_ppec_update_shipping_costs', array( $this, 'wc_ajax_update_shipping_costs' ) );
+            add_filter( 'clean_url', array( $this, 'angelleye_in_content_js' ) );
+            add_action( 'wc_ajax_angelleye_ajax_generate_cart', array( $this, 'angelleye_ajax_generate_cart' ) );
             if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
                 if ($this->button_position == 'bottom' || $this->button_position == 'both') {
                     add_action('woocommerce_proceed_to_checkout', array($this, 'woocommerce_paypal_express_checkout_button_angelleye'), 22);
@@ -413,7 +415,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_enqueue_scripts_product_page() {
         try {
-            if($this->enable_in_context_checkout_flow === 'yes' && !is_product()) {
+            if($this->enable_in_context_checkout_flow === 'yes' ) {
                 wp_enqueue_script( 'angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array(), null, true );
                 wp_enqueue_script( 'angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.js', array( 'jquery' ), $this->version, true );
                 wp_localize_script( 'angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param',
@@ -423,8 +425,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                                 'locale'      => ($this->use_wp_locale_code === 'yes' && get_locale() != '') ? get_locale() : '',
                                 'start_flow'  => esc_url( add_query_arg( array( 'startcheckout' => 'true' ), wc_get_page_permalink( 'cart' ) ) ),
                                 'show_modal'  => apply_filters( 'woocommerce_paypal_express_checkout_show_cart_modal', true ),
-                                'update_shipping_costs_nonce' => wp_create_nonce( '_wc_ppec_update_shipping_costs_nonce' ),
-                                'ajaxurl'     => WC_AJAX::get_endpoint( 'wc_ppec_update_shipping_costs' ),
+                                'update_shipping_costs_nonce' => wp_create_nonce( '_wc_angeleye_ppec_update_shipping_costs_nonce' ),
+                                'ajaxurl'     => WC_AJAX::get_endpoint( 'wc_angeleye_ppec_update_shipping_costs' ),
+                                'generate_cart_nonce' => wp_create_nonce( '_angelleye_generate_cart_nonce' ),
+                                'add_to_cart_ajaxurl'             => WC_AJAX::get_endpoint( 'angelleye_ajax_generate_cart' ),
+                                'is_product' => is_product()? "yes" : "no",
+				
                         )
                 );
             }
@@ -455,7 +461,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if ($this->button_position == 'top' || $this->button_position == 'both') {
                 do_action('angelleye_ec_before_top_cart_button', $this);
                 $top_cart_button_html .= '<div class="wc-proceed-to-checkout angelleye_cart_button">';
-                $top_cart_button_html .= $this->woocommerce_paypal_express_checkout_button_angelleye($return = true);
+                $top_cart_button_html .= $this->woocommerce_paypal_express_checkout_button_angelleye($return = true, 'top');
                 $top_cart_button_html .= '</div>';
                 echo apply_filters('angelleye_ec_top_cart_button', $top_cart_button_html);
                 do_action('angelleye_ec_after_top_cart_button', $this);                
@@ -473,7 +479,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
           }
      }
 
-    public function woocommerce_paypal_express_checkout_button_angelleye($return = false) {
+    public function woocommerce_paypal_express_checkout_button_angelleye($return = false, $possition = null) {
         if (!defined('WOOCOMMERCE_CHECKOUT')) {
             define('WOOCOMMERCE_CHECKOUT', true);
         }
@@ -484,6 +490,15 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if (!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
             return false;
         }
+        
+        if($possition == 'top') {
+            $class_top = 'paypal_checkout_button_top';
+            $class_cc_top = 'paypal_checkout_button_cc_top';
+        } else {
+            $class_top = 'paypal_checkout_button_bottom';
+            $class_cc_top = 'paypal_checkout_button_cc_bottom';
+        }
+        
         if ($this->enabled == 'yes' && $this->show_on_cart == 'yes' && 0 < WC()->cart->total) {
             $cart_button_html = '';
             if($return == false) {
@@ -491,21 +506,21 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             switch ($this->checkout_with_pp_button_type) {
                 case 'textbutton':
-                    $cart_button_html .= '<a   class="paypal_checkout_button button alt ec_checkout_page_button_type_textbutton" href="' . esc_url(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">' . $this->pp_button_type_text_button . '</a>';
+                    $cart_button_html .= '<a class="paypal_checkout_button button '.$class_top.' alt ec_checkout_page_button_type_textbutton" href="' . esc_url(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">' . $this->pp_button_type_text_button . '</a>';
                     break;
                 case 'paypalimage':
-                    $cart_button_html .= '<a  class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
+                    $cart_button_html .= '<a class="paypal_checkout_button '.$class_top.'" href="' . esc_url(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
                     $cart_button_html .= '<img src=' . WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage() . ' class="ec_checkout_page_button_type_paypalimage"  align="top" alt="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '" />';
                     $cart_button_html .= "</a>";
                     break;
                 case 'customimage':
-                    $cart_button_html .= '<a  class="paypal_checkout_button" href="' . esc_url(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
+                    $cart_button_html .= '<a class="paypal_checkout_button '.$class_top.'" href="' . esc_url(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">';
                     $cart_button_html .= '<img src="' . $this->pp_button_type_my_custom . '" class="ec_checkout_page_button_type_customimage" align="top" alt="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '" />';
                     $cart_button_html .= "</a>";
                     break;
             }
             if ($this->show_paypal_credit == 'yes') {
-                $paypal_credit_button_markup = '<a  class="paypal_checkout_button paypal_checkout_button_cc" href="' . esc_url(add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))))) . '" >';
+                $paypal_credit_button_markup = '<a class="paypal_checkout_button '.$class_cc_top.'" href="' . esc_url(add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))))) . '" >';
                 $paypal_credit_button_markup .= '<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png" width="148" height="26" class="ppcreditlogo ec_checkout_page_button_type_pc"  align="top" alt="' . __('Check out with PayPal Credit', 'paypal-for-woocommerce') . '" />';
                 $paypal_credit_button_markup .= '</a>';
                 $cart_button_html .= $paypal_credit_button_markup;
@@ -686,18 +701,61 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
     
     public function wc_ajax_update_shipping_costs() {
-		if ( ! wp_verify_nonce( $_POST['nonce'], '_wc_ppec_update_shipping_costs_nonce' ) ) {
-			wp_die( __( 'Cheatin&#8217; huh?', 'woocommerce-gateway-paypal-express-checkout' ) );
-		}
+        if ( ! wp_verify_nonce( $_POST['nonce'], '_wc_angeleye_ppec_update_shipping_costs_nonce' ) ) {
+            wp_die( __( 'Cheatin&#8217; huh?', 'woocommerce-gateway-paypal-express-checkout' ) );
+        }
+        if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
+            define( 'WOOCOMMERCE_CART', true );
+        }
+        WC()->shipping->reset_shipping();
+        WC()->cart->calculate_totals();
+        if( !empty($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == true ) {
+            WC()->session->set( 'ec_save_to_account', 'on');
+        }
+        wp_send_json( new stdClass() );
+    }
+        
+    public function angelleye_ajax_generate_cart() {
+        global $post;
+        if ( ! wp_verify_nonce( $_POST['nonce'], '_angelleye_generate_cart_nonce' ) ) {
+            wp_die( __( 'Cheatin&#8217; huh?', 'woocommerce-gateway-paypal-express-checkout' ) );
+        }
+        if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
+            define( 'WOOCOMMERCE_CART', true );
+        }
+        if (!defined('WOOCOMMERCE_CHECKOUT')) {
+            define('WOOCOMMERCE_CHECKOUT', true);
+        }
+        WC()->shipping->reset_shipping();
+        if ( is_product() ) {
+            $product = wc_get_product( $post->ID );
+            $qty     = ! isset( $_POST['qty'] ) ? 1 : absint( $_POST['qty'] );
+            if ( $product->is_type( 'variable' ) ) {
+                $attributes = array_map( 'wc_clean', $_POST['attributes'] );
+                if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
+                    $variation_id = $product->get_matching_variation( $attributes );
+                } else {
+                    $data_store = WC_Data_Store::load( 'product' );
+                    $variation_id = $data_store->find_matching_product_variation( $product, $attributes );
+                }
+                WC()->cart->add_to_cart( $product->get_id(), $qty, $variation_id, $attributes );
+            } elseif ( $product->is_type( 'simple' ) ) {
+                WC()->cart->add_to_cart( $product->get_id(), $qty );
+            }
+            WC()->cart->calculate_totals();
+        }
+        $url = esc_url_raw(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
+        if( !empty($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == true ) {
+            $url = add_query_arg( 'ec_save_to_account', 'true', $url );
+        }
+        
+        wp_send_json( array('url' => $url) );
+    }
 
-		if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
-			define( 'WOOCOMMERCE_CART', true );
-		}
-
-		WC()->shipping->reset_shipping();
-
-		WC()->cart->calculate_totals();
-
-		wp_send_json( new stdClass() );
-	}
+    public function angelleye_in_content_js($url) {
+        if (strpos($url, 'checkout.js') !== false) {
+            $url = "{$url}' async";
+        }
+        return $url;
+    }
 }
