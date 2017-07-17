@@ -344,13 +344,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if( !empty($post) ) {
                 $_enable_ec_button = get_post_meta($post->ID, '_enable_ec_button', true);
             }
+            $enable_in_context_checkout_flow = !empty($pp_settings['enable_in_context_checkout_flow']) ? $pp_settings['enable_in_context_checkout_flow'] : 'no';
             wp_register_script( 'angelleye_frontend', plugins_url( '/assets/js/angelleye-frontend.js' , __FILE__ ), array( 'jquery' ), WC_VERSION, true );
             $translation_array = array(
                 'is_product' => is_product()? "yes" : "no",
                 'is_cart' => is_cart()? "yes":"no",
                 'is_checkout' => is_checkout()? "yes":"no",
                 'three_digits'  => __('3 digits usually found on the signature strip.', 'paypal-for-woocommerce'),
-                'four_digits'  => __('4 digits usually found on the front of the card.', 'paypal-for-woocommerce')
+                'four_digits'  => __('4 digits usually found on the front of the card.', 'paypal-for-woocommerce'),
+                'enable_in_context_checkout_flow' => $enable_in_context_checkout_flow
             );
             wp_localize_script( 'angelleye_frontend', 'angelleye_frontend', $translation_array );
             wp_enqueue_script('angelleye_frontend');

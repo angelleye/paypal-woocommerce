@@ -62,28 +62,23 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             }
 
             $this->supports = array(
+                'subscriptions',
                 'products',
-                'refunds'
+                'refunds',
+                'subscription_cancellation',
+                'subscription_reactivation',
+                'subscription_suspension',
+                'subscription_amount_changes',
+                'subscription_payment_method_change', // Subs 1.n compatibility.
+                'subscription_payment_method_change_customer',
+                'subscription_payment_method_change_admin',
+                'subscription_date_changes',
+                'multiple_subscriptions',
             );
 
             $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
             if($this->enable_tokenized_payments == 'yes') {
-                $this->supports = array(
-                    'subscriptions',
-                    'products',
-                    'refunds',
-                    'subscription_cancellation',
-                    'subscription_reactivation',
-                    'subscription_suspension',
-                    'subscription_amount_changes',
-                    'subscription_payment_method_change', // Subs 1.n compatibility.
-                    'subscription_payment_method_change_customer',
-                    'subscription_payment_method_change_admin',
-                    'subscription_date_changes',
-                    'multiple_subscriptions',
-                    'add_payment_method',
-                    'tokenization'
-                );
+                $this->supports = array_merge($this->supports, array('add_payment_method','tokenization'));
             }
 
             $this->softdescriptor = $this->get_option('softdescriptor', '');
@@ -723,6 +718,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 do_action('before_save_payment_token', $order_id);   
                 if(AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                     $TRANSACTIONID = $PayPalResult['PNREF'];
+                    $this->save_payment_token($order, $TRANSACTIONID);
                     $this->are_reference_transactions_enabled($TRANSACTIONID);
                     if( !empty($_POST['wc-'.$this->id.'-payment-token']) && $_POST['wc-'.$this->id.'-payment-token'] != 'new' ) {
                         $token_id = wc_clean( $_POST['wc-'.$this->id.'-payment-token'] );
@@ -842,7 +838,16 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 echo '</p>';
             }
         }
-        parent::payment_fields();
+        if ( $this->supports( 'tokenization' ) && is_checkout() ) {
+            $this->tokenization_script();
+            $this->saved_payment_methods();
+            $this->form();
+            if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                $this->save_payment_method_checkbox();
+            }
+        } else {
+             $this->form();
+        }
         do_action('payment_fields_saved_payment_methods', $this);
     }
     

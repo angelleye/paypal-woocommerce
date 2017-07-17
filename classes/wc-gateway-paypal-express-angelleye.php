@@ -39,22 +39,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->init_settings();
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes') {
-            $this->supports = array(
-                'subscriptions',
-                'products',
-                'refunds',
-                'subscription_cancellation',
-                'subscription_reactivation',
-                'subscription_suspension',
-                'subscription_amount_changes',
-                'subscription_payment_method_change', // Subs 1.n compatibility.
-                'subscription_payment_method_change_customer',
-                'subscription_payment_method_change_admin',
-                'subscription_date_changes',
-                'multiple_subscriptions',
-                'add_payment_method',
-                'tokenization'
-            );
+            $this->supports = array_merge($this->supports, array('add_payment_method','tokenization'));
         }
         $this->enabled = $this->get_option('enabled');
         $this->title = $this->get_option('title');
@@ -613,6 +598,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __('If a buyer clicks to pay with PayPal, but they never return from PayPal, this will save the order as pending with all available details to that point.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
+            'enable_in_context_checkout_flow' => array(
+                'title' => __('Enable In-Context Checkout flow', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('The enhanced PayPal Express Checkout with In-Context gives your customers a simplified checkout experience that keeps them local to your website throughout the payment authorization process and enables them to use their PayPal balance, bank account, or credit card to pay without sharing or entering any sensitive information on your site.', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
+            
             'debug' => array(
                 'title' => __('Debug', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',

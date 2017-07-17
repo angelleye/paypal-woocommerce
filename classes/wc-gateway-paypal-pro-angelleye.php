@@ -122,27 +122,23 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->icon = apply_filters('woocommerce_paypal_pro_icon', $this->icon);
         $this->supports = array(
+            'subscriptions',
             'products',
-            'refunds'
+            'refunds',
+            'subscription_cancellation',
+            'subscription_reactivation',
+            'subscription_suspension',
+            'subscription_amount_changes',
+            'subscription_payment_method_change', // Subs 1.n compatibility.
+            'subscription_payment_method_change_customer',
+            'subscription_payment_method_change_admin',
+            'subscription_date_changes',
+            'multiple_subscriptions',
+            'add_payment_method',
         );
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if($this->enable_tokenized_payments == 'yes') {
-            $this->supports = array(
-                'subscriptions',
-                'products',
-                'refunds',
-                'subscription_cancellation',
-                'subscription_reactivation',
-                'subscription_suspension',
-                'subscription_amount_changes',
-                'subscription_payment_method_change', // Subs 1.n compatibility.
-                'subscription_payment_method_change_customer',
-                'subscription_payment_method_change_admin',
-                'subscription_date_changes',
-                'multiple_subscriptions',
-                'add_payment_method',
-                'tokenization'
-            );
+            $this->supports = array_merge($this->supports, array('add_payment_method','tokenization'));
         }
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         $this->credit_card_month_field = $this->get_option('credit_card_month_field', 'names');
@@ -482,7 +478,16 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 echo '</p>';
             }
         }
-        parent::payment_fields();
+       if ( $this->supports( 'tokenization' ) && is_checkout() ) {
+            $this->tokenization_script();
+            $this->saved_payment_methods();
+            $this->form();
+            if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                $this->save_payment_method_checkbox();
+            }
+        } else {
+             $this->form();
+        }
         do_action('payment_fields_saved_payment_methods', $this);
     }
 
