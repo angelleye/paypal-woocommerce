@@ -16,8 +16,18 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->secure_token_id = '';
         $this->securetoken = '';
         $this->supports = array(
+            'subscriptions',
             'products',
-            'refunds'
+            'refunds',
+            'subscription_cancellation',
+            'subscription_reactivation',
+            'subscription_suspension',
+            'subscription_amount_changes',
+            'subscription_payment_method_change', // Subs 1.n compatibility.
+            'subscription_payment_method_change_customer',
+            'subscription_payment_method_change_admin',
+            'subscription_date_changes',
+            'multiple_subscriptions',
         );
 
         // Load the form fields.
@@ -28,22 +38,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes' && !is_add_payment_method_page()) {
-            $this->supports = array(
-                'subscriptions',
-                'products',
-                'refunds',
-                'subscription_cancellation',
-                'subscription_reactivation',
-                'subscription_suspension',
-                'subscription_amount_changes',
-                'subscription_payment_method_change', // Subs 1.n compatibility.
-                'subscription_payment_method_change_customer',
-                'subscription_payment_method_change_admin',
-                'subscription_date_changes',
-                'multiple_subscriptions',
-                'add_payment_method',
-                'tokenization'
-            );
+            $this->supports = array_merge($this->supports, array('add_payment_method','tokenization'));
         }
         $this->enabled = 'yes' === $this->get_option('enabled', 'no');
         $this->title = $this->get_option('title');
@@ -578,20 +573,12 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             if (sizeof($order->get_items()) > 0 && $order->get_subtotal() > 0) {
                 foreach ($order->get_items() as $item) {
                     if ($item['qty']) {
-
                         $product = $order->get_product_from_item($item);
-
                         $item_name = $item['name'];
-
-                        //create order meta object and get the meta data as string
-                        $item_meta = new WC_order_item_meta($item['item_meta']);
-                        if ($length_error == 0 && $meta = $item_meta->display(true, true)) {
-                            $item_name .= ' (' . $meta . ')';
-                            $item_name = $this->paypal_advanced_item_name($item_name);
-                        }
                         $paypal_args['L_NAME' . $item_loop . '[' . strlen($item_name) . ']'] = $item_name;
-                        if ($product->get_sku())
+                        if (is_object($product)) {
                             $paypal_args['L_SKU' . $item_loop] = $product->get_sku();
+                        }
                         $paypal_args['L_QTY' . $item_loop] = $item['qty'];
                         $paypal_args['L_COST' . $item_loop] = $order->get_item_total($item, false, false); /* No Tax , No Round) */
                         $paypal_args['L_TAXAMT' . $item_loop] = $order->get_item_tax($item, false); /* No Round it */
@@ -930,9 +917,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if ($this->supports('tokenization') && is_checkout()) {
             $this->tokenization_script();
             $this->saved_payment_methods();
-            $this->save_payment_method_checkbox();
-            do_action('payment_fields_saved_payment_methods', $this);
+            if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                $this->save_payment_method_checkbox();
+            }
         }
+        do_action('payment_fields_saved_payment_methods', $this);
     }
 
     /**
@@ -1274,11 +1263,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     if ($item['qty']) {
                         $product = $order->get_product_from_item($item);
                         $item_name = $item['name'];
-                        $item_meta = new WC_order_item_meta($item['item_meta']);
-                        if ($length_error == 0 && $meta = $item_meta->display(true, true)) {
-                            $item_name .= ' (' . $meta . ')';
-                            $item_name = $this->paypal_advanced_item_name($item_name);
-                        }
                         $paypal_args['L_NAME' . $item_loop . '[' . strlen($item_name) . ']'] = $item_name;
                         if ($product->get_sku()) {
                             $paypal_args['L_SKU' . $item_loop] = $product->get_sku();

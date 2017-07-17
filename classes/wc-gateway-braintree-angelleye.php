@@ -23,29 +23,24 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->method_title = 'Braintree';
         $this->method_description = __('Credit Card payments Powered by PayPal / Braintree.', 'paypal-for-woocommerce');
         $this->supports = array(
+            'subscriptions',
             'products',
-            'refunds'
+            'refunds',
+            'subscription_cancellation',
+            'subscription_reactivation',
+            'subscription_suspension',
+            'subscription_amount_changes',
+            'subscription_payment_method_change', // Subs 1.n compatibility.
+            'subscription_payment_method_change_customer',
+            'subscription_payment_method_change_admin',
+            'subscription_date_changes',
+            'multiple_subscriptions',
         );
         $this->init_form_fields();
         $this->init_settings();
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes') {
-            $this->supports = array(
-                'subscriptions',
-                'products',
-                'refunds',
-                'subscription_cancellation',
-                'subscription_reactivation',
-                'subscription_suspension',
-                'subscription_amount_changes',
-                'subscription_payment_method_change', // Subs 1.n compatibility.
-                'subscription_payment_method_change_customer',
-                'subscription_payment_method_change_admin',
-                'subscription_date_changes',
-                'multiple_subscriptions',
-                'add_payment_method',
-                'tokenization'
-            );
+            $this->supports = array_merge($this->supports, array('add_payment_method','tokenization'));
         }
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');

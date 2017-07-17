@@ -39,22 +39,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->init_settings();
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes') {
-            $this->supports = array(
-                'subscriptions',
-                'products',
-                'refunds',
-                'subscription_cancellation',
-                'subscription_reactivation',
-                'subscription_suspension',
-                'subscription_amount_changes',
-                'subscription_payment_method_change', // Subs 1.n compatibility.
-                'subscription_payment_method_change_customer',
-                'subscription_payment_method_change_admin',
-                'subscription_date_changes',
-                'multiple_subscriptions',
-                'add_payment_method',
-                'tokenization'
-            );
+            $this->supports = array_merge($this->supports, array('add_payment_method','tokenization'));
         }
         $this->enabled = $this->get_option('enabled');
         $this->title = $this->get_option('title');
