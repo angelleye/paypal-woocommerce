@@ -800,6 +800,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function handle_wc_api() {
         try {
+            $this->angelleye_check_cart_items();
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
             $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
@@ -876,6 +877,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 $this->posted['payment_method'] = $this->id;
 
                             }
+                            $this->angelleye_check_cart_items();
                             $order_id = WC()->checkout()->create_order($this->posted);
                             if (is_wp_error($order_id)) {
                                 throw new Exception($order_id->get_error_message());
@@ -913,6 +915,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 }
                                 $this->posted['payment_method'] = $this->id;
                             }
+                            $this->angelleye_check_cart_items();
                             $order_id = WC()->checkout()->create_order($this->posted);
                             if (is_wp_error($order_id)) {
                                 throw new Exception($order_id->get_error_message());
@@ -1233,5 +1236,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     
     public function is_subscription($order_id) {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
+    }
+    
+    public function angelleye_check_cart_items() {
+        try {
+            WC()->checkout->check_cart_items();
+        } catch (Exception $ex) {
+
+        }            
+        if( wc_notice_count( 'error' ) > 0 ) {
+           self::log(print_r(wc_get_notices(), true));
+            wc_clear_notices();
+            $redirect_url = get_permalink(wc_get_page_id('cart'));
+            wp_redirect($redirect_url);
+            exit();
+        }
     }
 }
