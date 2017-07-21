@@ -1334,6 +1334,7 @@ class AngellEYE_Utility {
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
+        $payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
         if ($this->total_DoCapture == 0 && $this->total_Pending_DoAuthorization == 0) {
             if ('Order' == $payment_action) {
                 $post_status = 'Order';
@@ -1392,7 +1393,11 @@ class AngellEYE_Utility {
                 <?php
                 $i = 0;
                 if (empty($posts)) {
-                    $posts = $wpdb->get_results($wpdb->prepare("SELECT $wpdb->posts.ID, $wpdb->posts.post_title FROM $wpdb->posts INNER JOIN $wpdb->postmeta ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id ) WHERE 1=1 AND $wpdb->posts.post_status LIKE '%s' AND $wpdb->posts.post_parent = %d AND ( ( $wpdb->postmeta.meta_key = 'PAYMENTSTATUS' AND CAST($wpdb->postmeta.meta_value AS CHAR) = 'Pending' ) ) AND $wpdb->posts.post_type = 'paypal_transaction' GROUP BY $wpdb->posts.ID ORDER BY $wpdb->posts.post_date DESC LIMIT 0, 99", $post_status, $order_id), ARRAY_A);
+                    if($payment_method == 'paypal_pro_payflow') {
+                        $posts = $wpdb->get_results($wpdb->prepare("SELECT $wpdb->posts.ID, $wpdb->posts.post_title FROM $wpdb->posts INNER JOIN $wpdb->postmeta ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id ) WHERE 1=1 AND $wpdb->posts.post_status LIKE '%s' AND $wpdb->posts.post_parent = %d AND $wpdb->posts.post_type = 'paypal_transaction' GROUP BY $wpdb->posts.ID ORDER BY $wpdb->posts.post_date DESC LIMIT 0, 99", $post_status, $order_id), ARRAY_A);
+                    } else {
+                        $posts = $wpdb->get_results($wpdb->prepare("SELECT $wpdb->posts.ID, $wpdb->posts.post_title FROM $wpdb->posts INNER JOIN $wpdb->postmeta ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id ) WHERE 1=1 AND $wpdb->posts.post_status LIKE '%s' AND $wpdb->posts.post_parent = %d AND ( ( $wpdb->postmeta.meta_key = 'PAYMENTSTATUS' AND CAST($wpdb->postmeta.meta_value AS CHAR) = 'Pending' ) ) AND $wpdb->posts.post_type = 'paypal_transaction' GROUP BY $wpdb->posts.ID ORDER BY $wpdb->posts.post_date DESC LIMIT 0, 99", $post_status, $order_id), ARRAY_A);
+                    }
                 }
                 foreach ($posts as $post):
                     if ($i == 0) {
