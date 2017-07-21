@@ -350,8 +350,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 'four_digits'  => __('4 digits usually found on the front of the card.', 'paypal-for-woocommerce'),
                 'enable_in_context_checkout_flow' => $enable_in_context_checkout_flow
             );
-            wp_localize_script( 'angelleye_frontend', 'angelleye_frontend', $translation_array );
-            wp_enqueue_script('angelleye_frontend');
+            
+            if($enable_in_context_checkout_flow == 'no') {
+                wp_localize_script( 'angelleye_frontend', 'angelleye_frontend', $translation_array );
+                wp_enqueue_script('angelleye_frontend');
+            }
 
             if ( ! is_admin() && is_cart()){
                 wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/cart.css' , __FILE__ ) );
