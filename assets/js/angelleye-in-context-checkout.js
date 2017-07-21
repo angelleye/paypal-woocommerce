@@ -1,9 +1,7 @@
 ;
 (function ($, window, document) {
     if (angelleye_in_content_param.is_product == 'no') {
-       
                 var target_url = '';
-    
                 window.paypalCheckoutReady = function () {
                
                     setInterval(function () {
@@ -35,7 +33,7 @@
         
         
     } else {
-        
+       
         window.paypalCheckoutReady = function () {
             paypal.checkout.setup(angelleye_in_content_param.payer_id, {
                 environment: angelleye_in_content_param.environment,
@@ -106,6 +104,9 @@
                   }
             });
         }
+        
+        
+        
         
     }
 })(jQuery, window, document);
