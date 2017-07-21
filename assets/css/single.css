@@ -9,7 +9,11 @@
 #paypal_ec_paypal_credit_button, #paypal_ec_button, .paypal_ec_textbutton {
     position: relative;
 }
-.single_variation_wrap_angelleye:disabled {
+.single_add_to_cart_button.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.single_variation_wrap_angelleye:disabled, .single_add_to_cart_button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }

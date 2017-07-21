@@ -77,6 +77,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
             if( !empty($paypal_express_checkout['token'] ) ) {
                 $payPalURL = $this->PAYPAL_URL . $paypal_express_checkout['token'];
+                wc_clear_notices();
                 wp_redirect($payPalURL, 302);
                 exit;
             } 

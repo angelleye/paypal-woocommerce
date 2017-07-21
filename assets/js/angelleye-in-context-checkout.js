@@ -1,9 +1,11 @@
 ;
 (function ($, window, document) {
     if (angelleye_in_content_param.is_product == 'no') {
-       $angelleye_ec_in_content = {
-            init: function () {
+       
+                var target_url = '';
+    
                 window.paypalCheckoutReady = function () {
+               
                     setInterval(function () {
                         $('.woocommerce').unblock();
                     }, 3000);
@@ -13,37 +15,24 @@
                             {
                                 environment: angelleye_in_content_param.environment,
                                 button: selector,
-                                locale: angelleye_in_content_param.locale
+                                locale: angelleye_in_content_param.locale,
+                                click: function (event) {
+                                     event.preventDefault();
+                                     console.log($(event.target).parent().attr("href"));
+                                     paypal.checkout.initXO();
+                                     target_url = $(event.target).parent().attr("href");
+                                     if( $("#wc-paypal_express-new-payment-method").is(':checked') ) {
+                                         target_url = target_url + "&ec_save_to_account=true";
+                                     }
+                                     paypal.checkout.startFlow(target_url);
+                                }
                             }
                         );
                      });
                 }
-            }
-        }
-        var costs_updated = false;
-        $('a.paypal_checkout_button', 'a.paypal_checkout_button_cc').click(function (event) {
-            if (costs_updated) {
-                costs_updated = false;
-                return;
-            }
-            event.stopPropagation();
-            var data = {
-                'nonce': angelleye_in_content_param.update_shipping_costs_nonce
-            };
-            $.ajax({
-                type: 'POST',
-                data: data,
-                url: angelleye_in_content_param.ajaxurl,
-                success: function (response) {
-                    costs_updated = true;
-                    $( this ).click();
-                }
-            });
-        });
+           
         
-        if (angelleye_in_content_param.show_modal) {
-            $angelleye_ec_in_content.init();
-        }
+        
         
     } else {
         
@@ -51,6 +40,8 @@
             paypal.checkout.setup(angelleye_in_content_param.payer_id, {
                 environment: angelleye_in_content_param.environment,
                 click: function (event) {
+                event.preventDefault();
+                paypal.checkout.initXO();
                     $( '.cart' ).block({
                             message: null,
                             overlayCSS: {
@@ -81,13 +72,13 @@
                             'data': data
                         };
                     };
-                    event.preventDefault();
-                    
+
                     var data = {
                             'nonce':      angelleye_in_content_param.generate_cart_nonce,
                             'qty':        $( '.quantity .qty' ).val(),
                             'attributes': $( '.variations_form' ).length ? get_attributes().data : [],
-                            'wc-paypal_express-new-payment-method' : $("#wc-paypal_express-new-payment-method").is(':checked')
+                            'wc-paypal_express-new-payment-method' : $("#wc-paypal_express-new-payment-method").is(':checked'),
+                            'is_cc': $(event.target).hasClass('ec_checkout_page_button_type_pc')
                     };
 
                     $.ajax({
@@ -105,7 +96,14 @@
                         }
                     });
                 },
-                button: ['.paypal_checkout_button', '.paypal_checkout_button_cc']
+                button: ['.paypal_checkout_button', '.paypal_checkout_button_cc'],
+                condition: function () {
+                    if( $('.paypal_checkout_button').hasClass( "disabled" ) ) {
+                        return false;
+                    } else {
+                        return true;
+                    } 
+                  }
             });
         }
         

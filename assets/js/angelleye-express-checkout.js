@@ -1,5 +1,5 @@
 (function() {
-       if(  is_page_name == "checkout_page"  ){
+       if(  angelleye_js_value.is_page_name == "checkout_page"){
     jQuery(document).ready(function(e) {
         return e("form.checkout").length && e("body").hasClass("express-checkout") ? (e("ul.payment_methods").hide(), e(".ex-show-address-fields").on("click", function(b) {
             var c;
