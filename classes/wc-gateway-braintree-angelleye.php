@@ -294,9 +294,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'class' => ''
             ),
             'advanced' => array(
-		'title'       => __( 'Fraud Settings', 'paypal-for-woocommerce' ),
+		'title'       => __( 'Fraud Settings (Kount)', 'paypal-for-woocommerce' ),
 		'type'        => 'title',
-		'description' => '',
+		'description' => 'Advanced Fraud Tools help to identify and prevent fraudulent activity before a transaction or verification ever reaches a customer’s bank. With the help of our partner, Kount, we use hundreds of fraud detection tests – ranging from device fingerprinting to proxy piercing – to analyze each credit card transaction or verification within milliseconds.',
             ),
             'fraud_tool' => array(
                 'title'    => __( 'Fraud Tool', 'paypal-for-woocommerce' ),
