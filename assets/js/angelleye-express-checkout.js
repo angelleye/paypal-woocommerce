@@ -8,3 +8,13 @@
     }); 
     }
 }).call(this);
+
+jQuery(document).ready(function ($) {
+var is_set_class = $("div").is(".express-provided-address");
+if (is_set_class) {
+    jQuery('#express_checkout_button_chekout_page').hide();
+    jQuery('#express_checkout_button_text').hide();
+    jQuery('.woocommerce-message').hide();
+    jQuery('#checkout_paypal_message').hide();
+}
+});

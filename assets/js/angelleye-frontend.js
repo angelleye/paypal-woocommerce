@@ -41,13 +41,7 @@ jQuery(document).ready(function ($) {
     }
 
     if (angelleye_frontend.is_checkout == "yes") {
-        var is_set_class = $("div").is(".express-provided-address");
-        if (is_set_class) {
-            jQuery('#express_checkout_button_chekout_page').hide();
-            jQuery('#express_checkout_button_text').hide();
-            jQuery('.woocommerce-message').hide();
-            jQuery('#checkout_paypal_message').hide();
-        }
+        
         jQuery(".paypal_checkout_button").click(function () {
             $('.woocommerce').block({
                 message: null,
