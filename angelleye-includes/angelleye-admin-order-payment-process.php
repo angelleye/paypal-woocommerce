@@ -350,7 +350,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         $reason_array = array();
         $token_list = $this->angelleye_is_usable_reference_transaction_avilable($order);
         if ($this->angelleye_is_order_user_selected($order) == false) {
-            $reason_array[] = __('Customer must be selected for order.', 'paypal-for-woocommerce');
+            //$reason_array[] = __('Customer must be selected for order.', 'paypal-for-woocommerce');
         }
         if ($this->angelleye_is_order_payment_method_selected($order) == false) {
             $reason_array[] = __('Payment method is not available for payment process, Please select Payment method from Billing details section.', 'paypal-for-woocommerce');
