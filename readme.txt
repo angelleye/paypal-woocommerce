@@ -125,7 +125,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds option to enable the In-Context experience for Express Checkout Shortcut. ([#199](https://github.com/angelleye/paypal-woocommerce/issues/199))
 * Feature - Adds ability to create reference transaction orders from the WooCommerce order edit screen. ([#761](https://github.com/angelleye/paypal-woocommerce/issues/761))
 * Tweak - Improves the way order authorizations and captures are handled within WooCommerce. ([#761](https://github.com/angelleye/paypal-woocommerce/issues/761))
-
+* Tweak - Order status update adjustment. ([#805](https://github.com/angelleye/paypal-woocommerce/issues/805))
 
 = 1.4.5.1 - 07.07.2017 =
 * Tweak - Adds shipping company name from WooCommerce checkout page to PayPal shipping address (name). ([#792](https://github.com/angelleye/paypal-woocommerce/issues/792))
