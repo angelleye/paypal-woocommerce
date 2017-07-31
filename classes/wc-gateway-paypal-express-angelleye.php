@@ -599,9 +599,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no'
             ),
             'enable_in_context_checkout_flow' => array(
-                'title' => __('Enable In-Context Checkout flow', 'paypal-for-woocommerce'),
+                'title' => __('Enable In-Context', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('The enhanced PayPal Express Checkout with In-Context gives your customers a simplified checkout experience that keeps them local to your website throughout the payment authorization process and enables them to use their PayPal balance, bank account, or credit card to pay without sharing or entering any sensitive information on your site.', 'paypal-for-woocommerce'),
+                'label' => __('The enhanced PayPal Express Checkout with In-Context gives your customers a simplified checkout experience that keeps them at your website throughout the payment authorization process.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
             
