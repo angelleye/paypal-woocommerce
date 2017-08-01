@@ -1005,6 +1005,7 @@ class AngellEYE_Utility {
         endforeach;
         if (empty($this->angelleye_woocommerce_order_actions)) {
             $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions();
+            $this->angelleye_display_user_instruction_for_payment_action($payment_action, $this->angelleye_woocommerce_order_actions);
         }
         ?>
         <div class='wrap'>
@@ -1923,5 +1924,30 @@ class AngellEYE_Utility {
              return $is_display = true;
         }
         return $is_display;
+    }
+    
+    public function angelleye_display_user_instruction_for_payment_action($payment_action, $user_action) {
+        if( !empty($user_action) ) {
+            if($payment_action == 'Authorization') {
+                $case_one = array('Capture Authorization', 'Void Authorization');
+                $case_two = array('Capture Authorization');
+                $case_three = array('Authorization');
+                if (count(array_intersect($case_one, $user_action)) == count($case_one)) {
+                    echo '<div class="error"><p>' . __('This order has a pending authorization. You may capture partial or full payment for this authorization, or you may void the authorization.') .'</p></div>';
+                } elseif (count(array_intersect($case_two, $user_action)) == count($case_two)) {
+                    echo '<div class="error"><p>' . __('This order has been partially captured. You may capture process additional captures as necessary.') .'</p></div>';
+                } elseif (count(array_intersect($case_three, $user_action)) == count($case_three)) {
+                    echo '<div class="error"><p>' . __('The authorization for this order has expired. You will need to Reauthorize the transaction and then capture funds as necessary.') .'</p></div>';
+                }
+            } elseif($payment_action == 'Order') {
+                $case_one = array('Capture Authorization', 'Void Authorization', 'Authorization');
+                $case_two = array('Authorization');
+                if (count(array_intersect($case_one, $user_action)) == count($case_one)) {
+                    echo '<div class="error"><p>' . __('This order has a pending order. You may authorization partial payment for this order, or you may capture/void the authorization.') .'</p></div>';
+                } elseif (count(array_intersect($case_two, $user_action)) == count($case_two)) {
+                    echo '<div class="error"><p>' . __('This order has a pending order. You may authorization partial or full payment for this order.') .'</p></div>';
+                } 
+            }
+        }
     }
 }
