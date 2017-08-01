@@ -1150,6 +1150,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
         $this->must_create_account = $this->enable_guest_checkout || is_user_logged_in() ? false : true;
         $force_to_display_checkout_page = true;
+        if ($this->skip_final_review == 'no') {
+            return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
+        }
         if ($this->must_create_account) {
             return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
         }
@@ -1165,9 +1168,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } elseif ( !empty($paypal_express_terms) && $paypal_express_terms == true ) {
                 return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
             }
-        }
-        if ($this->skip_final_review == 'yes') {
-            return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
         }
         return apply_filters('angelleye_ec_force_to_display_checkout_page', $force_to_display_checkout_page);
     }
