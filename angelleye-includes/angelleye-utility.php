@@ -1935,7 +1935,7 @@ class AngellEYE_Utility {
                 if (count(array_intersect($case_one, $user_action)) == count($case_one)) {
                     echo '<div class="error"><p>' . __('This order has a pending authorization. You may capture partial or full payment for this authorization, or you may void the authorization.') .'</p></div>';
                 } elseif (count(array_intersect($case_two, $user_action)) == count($case_two)) {
-                    echo '<div class="error"><p>' . __('This order has been partially captured. You may capture process additional captures as necessary.') .'</p></div>';
+                    echo '<div class="error"><p>' . __('This order has been partially captured. You may process additional captures as necessary.') .'</p></div>';
                 } elseif (count(array_intersect($case_three, $user_action)) == count($case_three)) {
                     echo '<div class="error"><p>' . __('The authorization for this order has expired. You will need to Reauthorize the transaction and then capture funds as necessary.') .'</p></div>';
                 }
@@ -1943,9 +1943,9 @@ class AngellEYE_Utility {
                 $case_one = array('Capture Authorization', 'Void Authorization', 'Authorization');
                 $case_two = array('Authorization');
                 if (count(array_intersect($case_one, $user_action)) == count($case_one)) {
-                    echo '<div class="error"><p>' . __('This order has a pending order. You may authorization partial payment for this order, or you may capture/void the authorization.') .'</p></div>';
+                    echo '<div class="error"><p>' . __('This order is pending. You may authorization partial or full payment for this order, or you may capture/void the current authorization.') .'</p></div>';
                 } elseif (count(array_intersect($case_two, $user_action)) == count($case_two)) {
-                    echo '<div class="error"><p>' . __('This order has a pending order. You may authorization partial or full payment for this order.') .'</p></div>';
+                    echo '<div class="error"><p>' . __('This order is pending. You may authorize partial or full payment for this order.') .'</p></div>';
                 } 
             }
         }
