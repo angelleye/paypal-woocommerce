@@ -127,6 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds ability to create reference transaction orders from the WooCommerce order edit screen. ([#761](https://github.com/angelleye/paypal-woocommerce/issues/761))
 * Tweak - Improves the way order authorizations and captures are handled within WooCommerce. ([#761](https://github.com/angelleye/paypal-woocommerce/issues/761)) ([#820](https://github.com/angelleye/paypal-woocommerce/issues/820))
 * Tweak - Order status update adjustment. ([#805](https://github.com/angelleye/paypal-woocommerce/issues/805))
+* Fix - Resolves a bug in the "Skip Final Review" option within Express Checkout when payment takes place through WooCommerce checkout page. ([#822](https://github.com/angelleye/paypal-woocommerce/issues/822))
 
 = 1.4.5.1 - 07.07.2017 =
 * Tweak - Adds shipping company name from WooCommerce checkout page to PayPal shipping address (name). ([#792](https://github.com/angelleye/paypal-woocommerce/issues/792))
