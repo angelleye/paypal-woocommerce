@@ -1834,12 +1834,14 @@ class AngellEYE_Utility {
 
     public function call_paypal_pro_payflow_do_doreauthorization($order) {
         $this->add_ec_angelleye_paypal_php_library();
-        $this->ec_add_log('Delayed Capture API call');
+        $this->ec_add_log('Do Reauthorization API call');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
         $AMT = $order->get_total();
-        $AMT = self::round($AMT - $order->get_total_refunded());
+        $this->total_DoVoid = self::get_total('DoVoid', '', $order_id);
+        $this->total_DoCapture = self::get_total('DoCapture', 'Completed', $order_id);
+        $AMT = self::round($AMT - ($this->total_DoCapture + $this->total_DoVoid));
         
         if (isset($transaction_id) && !empty($transaction_id)) {
             $PayPalRequestData = array(
