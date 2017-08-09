@@ -994,11 +994,7 @@ class AngellEYE_Utility {
         foreach ($posts_array as $post_data):
             $payment_status = get_post_meta($post_data->ID, 'PAYMENTSTATUS', true);
             //$payment_status = get_post_meta($post->ID, 'post_status', true);
-            if($transaction_id == $post_data->post_title && $payment_method == 'paypal_pro_payflow') {
-                if($payment_status == 'Voided') {
-                    $order->update_status('cancelled', '', true);
-                }
-            }
+            
             if (isset($post->post_title) && !empty($post_data->post_title) && $payment_status != 'Completed') {
                 $this->angelleye_get_transactionDetails($post_data->post_title);
             }
@@ -1284,9 +1280,6 @@ class AngellEYE_Utility {
         $this->angelleye_get_transactionDetails($_first_transaction_id);
         $_payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
         if (isset($_payment_action) && !empty($_payment_action)) {
-            if (($this->max_authorize_amount <= $this->total_DoVoid) || ($this->total_Pending_DoAuthorization == 0 && $this->total_Completed_DoAuthorization == 0 && $this->total_DoVoid == $order->get_total())) {
-                $order->update_status('cancelled');
-            }
             if ($order->get_total() - $order->get_total_refunded() <= $this->total_Completed_DoAuthorization && $this->total_Pending_DoAuthorization == 0) {
                 do_action('woocommerce_order_status_pending_to_processing', $order_id);
                 $order->payment_complete($_first_transaction_id);
@@ -1297,10 +1290,6 @@ class AngellEYE_Utility {
                     wc_reduce_stock_levels($order->get_id());
                 }
             }
-        }
-
-        if ($order->get_total() == $this->total_DoVoid) {
-            $order->update_status('cancelled');
         }
     }
 
@@ -1782,7 +1771,7 @@ class AngellEYE_Utility {
                 self::angelleye_add_order_meta($order_id, $payment_order_meta);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_void_result, $order, 'DoVoid');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
-                $order->update_status('cancelled', '', true);
+                
             } else {
                 $ErrorCode = urldecode($do_void_result["RESULT"]);
                 $ErrorLongMsg = urldecode($do_void_result["RESPMSG"]);
