@@ -302,6 +302,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
     }
 
     public function process_subscription_payment($order) {
+        $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
         $this->add_rest_api_utility();
         $card = $this->paypal_rest_api->get_posted_card();
         $this->paypal_rest_api->create_payment_with_zero_amount($order, $card);
@@ -332,5 +333,25 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             }
         }
         return $settings;
+    }
+    
+    public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
+        if( $this->testmode == false ) {
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            if( $this->is_subscription($order_id) ) {
+                foreach ($order->get_items() as $cart_item_key => $values) {
+                    $product = $order->get_product_from_item($values);
+                    $product_id = $product->get_id();
+                    if( !empty($product_id) ) {
+                        $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
+                        if ($_enable_sandbox_mode == 'yes') {
+                            $this->testmode = true;
+                            $this->rest_client_id = $this->get_option('rest_client_id_sandbox', false);
+                            $this->rest_secret_id = $this->get_option('rest_secret_id_sandbox', false);
+                        }
+                    }        
+                }
+            }
+        }
     }
 }

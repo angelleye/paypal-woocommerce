@@ -1716,6 +1716,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function process_subscription_payment($order) {
+       $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
         if (!class_exists('Angelleye_PayPal')) {
              require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php');
         }
@@ -1971,5 +1972,25 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
     
+    public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
+        if( $this->testmode == false ) {
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            if( $this->is_subscription($order_id) ) {
+                foreach ($order->get_items() as $cart_item_key => $values) {
+                    $product = $order->get_product_from_item($values);
+                    $product_id = $product->get_id();
+                    if( !empty($product_id) ) {
+                        $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
+                        if ($_enable_sandbox_mode == 'yes') {
+                            $this->testmode = true;
+                            $this->api_username = $this->get_option('sandbox_api_username');
+                            $this->api_password = $this->get_option('sandbox_api_password');
+                            $this->api_signature = $this->get_option('sandbox_api_signature');
+                        }
+                    }        
+                }
+            }
+        }
+    }
     
 }

@@ -944,6 +944,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         }
         if ((!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') || $this->is_renewal($order_id)) {
             if ($this->is_renewal($order_id)) {
+                $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
                 $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
             } else {
                 $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
@@ -1094,7 +1095,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     public function receipt_page($order_id) {
 
         //get the mode
-        $PF_MODE = $this->testmode == 'yes' ? 'TEST' : 'LIVE';
+        $PF_MODE = $this->testmode == true ? 'TEST' : 'LIVE';
         //create order object
         $order = new WC_Order($order_id);
 
@@ -1454,6 +1455,24 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     
     public function is_renewal($order_id) {
         return ( function_exists('wcs_order_contains_subscription') && wcs_order_contains_renewal($order_id)  );
+    }
+    
+    public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
+        if( $this->testmode == false ) {
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            if( $this->is_subscription($order_id) ) {
+                foreach ($order->get_items() as $cart_item_key => $values) {
+                    $product = $order->get_product_from_item($values);
+                    $product_id = $product->get_id();
+                    if( !empty($product_id) ) {
+                        $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
+                        if ($_enable_sandbox_mode == 'yes') {
+                            $this->testmode = true;
+                        }
+                    }        
+                }
+            }
+        }
     }
 
 }

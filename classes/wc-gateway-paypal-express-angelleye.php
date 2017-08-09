@@ -659,6 +659,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public function process_subscription_payment($order_id) {
         $order = wc_get_order($order_id);
         if ($this->is_subscription($order_id)) {
+            $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
             $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
             $result = $paypal_express_request->DoReferenceTransaction($order_id);
@@ -1250,6 +1251,29 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $redirect_url = get_permalink(wc_get_page_id('cart'));
             wp_redirect($redirect_url);
             exit();
+        }
+    }
+    
+    public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
+        if( $this->testmode == false ) {
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            if( $this->is_subscription($order_id) ) {
+                foreach ($order->get_items() as $cart_item_key => $values) {
+                    $product = $order->get_product_from_item($values);
+                    $product_id = $product->get_id();
+                    if( !empty($product_id) ) {
+                        $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
+                        if ($_enable_sandbox_mode == 'yes') {
+                            $this->testmode = true;
+                            $this->API_Endpoint = "https://api-3t.sandbox.paypal.com/nvp";
+                            $this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
+                            $this->api_username = $this->get_option('sandbox_api_username');
+                            $this->api_password = $this->get_option('sandbox_api_password');
+                            $this->api_signature = $this->get_option('sandbox_api_signature');
+                        }
+                    }        
+                }
+            }
         }
     }
 }

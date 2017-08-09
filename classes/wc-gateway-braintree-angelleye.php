@@ -1405,6 +1405,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function process_subscription_payment($order, $amount, $payment_token = null) {
+        $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $request_data = array();
         $this->angelleye_braintree_lib();
@@ -1652,4 +1653,26 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 	public function get_risk_decision() {
             return ! empty( $this->response->transaction->riskData->decision ) ? $this->response->transaction->riskData->decision : null;
 	}
+        
+        public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
+            if( $this->sandbox == false ) {
+                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                if( $this->is_subscription($order_id) ) {
+                    foreach ($order->get_items() as $cart_item_key => $values) {
+                        $product = $order->get_product_from_item($values);
+                        $product_id = $product->get_id();
+                        if( !empty($product_id) ) {
+                            $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
+                            if ($_enable_sandbox_mode == 'yes') {
+                                $this->sandbox = true;
+                                $this->environment = $this->sandbox == false ? 'production' : 'sandbox';
+                                $this->merchant_id = $this->sandbox == false ? $this->get_option('merchant_id') : $this->get_option('sandbox_merchant_id');
+                                $this->private_key = $this->sandbox == false ? $this->get_option('private_key') : $this->get_option('sandbox_private_key');
+                                $this->public_key = $this->sandbox == false ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
+                            }
+                        }        
+                    }
+                }
+            }
+        }
 }
