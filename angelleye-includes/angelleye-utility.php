@@ -1051,46 +1051,26 @@ class AngellEYE_Utility {
                     <input type="text" placeholder="Enter amount <?php echo $remain_capture; ?>" id="_regular_price" name="_regular_price" <?php if($remain_capture > 0 ) { echo "value='$remain_capture'"; } ?>class="short wc_input_price text-box" style="width: 220px">
                 </div>
                 <?php $this->angelleye_express_checkout_transaction_capture_dropdownbox($post->ID); ?>
+                <input type="hidden" value="no" name="is_submited" id="is_submited">
                 <input type="submit" id="angelleye_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
                 <br/><br/><br/>
                 <script>
                     (function ($) {
                         "use strict";
-
-                        //Asking confirm for the capture
-                        $('#angelleye_payment_submit_button').on('click', function () {
-                            var r = confirm('Are you sure?');
-                            if (r == true) {
-                                jQuery("#angelleye-pw-order-action").block({message:null,overlayCSS:{background:"#fff",opacity:.6}})
-                                return r;
-                            } else {
-                                jQuery("#angelleye-pw-order-action").unblock();
-                                return r;
-                            }
-                        })
-
-                        MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-                        var observer = new MutationObserver(function (mutations, observer) {
-                            var currency_symbol = window.woocommerce_admin_meta_boxes.currency_format_symbol;
-
-                            for (var i = 0, len = mutations.length; i < len; i++) {
-                                //Updating the total order action table field
-                                if (mutations[i].target.className == 'inside' && mutations[i].addedNodes.length > 0) {
-                                    //var new_amt_with_curr = $('.wc-order-refund-items .wc-order-totals tr td.total .amount:last').text();
-                                    //Adjusting price with paypal-for-woocommerce amount format
-                                    // new_amt_with_curr = currency_symbol + new_amt_with_curr.replace(currency_symbol, '');
-                                    //$('.angelleye_order_action_table:first tr:first td:last').text(new_amt_with_curr);
+                            $('#angelleye_payment_submit_button').on('click', function (event) {
+                                if( $('#is_submited').val() == 'no') {
+                                    $('#is_submited').val('yes');
+                                    var r = confirm('Are you sure?');
+                                    if (r == true) {
+                                        jQuery("#angelleye-pw-order-action").block({message:null,overlayCSS:{background:"#fff",opacity:.6}});
+                                        return r;
+                                    } else {
+                                        jQuery("#angelleye-pw-order-action").unblock();
+                                        event.preventDefault();
+                                        return r;
+                                    }
                                 }
-                            }
-                        });
-
-                        //Setting an observer to know about total new total amount
-                        $(document).ready(function () {
-                            var target = document.getElementById('woocommerce-order-items').getElementsByClassName('inside')[0];
-                            observer.observe(target, {
-                                childList: true,
                             });
-                        });
                     })(jQuery);
                 </script>
                 <?php
