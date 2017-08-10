@@ -188,22 +188,31 @@ class AngellEYE_Utility {
                                 }
                                 break;
                             case ($payment_action == 'Authorization'):
-                                $paypal_payment_action = array('DoCapture' => 'Capture Authorization', 'DoReauthorization' => 'Authorization', 'DoVoid' => 'Void Authorization');
-                                $transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
-                                if (!$this->has_authorization_inside_honor_period($transaction_id)) {
-                                    unset($paypal_payment_action['DoReauthorization']);
+                                $this->angelleye_max_authorize_amount($order_id);
+                                $this->angelleye_remain_authorize_amount();
+                                if ($this->max_authorize_amount == $this->total_DoVoid) {
+                                    return $paypal_payment_action;
+                                } else {
+                                    $paypal_payment_action = array('DoCapture' => 'Capture Authorization', 'DoVoid' => 'Void Authorization', 'DoReauthorization' => 'Authorization');
+                                    if (!$this->has_authorization_inside_honor_period($transaction_id)) {
+                                        unset($paypal_payment_action['DoReauthorization']);
+                                    }
+                                    if ($this->total_DoCapture < ($order->get_total() - $order->get_total_refunded() - $this->total_DoVoid)) {
+                                        if ($this->has_authorization_expired($order_id)) {
+                                            $paypal_payment_action['DoReauthorization'] = 'Authorization';
+                                            unset($paypal_payment_action['DoCapture']);
+                                            unset($paypal_payment_action['DoVoid']);
+                                    }
+                                    }
+                                    if ($this->total_DoCapture >= ($order->get_total() - $order->get_total_refunded() - $this->total_DoVoid)) {
+                                        unset($paypal_payment_action['DoCapture']);
+                                    }
+                                    if ($this->total_DoCapture > 0 || $this->total_DoVoid > 0) {
+                                        unset($paypal_payment_action['DoVoid']);
+                                    }
+                                    return $paypal_payment_action;
                                 }
-                                if (!is_object($order_id)) {
-                                    $order = wc_get_order($order_id);
-                                }
-                                if ($this->total_DoCapture > 0 || $this->total_Pending_DoAuthorization == 0) {
-                                    unset($paypal_payment_action['DoVoid']);
-                                }
-                                if ($order->get_total() == $this->total_DoVoid || $this->total_Completed_DoAuthorization == $order->get_total() || $order->get_total() == $this->total_DoCapture || $this->total_DoCapture == $order->get_total() - $order->get_total_refunded()) {
-                                    unset($paypal_payment_action['DoCapture']);
-                                   // unset($paypal_payment_action['DoVoid']);
-                                }
-                                return $paypal_payment_action;
+                                break;
                         }
                     }
                 case 'paypal_pro': {
