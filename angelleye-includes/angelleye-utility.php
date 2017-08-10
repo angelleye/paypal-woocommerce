@@ -158,6 +158,7 @@ class AngellEYE_Utility {
             switch ($this->payment_method) {
                 case 'paypal_express': {
                         $paypal_payment_action = array();
+                        $transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
                         $this->total_Order = self::get_total('Order', 'Pending', $order_id);
                         $this->total_DoVoid = self::get_total('DoVoid', '', $order_id);
                         $this->total_DoCapture = self::get_total('DoCapture', 'Completed', $order_id);
