@@ -40,6 +40,9 @@ class PayPal_Rest_API_Utility {
             $this->gateway = $gateway;
         }
         $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'no');
+        if ($this->testmode == false) {
+            $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+        }
         $this->softdescriptor = $this->gateway->get_option('softdescriptor', '');
         $this->mode = $this->testmode == true ? 'SANDBOX' : 'LIVE';
         $this->debug = 'yes' === $this->gateway->get_option('debug', 'no');

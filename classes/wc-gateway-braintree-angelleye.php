@@ -1339,8 +1339,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if ($token->get_user_id() !== get_current_user_id()) {
                 throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
             } else {
-                $is_sandbox = $this->sandbox == 'no' ? false : true;
-                update_post_meta($order_id, 'is_sandbox', $is_sandbox);
+                update_post_meta($order_id, 'is_sandbox', $this->sandbox);
                 $payment_tokens_id = $token->get_token();
                 $this->save_payment_token($order, $payment_tokens_id);
                 $order->payment_complete($payment_tokens_id);
@@ -1359,8 +1358,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $result = $this->add_payment_method($zero_amount_payment = true);
             if ($result['result'] == 'success') {
-                $is_sandbox = $this->sandbox == 'no' ? false : true;
-                update_post_meta($order_id, 'is_sandbox', $is_sandbox);
+                update_post_meta($order_id, 'is_sandbox', $this->sandbox);
                 $payment_tokens_id = (!empty($result['_payment_tokens_id'])) ? $result['_payment_tokens_id'] : '';
                 $this->save_payment_token($order, $payment_tokens_id);
                 $order->payment_complete($payment_tokens_id);
@@ -1510,8 +1508,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'submitted_for_settlement',
         );
         if (in_array($this->response->transaction->status, $maybe_settled_later)) {
-            $is_sandbox = $this->sandbox == 'no' ? false : true;
-            update_post_meta($order_id, 'is_sandbox', $is_sandbox);
+            update_post_meta($order_id, 'is_sandbox', $this->sandbox);
             $order->payment_complete($this->response->transaction->id);
             $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $this->response->transaction->id));
         } else {
