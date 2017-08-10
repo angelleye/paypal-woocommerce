@@ -282,32 +282,6 @@ class AngellEYE_Admin_Order_Payment_Process {
         }
     }
 
-    public function create_order_line_items(&$order, $cart) {
-        foreach ($cart->get_cart() as $cart_item_key => $values) {
-            $product = $values['data'];
-            $item = new WC_Order_Item_Product();
-            $item->set_props(array(
-                'quantity' => $values['quantity'],
-                'variation' => $values['variation'],
-                'subtotal' => $values['line_subtotal'],
-                'total' => $values['line_total'],
-                'subtotal_tax' => $values['line_subtotal_tax'],
-                'total_tax' => $values['line_tax'],
-                'taxes' => $values['line_tax_data'],
-            ));
-            if ($product) {
-                $item->set_props(array(
-                    'name' => $product->get_name(),
-                    'tax_class' => $product->get_tax_class(),
-                    'product_id' => $product->is_type('variation') ? $product->get_parent_id() : $product->get_id(),
-                    'variation_id' => $product->is_type('variation') ? $product->get_id() : 0,
-                ));
-            }
-            $item->set_backorder_meta();
-            $order->add_item($item);
-        }
-    }
-
     public function angelleye_is_order_created_by_create_new_reference_order($order) {
         return ($order->get_created_via() == 'create_new_reference_order' ) ? true : false;
     }

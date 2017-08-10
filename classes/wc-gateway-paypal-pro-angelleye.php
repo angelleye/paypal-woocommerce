@@ -1725,7 +1725,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
         $PayPalConfig = array(
-            'Sandbox' => $this->testmode == 'yes' ? TRUE : FALSE,
+            'Sandbox' => $this->testmode,
             'APIUsername' => $this->api_username,
             'APIPassword' => $this->api_password,
             'APISignature' => $this->api_signature,
@@ -1887,7 +1887,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $cvv2_response_order_note .= $cvv2_response_code;
             $cvv2_response_order_note .= $cvv2_response_message != '' ? ' - ' . $cvv2_response_message : '';
             $order->add_order_note($cvv2_response_order_note);
-            $is_sandbox = $this->testmode == 'yes' ? true : false;
+            $is_sandbox = $this->testmode;
             update_post_meta($order_id, 'is_sandbox', $is_sandbox);
             if ($this->payment_action == "Sale") {
                 $this->save_payment_token($order, $PayPalResult['TRANSACTIONID']);
