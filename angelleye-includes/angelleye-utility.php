@@ -149,7 +149,7 @@ class AngellEYE_Utility {
         }
 
         $order = $theorder;
-         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $paypal_payment_action = array();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
@@ -157,9 +157,6 @@ class AngellEYE_Utility {
         if ((isset($this->payment_method) && !empty($this->payment_method)) && (isset($payment_action) && !empty($payment_action)) ) {
             switch ($this->payment_method) {
                 case 'paypal_express': {
-                        if( $this->has_authorization_expired($order_id) ) {
-                            return false;
-                        }
                         $paypal_payment_action = array();
                         $this->total_Order = self::get_total('Order', 'Pending', $order_id);
                         $this->total_DoVoid = self::get_total('DoVoid', '', $order_id);
@@ -1070,6 +1067,7 @@ class AngellEYE_Utility {
                                         jQuery("#angelleye-pw-order-action").block({message:null,overlayCSS:{background:"#fff",opacity:.6}});
                                         return r;
                                     } else {
+                                        $('#is_submited').val('no');
                                         jQuery("#angelleye-pw-order-action").unblock();
                                         event.preventDefault();
                                         return r;
