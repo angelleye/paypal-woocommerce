@@ -121,6 +121,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.6.1 - 08.11.2017 =
+* Fix - Further adjustments to Skip Final Review bug. ([#830](https://github.com/angelleye/paypal-woocommerce/issues/830))
+
 = 1.4.6 - 08.11.2017 =
 * Feature - Adds Kount Fraud Management to Braintree integration. ([#751](https://github.com/angelleye/paypal-woocommerce/issues/751))
 * Feature - Adds option to enable the In-Context experience for Express Checkout Shortcut. ([#199](https://github.com/angelleye/paypal-woocommerce/issues/199))
