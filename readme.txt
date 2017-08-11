@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
 Tested up to: 4.8
-Stable tag: 1.4.5.1
+Stable tag: 1.4.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -121,7 +121,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.6 - 08.xx.2017 =
+= 1.4.6 - 08.11.2017 =
 * Feature - Adds Kount Fraud Management to Braintree integration. ([#751](https://github.com/angelleye/paypal-woocommerce/issues/751))
 * Feature - Adds option to enable the In-Context experience for Express Checkout Shortcut. ([#199](https://github.com/angelleye/paypal-woocommerce/issues/199))
 * Feature - Adds ability to create reference transaction orders from the WooCommerce order edit screen. ([#761](https://github.com/angelleye/paypal-woocommerce/issues/761))
