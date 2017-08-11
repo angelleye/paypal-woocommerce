@@ -1305,9 +1305,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
             $pc_display_type_error = apply_filters('ae_ppddp_error_exception', $pc_display_type_error, $error_code, $long_message);
             $pc_display_type_notice = apply_filters('ae_ppddp_error_user_display_message', $pc_display_type_notice, $error_code, $long_message);
-            wc_add_notice($pc_display_type_notice, "error");
             throw new Exception($pc_display_type_error);
-
             return;
         }
     }

@@ -1169,6 +1169,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
             }
         }
+        if ($this->skip_final_review == 'yes') {
+            return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
+        }
         return apply_filters('angelleye_ec_force_to_display_checkout_page', $force_to_display_checkout_page);
     }
 
