@@ -1226,6 +1226,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && $PayPalResult['L_ERRORCODE0'] == '11610') {
                     $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
                     $order->update_status('on-hold', $error);
+                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                    if ( $old_wc ) {
+                        if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                            $order->reduce_order_stock();
+                        } 
+                    } else {
+                        wc_maybe_reduce_stock_levels( $order_id );
+                    }
                 } elseif ($PayPalResult['L_ERRORCODE0'] == '10574') {
                     $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
                     $order->add_order_note('ERROR MESSAGE: ' . $error);
@@ -1234,6 +1242,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
                     $order->add_order_note('ERROR MESSAGE: ' . $error);
                     $order->update_status('on-hold', $error);
+                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                    if ( $old_wc ) {
+                        if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                            $order->reduce_order_stock();
+                        } 
+                    } else {
+                        wc_maybe_reduce_stock_levels( $order_id );
+                    }
                 } else {
                     $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
                 }
@@ -1899,6 +1915,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $angelleye_utility = new AngellEYE_Utility(null, null);
                 $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['TRANSACTIONID']);
                 $order->update_status('on-hold');
+                $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                if ( $old_wc ) {
+                    if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                        $order->reduce_order_stock();
+                    } 
+                } else {
+                    wc_maybe_reduce_stock_levels( $order_id );
+                }
                 $order->add_order_note('Payment Action: ' . $this->payment_action);
             }
             return true;
@@ -1966,6 +1990,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if( $this->payment_action == 'Sale') {
             $order->payment_complete($transaction_id);
         } else {
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+            if ( $old_wc ) {
+                if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                    $order->reduce_order_stock();
+                } 
+            } else {
+                wc_maybe_reduce_stock_levels( $order_id );
+            }
             $order->update_status('on-hold');
         }
     }

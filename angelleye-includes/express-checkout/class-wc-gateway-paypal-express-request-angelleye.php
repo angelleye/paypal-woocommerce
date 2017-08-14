@@ -227,11 +227,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     } else {
                         update_post_meta($order->get_id(), '_transaction_id', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                     }
-                    if ($old_wc) {
-                        $order->reduce_order_stock();
-                    } else {
-                        wc_reduce_stock_levels($order->get_id());
-                    }
                     WC()->cart->empty_cart();
                 }
                 $payeremail = WC()->session->get('payeremail');
@@ -243,7 +238,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     update_post_meta($order->get_id(), 'paypal_email', $payeremail);
                 }
                 $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : ''));
-                
                 WC()->cart->empty_cart();
                 wc_clear_notices();
                 wp_redirect($this->gateway->get_return_url($order));
@@ -269,6 +263,15 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && (!empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '11610')) {
                         $error = !empty($this->paypal_response['L_LONGMESSAGE0']) ? $this->paypal_response['L_LONGMESSAGE0'] : $this->paypal_response['L_SHORTMESSAGE0'];
                         $order->update_status('on-hold', $error);
+                        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                        if ( $old_wc ) {
+                            if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                                $order->reduce_order_stock();
+                            } 
+                        } else {
+                            wc_maybe_reduce_stock_levels( $order_id );
+                        }
                     } else {
                         $this->update_payment_status_by_paypal_responce($this->confirm_order_id, $this->paypal_response);
                     }
@@ -276,12 +279,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         update_post_meta($order_id, '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                     } else {
                         update_post_meta($order->get_id(), '_transaction_id', $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
-                    }
-
-                    if ($old_wc) {
-                        $order->reduce_order_stock();
-                    } else {
-                        wc_reduce_stock_levels($order->get_id());
                     }
                     WC()->cart->empty_cart();
                 }
@@ -684,6 +681,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function update_payment_status_by_paypal_responce($orderid, $result) {
         try {
             $order = wc_get_order($orderid);
+            $old_wc = version_compare( WC_VERSION, '3.0', '<' );
             switch (strtolower($result['PAYMENTINFO_0_PAYMENTSTATUS'])) :
                 case 'completed' :
                     if ($order->status == 'completed') {
@@ -738,6 +736,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     }
                     $order->add_order_note(sprintf(__('Payment via Express Checkout Pending. PayPal reason: %s.', 'paypal-for-woocommerce'), $pending_reason));
                     $order->update_status('on-hold');
+                    if ( $old_wc ) {
+                        if ( ! get_post_meta( $orderid, '_order_stock_reduced', true ) ) {
+                            $order->reduce_order_stock();
+                        } 
+                    } else {
+                        wc_maybe_reduce_stock_levels( $orderid );
+                    }
                     break;
                 case 'denied' :
                 case 'expired' :

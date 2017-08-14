@@ -664,8 +664,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
             $result = $paypal_express_request->DoReferenceTransaction($order_id);
             if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
-                $order->payment_complete($result['TRANSACTIONID']);
-                $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
+                $paypal_express_request->update_payment_status_by_paypal_responce($order_id, $result);
                 return array(
                     'result' => 'success',
                     'redirect' => $this->get_return_url($order)
@@ -678,7 +677,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
-        
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         try {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {

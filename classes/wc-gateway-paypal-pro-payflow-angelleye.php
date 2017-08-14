@@ -750,9 +750,27 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 }
                 if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && $PayPalResult['RESULT'] == 126) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
+                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                    $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                    if ( $old_wc ) {
+                        if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                            $order->reduce_order_stock();
+                        } 
+                    } else {
+                        wc_maybe_reduce_stock_levels( $order_id );
+                    }
                 } else {
                     if ($this->payment_action == "Authorization") {
                         $order->update_status('on-hold');
+                        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                        if ( $old_wc ) {
+                            if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                                $order->reduce_order_stock();
+                            } 
+                        } else {
+                            wc_maybe_reduce_stock_levels( $order_id );
+                        }
                         if ($old_wc) {
                             update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
                         } else {

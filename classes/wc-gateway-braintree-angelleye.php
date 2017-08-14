@@ -729,6 +729,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     $this->add_log(sprintf('Info: unhandled transaction id = %s, status = %s', $this->response->transaction->id, $this->response->transaction->status));
                     $order->update_status('on-hold', sprintf(__('Transaction was submitted to PayPal Braintree but not handled by WooCommerce order, transaction_id: %s, status: %s. Order was put in-hold.', 'paypal-for-woocommerce'), $this->response->transaction->id, $this->response->transaction->status));
+                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                    $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                    if ( $old_wc ) {
+                        if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                            $order->reduce_order_stock();
+                        } 
+                    } else {
+                        wc_maybe_reduce_stock_levels( $order_id );
+                    }
                 }
         } catch (Exception $ex) {
             wc_add_notice($ex->getMessage(), 'error');
@@ -1514,6 +1523,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $this->add_log(sprintf('Info: unhandled transaction id = %s, status = %s', $this->response->transaction->id, $this->response->transaction->status));
             $order->update_status('on-hold', sprintf(__('Transaction was submitted to PayPal Braintree but not handled by WooCommerce order, transaction_id: %s, status: %s. Order was put in-hold.', 'paypal-for-woocommerce'), $this->response->transaction->id, $this->response->transaction->status));
+            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            if ( $old_wc ) {
+                if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                    $order->reduce_order_stock();
+                } 
+            } else {
+                wc_maybe_reduce_stock_levels( $order_id );
+            }
         }
     }
 

@@ -1292,11 +1292,6 @@ class AngellEYE_Utility {
                 do_action('woocommerce_order_status_pending_to_processing', $order_id);
                 $order->payment_complete($_first_transaction_id);
                 do_action('woocommerce_checkout_order_processed', $order_id, $posted = array());
-                if ($old_wc) {
-                    $order->reduce_order_stock();
-                } else {
-                    wc_reduce_stock_levels($order->get_id());
-                }
             }
         }
     }
