@@ -232,6 +232,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             foreach ($this->ec_get_session_data('shipping_details') as $field => $value) {
                 if ($value) {
                     $_POST['billing_' . $field] = $value;
+                    $_POST['shipping_' . $field] = $value;
                 }
             }
             $post_data = WC()->session->get( 'post_data' );

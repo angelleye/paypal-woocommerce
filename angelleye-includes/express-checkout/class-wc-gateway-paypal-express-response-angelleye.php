@@ -37,6 +37,7 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
 
     public function ec_get_state_code($country_code, $state) {
         try {
+            $state = strtoupper($state);
             if ($country_code !== 'US' && isset(WC()->countries->states[$country_code])) {
                 $local_states = WC()->countries->states[$country_code];
                 if (!empty($local_states) && in_array($state, $local_states)) {
