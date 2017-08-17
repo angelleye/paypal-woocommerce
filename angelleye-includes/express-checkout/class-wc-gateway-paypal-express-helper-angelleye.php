@@ -8,6 +8,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public $setting;
     public $function_helper;
+    public $posted;
 
     public function __construct($version) {
         try {
@@ -223,16 +224,33 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
         }
     }
+    
 
     public function ec_set_checkout_post_data() {
         try {
             if (!$this->function_helper->ec_is_express_checkout() || !$this->ec_get_session_data('shipping_details')) {
                 return;
             }
+            $this->posted = $_POST;
             foreach ($this->ec_get_session_data('shipping_details') as $field => $value) {
                 if ($value) {
-                    $_POST['billing_' . $field] = $value;
-                    $_POST['shipping_' . $field] = $value;
+                    if('state' == $field) {
+                        $shipping_details = $this->ec_get_session_data('shipping_details');
+                        if( $this->validate_checkout($shipping_details['country'], $value, 'billing') ) {
+                            $_POST['billing_' . $field] = $this->validate_checkout($shipping_details['country'], $value, 'billing');
+                        } else {
+                            $_POST['billing_' . $field] = '';
+                        }
+                        if( $this->validate_checkout($shipping_details['country'], $value, 'shipping') ) {
+                            $_POST['shipping_' . $field] = $this->validate_checkout($shipping_details['country'], $value, 'shipping');
+                        } else {
+                            $_POST['shipping_' . $field];
+                        }
+                    } else {
+                        $_POST['billing_' . $field] = $value;
+                        $_POST['shipping_' . $field] = $value;
+                    }
+                    
                 }
             }
             $post_data = WC()->session->get( 'post_data' );
@@ -251,12 +269,19 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public function ec_display_checkout_fields($checkout_fields) {
         try {
             if ($this->function_helper->ec_is_express_checkout() && $this->ec_get_session_data('shipping_details')) {
-                foreach ($this->ec_get_session_data('shipping_details') as $field => $value) {
-                    if (isset($checkout_fields['billing']) && isset($checkout_fields['billing']['billing_' . $field])) {
-                        $required = isset($checkout_fields['billing']['billing_' . $field]['required']) && $checkout_fields['billing']['billing_' . $field]['required'];
+                foreach ($this->ec_get_session_data('shipping_details') as $field_key => $value) {
+                    if (isset($checkout_fields['billing']) && isset($checkout_fields['billing']['billing_' . $field_key])) {
+                        $required = isset($checkout_fields['billing']['billing_' . $field_key]['required']) && $checkout_fields['billing']['billing_' . $field_key]['required'];
                         if (!$required || $required && !empty($value)) {
-                            $checkout_fields['billing']['billing_' . $field]['class'][] = 'express-provided';
-                            $checkout_fields['billing']['billing_' . $field]['class'][] = 'hidden';
+                            $checkout_fields['billing']['billing_' . $field_key]['class'][] = 'express-provided';
+                            $checkout_fields['billing']['billing_' . $field_key]['class'][] = 'hidden';
+                        }
+                    }
+                    if (isset($checkout_fields['shipping']) && isset($checkout_fields['shipping']['shipping_' . $field_key])) {
+                        $required = isset($checkout_fields['shipping']['shipping_' . $field_key]['required']) && $checkout_fields['shipping']['shipping_' . $field_key]['required'];
+                        if (!$required || $required && !empty($value)) {
+                            $checkout_fields['shipping']['shipping_' . $field_key]['class'][] = 'express-provided';
+                            $checkout_fields['shipping']['shipping_' . $field_key]['class'][] = 'hidden';
                         }
                     }
                 }
@@ -368,11 +393,14 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->ec_formatted_address('billing');
             }
             ?>
-            <style type="text/css">
-                .woocommerce-shipping-fields {
-                    display: none;
-                }
-            </style>
+        <style type="text/css">
+            #order_comments_field {
+                display:none;
+            }
+            #ship-to-different-address {
+                display:none;
+            }
+        </style>
             <?php
         }
     }
@@ -758,5 +786,25 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $url = "{$url}' async";
         }
         return $url;
+    }
+    
+    public function validate_checkout($country, $state, $sec) {
+            $state_value = '';
+            $valid_states = WC()->countries->get_states(isset($country) ? $country : ( 'billing' === $sec ? WC()->customer->get_country() : WC()->customer->get_shipping_country() ));
+            if (!empty($valid_states) && is_array($valid_states)) {
+                $valid_state_values = array_flip(array_map('strtolower', $valid_states));
+                if (isset($valid_state_values[strtolower($state)])) {
+                    $state_value = $valid_state_values[strtolower($state)];
+                }
+            }
+            if (!empty($valid_states) && is_array($valid_states) && sizeof($valid_states) > 0) {
+                if (!in_array($state, array_keys($valid_states))) {
+                    return false;
+                } else {
+                    return $state;
+                }
+            }
+        
+        return $state_value;
     }
 }
