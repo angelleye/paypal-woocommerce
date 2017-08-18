@@ -207,6 +207,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_get_session_data($key = '') {
         try {
+            if (sizeof(WC()->session) == 0) {
+                return false;
+            }
             $session_data = WC()->session->get( 'paypal_express_checkout' );
             if (isset($session_data[$key])) {
                 $session_data = $session_data[$key];
@@ -233,7 +236,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             $this->posted = $_POST;
             foreach ($this->ec_get_session_data('shipping_details') as $field => $value) {
-                if ($value) {
+                if (!empty($value)) {
                     if('state' == $field) {
                         $shipping_details = $this->ec_get_session_data('shipping_details');
                         if( $this->validate_checkout($shipping_details['country'], $value, 'billing') ) {
@@ -244,7 +247,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         if( $this->validate_checkout($shipping_details['country'], $value, 'shipping') ) {
                             $_POST['shipping_' . $field] = $this->validate_checkout($shipping_details['country'], $value, 'shipping');
                         } else {
-                            $_POST['shipping_' . $field];
+                            $_POST['shipping_' . $field] = '';
                         }
                     } else {
                         $_POST['billing_' . $field] = $value;
@@ -795,7 +798,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $valid_state_values = array_flip(array_map('strtolower', $valid_states));
                 if (isset($valid_state_values[strtolower($state)])) {
                     $state_value = $valid_state_values[strtolower($state)];
+                    return $state_value;
                 }
+            } else {
+                return $state;
             }
             if (!empty($valid_states) && is_array($valid_states) && sizeof($valid_states) > 0) {
                 if (!in_array($state, array_keys($valid_states))) {

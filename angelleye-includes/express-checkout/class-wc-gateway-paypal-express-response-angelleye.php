@@ -35,17 +35,23 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
         }
     }
 
-    public function ec_get_state_code($country_code, $state) {
+    public function ec_get_state_code($country, $state) {
         try {
-            $state = strtoupper($state);
-            if ($country_code !== 'US' && isset(WC()->countries->states[$country_code])) {
-                $local_states = WC()->countries->states[$country_code];
-                if (!empty($local_states) && in_array($state, $local_states)) {
-                    foreach ($local_states as $key => $val) {
-                        if ($val === $state) {
-                            return $key;
-                        }
-                    }
+            $valid_states = WC()->countries->get_states($country);
+            if (!empty($valid_states) && is_array($valid_states)) {
+                $valid_state_values = array_flip(array_map('strtolower', $valid_states));
+                if (isset($valid_state_values[strtolower($state)])) {
+                    $state_value = $valid_state_values[strtolower($state)];
+                    return $state_value;
+                }
+            } else {
+                return $state;
+            }
+            if (!empty($valid_states) && is_array($valid_states) && sizeof($valid_states) > 0) {
+                if (!in_array($state, array_keys($valid_states))) {
+                    return false;
+                } else {
+                    return $state;
                 }
             }
             return $state;
@@ -63,19 +69,19 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
     }
 
     public function ec_is_response_success($paypal_response) {
-        if (strtoupper($paypal_response['ACK']) == 'SUCCESS') {
+        if (!empty($paypal_response['ACK']) && strtoupper($paypal_response['ACK']) == 'SUCCESS') {
             return true;
         }
     }
 
     public function ec_is_response_success_or_successwithwarning($paypal_response) {
-        if (strtoupper($paypal_response['ACK']) == 'SUCCESS' || strtoupper($paypal_response['ACK']) == "SUCCESSWITHWARNING") {
+        if ( !empty($paypal_response['ACK']) && strtoupper($paypal_response['ACK']) == 'SUCCESS' || strtoupper($paypal_response['ACK']) == "SUCCESSWITHWARNING") {
             return true;
         }
     }
 
     public function ec_is_response_successwithwarning($paypal_response) {
-        if (strtoupper($paypal_response['ACK']) == 'SUCCESSWITHWARNING') {
+        if ( !empty($paypal_response['ACK']) && strtoupper($paypal_response['ACK']) == 'SUCCESSWITHWARNING') {
             return true;
         }
     }
