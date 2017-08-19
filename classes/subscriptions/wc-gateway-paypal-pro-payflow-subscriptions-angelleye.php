@@ -33,7 +33,11 @@ class WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE extends WC_Gateway_P
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
-        $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);
+        $renewal_order_id = $this->wc_pre_30 ? $renewal_order->id : $renewal_order->get_id();
+        $payment_tokens_id = get_post_meta($renewal_order_id, '_payment_tokens_id', true);
+        if (empty($payment_tokens_id) || $payment_tokens_id == false) {
+            $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);
+        }
         parent::process_subscription_payment($renewal_order, $amount_to_charge);
     }
 
