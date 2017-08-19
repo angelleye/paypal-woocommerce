@@ -54,7 +54,7 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
 
     public function validate_subscription_payment_meta($payment_method_id, $payment_meta) {
         if ($this->id === $payment_method_id) {
-            if (!empty($payment_meta['post_meta']['_payment_tokens_id']['value']) && empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
+            if (empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
                 throw new Exception('A "_payment_tokens_id" value is required.');
             }
         }
