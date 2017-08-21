@@ -121,6 +121,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.6.2 - 08.21.2017 =
+* Tweak - More adjustments to shipping validation errors in Express Checkout review. ([#816](https://github.com/angelleye/paypal-woocommerce/issues/816))
+* Fix - Resolves an issue with the order edit screen appearing blank in older versions of WooCommerce. ([#833](https://github.com/angelleye/paypal-woocommerce/issues/833))
+* Fix - Resolves a problem with inventory updates when working with Authorization/Capture orders. ([#834](https://github.com/angelleye/paypal-woocommerce/issues/834))
+* Fix - Resolves compatibility issue with various versions of Woo Subscriptions. ([#823](https://github.com/angelleye/paypal-woocommerce/issues/823))
+* Fix - Resolves some issues with Woo Germanized compatibility. ([#757](https://github.com/angelleye/paypal-woocommerce/issues/757))
+
 = 1.4.6.1 - 08.11.2017 =
 * Fix - Further adjustments to Skip Final Review bug. ([#830](https://github.com/angelleye/paypal-woocommerce/issues/830))
 
