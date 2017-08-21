@@ -122,6 +122,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.6.2 - 08.21.2017 =
+* Feature - Adds filter hook to Payments Pro PayFlow which allows you to override the API endpoint when using services like NoFraud. ([#843](https://github.com/angelleye/paypal-woocommerce/issues/843))
 * Tweak - More adjustments to shipping validation errors in Express Checkout review. ([#816](https://github.com/angelleye/paypal-woocommerce/issues/816))
 * Fix - Resolves an issue with the order edit screen appearing blank in older versions of WooCommerce. ([#833](https://github.com/angelleye/paypal-woocommerce/issues/833))
 * Fix - Resolves a problem with inventory updates when working with Authorization/Capture orders. ([#834](https://github.com/angelleye/paypal-woocommerce/issues/834))
