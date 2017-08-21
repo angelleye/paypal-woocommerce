@@ -51,11 +51,11 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal
 		
 		if($this->Sandbox)
 		{
-			$this->APIEndPoint = 'https://pilot-payflowpro.paypal.com';
+			$this->APIEndPoint = apply_filters('aepfw_payments_pro_payflow_endpoint_sandbox', 'https://pilot-payflowpro.paypal.com');
 		}
 		else
 		{
-			$this->APIEndPoint = 'https://payflowpro.paypal.com';
+			$this->APIEndPoint = apply_filters('aepfw_payments_pro_payflow_endpoint', 'https://payflowpro.paypal.com');
 		}
 		
 		$this->NVPCredentials = 'BUTTONSOURCE['.strlen($this->APIButtonSource).']='.$this->APIButtonSource.'&VERBOSITY['.strlen($this->Verbosity).']='.$this->Verbosity.'&USER['.strlen($this->APIUsername).']='.$this->APIUsername.'&VENDOR['.strlen($this->APIVendor).']='.$this->APIVendor.'&PARTNER['.strlen($this->APIPartner).']='.$this->APIPartner.'&PWD['.strlen($this->APIPassword).']='.$this->APIPassword;
