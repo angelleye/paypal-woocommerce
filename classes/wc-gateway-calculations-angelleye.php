@@ -35,6 +35,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             if (!defined('WOOCOMMERCE_CART')) {
                 define('WOOCOMMERCE_CART', true);
             }
+            $desc = '';
             WC()->cart->calculate_totals();
             $this->payment = array();
             $this->itemamt = 0;
@@ -48,19 +49,38 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     $name = $values['data']->post->post_title;
                 } else {
                     $product = $values['data'];
-                    $name = $product->get_name();
+                    $name = $product->get_title();
                 }
                 $name = AngellEYE_Gateway_Paypal::clean_product_title($name);
+                if( $product->is_type( 'variation' ) ) {
+                    if (version_compare(WC_VERSION, '3.0', '<')) {
+                        $attributes = $product->get_variation_attributes();
+                        if( !empty($attributes) && is_array($attributes) ) {
+                            foreach ($attributes as $key => $value) {
+                                $key = str_replace(array('attribute_pa_', 'attribute_'), '', $key);
+                                $desc .= ' ' . ucwords($key) .': ' . $value;
+                            }
+                            $desc = trim($desc);
+                        }
+                    } else {
+                        $attributes = $product->get_attributes();
+                        if( !empty($attributes) && is_array($attributes)) {
+                            foreach ($attributes as $key => $value) {
+                               $desc .= ' ' . ucwords($key) .': ' . $value;
+                            }
+                        }
+                        $desc = trim($desc);
+                    }
+                }
                 $product_sku = null;
                 if (is_object($product)) {
                     $product_sku = $product->get_sku();
                 }
-                
                 $item = array(
                     'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'paypal-for-woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
-                    'desc' => '',
+                    'desc' => html_entity_decode( wc_trim_string( $desc , 127 ), ENT_NOQUOTES, 'UTF-8' ),
                     'qty' => $values['quantity'],
-                    'amt' => $amount,
+                    'amt' => AngellEYE_Gateway_Paypal::number_format($amount),
                     'number' => $product_sku
                 );
                 $this->order_items[] = $item;
@@ -104,11 +124,11 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->shippingamt = 0;
             }
             $this->cart_re_calculate();
-            $this->payment['itemamt'] = round($this->itemamt, $this->decimals);
-            $this->payment['taxamt'] = round($this->taxamt, $this->decimals);
+            $this->payment['itemamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->itemamt, $this->decimals));
+            $this->payment['taxamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->taxamt, $this->decimals));
             $this->payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->shippingamt, $this->decimals));
             $this->payment['order_items'] = $this->order_items;
-            $this->payment['discount_amount'] = round($this->discount_amount, $this->decimals);
+            $this->payment['discount_amount'] = AngellEYE_Gateway_Paypal::number_format(round($this->discount_amount, $this->decimals));
             return $this->payment;
         }
 
@@ -120,6 +140,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->order_items = array();
             $roundedPayPalTotal = 0;
             $this->discount_amount = round($order->get_total_discount(), $this->decimals);
+            $desc = '';
             foreach ($order->get_items() as $cart_item_key => $values) {
                 $product = $order->get_product_from_item($values);
                 $product_sku = null;
@@ -133,11 +154,32 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 }
                 $name = AngellEYE_Gateway_Paypal::clean_product_title($name);
                 $amount = round($values['line_subtotal'] / $values['qty'], $this->decimals);
+                
+                if( $product->is_type( 'variation' ) ) {
+                    if (version_compare(WC_VERSION, '3.0', '<')) {
+                        $attributes = $product->get_variation_attributes();
+                        if( !empty($attributes) && is_array($attributes) ) {
+                            foreach ($attributes as $key => $value) {
+                                $key = str_replace(array('attribute_pa_', 'attribute_'), '', $key);
+                                $desc .= ' ' . ucwords($key) .': ' . $value;
+                            }
+                            $desc = trim($desc);
+                        }
+                    } else {
+                        $attributes = $product->get_attributes();
+                        if( !empty($attributes) && is_array($attributes)) {
+                            foreach ($attributes as $key => $value) {
+                               $desc .= ' ' . ucwords($key) .': ' . $value;
+                            }
+                        }
+                        $desc = trim($desc);
+                    }
+                }
                 $item = array(
                     'name' => html_entity_decode( wc_trim_string( $name ? $name : __( 'Item', 'paypal-for-woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
-                    'desc' => '',
+                    'desc' => html_entity_decode( wc_trim_string( $desc , 127 ), ENT_NOQUOTES, 'UTF-8' ),
                     'qty' => $values['qty'],
-                    'amt' => $amount,
+                    'amt' => AngellEYE_Gateway_Paypal::number_format($amount),
                     'number' => $product_sku,
                 );
                 $this->order_items[] = $item;
@@ -150,7 +192,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     'name' => html_entity_decode( wc_trim_string( $fee_item_name ? $fee_item_name : __( 'Fee', 'paypal-for-woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' ),
                     'desc' => '',
                     'qty' => 1,
-                    'amt' => $amount,
+                    'amt' => AngellEYE_Gateway_Paypal::number_format($amount),
                     'number' => ''
                 );
                 $this->order_items[] = $fee_item;
@@ -182,11 +224,11 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->shippingamt = 0;
             }
             $this->order_re_calculate($order);
-            $this->payment['itemamt'] = round($this->itemamt, $this->decimals);
-            $this->payment['taxamt'] = round($this->taxamt, $this->decimals);
-            $this->payment['shippingamt'] = round($this->shippingamt, $this->decimals);
+            $this->payment['itemamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->itemamt, $this->decimals));
+            $this->payment['taxamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->taxamt, $this->decimals));
+            $this->payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->shippingamt, $this->decimals));
             $this->payment['order_items'] = $this->order_items;
-            $this->payment['discount_amount'] = round($this->discount_amount, $this->decimals);
+            $this->payment['discount_amount'] = AngellEYE_Gateway_Paypal::number_format(round($this->discount_amount, $this->decimals));
             return $this->payment;
         }
 
