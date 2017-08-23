@@ -42,6 +42,9 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->order_items = array();
             $roundedPayPalTotal = 0;
             $this->discount_amount = round(WC()->cart->get_cart_discount_total(), $this->decimals);
+            if( $this->get_giftcard_amount() != false ) {
+                $this->discount_amount = round( $this->discount_amount + $this->get_giftcard_amount() , $this->decimals);
+            }
             foreach (WC()->cart->cart_contents as $cart_item_key => $values) {
                 $amount = round($values['line_subtotal'] / $values['quantity'], $this->decimals);
                 if (version_compare(WC_VERSION, '3.0', '<')) {
@@ -140,6 +143,9 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->order_items = array();
             $roundedPayPalTotal = 0;
             $this->discount_amount = round($order->get_total_discount(), $this->decimals);
+            if( $this->get_giftcard_amount($order_id) != false ) {
+                $this->discount_amount = round( $this->discount_amount + $this->get_giftcard_amount($order_id) , $this->decimals);
+            }
             $desc = '';
             foreach ($order->get_items() as $cart_item_key => $values) {
                 $product = $order->get_product_from_item($values);
@@ -306,6 +312,26 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     }
                 }
             }
+        }
+        
+        public function get_giftcard_amount($order_id = null) {
+            if(class_exists('WPR_Giftcard')) {
+                if( !empty(WC()->session->giftcard_post) ) {
+                    $giftCards = WC()->session->giftcard_post;
+                    $giftcard = new WPR_Giftcard();
+		    $price = $giftcard->wpr_get_payment_amount();
+                    return $price;
+                } else {
+                    $giftCardPayment = get_post_meta( $order_id, 'rpgc_payment', true);
+                    if( !empty($giftCardPayment) && is_array($giftCardPayment)) {
+                        return $giftCardPayment[count($giftCardPayment) - 1];
+                    }
+                    return $giftCardPayment;
+                }
+            } else {
+                return false;
+            }
+            
         }
         
         
