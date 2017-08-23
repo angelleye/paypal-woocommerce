@@ -163,6 +163,13 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
     clear: both;
     float: left;
 }
+.single_add_to_cart_button.paypal_checkout_button.paypal_checkout_button_cc {
+    border: none !important;
+}
+.single_add_to_cart_button.paypal_checkout_button.paypal_checkout_button_cc::before {
+    content: unset !important;
+    font-family: inherit !important;
+}
 @media only screen 
   and (min-device-width: 320px) 
   and (max-device-width: 1024px) {
