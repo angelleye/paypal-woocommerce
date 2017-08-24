@@ -124,6 +124,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.4.6.3 - xx.xx.2017 =
 * Tweak - Adjusts the way variation data is passed in the PayPal request. ([#734](https://github.com/angelleye/paypal-woocommerce/issues/734))
 * Tweak - Adjustments to PayPal Credit button output. ([#846](https://github.com/angelleye/paypal-woocommerce/issues/846))
+* Tweak - Adds INR currency code to compatible currencies in Express Checkout. ([#847](https://github.com/angelleye/paypal-woocommerce/issues/847))
 * Fix - Resolves a payment status problem with Braintree drop-in UI payments. ([#804](https://github.com/angelleye/paypal-woocommerce/issues/804))
 * Fix - Resolves an issue with tax calculations pertaining to orders that include gift cards. ([#811](https://github.com/angelleye/paypal-woocommerce/issues/811))
 
