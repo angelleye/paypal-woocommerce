@@ -1523,7 +1523,7 @@ class AngellEYE_Utility {
     }
 
     public static function is_valid_for_use_paypal_express() {
-        return in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_express_supported_currencies', array('AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP')));
+        return in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_express_supported_currencies', array('AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP', 'INR')));
     }
 
     public function angelleye_set_payment_method() {
