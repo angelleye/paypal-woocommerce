@@ -73,6 +73,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             add_filter( 'clean_url', array( $this, 'adjust_fraud_script_tag' ) );
             add_action( 'wp_print_footer_scripts', array( $this, 'render_fraud_js' ), 1 );
         }
+        
+       add_action('woocommerce_admin_order_data_after_order_details', array($this, 'woocommerce_admin_order_data_after_order_details'), 10, 1);
+        
     }
 
     /**
@@ -1705,6 +1708,40 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 $this->public_key = $this->sandbox == false ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
                             }
                         }        
+                    }
+                }
+            }
+        }
+        
+        public function woocommerce_admin_order_data_after_order_details($order) {
+            $payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+            if( 'braintree' == $payment_method && $order->get_status() != 'refunded') {
+                $this->angelleye_braintree_lib();
+                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                $transaction_id = $order->get_transaction_id();
+                $transaction = Braintree_Transaction::find($transaction_id);
+                if( !empty($transaction->refundIds) ) {
+                    foreach ($transaction->refundIds as $key => $value) {
+                        $braintree_refunded_id = get_post_meta($order_id, 'braintree_refunded_id', true);
+                        if( empty($braintree_refunded_id) ) {
+                            $braintree_refunded_id = array();
+                        }
+                        if(!in_array($value, $braintree_refunded_id)) {
+                            $refund_transaction = Braintree_Transaction::find($value);
+                            $default_args = array(
+                                    'amount'         => $refund_transaction->amount,
+                                    'reason'         => 'Data Synchronization from Braintree',
+                                    'order_id'       => $order_id,
+                                    'refund_id'      => 0,
+                                    'line_items'     => array(),
+                                    'refund_payment' => false,
+                                    'restock_items'  => false,
+                            );
+                            wc_create_refund( $default_args );
+                            $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($refund_transaction->amount, 2, '.', '')), $value));
+                            $braintree_refunded_id[$value] = $value;
+                            update_post_meta($order_id, 'braintree_refunded_id', $braintree_refunded_id);
+                        }
                     }
                 }
             }
