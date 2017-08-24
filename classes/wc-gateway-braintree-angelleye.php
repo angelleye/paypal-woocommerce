@@ -698,18 +698,37 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 update_user_meta($customer_id, 'braintree_customer_id', $transaction->customer['id']);
                                 $payment_method_token = $transaction->creditCard['token'];
                                 $wc_existing_token = $this->get_token_by_token($payment_method_token);
+                                $paymentMethod = Braintree_PaymentMethod::find($payment_method_token);
                                 if ($wc_existing_token == null) {
-                                    $token = new WC_Payment_Token_CC();
-                                    $token->set_user_id($customer_id);
-                                    $token->set_token($payment_method_token);
-                                    $token->set_gateway_id($this->id);
-                                    $token->set_card_type($transaction->creditCard['cardType']);
-                                    $token->set_last4($transaction->creditCard['last4']);
-                                    $token->set_expiry_month($transaction->creditCard['expirationMonth']);
-                                    $token->set_expiry_year($transaction->creditCard['expirationYear']);
-                                    $save_result = $token->save();
-                                    if ($save_result) {
-                                        $order->add_payment_token($token);
+                                    if( !empty($transaction->creditCard['cardType']) && !empty($transaction->creditCard['last4']) ) {
+                                        $token = new WC_Payment_Token_CC();
+                                        $token->set_user_id($customer_id);
+                                        $token->set_token($payment_method_token);
+                                        $token->set_gateway_id($this->id);
+                                        $token->set_card_type($transaction->creditCard['cardType']);
+                                        $token->set_last4($transaction->creditCard['last4']);
+                                        $token->set_expiry_month($transaction->creditCard['expirationMonth']);
+                                        $token->set_expiry_year($transaction->creditCard['expirationYear']);
+                                        $save_result = $token->save();
+                                        if ($save_result) {
+                                            $order->add_payment_token($token);
+                                        }
+                                    } else {
+                                        if( !empty($paymentMethod->billingAgreementId) ) {
+                                            $token = new WC_Payment_Token_CC();
+                                            $customer_id = get_current_user_id();
+                                            $token->set_user_id($customer_id);
+                                            $token->set_token($paymentMethod->billingAgreementId);
+                                            $token->set_gateway_id($this->id);
+                                            $token->set_card_type('PayPal Billing Agreement');
+                                            $token->set_last4(substr($paymentMethod->billingAgreementId, -4));
+                                            $token->set_expiry_month(date('m'));
+                                            $token->set_expiry_year(date('Y', strtotime('+20 year')));
+                                            $save_result = $token->save();
+                                            if ($save_result) {
+                                                $order->add_payment_token($token);
+                                            }
+                                        }
                                     }
                                  } else {
                                      $order->add_payment_token($wc_existing_token);
