@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adds INR currency code to compatible currencies in Express Checkout. ([#847](https://github.com/angelleye/paypal-woocommerce/issues/847))
 * Fix - Resolves a payment status problem with Braintree drop-in UI payments. ([#804](https://github.com/angelleye/paypal-woocommerce/issues/804))
 * Fix - Resolves an issue with tax calculations pertaining to orders that include gift cards. ([#811](https://github.com/angelleye/paypal-woocommerce/issues/811))
-
+* Fix - Resolves an issue where Braintree refunds were not updating the WooCommerce order status properly.  ([#780](https://github.com/angelleye/paypal-woocommerce/issues/780))
 
 = 1.4.6.2 - 08.21.2017 =
 * Feature - Adds filter hook to Payments Pro PayFlow which allows you to override the API endpoint when using services like NoFraud. ([#843](https://github.com/angelleye/paypal-woocommerce/issues/843))
