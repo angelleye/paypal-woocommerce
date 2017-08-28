@@ -667,7 +667,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $paypal_express_request->update_payment_status_by_paypal_responce($order_id, $result);
                 return array(
                     'result' => 'success',
-                    'redirect' => $this->get_return_url($order)
+                    'redirect' => add_query_arg( 'utm_nooverride', '1', $this->get_return_url($order) )
                 );
             } else {
                 $redirect_url = get_permalink(wc_get_page_id('cart'));
@@ -688,7 +688,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     WC()->cart->empty_cart();
                     return array(
                         'result' => 'success',
-                        'redirect' => $this->get_return_url($order)
+                        'redirect' => add_query_arg( 'utm_nooverride', '1', $this->get_return_url($order) )
                     );
                 } else {
                     $redirect_url = get_permalink(wc_get_page_id('cart'));
@@ -1212,7 +1212,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             WC()->cart->empty_cart();
             return array(
                 'result' => 'success',
-                'redirect' => $this->get_return_url($order)
+                'redirect' => add_query_arg( 'utm_nooverride', '1', $this->get_return_url($order) )
             );
         }
     }

@@ -45,7 +45,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
 
     public function ec_get_checkout_url($action) {
-        return add_query_arg('pp_action', $action, WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE'));
+        return add_query_arg( array( 'pp_action' => $action, 'utm_nooverride' => '1'), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE') );
     }
 
     public function ec_is_express_checkout() {

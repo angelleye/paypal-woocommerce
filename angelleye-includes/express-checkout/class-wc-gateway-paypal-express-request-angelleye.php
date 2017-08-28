@@ -237,7 +237,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : ''));
                 WC()->cart->empty_cart();
                 wc_clear_notices();
-                wp_redirect($this->gateway->get_return_url($order));
+                wp_redirect(add_query_arg( 'utm_nooverride', '1', $this->gateway->get_return_url($order) ));
                 exit();
             } elseif ($this->response_helper->ec_is_response_successwithwarning($this->paypal_response)) {
                 apply_filters( 'woocommerce_payment_successful_result', array('result' => 'success'), $order_id );
@@ -286,7 +286,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 
                 WC()->cart->empty_cart();
                 wc_clear_notices();
-                wp_redirect($this->gateway->get_return_url($order));
+                wp_redirect(add_query_arg( 'utm_nooverride', '1', $this->gateway->get_return_url($order) ));
                 exit();
             } else {
                 $this->angelleye_add_order_note_with_error($order, $paypal_action_name = 'DoExpressCheckoutPayment');
