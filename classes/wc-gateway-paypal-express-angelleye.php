@@ -783,6 +783,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }
         $locale = get_locale();
+        if (get_locale() != '') {
+            $locale = substr(get_locale(), 0, 5);
+        }
         if (!in_array($locale, $_supportedLocale)) {
             $locale = 'en_US';
         }
