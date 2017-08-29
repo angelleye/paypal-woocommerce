@@ -791,10 +791,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public static function angelleye_get_paypalimage() {
         if (self::get_button_locale_code() == 'en_US') {
-            return "https://www.paypalobjects.com/webstatic/" . self::get_button_locale_code() . "/i/buttons/checkout-logo-medium.png";
+            $image_path = plugins_url('/assets/images/dynamic-image/' . self::get_button_locale_code() . '.png', plugin_basename(dirname(__FILE__)));
         } else {
-            return esc_url(add_query_arg('cmd', '_dynamic-image', add_query_arg('locale', self::get_button_locale_code(), 'https://fpdbs.paypal.com/dynamicimageweb')));
+            $image_path = plugins_url('/assets/images/dynamic-image/' . self::get_button_locale_code() . '.gif', plugin_basename(dirname(__FILE__)));
+            if (is_ssl()) {
+                $image_path = preg_replace("/^http:/i", "https:", $image_path);
+            }
         }
+        
+        return $image_path;
     }
 
     public function handle_wc_api() {
