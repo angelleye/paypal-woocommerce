@@ -132,6 +132,8 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                                 <option value="disable_paypal_billing_agreement"><?php echo __('Disable PayPal Billing Agreement', 'paypal-for-woocommerce'); ?></option>
                                 <option value="enable_express_checkout_button"><?php echo __('Enable Express Checkout Button', 'paypal-for-woocommerce'); ?></option>
                                 <option value="disable_express_checkout_button"><?php echo __('Disable Express Checkout Button', 'paypal-for-woocommerce'); ?></option>
+                                <option value="enable_sandbox_mode"><?php echo __('Enable Sandbox Mode', 'paypal-for-woocommerce'); ?></option>
+                                <option value="disable_sandbox_mode"><?php echo __('Disable Sandbox Mode', 'paypal-for-woocommerce'); ?></option>
                             </select>
                         </div>
                     </div>

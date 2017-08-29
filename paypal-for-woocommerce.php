@@ -700,6 +700,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $action_key = "_paypal_billing_agreement";
                 } elseif ($pfw_bulk_action_type == 'enable_express_checkout_button' || $pfw_bulk_action_type == 'disable_express_checkout_button') {
                     $action_key = "_enable_ec_button";
+                } elseif ($pfw_bulk_action_type == 'enable_sandbox_mode' || $pfw_bulk_action_type == 'disable_sandbox_mode') {
+                    $action_key = "_enable_sandbox_mode";
                 }
 
                 // All Products
