@@ -127,6 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjustments to PayPal Credit button output. ([#846](https://github.com/angelleye/paypal-woocommerce/issues/846))
 * Tweak - Adds INR currency code to compatible currencies in Express Checkout. ([#847](https://github.com/angelleye/paypal-woocommerce/issues/847))
 * Tweak - Referrer adjustment so Google Analytics will not show PayPal as the referrer on sales. ([#605](https://github.com/angelleye/paypal-woocommerce/issues/605))
+* Tweak - Adds local images for PayPal Express buttons instead of using PayPal hosted buttons because they often load slowly. ([#818](https://github.com/angelleye/paypal-woocommerce/issues/818))
 * Fix - Resolves a payment status problem with Braintree drop-in UI payments. ([#804](https://github.com/angelleye/paypal-woocommerce/issues/804))
 * Fix - Resolves an issue with tax calculations pertaining to orders that include gift cards. ([#811](https://github.com/angelleye/paypal-woocommerce/issues/811))
 * Fix - Resolves an issue where Braintree refunds were not updating the WooCommerce order status properly.  ([#780](https://github.com/angelleye/paypal-woocommerce/issues/780))
