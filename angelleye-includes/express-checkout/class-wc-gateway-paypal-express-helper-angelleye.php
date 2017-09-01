@@ -647,6 +647,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if(!empty($post_data['ship_to_different_address']) && $post_data['ship_to_different_address'] == '1') {
             return 1;
         }
+        if( $this->function_helper->ec_is_express_checkout() ) {
+            return 1;
+        }
         return $bool;
     }
     

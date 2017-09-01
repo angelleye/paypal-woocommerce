@@ -22,6 +22,9 @@
 .express-checkout .wc-terms-and-conditions {
    width: 100%; 
 }
+.express-checkout #ship-to-different-address {
+    display: none;
+}
 .express-checkout.express-hide-terms .wc-terms-and-conditions {
     display: none !important
 }
