@@ -19,8 +19,10 @@
 .express-checkout #order_payment_heading {
     display: none;
 }
-.express-checkout.express-hide-terms .terms label[for="terms"],
-.express-checkout.express-hide-terms .terms #terms {
+.express-checkout .wc-terms-and-conditions {
+   width: 100%; 
+}
+.express-checkout.express-hide-terms .wc-terms-and-conditions {
     display: none !important
 }
 .express-checkout #payment .payment_methods {

@@ -123,6 +123,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function admin_options() {
         $guest_checkout = get_option('woocommerce_enable_guest_checkout', 'yes');
+        if( 'yes' === get_option( 'woocommerce_registration_generate_username' ) && 'yes' === get_option( 'woocommerce_registration_generate_password' ) ) {
+            $guest_checkout = 'yes';
+        }
         if (wc_get_page_id('terms') > 0 && apply_filters('woocommerce_checkout_show_terms', true)) {
             if ($guest_checkout === 'yes') {
                 $display_disable_terms = 'yes';
@@ -207,7 +210,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $skip_final_review_option_not_allowed_guest_checkout = '';
         $skip_final_review_option_not_allowed_terms = '';
         $skip_final_review_option_not_allowed_tokenized_payments = '';
+        
         $woocommerce_enable_guest_checkout = get_option('woocommerce_enable_guest_checkout');
+        if( 'yes' === get_option( 'woocommerce_registration_generate_username' ) && 'yes' === get_option( 'woocommerce_registration_generate_password' ) ) {
+            $woocommerce_enable_guest_checkout = 'yes';
+        }
         if (isset($woocommerce_enable_guest_checkout) && ( $woocommerce_enable_guest_checkout === "no" )) {
             $skip_final_review_option_not_allowed_guest_checkout = ' (The WooCommerce guest checkout option is disabled.  Therefore, the review page is required for login / account creation, and this option will be overridden.)';
         }
@@ -896,6 +903,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             if (is_wp_error($order_id)) {
                                 throw new Exception($order_id->get_error_message());
                             }
+                            if ( ! is_user_logged_in() && WC()->checkout->is_registration_required($order_id) ) {
+                                $paypal_express_request->angelleye_process_customer();
+                            }
                             do_action('woocommerce_checkout_order_processed', $order_id, $this->posted);
                         } else {
                             $_POST = WC()->session->get( 'post_data' );
@@ -933,6 +943,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $order_id = WC()->checkout()->create_order($this->posted);
                             if (is_wp_error($order_id)) {
                                 throw new Exception($order_id->get_error_message());
+                            }
+                            if ( ! is_user_logged_in() && WC()->checkout->is_registration_required() ) {
+                                $paypal_express_request->angelleye_process_customer($order_id);
                             }
                             do_action('woocommerce_checkout_order_processed', $order_id, $this->posted);
                         }

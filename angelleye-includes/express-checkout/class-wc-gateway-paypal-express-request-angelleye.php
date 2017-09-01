@@ -1152,6 +1152,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if ($this->skip_final_review == 'no') {
             return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
         }
+        if( 'yes' === get_option( 'woocommerce_registration_generate_username' ) && 'yes' === get_option( 'woocommerce_registration_generate_password' ) ) {
+            $this->must_create_account = false;
+        }
         if ($this->must_create_account) {
             return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
         }
@@ -1246,6 +1249,50 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         } else {
             $ec_message = apply_filters('ae_ppec_refund_error_message', $this->paypal_response['L_LONGMESSAGE0'], $this->paypal_response['L_ERRORCODE0'], $this->paypal_response);
             return new WP_Error('ec_refund-error', $ec_message);
+        }
+    }
+    
+    public function angelleye_process_customer($order_id) {
+        $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
+        if( !empty($paypal_express_checkout) ) {
+            $email = ( !empty($paypal_express_checkout['ExpresscheckoutDetails']['EMAIL']) ) ? $paypal_express_checkout['ExpresscheckoutDetails']['EMAIL'] : '';
+            if( !empty($email) ) {
+                if (email_exists($email)) {
+                    $customer_id = email_exists($email);
+                } else {
+                    $username = sanitize_user(current(explode('@', $email)), true);
+                    $append = 1;
+                    $o_username = $username;
+                    while (username_exists($username)) {
+                        $username = $o_username . $append;
+                        $append++;
+                    }
+                    $password = wp_generate_password();
+                    WC()->session->set('before_wc_create_new_customer', true);
+                    $new_customer = wc_create_new_customer($email, $username, $password);
+                    if (is_wp_error($new_customer)) {
+                        throw new Exception($new_customer->get_error_message());
+                    } else {
+                        $customer_id = absint($new_customer);
+                        do_action('woocommerce_guest_customer_new_account_notification', $customer_id);
+                    }
+                }
+                wc_set_customer_auth_cookie($customer_id);
+                WC()->session->set('reload_checkout', true);
+                WC()->cart->calculate_totals();
+                $first_name = $paypal_express_checkout['ExpresscheckoutDetails']['FIRSTNAME'];
+                if ($first_name && apply_filters('woocommerce_checkout_update_customer_data', true, WC()->customer)) {
+                    $userdata = array(
+                        'ID' => $customer_id,
+                        'first_name' => $paypal_express_checkout['ExpresscheckoutDetails']['FIRSTNAME'],
+                        'last_name' => $paypal_express_checkout['ExpresscheckoutDetails']['LASTNAME'],
+                        'display_name' => $paypal_express_checkout['ExpresscheckoutDetails']['FIRSTNAME']
+                    );
+                    update_post_meta( $order_id, '_customer_user', $customer_id );
+                    wp_update_user(apply_filters('woocommerce_checkout_customer_userdata', $userdata, WC()->customer));
+                    wc_clear_notices();
+                }
+            }
         }
     }
 }
