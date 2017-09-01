@@ -316,6 +316,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'default' => 'WC-EC'
             ),
+            'review_title_page' => array(
+                'title' => __('Order Review Page Title', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('This controls the title of order review page which the user sees during checkout.', 'paypal-for-woocommerce'),
+                'desc_tip' => true,
+                'default' => 'Review Order'
+            ),
             'checkout_with_pp_button_type' => array(
                 'title' => __('Checkout Button Type', 'paypal-for-woocommerce'),
                 'type' => 'select',

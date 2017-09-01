@@ -116,7 +116,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( "pre_option_woocommerce_paypal_pro_payflow_settings", array($this, 'angelleye_paypal_pro_payflow_decrypt_gateway_api'), 10, 1);
             add_filter( "pre_option_woocommerce_braintree_settings", array($this, 'angelleye_braintree_decrypt_gateway_api'), 10, 1);
             add_filter( "pre_option_woocommerce_enable_guest_checkout", array($this, 'angelleye_express_checkout_woocommerce_enable_guest_checkout'), 10, 1);
-            add_filter('the_title', array($this, 'angelleye_paypal_for_woocommerce_page_title'), 99, 1);
+            
             $this->customer_id;
         }
 
@@ -1075,19 +1075,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 return $gateway_settings;
             } else {
                 return $bool;
-            }
-        }
-        
-        public function angelleye_paypal_for_woocommerce_page_title($page_title) {
-            if (sizeof(WC()->session) == 0) {
-                return $page_title;
-            }
-            $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
-            if ('Checkout' == $page_title && !empty($paypal_express_checkout)) {
-                remove_filter('the_title', array($this, 'angelleye_paypal_for_woocommerce_page_title'));
-                return 'Review Order';
-            } else {
-                return $page_title;
             }
         }
         

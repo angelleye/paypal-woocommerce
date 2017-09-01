@@ -11,7 +11,7 @@
     float: left;   
 }
 .express-checkout .ex-show-address-fields {
-    float: right
+    width: 100%;
 }
 .express-checkout .express-provided.hidden {
     display: none !important
