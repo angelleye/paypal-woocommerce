@@ -93,56 +93,23 @@ if ( ! class_exists( 'AngellEYE_Gateway_Paypal' ) ) {
 			$basename = plugin_basename( __FILE__ );
 			$prefix   = is_network_admin() ? 'network_admin_' : '';
 			add_filter( "{$prefix}plugin_action_links_$basename", array( $this, 'plugin_action_links' ), 10, 4 );
-
-
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 			add_action( 'admin_print_styles', array( $this, 'admin_styles' ) );
-
 			add_action( 'admin_menu', array( $this, 'angelleye_admin_menu_own' ) );
 			add_action( 'product_type_options', array( $this, 'angelleye_product_type_options_own' ), 10, 1 );
-			add_action( 'woocommerce_process_product_meta', array(
-				$this,
-				'angelleye_woocommerce_process_product_meta_own'
-			), 10, 1 );
-			add_filter( 'woocommerce_add_to_cart_sold_individually_quantity', array(
-				$this,
-				'angelleye_woocommerce_add_to_cart_sold_individually_quantity'
-			), 10, 5 );
+			add_action( 'woocommerce_process_product_meta', array( $this,'angelleye_woocommerce_process_product_meta_own'), 10, 1 );
+			add_filter( 'woocommerce_add_to_cart_sold_individually_quantity', array($this,'angelleye_woocommerce_add_to_cart_sold_individually_quantity'), 10, 5 );
 			add_action( 'admin_enqueue_scripts', array( $this, 'angelleye_woocommerce_admin_enqueue_scripts' ) );
-			add_action( 'wp_ajax_pfw_ed_shipping_bulk_tool', array(
-				$this,
-				'angelleye_woocommerce_pfw_ed_shipping_bulk_tool'
-			) );
+			add_action( 'wp_ajax_pfw_ed_shipping_bulk_tool', array($this,'angelleye_woocommerce_pfw_ed_shipping_bulk_tool') );
 			add_filter( 'body_class', array( $this, 'add_body_classes' ) );
 			add_action( 'http_api_curl', array( $this, 'http_api_curl_ec_add_curl_parameter' ), 10, 3 );
-			add_filter( "pre_option_woocommerce_paypal_express_settings", array(
-				$this,
-				'angelleye_express_checkout_decrypt_gateway_api'
-			), 10, 1 );
-			add_filter( "pre_option_woocommerce_paypal_advanced_settings", array(
-				$this,
-				'angelleye_paypal_advanced_decrypt_gateway_api'
-			), 10, 1 );
-			add_filter( "pre_option_woocommerce_paypal_credit_card_rest_settings", array(
-				$this,
-				'angelleye_paypal_credit_card_rest_decrypt_gateway_api'
-			), 10, 1 );
-			add_filter( "pre_option_woocommerce_paypal_pro_settings", array(
-				$this,
-				'angelleye_paypal_pro_decrypt_gateway_api'
-			), 10, 1 );
-			add_filter( "pre_option_woocommerce_paypal_pro_payflow_settings", array(
-				$this,
-				'angelleye_paypal_pro_payflow_decrypt_gateway_api'
-			), 10, 1 );
-			add_filter( "pre_option_woocommerce_braintree_settings", array(
-				$this,
-				'angelleye_braintree_decrypt_gateway_api'
-			), 10, 1 );
-			add_filter( "pre_option_woocommerce_enable_guest_checkout", array(
-				$this,
-				'angelleye_express_checkout_woocommerce_enable_guest_checkout'
-			), 10, 1 );
+			add_filter( "pre_option_woocommerce_paypal_express_settings", array($this,'angelleye_express_checkout_decrypt_gateway_api'), 10, 1 );
+			add_filter( "pre_option_woocommerce_paypal_advanced_settings", array($this,'angelleye_paypal_advanced_decrypt_gateway_api'), 10, 1 );
+			add_filter( "pre_option_woocommerce_paypal_credit_card_rest_settings", array($this,'angelleye_paypal_credit_card_rest_decrypt_gateway_api'), 10, 1 );
+			add_filter( "pre_option_woocommerce_paypal_pro_settings", array($this,'angelleye_paypal_pro_decrypt_gateway_api'), 10, 1 );
+			add_filter( "pre_option_woocommerce_paypal_pro_payflow_settings", array($this,'angelleye_paypal_pro_payflow_decrypt_gateway_api'), 10, 1 );
+			add_filter( "pre_option_woocommerce_braintree_settings", array($this,'angelleye_braintree_decrypt_gateway_api'), 10, 1 );
+			add_filter( "pre_option_woocommerce_enable_guest_checkout", array($this,'angelleye_express_checkout_woocommerce_enable_guest_checkout'), 10, 1 );
 			add_filter( 'the_title', array( $this, 'angelleye_paypal_for_woocommerce_page_title' ), 99, 1 );
 			$this->customer_id;
 		}
@@ -304,7 +271,7 @@ if ( ! class_exists( 'AngellEYE_Gateway_Paypal' ) ) {
 				$processed = ( isset( $_GET['processed'] ) ) ? $_GET['processed'] : false;
 				if ( $processed ) {
 					echo '<div class="updated">';
-					echo '<p>' . sprintf( __( 'Action completed; %s records processed. ', 'paypal-for-woocommerce' ), ( $processed == 'zero' ) ? 0 : $processed );
+					echo '<p>' . sprintf( __( 'Action completed; %s records processed. ', 'paypal-for-woocommerce' ), ( $processed == 'zero' ) ? 0 : $processed ).'</p>';
 					echo '</div>';
 				}
 			}
@@ -1007,10 +974,9 @@ if ( ! class_exists( 'AngellEYE_Gateway_Paypal' ) ) {
 			if ( 'true' === $ignore_paypal_plus_move_notice ) {
 				return false;
 			}
-			if ( ! empty( $paypal_plus['enabled'] ) && 'yes' === $paypal_plus['enabled'] && version_compare( VERSION_PFW, '1.2.4', '<=' ) && $this->is_paypal_plus_plugin_active() == false && $ignore_paypal_plus_move_notice == false ) {
-				echo '<div class="notice welcome-panel error"><p style="margin: 10px;">' . sprintf( __( "In order to better support the different countries and international features that PayPal Plus provides we have created a new, separate plugin. <a href='https://www.angelleye.com/product/woocommerce-paypal-plus-plugin' target='_blank'>Get the New PayPal Plus Plugin!</a>" ) );
-				?></p><a class="welcome-panel-close"
-                         href="<?php echo esc_url( add_query_arg( array( 'ignore_paypal_plus_move_notice' => '0' ) ) ); ?>"><?php _e( 'Dismiss' ); ?></a></div><?php
+			if ( !empty($paypal_plus['enabled']) && 'yes' === $paypal_plus['enabled'] && version_compare(VERSION_PFW,'1.2.4','<=') && false === $this->is_paypal_plus_plugin_active() && false === $ignore_paypal_plus_move_notice ) {
+				echo '<div class="notice welcome-panel error"><p style="margin: 10px;">' . sprintf( __("In order to better support the different countries and international features that PayPal Plus provides we have created a new, separate plugin. <a href='https://www.angelleye.com/product/woocommerce-paypal-plus-plugin' target='_blank'>Get the New PayPal Plus Plugin!</a>"))."</p>";
+				?><a class="welcome-panel-close" href="<?php echo esc_url( add_query_arg( array( 'ignore_paypal_plus_move_notice' => '0' ) ) ); ?>"><?php _e( 'Dismiss' ); ?></a></div><?php
 			}
 		}
 
