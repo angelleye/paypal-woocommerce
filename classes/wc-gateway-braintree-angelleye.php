@@ -60,7 +60,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->softdescriptor_value = $this->get_option('softdescriptor', '');
         $this->softdescriptor = $this->get_softdescriptor();
         $this->fraud_tool = $this->get_option('fraud_tool', 'basic');
-        $this->kount_merchant_id = ($this->fraud_tool == 'kount_direct') ? $this->get_option('kount_merchant_id') : '';
+        $this->kount_merchant_id = ($this->fraud_tool == 'kount_custom') ? $this->get_option('kount_merchant_id') : '';
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
@@ -70,7 +70,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         add_action('admin_notices', array($this, 'checks'));
         add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_braintree_credit_card_form_fields'), 10, 2);
         $this->customer_id;
-        if( $this->fraud_tool == 'advanced' || $this->fraud_tool == 'kount_direct') {
+        if( $this->fraud_tool == 'kount_standard' || $this->fraud_tool == 'kount_custom') {
             add_filter( 'clean_url', array( $this, 'adjust_fraud_script_tag' ) );
             add_action( 'wp_print_footer_scripts', array( $this, 'render_fraud_js' ), 1 );
         }
@@ -102,7 +102,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }).change();
                 jQuery( 'select.angelleye-fraud-tool' ).change( function() {
                     var $kount_id_row = jQuery( '.angelleye-kount-merchant-id' ).closest( 'tr' );
-                    if ( 'kount_direct' === jQuery( this ).val() ) {
+                    if ( 'kount_custom' === jQuery( this ).val() ) {
                         $kount_id_row.show();
                     } else {
                         $kount_id_row.hide();
@@ -315,11 +315,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'type'     => 'select',
                 'class'    => 'angelleye-fraud-tool',
                 'default'     => 'basic',
-                'desc_tip' => __( 'Select the fraud tool you want to use. Basic is enabled by default and requires no additional configuration. Advanced requires you to enable advanced fraud tools in your Braintree control panel. To use Kount Direct you must contact Braintree support.', 'paypal-for-woocommerce' ),
+                'desc_tip' => __( 'Select the fraud tool you want to use. Basic is enabled by default and requires no additional configuration. Kount Standard requires you to enable advanced fraud tools in your Braintree control panel. To use Kount Custom you must contact Braintree support.', 'paypal-for-woocommerce' ),
                 'options'  => array(
                                 'basic'    => __( 'Basic', 'paypal-for-woocommerce' ),
-                                'advanced' => __( 'Advanced', 'paypal-for-woocommerce' ),
-                                'kount_direct' => __( 'Kount Direct', 'paypal-for-woocommerce' )
+                                'kount_standard' => __( 'Kount Standard', 'paypal-for-woocommerce' ),
+                                'kount_custom' => __( 'Kount Custom', 'paypal-for-woocommerce' )
                             )
             ),
             'kount_merchant_id'    => array(
@@ -559,7 +559,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     'countryCodeAlpha2' => $billing_country,
                 );
                 
-                if( $this->fraud_tool == 'advanced' || $this->fraud_tool == 'kount_direct') {
+                if( $this->fraud_tool == 'kount_standard' || $this->fraud_tool == 'kount_custom') {
                     $device_data = self::get_posted_variable('device_data');
                     if( !empty($device_data) ) {
                         $device_data = wp_unslash( $device_data );
@@ -1106,7 +1106,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enable_braintree_drop_in) {
             wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/v2/braintree.js', array(), WC_VERSION, false);
         }
-        if( $this->fraud_tool == 'advanced' || $this->fraud_tool == 'kount_direct') {
+        if( $this->fraud_tool == 'kount_standard' || $this->fraud_tool == 'kount_custom') {
             wp_enqueue_script( 'braintree-data', 'https://js.braintreegateway.com/v1/braintree-data.js', array( 'braintree-gateway' ), WC_VERSION, true );
         }
     }
@@ -1670,11 +1670,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     
     public function render_fraud_js() {
         $environment = 'BraintreeData.environments.' . $this->environment;
+        $this->kount_merchant_id = ($this->fraud_tool == 'kount_custom') ? $this->get_option('kount_merchant_id') : '';
         
-        $this->fraud_tool = $this->get_option('fraud_tool', 'basic');
-        $this->kount_merchant_id = ($this->fraud_tool == 'kount_direct') ? $this->get_option('kount_merchant_id') : '';
-        
-        if( $this->fraud_tool == 'kount_direct' && !empty($this->kount_merchant_id) ) {
+        if( $this->fraud_tool == 'kount_custom' && !empty($this->kount_merchant_id) ) {
             $environment .= '.withId' . $this->kount_merchant_id;
         }
             
