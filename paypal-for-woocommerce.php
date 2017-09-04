@@ -256,7 +256,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $processed = (isset($_GET['processed']) ) ? $_GET['processed'] : FALSE;
                 if($processed) {
                     echo '<div class="updated">';
-                    echo '<p>'. sprintf( __('Action completed; %s records processed. ', 'paypal-for-woocommerce'), ($processed == 'zero') ? 0 : $processed);
+                    echo '<p>'. sprintf( __('Action completed; %s records processed. ', 'paypal-for-woocommerce'), ($processed == 'zero') ? 0 : $processed) .'</p>';
                     echo '</div>';
                 }
             }
