@@ -323,10 +323,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             )
             ),
             'kount_merchant_id'    => array(
-				'title'    => __( 'Kount merchant ID', 'paypal-for-woocommerce' ),
+				'title'    => __( 'Kount Merchant ID', 'paypal-for-woocommerce' ),
 				'type'     => 'text',
 				'class'    => 'angelleye-kount-merchant-id',
-				'desc_tip' => __( 'Speak with your account management team at Braintree to get this.', 'paypal-for-woocommerce' ),
+				'desc_tip' => __( 'Speak with your account management team at Braintree to obtain your Kount Merchant ID.', 'paypal-for-woocommerce' ),
 			),
         );
     }
