@@ -713,15 +713,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $return_url = add_query_arg('order_id', $order_id, $this->function_helper->ec_get_checkout_url('do_express_checkout_payment', $order_id));
                 if( is_user_logged_in() && !empty($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] == '1') {
                 } else {
-                    $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
-                    $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
-                    AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
+                    if( empty($_POST['shipping_country'] ) ) {
+                        $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+                        $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
+                        AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
+                    }
                 }
                 $post_data = WC()->session->get('post_data');
                 if ($this->billing_address && empty($post_data)) {
-                    $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
-                    $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
-                    AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'billing');
+                    if( empty($_POST['billing_country'] ) ) {
+                        $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+                        $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
+                        AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'billing');
+                    }
                 }
                 $args = array(
                     'result' => 'success',
