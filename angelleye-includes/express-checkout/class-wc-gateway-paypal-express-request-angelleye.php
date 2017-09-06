@@ -167,8 +167,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     WC()->customer->set_calculated_shipping(true);
                 }
                 if ($this->angelleye_ec_force_to_display_checkout_page()) {
-                    wp_redirect(WC()->cart->get_checkout_url());
-                    exit();
+                    wp_safe_redirect( wc_get_checkout_url() );
+                    exit;
                 }
                 
             } else {
