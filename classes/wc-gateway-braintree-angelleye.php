@@ -1831,6 +1831,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
+    public function angelleye_update_settings($settings) {
+        if (!empty($_POST['woocommerce_braintree_merchant_account_id'])) {
+            $settings['merchant_account_id'] = $_POST['woocommerce_braintree_merchant_account_id'];
+        } else {
+            $settings['merchant_account_id'] = '';
+        }
+        return $settings;
+    }
+
     public function angelleye_display_mid_ui() {
         $base_currency = get_woocommerce_currency();
         $button_text = sprintf(__('Add merchant account ID for %s', 'paypal-for-woocommerce'), $base_currency);
@@ -1888,15 +1897,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         </tr>
         <?php
         return trim(preg_replace("/[\n\r\t]/", '', ob_get_clean()));
-    }
-
-    public function angelleye_update_settings($settings) {
-        if (!empty($_POST['woocommerce_braintree_merchant_account_id'])) {
-            $settings['merchant_account_id'] = $_POST['woocommerce_braintree_merchant_account_id'];
-        } else {
-            $settings['merchant_account_id'] = '';
-        }
-        return $settings;
     }
 
 }
