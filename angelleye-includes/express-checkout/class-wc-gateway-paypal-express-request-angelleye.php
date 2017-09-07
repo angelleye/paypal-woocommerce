@@ -185,6 +185,31 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if (!isset($_GET['order_id'])) {
                 // todo need to redirect to cart page.
             }
+            
+            if ( WC()->cart->needs_shipping() ) {
+                $errors      = new WP_Error();
+                $shipping_country = WC()->customer->get_shipping_country();
+                if ( empty( $shipping_country ) ) {
+                        $errors->add( 'shipping', __( 'Please enter an address to continue.', 'woocommerce' ) );
+                } elseif ( ! in_array( WC()->customer->get_shipping_country(), array_keys( WC()->countries->get_shipping_countries() ) ) ) {
+                        $errors->add( 'shipping', sprintf( __( 'Unfortunately <strong>we do not ship %s</strong>. Please enter an alternative shipping address.', 'woocommerce' ), WC()->countries->shipping_to_prefix() . ' ' . WC()->customer->get_shipping_country() ) );
+                } else {
+                    $chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
+                    foreach ( WC()->shipping->get_packages() as $i => $package ) {
+                        if ( ! isset( $chosen_shipping_methods[ $i ], $package['rates'][ $chosen_shipping_methods[ $i ] ] ) ) {
+                            $errors->add( 'shipping', __( 'No shipping method has been selected. Please double check your address, or contact us if you need any help.', 'woocommerce' ) );
+                        }
+                    }
+                }
+                foreach ( $errors->get_error_messages() as $message ) {
+                    wc_add_notice( $message, 'error' );
+                }
+                if ( wc_notice_count( 'error' ) > 0 ) {
+                    wp_redirect(get_permalink(wc_get_page_id('cart')));
+                    exit;
+                }
+            }
+            
             $this->confirm_order_id = esc_attr($_GET['order_id']);
             $order = new WC_Order($this->confirm_order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
