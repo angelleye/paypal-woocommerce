@@ -167,8 +167,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     WC()->customer->set_calculated_shipping(true);
                 }
                 if ($this->angelleye_ec_force_to_display_checkout_page()) {
-                    wp_redirect(WC()->cart->get_checkout_url());
-                    exit();
+                    wp_safe_redirect( wc_get_checkout_url() );
+                    exit;
                 }
                 
             } else {
@@ -373,10 +373,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     array_push($PaymentRedeemedOffers, $RedeemedOffer);
                 }
                 $Payment['redeemed_offers'] = $PaymentRedeemedOffers;
-                array_push($Payments, $Payment);
-            } else {
-                array_push($Payments, $Payment);
-            }
+                
+            } 
             if (WC()->cart->needs_shipping()) {
                 $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
                 $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
@@ -386,17 +384,17 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
                 $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
                 $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
-                $Payment = array('shiptoname' => $shipping_first_name . ' ' . $shipping_last_name,
-                    'shiptostreet' => $shipping_address_1,
-                    'shiptostreet2' => $shipping_address_2,
-                    'shiptocity' => wc_clean(stripslashes($shipping_city)),
-                    'shiptostate' => $shipping_state,
-                    'shiptozip' => $shipping_postcode,
-                    'shiptocountrycode' => $shipping_country,
-                    'shiptophonenum' => isset($paypal_express_checkout['billing_phone']) ? $paypal_express_checkout['billing_phone'] : '',
-                );
-                array_push($Payments, $Payment);
+                $billing_phone = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_phone : $order->get_billing_phone();
+                $Payment['shiptoname'] = $shipping_first_name . ' ' . $shipping_last_name;
+                $Payment['shiptostreet'] = $shipping_address_1;
+                $Payment['shiptostreet2'] = $shipping_address_2;
+                $Payment['shiptocity'] = wc_clean(stripslashes($shipping_city));
+                $Payment['shiptostate'] = $shipping_state;
+                $Payment['shiptozip'] = $shipping_postcode;
+                $Payment['shiptocountrycode'] = $shipping_country;
+                $Payment['shiptophonenum'] = $billing_phone;
             }
+            array_push($Payments, $Payment);
             $this->paypal_request = array(
                 'DECPFields' => $DECPFields,
                 'Payments' => $Payments
