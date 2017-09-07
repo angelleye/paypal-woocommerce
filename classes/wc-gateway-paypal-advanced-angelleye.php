@@ -812,6 +812,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'transtype' => array(
                 'title' => __('Transaction Type', 'paypal-for-woocommerce'),
                 'type' => 'select',
+                'class'    => 'wc-enhanced-select',
                 'label' => __('Transaction Type', 'paypal-for-woocommerce'),
                 'default' => 'S',
                 'description' => '',
@@ -820,6 +821,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'layout' => array(
                 'title' => __('Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
+                'class'    => 'wc-enhanced-select',
                 'label' => __('Layout', 'paypal-for-woocommerce'),
                 'default' => 'C',
                 'description' => __('Layouts A and B redirect to PayPal\'s website for the user to pay. <br/>Layout C (recommended) is a secure PayPal-hosted page but is embedded on your site using an iFrame.', 'paypal-for-woocommerce'),

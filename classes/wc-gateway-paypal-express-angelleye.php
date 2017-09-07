@@ -333,8 +333,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'checkout_with_pp_button_type' => array(
                 'title' => __('Checkout Button Type', 'paypal-for-woocommerce'),
                 'type' => 'select',
+                'class'    => 'checkout_with_pp_button_type wc-enhanced-select',
                 'label' => __('Use Checkout with PayPal image button', 'paypal-for-woocommerce'),
-                'class' => 'checkout_with_pp_button_type',
                 'options' => array(
                     'paypalimage' => __('PayPal Image', 'paypal-for-woocommerce'),
                     'textbutton' => __('Text Button', 'paypal-for-woocommerce'),
@@ -365,6 +365,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __('Where to display PayPal Express Checkout button(s).', 'paypal-for-woocommerce'),
                 'description' => __('Set where to display the PayPal Express Checkout button(s).'),
                 'type' => 'select',
+                'class'    => 'wc-enhanced-select',
                 'options' => array(
                     'top' => 'At the top, above the shopping cart details.',
                     'bottom' => 'At the bottom, below the shopping cart details.',
@@ -382,6 +383,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'regular' => __('Display in general list of enabled gatways on checkout page.', 'paypal-for-woocommerce'),
                     'both' => __('Display both at the top and in the general list of gateways on the checkout page.')),
                 'default' => 'top',
+                'class'    => 'wc-enhanced-select',
                 'description' => __('Displaying the checkout button at the top of the checkout page will allow users to skip filling out the forms and can potentially increase conversion rates.'),
                 'desc_tip' => true,
             ),
@@ -405,6 +407,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'landing_page' => array(
                 'title' => __('Landing Page', 'paypal-for-woocommerce'),
                 'type' => 'select',
+                'class'    => 'wc-enhanced-select',
                 'description' => __('Type of PayPal page to display as default. PayPal Account Optional must be checked for this option to be used.', 'paypal-for-woocommerce'),
                 'options' => array('login' => __('Login', 'paypal-for-woocommerce'),
                     'billing' => __('Billing', 'paypal-for-woocommerce')),
@@ -415,7 +418,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Error Display Type', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'label' => __('Display detailed or generic errors', 'paypal-for-woocommerce'),
-                'class' => 'error_display_type_option',
+                'class' => 'error_display_type_option wc-enhanced-select',
                 'options' => array(
                     'detailed' => __('Detailed', 'paypal-for-woocommerce'),
                     'generic' => __('Generic', 'paypal-for-woocommerce')
@@ -506,6 +509,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
                 'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds from within the WooCommerce order when you are ready to deliver.'),
                 'type' => 'select',
+                'class'    => 'wc-enhanced-select',
                 'options' => array(
                     'Sale' => 'Sale',
                     'Authorization' => 'Authorization',
@@ -526,6 +530,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Cancel Page', 'paypal-for-woocommerce'),
                 'description' => __('Sets the page users will be returned to if they click the Cancel link on the PayPal checkout pages.'),
                 'type' => 'select',
+                'class'    => 'wc-enhanced-select',
                 'options' => $cancel_page,
                 'desc_tip' => true,
             ),
@@ -575,7 +580,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => '',
                 'description' => __('Allows you to cancel and refund orders that do not meet PayPal\'s Seller Protection criteria.', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'order_cancellations',
+                'class' => 'order_cancellations wc-enhanced-select',
                 'options' => array(
                     'no_seller_protection' => __('Do *not* have PayPal Seller Protection', 'paypal-for-woocommerce'),
                     'no_unauthorized_payment_protection' => __('Do *not* have PayPal Unauthorized Payment Protection', 'paypal-for-woocommerce'),
@@ -589,6 +594,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => '',
                 'description' => __('Choose how you would like to handle orders when Fraud Management Filters are flagged.', 'paypal-for-woocommerce'),
                 'type' => 'select',
+                'class'    => 'wc-enhanced-select',
                 'class' => '',
                 'options' => array(
                     'ignore_warnings_and_proceed_as_usual' => __('Ignore warnings and proceed as usual.', 'paypal-for-woocommerce'),

@@ -354,7 +354,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'fraud_tool' => array(
                 'title' => __('Fraud Tool', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'angelleye-fraud-tool',
+                'class' => 'angelleye-fraud-tool wc-enhanced-select',
                 'default' => 'basic',
                 'desc_tip' => __('Select the fraud tool you want to use. Basic is enabled by default and requires no additional configuration. Kount Standard requires you to enable advanced fraud tools in your Braintree control panel. To use Kount Custom you must contact Braintree support.', 'paypal-for-woocommerce'),
                 'options' => array(

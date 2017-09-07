@@ -200,7 +200,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'title' => __('Error Display Type', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'label' => __('Display detailed or generic errors', 'paypal-for-woocommerce'),
-                'class' => 'error_display_type_option',
+                'class' => 'error_display_type_option wc-enhanced-select',
                 'options' => array(
                     'detailed' => 'Detailed',
                     'generic' => 'Generic'
@@ -283,6 +283,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
                 'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds through your PayPal account when you are ready to deliver.'),
                 'type' => 'select',
+                'class'    => 'wc-enhanced-select',
                 'options' => array(
                     'Sale' => 'Sale',
                     'Authorization' => 'Authorization',
@@ -301,7 +302,7 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'label' => '',
                 'description' => __('Choose how you would like to handle orders when Fraud Management Filters are flagged.', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => '',
+                'class'    => 'wc-enhanced-select',
                 'options' => array(
                     'ignore_warnings_and_proceed_as_usual' => __('Ignore warnings and proceed as usual.', 'paypal-for-woocommerce'),
                     'place_order_on_hold_for_further_review' => __('Place order On Hold for further review.', 'paypal-for-woocommerce'),
