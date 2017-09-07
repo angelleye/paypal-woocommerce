@@ -1849,7 +1849,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 <select id="wc_braintree_merchant_account_id_currency" class="wc-enhanced-select">
                     <?php foreach (get_woocommerce_currencies() as $code => $name) : ?>
                         <option <?php selected($code, $base_currency); ?> value="<?php echo esc_attr($code); ?>">
-                            <?php echo esc_html(sprintf('%s (%s)', $name, get_woocommerce_currency_symbol($code))); ?>
+                            <?php echo esc_html(sprintf('%s (%s)', ucwords($name), get_woocommerce_currency_symbol($code))); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
