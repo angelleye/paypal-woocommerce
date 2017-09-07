@@ -185,6 +185,31 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if (!isset($_GET['order_id'])) {
                 // todo need to redirect to cart page.
             }
+            
+            if ( WC()->cart->needs_shipping() ) {
+                $errors      = new WP_Error();
+                $shipping_country = WC()->customer->get_shipping_country();
+                if ( empty( $shipping_country ) ) {
+                        $errors->add( 'shipping', __( 'Please enter an address to continue.', 'woocommerce' ) );
+                } elseif ( ! in_array( WC()->customer->get_shipping_country(), array_keys( WC()->countries->get_shipping_countries() ) ) ) {
+                        $errors->add( 'shipping', sprintf( __( 'Unfortunately <strong>we do not ship %s</strong>. Please enter an alternative shipping address.', 'woocommerce' ), WC()->countries->shipping_to_prefix() . ' ' . WC()->customer->get_shipping_country() ) );
+                } else {
+                    $chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
+                    foreach ( WC()->shipping->get_packages() as $i => $package ) {
+                        if ( ! isset( $chosen_shipping_methods[ $i ], $package['rates'][ $chosen_shipping_methods[ $i ] ] ) ) {
+                            $errors->add( 'shipping', __( 'No shipping method has been selected. Please double check your address, or contact us if you need any help.', 'woocommerce' ) );
+                        }
+                    }
+                }
+                foreach ( $errors->get_error_messages() as $message ) {
+                    wc_add_notice( $message, 'error' );
+                }
+                if ( wc_notice_count( 'error' ) > 0 ) {
+                    wp_redirect(get_permalink(wc_get_page_id('cart')));
+                    exit;
+                }
+            }
+            
             $this->confirm_order_id = esc_attr($_GET['order_id']);
             $order = new WC_Order($this->confirm_order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
@@ -373,10 +398,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     array_push($PaymentRedeemedOffers, $RedeemedOffer);
                 }
                 $Payment['redeemed_offers'] = $PaymentRedeemedOffers;
-                array_push($Payments, $Payment);
-            } else {
-                array_push($Payments, $Payment);
-            }
+                
+            } 
             if (WC()->cart->needs_shipping()) {
                 $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
                 $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
@@ -386,17 +409,17 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
                 $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
                 $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
-                $Payment = array('shiptoname' => $shipping_first_name . ' ' . $shipping_last_name,
-                    'shiptostreet' => $shipping_address_1,
-                    'shiptostreet2' => $shipping_address_2,
-                    'shiptocity' => wc_clean(stripslashes($shipping_city)),
-                    'shiptostate' => $shipping_state,
-                    'shiptozip' => $shipping_postcode,
-                    'shiptocountrycode' => $shipping_country,
-                    'shiptophonenum' => isset($paypal_express_checkout['billing_phone']) ? $paypal_express_checkout['billing_phone'] : '',
-                );
-                array_push($Payments, $Payment);
+                $billing_phone = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_phone : $order->get_billing_phone();
+                $Payment['shiptoname'] = $shipping_first_name . ' ' . $shipping_last_name;
+                $Payment['shiptostreet'] = $shipping_address_1;
+                $Payment['shiptostreet2'] = $shipping_address_2;
+                $Payment['shiptocity'] = wc_clean(stripslashes($shipping_city));
+                $Payment['shiptostate'] = $shipping_state;
+                $Payment['shiptozip'] = $shipping_postcode;
+                $Payment['shiptocountrycode'] = $shipping_country;
+                $Payment['shiptophonenum'] = $billing_phone;
             }
+            array_push($Payments, $Payment);
             $this->paypal_request = array(
                 'DECPFields' => $DECPFields,
                 'Payments' => $Payments
