@@ -703,7 +703,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                     $_POST = WC()->session->get( 'post_data' );
                     $order->payment_complete($result['TRANSACTIONID']);
-                    $order->add_order_note(sprintf(__('%s payment approved! Trnsaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
+                    $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
                     WC()->cart->empty_cart();
                     return array(
                         'result' => 'success',
