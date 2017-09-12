@@ -137,6 +137,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue with tax calculations pertaining to orders that include gift cards. ([#811](https://github.com/angelleye/paypal-woocommerce/issues/811))
 * Fix - Resolves an issue where Braintree refunds were not updating the WooCommerce order status properly.  ([#780](https://github.com/angelleye/paypal-woocommerce/issues/780))
 * Fix - Resolves an issue with Express Checkout In Context where PayPal buttons would sometimes disappear if the IC window was closed. ([#850](https://github.com/angelleye/paypal-woocommerce/issues/850))
+* Fix - Resolves typos in WC order notes. ([#866](https://github.com/angelleye/paypal-woocommerce/issues/866))
 
 = 1.4.6.2 - 08.21.2017 =
 * Feature - Adds filter hook to Payments Pro PayFlow which allows you to override the API endpoint when using services like NoFraud. ([#843](https://github.com/angelleye/paypal-woocommerce/issues/843))
