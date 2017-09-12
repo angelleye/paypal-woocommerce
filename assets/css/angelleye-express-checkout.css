@@ -189,3 +189,39 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
           margin: 0px;
       }
 }
+
+.angelleye-woocommerce-customer-details-email::before {
+    font-family: WooCommerce;
+    speak: none;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    margin-right: .618em;
+    content: "\e02d";
+    text-decoration: none;
+    margin-left: -1.5em;
+    line-height: 1.75;
+    position: absolute;
+}
+.angelleye-woocommerce-customer-details-phone, .angelleye-woocommerce-customer-details-email {
+        margin-bottom: 0;
+        padding-left: 1.5em;
+}
+
+.angelleye-woocommerce-customer-details-phone::before {
+    font-family: WooCommerce;
+    speak: none;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    margin-right: .618em;
+    content: "\e037";
+    text-decoration: none;
+    margin-left: -1.5em;
+    line-height: 1.75;
+    position: absolute;
+}

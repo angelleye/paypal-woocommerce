@@ -320,6 +320,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 return;
             }
             ?>
+           
             <div class="express-provided-address">
                <a href="#" class="ex-show-address-fields" data-type="<?php echo esc_attr('billing'); ?>"><?php esc_html_e('Edit', 'paypal-for-woocommerce'); ?></a>
                <address>
@@ -340,12 +341,14 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     echo $formatted_address;
                     $shipping_details = $this->ec_get_session_data('shipping_details');
                     if( !empty($shipping_details) ) {
-                        echo !empty($shipping_details['email']) ? $shipping_details['email'] .'<br/>' : '';
-                        echo !empty($shipping_details['phone']) ? $shipping_details['phone'] .'<br/>' : '';
+                        echo !empty($shipping_details['email']) ? '<p class="angelleye-woocommerce-customer-details-email">' . $shipping_details['email'] .'</p>' : '';
+                        echo !empty($shipping_details['phone']) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $shipping_details['phone'] .'</p>' : '';
                     }
                     ?>
                 </address>
+            
             </div>
+                
             <?php
         } catch (Exception $ex) {
 
