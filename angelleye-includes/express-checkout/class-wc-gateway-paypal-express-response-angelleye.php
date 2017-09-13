@@ -20,7 +20,7 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
                     'last_name' => isset($shipping_last_name) ? $shipping_last_name : $response['LASTNAME'],
                     'company' => isset($response['BUSINESS']) ? $response['BUSINESS'] : '',
                     'email' => isset($response['EMAIL']) ? $response['EMAIL'] : '',
-                    'phone' => isset($response['PHONENUM']) ? $response['PHONENUM'] : '',
+                    'phone' => isset($response['SHIPTOPHONENUM']) ? $response['SHIPTOPHONENUM'] : '',
                     'address_1' => isset($response['SHIPTOSTREET']) ? $response['SHIPTOSTREET'] : '',
                     'address_2' => isset($response['SHIPTOSTREET2']) ? $response['SHIPTOSTREET2'] : '',
                     'city' => isset($response['SHIPTOCITY']) ? $response['SHIPTOCITY'] : '',

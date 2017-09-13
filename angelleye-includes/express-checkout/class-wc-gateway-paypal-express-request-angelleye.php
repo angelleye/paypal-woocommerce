@@ -558,6 +558,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $Payment['shiptostate'] = !empty($post_data['shipping_state']) ? $post_data['shipping_state'] : '';
                         $Payment['shiptozip'] = !empty($post_data['shipping_postcode']) ? $post_data['shipping_postcode'] : '';
                         $Payment['shiptocountrycode'] = !empty($post_data['shipping_country']) ? $post_data['shipping_country'] : '';
+                        $Payment['shiptophonenum'] = !empty($post_data['billing_phone']) ? $post_data['billing_phone'] : '';
                     } else {
                         $shiptoname = '';
                         if( !empty($post_data['billing_first_name']) && !empty($post_data['billing_last_name'])) {
