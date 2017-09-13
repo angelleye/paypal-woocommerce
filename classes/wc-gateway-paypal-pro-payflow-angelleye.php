@@ -593,10 +593,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             /**
              * Shipping/tax/item amount
              */
+            if( $order->get_total() != $PaymentData['shippingamt'] ) {
+                $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
+            } else {
+                $PayPalRequestData['freightamt'] = 0.00;
+            }
+
             $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
-            $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
-
-
             if ($this->send_items) {
                 $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
