@@ -410,7 +410,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
                 $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
                 $billing_phone = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_phone : $order->get_billing_phone();
-                $Payment['shiptoname'] = $shipping_first_name . ' ' . $shipping_last_name;
+                $Payment['shiptoname'] = wc_clean(stripslashes($shipping_first_name . ' ' . $shipping_last_name));
                 $Payment['shiptostreet'] = $shipping_address_1;
                 $Payment['shiptostreet2'] = $shipping_address_2;
                 $Payment['shiptocity'] = wc_clean(stripslashes($shipping_city));
@@ -547,9 +547,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         
                         if( !empty($post_data['shipping_company']) ) {
                             $shipping_company = $post_data['shipping_company'];
-                            $Payment['shiptoname'] = $shipping_company .' - '. $shiptoname;
+                            $Payment['shiptoname'] = wc_clean(stripslashes($shipping_company .' - '. $shiptoname));
                         } else {
-                            $Payment['shiptoname'] = $shiptoname;
+                            $Payment['shiptoname'] = wc_clean(stripslashes($shiptoname));
                         }
                         
                         $Payment['shiptostreet'] = !empty($post_data['shipping_address_1']) ? $post_data['shipping_address_1'] : '';
@@ -571,9 +571,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         
                         if( !empty($post_data['billing_company']) ) {
                             $billing_company = $post_data['billing_company'];
-                            $Payment['shiptoname'] = $billing_company .' - '. $shiptoname;
+                            $Payment['shiptoname'] = wc_clean(stripslashes($billing_company .' - '. $shiptoname));
                         } else {
-                            $Payment['shiptoname'] = $shiptoname;
+                            $Payment['shiptoname'] = wc_clean(stripslashes($shiptoname));
                         }
                         
                         $Payment['shiptostreet'] = !empty($post_data['billing_address_1']) ? $post_data['billing_address_1'] : '';
@@ -618,7 +618,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $billing_postcode = WC()->customer->get_billing_postcode();
                         $billing_phone = WC()->customer->get_billing_phone();
                     }
-                    $Payment['shiptoname'] = $firstname . ' ' . $lastname;
+                    $Payment['shiptoname'] = wc_clean(stripslashes($firstname . ' ' . $lastname));
                     $Payment['shiptostreet'] = !empty($shiptostreet) ? wc_clean(stripslashes($shiptostreet)) : wc_clean(stripslashes($billing_shiptostreet));
                     $Payment['shiptostreet2'] = !empty($shiptostreet_two) ? wc_clean(stripslashes($shiptostreet_two)) : wc_clean(stripslashes($billing_shiptostreet_two));
                     $Payment['shiptocity'] = !empty($shipping_city) ? wc_clean(stripslashes($shipping_city)) : wc_clean(stripslashes($billing_city));
@@ -636,7 +636,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
                 $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
                 $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
-                $Payment['shiptoname'] = $shipping_first_name . ' ' . $shipping_last_name;
+                $Payment['shiptoname'] = wc_clean(stripslashes($shipping_first_name . ' ' . $shipping_last_name));
                 $Payment['shiptostreet'] = $shipping_address_1;
                 $Payment['shiptostreet2'] = $shipping_address_2;
                 $Payment['shiptocity'] = wc_clean(stripslashes($shipping_city));
@@ -1137,7 +1137,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
             $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
             $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
-            $ShippingAddress = array('shiptoname' => $shipping_first_name . ' ' . $shipping_last_name, // Required if shipping is included.  Person's name associated with this address.  32 char max.
+            $ShippingAddress = array('shiptoname' => wc_clean(stripslashes($shipping_first_name . ' ' . $shipping_last_name)), // Required if shipping is included.  Person's name associated with this address.  32 char max.
                 'shiptostreet' => $shipping_address_1, // Required if shipping is included.  First street address.  100 char max.
                 'shiptostreet2' => $shipping_address_2, // Second street address.  100 char max.
                 'shiptocity' => wc_clean(stripslashes($shipping_city)), // Required if shipping is included.  Name of city.  40 char max.

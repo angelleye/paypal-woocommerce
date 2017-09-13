@@ -260,9 +260,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         }
                     } else {
                         if( $this->angelleye_is_need_to_set_billing_address() == true ) {
-                            $_POST['billing_' . $field] = $value;
+                            $_POST['billing_' . $field] = wc_clean(stripslashes($value));
                         }
-                        $_POST['shipping_' . $field] = $value;
+                        $_POST['shipping_' . $field] = wc_clean(stripslashes($value));
                     }
                     
                 }
@@ -271,7 +271,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $_POST['order_comments'] = isset($post_data['order_comments']) ? $post_data['order_comments'] : '';
             if( !empty($post_data) ) {
                 foreach ($post_data as $key => $value) {
-                    $_POST[$key] = $value;
+                    if( !empty($value)) {
+                        $_POST[$key] = is_string($value) ? wc_clean(stripslashes($value)) : $value;
+                    }
                 }
             } else {
                 if( $this->angelleye_is_need_to_set_billing_address() == false ) {
@@ -279,7 +281,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     if( !empty($shipping_details)) {
                         $_POST['billing_first_name'] = $shipping_details['first_name'];
                         $_POST['billing_last_name'] = $shipping_details['last_name'];
-                        $_POST['billing_company'] = $shipping_details['company'];
+                        $_POST['billing_company'] = !empty($shipping_details['company']) ? wc_clean(stripslashes($shipping_details['company'])) : '';
                         $_POST['billing_email'] = $shipping_details['email'];
                         $_POST['billing_phone'] = $shipping_details['phone'];
                     }

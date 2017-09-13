@@ -15,10 +15,11 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
                 $split_name = $parser->split_full_name($response['SHIPTONAME']);
                 $shipping_first_name = $split_name['fname'];
                 $shipping_last_name = $split_name['lname'];
+                $company = !empty($response['BUSINESS']) ? str_replace("\\","", $response['BUSINESS']) : '';
                 $details = array(
                     'first_name' => isset($shipping_first_name) ? $shipping_first_name : $response['FIRSTNAME'],
                     'last_name' => isset($shipping_last_name) ? $shipping_last_name : $response['LASTNAME'],
-                    'company' => isset($response['BUSINESS']) ? $response['BUSINESS'] : '',
+                    'company' => $company,
                     'email' => isset($response['EMAIL']) ? $response['EMAIL'] : '',
                     'phone' => isset($response['SHIPTOPHONENUM']) ? $response['SHIPTOPHONENUM'] : '',
                     'address_1' => isset($response['SHIPTOSTREET']) ? $response['SHIPTOSTREET'] : '',

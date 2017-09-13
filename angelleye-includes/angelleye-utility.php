@@ -1610,6 +1610,7 @@ class AngellEYE_Utility {
 
     public static function angelleye_set_address($order_id, $address, $type = 'billing') {
         foreach ($address as $key => $value) {
+            is_string($value) ? wc_clean(stripslashes($value)) : $value;
             update_post_meta($order_id, "_{$type}_" . $key, $value);
         }
     }
