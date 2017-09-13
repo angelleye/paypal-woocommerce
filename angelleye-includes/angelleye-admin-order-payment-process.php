@@ -12,7 +12,7 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function __construct() {
         if (is_admin() && !defined('DOING_AJAX')) {
-            add_action('add_meta_boxes', array($this, 'angelleye_add_meta_box'), 99);
+            add_action('add_meta_boxes', array($this, 'angelleye_add_meta_box'), 10);
             add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_admin_create_reference_order'), 10, 2);
             add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_admin_order_process_payment'), 10, 2);
             add_action('angelleye_admin_create_reference_order_action_hook', array($this, 'angelleye_admin_create_reference_order_action'), 10, 1);
@@ -21,8 +21,8 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function angelleye_add_meta_box() {
-        add_meta_box('angelleye_admin_order_payment_process', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_payment_process'), 'shop_order', 'side', 'high');
-        add_meta_box('angelleye_admin_order_reference_order', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_reference_order'), 'shop_order', 'side', 'high');
+        add_meta_box('angelleye_admin_order_payment_process', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_payment_process'), 'shop_order', 'side', 'default');
+        add_meta_box('angelleye_admin_order_reference_order', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_reference_order'), 'shop_order', 'side', 'default');
     }
 
     public function angelleye_hide_reference_order_metabox() {
