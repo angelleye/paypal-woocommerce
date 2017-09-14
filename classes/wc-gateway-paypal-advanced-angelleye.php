@@ -1076,8 +1076,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         }
 
         if ($refund_result_arr['RESULT'] == 0) {
-
             $order->add_order_note(sprintf(__('Successfully Refunded - Refund Transaction ID: %s', 'paypal-for-woocommerce'), $refund_result_arr['PNREF']));
+            update_post_meta($order_id, 'Refund Transaction ID', $refund_result_arr['PNREF']);
         } else {
 
             $order->add_order_note(sprintf(__('Refund Failed - Refund Transaction ID: %s, Error Msg: %s', 'paypal-for-woocommerce'), $refund_result_arr['PNREF'], $refund_result_arr['RESPMSG']));

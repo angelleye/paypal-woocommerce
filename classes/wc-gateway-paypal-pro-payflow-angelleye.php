@@ -978,9 +978,8 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
 
         add_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
         if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
-
+            update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['PNREF']);
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);
-
             $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
             if (!$max_remaining_refund > 0) {
                 $order->update_status('refunded');

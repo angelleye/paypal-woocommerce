@@ -872,6 +872,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $result = Braintree_Transaction::void($order->get_transaction_id());
                     if ($result->success) {
                         $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
+                        update_post_meta($order_id, 'Refund Transaction ID', $result->transaction->id);   
                         return true;
                     } else {
                         $error = '';

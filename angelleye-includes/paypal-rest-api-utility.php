@@ -535,6 +535,7 @@ class PayPal_Rest_API_Utility {
             $refundedSale = $sale->refund($refund, $this->getAuth());
             if ($refundedSale->state == 'completed') {
                 $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
+                update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
                 if (isset($reason) && !empty($reason)) {
                     $order->add_order_note('Reason for Refund :' . $reason);
                 }
