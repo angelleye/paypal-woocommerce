@@ -124,6 +124,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.4.6.3 - xx.xx.2017 =
 * Feature - Adds WooCommerce Pay for Payment plugin compatibility. ([#849](https://github.com/angelleye/paypal-woocommerce/issues/849))
 * Feature - Adds Kount Custom functionality to Braintree payments. ([#844](https://github.com/angelleye/paypal-woocommerce/issues/844))
+* Feature - WooCommerce 3.2 compatibility. ([#853](https://github.com/angelleye/paypal-woocommerce/issues/853))
 * Tweak - Adjusts the way variation data is passed in the PayPal request. ([#734](https://github.com/angelleye/paypal-woocommerce/issues/734))
 * Tweak - Adjustments to PayPal Credit button output. ([#846](https://github.com/angelleye/paypal-woocommerce/issues/846))
 * Tweak - Adds INR currency code to compatible currencies in Express Checkout. ([#847](https://github.com/angelleye/paypal-woocommerce/issues/847))
