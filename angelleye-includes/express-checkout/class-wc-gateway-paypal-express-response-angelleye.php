@@ -16,12 +16,18 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
                 $shipping_first_name = $split_name['fname'];
                 $shipping_last_name = $split_name['lname'];
                 $company = !empty($response['BUSINESS']) ? str_replace("\\","", $response['BUSINESS']) : '';
+                $phone = '';
+                if( !empty($response['SHIPTOPHONENUM']) ) {
+                    $phone = $response['SHIPTOPHONENUM'];
+                } elseif( !empty($response['PHONENUM']) ) {
+                    $phone = $response['PHONENUM'];
+                }
                 $details = array(
                     'first_name' => isset($shipping_first_name) ? $shipping_first_name : $response['FIRSTNAME'],
                     'last_name' => isset($shipping_last_name) ? $shipping_last_name : $response['LASTNAME'],
                     'company' => $company,
                     'email' => isset($response['EMAIL']) ? $response['EMAIL'] : '',
-                    'phone' => isset($response['SHIPTOPHONENUM']) ? $response['SHIPTOPHONENUM'] : '',
+                    'phone' => $phone,
                     'address_1' => isset($response['SHIPTOSTREET']) ? $response['SHIPTOSTREET'] : '',
                     'address_2' => isset($response['SHIPTOSTREET2']) ? $response['SHIPTOSTREET2'] : '',
                     'city' => isset($response['SHIPTOCITY']) ? $response['SHIPTOCITY'] : '',
