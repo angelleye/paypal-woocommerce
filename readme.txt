@@ -137,6 +137,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Improvements to shipping method handling in Express Checkout. ([#677](https://github.com/angelleye/paypal-woocommerce/issues/677))
 * Tweak - Adjusts reference transaction meta box to avoid potential conflicts with other meta boxes. ([#870](https://github.com/angelleye/paypal-woocommerce/issues/870))
 * Tweak - Adds refund transaction ID as a custom field in the WooCommerce order when refunds are processed. ([#405](https://github.com/angelleye/paypal-woocommerce/issues/405))
+* Tweak - Regenerate default language files for translation. ([#873](https://github.com/angelleye/paypal-woocommerce/issues/873))
 * Fix - Resolves a payment status problem with Braintree drop-in UI payments. ([#804](https://github.com/angelleye/paypal-woocommerce/issues/804))
 * Fix - Resolves an issue with tax calculations pertaining to orders that include gift cards. ([#811](https://github.com/angelleye/paypal-woocommerce/issues/811))
 * Fix - Resolves an issue where Braintree refunds were not updating the WooCommerce order status properly.  ([#780](https://github.com/angelleye/paypal-woocommerce/issues/780))
