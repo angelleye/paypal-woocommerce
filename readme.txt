@@ -145,6 +145,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue with Express Checkout In Context where PayPal buttons would sometimes disappear if the IC window was closed. ([#850](https://github.com/angelleye/paypal-woocommerce/issues/850))
 * Fix - Resolves typos in WC order notes. ([#866](https://github.com/angelleye/paypal-woocommerce/issues/866))
 * Fix - Resolves an issue in PayFlow where Fraud Filter flags sometimes cause duplicate order failures on re-attempts. ([#861](https://github.com/angelleye/paypal-woocommerce/issues/861))
+* Fix - Resolves an issue with PayFlow where "shipping only" orders caused a failure. ([#872](https://github.com/angelleye/paypal-woocommerce/issues/872))
 
 = 1.4.6.2 - 08.21.2017 =
 * Feature - Adds filter hook to Payments Pro PayFlow which allows you to override the API endpoint when using services like NoFraud. ([#843](https://github.com/angelleye/paypal-woocommerce/issues/843))
