@@ -119,6 +119,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
         $this->order_button_text = ($this->function_helper->ec_is_express_checkout() == false) ?  __('Proceed to PayPal', 'paypal-for-woocommerce') :  __( 'Place order', 'paypal-for-woocommerce' );
+        $this = apply_filters( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this );
     }
 
     public function admin_options() {
