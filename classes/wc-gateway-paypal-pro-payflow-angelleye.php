@@ -122,7 +122,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         }
 
         $this->fraud_error_codes = array('125', '126', '127', '128');
-        $this = apply_filters( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this );
+        do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this );
     }
 
     public function add_log($message, $level = 'info') {

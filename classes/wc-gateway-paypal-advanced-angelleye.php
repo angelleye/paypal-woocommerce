@@ -92,7 +92,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_api_wc_gateway_paypal_advanced_angelleye', array($this, 'relay_response'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_advanced_encrypt_gateway_api'), 10, 1);
         $this->customer_id;
-        $this = apply_filters( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this );
+        do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this );
     }
 
     /**
