@@ -121,6 +121,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.6.4 - 09.xx.2017 =
+* Feature - Adds hooks necessary for multi-account setup extension plugin we are building. ([#876](https://github.com/angelleye/paypal-woocommerce/issues/876))
+
 = 1.4.6.3 - 09.15.2017 =
 * Feature - Adds WooCommerce Pay for Payment plugin compatibility. ([#849](https://github.com/angelleye/paypal-woocommerce/issues/849))
 * Feature - Adds Kount Custom functionality to Braintree payments. ([#844](https://github.com/angelleye/paypal-woocommerce/issues/844))
