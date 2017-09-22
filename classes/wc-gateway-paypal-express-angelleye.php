@@ -119,7 +119,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
         $this->order_button_text = ($this->function_helper->ec_is_express_checkout() == false) ?  __('Proceed to PayPal', 'paypal-for-woocommerce') :  __( 'Place order', 'paypal-for-woocommerce' );
-        do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this );
+        do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
     }
 
     public function admin_options() {
@@ -914,7 +914,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 throw new Exception($order_id->get_error_message());
                             }
                             if ( ! is_user_logged_in() && WC()->checkout->is_registration_required($order_id) ) {
-                                $paypal_express_request->angelleye_process_customer();
+                                $paypal_express_request->angelleye_process_customer($order_id);
                             }
                             do_action('woocommerce_checkout_order_processed', $order_id, $this->posted);
                         } else {

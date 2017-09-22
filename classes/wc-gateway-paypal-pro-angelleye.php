@@ -175,7 +175,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
             $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
         }
-        do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this );
+        do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
     }
 
     /**

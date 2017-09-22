@@ -47,14 +47,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->api_signature = $this->gateway->get_option('api_signature');
             }
             $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
-            $this->credentials = array(
-                'Sandbox' => $this->testmode,
-                'APIUsername' => $this->api_username,
-                'APIPassword' => $this->api_password,
-                'APISignature' => $this->api_signature,
-                'Force_tls_one_point_two' => $this->gateway->Force_tls_one_point_two
-            );
-            $this->angelleye_load_paypal_class();
+            $this->angelleye_load_paypal_class($this->gateway, $this);
             if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
             }
@@ -67,6 +60,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-function-angelleye.php' );
             }
             $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
+            
         } catch (Exception $ex) {
             
         }
@@ -135,6 +129,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_redirect();
             }
             $token = esc_attr($_GET['token']);
+            $this->angelleye_load_paypal_class($this->gateway, $this, null);
             $this->paypal_response = $this->paypal->GetExpresscheckoutDetails($token);
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'GetExpresscheckoutDetails');
             if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
@@ -214,6 +209,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $order = new WC_Order($this->confirm_order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $this->angelleye_load_paypal_class($this->gateway, $this, $order_id);
             if ($order->get_total() > 0) {
                 $this->angelleye_do_express_checkout_payment_request();
             } else {
@@ -333,6 +329,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 
             }
             $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
+            $this->angelleye_load_paypal_class($this->gateway, $this, $this->confirm_order_id);
             $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
             if( empty($paypal_express_checkout['token'])) {
                 $this->angelleye_redirect();
@@ -431,7 +428,15 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         }
     }
 
-    public function angelleye_load_paypal_class() {
+    public function angelleye_load_paypal_class($gateway, $current, $order_id = null) {
+        do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_paypal_express', $gateway, $current, $order_id);
+         $this->credentials = array(
+            'Sandbox' => $this->testmode,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->gateway->Force_tls_one_point_two
+        );
         try {
             if (!class_exists('Angelleye_PayPal')) {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
@@ -1092,6 +1097,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function DoReferenceTransaction($order_id) {
+        $this->angelleye_load_paypal_class($this->gateway, $this, $order_id);
         $PayPalRequestData = array();
         $referenceid = get_post_meta($order_id, '_payment_tokens_id', true);
         if( !empty($_POST['wc-paypal_express-payment-token'])) {
@@ -1230,6 +1236,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function angelleye_process_refund($order_id, $amount = null, $reason = '') {
+        $this->angelleye_load_paypal_class($this->gateway, $this, $order_id);
         $order = wc_get_order($order_id);
         WC_Gateway_PayPal_Express_AngellEYE::log('Begin Refund');
         WC_Gateway_PayPal_Express_AngellEYE::log('Transaction ID: ' . print_r($order->get_transaction_id(), true));
