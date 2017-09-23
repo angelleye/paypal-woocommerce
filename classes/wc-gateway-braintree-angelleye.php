@@ -1830,6 +1830,20 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             update_post_meta($order_id, 'braintree_refunded_id', $braintree_refunded_id);
                         }
                     }
+                } 
+                if( !empty($transaction->status) && $transaction->status == 'voided' ) {
+                    $default_args = array(
+                        'amount' => $transaction->amount,
+                        'reason' => 'Data Synchronization from Braintree',
+                        'order_id' => $order_id,
+                        'refund_id' => 0,
+                        'line_items' => array(),
+                        'refund_payment' => false,
+                        'restock_items' => false,
+                    );
+                    wc_create_refund($default_args);
+                    $order->add_order_note(sprintf(__('Voided %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($transaction->amount, 2, '.', '')), $transaction->id));
+                    update_post_meta($order_id, 'braintree_refunded_id', $transaction->id);
                 }
             }
         }
