@@ -196,8 +196,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($this->checkout_with_pp_button_type == 'customimage') {
             $image_path = $this->pp_button_type_my_custom;
         }
-        if (is_ssl()) {
-            $image_path = preg_replace("/^http:/i", "https:", $image_path);
+        
+        if ( is_ssl() || get_option( 'woocommerce_force_ssl_checkout' ) == 'yes' ) {
+            $image_path = str_replace( 'http:', 'https:', $image_path );
         }
         $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
         return apply_filters('woocommerce_paypal_express_icon', $icon, $this->id);
