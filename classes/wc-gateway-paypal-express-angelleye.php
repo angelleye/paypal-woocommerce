@@ -822,7 +822,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $image_path = plugins_url('/assets/images/dynamic-image/' . self::get_button_locale_code() . '.png', plugin_basename(dirname(__FILE__)));
         } else {
             $image_path = plugins_url('/assets/images/dynamic-image/' . self::get_button_locale_code() . '.gif', plugin_basename(dirname(__FILE__)));
-            if (is_ssl()) {
+            if ( is_ssl() || get_option( 'woocommerce_force_ssl_checkout' ) == 'yes' ) {
                 $image_path = preg_replace("/^http:/i", "https:", $image_path);
             }
         }
