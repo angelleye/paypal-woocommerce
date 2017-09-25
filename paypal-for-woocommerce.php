@@ -120,6 +120,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( "pre_option_woocommerce_paypal_pro_payflow_settings", array($this, 'angelleye_paypal_pro_payflow_decrypt_gateway_api'), 10, 1);
             add_filter( "pre_option_woocommerce_braintree_settings", array($this, 'angelleye_braintree_decrypt_gateway_api'), 10, 1);
             add_filter( "pre_option_woocommerce_enable_guest_checkout", array($this, 'angelleye_express_checkout_woocommerce_enable_guest_checkout'), 10, 1);
+            add_filter( 'woocommerce_get_checkout_order_received_url', array($this, 'angelleye_woocommerce_get_checkout_order_received_url'), 10, 2);
             
             $this->customer_id;
         }
@@ -1087,6 +1088,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $product_title = str_replace(array("&#8211;", "&#8211"), array("-"), $product_title);
             $product_title = str_replace('&', '-', $product_title);
             return $product_title;
+        }
+        
+        public function angelleye_woocommerce_get_checkout_order_received_url($order_received_url, $order) {
+            $lang_code = get_post_meta( $order->id, 'wpml_language', true );
+            if( empty($lang_code) ) {
+                $lang_code = get_post_meta( $order->id, '_wpml_language', true );
+            }
+            if( !empty($lang_code) ) {
+                $order_received_url = apply_filters( 'wpml_permalink', $order_received_url , $lang_code );
+            }
+            return $order_received_url;
         }
     }
 }
