@@ -16,7 +16,6 @@
                                 locale: angelleye_in_content_param.locale,
                                 click: function (event) {
                                      event.preventDefault();
-                                     console.log($(event.target).parent().attr("href"));
                                      paypal.checkout.initXO();
                                      target_url = $(event.target).parent().attr("href");
                                      if( $("#wc-paypal_express-new-payment-method").is(':checked') ) {

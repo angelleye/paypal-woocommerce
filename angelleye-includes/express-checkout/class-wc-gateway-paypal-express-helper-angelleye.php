@@ -777,8 +777,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_in_content_js($url) {
-        if (strpos($url, 'checkout.js') !== false) {
-            $url = "{$url}' async";
+        if (strpos($url, 'https://www.paypalobjects.com/api/checkout.js') !== false) {
+            return "$url' async data-log-level='error";
         }
         return $url;
     }
