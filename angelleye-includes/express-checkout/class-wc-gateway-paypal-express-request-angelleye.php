@@ -1299,7 +1299,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $username = $o_username . $append;
                         $append++;
                     }
-                    $password = wp_generate_password();
+                    if ( 'yes' === get_option( 'woocommerce_registration_generate_password' ) ) {
+                        $password = wp_generate_password();
+                    } else {
+                        $password = '';
+                    }
                     WC()->session->set('before_wc_create_new_customer', true);
                     $new_customer = wc_create_new_customer($email, $username, $password);
                     if (is_wp_error($new_customer)) {
