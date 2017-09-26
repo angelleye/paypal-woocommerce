@@ -123,6 +123,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.6.4 - 09.xx.2017 =
 * Feature - Adds hooks necessary for multi-account setup extension plugin we are building. ([#876](https://github.com/angelleye/paypal-woocommerce/issues/876))
+* Tweak - Adjustments to ensure PayPal Express Checkout image on WC checkout page uses https:// when site is running on SSL. ([#878](https://github.com/angelleye/paypal-woocommerce/issues/878))
 * Fix - Resolves a PHP failure when loading a failed Braintree order in WooCommerce. ([#879](https://github.com/angelleye/paypal-woocommerce/issues/879))
 
 = 1.4.6.3 - 09.15.2017 =
