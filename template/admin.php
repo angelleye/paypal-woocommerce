@@ -5,81 +5,54 @@
 ?>
 <?php
 $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general_settings';
-$gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
+$gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'paypal_payment_gateway_products';
 ?>
-
 <div class="wrap">
     <h2><?php echo esc_html(get_admin_page_title()); ?></h2>
     <h2 class="nav-tab-wrapper">
-        <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=express_checkout" class="nav-tab <?php echo $active_tab == 'general_settings' ? 'nav-tab-active' : ''; ?>"><?php echo __('General', 'paypal-for-woocommerce'); ?></a>
+        <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_payment_gateway_products" class="nav-tab <?php echo $active_tab == 'general_settings' ? 'nav-tab-active' : ''; ?>"><?php echo __('General', 'paypal-for-woocommerce'); ?></a>
         <a href="?page=<?php echo $this->plugin_slug; ?>&tab=tabs" class="nav-tab <?php echo $active_tab == 'tabs' ? 'nav-tab-active' : ''; ?>"><?php echo __('Tools', 'paypal-for-woocommerce'); ?></a>
     </h2>
-
-<?php if ($active_tab == 'general_settings') { ?>
-
+    <?php if ($active_tab == 'general_settings') { ?>
         <h2 class="nav-tab-wrapper">
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=express_checkout" class="nav-tab <?php echo $gateway == 'express_checkout' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></a>
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=payflow" class="nav-tab <?php echo $gateway == 'payflow' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Payments Pro (PayFlow)', 'paypal-for-woocommerce'); ?></a>
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=dodirectpayment" class="nav-tab <?php echo $gateway == 'dodirectpayment' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Website Payments Pro (DoDirectPayment)', 'paypal-for-woocommerce'); ?></a>
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_plus" class="nav-tab <?php echo $gateway == 'paypal_plus' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Plus', 'paypal-for-woocommerce'); ?></a>
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=braintree" class="nav-tab <?php echo $gateway == 'braintree' ? 'nav-tab-active' : ''; ?>"><?php echo __('Braintree', 'paypal-for-woocommerce'); ?></a>
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_advanced" class="nav-tab <?php echo $gateway == 'paypal_advanced' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Advanced', 'paypal-for-woocommerce'); ?></a>
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_credit_card_rest" class="nav-tab <?php echo $gateway == 'paypal_credit_card_rest' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Credit Card (REST)', 'paypal-for-woocommerce'); ?></a>
+            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_payment_gateway_products" class="nav-tab <?php echo $gateway == 'paypal_payment_gateway_products' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Payment Gateway Products', 'paypal-for-woocommerce'); ?></a>
+
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=global" class="nav-tab <?php echo $gateway == 'global' ? 'nav-tab-active' : ''; ?>"><?php echo __('Global', 'paypal-for-woocommerce'); ?></a>
         </h2>
-
-    <?php
-    if ($gateway == 'express_checkout') {
-        ?>
+        <?php
+        if ($gateway == 'paypal_payment_gateway_products') {
+            ?>
             <div class="wrap">
                 <p><?php _e('PayPal Express Checkout is a more advanced version of the standard PayPal payment option that is included with WooCommerce. It has more features included with it and allows us to more tightly integrate PayPal into WooCommerce. It is the recommended method of enabling PayPal payments in WooCommerce.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'); ?>"><?php _e('Express Checkout Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
-        <?php
-    } elseif ($gateway == 'payflow') {
-        ?>
             <div class="wrap">
                 <p><?php _e('PayPal Payments Pro 2.0 is the latest release of PayPal’s Pro offering. It works on PayPal’s PayFlow Gateway as opposed to their original DoDirectPayment API. You need to be sure that your account is setup for this version of Pro before configuring this payment gateway or you will end up with errors when people attempt to pay you via credit card.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_pro_payflow'); ?>"><?php _e('PayPal Payments Pro (PayFlow) Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
-        <?php
-    } elseif ($gateway == 'dodirectpayment') {
-        ?>
             <div class="wrap">
                 <p><?php _e('PayPal’s Website Payments Pro 3.0 is the original Pro package that PayPal offered. It works on the DoDirectPayment API and is being slowly deprecated since the launch of Payments Pro 2.0 that works on the PayFlow API. You need to be sure that your account is setup for this version of Pro before configuring this payment gateway or you will end up with errors when people attempt to pay you via credit card.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_pro'); ?>"><?php _e('PayPal Website Payments Pro (DoDirectPayment) Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
-        <?php
-    } elseif ($gateway == 'paypal_plus') {
-        ?>
             <div class="wrap">
                 <p><?php _e('PayPal Plus is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame.', 'paypal-for-woocommerce'); ?></p>
                 <p><?php _e('PayPal Plus is designed for non-U.S. based PayPal accounts, and because of this, PayPal does not support us the way they do with other PayPal products.  As such, we were forced to move PayPal Plus to its own paid plugin separate from this one.', 'paypal-for-woocommerce'); ?></p>
                 <p><?php _e('This will make it possible for us to dedicate resources to PayPal Plus in order to maintain and support it thoroughly.', 'paypal-for-woocommerce'); ?></p>
                 <p><a target="_blank" href="https://www.angelleye.com/product/woocommerce-paypal-plus-plugin">Get the PayPal Plus Plugin!</a></p>
             </div>
-        <?php
-    } elseif ($gateway == 'braintree') {
-        ?>
             <div class="wrap">
                 <p><?php _e('Credit Card payments Powered by PayPal / Braintree.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=braintree'); ?>"><?php _e('Braintree Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
-        <?php
-    } elseif ($gateway == 'paypal_advanced') {
-        ?>
             <div class="wrap">
                 <p><?php _e('PayPal Payments Advanced uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_advanced'); ?>"><?php _e('PayPal Advanced Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
-        <?php
-    } elseif ($gateway == 'paypal_credit_card_rest') {
-        ?>
             <div class="wrap">
                 <p><?php _e('PayPal direct credit card payments using the REST API.  This allows you to accept credit cards directly on the site without the need for the full Payments Pro.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_credit_card_rest'); ?>"><?php _e('PayPal Credit Card (REST) Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
-        <?php
+            <?php
         } elseif ($gateway == 'global') {
             ?>
             <div class="wrap">
@@ -108,12 +81,11 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                     </table>
                     <?php submit_button(); ?>
                 </form>
-
             </div>
             <?php
-    }
-    ?>
-    <?php } else { 
+        }
+        ?>
+    <?php } else {
         ?>
         <div class="wrap">
             <div class="angelleye-paypal-for-woocommerce-shipping-tools-wrap">
@@ -173,9 +145,9 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                             <select name="pfw_bulk_action_target_where_category" id="pfw-bulk-action-target-where-category">
                                 <option value=""><?php echo __('- Select option', 'paypal-for-woocommerce'); ?></option>
                                 <?php
-                                if($product_cats) {
-                                    foreach($product_cats as $cat) {
-                                        echo '<option value="'.$cat->slug.'">'.$cat->cat_name.'</option>';
+                                if ($product_cats) {
+                                    foreach ($product_cats as $cat) {
+                                        echo '<option value="' . $cat->slug . '">' . $cat->cat_name . '</option>';
                                     }
                                 }
                                 ?>
@@ -216,5 +188,5 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'express_checkout';
                 </form>
             </div>
         </div>
-<?php } ?>
+    <?php } ?>
 </div>
