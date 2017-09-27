@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
 Tested up to: 4.8
-Stable tag: 1.4.6.3
+Stable tag: 1.4.6.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -121,7 +121,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.6.4 - 09.xx.2017 =
+= 1.4.6.4 - 09.27.2017 =
 * Feature - Adds hooks necessary for multi-account setup extension plugin we are building. ([#876](https://github.com/angelleye/paypal-woocommerce/issues/876))
 * Tweak - Adjustments to ensure PayPal Express Checkout image on WC checkout page uses https:// when site is running on SSL. ([#878](https://github.com/angelleye/paypal-woocommerce/issues/878))
 * Tweak - Resolves conflicts with some themes using Express Checkout In Context. ([#882](https://github.com/angelleye/paypal-woocommerce/issues/882))
