@@ -1300,9 +1300,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $append++;
                     }
                     if ( 'yes' === get_option( 'woocommerce_registration_generate_password' ) ) {
-                        $password = wp_generate_password();
-                    } else {
                         $password = '';
+                    } else {
+                        $password = wp_generate_password();
                     }
                     WC()->session->set('before_wc_create_new_customer', true);
                     $new_customer = wc_create_new_customer($email, $username, $password);
