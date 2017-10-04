@@ -49,7 +49,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             if (WC()->cart->has_discount() && $this->discount_amount == 0) {
                 $applied_coupons = WC()->cart->get_applied_coupons();
                 if (!empty($applied_coupons)) {
-                    foreach ( $applied_coupons as $code ) {
+                    foreach ($applied_coupons as $code) {
                         $coupon = new WC_Coupon($code);
                         if (version_compare(WC_VERSION, '3.0', '<')) {
                             $coupon_amount = (!empty($coupon->amount) ) ? $coupon->amount : 0;
@@ -151,7 +151,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->shippingamt, $this->decimals));
             $this->payment['order_items'] = $this->order_items;
             $this->payment['discount_amount'] = AngellEYE_Gateway_Paypal::number_format(round($this->discount_amount, $this->decimals));
-            if($this->taxamt < 0 || $this->shippingamt < 0) {
+            if ($this->taxamt < 0 || $this->shippingamt < 0) {
                 $this->payment['is_calculation_mismatch'] = true;
             } else {
                 $this->payment['is_calculation_mismatch'] = false;
@@ -167,23 +167,8 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->order_items = array();
             $roundedPayPalTotal = 0;
             $this->discount_amount = round($order->get_total_discount(), $this->decimals);
-            if ($this->get_giftcard_amount($order_id) != false) {
-                $this->discount_amount = round($this->discount_amount + $this->get_giftcard_amount($order_id), $this->decimals);
-            }
-            if (WC()->cart->has_discount() && $this->discount_amount == 0) {
-                $applied_coupons = WC()->cart->get_applied_coupons();
-                if (!empty($applied_coupons)) {
-                    foreach ( $applied_coupons as $code ) {
-                        $coupon = new WC_Coupon($code);
-                        if (version_compare(WC_VERSION, '3.0', '<')) {
-                            $coupon_amount = (!empty($coupon->amount) ) ? $coupon->amount : 0;
-                            $this->discount_amount = round($this->discount_amount + $coupon_amount, $this->decimals);
-                        } else {
-                            $coupon_amount = $coupon->get_amount();
-                            $this->discount_amount = round($this->discount_amount + $coupon_amount, $this->decimals);
-                        }
-                    }
-                }
+            if ($order->get_discount_total() > 0 && $this->discount_amount == 0) {
+                $this->discount_amount = round($order->get_discount_total(), $this->decimals);
             }
             $desc = '';
             foreach ($order->get_items() as $cart_item_key => $values) {
@@ -274,7 +259,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->shippingamt, $this->decimals));
             $this->payment['order_items'] = $this->order_items;
             $this->payment['discount_amount'] = AngellEYE_Gateway_Paypal::number_format(round($this->discount_amount, $this->decimals));
-            if($this->taxamt < 0 || $this->shippingamt < 0) {
+            if ($this->taxamt < 0 || $this->shippingamt < 0) {
                 $this->payment['is_calculation_mismatch'] = true;
             } else {
                 $this->payment['is_calculation_mismatch'] = false;
@@ -378,6 +363,8 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
         }
 
     }
+
+    
 
     
 
