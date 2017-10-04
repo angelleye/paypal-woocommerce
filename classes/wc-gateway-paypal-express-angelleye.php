@@ -1197,7 +1197,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         $error_display_type_message = apply_filters('ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg);
         if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
-            wc_add_notice($error_display_type_message, 'error');
+            if(function_exists('wc_add_notice')) {
+                wc_add_notice($error_display_type_message, 'error');
+            }
+        }
+        if(is_admin()) {
+            return false;
         }
         if (!is_ajax()) {
             wp_redirect($redirect_url);

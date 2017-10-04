@@ -705,22 +705,42 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         try {
             $order = wc_get_order($orderid);
             $old_wc = version_compare( WC_VERSION, '3.0', '<' );
-            switch (strtolower($result['PAYMENTINFO_0_PAYMENTSTATUS'])) :
+            if(!empty($result['PAYMENTINFO_0_PAYMENTSTATUS'])) {
+                $payment_status = $result['PAYMENTINFO_0_PAYMENTSTATUS'];
+            } elseif ( !empty ($result['PAYMENTSTATUS'])) {
+                $payment_status = $result['PAYMENTSTATUS'];
+            }
+            if( !empty($result['PAYMENTINFO_0_TRANSACTIONTYPE']) ) {
+                $transaction_type = $result['PAYMENTINFO_0_TRANSACTIONTYPE'];
+            } elseif ( !empty ($result['TRANSACTIONTYPE'])) {
+                $transaction_type = $result['TRANSACTIONTYPE'];
+            }
+            if( !empty($result['PAYMENTINFO_0_TRANSACTIONID']) ) {
+                $transaction_id = $result['PAYMENTINFO_0_TRANSACTIONID'];
+            } elseif ( !empty ($result['BILLINGAGREEMENTID'])) {
+                $transaction_id = $result['BILLINGAGREEMENTID'];
+            }
+            if( !empty($result['PAYMENTINFO_0_PENDINGREASON']) ) {
+                $pending_reason = $result['PAYMENTINFO_0_PENDINGREASON'];
+            } elseif ( !empty ($result['PENDINGREASON'])) {
+                $pending_reason = $result['PENDINGREASON'];
+            }
+            switch (strtolower($payment_status)) :
                 case 'completed' :
                     if ($order->status == 'completed') {
                         break;
                     }
-                    if (!in_array(strtolower($result['PAYMENTINFO_0_TRANSACTIONTYPE']), array('cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
                         break;
                     }
                     $order->add_order_note(__('Payment Completed via Express Checkout', 'paypal-for-woocommerce'));
-                    $order->payment_complete($result['PAYMENTINFO_0_TRANSACTIONID']);
+                    $order->payment_complete($transaction_id);
                     break;
                 case 'pending' :
-                    if (!in_array(strtolower($result['PAYMENTINFO_0_TRANSACTIONTYPE']), array('cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
                         break;
                     }
-                    switch (strtolower($result['PAYMENTINFO_0_PENDINGREASON'])) {
+                    switch (strtolower($pending_reason)) {
                         case 'address':
                             $pending_reason = __('Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile.', 'paypal-for-woocommerce');
                             break;
@@ -771,7 +791,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 case 'expired' :
                 case 'failed' :
                 case 'voided' :
-                    $order->update_status('failed', sprintf(__('Payment %s via Express Checkout.', 'paypal-for-woocommerce'), strtolower($result['PAYMENTINFO_0_PAYMENTSTATUS'])));
+                    $order->update_status('failed', sprintf(__('Payment %s via Express Checkout.', 'paypal-for-woocommerce'), strtolower($payment_status)));
                     break;
                 default:
                     break;
