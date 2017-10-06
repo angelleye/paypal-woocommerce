@@ -471,7 +471,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     onError: function (a) {
                         if ("VALIDATION" === a.type) {
                             if (is_angelleye_braintree_selected()) {
-                                console.log("configuration error " + a.message);
                                 jQuery('.woocommerce-error, .braintree-token', ccForm).remove();
                                 ccForm.prepend('<ul class="woocommerce-error"><li>' + a.message + '</li></ul>');
                                 return $form.unblock();
@@ -479,7 +478,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         } else {
                             jQuery('.woocommerce-error, .braintree-token', ccForm).remove();
                             ccForm.prepend('<ul class="woocommerce-error"><li>' + a.message + '</li></ul>');
-                            console.log("configuration error " + a.message);
                             return $form.unblock();
                         }
                     },
@@ -497,7 +495,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }
                 function braintreeResponseHandler(obj) {
                     var $form = jQuery('form.checkout, #order_review, #add_payment_method'),
-                            ccForm = jQuery('#braintree-cc-form');
+                     ccForm = jQuery('#braintree-cc-form');
                     if (obj.nonce) {
                         jQuery('.woocommerce-error, .braintree-token', ccForm).remove();
                         if (jQuery('#device_data').length) {
@@ -1728,6 +1726,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public function adjust_fraud_script_tag($url) {
         if (strpos($url, 'braintree-data.js') !== false) {
             $url = "{$url}' async='true";
+        }
+        if (strpos($url, 'https://js.braintreegateway.com/v2/braintree.js') !== false) {
+            return "$url' data-log-level='error";
         }
         return $url;
     }
