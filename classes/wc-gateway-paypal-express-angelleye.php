@@ -635,7 +635,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'save_abandoned_checkout' => array(
                 'title' => __('Save Abandoned Checkouts', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('If a buyer clicks to pay with PayPal, but they never return from PayPal, this will save the order as pending with all available details to that point.', 'paypal-for-woocommerce'),
+                'label' => __('If a buyer choose to pay with PayPal from the WooCommerce checkout page, but they never return from PayPal, this will save the order as pending with all available details to that point.  Note that this will not work when Express Checkout Shortcut buttons are used.'),
                 'default' => 'no'
             ),
             'enable_in_context_checkout_flow' => array(
