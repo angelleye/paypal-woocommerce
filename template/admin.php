@@ -23,34 +23,41 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'paypal_payment_gateway_
         if ($gateway == 'paypal_payment_gateway_products') {
             ?>
             <div class="wrap">
+                <h3>PayPal Express Checkout</h3>
                 <p><?php _e('PayPal Express Checkout is a more advanced version of the standard PayPal payment option that is included with WooCommerce. It has more features included with it and allows us to more tightly integrate PayPal into WooCommerce. It is the recommended method of enabling PayPal payments in WooCommerce.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'); ?>"><?php _e('Express Checkout Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
             <div class="wrap">
+                <h3>PayPal Payments Pro 2.0 (PayFlow)</h3>
                 <p><?php _e('PayPal Payments Pro 2.0 is the latest release of PayPal’s Pro offering. It works on PayPal’s PayFlow Gateway as opposed to their original DoDirectPayment API. You need to be sure that your account is setup for this version of Pro before configuring this payment gateway or you will end up with errors when people attempt to pay you via credit card.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_pro_payflow'); ?>"><?php _e('PayPal Payments Pro (PayFlow) Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
             <div class="wrap">
+                <h3>PayPal Website Payments Pro 3.0 (DoDirectPayment)</h3>
                 <p><?php _e('PayPal’s Website Payments Pro 3.0 is the original Pro package that PayPal offered. It works on the DoDirectPayment API and is being slowly deprecated since the launch of Payments Pro 2.0 that works on the PayFlow API. You need to be sure that your account is setup for this version of Pro before configuring this payment gateway or you will end up with errors when people attempt to pay you via credit card.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_pro'); ?>"><?php _e('PayPal Website Payments Pro (DoDirectPayment) Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
             <div class="wrap">
-                <p><?php _e('PayPal Plus is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame.', 'paypal-for-woocommerce'); ?></p>
-                <p><?php _e('PayPal Plus is designed for non-U.S. based PayPal accounts, and because of this, PayPal does not support us the way they do with other PayPal products.  As such, we were forced to move PayPal Plus to its own paid plugin separate from this one.', 'paypal-for-woocommerce'); ?></p>
-                <p><?php _e('This will make it possible for us to dedicate resources to PayPal Plus in order to maintain and support it thoroughly.', 'paypal-for-woocommerce'); ?></p>
-                <p><a target="_blank" href="https://www.angelleye.com/product/woocommerce-paypal-plus-plugin">Get the PayPal Plus Plugin!</a></p>
-            </div>
-            <div class="wrap">
+                <h3>PayPal / Braintree Payments</h3>
                 <p><?php _e('Credit Card payments Powered by PayPal / Braintree.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=braintree'); ?>"><?php _e('Braintree Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
             <div class="wrap">
+                <h3>PayPal REST Direct Credit Cards</h3>
+                <p><?php _e('PayPal direct credit card payments using the REST API.  This allows you to accept credit cards directly on the site without the need for the full Payments Pro.', 'paypal-for-woocommerce'); ?></p>
+                <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_credit_card_rest'); ?>"><?php _e('PayPal Credit Card (REST) Setting', 'paypal-for-woocommerce'); ?></a>
+            </div>
+            <div class="wrap">
+                <h3>PayPal Payments Advanced</h3>
                 <p><?php _e('PayPal Payments Advanced uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process.', 'paypal-for-woocommerce'); ?></p>
                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_advanced'); ?>"><?php _e('PayPal Advanced Setting', 'paypal-for-woocommerce'); ?></a>
             </div>
             <div class="wrap">
-                <p><?php _e('PayPal direct credit card payments using the REST API.  This allows you to accept credit cards directly on the site without the need for the full Payments Pro.', 'paypal-for-woocommerce'); ?></p>
-                <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_credit_card_rest'); ?>"><?php _e('PayPal Credit Card (REST) Setting', 'paypal-for-woocommerce'); ?></a>
+                <h3>PayPal Plus (Germany / Mexico / Brazil)</h3>
+                <p><?php _e('PayPal Plus is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame.', 'paypal-for-woocommerce'); ?></p>
+                <p><?php _e('PayPal Plus is designed for non-U.S. based PayPal accounts, and because of this, PayPal does not support us the way they do with other PayPal products.  As such, we were forced to move PayPal Plus to its own paid plugin separate from this one.', 'paypal-for-woocommerce'); ?></p>
+                <p><?php _e('This will make it possible for us to dedicate resources to PayPal Plus in order to maintain and support it thoroughly.', 'paypal-for-woocommerce'); ?></p>
+                <p><a target="_blank" href="https://www.angelleye.com/product/woocommerce-paypal-plus-plugin">Get the PayPal Plus Plugin!</a></p>
             </div>
             <?php
         } elseif ($gateway == 'global') {
