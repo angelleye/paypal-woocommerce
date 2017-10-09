@@ -121,6 +121,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.6.5 - xx.xx.2017 =
+* Tweak - Clean up settings panel. ([#884](https://github.com/angelleye/paypal-woocommerce/issues/884))
+
 = 1.4.6.4 - 09.27.2017 =
 * Feature - Adds hooks necessary for multi-account setup extension plugin we are building. ([#876](https://github.com/angelleye/paypal-woocommerce/issues/876))
 * Tweak - Adjustments to ensure PayPal Express Checkout image on WC checkout page uses https:// when site is running on SSL. ([#878](https://github.com/angelleye/paypal-woocommerce/issues/878))
