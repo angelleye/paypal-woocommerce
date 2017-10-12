@@ -125,6 +125,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Clean up settings panel. ([#884](https://github.com/angelleye/paypal-woocommerce/issues/884))
 * Tweak - Adjustments related to JavaScript errors/logs. ([#886](https://github.com/angelleye/paypal-woocommerce/issues/886))
 * Fix - Resolves an issue related to discounts with Woo Subscription products. ([#888](https://github.com/angelleye/paypal-woocommerce/issues/888))
+* Fix - Resolves a conflict with WooCommerce 3.2 release. ([#899](https://github.com/angelleye/paypal-woocommerce/issues/899))
 
 = 1.4.6.4 - 09.27.2017 =
 * Feature - Adds hooks necessary for multi-account setup extension plugin we are building. ([#876](https://github.com/angelleye/paypal-woocommerce/issues/876))
