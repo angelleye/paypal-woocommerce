@@ -255,7 +255,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     update_post_meta($order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                     update_post_meta($order->get_id(), 'paypal_email', $payeremail);
                 }
-                $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : ''));
+                $order->add_order_note(sprintf(__('%s payment Transaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : ''));
                 WC()->cart->empty_cart();
                 wc_clear_notices();
                 wp_redirect(add_query_arg( 'utm_nooverride', '1', $this->gateway->get_return_url($order) ));
@@ -303,7 +303,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     update_post_meta($order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                 }
 
-                $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']));
+                $order->add_order_note(sprintf(__('%s payment Transaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']));
                 
                 WC()->cart->empty_cart();
                 wc_clear_notices();
@@ -450,9 +450,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_set_express_checkout_request() {
         try {
             $Payments = array();
-            $cancel_url = !empty($this->gateway->cancel_page_id) ? get_permalink($this->gateway->cancel_page_id) : WC()->cart->get_cart_url();
+            $cancel_url = !empty($this->gateway->cancel_page_id) ? get_permalink($this->gateway->cancel_page_id) : wc_get_cart_url();
             if($cancel_url == false) {
-                $cancel_url = WC()->cart->get_cart_url();
+                $cancel_url = wc_get_cart_url();
             }
             $order_total = '';
             $returnurl = urldecode(add_query_arg('pp_action', 'get_express_checkout_details', WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
@@ -737,7 +737,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $order->payment_complete($transaction_id);
                     break;
                 case 'pending' :
-                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'expresscheckout'))) {
                         break;
                     }
                     switch (strtolower($pending_reason)) {

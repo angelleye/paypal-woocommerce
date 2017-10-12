@@ -885,7 +885,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             switch ($_GET['pp_action']) {
                 case 'cancel_order':
                     $this->function_helper->ec_clear_session_data();
-                     $cancel_url = !empty($this->cancel_page_id) ? get_permalink($this->cancel_page_id) : WC()->cart->get_cart_url();
+                     $cancel_url = !empty($this->cancel_page_id) ? get_permalink($this->cancel_page_id) : wc_get_cart_url();
                      wp_safe_redirect( $cancel_url );
                      exit;
                 case 'set_express_checkout':

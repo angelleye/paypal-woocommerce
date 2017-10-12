@@ -495,9 +495,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
      }
 
     public function woocommerce_paypal_express_checkout_button_angelleye($return = false, $possition = null) {
-        if (!defined('WOOCOMMERCE_CHECKOUT')) {
-            define('WOOCOMMERCE_CHECKOUT', true);
-        }
         if (!defined('WOOCOMMERCE_CART')) {
             define('WOOCOMMERCE_CART', true);
         }
@@ -553,9 +550,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function checkout_message() {
-        if (!defined('WOOCOMMERCE_CHECKOUT')) {
-            define('WOOCOMMERCE_CHECKOUT', true);
-        }
         if (!defined('WOOCOMMERCE_CART')) {
             define('WOOCOMMERCE_CART', true);
         }
@@ -641,9 +635,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
     
     public function woocommerce_before_cart() {
-        if (!defined('WOOCOMMERCE_CHECKOUT')) {
-            define('WOOCOMMERCE_CHECKOUT', true);
-        }
         if (!defined('WOOCOMMERCE_CART')) {
             define('WOOCOMMERCE_CART', true);
         }
@@ -740,9 +731,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
         if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
             define( 'WOOCOMMERCE_CART', true );
-        }
-        if (!defined('WOOCOMMERCE_CHECKOUT')) {
-            define('WOOCOMMERCE_CHECKOUT', true);
         }
         WC()->shipping->reset_shipping();
         if ( is_product() ) {
