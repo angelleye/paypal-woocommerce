@@ -121,7 +121,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( "pre_option_woocommerce_braintree_settings", array($this, 'angelleye_braintree_decrypt_gateway_api'), 10, 1);
             add_filter( "pre_option_woocommerce_enable_guest_checkout", array($this, 'angelleye_express_checkout_woocommerce_enable_guest_checkout'), 10, 1);
             add_filter( 'woocommerce_get_checkout_order_received_url', array($this, 'angelleye_woocommerce_get_checkout_order_received_url'), 10, 2);
-            
+            add_action('wp_head', array($this, 'angelleye_paypal_insights'), 10);
             $this->customer_id;
         }
 
@@ -195,6 +195,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         function set_ignore_tag(){
+            include_once( 'template/angelleye-paypal-insights.php' );
+            $paypal_insights = new Angelleye_PayPal_Insights(VERSION_PFW);
             global $current_user;
             $plugin = plugin_basename( __FILE__ );
             $plugin_data = get_plugin_data( __FILE__, false );
@@ -1100,6 +1102,52 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $order_received_url = apply_filters( 'wpml_permalink', $order_received_url , $lang_code );
             }
             return $order_received_url;
+        }
+        
+        public function angelleye_paypal_insights() {
+            $paypal_insights_enable = get_option('paypal_insights_enable');
+            if (!empty($paypal_insights_enable) && $paypal_insights_enable == 'on') {
+                $paypal_insights_testmode = get_option('paypal_insights_testmode');
+                if (!empty($paypal_insights_testmode) && $paypal_insights_testmode == 'on') {
+                    $angelleye_paypal_insights_sandbox_cid = get_option('angelleye_paypal_insights_sandbox_cid');
+                    if (!empty($angelleye_paypal_insights_sandbox_cid)) {
+                        ?>
+                        <!-- PayPal BEGIN -->
+                        <script>
+                            ;
+                            (function(a, t, o, m, s) {
+                                a[m] = a[m] || [];
+                                a[m].push({t: new Date().getTime(), event: 'snippetRun'});
+                                var f = t.getElementsByTagName(o)[0], e = t.createElement(o), d = m !== 'paypalDDL' ? '&m=' + m : '';
+                                e.async = !0;
+                                e.src = 'https://www.sandbox.paypal.com/tagmanager/pptm.js?id=' + s + d;
+                                f.parentNode.insertBefore(e, f);
+                            })(window, document, 'script', 'paypalDDL', '<?php echo $angelleye_paypal_insights_sandbox_cid; ?>');
+                        </script>
+                        <!-- PayPal END -->
+                        <?php
+                    }
+                } else {
+                    $angelleye_paypal_insights_production_cid = get_option('angelleye_paypal_insights_production_cid');
+                    if (!empty($angelleye_paypal_insights_production_cid)) {
+                        ?>
+                        <!-- PayPal BEGIN -->
+                        <script>
+                            ;
+                            (function(a, t, o, m, s) {
+                                a[m] = a[m] || [];
+                                a[m].push({t: new Date().getTime(), event: 'snippetRun'});
+                                var f = t.getElementsByTagName(o)[0], e = t.createElement(o), d = m !== 'paypalDDL' ? '&m=' + m : '';
+                                e.async = !0;
+                                e.src = 'https://www.sandbox.paypal.com/tagmanager/pptm.js?id=' + s + d;
+                                f.parentNode.insertBefore(e, f);
+                            })(window, document, 'script', 'paypalDDL', '<?php echo $angelleye_paypal_insights_production_cid; ?>');
+                        </script>
+                        <!-- PayPal END -->
+                        <?php
+                    }
+                }
+            }
         }
     }
 }
