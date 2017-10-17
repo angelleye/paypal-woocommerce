@@ -895,7 +895,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 return false;
             }
             if(is_product()) {
-                $post_id = get_the_ID;
+                $post_id = get_the_ID();
                 $is_ec_button_enable_product_level = get_post_meta($post_id, '_enable_ec_button', true);
                 if ($this->enabled == 'yes' && $this->show_on_product_page == 'yes' && $is_ec_button_enable_product_level == 'yes') {
                     return true;
