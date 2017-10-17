@@ -889,13 +889,14 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
     
     public function angelleye_is_in_context_enable() {
-        global $product;
+        
         if( $this->enable_in_context_checkout_flow === 'yes' && $this->enabled == 'yes') {
             if($this->function_helper->ec_is_express_checkout()) {
                 return false;
             }
             if(is_product()) {
-                $is_ec_button_enable_product_level = get_post_meta($product->get_id(), '_enable_ec_button', true);
+                $post_id = get_the_ID;
+                $is_ec_button_enable_product_level = get_post_meta($post_id, '_enable_ec_button', true);
                 if ($this->enabled == 'yes' && $this->show_on_product_page == 'yes' && $is_ec_button_enable_product_level == 'yes') {
                     return true;
                 }
