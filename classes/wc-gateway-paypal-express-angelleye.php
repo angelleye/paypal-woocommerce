@@ -13,6 +13,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function __construct() {
         $this->id = 'paypal_express';
+        $this->home_url = is_ssl() ? home_url('/', 'https') : home_url('/'); 
         $this->method_title = __('PayPal Express Checkout ', 'paypal-for-woocommerce');
         $this->method_description = __('PayPal Express Checkout is designed to make the checkout experience for buyers using PayPal much more quick and easy than filling out billing and shipping forms.  Customers will be taken directly to PayPal to sign in and authorize the payment, and are then returned back to your store to choose a shipping method, review the final order total, and complete the payment.', 'paypal-for-woocommerce');
         $this->has_fields = false;
@@ -78,6 +79,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->cancel_page_id = $this->get_option('cancel_page', '');
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
+        $this->paypal_insights_cid_production = $this->get_option('paypal_insights_cid_production', '');
+        $this->paypal_insights_cid_sandbox = $this->get_option('paypal_insights_cid_sandbox', '');
         if ($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl');
             if (isset($this->notifyurl) && !empty($this->notifyurl)) {
@@ -141,6 +144,58 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
             <?php $this->generate_settings_html(); ?>
+          </table>  
+            <div class='wrap'>
+                <div id='angelleye_muse_activate_managesettings_button_sandbox'></div>
+                <div id='angelleye_muse_activate_managesettings_button_production'></div>
+            </div>
+            <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
+            <script>
+                jQuery('#woocommerce_paypal_express_paypal_insights_enabled, #woocommerce_paypal_express_paypal_insights_environment').change(function() {
+                    var sandbox = jQuery('#angelleye_muse_activate_managesettings_button_sandbox');
+                    var production = jQuery('#angelleye_muse_activate_managesettings_button_production');
+                    if (jQuery('#woocommerce_paypal_express_paypal_insights_enabled').is(':checked')) {
+                        if(jQuery( "#woocommerce_paypal_express_paypal_insights_environment option:selected" ).text() == 'Production') {
+                           production.show();
+                           sandbox.hide();
+                        } else {
+                            sandbox.show();
+                            production.hide();
+                        }
+                    } else {
+                        sandbox.hide();
+                        production.hide();
+                    }
+                }).change();
+               jQuery('#woocommerce_paypal_express_paypal_insights_cid_sandbox, #woocommerce_paypal_express_paypal_insights_cid_production').closest('tr').hide();
+                var muse_options_sandbox = {
+                    onContainerCreate: callback_onsuccess_sandbox,
+                    url: '<?php echo $this->home_url; ?>',
+                    parnter_name: 'Angell EYE',
+                    bn_code: 'AngellEYE_PHPClass',
+                    env: 'sandbox',
+                    cid: '<?php echo $this->paypal_insights_cid_sandbox; ?>'
+                }
+                function callback_onsuccess_sandbox(containerId) {
+                    jQuery('#woocommerce_paypal_express_paypal_insights_cid_sandbox').val(containerId);
+                    muse_options_sandbox.cid = containerId;
+                }
+                MUSEButton('angelleye_muse_activate_managesettings_button_sandbox', muse_options_sandbox);
+                var muse_options_production = {
+                    onContainerCreate: callback_onsuccess_production,
+                    url: '<?php echo $this->home_url; ?>',
+                    parnter_name: 'Angell EYE',
+                    bn_code: 'AngellEYE_PHPClass',
+                    env: 'production',
+                    cid: '<?php echo $this->paypal_insights_cid_production; ?>'
+                }
+                function callback_onsuccess_production(containerId) {
+                    jQuery('#woocommerce_paypal_express_paypal_insights_cid_production').val(containerId);
+                    
+                    muse_options_production.cid = containerId;
+                }
+                MUSEButton('angelleye_muse_activate_managesettings_button_production', muse_options_production);
+            </script>
             <script type="text/javascript">
                 var display_disable_terms = "<?php echo $display_disable_terms; ?>";
         <?php if ($guest_checkout === 'no') { ?>
@@ -169,7 +224,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }).change();
                 jQuery('#woocommerce_paypal_express_testmode').change(function () {
                     sandbox = jQuery('#woocommerce_paypal_express_sandbox_api_username, #woocommerce_paypal_express_sandbox_api_password, #woocommerce_paypal_express_sandbox_api_signature').closest('tr'),
-                            production = jQuery('#woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature').closest('tr');
+                    production = jQuery('#woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature').closest('tr');
                     if (jQuery(this).is(':checked')) {
                         sandbox.show();
                         production.hide();
@@ -179,7 +234,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                 }).change();
             </script>
-        </table> <?php
+         <?php
     }
 
     /**
@@ -657,6 +712,36 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'hidden',
                 'default' => 'yes',
                 'class' => ''
+            ),
+            'paypal_insights' => array(
+		'title'       => __( 'PayPal Insights', 'paypal-for-woocommerce' ),
+		'type'        => 'title',
+		'description' => '',
+            ),
+            'paypal_insights_enabled' => array(
+                'title'       => __( 'Enable PayPal Insights', 'paypal-for-woocommerce' ),
+                'type'        => 'checkbox',
+                'label'       => 'Enable',
+                'default'     => 'no',
+            ),
+            'paypal_insights_environment' => array(
+                'title'       => __( 'Environment' ),
+                'type'        => 'select',
+                'label'       => true,
+                'default'     => 'sandbox',
+                 'class'       => 'wc-enhanced-select',
+                'options'     => array(
+                    'production'    => __( 'Production' ),
+                    'sandbox' => __( 'Sandbox' ),
+                ),
+            ),
+            'paypal_insights_cid_sandbox' => array(
+                'type'        => 'hidden',
+                'default'     => '',
+            ),
+            'paypal_insights_cid_production' => array(
+                'type'        => 'hidden',
+                'default'     => '',
             )
         );
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
