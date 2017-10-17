@@ -438,9 +438,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_enqueue_scripts_product_page() {
         try {
-
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
-            if ($this->enable_in_context_checkout_flow === 'yes' && (is_checkout() || is_product() || is_cart())) {
+            if ($this->angelleye_is_in_context_enable() == true) {
                 wp_enqueue_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array(), null, true);
                 wp_enqueue_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.js', array('jquery'), $this->version, true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
@@ -887,6 +886,34 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             }
         }
+    }
+    
+    public function angelleye_is_in_context_enable() {
+        global $product;
+        if( $this->enable_in_context_checkout_flow === 'yes' && $this->enabled == 'yes') {
+            if($this->function_helper->ec_is_express_checkout()) {
+                return false;
+            }
+            if(is_product()) {
+                $is_ec_button_enable_product_level = get_post_meta($product->get_id(), '_enable_ec_button', true);
+                if ($this->enabled == 'yes' && $this->show_on_product_page == 'yes' && $is_ec_button_enable_product_level == 'yes') {
+                    return true;
+                }
+            }
+            if(is_checkout()) {
+                 if ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both') {
+                     return true;
+                 }
+            }
+            if(is_cart()) {
+                if($this->show_on_cart == 'yes') {
+                    return true;
+                }
+            }
+        } else {
+            return false;
+        }
+        return false;
     }
 
 }
