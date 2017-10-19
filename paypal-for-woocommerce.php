@@ -222,7 +222,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         function admin_notices() {
             global $current_user, $pp_settings ;
             $user_id = $current_user->ID;
-
+echo '<h1>djjdfjfdkkf</h1>';
             $pp_pro = get_option('woocommerce_paypal_pro_settings');
             $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
             $pp_standard = get_option('woocommerce_paypal_settings');
@@ -264,6 +264,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     echo '</div>';
                 }
             }
+            
+            $is_disable_paypal_insights_notice = get_option('is_disable_paypal_insights_notice', 'no');
+            
+            
+                
+                echo '<div class="error"><p>' . sprintf( __("PayPal Insights now available in Express Checkout! Make sure to activate Insights for valuable analytics about your visitors and increased conversion rates on your site! <a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>activate Insights</a>. | <a href=%s>%s</a>", 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("ignore_pp_woo",0)).'"', __("Hide this notice", 'paypal-for-woocommerce') ) . '</p></div>';
+                
+                
+            
+            
             $this->angelleye_paypal_plus_notice($user_id);
         }
 
