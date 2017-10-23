@@ -714,15 +714,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class' => ''
             ),
             'paypal_marketing_solutions' => array(
-		'title'       => __( 'PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
+                'title'       => __( 'PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
 		'type'        => 'title',
-		'description' => '',
-            ),
+		'description' => __( '<div class="paypalTOC">
+						<p>By clicking Enable below, you acknowledge you have the right to use the PayPal Insights tool and to collect information from shoppers on your site. <a href="https://www.paypal.com/tagmanager/terms">See terms and conditions</a></p>
+						<p>By enabling promotions, you acknowledge that you have agreed to, and accepted the terms of, the PayPal User Agreement, including the <a href="https://www.paypal.com/webapps/mpp/ua/useragreement-full#advertising-program">terms and conditions</a> thereof applicable to the PayPal Advertising Program.</p>
+					</div>')),
+            
             'paypal_marketing_solutions_enabled' => array(
-                'title'       => __( 'Enable PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
+                'title'       => __( 'PayPal Insights &amp; Promotions', 'paypal-for-woocommerce' ),
                 'type'        => 'checkbox',
                 'label'       => 'Enable',
                 'default'     => 'no',
+                'desc_tip'    => true,
+		'description' => __( 'This enables PayPal Marketing Solutions' ),
             ),
             'paypal_marketing_solutions_environment' => array(
                 'title'       => __( 'Environment' ),
