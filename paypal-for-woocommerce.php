@@ -208,7 +208,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $user_id = $current_user->ID;
             
             /* If user clicks to ignore the notice, add that to their user meta */
-            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice');
+            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'is_disable_paypal_insights_notice');
             
             foreach ($notices as $notice) {
                 if ( isset($_GET[$notice]) && '0' == $_GET[$notice] ) {
@@ -222,7 +222,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         function admin_notices() {
             global $current_user, $pp_settings ;
             $user_id = $current_user->ID;
-echo '<h1>djjdfjfdkkf</h1>';
             $pp_pro = get_option('woocommerce_paypal_pro_settings');
             $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
             $pp_standard = get_option('woocommerce_paypal_settings');
@@ -265,14 +264,11 @@ echo '<h1>djjdfjfdkkf</h1>';
                 }
             }
             
-            $is_disable_paypal_insights_notice = get_option('is_disable_paypal_insights_notice', 'no');
-            
-            
-                
-                echo '<div class="error"><p>' . sprintf( __("PayPal Insights now available in Express Checkout! Make sure to activate Insights for valuable analytics about your visitors and increased conversion rates on your site! <a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>activate Insights</a>. | <a href=%s>%s</a>", 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("ignore_pp_woo",0)).'"', __("Hide this notice", 'paypal-for-woocommerce') ) . '</p></div>';
-                
-                
-            
+            if( !get_user_meta($user_id, 'is_disable_paypal_insights_notice') ) {
+                //echo '<div class="error"><p>' . sprintf(__('You currently have both PayPal (standard) and Express Checkout enabled.  It is recommended that you disable the standard PayPal from <a href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal">the settings page</a> when using Express Checkout. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("ignore_pp_check",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+               // echo '<div class="error"><p>' . sprintf( __('PayPal Insights now available in Express Checkout! Make sure to activate Insights for valuable analytics about your visitors and increased conversion rates on your site! <a href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal#woocommerce_paypal_express_paypal_insights_enabled" target="_self'>activate Insights</a>. | <a href=%s>%s</a>", 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("is_disable_paypal_insights_notice",0)).''', __("Hide this notice", 'paypal-for-woocommerce') ) . '</p></div>';
+                echo '<div class="notice notice-info"><p>' . sprintf(__('PayPal Insights now available in Express Checkout! Make sure to <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_paypal_insights_enabled">activate Insights</a> for valuable analytics about your visitors and increased conversion rates on your site!  when using Express Checkout. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("is_disable_paypal_insights_notice",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+            }
             
             $this->angelleye_paypal_plus_notice($user_id);
         }
