@@ -42,10 +42,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->cancel_page = !empty($this->setting['cancel_page']) ? $this->setting['cancel_page'] : '';
             $this->use_wp_locale_code = !empty($this->setting['use_wp_locale_code']) ? $this->setting['use_wp_locale_code'] : 'yes';
 
-            $this->paypal_insights_enabled = !empty($this->setting['paypal_insights_enabled']) ? $this->setting['paypal_insights_enabled'] : 'no';
-            $this->paypal_insights_environment = !empty($this->setting['paypal_insights_environment']) ? $this->setting['paypal_insights_environment'] : 'sandbox';
-            $this->paypal_insights_cid_sandbox = !empty($this->setting['paypal_insights_cid_sandbox']) ? $this->setting['paypal_insights_cid_sandbox'] : '';
-            $this->paypal_insights_cid_production = !empty($this->setting['paypal_insights_cid_production']) ? $this->setting['paypal_insights_cid_production'] : '';
+            $this->paypal_marketing_solutions_enabled = !empty($this->setting['paypal_marketing_solutions_enabled']) ? $this->setting['paypal_marketing_solutions_enabled'] : 'no';
+            $this->paypal_marketing_solutions_environment = !empty($this->setting['paypal_marketing_solutions_environment']) ? $this->setting['paypal_marketing_solutions_environment'] : 'sandbox';
+            $this->paypal_marketing_solutions_cid_sandbox = !empty($this->setting['paypal_marketing_solutions_cid_sandbox']) ? $this->setting['paypal_marketing_solutions_cid_sandbox'] : '';
+            $this->paypal_marketing_solutions_cid_production = !empty($this->setting['paypal_marketing_solutions_cid_production']) ? $this->setting['paypal_marketing_solutions_cid_production'] : '';
 
             $this->enable_in_context_checkout_flow = !empty($this->setting['enable_in_context_checkout_flow']) ? $this->setting['enable_in_context_checkout_flow'] : 'no';
             if ($this->testmode == false) {
@@ -127,7 +127,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_filter('the_title', array($this, 'angelleye_paypal_for_woocommerce_page_title'), 99, 1);
             add_action('template_redirect', array($this, 'angelleye_redirect_to_checkout_page'));
             add_filter('woocommerce_billing_fields', array($this, 'angelleye_optional_billing_fields'), 10, 1);
-            add_action('wp_enqueue_scripts', array($this, 'angelleye_paypal_insights'), 10);
+            add_action('wp_enqueue_scripts', array($this, 'angelleye_paypal_marketing_solutions'), 10);
             $this->is_order_completed = true;
         } catch (Exception $ex) {
             
@@ -845,10 +845,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
     }
 
-    public function angelleye_paypal_insights() {
-        if (!empty($this->paypal_insights_enabled) && $this->paypal_insights_enabled == 'yes') {
-            if (!empty($this->paypal_insights_environment) && $this->paypal_insights_environment == 'sandbox') {
-                if (!empty($this->paypal_insights_cid_sandbox)) {
+    public function angelleye_paypal_marketing_solutions() {
+        if (!empty($this->paypal_marketing_solutions_enabled) && $this->paypal_marketing_solutions_enabled == 'yes') {
+            if (!empty($this->paypal_marketing_solutions_environment) && $this->paypal_marketing_solutions_environment == 'sandbox') {
+                if (!empty($this->paypal_marketing_solutions_cid_sandbox)) {
                     ?>
                     <!-- PayPal BEGIN -->
                     <script>
@@ -860,14 +860,14 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                             e.async = !0;
                             e.src = 'https://www.sandbox.paypal.com/tagmanager/pptm.js?id=' + s + d;
                             f.parentNode.insertBefore(e, f);
-                        })(window, document, 'script', 'paypalDDL', '<?php echo $this->paypal_insights_cid_sandbox; ?>');
+                        })(window, document, 'script', 'paypalDDL', '<?php echo $this->paypal_marketing_solutions_cid_sandbox; ?>');
                     </script>
                     <!-- PayPal END -->
                     <?php
                 }
             } else {
 
-                if (!empty($this->paypal_insights_cid_production)) {
+                if (!empty($this->paypal_marketing_solutions_cid_production)) {
                     ?>
                     <!-- PayPal BEGIN -->
                     <script>
@@ -879,7 +879,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                             e.async = !0;
                             e.src = 'https://www.paypal.com/tagmanager/pptm.js?id=' + s + d;
                             f.parentNode.insertBefore(e, f);
-                        })(window, document, 'script', 'paypalDDL', '<?php echo $this->paypal_insights_cid_production; ?>');
+                        })(window, document, 'script', 'paypalDDL', '<?php echo $this->paypal_marketing_solutions_cid_production; ?>');
                     </script>
                     <!-- PayPal END -->
                     <?php

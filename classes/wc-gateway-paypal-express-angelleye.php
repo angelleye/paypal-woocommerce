@@ -79,8 +79,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->cancel_page_id = $this->get_option('cancel_page', '');
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
-        $this->paypal_insights_cid_production = $this->get_option('paypal_insights_cid_production', '');
-        $this->paypal_insights_cid_sandbox = $this->get_option('paypal_insights_cid_sandbox', '');
+        $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
+        $this->paypal_marketing_solutions_cid_sandbox = $this->get_option('paypal_marketing_solutions_cid_sandbox', '');
         if ($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl');
             if (isset($this->notifyurl) && !empty($this->notifyurl)) {
@@ -151,11 +151,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             </div>
             <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
             <script>
-                jQuery('#woocommerce_paypal_express_paypal_insights_enabled, #woocommerce_paypal_express_paypal_insights_environment').change(function() {
+                jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled, #woocommerce_paypal_express_paypal_marketing_solutions_environment').change(function() {
                     var sandbox = jQuery('#angelleye_muse_activate_managesettings_button_sandbox');
                     var production = jQuery('#angelleye_muse_activate_managesettings_button_production');
-                    if (jQuery('#woocommerce_paypal_express_paypal_insights_enabled').is(':checked')) {
-                        if(jQuery( "#woocommerce_paypal_express_paypal_insights_environment option:selected" ).text() == 'Production') {
+                    if (jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').is(':checked')) {
+                        if(jQuery( "#woocommerce_paypal_express_paypal_marketing_solutions_environment option:selected" ).text() == 'Production') {
                            production.show();
                            sandbox.hide();
                         } else {
@@ -167,17 +167,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         production.hide();
                     }
                 }).change();
-               jQuery('#woocommerce_paypal_express_paypal_insights_cid_sandbox, #woocommerce_paypal_express_paypal_insights_cid_production').closest('tr').hide();
+               jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_sandbox, #woocommerce_paypal_express_paypal_marketing_solutions_cid_production').closest('tr').hide();
                 var muse_options_sandbox = {
                     onContainerCreate: callback_onsuccess_sandbox,
                     url: '<?php echo $this->home_url; ?>',
                     parnter_name: 'Angell EYE',
                     bn_code: 'AngellEYE_PHPClass',
                     env: 'sandbox',
-                    cid: '<?php echo $this->paypal_insights_cid_sandbox; ?>'
+                    cid: '<?php echo $this->paypal_marketing_solutions_cid_sandbox; ?>'
                 }
                 function callback_onsuccess_sandbox(containerId) {
-                    jQuery('#woocommerce_paypal_express_paypal_insights_cid_sandbox').val(containerId);
+                    jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_sandbox').val(containerId);
                     muse_options_sandbox.cid = containerId;
                 }
                 MUSEButton('angelleye_muse_activate_managesettings_button_sandbox', muse_options_sandbox);
@@ -187,10 +187,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     parnter_name: 'Angell EYE',
                     bn_code: 'AngellEYE_PHPClass',
                     env: 'production',
-                    cid: '<?php echo $this->paypal_insights_cid_production; ?>'
+                    cid: '<?php echo $this->paypal_marketing_solutions_cid_production; ?>'
                 }
                 function callback_onsuccess_production(containerId) {
-                    jQuery('#woocommerce_paypal_express_paypal_insights_cid_production').val(containerId);
+                    jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val(containerId);
                     
                     muse_options_production.cid = containerId;
                 }
@@ -713,18 +713,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'yes',
                 'class' => ''
             ),
-            'paypal_insights' => array(
-		'title'       => __( 'PayPal Insights', 'paypal-for-woocommerce' ),
+            'paypal_marketing_solutions' => array(
+		'title'       => __( 'PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
 		'type'        => 'title',
 		'description' => '',
             ),
-            'paypal_insights_enabled' => array(
-                'title'       => __( 'Enable PayPal Insights', 'paypal-for-woocommerce' ),
+            'paypal_marketing_solutions_enabled' => array(
+                'title'       => __( 'Enable PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
                 'type'        => 'checkbox',
                 'label'       => 'Enable',
                 'default'     => 'no',
             ),
-            'paypal_insights_environment' => array(
+            'paypal_marketing_solutions_environment' => array(
                 'title'       => __( 'Environment' ),
                 'type'        => 'select',
                 'label'       => true,
@@ -735,11 +735,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'sandbox' => __( 'Sandbox' ),
                 ),
             ),
-            'paypal_insights_cid_sandbox' => array(
+            'paypal_marketing_solutions_cid_sandbox' => array(
                 'type'        => 'hidden',
                 'default'     => '',
             ),
-            'paypal_insights_cid_production' => array(
+            'paypal_marketing_solutions_cid_production' => array(
                 'type'        => 'hidden',
                 'default'     => '',
             )
