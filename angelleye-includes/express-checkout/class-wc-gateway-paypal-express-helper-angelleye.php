@@ -43,7 +43,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->use_wp_locale_code = !empty($this->setting['use_wp_locale_code']) ? $this->setting['use_wp_locale_code'] : 'yes';
 
             $this->paypal_marketing_solutions_enabled = !empty($this->setting['paypal_marketing_solutions_enabled']) ? $this->setting['paypal_marketing_solutions_enabled'] : 'no';
-            $this->paypal_marketing_solutions_environment = !empty($this->setting['paypal_marketing_solutions_environment']) ? $this->setting['paypal_marketing_solutions_environment'] : 'sandbox';
             $this->paypal_marketing_solutions_cid_sandbox = !empty($this->setting['paypal_marketing_solutions_cid_sandbox']) ? $this->setting['paypal_marketing_solutions_cid_sandbox'] : '';
             $this->paypal_marketing_solutions_cid_production = !empty($this->setting['paypal_marketing_solutions_cid_production']) ? $this->setting['paypal_marketing_solutions_cid_production'] : '';
 
@@ -847,7 +846,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function angelleye_paypal_marketing_solutions() {
         if (!empty($this->paypal_marketing_solutions_enabled) && $this->paypal_marketing_solutions_enabled == 'yes') {
-            if (!empty($this->paypal_marketing_solutions_environment) && $this->paypal_marketing_solutions_environment == 'sandbox') {
+            if ($this->testmode == true) {
                 if (!empty($this->paypal_marketing_solutions_cid_sandbox)) {
                     ?>
                     <!-- PayPal BEGIN -->
