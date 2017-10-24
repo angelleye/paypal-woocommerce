@@ -149,22 +149,26 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 <div id='angelleye_muse_activate_managesettings_button_sandbox'></div>
                 <div id='angelleye_muse_activate_managesettings_button_production'></div>
             </div>
+            <hr></hr>
             <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
             <script>
-                jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled, #woocommerce_paypal_express_paypal_marketing_solutions_environment').change(function() {
-                    var sandbox = jQuery('#angelleye_muse_activate_managesettings_button_sandbox');
-                    var production = jQuery('#angelleye_muse_activate_managesettings_button_production');
+                jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled, #woocommerce_paypal_express_testmode').change(function() {
+                    var sandbox_marketing_solutions = jQuery('#angelleye_muse_activate_managesettings_button_sandbox');
+                    var production_marketing_solutions = jQuery('#angelleye_muse_activate_managesettings_button_production, #paypalInsightsLink');
                     if (jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').is(':checked')) {
-                        if(jQuery( "#woocommerce_paypal_express_paypal_marketing_solutions_environment option:selected" ).text() == 'Production') {
-                           production.show();
-                           sandbox.hide();
+                       // jQuery('#muse-container').hide();
+                        if (jQuery('#woocommerce_paypal_express_testmode').is(':checked')) {
+                           sandbox_marketing_solutions.show();
+                            production_marketing_solutions.hide();
                         } else {
-                            sandbox.show();
-                            production.hide();
+                            production_marketing_solutions.show();
+                           sandbox_marketing_solutions.hide();
+                            
                         }
                     } else {
-                        sandbox.hide();
-                        production.hide();
+                       // jQuery('#muse-container').show();
+                        sandbox_marketing_solutions.hide();
+                        production_marketing_solutions.hide();
                     }
                 }).change();
                jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_sandbox, #woocommerce_paypal_express_paypal_marketing_solutions_cid_production').closest('tr').hide();
@@ -714,12 +718,37 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class' => ''
             ),
             'paypal_marketing_solutions' => array(
-                'title'       => __( 'PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
+                'title'       => __( '<hr></hr>PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
 		'type'        => 'title',
-		'description' => __( '<div class="paypalTOC">
+		'description' => __( '<div id="pms-muse-container">
+				<div class="pms-muse-left-container">
+					<div class="pms-muse-description">
+						<p>With more time to pay with PayPal Credit, your shoppers are more likely to complete their purchases and spend more. In addition, you will get free business insights into your customers&#39; shopping habits; like how often they shop, how much they spend, and how they interact with your website to help you make smarter sales and marketing decisions.</p>
+					</div>
+					<div class="pms-paypalTOC">
 						<p>By clicking Enable below, you acknowledge you have the right to use the PayPal Insights tool and to collect information from shoppers on your site. <a href="https://www.paypal.com/tagmanager/terms">See terms and conditions</a></p>
 						<p>By enabling promotions, you acknowledge that you have agreed to, and accepted the terms of, the PayPal User Agreement, including the <a href="https://www.paypal.com/webapps/mpp/ua/useragreement-full#advertising-program">terms and conditions</a> thereof applicable to the PayPal Advertising Program.</p>
-					</div>')),
+					</div>
+					<div id="pms-paypalInsightsLink">You can view insights about your visitors. <a target="_blank" href="https://business.paypal.com/merchantdata/reportHome">View Shopper Insights</a></div>
+				</div>
+				<div class="pms-muse-right-container">
+					<div>
+						<img src="'. PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse1.png"/>
+						<div>Merchants like you have increased their average order value (AOV) by upto 68%*</div>
+					</div>
+					<div>
+						<img src="'. PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse2.png"/>
+						<div>Join 20,000 merchants who are promoting financing options on their site to boost sales</div>
+					</div>
+					<div>
+						<img src="'. PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse3.png"/>
+						<div>Get insights about your visitors and how they shop on your site</div>
+					</div>
+				</div>
+			</div>
+			
+	', 'paypal-for-woocommerce' ),
+	),
             
             'paypal_marketing_solutions_enabled' => array(
                 'title'       => __( 'PayPal Insights &amp; Promotions', 'paypal-for-woocommerce' ),
@@ -728,17 +757,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default'     => 'no',
                 'desc_tip'    => true,
 		'description' => __( 'This enables PayPal Marketing Solutions' ),
-            ),
-            'paypal_marketing_solutions_environment' => array(
-                'title'       => __( 'Environment' ),
-                'type'        => 'select',
-                'label'       => true,
-                'default'     => 'sandbox',
-                 'class'       => 'wc-enhanced-select',
-                'options'     => array(
-                    'production'    => __( 'Production' ),
-                    'sandbox' => __( 'Sandbox' ),
-                ),
             ),
             'paypal_marketing_solutions_cid_sandbox' => array(
                 'type'        => 'hidden',
