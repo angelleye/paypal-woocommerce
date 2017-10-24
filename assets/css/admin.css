@@ -108,3 +108,49 @@ hr {
 #pms-muse-container {
 	width: 100%;
 }
+
+.angelleye_addons_wrap .products {
+    overflow: hidden;
+}
+.angelleye_addons_wrap .products li {
+    float: left;
+    margin: 0 1em 1em 0 !important;
+    padding: 0;
+    vertical-align: top;
+    width: 300px;
+}
+.angelleye_addons_wrap .products li a {
+    background: #f5f5f5 none repeat scroll 0 0;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 -1px 0 rgba(0, 0, 0, 0.1) inset;
+    color: inherit;
+    display: block;
+    min-height: 220px;
+    overflow: hidden;
+    text-decoration: none;
+}
+.angelleye_addons_wrap .products li a h4 {
+    background: #fff none repeat scroll 0 0;
+    margin: 0 !important;
+    padding: 20px !important;
+    height: 20px;
+}
+.angelleye_addons_wrap .products li a .price, .angelleye_addons_wrap .products li a img.extension-thumb + h4 {
+    display: none;
+}
+.angelleye_addons_wrap .products li a {
+    color: inherit;
+}
+.angelleye_addons_wrap .products li a p {
+    border-top: 1px solid #f1f1f1;
+    margin: 0 !important;
+    padding: 20px !important;
+    min-height: 150px;
+}
+.angelleye_addons_wrap .products li a:focus, .angelleye_addons_wrap .products li a:hover {
+    background-color: #fff;
+}
+.angelleye_addons_wrap .products .product img {
+    height: 300px;
+    width: 300px;
+}
