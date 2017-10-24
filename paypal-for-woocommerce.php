@@ -265,7 +265,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
             
             if( !get_user_meta($user_id, 'is_disable_paypal_marketing_solutions_notice') ) {
-                echo '<div class="notice notice-info"><p>' . sprintf(__('PayPal Insights now available in Express Checkout! Make sure to <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_paypal_marketing_solutions_enabled">activate Insights</a> for valuable analytics about your visitors and increased conversion rates on your site!  when using Express Checkout. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("is_disable_paypal_marketing_solutions_notice",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+                echo '<div class="notice notice-info"><p>' . sprintf(__('PayPal Marketing Solutions now available in Express Checkout! Make sure to <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_paypal_marketing_solutions_enabled">activate PayPal Insights</a> for valuable analytics about your visitors and increased conversion rates on your site! | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("is_disable_paypal_marketing_solutions_notice",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
             }
             
             $this->angelleye_paypal_plus_notice($user_id);
