@@ -134,6 +134,7 @@ hr {
     margin: 0 !important;
     padding: 20px !important;
     height: 20px;
+    font-size: 16px;
 }
 .angelleye_addons_wrap .products li a .price, .angelleye_addons_wrap .products li a img.extension-thumb + h4 {
     display: none;
