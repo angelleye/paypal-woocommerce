@@ -727,7 +727,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					</div>
 					<div class="pms-paypalTOC">
 						<p>By clicking Enable below, you acknowledge you have the right to use the PayPal Insights tool and to collect information from shoppers on your site. <a href="https://www.paypal.com/tagmanager/terms">See terms and conditions</a></p>
-						<p>By enabling promotions, you acknowledge that you have agreed to, and accepted the terms of, the PayPal User Agreement, including the <a href="https://www.paypal.com/webapps/mpp/ua/useragreement-full#advertising-program">terms and conditions</a> thereof applicable to the PayPal Advertising Program.</p>
+						<p>By enabling promotions you acknowledge that you have agreed to and accepted the terms of the PayPal User Agreement, including the <a href="https://www.paypal.com/webapps/mpp/ua/useragreement-full#advertising-program">terms and conditions</a> applicable to the PayPal Marketing Solutions program.</p>
 					</div>
 					<div id="pms-paypalInsightsLink">You can view insights about your visitors. <a target="_blank" href="https://business.paypal.com/merchantdata/reportHome">View Shopper Insights</a></div>
 				</div>
