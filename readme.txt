@@ -122,6 +122,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.6.6 - xx.xx.2017 =
+* Feature - Adds PayPal Marketing Solutions (Insights & Promotions) to Express Checkout. ([#904](https://github.com/angelleye/paypal-woocommerce/issues/904))
 * Fix - Resolves browser console errors displayed when Express Checkout is disabled on product pages. ([#905](https://github.com/angelleye/paypal-woocommerce/issues/905))
 
 = 1.4.6.5 - 10.12.2017 =
