@@ -734,15 +734,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				<div class="pms-muse-right-container">
 					<div>
 						<img src="'. PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse1.png"/>
-						<div>Merchants like you have increased their average order value (AOV) by upto 68%*</div>
+						<div>Merchants like you have increased their average order value (AOV) by up to 68%.</div>
 					</div>
 					<div>
 						<img src="'. PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse2.png"/>
-						<div>Join 20,000 merchants who are promoting financing options on their site to boost sales</div>
+						<div>Join 20,000 merchants who are promoting financing options on their site to boost sales.</div>
 					</div>
 					<div>
 						<img src="'. PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse3.png"/>
-						<div>Get insights about your visitors and how they shop on your site</div>
+						<div>Get insights about your visitors and how they shop on your site.</div>
 					</div>
 				</div>
 			</div>
