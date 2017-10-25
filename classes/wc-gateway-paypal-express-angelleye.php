@@ -145,28 +145,39 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <table class="form-table">
             <?php $this->generate_settings_html(); ?>
           </table>  
+            <?php if (($this->testmode == true & empty($this->paypal_marketing_solutions_cid_sandbox)) || ($this->testmode == false && empty($this->paypal_marketing_solutions_cid_sandbox))) { ?>
             <div class='wrap'>
                 <div id='angelleye_muse_activate_managesettings_button_sandbox'></div>
                 <div id='angelleye_muse_activate_managesettings_button_production'></div>
             </div>
+            <?php } ?>
             <hr></hr>
             <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
             <script>
+                <?php if (($this->testmode == true & !empty($this->paypal_marketing_solutions_cid_sandbox)) || ($this->testmode == false && !empty($this->paypal_marketing_solutions_cid_sandbox))) { 
+                    ?> jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('tr').hide(); <?php
+                }
+                ?>
                 jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled, #woocommerce_paypal_express_testmode').change(function() {
                     var sandbox_marketing_solutions = jQuery('#angelleye_muse_activate_managesettings_button_sandbox');
                     var production_marketing_solutions = jQuery('#angelleye_muse_activate_managesettings_button_production, #paypalInsightsLink');
                     if (jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').is(':checked')) {
-                       // jQuery('#muse-container').hide();
+                       jQuery('.pms-paypalTOC').hide();
+                       
+                       
                         if (jQuery('#woocommerce_paypal_express_testmode').is(':checked')) {
+                            jQuery('#pms-paypalInsightsLink').hide();
                            sandbox_marketing_solutions.show();
                             production_marketing_solutions.hide();
                         } else {
+                            jQuery('#pms-paypalInsightsLink').show();
                             production_marketing_solutions.show();
                            sandbox_marketing_solutions.hide();
                             
                         }
                     } else {
-                       // jQuery('#muse-container').show();
+                        jQuery('#pms-paypalInsightsLink').hide();
+                        jQuery('.pms-paypalTOC').show();
                         sandbox_marketing_solutions.hide();
                         production_marketing_solutions.hide();
                     }
@@ -327,6 +338,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         foreach ($pages as $p) {
             $cancel_page[$p->ID] = $p->post_title;
         }
+        $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
+        $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
+        $this->paypal_marketing_solutions_cid_sandbox = $this->get_option('paypal_marketing_solutions_cid_sandbox', '');
+        $paypal_marketing_solutions_content = '';
+        if (($this->testmode == true & !empty($this->paypal_marketing_solutions_cid_sandbox)) || ($this->testmode == false && !empty($this->paypal_marketing_solutions_cid_sandbox))) { 
+            $paypal_marketing_solutions_content = "<br/><div class='wrap'>
+                <div id='angelleye_muse_activate_managesettings_button_sandbox'></div>
+                <div id='angelleye_muse_activate_managesettings_button_production'></div>
+            </div>";
+        }  
+            
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -730,6 +752,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 						<p>By enabling promotions you acknowledge that you have agreed to and accepted the terms of the PayPal User Agreement, including the <a href="https://www.paypal.com/webapps/mpp/ua/useragreement-full#advertising-program">terms and conditions</a> applicable to the PayPal Marketing Solutions program.</p>
 					</div>
 					<div id="pms-paypalInsightsLink">You can view insights about your visitors. <a target="_blank" href="https://business.paypal.com/merchantdata/reportHome">View Shopper Insights</a></div>
+                                        '.$paypal_marketing_solutions_content.'
 				</div>
 				<div class="pms-muse-right-container">
 					<div>
