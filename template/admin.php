@@ -16,6 +16,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'paypal_payment_gateway_
     <?php if ($active_tab == 'general_settings') { ?>
         <h2 class="nav-tab-wrapper">
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_payment_gateway_products" class="nav-tab <?php echo $gateway == 'paypal_payment_gateway_products' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Payment Gateway Products', 'paypal-for-woocommerce'); ?></a>
+            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_woocommerce_premium_extension" class="nav-tab <?php echo $gateway == 'paypal_woocommerce_premium_extension' ? 'nav-tab-active' : ''; ?>"><?php echo __('Premium Extensions / Support', 'paypal-for-woocommerce'); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=global" class="nav-tab <?php echo $gateway == 'global' ? 'nav-tab-active' : ''; ?>"><?php echo __('Global', 'paypal-for-woocommerce'); ?></a>
             <?php do_action('angelleye_paypal_for_woocommerce_general_settings_tab'); ?>
         </h2>
@@ -80,6 +81,49 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'paypal_payment_gateway_
                 </ul>
             </div>
             <?php
+        } elseif ($gateway == 'paypal_woocommerce_premium_extension') {
+            if (false === ( $addons = get_transient('angelleye_addons_data_paypal_woocommerce_premium_extension') )) {
+                $addons_json = wp_remote_get('https://www.angelleye.com/web-services/woocommerce/api/getinfo.php?tag=paypal_woocommerce_premium_extension', array( 'timeout' => 120 ));
+                if (!is_wp_error($addons_json)) {
+                    $addons = json_decode(wp_remote_retrieve_body($addons_json));
+                    if ($addons) {
+                        set_transient('angelleye_addons_data_paypal_woocommerce_premium_extension', $addons, HOUR_IN_SECONDS);
+                    }
+                }
+            }
+            if (isset($addons) && !empty($addons)) {
+                ?>
+                <div class="wrap angelleye_addons_wrap">
+                    <ul class="products">
+                        <?php
+                        foreach ($addons as $addon) {
+                            echo '<li class="product">';
+                            echo '<a target="_blank" href="' . $addon->permalink . '">';
+                            if( isset($addon->title) && !empty($addon->title) ) {
+                                echo '<h4>' . $addon->title . '</h4>';
+                            }
+                            if( isset($addon->price) && !empty($addon->price) ) {
+                                echo '<span class="price">' . $addon->price . '</span>';
+                            }
+                            $images = ( !empty($addon->images[0]->src) ) ? $addon->images[0]->src : '';
+                            if( !empty($images)) {
+                              echo "<img src='$images'>";
+                            }
+                            $description = ( !empty($addon->short_description )) ? $addon->short_description : $addon->description;
+                            if( isset($description) && !empty($description) ) {
+                                $description = strip_tags($description);
+                                echo '<p>' . wp_trim_words( $description, $num_words = 30 ) . '</p>';
+                            }
+                            echo '</a>';
+                            echo '</li>';
+                        }
+                        ?>
+                    </ul>
+                </div>
+                <?php
+            } else {
+                echo 'Premium extension available at <a target="_blank" href="https://www.angelleye.com/store/?utm_source=paypal_ipn_for_wordpress&utm_medium=premium_extensions">www.angelleye.com</a>';
+            }
         } elseif ($gateway == 'global') {
             ?>
             <div class="wrap">
