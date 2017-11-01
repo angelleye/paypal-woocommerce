@@ -896,7 +896,12 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
      * Get user's IP address
      */
     function get_user_ip() {
-        return !empty($_SERVER['HTTP_X_FORWARD_FOR']) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
+        if(class_exists('WC_Geolocation')) {
+            return WC_Geolocation::get_ip_address();
+        } else {
+            return !empty($_SERVER['HTTP_X_FORWARD_FOR']) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
+        }
+        
     }
 
     /**
