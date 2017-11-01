@@ -121,7 +121,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( "pre_option_woocommerce_braintree_settings", array($this, 'angelleye_braintree_decrypt_gateway_api'), 10, 1);
             add_filter( "pre_option_woocommerce_enable_guest_checkout", array($this, 'angelleye_express_checkout_woocommerce_enable_guest_checkout'), 10, 1);
             add_filter( 'woocommerce_get_checkout_order_received_url', array($this, 'angelleye_woocommerce_get_checkout_order_received_url'), 10, 2);
-            add_action('wp_ajax_wp_paypal_paypal_marketing_solutions_general_setting_save_field', array($this, 'wp_paypal_paypal_marketing_solutions_general_setting_save_field'));
+            add_action('wp_ajax_wp_paypal_paypal_marketing_solutions_express_checkout_save', array($this, 'wp_paypal_paypal_marketing_solutions_express_checkout_save'));
             $this->customer_id;
         }
 
@@ -215,6 +215,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 if ( isset($_GET[$notice]) && '0' == $_GET[$notice] ) {
                     add_user_meta($user_id, $notice, 'true', true);
                     $set_ignore_tag_url =  remove_query_arg( $notice );
+                    wp_redirect($set_ignore_tag_url);
+                }
+            }
+            
+            $resets = array('pms_reset');
+            foreach ($resets as $reset) {
+                if ( isset($_GET[$reset]) && true == $_GET[$reset] ) {
+                    $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
+                    $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = '';
+                    update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
+                    $set_ignore_tag_url =  remove_query_arg( $reset );
                     wp_redirect($set_ignore_tag_url);
                 }
             }
@@ -1106,49 +1117,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             return $order_received_url;
         }
         
-        public function wp_paypal_paypal_marketing_solutions_general_setting_save_field() {
-            $result = array();
-            if( !empty($_POST['action']) && $_POST['action'] == 'wp_paypal_paypal_marketing_solutions_general_setting_save_field' ) {
-                $post = '{"owner_id": "woocommerce_container","owner_type": "PAYPAL","name":"woocommerce_container","description":"Container created from WooCommerce plugin","url":"' . get_bloginfo('url') . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"abcd-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"limit","value":"3"}]}]}';
-                $headers = array(
-                    'Accept: application/json',
-                    'Content-Type: application/json',
-                    'Content-Length: ' . strlen($post),
-                    "x_nvp_pwd: " . $_POST['api_password'],
-                    "x_nvp_signature: " . $_POST['api_signature'],
-                    "x_nvp_user: " . $_POST['api_username']
-                );
-                $curl = curl_init();
-                curl_setopt($curl, CURLOPT_VERBOSE, 1);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-                curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-                curl_setopt($curl, CURLOPT_URL, 'https://api.paypal.com/proxy/v1/offers/containers');
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
-                curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($curl, CURLOPT_SSLVERSION, 6);
-                $Response = curl_exec($curl);
-                $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                if ($Response === false) {
-                    $curl_error = curl_error($curl);
-                    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                    $result = array('CURL_ERROR' => curl_error($curl));
-                    $result['success'] = false;
-                } else {
-                    $Response = json_decode($Response);
-                    $result['success'] = true;
-                    $link = $Response->links[0];
-                    $e = explode('/', $link->href);
-                    $result['cid_production'] = end($e);
+        public function wp_paypal_paypal_marketing_solutions_express_checkout_save() {
+            if( !empty($_POST['action']) && $_POST['action'] == 'wp_paypal_paypal_marketing_solutions_express_checkout_save' ) {
+                if( !empty($_POST['cid_production']) ) {
                     $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
-                    $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = $result['cid_production'];
+                    $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = $_POST['cid_production'];
                     update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
                 }
-                echo json_encode($result);
-                curl_close($curl);
-                exit();
             }
+             exit();
         }
     }
+    
 }
 new AngellEYE_Gateway_Paypal();

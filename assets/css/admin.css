@@ -158,9 +158,8 @@ hr {
 #pms-muse-container {
     width: 100%;
 }
-
-#angelleye_muse_activate_managesettings_button_production {
-   
+#angelleye_wp_marketing_solutions_button_production {
+    width: 74%;
     margin: 0 auto;
     margin-right: 5px;
 }
@@ -180,6 +179,12 @@ hr {
 .pms-center-moreinfo {
     margin: 0 auto !important;
     width: 63%;
+}
+
+
+#pms-reset {
+    margin-left: 3px;
+margin-top: 26px;
 }
 
 
