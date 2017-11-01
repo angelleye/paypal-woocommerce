@@ -52,62 +52,6 @@ table.angelleye_order_action_table td {
 #angelleye_create_reference_order_submit_button {
     margin-bottom: 10px;
 }
-.pms-promote-credit {
-  width: 442px;
-  height: 50px;
-  font-family: HelveticaNeue;
-  font-size: 21px;
-  font-weight: 500;
-  color: #2c2e2f;
-}
-
-.pms-muse-left-container {
-	width: 60%;
-	display: inline-block;
-	vertical-align: top;
-}
-
-.pms-muse-description {
-	margin-right: 40px;
-}
-
-.pms-muse-description p {
-	font-size: 16px;
-	line-height: 1.31;
-}
-
-.pms-muse-right-container {
-	width: 25%;
-	color: #6c7378;
-	display: inline-block;
-	margin-left: 40px;
-	vertical-align: top;
-}
-
-.pms-muse-right-container > div img {
-	display: inline-block;
-	margin-left: 30%;
-}
-
-.pms-paypalTOC {
-	color: #6c7378;
-	font-size: .7em;
-}
-
-hr {
-	height: 2px;
-	color: #708090;
-	background-color: #708090;
-}
-
-#pms-paypalInsightsLink {
-	
-	font-size: 1em;
-}
-
-#pms-muse-container {
-	width: 100%;
-}
 
 .angelleye_addons_wrap .products {
     overflow: hidden;
@@ -155,3 +99,87 @@ hr {
     height: 300px;
     width: 300px;
 }
+
+.pms-promote-credit {
+    width: 442px;
+    height: 50px;
+    font-family: HelveticaNeue;
+    font-size: 21px;
+    font-weight: 500;
+    color: #2c2e2f;
+}
+
+.pms-muse-left-container {
+    width: 58%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.pms-muse-description {
+    margin-right: 40px;
+}
+
+.pms-muse-description p {
+    font-size: 13px;
+    line-height: 1.31;
+    margin-bottom: 38px;
+}
+
+.pms-muse-right-container {
+    width: 35%;
+    color: #6c7378;
+    display: inline-block;
+    margin-left: 40px;
+    vertical-align: top;
+}
+
+.pms-muse-right-container > div img {
+    display: inline-block;
+    margin-left: 30%;
+    width: 60px;
+}
+
+.pms-paypalTOC {
+    color: #6c7378;
+    font-size: .7em;
+}
+
+hr {
+    height: 2px;
+    color: #708090;
+    background-color: #708090;
+}
+
+#pms-paypalInsightsLink {
+
+    font-size: 1em;
+}
+
+#pms-muse-container {
+    width: 100%;
+}
+
+#angelleye_muse_activate_managesettings_button_production {
+   
+    margin: 0 auto;
+    margin-right: 5px;
+}
+.agelleye-paypal-px-btn {
+    width: 305px;
+    height: 50px;
+    line-height: 1.4em;
+}
+.pms-green {
+    color:green;
+}
+
+.pms-view-more {
+    width: 150px !important;
+    margin: 0 auto;
+}
+.pms-center-moreinfo {
+    margin: 0 auto !important;
+    width: 63%;
+}
+
+
