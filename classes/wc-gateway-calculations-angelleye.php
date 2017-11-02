@@ -18,9 +18,16 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
         public $discount_amount;
         public $decimals;
         public $is_adjust;
+        public $payment_method;
+        public $temp_total;
+        public $is_separate_discount;
 
-        public function __construct() {
+        public function __construct($payment_method = null) {
             $this->is_adjust = false;
+            $this->payment_method = $payment_method;
+            if( $this->payment_method == 'paypal_pro_payflow' ) {
+                $this->is_separate_discount = true;
+            }
             $is_zdp_currency = in_array(get_woocommerce_currency(), $this->zdp_currencies);
             if ($is_zdp_currency) {
                 $this->decimals = 0;
@@ -237,17 +244,19 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->itemamt -= $this->discount_amount;
                 $this->order_total -= $this->discount_amount;
             } else {
-                if ($this->discount_amount > 0) {
-                    $discLineItem = array(
-                        'name' => 'Discount',
-                        'desc' => 'Discount Amount',
-                        'number' => '',
-                        'qty' => 1,
-                        'amt' => '-' . AngellEYE_Gateway_Paypal::number_format($this->discount_amount)
-                    );
-                    $this->order_items[] = $discLineItem;
-                    $this->itemamt -= $this->discount_amount;
-                    $this->order_total -= $this->discount_amount;
+                if( $this->is_separate_discount == false ) {
+                    if ($this->discount_amount > 0) {
+                        $discLineItem = array(
+                            'name' => 'Discount',
+                            'desc' => 'Discount Amount',
+                            'number' => '',
+                            'qty' => 1,
+                            'amt' => '-' . AngellEYE_Gateway_Paypal::number_format($this->discount_amount)
+                        );
+                        $this->order_items[] = $discLineItem;
+                        $this->itemamt -= $this->discount_amount;
+                        $this->order_total -= $this->discount_amount;
+                    }
                 }
             }
             if (!is_numeric($this->shippingamt)) {
@@ -275,8 +284,13 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 }
             }
             $this->itemamt = round($temp_roundedPayPalTotal, $this->decimals);
-            if (round(WC()->cart->total, $this->decimals) != round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals)) {
-                $cartItemAmountDifference = round(WC()->cart->total, $this->decimals) - round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
+            if( $this->is_separate_discount == true ) {
+                $this->temp_total = round($this->itemamt + $this->taxamt + $this->shippingamt - $this->discount_amount, $this->decimals);
+            } else {
+                $this->temp_total = round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
+            }
+            if (round(WC()->cart->total, $this->decimals) != $this->temp_total) {
+                $cartItemAmountDifference = round(WC()->cart->total, $this->decimals) - $this->temp_total;
                 if ($this->shippingamt > 0) {
                     $this->shippingamt += round($cartItemAmountDifference, $this->decimals);
                 } elseif ($this->taxamt > 0) {
@@ -313,8 +327,13 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 }
             }
             $this->itemamt = $temp_roundedPayPalTotal;
-            if (round($order->get_total(), $this->decimals) != round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals)) {
-                $cartItemAmountDifference = round($order->get_total(), $this->decimals) - round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
+            if( $this->is_separate_discount == true ) {
+                $this->temp_total = round($this->itemamt + $this->taxamt + $this->shippingamt - $this->discount_amount, $this->decimals);
+            } else {
+                $this->temp_total = round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
+            }
+            if (round($order->get_total(), $this->decimals) != $this->temp_total) {
+                $cartItemAmountDifference = round($order->get_total(), $this->decimals) - $this->temp_total;
                 if ($this->shippingamt > 0) {
                     $this->shippingamt += round($cartItemAmountDifference, $this->decimals);
                 } elseif ($this->taxamt > 0) {

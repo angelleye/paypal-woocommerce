@@ -115,10 +115,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 
         $this->customer_id;
         if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
-            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id);
         } else {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
-            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id);
         }
 
         $this->fraud_error_codes = array('125', '126', '127', '128');
@@ -575,6 +575,11 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             }
 
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+            
+            if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
+                $PayPalRequestData['discount'] = $PaymentData['discount_amount'];
+            }
+            
             $OrderItems = array();
             if ($this->send_items) {
                 $item_loop = 0;
