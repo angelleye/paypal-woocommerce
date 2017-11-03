@@ -64,7 +64,7 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
 .woocommerce #payment .form-row select , .woocommerce-page #payment .form-row select {
     border-color: #bbb3b9 #c7c1c6 #c7c1c6;
     color: #888;
-    font-size: 17px;
+    font-size: inherit;
     outline: 0 none;
     line-height: 1;
     min-width: 103px;
@@ -94,6 +94,13 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 .angelleyeOverlay {
     display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute;
 }
+.woocommerce .payment_methods li .payment_method_paypal_pro_payflow label, .woocommerce .payment_methods li .payment_method_paypal_pro label {
+    display: block !important;
+}
+.woocommerce .payment_methods li .payment_method_paypal_pro_payflow select, .woocommerce .payment_methods li .payment_method_paypal_pro select {
+    display: inline-block !important;
+}
+
 @media only screen 
   and (min-device-width: 320px) 
   and (max-device-width: 480px) {
