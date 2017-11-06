@@ -162,8 +162,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     WC()->customer->set_calculated_shipping(true);
                 }
                 if ($this->angelleye_ec_force_to_display_checkout_page()) {
-                    wp_safe_redirect( wc_get_checkout_url() );
-                    exit;
+                    if ($this->angelleye_ec_force_to_display_checkout_page()) {
+                        if( !empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true && !empty($_GET['key'])) {
+                           WC()->session->set( 'order_awaiting_payment', $_GET['order_id'] );
+                        } else {
+                            wp_safe_redirect( wc_get_checkout_url() );
+                            exit;
+                        }
+                    }
                 }
                 
             } else {
@@ -471,7 +477,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     'key' => $_GET['key'],
                     'order_id' => $order_id,
                 ), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE') ) );
-                
+                WC()->session->set( 'order_awaiting_payment', $order_id );
             } else {
                 $this->cart_param = $this->gateway_calculation->cart_calculation();
                 $order_total = WC()->cart->total;
@@ -537,6 +543,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             
             if( empty($_GET['pay_for_order']) ) {
+                
                 $post_data = WC()->session->get('post_data');
                 if (!empty($post_data)) {
                     $SECFields['addroverride'] = WC()->cart->needs_shipping() ? 1 : 0;
