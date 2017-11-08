@@ -100,7 +100,6 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 .woocommerce .payment_methods li .payment_method_paypal_pro_payflow select, .woocommerce .payment_methods li .payment_method_paypal_pro select {
     display: inline-block !important;
 }
-
 @media only screen 
   and (min-device-width: 320px) 
   and (max-device-width: 480px) {
@@ -114,4 +113,12 @@ p.woocommerce-SavedPaymentMethods-saveNew {
             margin-left: 0px;
             margin-top: 12px;
       }
+      
+      .woocommerce form .form-row-first, .woocommerce form .form-row-last, .woocommerce-page form .form-row-first, .woocommerce-page form .form-row-last {
+          width: 100%;
+      }
+      .woocommerce form .form-row-last, .woocommerce-page form .form-row-last {
+          float: left;
+      }
+      
   }
