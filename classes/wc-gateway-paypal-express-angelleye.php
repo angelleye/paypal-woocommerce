@@ -463,7 +463,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'show_on_minicart' => array(
                 'title' => __('Minicart', 'paypal-for-woocommerce'),
-                'label' => __('Show Express Checkout button on shopping Minicart.', 'paypal-for-woocommerce'),
+                'label' => __('Show Express Checkout button in the WooCommerce Minicart.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'default' => 'yes'
             ),
