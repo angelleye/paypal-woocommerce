@@ -42,6 +42,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->billing_address = 'yes' === $this->billing_address_value;
             $this->cancel_page = !empty($this->setting['cancel_page']) ? $this->setting['cancel_page'] : '';
             $this->use_wp_locale_code = !empty($this->setting['use_wp_locale_code']) ? $this->setting['use_wp_locale_code'] : 'yes';
+
+            $this->paypal_marketing_solutions_enabled = !empty($this->setting['paypal_marketing_solutions_enabled']) ? $this->setting['paypal_marketing_solutions_enabled'] : 'no';
+            $this->paypal_marketing_solutions_cid_production = !empty($this->setting['paypal_marketing_solutions_cid_production']) ? $this->setting['paypal_marketing_solutions_cid_production'] : '';
+
             $this->enable_in_context_checkout_flow = !empty($this->setting['enable_in_context_checkout_flow']) ? $this->setting['enable_in_context_checkout_flow'] : 'no';
             if ($this->testmode == false) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
@@ -122,6 +126,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_filter('the_title', array($this, 'angelleye_paypal_for_woocommerce_page_title'), 99, 1);
             add_action('template_redirect', array($this, 'angelleye_redirect_to_checkout_page'));
             add_filter('woocommerce_billing_fields', array($this, 'angelleye_optional_billing_fields'), 10, 1);
+            add_action('wp_enqueue_scripts', array($this, 'angelleye_paypal_marketing_solutions'), 10);
             $this->is_order_completed = true;
         } catch (Exception $ex) {
             
@@ -839,6 +844,49 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
     }
 
+    public function angelleye_paypal_marketing_solutions() {
+        if (!empty($this->paypal_marketing_solutions_enabled) && $this->paypal_marketing_solutions_enabled == 'yes') {
+            if ($this->testmode == true) {
+                if (!empty($this->paypal_marketing_solutions_cid_sandbox)) {
+                    ?>
+                    <!-- PayPal BEGIN -->
+                    <script>
+                        ;
+                        (function (a, t, o, m, s) {
+                            a[m] = a[m] || [];
+                            a[m].push({t: new Date().getTime(), event: 'snippetRun'});
+                            var f = t.getElementsByTagName(o)[0], e = t.createElement(o), d = m !== 'paypalDDL' ? '&m=' + m : '';
+                            e.async = !0;
+                            e.src = 'https://www.sandbox.paypal.com/tagmanager/pptm.js?id=' + s + d;
+                            f.parentNode.insertBefore(e, f);
+                        })(window, document, 'script', 'paypalDDL', '<?php echo $this->paypal_marketing_solutions_cid_sandbox; ?>');
+                    </script>
+                    <!-- PayPal END -->
+                    <?php
+                }
+            } else {
+
+                if (!empty($this->paypal_marketing_solutions_cid_production)) {
+                    ?>
+                    <!-- PayPal BEGIN -->
+                    <script>
+                        ;
+                        (function (a, t, o, m, s) {
+                            a[m] = a[m] || [];
+                            a[m].push({t: new Date().getTime(), event: 'snippetRun'});
+                            var f = t.getElementsByTagName(o)[0], e = t.createElement(o), d = m !== 'paypalDDL' ? '&m=' + m : '';
+                            e.async = !0;
+                            e.src = 'https://www.paypal.com/tagmanager/pptm.js?id=' + s + d;
+                            f.parentNode.insertBefore(e, f);
+                        })(window, document, 'script', 'paypalDDL', '<?php echo $this->paypal_marketing_solutions_cid_production; ?>');
+                    </script>
+                    <!-- PayPal END -->
+                    <?php
+                }
+            }
+        }
+    }
+    
     public function angelleye_is_in_context_enable() {
         
         if( $this->enable_in_context_checkout_flow === 'yes' && $this->enabled == 'yes') {

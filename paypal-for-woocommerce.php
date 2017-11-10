@@ -121,6 +121,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( "pre_option_woocommerce_braintree_settings", array($this, 'angelleye_braintree_decrypt_gateway_api'), 10, 1);
             add_filter( "pre_option_woocommerce_enable_guest_checkout", array($this, 'angelleye_express_checkout_woocommerce_enable_guest_checkout'), 10, 1);
             add_filter( 'woocommerce_get_checkout_order_received_url', array($this, 'angelleye_woocommerce_get_checkout_order_received_url'), 10, 2);
+            add_action('wp_ajax_wp_paypal_paypal_marketing_solutions_express_checkout_save', array($this, 'wp_paypal_paypal_marketing_solutions_express_checkout_save'));
             $this->customer_id;
         }
 
@@ -204,6 +205,30 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     wp_die( "<strong>".$plugin_data['Name']."</strong> requires <strong>WooCommerce</strong> plugin to work normally. Please activate it or install it from <a href=\"http://wordpress.org/plugins/woocommerce/\" target=\"_blank\">here</a>.<br /><br />Back to the WordPress <a href='".get_admin_url(null, 'plugins.php')."'>Plugins page</a>." );
                 }
             }
+            
+            $user_id = $current_user->ID;
+            
+            /* If user clicks to ignore the notice, add that to their user meta */
+            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'is_disable_paypal_marketing_solutions_notice');
+            
+            foreach ($notices as $notice) {
+                if ( isset($_GET[$notice]) && '0' == $_GET[$notice] ) {
+                    add_user_meta($user_id, $notice, 'true', true);
+                    $set_ignore_tag_url =  remove_query_arg( $notice );
+                    wp_redirect($set_ignore_tag_url);
+                }
+            }
+            
+            $resets = array('pms_reset');
+            foreach ($resets as $reset) {
+                if ( isset($_GET[$reset]) && true == $_GET[$reset] ) {
+                    $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
+                    $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = '';
+                    update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
+                    $set_ignore_tag_url =  remove_query_arg( $reset );
+                    wp_redirect($set_ignore_tag_url);
+                }
+            }
         }
 
         function admin_notices() {
@@ -251,6 +276,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
             }
            
+            if( !get_user_meta($user_id, 'is_disable_paypal_marketing_solutions_notice') ) {
+                echo '<div class="notice notice-info"><p>' . sprintf(__('PayPal Marketing Solutions now available in Express Checkout! Make sure to <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_paypal_marketing_solutions">activate PayPal Insights</a> for valuable analytics about your visitors and increased conversion rates on your site! | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("is_disable_paypal_marketing_solutions_notice",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+            }
+            
+            $this->angelleye_paypal_plus_notice($user_id);
         }
 
         //init function
@@ -1085,6 +1115,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $order_received_url = apply_filters( 'wpml_permalink', $order_received_url , $lang_code );
             }
             return $order_received_url;
+        }
+        
+        public function wp_paypal_paypal_marketing_solutions_express_checkout_save() {
+            if( !empty($_POST['action']) && $_POST['action'] == 'wp_paypal_paypal_marketing_solutions_express_checkout_save' ) {
+                if( !empty($_POST['cid_production']) ) {
+                    $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
+                    $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = $_POST['cid_production'];
+                    update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
+                }
+            }
+             exit();
         }
     }
     
