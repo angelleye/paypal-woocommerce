@@ -79,7 +79,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->cancel_page_id = $this->get_option('cancel_page', '');
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
-        $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
         $this->show_on_minicart = $this->get_option('show_on_minicart', 'yes');
         if ($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl');
@@ -141,64 +140,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             $display_disable_terms = 'no';
         }
-        $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
         ?>
         <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
              <?php $this->generate_settings_html(); ?>
         </table>  
-        <hr></hr>
-        <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
-        <script>
-        <?php
-        if (!empty($this->paypal_marketing_solutions_cid_production)) {
-            ?> jQuery('#pms-paypalInsightsLink').show();
-                jQuery('.display_when_deactivated').hide();
-                jQuery('.pms-view-more').hide();
-                jQuery('#angelleye_wp_marketing_solutions_button_production').css({'width': 'auto', 'float': 'left'});
-                jQuery('.pms-muse-right-container > div img').css({'height' : '44px'});
-                jQuery('#pms-reset').show();
-            <?php
-        } else {
-            ?> jQuery('#pms-paypalInsightsLink').hide(); jQuery('#pms-reset').hide(); <?php
-        }
-        ?>
-
-            jQuery('.paypal_marketing_solutions_cid_production, .paypal_marketing_solutions_cid_sandbox').closest('tr').hide();
-            jQuery('.view-paypal-insight-result').on('click', function (event) {
-                event.preventDefault();
-                var win = window.open('https://www.paypal.com/us/webapps/mpp/paypal-marketing-solutions', '_blank');
-                win.focus();
-            });
-            var muse_options_production = {
-                onContainerCreate: callback_onsuccess_production,
-                url: '<?php echo $this->home_url; ?>',
-                parnter_name: 'Angell EYE',
-                bn_code: 'AngellEYE_PHPClass',
-                env: 'production',
-                cid: '<?php echo $this->paypal_marketing_solutions_cid_production; ?>'
-            }
-            function callback_onsuccess_production(containerId) {
-                jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val(containerId);
-                var data = {
-                    'action': 'wp_paypal_paypal_marketing_solutions_express_checkout_save',
-                    'cid_production': containerId
-                };
-                jQuery.post(ajaxurl, data, function (response) {
-                });
-                muse_options_production.cid = containerId;
-                jQuery('.display_msg_when_activated').html('<span class="pms-green">You have successfully activated PayPal Marketing Solutions for your site!</span>');
-                jQuery('#pms-paypalInsightsLink').show();
-                jQuery('.display_when_deactivated').hide();
-                jQuery('.pms-view-more').hide();
-                jQuery('#angelleye_wp_marketing_solutions_button_production').css({'width': 'auto', 'float': 'left'});
-                jQuery('.pms-muse-right-container > div img').css({'height': '44px'});
-                jQuery('#pms-reset').show();
-
-            }
-            MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
-        </script>
         <script type="text/javascript">
             var display_disable_terms = "<?php echo $display_disable_terms; ?>";
             <?php if ($guest_checkout === 'no') { ?>
@@ -336,18 +283,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $cancel_page[$p->ID] = $p->post_title;
         }
         $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
-        $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
-        $this->paypal_marketing_solutions_cid_sandbox = $this->get_option('paypal_marketing_solutions_cid_sandbox', '');
        
-        
-            $paypal_marketing_solutions_content = "<br/><div class='wrap'>
-                <div id='angelleye_muse_activate_managesettings_button_production'></div>
-                <div id='pms-paypalInsightsLink'><button class='paypal-px-btn view-paypal-insight-result'>". __('View Shopper Insights', '') ."</button></div>
-            </div>";
-       
-        
-       
-            
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -744,53 +680,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'yes',
                 'class' => ''
             ),
-            'paypal_marketing_solutions' => array(
-                'title'       => __( '<hr></hr>PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
-		'type'        => 'title',
-		'description' => __( '<div id="pms-muse-container">
-				<div class="pms-muse-left-container">
-					<div class="pms-muse-description">
-						<p>' . __('Increase your sales with powerful marketing tools from PayPal.', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p>' . __('Get business insights into your customers’ shopping habits; like how often they shop, how much they spend, and how they interact with your website.', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p>' . __('Display relevant PayPal offers and promotional messages to customers on your website. Manage Settings to choose which messages, if any, you want to show, as well as how and where these messages appear on your website.', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p class="display_when_deactivated">' . __('All FREE to you as a valued PayPal merchant. Simply ‘Activate’ now!', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p class="display_when_deactivated">' . __('By activating you acknowledge that you have agreed to, and accepted the term of, the PayPal User Agreement, including the terms and conditions thereof applicable to the PayPal Advertising Program.', 'wp-paypal-marketing-solutions') . '</p> 
-                                                <p class="display_msg_when_activated"></p>
-					</div>
-					
-                                        <div class="wrap">
-                                            <div id="angelleye_wp_marketing_solutions_button_production"></div>
-                                            <div id="pms-paypalInsightsLink"><button class="paypal-px-btn view-paypal-insight-result">' . __('View Shopper Insights', '') . '</button></div>
-                                            <p><div id="pms-reset"><a class="button" href='.$rest_url.'>Reset PayPal Marketing Solutions</a></div></p>
-                                        </div>
-				</div>
-				<div class="pms-muse-right-container">
-					<div>
-						<img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse1.png"/>
-						<div><p>' . __('Merchants like you have increased their average order value (AOV) by up to 68%.', 'wp-paypal-marketing-solutions') . '</p></div>
-					</div>
-					<div>
-						<img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse2.png"/>
-						<div><p>' . __('Join 20,000 merchants who are promoting financing options on their site to boost sales.', 'wp-paypal-marketing-solutions') . '</p></div>
-					</div>
-					<div>
-						<img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse3.png"/>
-						<div><p>' . __('Get insights about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
-					</div>
-                                        <div class="wrap pms-center-moreinfo">
-                                            <div><a target="_blank" href="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg?TB_iframe=true" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
-                                        </div>
-				</div>
-			</div>
-	', 'paypal-for-woocommerce' ),
-	),
-            
-           
-            'paypal_marketing_solutions_cid_production' => array(
-                'type'        => 'hidden',
-                'default'     => '',
-            )
-        );
+           );
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
     }
 
