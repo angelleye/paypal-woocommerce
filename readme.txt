@@ -125,6 +125,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds PayPal Marketing Solutions (Insights & Promotions) to Express Checkout. ([#904](https://github.com/angelleye/paypal-woocommerce/issues/904))
 * Tweak - Adjustments to PayPal Pro / PayFlow checkout styles for better display on mobile devices. ([#912](https://github.com/angelleye/paypal-woocommerce/issues/912))
 * Tweak - Adjustments to cart total calculations class. ([#908](https://github.com/angelleye/paypal-woocommerce/issues/908))
+* Tweak - WooCommerce 3.2.2 compatibility check. ([#919](https://github.com/angelleye/paypal-woocommerce/issues/919))
 * Fix - Resolves browser console errors displayed when Express Checkout is disabled on product pages. ([#905](https://github.com/angelleye/paypal-woocommerce/issues/905))
 * Fix - Resolves an issue causing Express Checkout to fail from saved/pending orders that are sent directly to the buyer for payment. ([#914](https://github.com/angelleye/paypal-woocommerce/issues/914))
 * Fix - Resolves an issue where IPv6 addresses are sometimes used in the PayPal request, which PayPal does not support.  Now we make sure IPv4 is used. ([#909](https://github.com/angelleye/paypal-woocommerce/issues/909))
