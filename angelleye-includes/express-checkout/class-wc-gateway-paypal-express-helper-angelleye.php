@@ -33,6 +33,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->show_on_checkout = !empty($this->setting['show_on_checkout']) ? $this->setting['show_on_checkout'] : 'top';
             $this->button_position = !empty($this->setting['button_position']) ? $this->setting['button_position'] : 'bottom';
             $this->show_on_cart = !empty($this->setting['show_on_cart']) ? $this->setting['show_on_cart'] : 'yes';
+            $this->show_on_minicart = !empty($this->setting['show_on_minicart']) ? $this->setting['show_on_minicart'] : 'yes';
             $this->prevent_to_add_additional_item_value = !empty($this->setting['prevent_to_add_additional_item']) ? $this->setting['prevent_to_add_additional_item'] : 'no';
             $this->prevent_to_add_additional_item = 'yes' === $this->prevent_to_add_additional_item_value;
             $this->testmode_value = !empty($this->setting['testmode']) ? $this->setting['testmode'] : 'yes';
@@ -95,7 +96,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             add_filter('woocommerce_thankyou_order_received_text', array($this, 'ec_order_received_text'), 10, 2);
             add_action('wp_enqueue_scripts', array($this, 'ec_enqueue_scripts_product_page'), 0);
             add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'));
-            if ($this->show_on_cart == 'yes') {
+            if ($this->show_on_cart == 'yes' && $this->show_on_minicart == 'yes') {
                 add_action('woocommerce_after_mini_cart', array($this, 'mini_cart_button'));
             }
             add_action('woocommerce_before_cart', array($this, 'woocommerce_before_cart'), 12);

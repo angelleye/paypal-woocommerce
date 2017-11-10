@@ -80,6 +80,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
         $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
+        $this->show_on_minicart = $this->get_option('show_on_minicart', 'yes');
         if ($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl');
             if (isset($this->notifyurl) && !empty($this->notifyurl)) {
@@ -222,6 +223,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     term_notice.hide();
                 } else {
                     term_notice.show();
+                }
+            }).change();
+            jQuery('#woocommerce_paypal_express_show_on_cart').change(function () {
+                var show_on_minicart = jQuery('#woocommerce_paypal_express_show_on_minicart').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    show_on_minicart.show();
+                } else {
+                    show_on_minicart.hide();
                 }
             }).change();
             jQuery('#woocommerce_paypal_express_testmode').change(function () {
@@ -449,6 +458,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'show_on_cart' => array(
                 'title' => __('Cart Page', 'paypal-for-woocommerce'),
                 'label' => __('Show Express Checkout button on shopping cart page.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'default' => 'yes'
+            ),
+            'show_on_minicart' => array(
+                'title' => __('Minicart', 'paypal-for-woocommerce'),
+                'label' => __('Show Express Checkout button on shopping Minicart.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'default' => 'yes'
             ),
