@@ -128,6 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjustments to cart total calculations class. ([#908](https://github.com/angelleye/paypal-woocommerce/issues/908))
 * Tweak - WooCommerce 3.2.2 compatibility check. ([#919](https://github.com/angelleye/paypal-woocommerce/issues/919))
 * Tweak - Adjustments to the way WC orders are created when Express Checkout is used from the WC checkout page. ([#903](https://github.com/angelleye/paypal-woocommerce/issues/903))
+* Tweak - Adjustments to Settings -> PayPal for WooCommerce screen. ([#901](https://github.com/angelleye/paypal-woocommerce/issues/901))
 * Fix - Resolves browser console errors displayed when Express Checkout is disabled on product pages. ([#905](https://github.com/angelleye/paypal-woocommerce/issues/905))
 * Fix - Resolves an issue causing Express Checkout to fail from saved/pending orders that are sent directly to the buyer for payment. ([#914](https://github.com/angelleye/paypal-woocommerce/issues/914))
 * Fix - Resolves an issue where IPv6 addresses are sometimes used in the PayPal request, which PayPal does not support.  Now we make sure IPv4 is used. ([#909](https://github.com/angelleye/paypal-woocommerce/issues/909))
