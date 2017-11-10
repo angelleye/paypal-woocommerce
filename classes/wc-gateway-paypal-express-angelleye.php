@@ -168,7 +168,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             jQuery('.paypal_marketing_solutions_cid_production, .paypal_marketing_solutions_cid_sandbox').closest('tr').hide();
             jQuery('.view-paypal-insight-result').on('click', function (event) {
                 event.preventDefault();
-                var win = window.open('https://business.paypal.com/merchantdata/reportHome', '_blank');
+                var win = window.open('https://www.paypal.com/us/webapps/mpp/paypal-marketing-solutions', '_blank');
                 win.focus();
             });
             var muse_options_production = {
@@ -778,7 +778,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 						<div><p>' . __('Get insights about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
                                         <div class="wrap pms-center-moreinfo">
-                                            <div><a target="_blank" href="https://www.angelleye.com/?TB_iframe=true&width=600&height=550" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
+                                            <div><a target="_blank" href="https://www.angelleye.com/?TB_iframe=true&width=930&height=450" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
                                         </div>
 				</div>
 			</div>
