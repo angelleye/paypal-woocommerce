@@ -184,7 +184,14 @@ hr {
 
 #pms-reset {
     margin-left: 3px;
-margin-top: 26px;
+    margin-top: 26px;
+}
+
+#TB_window img#TB_Image {
+    border-right: none !important;
+    border-bottom: none !important;
+    border-top: none !important;
+    border-left: none !important;
 }
 
 
