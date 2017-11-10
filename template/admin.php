@@ -122,7 +122,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'paypal_payment_gateway_
                 </div>
                 <?php
             } else {
-                echo 'Premium extension available at <a target="_blank" href="https://www.angelleye.com/store/?utm_source=paypal_ipn_for_wordpress&utm_medium=premium_extensions">www.angelleye.com</a>';
+                echo '<p>Premium extension available at <a target="_blank" href="https://www.angelleye.com/store/?utm_source=paypal_woocommerce_premium_extension&utm_medium=premium_extensions">www.angelleye.com</a></p>';
             }
         } elseif ($gateway == 'global') {
             ?>
