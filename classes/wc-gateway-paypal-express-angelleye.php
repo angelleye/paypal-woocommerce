@@ -754,7 +754,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                                 <p>' . __('Get business insights into your customers’ shopping habits; like how often they shop, how much they spend, and how they interact with your website.', 'wp-paypal-marketing-solutions') . '</p>
                                                 <p>' . __('Display relevant PayPal offers and promotional messages to customers on your website. Manage Settings to choose which messages, if any, you want to show, as well as how and where these messages appear on your website.', 'wp-paypal-marketing-solutions') . '</p>
                                                 <p class="display_when_deactivated">' . __('All FREE to you as a valued PayPal merchant. Simply ‘Activate’ now!', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p class="display_when_deactivated">' . __('By activating you acknowledge that you have agreed to, and accepted the term of, the PayPal User Agreement, including the terms and conditions thereof applicable to the PayPal Advertising Program.', 'wp-paypal-marketing-solutions') . '</p> 
+                                                <p class="display_when_deactivated">' . __('By enabling you acknowledge that you have agreed to, and accepted the terms of, the PayPal User Agreement, including the terms and conditions thereof applicable to the PayPal Advertising Program.', 'wp-paypal-marketing-solutions') . '</p> 
                                                 <p class="display_msg_when_activated"></p>
 					</div>
 					
