@@ -171,6 +171,9 @@ hr {
 .pms-green {
     color:green;
 }
+.pms-red {
+    color:red;
+}
 
 .pms-view-more {
     width: 150px !important;

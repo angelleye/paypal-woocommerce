@@ -122,6 +122,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( "pre_option_woocommerce_enable_guest_checkout", array($this, 'angelleye_express_checkout_woocommerce_enable_guest_checkout'), 10, 1);
             add_filter( 'woocommerce_get_checkout_order_received_url', array($this, 'angelleye_woocommerce_get_checkout_order_received_url'), 10, 2);
             add_action('wp_ajax_wp_paypal_paypal_marketing_solutions_express_checkout_save', array($this, 'wp_paypal_paypal_marketing_solutions_express_checkout_save'));
+            add_action('wp_ajax_wp_paypal_paypal_marketing_solutions_generate_cid', array($this, 'wp_paypal_paypal_marketing_solutions_generate_cid'));
             $this->customer_id;
         }
 
@@ -223,7 +224,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             foreach ($resets as $reset) {
                 if ( isset($_GET[$reset]) && true == $_GET[$reset] ) {
                     $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
-                    $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = '';
+                    unset($woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production']);
                     update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
                     $set_ignore_tag_url =  remove_query_arg( $reset );
                     wp_redirect($set_ignore_tag_url);
@@ -276,7 +277,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
             }
            
-            if( !get_user_meta($user_id, 'is_disable_paypal_marketing_solutions_notice') ) {
+            if( !get_user_meta($user_id, 'is_disable_paypal_marketing_solutions_notice') && empty(@$pp_settings['paypal_marketing_solutions_cid_production']) ) {
                 echo '<div class="notice notice-info"><p>' . sprintf(__('PayPal Marketing Solutions now available in Express Checkout! Make sure to <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_paypal_marketing_solutions">activate PayPal Insights</a> for valuable analytics about your visitors and increased conversion rates on your site! | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("is_disable_paypal_marketing_solutions_notice",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
             }
             
@@ -1126,6 +1127,67 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
             }
              exit();
+        }
+        
+        public function wp_paypal_paypal_marketing_solutions_generate_cid() {
+            $cid_production = '';
+            $result = array();
+            if( !empty($_POST['action']) && $_POST['action'] == 'wp_paypal_paypal_marketing_solutions_generate_cid' ) {
+                $header = get_headers(get_bloginfo('url'));
+                if( !empty($header) && $header[0] == 'HTTP/1.1 200 OK') {
+                    $website_url = get_bloginfo('url');
+                } else {
+                    $website_url = 'https://www.flipkart.com/';
+                }
+                $website_url = str_ireplace('www.', '', parse_url($website_url, PHP_URL_HOST));
+                $post = '{"owner_id": "woocommerce_container","owner_type": "PAYPAL","name":"woocommerce_container","description":"Container created from WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"abcd-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"limit","value":"3"}]}]}';
+                $headers = array(
+                    'Accept: application/json',
+                    'Content-Type: application/json',
+                    'Content-Length: ' . strlen($post),
+                    "x_nvp_pwd: " . $_POST['api_password'],
+                    "x_nvp_signature: " . $_POST['api_signature'],
+                    "x_nvp_user: " . $_POST['api_username']
+                );
+                $curl = curl_init();
+                curl_setopt($curl, CURLOPT_VERBOSE, 1);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+                curl_setopt($curl, CURLOPT_URL, 'https://api.paypal.com/proxy/v1/offers/containers');
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($curl, CURLOPT_SSLVERSION, 6);
+                $Response = curl_exec($curl);
+                $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                
+                if($httpCode == 400) {
+                    $Response = json_decode($Response);
+                    if( !empty($Response->details[0]->issue ) && 'EXISTING_CONTAINER' == $Response->details[0]->issue ) {
+                        $cid_production = !empty($Response->details[0]->value) ? $Response->details[0]->value : '';
+                        $result['success'] = true;
+                        $result['cid_production'] = $cid_production;
+                        $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
+                        $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = $result['cid_production'];
+                        update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
+                    } else {
+                        $result['success'] = false;
+                        $result['error_msg'] = !empty($Response->message) ? $Response->message : '';
+                    }
+                } elseif($httpCode == 201) {
+                    $Response = json_decode($Response);
+                    $result['success'] = true;
+                    $link = $Response->links[0];
+                    $e = explode('/', $link->href);
+                    $result['cid_production'] = end($e);
+                    $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
+                    $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = $result['cid_production'];
+                    update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
+                }
+                echo json_encode($result);
+                curl_close($curl);
+                exit();
+            }
         }
     }
     
