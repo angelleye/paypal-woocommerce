@@ -1140,7 +1140,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $website_url = 'https://www.flipkart.com/';
                 }
                 $website_url = str_ireplace('www.', '', parse_url($website_url, PHP_URL_HOST));
-                $post = '{"owner_id": "woocommerce_container","owner_type": "PAYPAL","name":"woocommerce_container","description":"Container created from WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"abcd-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"limit","value":"3"}]}]}';
+                $post = '{"owner_id": "woocommerce_container","owner_type": "PAYPAL","application_context": {"terms_accepted": true,"bn_code": "AngellEYE_SP_MarketingSolutions","partner_name": "Angell EYE"},"name":"woocommerce_container","description":"Container created from WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"abcd-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"limit","value":"3"}]}]}';
                 $headers = array(
                     'Accept: application/json',
                     'Content-Type: application/json',

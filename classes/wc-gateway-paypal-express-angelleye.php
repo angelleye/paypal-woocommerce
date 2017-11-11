@@ -155,7 +155,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 onContainerCreate: callback_onsuccess_production,
                 url: '<?php echo $this->home_url; ?>',
                 parnter_name: 'Angell EYE',
-                bn_code: 'AngellEYE_PHPClass',
+                bn_code: 'AngellEYE_SP_MarketingSolutions',
                 env: 'production',
                 cid: '<?php echo $this->paypal_marketing_solutions_cid_production; ?>'
             }
