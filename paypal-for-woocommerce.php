@@ -219,17 +219,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     wp_redirect($set_ignore_tag_url);
                 }
             }
-            
-            $resets = array('pms_reset');
-            foreach ($resets as $reset) {
-                if ( isset($_GET[$reset]) && true == $_GET[$reset] ) {
-                    $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
-                    unset($woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production']);
-                    update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
-                    $set_ignore_tag_url =  remove_query_arg( $reset );
-                    wp_redirect($set_ignore_tag_url);
-                }
-            }
         }
 
         function admin_notices() {
