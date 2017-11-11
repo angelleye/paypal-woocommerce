@@ -272,6 +272,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             jQuery('.display_msg_when_activated').html('<span class="pms-green">You have successfully activated PayPal Marketing Solutions for your site!</span>');
                             jQuery('#pms-reset').show();
                         } else {
+                            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').prop('checked', false);
                             if( json.error_msg ) {
                                 jQuery('.display_msg_when_activated').html('<span class="pms-red">'+json.error_msg+'</span>');
                             }
