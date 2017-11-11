@@ -152,20 +152,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
         <script>
         function display_notice_and_disable_marketing_solution() {
-                jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('checked', false);                
-                jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('disabled', 'disabled');
-                jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('readonly', 'readonly'); 
-                jQuery('.display_msg_when_activated').html('');
-                jQuery('.display_msg_when_activated').html('<span class="pms-red">PayPal Marketing Solutions only available for Live mode.<br/><br/><br/></span>');
-            }
+            jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('disabled', 'disabled');
+            jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('readonly', 'readonly'); 
+            jQuery('.display_msg_when_activated').html('');
+            jQuery('.display_msg_when_activated').html('<span class="pms-red">PayPal Marketing Solutions only available for Live mode.<br/><br/></span>');
+        }
         var muse_options_production = {
-                onContainerCreate: callback_onsuccess_production,
-                url: '<?php echo $this->home_url; ?>',
-                parnter_name: 'Angell EYE',
-                bn_code: 'AngellEYE_SP_MarketingSolutions',
-                env: 'production',
-                cid: '<?php echo $this->paypal_marketing_solutions_cid_production; ?>'
-            }
+            onContainerCreate: callback_onsuccess_production,
+            url: '<?php echo $this->home_url; ?>',
+            parnter_name: 'Angell EYE',
+            bn_code: 'AngellEYE_SP_MarketingSolutions',
+            env: 'production',
+            cid: '<?php echo $this->paypal_marketing_solutions_cid_production; ?>'
+        }
         jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').closest('tr').hide();
         <?php
         if (!empty($this->paypal_marketing_solutions_cid_production)) {
@@ -181,112 +180,107 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ?> 
             display_notice_and_disable_marketing_solution();
             jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').css({'width': '50%', 'top': '-65px'}); jQuery('#pms-paypalInsightsLink').hide(); jQuery('#pms-reset').hide(); jQuery('#angelleye_wp_marketing_solutions_button_production').hide(); 
-                <?php
+            <?php
         }
         ?>
-            
-            jQuery("#woocommerce_paypal_express_testmode, #woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature").on('keyup change keypress', function (){
-                if (jQuery(this).is(':checked') === false) {
-                    var api_username = (jQuery('#woocommerce_paypal_express_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_username').val() : jQuery('#woocommerce_paypal_express_api_username').text();
-                        var api_password = (jQuery('#woocommerce_paypal_express_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_password').val() : jQuery('#woocommerce_paypal_express_api_password').text();
-                        var api_signature = (jQuery('#woocommerce_paypal_express_api_signature').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_signature').val() : jQuery('#woocommerce_paypal_express_api_signature').text();
-                        if( api_username.length > 0 && api_password.length > 0 && api_signature.length > 0 ) {
-                            jQuery('.display_msg_when_activated').html('');
-                            jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('disabled', '');
-                            jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('readonly', '');
-                        } else {
-                            display_notice_and_disable_marketing_solution();
-                        }
-                } else { 
-                    display_notice_and_disable_marketing_solution();
-                }
-            }).change();
-            
-            jQuery('.view-paypal-insight-result').on('click', function (event) {
-                event.preventDefault();
-                var win = window.open('https://www.paypal.com/us/webapps/mpp/paypal-marketing-solutions', '_blank');
-                win.focus();
-            });
-            jQuery('.reset_paypal_marketing_solutions').on('click', function (event) {
-                event.preventDefault();
-                jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val('');
-                jQuery("form").submit();
-            });
-            
-            function callback_onsuccess_production(containerId) {
-                jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val(containerId);
-                var data = {
-                    'action': 'wp_paypal_paypal_marketing_solutions_express_checkout_save',
-                    'cid_production': containerId
-                };
-                jQuery.post(ajaxurl, data, function (response) {
-                });
-                muse_options_production.cid = containerId;
-                jQuery('.display_msg_when_activated').html('<span class="pms-green">You have successfully activated PayPal Marketing Solutions for your site!</span>');
-                jQuery('#pms-paypalInsightsLink').show();
-                jQuery('.display_when_deactivated').hide();
-                jQuery('.pms-view-more').hide();
-                jQuery('#angelleye_wp_marketing_solutions_button_production').css({'width': 'auto', 'float': 'left'});
-                jQuery('.pms-muse-right-container > div img').css({'height': '44px'});
-                jQuery('#pms-reset').show();
-
+        jQuery("#woocommerce_paypal_express_testmode, #woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature").on('keyup change keypress', function (){
+            if (jQuery(this).is(':checked') === false) {
+                var api_username = (jQuery('#woocommerce_paypal_express_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_username').val() : jQuery('#woocommerce_paypal_express_api_username').text();
+                    var api_password = (jQuery('#woocommerce_paypal_express_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_password').val() : jQuery('#woocommerce_paypal_express_api_password').text();
+                    var api_signature = (jQuery('#woocommerce_paypal_express_api_signature').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_signature').val() : jQuery('#woocommerce_paypal_express_api_signature').text();
+                    if( api_username.length > 0 && api_password.length > 0 && api_signature.length > 0 ) {
+                        jQuery('.display_msg_when_activated').html('');
+                        jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('disabled', '');
+                        jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('readonly', '');
+                    } else {
+                        display_notice_and_disable_marketing_solution();
+                    }
+            } else { 
+                display_notice_and_disable_marketing_solution();
             }
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').change(function() {
-                    var production_marketing_solutions = jQuery('#angelleye_wp_marketing_solutions_button_production');
-                    if (jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').is(':checked')) {
-                        var api_username = (jQuery('#woocommerce_paypal_express_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_username').val() : jQuery('#woocommerce_paypal_express_api_username').text();
-                        var api_password = (jQuery('#woocommerce_paypal_express_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_password').val() : jQuery('#woocommerce_paypal_express_api_password').text();
-                        var api_signature = (jQuery('#woocommerce_paypal_express_api_signature').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_signature').val() : jQuery('#woocommerce_paypal_express_api_signature').text();
-                        if( api_username.length > 0 && api_password.length > 0 && api_signature.length > 0 ) {
-                             jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').block({
-                                message: null,
-                                overlayCSS: {
-                                    background: '#fff',
-                                    opacity: 0.6
-                                }
-                            });
-                            
-                            jQuery(".woocommerce-save-button").prop('disabled', 'disabled');
-                                
-                            var data = {
-                                'action': 'wp_paypal_paypal_marketing_solutions_generate_cid',
-                                'api_username': api_username,
-                                'api_password': api_password,
-                                'api_signature': api_signature
-                            };
-                            jQuery('.display_msg_when_activated').html('');
-                            jQuery.post(ajaxurl, data, function(response) {
-                                jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').unblock();
-                                jQuery('.woocommerce-save-button').unblock();
-                                jQuery(".woocommerce-save-button").prop('disabled', '');
-                                var json = jQuery.parseJSON(response);
-                                if( json.success === true) {
-                                    muse_options_production.cid = json.cid_production;
-                                    jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val(json.cid_production);
-                                    jQuery('#angelleye_wp_marketing_solutions_button_production').html('');
-                                    MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
-                                    production_marketing_solutions.show();
-                                    jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('tr').hide();
-                                    jQuery('.pms-view-more').hide(); 
-                                    jQuery('#angelleye_wp_marketing_solutions_button_production').css({'width': 'auto', 'float': 'left'});
-                                      jQuery('.display_when_deactivated').hide();
-                                      jQuery('#pms-paypalInsightsLink').show();
-                                      jQuery('.pms-muse-right-container > div img').css({'height' : '44px'});
-                                      jQuery('.display_msg_when_activated').html('<span class="pms-green">You have successfully activated PayPal Marketing Solutions for your site!</span>');
-                                     jQuery('#pms-reset').show();
-                                } else {
-                                    if( json.error_msg ) {
-                                        jQuery('.display_msg_when_activated').html('<span class="pms-red">'+json.error_msg+'</span>');
-                                    }
-                                }
-                            });
-                        } 
-                    } 
-                });
-                
-                    MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
-                
-                
+        }).change();
+            
+        jQuery('.view-paypal-insight-result').on('click', function (event) {
+            event.preventDefault();
+            var win = window.open('https://www.paypal.com/us/webapps/mpp/paypal-marketing-solutions', '_blank');
+            win.focus();
+        });
+        jQuery('.reset_paypal_marketing_solutions').on('click', function (event) {
+            event.preventDefault();
+            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val('');
+            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').prop('checked', false);
+            jQuery("form").submit();
+        });
+            
+        function callback_onsuccess_production(containerId) {
+            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val(containerId);
+            var data = {
+                'action': 'wp_paypal_paypal_marketing_solutions_express_checkout_save',
+                'cid_production': containerId
+            };
+            jQuery.post(ajaxurl, data, function (response) {
+            });
+            muse_options_production.cid = containerId;
+            jQuery('.display_msg_when_activated').html('<span class="pms-green">You have successfully activated PayPal Marketing Solutions for your site!</span>');
+            jQuery('#pms-paypalInsightsLink').show();
+            jQuery('.display_when_deactivated').hide();
+            jQuery('.pms-view-more').hide();
+            jQuery('#angelleye_wp_marketing_solutions_button_production').css({'width': 'auto', 'float': 'left'});
+            jQuery('.pms-muse-right-container > div img').css({'height': '44px'});
+            jQuery('#pms-reset').show();
+
+        }
+        jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').change(function() {
+            var production_marketing_solutions = jQuery('#angelleye_wp_marketing_solutions_button_production');
+            if (jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').is(':checked')) {
+                var api_username = (jQuery('#woocommerce_paypal_express_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_username').val() : jQuery('#woocommerce_paypal_express_api_username').text();
+                var api_password = (jQuery('#woocommerce_paypal_express_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_password').val() : jQuery('#woocommerce_paypal_express_api_password').text();
+                var api_signature = (jQuery('#woocommerce_paypal_express_api_signature').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_signature').val() : jQuery('#woocommerce_paypal_express_api_signature').text();
+                if( api_username.length > 0 && api_password.length > 0 && api_signature.length > 0 ) {
+                    jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').block({
+                       message: null,
+                       overlayCSS: {
+                           background: '#fff',
+                           opacity: 0.6
+                       }
+                   });
+                    jQuery(".woocommerce-save-button").prop('disabled', 'disabled');
+                    var data = {
+                        'action': 'wp_paypal_paypal_marketing_solutions_generate_cid',
+                        'api_username': api_username,
+                        'api_password': api_password,
+                        'api_signature': api_signature
+                    };
+                    jQuery('.display_msg_when_activated').html('');
+                    jQuery.post(ajaxurl, data, function(response) {
+                        jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').unblock();
+                        jQuery('.woocommerce-save-button').unblock();
+                        jQuery(".woocommerce-save-button").prop('disabled', '');
+                        var json = jQuery.parseJSON(response);
+                        if( json.success === true) {
+                            muse_options_production.cid = json.cid_production;
+                            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val(json.cid_production);
+                            jQuery('#angelleye_wp_marketing_solutions_button_production').html('');
+                            MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
+                            production_marketing_solutions.show();
+                            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('tr').hide();
+                            jQuery('.pms-view-more').hide(); 
+                            jQuery('#angelleye_wp_marketing_solutions_button_production').css({'width': 'auto', 'float': 'left'});
+                            jQuery('.display_when_deactivated').hide();
+                            jQuery('#pms-paypalInsightsLink').show();
+                            jQuery('.pms-muse-right-container > div img').css({'height' : '44px'});
+                            jQuery('.display_msg_when_activated').html('<span class="pms-green">You have successfully activated PayPal Marketing Solutions for your site!</span>');
+                            jQuery('#pms-reset').show();
+                        } else {
+                            if( json.error_msg ) {
+                                jQuery('.display_msg_when_activated').html('<span class="pms-red">'+json.error_msg+'</span>');
+                            }
+                        }
+                    });
+                } 
+            } 
+        });
+        MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
         </script>
         <script type="text/javascript">
             var display_disable_terms = "<?php echo $display_disable_terms; ?>";
