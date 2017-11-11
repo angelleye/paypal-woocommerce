@@ -112,7 +112,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->version = "64";
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         $this->page_style = $this->get_option('page_style', '');
-        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'angelleye_update_marketing_solution'), 10);
+        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'), 999);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
         if (!has_action('woocommerce_api_' . strtolower('WC_Gateway_PayPal_Express_AngellEYE'))) {
             add_action('woocommerce_api_' . strtolower('WC_Gateway_PayPal_Express_AngellEYE'), array($this, 'handle_wc_api'));
@@ -1555,5 +1556,52 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
     }
     
-    
+    public function angelleye_update_marketing_solution() {
+        if( !empty($_POST['woocommerce_paypal_express_api_username']) && !empty($_POST['woocommerce_paypal_express_api_password']) && !empty($_POST['woocommerce_paypal_express_api_signature'])) {
+            if(empty($_POST['woocommerce_paypal_express_testmode'])) {
+                if($_POST['woocommerce_paypal_express_api_username'] != $this->api_username) {
+                    if(!empty($_POST['woocommerce_paypal_express_paypal_marketing_solutions_enabled']) || !empty($this->paypal_marketing_solutions_cid_production)) {
+                        $cid_production = '';
+                        $result = array();
+                        $website_url = get_bloginfo('url');
+                        $website_url = str_ireplace('www.', '', parse_url($website_url, PHP_URL_HOST));
+                        $post = '{"owner_id": "woocommerce_container","owner_type": "PAYPAL","application_context": {"terms_accepted": true,"bn_code": "AngellEYE_SP_MarketingSolutions","partner_name": "Angell EYE"},"name":"woocommerce_container","description":"Container created from WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"abcd-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"limit","value":"3"}]}]}';
+                        $headers = array(
+                            'Accept: application/json',
+                            'Content-Type: application/json',
+                            'Content-Length: ' . strlen($post),
+                            "x_nvp_pwd: " . $_POST['woocommerce_paypal_express_api_password'],
+                            "x_nvp_signature: " . $_POST['woocommerce_paypal_express_api_signature'],
+                            "x_nvp_user: " . $_POST['woocommerce_paypal_express_api_username']
+                        );
+                        $curl = curl_init();
+                        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+                        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+                        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+                        curl_setopt($curl, CURLOPT_URL, 'https://api.paypal.com/proxy/v1/offers/containers');
+                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                        curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
+                        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+                        curl_setopt($curl, CURLOPT_SSLVERSION, 6);
+                        $Response = curl_exec($curl);
+                        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                        if($httpCode == 400) {
+                            $Response = json_decode($Response);
+                            if( !empty($Response->details[0]->issue ) && 'EXISTING_CONTAINER' == $Response->details[0]->issue ) {
+                                $cid_production = !empty($Response->details[0]->value) ? $Response->details[0]->value : '';
+                                $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = $cid_production;
+                            } 
+                        } elseif($httpCode == 201) {
+                            $Response = json_decode($Response);
+                            $result['success'] = true;
+                            $link = $Response->links[0];
+                            $e = explode('/', $link->href);
+                            $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = end($e);
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
 }

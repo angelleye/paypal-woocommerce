@@ -1118,7 +1118,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
              exit();
         }
         
-        public function wp_paypal_paypal_marketing_solutions_generate_cid() {
+        public static function wp_paypal_paypal_marketing_solutions_generate_cid() {
             $cid_production = '';
             $result = array();
             if( !empty($_POST['action']) && $_POST['action'] == 'wp_paypal_paypal_marketing_solutions_generate_cid' ) {
