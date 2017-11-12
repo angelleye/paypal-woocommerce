@@ -860,12 +860,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 	),
             
            'paypal_marketing_solutions_enabled' => array(
-                'title'       => __( 'PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
+                'title'       => __( 'Enable Marketing Solutions', 'paypal-for-woocommerce' ),
                 'type'        => 'checkbox',
                 'label'       => 'Enable',
                 'default'     => 'no',
                 'desc_tip'    => true,
-		'description' => __( 'This enables PayPal Marketing Solutions' ),
+		'description' => __( 'This enables PayPal Marketing Solutions for valuable customer insights.' ),
             ),
             
             'paypal_marketing_solutions_cid_production' => array(
