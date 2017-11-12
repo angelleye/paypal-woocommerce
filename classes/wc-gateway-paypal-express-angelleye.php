@@ -203,7 +203,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             
         jQuery('.view-paypal-insight-result').on('click', function (event) {
             event.preventDefault();
-            var win = window.open('https://www.paypal.com/us/webapps/mpp/paypal-marketing-solutions', '_blank');
+            var win = window.open('https://business.paypal.com/merchantdata/reportHome', '_blank');
             win.focus();
         });
         jQuery('.reset_paypal_marketing_solutions').on('click', function (event) {
