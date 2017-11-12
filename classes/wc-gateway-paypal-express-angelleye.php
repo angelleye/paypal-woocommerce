@@ -1565,7 +1565,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $result = array();
                         $website_url = get_bloginfo('url');
                         $website_url = str_ireplace('www.', '', parse_url($website_url, PHP_URL_HOST));
-                        $post = '{"owner_id": "woocommerce_container","owner_type": "PAYPAL","application_context": {"terms_accepted": true,"bn_code": "AngellEYE_SP_WooCommerce_MS","partner_name": "Angell EYE"},"name":"woocommerce_container","description":"Container created from WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"abcd-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"limit","value":"3"}]}]}';
+                        $post = '{"owner_id": "woocommerce_container","owner_type": "PAYPAL","application_context": {"terms_accepted": true,"bn_code": "AngellEYE_SP_WooCommerce_MS","partner_name": "Angell EYE"},"name":"woocommerce_container","description":"Container created from PayPal for WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"abcd-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"limit","value":"3"}]}]}';
                         $headers = array(
                             'Accept: application/json',
                             'Content-Type: application/json',
