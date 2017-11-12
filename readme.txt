@@ -122,7 +122,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.6.6 - xx.xx.2017 =
-* Feature - Adds PayPal Marketing Solutions (Insights & Promotions) to Express Checkout. ([#904](https://github.com/angelleye/paypal-woocommerce/issues/904))
+* Feature - Adds PayPal Marketing Solutions (Insights & Promotions) to Express Checkout.  Activate to increase avg. order amount and conversion rates! ([#904](https://github.com/angelleye/paypal-woocommerce/issues/904))
 * Feature - Adds an option for whether or not to display the Express Checkout button in the Woo Minicart. ([#920](https://github.com/angelleye/paypal-woocommerce/issues/920))
 * Tweak - Adjustments to PayPal Pro / PayFlow checkout styles for better display on mobile devices. ([#912](https://github.com/angelleye/paypal-woocommerce/issues/912))
 * Tweak - Adjustments to cart total calculations class. ([#908](https://github.com/angelleye/paypal-woocommerce/issues/908))
