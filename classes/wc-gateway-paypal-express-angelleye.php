@@ -149,6 +149,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <table class="form-table">
              <?php $this->generate_settings_html(); ?>
         </table>  
+        <div id="more-info-popup" style="display:none;">
+          <?php echo '<img width="1200" src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg"/>'; ?>
+        </div>
         <hr></hr>
         <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
         <script>
@@ -852,7 +855,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 						<div><p>' . __('Get insights about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
                                         <div class="wrap pms-center-moreinfo">
-                                            <div><a target="_blank" href="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg?TB_iframe=true" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
+                                            <div><a href="#TB_inline?&width=1200&height=550&inlineId=more-info-popup" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
                                         </div>
 				</div>
 			</div>
@@ -1586,14 +1589,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         curl_setopt($curl, CURLOPT_SSLVERSION, 6);
                         $Response = curl_exec($curl);
                         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution start', $level = 'info', 'paypal_marketing_solutions');
+                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution request' . print_r($post, true) , 'info', 'paypal_marketing_solutions');
+                        $Response = json_decode($Response);
+                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution response' . print_r($Response, true) , 'info', 'paypal_marketing_solutions');
                         if($httpCode == 400) {
-                            $Response = json_decode($Response);
                             if( !empty($Response->details[0]->issue ) && 'EXISTING_CONTAINER' == $Response->details[0]->issue ) {
                                 $cid_production = !empty($Response->details[0]->value) ? $Response->details[0]->value : '';
                                 $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = $cid_production;
                             } 
                         } elseif($httpCode == 201) {
-                            $Response = json_decode($Response);
                             $result['success'] = true;
                             $link = $Response->links[0];
                             $e = explode('/', $link->href);

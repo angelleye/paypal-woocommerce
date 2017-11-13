@@ -1145,9 +1145,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 curl_setopt($curl, CURLOPT_SSLVERSION, 6);
                 $Response = curl_exec($curl);
                 $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                
+                WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution start', 'info', $source = 'paypal_marketing_solutions');
+                WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution request' . print_r($post, true) , 'info', 'paypal_marketing_solutions');
+                $Response = json_decode($Response);
+                WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution response' . print_r($Response, true) , 'info', 'paypal_marketing_solutions');
                 if($httpCode == 400) {
-                    $Response = json_decode($Response);
                     if( !empty($Response->details[0]->issue ) && 'EXISTING_CONTAINER' == $Response->details[0]->issue ) {
                         $cid_production = !empty($Response->details[0]->value) ? $Response->details[0]->value : '';
                         $result['success'] = true;
@@ -1160,7 +1162,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         $result['error_msg'] = !empty($Response->message) ? $Response->message : '';
                     }
                 } elseif($httpCode == 201) {
-                    $Response = json_decode($Response);
                     $result['success'] = true;
                     $link = $Response->links[0];
                     $e = explode('/', $link->href);
