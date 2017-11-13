@@ -824,10 +824,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 		'description' => __( '<div id="pms-muse-container">
 				<div class="pms-muse-left-container">
 					<div class="pms-muse-description">
-						<p>' . __('Increase your sales with powerful marketing tools from PayPal.', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p>' . __('Get business insights into your customers’ shopping habits; like how often they shop, how much they spend, and how they interact with your website.', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p>' . __('Display relevant PayPal offers and promotional messages to customers on your website. Manage Settings to choose which messages, if any, you want to show, as well as how and where these messages appear on your website.', 'wp-paypal-marketing-solutions') . '</p>
+						<p>' . __('Get free business insights into your customers’ shopping habits; like how often they shop, how much they spend, and how they interact with your website.', 'wp-paypal-marketing-solutions') . '</p>
+                                                <p>' . __('Help drive sales by displaying relevant PayPal offers and promotional messages to your customers on your website. Manage Settings to choose which messages, if any, you want to show, as well as how and where these messages appear on your website.', 'wp-paypal-marketing-solutions') . '</p>
                                                 <p class="display_when_deactivated">' . __('All FREE to you as a valued PayPal merchant. Simply ‘Enable’ now!', 'wp-paypal-marketing-solutions') . '</p>
+                                                <p class="display_when_deactivated">' . __('By enabling, you acknowledge that you have the right to use the PayPal Insights tool and to collect information from shoppers on your site.  See <a target="_blank" href="https://www.paypal.com/webapps/mpp/ua/useragreement-full">terms and conditions</a>.', 'wp-paypal-marketing-solutions') . '</p> 
                                                 <p class="display_when_deactivated">' . __('By enabling, you acknowledge that you have agreed to, and accepted the terms of, the PayPal User Agreement, including the <a target="_blank" href="https://www.paypal.com/webapps/mpp/ua/useragreement-full">terms and conditions</a> thereof applicable to the PayPal Advertising Program.', 'wp-paypal-marketing-solutions') . '</p> 
                                                 <p class="display_msg_when_activated"></p>
 					</div>
