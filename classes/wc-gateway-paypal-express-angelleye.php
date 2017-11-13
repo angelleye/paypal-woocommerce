@@ -1432,7 +1432,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
-    public static function log($message, $level = 'info') {
+    public static function log($message, $level = 'info', $source = null) {
+        if($source == null ) {
+            $source = 'paypal_express';
+        }
         if (self::$log_enabled) {
             if (version_compare(WC_VERSION, '3.0', '<')) {
                 if (empty(self::$log)) {
@@ -1443,7 +1446,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (empty(self::$log)) {
                     self::$log = wc_get_logger();
                 }
-                self::$log->log($level, $message, array('source' => 'paypal_express'));
+                self::$log->log($level, $message, array('source' => $source));
             }
         }
     }
@@ -1589,10 +1592,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         curl_setopt($curl, CURLOPT_SSLVERSION, 6);
                         $Response = curl_exec($curl);
                         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution start', $level = 'info', 'paypal_marketing_solutions');
-                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution request' . print_r($post, true) , 'info', 'paypal_marketing_solutions');
+                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution start ', $level = 'info', 'paypal_marketing_solutions');
+                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution request ' . print_r($post, true) , 'info', 'paypal_marketing_solutions');
                         $Response = json_decode($Response);
-                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution response' . print_r($Response, true) , 'info', 'paypal_marketing_solutions');
+                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution response ' . print_r($Response, true) , 'info', 'paypal_marketing_solutions');
                         if($httpCode == 400) {
                             if( !empty($Response->details[0]->issue ) && 'EXISTING_CONTAINER' == $Response->details[0]->issue ) {
                                 $cid_production = !empty($Response->details[0]->value) ? $Response->details[0]->value : '';
