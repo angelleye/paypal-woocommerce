@@ -967,6 +967,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
         
     public function angelleye_update_marketing_solution() {
+        if( !empty($_POST['reset']) && 'reset' == $_POST['reset'] ) {
+            unset($_POST['reset']);
+            return false;
+        }
         if( !empty($_POST['woocommerce_paypal_express_api_username']) && !empty($_POST['woocommerce_paypal_express_api_password']) && !empty($_POST['woocommerce_paypal_express_api_signature'])) {
             if(empty($_POST['woocommerce_paypal_express_testmode'])) {
                 if($_POST['woocommerce_paypal_express_api_username'] != $this->api_username) {

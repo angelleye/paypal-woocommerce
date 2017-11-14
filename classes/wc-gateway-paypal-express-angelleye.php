@@ -213,7 +213,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         });
         jQuery('.reset_paypal_marketing_solutions').on('click', function (event) {
             event.preventDefault();
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val('');
+            jQuery('<input>').attr({ type: 'hidden', id: 'reset', value: 'reset', name: 'reset'}).appendTo('form');
+            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val('reset');
             jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').prop('checked', false);
             jQuery("form").submit();
         });
