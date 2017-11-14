@@ -113,15 +113,24 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
     
     public function angelleye_paypal_for_woocommerce_needs_shipping($SECFields) {
+        $is_required = 0;
+        $is_not_required = 0;
         if (sizeof(WC()->cart->get_cart()) != 0) {
             foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
                 $product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
                 $_no_shipping_required = get_post_meta($product_id, '_no_shipping_required', true);
                 if( $_no_shipping_required == 'yes' ) {
-                    $SECFields['noshipping'] = 1;
-                    return $SECFields;
+                    $is_not_required = $is_not_required + 1;
+                } else {
+                    $is_required = $is_required + 1;
                 }   
             }
+        }
+        if( $is_required > 0 ) {
+            return $SECFields;
+        } elseif ($is_not_required > 0) {
+            $SECFields['noshipping'] = 1;
+            return $SECFields;
         }
         return $SECFields;
     }
