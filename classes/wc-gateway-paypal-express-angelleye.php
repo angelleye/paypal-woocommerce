@@ -151,7 +151,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
              <?php $this->generate_settings_html(); ?>
         </table>  
         <div id="more-info-popup" style="display:none;">
-          <?php echo '<img width="1200" src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg"/>'; ?>
+          <?php echo '<img width="886" height="549" src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg"/>'; ?>
         </div>
         <hr></hr>
         <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
@@ -222,57 +222,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         function callback_onsuccess_production(containerId) {
             muse_options_production.cid = containerId;
         }
-        jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').change(function() {
-            var production_marketing_solutions = jQuery('#angelleye_wp_marketing_solutions_button_production');
-            if (jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').is(':checked')) {
-                var api_username = (jQuery('#woocommerce_paypal_express_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_username').val() : jQuery('#woocommerce_paypal_express_api_username').text();
-                var api_password = (jQuery('#woocommerce_paypal_express_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_password').val() : jQuery('#woocommerce_paypal_express_api_password').text();
-                var api_signature = (jQuery('#woocommerce_paypal_express_api_signature').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_signature').val() : jQuery('#woocommerce_paypal_express_api_signature').text();
-                if( api_username.length > 0 && api_password.length > 0 && api_signature.length > 0 ) {
-                    jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').block({
-                       message: null,
-                       overlayCSS: {
-                           background: '#fff',
-                           opacity: 0.6
-                       }
-                   });
-                    jQuery(".woocommerce-save-button").prop('disabled', 'disabled');
-                    var data = {
-                        'action': 'wp_paypal_paypal_marketing_solutions_generate_cid',
-                        'api_username': api_username,
-                        'api_password': api_password,
-                        'api_signature': api_signature
-                    };
-                    jQuery('.display_msg_when_activated').html('');
-                    jQuery.post(ajaxurl, data, function(response) {
-                        jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').unblock();
-                        jQuery('.woocommerce-save-button').unblock();
-                        jQuery(".woocommerce-save-button").prop('disabled', '');
-                        var json = jQuery.parseJSON(response);
-                        if( json.success === true) {
-                            muse_options_production.cid = json.cid_production;
-                            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val(json.cid_production);
-                            jQuery('#angelleye_wp_marketing_solutions_button_production').html('');
-                            MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
-                            production_marketing_solutions.show();
-                            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('tr').hide();
-                            jQuery('.pms-view-more').hide(); 
-                            jQuery('#angelleye_wp_marketing_solutions_button_production').css({'width': 'auto', 'float': 'left'});
-                            jQuery('.display_when_deactivated').hide();
-                            jQuery('#pms-paypalInsightsLink').show();
-                            jQuery('.pms-muse-right-container > div img').css({'height' : '44px'});
-                            jQuery('.display_msg_when_activated').html('<span class="pms-green">You have successfully activated PayPal Marketing Solutions for your site!</span>');
-                            jQuery('#pms-reset').show();
-                        } else {
-                            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').prop('checked', false);
-                            if( json.error_msg ) {
-                                jQuery('.display_msg_when_activated').html('<span class="pms-red">'+json.error_msg+'</span>');
-                            }
-                        }
-                    });
-                } 
-            } 
-        });
         MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
         </script>
         <script type="text/javascript">
@@ -843,7 +792,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 						<div><p>' . __('Get insights about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
                                         <div class="wrap pms-center-moreinfo">
-                                            <div><a href="#TB_inline?&width=1200&height=550&inlineId=more-info-popup" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
+                                        <div>
+                                            <div><a href="#TB_inline?&width=889&height=558&inlineId=more-info-popup" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
                                         </div>
 				</div>
 			</div>
