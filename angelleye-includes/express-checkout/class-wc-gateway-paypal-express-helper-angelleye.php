@@ -928,7 +928,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $cid_production = '';
                     $result = array();
                     $website_name = get_bloginfo('name');
-                    $website_url = 'https://www.amazon.in'; //get_bloginfo('url');
+                    $website_url = get_bloginfo('url');
                     $website_url = str_ireplace('www.', '', parse_url($website_url, PHP_URL_HOST));
                     $post = '{"owner_id":"woocommerce_container","owner_type":"PAYPAL","application_context":{"terms_accepted":true,"bn_code":"AngellEYE_SP_WooCommerce_MS","partner_name":"' . $website_name . '"},"name":"woocommerce_container","description":"Container created from PayPal for WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"' . $_POST['woocommerce_paypal_express_api_username'] . '-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"mobile-flow","value":"credit"},{"id":"is-mobile-enabled","value":"true"},{"id":"is-desktop-enabled","value":"true"},{"id":"limit","value":"3"}]}]}';
                     $headers = array(
