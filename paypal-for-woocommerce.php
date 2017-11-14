@@ -122,7 +122,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( "pre_option_woocommerce_enable_guest_checkout", array($this, 'angelleye_express_checkout_woocommerce_enable_guest_checkout'), 10, 1);
             add_filter( 'woocommerce_get_checkout_order_received_url', array($this, 'angelleye_woocommerce_get_checkout_order_received_url'), 10, 2);
             add_action('wp_ajax_wp_paypal_paypal_marketing_solutions_express_checkout_save', array($this, 'wp_paypal_paypal_marketing_solutions_express_checkout_save'));
-            add_action('wp_ajax_wp_paypal_paypal_marketing_solutions_generate_cid', array($this, 'wp_paypal_paypal_marketing_solutions_generate_cid'));
+            
             $this->customer_id;
         }
 
@@ -1118,64 +1118,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
              exit();
         }
         
-        public static function wp_paypal_paypal_marketing_solutions_generate_cid() {
-            $cid_production = '';
-            $result = array();
-            if( !empty($_POST['action']) && $_POST['action'] == 'wp_paypal_paypal_marketing_solutions_generate_cid' ) {
-                $website_url = get_bloginfo('url');
-                $website_name = get_bloginfo('name');
-                $website_url = str_ireplace('www.', '', parse_url($website_url, PHP_URL_HOST));
-                $post = '{"owner_id": "woocommerce_container","owner_type": "PAYPAL","application_context": {"terms_accepted": true,"bn_code": "AngellEYE_SP_WooCommerce_MS","partner_name": "' . $website_name . '"},"name":"woocommerce_container","description":"Container created from PayPal for WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"abcd-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"limit","value":"3"}]}]}';
-                $headers = array(
-                    'Accept: application/json',
-                    'Content-Type: application/json',
-                    'Content-Length: ' . strlen($post),
-                    "x_nvp_pwd: " . $_POST['api_password'],
-                    "x_nvp_signature: " . $_POST['api_signature'],
-                    "x_nvp_user: " . $_POST['api_username']
-                );
-                $curl = curl_init();
-                curl_setopt($curl, CURLOPT_VERBOSE, 1);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-                curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-                curl_setopt($curl, CURLOPT_URL, 'https://api.paypal.com/proxy/v1/offers/containers');
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
-                curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($curl, CURLOPT_SSLVERSION, 6);
-                $Response = curl_exec($curl);
-                $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution start ', 'info', $source = 'paypal_marketing_solutions');
-                WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution request ' . print_r($post, true) , 'info', 'paypal_marketing_solutions');
-                $Response = json_decode($Response);
-                WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution response ' . print_r($Response, true) , 'info', 'paypal_marketing_solutions');
-                if($httpCode == 400) {
-                    if( !empty($Response->details[0]->issue ) && 'EXISTING_CONTAINER' == $Response->details[0]->issue ) {
-                        $cid_production = !empty($Response->details[0]->value) ? $Response->details[0]->value : '';
-                        $result['success'] = true;
-                        $result['cid_production'] = $cid_production;
-                        $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
-                        $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = $result['cid_production'];
-                        update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
-                    } else {
-                        $result['success'] = false;
-                        $result['error_msg'] = !empty($Response->message) ? $Response->message : '';
-                    }
-                } elseif($httpCode == 201) {
-                    $result['success'] = true;
-                    $link = $Response->links[0];
-                    $e = explode('/', $link->href);
-                    $result['cid_production'] = end($e);
-                    $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
-                    $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = $result['cid_production'];
-                    update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
-                }
-                echo json_encode($result);
-                curl_close($curl);
-                exit();
-            }
-        }
-    }
+        
+        
+        
+    } 
     
 }
 new AngellEYE_Gateway_Paypal();
