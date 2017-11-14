@@ -68,7 +68,7 @@ Developers can contribute to the source code on the [PayPal for WooCommerce GitH
 
 = Minimum Requirements =
 
-* WooCommerce 2.6 or higher
+* WooCommerce 3.0 or higher
 
 = Automatic installation =
 
