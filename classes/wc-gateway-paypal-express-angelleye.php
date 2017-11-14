@@ -144,6 +144,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $display_disable_terms = 'no';
         }
         $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
+        $report_home = 'https://business.paypal.com/merchantdata/reportHome?cid='.$this->paypal_marketing_solutions_cid_production;
         ?>
         <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
@@ -208,7 +209,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             
         jQuery('.view-paypal-insight-result').on('click', function (event) {
             event.preventDefault();
-            var win = window.open('https://business.paypal.com/merchantdata/reportHome', '_blank');
+            var win = window.open('<?php echo $report_home; ?>', '_blank');
             win.focus();
         });
         jQuery('.reset_paypal_marketing_solutions').on('click', function (event) {
