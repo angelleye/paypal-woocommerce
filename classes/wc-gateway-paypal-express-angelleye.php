@@ -219,22 +219,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         });
             
         function callback_onsuccess_production(containerId) {
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val(containerId);
-            var data = {
-                'action': 'wp_paypal_paypal_marketing_solutions_express_checkout_save',
-                'cid_production': containerId
-            };
-            jQuery.post(ajaxurl, data, function (response) {
-            });
             muse_options_production.cid = containerId;
-            jQuery('.display_msg_when_activated').html('<span class="pms-green">You have successfully activated PayPal Marketing Solutions for your site!</span>');
-            jQuery('#pms-paypalInsightsLink').show();
-            jQuery('.display_when_deactivated').hide();
-            jQuery('.pms-view-more').hide();
-            jQuery('#angelleye_wp_marketing_solutions_button_production').css({'width': 'auto', 'float': 'left'});
-            jQuery('.pms-muse-right-container > div img').css({'height': '44px'});
-            jQuery('#pms-reset').show();
-
         }
         jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').change(function() {
             var production_marketing_solutions = jQuery('#angelleye_wp_marketing_solutions_button_production');
