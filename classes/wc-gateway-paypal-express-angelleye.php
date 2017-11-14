@@ -112,7 +112,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->version = "64";
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         $this->page_style = $this->get_option('page_style', '');
-        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'angelleye_update_marketing_solution'), 10);
+        
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'), 999);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
         if (!has_action('woocommerce_api_' . strtolower('WC_Gateway_PayPal_Express_AngellEYE'))) {
@@ -124,6 +124,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
         $this->order_button_text = ($this->function_helper->ec_is_express_checkout() == false) ?  __('Proceed to PayPal', 'paypal-for-woocommerce') :  __( 'Place order', 'paypal-for-woocommerce' );
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
+        
         
     }
 
@@ -149,6 +150,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <table class="form-table">
              <?php $this->generate_settings_html(); ?>
         </table>  
+        <div id="more-info-popup" style="display:none;">
+          <?php echo '<img width="1200" src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg"/>'; ?>
+        </div>
         <hr></hr>
         <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
         <script>
@@ -163,6 +167,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             url: '<?php echo $this->home_url; ?>',
             parnter_name: 'Angell EYE',
             bn_code: 'AngellEYE_SP_MarketingSolutions',
+            promotionsEnabled: 'True',
             env: 'production',
             cid: '<?php echo $this->paypal_marketing_solutions_cid_production; ?>'
         }
@@ -208,28 +213,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         });
         jQuery('.reset_paypal_marketing_solutions').on('click', function (event) {
             event.preventDefault();
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val('');
+            jQuery('<input>').attr({ type: 'hidden', id: 'reset', value: 'reset', name: 'reset'}).appendTo('form');
+            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val('reset');
             jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').prop('checked', false);
             jQuery("form").submit();
         });
             
         function callback_onsuccess_production(containerId) {
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val(containerId);
-            var data = {
-                'action': 'wp_paypal_paypal_marketing_solutions_express_checkout_save',
-                'cid_production': containerId
-            };
-            jQuery.post(ajaxurl, data, function (response) {
-            });
             muse_options_production.cid = containerId;
-            jQuery('.display_msg_when_activated').html('<span class="pms-green">You have successfully activated PayPal Marketing Solutions for your site!</span>');
-            jQuery('#pms-paypalInsightsLink').show();
-            jQuery('.display_when_deactivated').hide();
-            jQuery('.pms-view-more').hide();
-            jQuery('#angelleye_wp_marketing_solutions_button_production').css({'width': 'auto', 'float': 'left'});
-            jQuery('.pms-muse-right-container > div img').css({'height': '44px'});
-            jQuery('#pms-reset').show();
-
         }
         jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').change(function() {
             var production_marketing_solutions = jQuery('#angelleye_wp_marketing_solutions_button_production');
@@ -852,7 +843,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 						<div><p>' . __('Get insights about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
                                         <div class="wrap pms-center-moreinfo">
-                                            <div><a target="_blank" href="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg?TB_iframe=true" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
+                                            <div><a href="#TB_inline?&width=1200&height=550&inlineId=more-info-popup" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
                                         </div>
 				</div>
 			</div>
@@ -1429,7 +1420,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
-    public static function log($message, $level = 'info') {
+    public static function log($message, $level = 'info', $source = null) {
+        if($source == null ) {
+            $source = 'paypal_express';
+        }
         if (self::$log_enabled) {
             if (version_compare(WC_VERSION, '3.0', '<')) {
                 if (empty(self::$log)) {
@@ -1440,7 +1434,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (empty(self::$log)) {
                     self::$log = wc_get_logger();
                 }
-                self::$log->log($level, $message, array('source' => 'paypal_express'));
+                self::$log->log($level, $message, array('source' => $source));
             }
         }
     }
@@ -1554,55 +1548,5 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         }
-    }
-    
-    public function angelleye_update_marketing_solution() {
-        if( !empty($_POST['woocommerce_paypal_express_api_username']) && !empty($_POST['woocommerce_paypal_express_api_password']) && !empty($_POST['woocommerce_paypal_express_api_signature'])) {
-            if(empty($_POST['woocommerce_paypal_express_testmode'])) {
-                if($_POST['woocommerce_paypal_express_api_username'] != $this->api_username) {
-                    if(!empty($_POST['woocommerce_paypal_express_paypal_marketing_solutions_enabled']) || !empty($this->paypal_marketing_solutions_cid_production)) {
-                        $cid_production = '';
-                        $result = array();
-                        $website_name = get_bloginfo('name');
-                        $website_url = get_bloginfo('url');
-                        $website_url = str_ireplace('www.', '', parse_url($website_url, PHP_URL_HOST));
-                        $post = '{"owner_id":"woocommerce_container","owner_type":"PAYPAL","application_context":{"terms_accepted":true,"bn_code":"AngellEYE_SP_WooCommerce_MS","partner_name":"' . $website_name . '"},"name":"woocommerce_container","description":"Container created from PayPal for WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"' . $_POST['woocommerce_paypal_express_api_username'] . '-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"mobile-flow","value":"credit"},{"id":"is-mobile-enabled","value":"true"},{"id":"is-desktop-enabled","value":"true"},{"id":"limit","value":"3"}]}]}';
-                        $headers = array(
-                            'Accept: application/json',
-                            'Content-Type: application/json',
-                            'Content-Length: ' . strlen($post),
-                            "x_nvp_pwd: " . $_POST['woocommerce_paypal_express_api_password'],
-                            "x_nvp_signature: " . $_POST['woocommerce_paypal_express_api_signature'],
-                            "x_nvp_user: " . $_POST['woocommerce_paypal_express_api_username']
-                        );
-                        $curl = curl_init();
-                        curl_setopt($curl, CURLOPT_VERBOSE, 1);
-                        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-                        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-                        curl_setopt($curl, CURLOPT_URL, 'https://api.paypal.com/proxy/v1/offers/containers');
-                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                        curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
-                        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-                        curl_setopt($curl, CURLOPT_SSLVERSION, 6);
-                        $Response = curl_exec($curl);
-                        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                        if($httpCode == 400) {
-                            $Response = json_decode($Response);
-                            if( !empty($Response->details[0]->issue ) && 'EXISTING_CONTAINER' == $Response->details[0]->issue ) {
-                                $cid_production = !empty($Response->details[0]->value) ? $Response->details[0]->value : '';
-                                $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = $cid_production;
-                            } 
-                        } elseif($httpCode == 201) {
-                            $Response = json_decode($Response);
-                            $result['success'] = true;
-                            $link = $Response->links[0];
-                            $e = explode('/', $link->href);
-                            $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = end($e);
-                        }
-                    }
-                }
-            }
-        }
-        
     }
 }
