@@ -154,7 +154,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <div id="more-info-popup" style="display:none;">
           <?php echo '<img width="886" height="549" src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg"/>'; ?>
         </div>
-        <p>* As reported in Nielsen’s PayPal Credit Average Order Value Study for activity occurring from April 2015 to March 2016 (small merchants) and October 2015 to March 2016 (midsize merchants), which compared PayPal Credit transactions to credit and debit card transactions on websites that offer PayPal Credit as a payment option or within the PayPal Wallet. Nielsen measured 284890 transactions across 27 mid and small merchants. Copyright Nielsen 2016.</p>
+        <p class="font11"><?php echo __("* As reported in Nielsen’s PayPal Credit Average Order Value Study for activity occurring from April 2015 to March 2016 (small merchants) and October 2015 to March 2016 (midsize merchants), which compared PayPal Credit transactions to credit and debit card transactions on websites that offer PayPal Credit as a payment option or within the PayPal Wallet. Nielsen measured 284890 transactions across 27 mid and small merchants. Copyright Nielsen 2016.", 'paypal-for-woocommerce'); ?></p>
         <hr></hr>
         <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
         <script>
@@ -775,15 +775,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				<div class="pms-muse-right-container">
 					<div>
 						<img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse1.png"/>
-						<div><p>' . __('Merchants like you have increased their average order value (AOV) by up to 68%.', 'wp-paypal-marketing-solutions') . '</p></div>
+						<div><p>' . __('Merchants like you have increased their average order value (AOV) by <b>up to 68%*</b>.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
 					<div>
 						<img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse2.png"/>
-						<div><p>' . __('Join 20,000 merchants who are promoting financing options on their site to boost sales.', 'wp-paypal-marketing-solutions') . '</p></div>
+						<div><p>' . __('Join <b>20,000 merchants</b> who are promoting financing options on their site to boost sales.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
 					<div>
 						<img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse3.png"/>
-						<div><p>' . __('Get insights about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
+						<div><p>' . __('<b>Get insights</b> about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
                                         <div class="wrap pms-center-moreinfo">
                                         <div>

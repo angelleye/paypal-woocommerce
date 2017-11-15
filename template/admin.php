@@ -141,19 +141,32 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'paypal_payment_gateway_
                                     </fieldset>
                                 </td>
                             </tr>
+                            <?php 
+                            global $wpdb;
+                            $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
+                            $this->setting = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
+                            $this->paypal_marketing_solutions_cid_production = !empty($this->setting['paypal_marketing_solutions_cid_production']) ? $this->setting['paypal_marketing_solutions_cid_production'] : '';
+                            if( !empty($this->paypal_marketing_solutions_cid_production) ) {
+                            ?>
+
+                            <tr valign="top" class="">
+                                <th class="titledesc" scope="row"><?php echo __('Reset PayPal Marketing Solutions', 'paypal-for-woocommerce'); ?></th>
+                                <td class="forminp forminp-checkbox">
+                                    <fieldset>
+                                        <label for="reset_paypal_marketing_solutions">
+                                            <?php echo '<p><a href="'.esc_url(add_query_arg("reset_paypal_marketing_solutions",1)).'" class="button reset_paypal_marketing_solutions">Reset PayPal Marketing Solutions</a></p>'; ?>					
+                                        </label> 														
+                                    </fieldset>
+                                </td>
+                            </tr>
+                            <?php } ?>
                         </tbody>
                     </table>
                     <?php submit_button(); ?>
                 </form>
             </div>
             <?php
-            global $wpdb;
-            $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
-            $this->setting = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
-            $this->paypal_marketing_solutions_cid_production = !empty($this->setting['paypal_marketing_solutions_cid_production']) ? $this->setting['paypal_marketing_solutions_cid_production'] : '';
-            if( !empty($this->paypal_marketing_solutions_cid_production) ) {
-                echo '<div class="wrap"><div id="pms-reset"><p><a href="'.esc_url(add_query_arg("reset_paypal_marketing_solutions",1)).'" class="button reset_paypal_marketing_solutions">Reset PayPal Marketing Solutions</a></p></div></div>';
-            }
+            
         } else {
             do_action('angelleye_paypal_for_woocommerce_general_settings_tab_content');
         }
