@@ -104,7 +104,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'paypal_payment_gateway_
                             $description = ( !empty($addon->short_description )) ? $addon->short_description : $addon->description;
                             if( isset($description) && !empty($description) ) {
                                 $description = strip_tags($description);
-                                echo '<p>' . wp_trim_words( $description, $num_words = 30 ) . '</p>';
+                                echo '<p>' . wp_trim_words( $description, $num_words = 55 ) . '</p>';
                             }
                             echo '</a>';
                             echo '</li>';
