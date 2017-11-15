@@ -154,6 +154,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <div id="more-info-popup" style="display:none;">
           <?php echo '<img width="886" height="549" src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg"/>'; ?>
         </div>
+        <p>* As reported in Nielsen’s PayPal Credit Average Order Value Study for activity occurring from April 2015 to March 2016 (small merchants) and October 2015 to March 2016 (midsize merchants), which compared PayPal Credit transactions to credit and debit card transactions on websites that offer PayPal Credit as a payment option or within the PayPal Wallet. Nielsen measured 284890 transactions across 27 mid and small merchants. Copyright Nielsen 2016.</p>
         <hr></hr>
         <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
         <script>
@@ -173,20 +174,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             cid: '<?php echo $this->paypal_marketing_solutions_cid_production; ?>'
         }
         jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').closest('tr').hide();
+        jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('tr').find('th').hide(); 
+        
         <?php
         if (!empty($this->paypal_marketing_solutions_cid_production)) {
             ?> jQuery('#pms-paypalInsightsLink').show();
                 jQuery('.display_when_deactivated').hide();
                 jQuery('.pms-view-more').hide();
-                jQuery('#angelleye_wp_marketing_solutions_button_production').css({'width': 'auto', 'float': 'left'});
-                jQuery('.pms-muse-right-container > div img').css({'height' : '44px'});
-                jQuery('#pms-reset').show();
+                
                 jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').css({'display': 'none'}); 
             <?php
         } else {
             ?> 
             display_notice_and_disable_marketing_solution();
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').css({'width': '50%', 'top': '-65px'}); jQuery('#pms-paypalInsightsLink').hide(); jQuery('#pms-reset').hide(); jQuery('#angelleye_wp_marketing_solutions_button_production').hide(); 
+            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').css({'width': '50%', 'top': '-65px'}); jQuery('#pms-paypalInsightsLink').hide(); jQuery('#angelleye_wp_marketing_solutions_button_production').hide(); 
             <?php
         }
         ?>
@@ -212,14 +213,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             var win = window.open('<?php echo $report_home; ?>', '_blank');
             win.focus();
         });
-        jQuery('.reset_paypal_marketing_solutions').on('click', function (event) {
-            event.preventDefault();
-            jQuery('<input>').attr({ type: 'hidden', id: 'reset', value: 'reset', name: 'reset'}).appendTo('form');
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').val('');
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').prop('checked', false);
-            jQuery("form").submit();
-        });
-            
         function callback_onsuccess_production(containerId) {
             muse_options_production.cid = containerId;
         }
@@ -776,7 +769,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                         <div class="wrap">
                                             <div id="angelleye_wp_marketing_solutions_button_production"></div>
                                             <div id="pms-paypalInsightsLink"><button class="paypal-px-btn view-paypal-insight-result">' . __('View Shopper Insights', '') . '</button></div>
-                                            <p><div id="pms-reset"><a class="button reset_paypal_marketing_solutions">Reset PayPal Marketing Solutions</a></div></p>
+                                            
                                         </div>
 				</div>
 				<div class="pms-muse-right-container">
@@ -802,10 +795,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 	),
             
            'paypal_marketing_solutions_enabled' => array(
-                'title'       => __( 'Enable Marketing Solutions', 'paypal-for-woocommerce' ),
+                'title'       => __( '', 'paypal-for-woocommerce' ),
                 'type'        => 'checkbox',
-                'label'       => 'Enable',
+                'label'       => '&nbsp;&nbsp;Enable PayPal Marketing Solutions',
                 'default'     => 'no',
+               'class' => 'checkbox',
                 'desc_tip'    => true,
 		'description' => __( 'This enables PayPal Marketing Solutions for valuable customer insights.' ),
             ),

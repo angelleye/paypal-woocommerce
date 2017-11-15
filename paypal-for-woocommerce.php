@@ -270,6 +270,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 echo '<div class="notice notice-info"><p>' . sprintf(__('PayPal Marketing Solutions is now available in Express Checkout! Make sure to <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_paypal_marketing_solutions">activate Marketing Solutions</a> for valuable analytics about your visitors as well as increased conversion rates and higher average order amounts on your site! | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("is_disable_paypal_marketing_solutions_notice",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
             }
             
+            if( !empty($_GET['reset_paypal_marketing_solutions']) && $_GET['reset_paypal_marketing_solutions'] == 1 ) {
+                @$pp_settings['paypal_marketing_solutions_cid_production'] = '';
+                @$pp_settings['paypal_marketing_solutions_enabled'] = '';
+                update_option('woocommerce_paypal_express_settings', @$pp_settings);
+                echo '<div class="notice notice-success"><p>' . sprintf(__('Successfully reset PayPal Marketing Solutions.', 'paypal-for-woocommerce')) . '</p></div>';
+                $set_ignore_tag_url =  remove_query_arg( 'reset_paypal_marketing_solutions' );
+                wp_redirect($set_ignore_tag_url);
+            }
+            
             $this->angelleye_paypal_plus_notice($user_id);
         }
 
