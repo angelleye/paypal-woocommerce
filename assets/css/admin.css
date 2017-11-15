@@ -180,6 +180,7 @@ hr {
     width: 110px !important;
     margin: 0 auto;
     height: 31px !important;
+    margin-left: 6px;
 }
 .pms-center-moreinfo {
     margin: 0 auto !important;
