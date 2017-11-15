@@ -111,7 +111,7 @@ table.angelleye_order_action_table td {
 }
 
 .pms-muse-left-container {
-    width: 621px;
+    width: 58%;
     display: inline-block;
     vertical-align: top;
 }
@@ -127,7 +127,7 @@ table.angelleye_order_action_table td {
 }
 
 .pms-muse-right-container {
-    width: 264px;
+    width: 35%;
     color: #6c7378;
     display: inline-block;
     margin-left: 40px;
@@ -136,8 +136,7 @@ table.angelleye_order_action_table td {
 
 .pms-muse-right-container > div img {
     display: inline-block;
-    margin-left: 80px;
-    
+    margin-left: 35%;
 }
 
 .pms-paypalTOC {
@@ -177,12 +176,6 @@ hr {
     color:red;
 }
 
-.pms-view-more {
-    width: 110px !important;
-    margin: 0 auto;
-    height: 31px !important;
-    margin-left: 6px;
-}
 .pms-center-moreinfo {
     margin: 0 auto !important;
     width: 63%;
@@ -216,4 +209,14 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 
 .view-paypal-insight-result {
     width: 285px !important;
+}
+
+.pms-view-more {
+    width: 110px !important;
+    margin: 0 auto;
+    height: 31px !important;
+    margin-left: 18%;
+}
+.font11 {
+    font-size: 11px;
 }
