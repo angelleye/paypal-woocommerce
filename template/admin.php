@@ -150,7 +150,7 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'paypal_payment_gateway_
                             ?>
 
                             <tr valign="top" class="">
-                                <th class="titledesc" scope="row"><?php echo __('Reset PayPal Marketing Solutions', 'paypal-for-woocommerce'); ?></th>
+                                <th class="titledesc" scope="row"><?php echo __('PayPal Marketing Solutions', 'paypal-for-woocommerce'); ?></th>
                                 <td class="forminp forminp-checkbox">
                                     <fieldset>
                                         <label for="reset_paypal_marketing_solutions">
