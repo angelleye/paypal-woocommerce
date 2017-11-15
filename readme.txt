@@ -133,6 +133,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue causing Express Checkout to fail from saved/pending orders that are sent directly to the buyer for payment. ([#914](https://github.com/angelleye/paypal-woocommerce/issues/914))
 * Fix - Resolves an issue where IPv6 addresses are sometimes used in the PayPal request, which PayPal does not support.  Now we make sure IPv4 is used. ([#909](https://github.com/angelleye/paypal-woocommerce/issues/909))
 * Fix - Resolves an issue where orders with both items that need shipped and items with "no shipping required" are being treated as no shipping required. ([#928](https://github.com/angelleye/paypal-woocommerce/issues/928))
+* Fix - Resolves a broken admin notice link. ([#930](https://github.com/angelleye/paypal-woocommerce/issues/930))
 
 = 1.4.6.5 - 10.12.2017 =
 * Tweak - Clean up settings panel. ([#884](https://github.com/angelleye/paypal-woocommerce/issues/884))
