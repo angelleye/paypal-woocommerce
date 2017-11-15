@@ -151,16 +151,15 @@ hr {
 }
 
 #pms-paypalInsightsLink {
-    float: right;
+    float: left;
     font-size: 1em;
-    width: 285px;
+    margin-left: 10px;
 }
 
 #pms-muse-container {
     width: 100%;
 }
 #angelleye_wp_marketing_solutions_button_production {
-    width: 285px !important;
     margin: 0 auto;
     float: left;
 }
