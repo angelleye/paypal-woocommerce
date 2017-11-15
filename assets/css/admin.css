@@ -219,3 +219,8 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 .font11 {
     font-size: 11px;
 }
+.wrap.angelleye_addons_wrap.paypal_woocommerce_premium_extension ul.products li.product img {
+    height: 300px;
+    width: 300px;
+    margin: 0px;
+}

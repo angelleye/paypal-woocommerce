@@ -86,20 +86,19 @@ $gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'paypal_payment_gateway_
             }
             if (isset($addons) && !empty($addons)) {
                 ?>
-                <div class="wrap angelleye_addons_wrap">
+                <div class="wrap angelleye_addons_wrap paypal_woocommerce_premium_extension">
                     <ul class="products">
                         <?php
                         foreach ($addons as $addon) {
                             echo '<li class="product">';
                             echo '<a target="_blank" href="' . $addon->permalink . '">';
-                            if( isset($addon->title) && !empty($addon->title) ) {
-                                echo '<h4>' . $addon->title . '</h4>';
-                            }
                             if( isset($addon->price) && !empty($addon->price) ) {
                                 echo '<span class="price">' . $addon->price . '</span>';
                             }
                             $images = ( !empty($addon->images[0]->src) ) ? $addon->images[0]->src : '';
                             if( !empty($images)) {
+                              $images = str_replace('.png', '', $images);
+                              $images .= '-300x300.png';
                               echo "<img src='$images'>";
                             }
                             $description = ( !empty($addon->short_description )) ? $addon->short_description : $addon->description;
