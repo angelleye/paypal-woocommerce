@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
 Tested up to: 4.9
-Stable tag: 1.4.6.5
+Stable tag: 1.4.6.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -121,7 +121,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.6.6 - xx.xx.2017 =
+= 1.4.6.6 - 11.15.2017 =
 * Feature - Adds PayPal Marketing Solutions (Insights & Promotions) to Express Checkout.  Activate to increase avg. order amount and conversion rates! ([#904](https://github.com/angelleye/paypal-woocommerce/issues/904))
 * Feature - Adds an option for whether or not to display the Express Checkout button in the Woo Minicart. ([#920](https://github.com/angelleye/paypal-woocommerce/issues/920))
 * Tweak - Adjustments to PayPal Pro / PayFlow checkout styles for better display on mobile devices. ([#912](https://github.com/angelleye/paypal-woocommerce/issues/912))
