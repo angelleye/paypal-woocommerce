@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
 Tested up to: 4.9
-Stable tag: 1.4.6.6
+Stable tag: 1.4.6.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -121,7 +121,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.6.7 - xx.xx.2017 =
+= 1.4.6.7 - 11.15.2017 =
 * Fix - Resolves PHP warnings (only displayed when error reporting is enabled).  ([#933](https://github.com/angelleye/paypal-woocommerce/issues/933))
 
 = 1.4.6.6 - 11.15.2017 =
