@@ -134,7 +134,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         public function add_body_classes($classes) {
           global $pp_settings;
-          if(@$pp_settings['enabled'] == 'yes')
+          if(!empty($pp_settings['enabled']) && $pp_settings['enabled'] == 'yes')
             $classes[] = 'has_paypal_express_checkout';
           return $classes;
         }
@@ -201,7 +201,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $plugin_data = get_plugin_data( __FILE__, false );
 
             if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) && !is_plugin_active_for_network( 'woocommerce/woocommerce.php' ) ) {
-                if(!in_array(@$_GET['action'],array('activate-plugin', 'upgrade-plugin','activate','do-plugin-upgrade')) && is_plugin_active($plugin) ) {
+                if(!empty($_GET['action']) && !in_array($_GET['action'], array('activate-plugin', 'upgrade-plugin','activate','do-plugin-upgrade')) && is_plugin_active($plugin) ) {
                     deactivate_plugins( $plugin );
                     wp_die( "<strong>".$plugin_data['Name']."</strong> requires <strong>WooCommerce</strong> plugin to work normally. Please activate it or install it from <a href=\"http://wordpress.org/plugins/woocommerce/\" target=\"_blank\">here</a>.<br /><br />Back to the WordPress <a href='".get_admin_url(null, 'plugins.php')."'>Plugins page</a>." );
                 }
@@ -229,25 +229,34 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $pp_standard = get_option('woocommerce_paypal_settings');
 
             do_action( 'angelleye_admin_notices', $pp_pro, $pp_payflow, $pp_standard );
-
-            if (@$pp_pro['enabled']=='yes' || @$pp_payflow['enabled']=='yes') {
+            
+            $pp_pro['testmode'] = !empty($pp_pro['testmode']) ? $pp_pro['testmode'] : '';
+            $pp_payflow['testmode'] = !empty($pp_payflow['testmode']) ? $pp_payflow['testmode'] : '';
+            $pp_settings['testmode'] = !empty($pp_settings['testmode']) ? $pp_settings['testmode'] : '';
+            $pp_pro['enabled'] = !empty($pp_pro['enabled']) ? $pp_pro['enabled'] : '';
+            $pp_payflow['enabled'] = !empty($pp_payflow['enabled']) ? $pp_payflow['enabled'] : '';
+            $pp_settings['enabled'] = !empty($pp_settings['enabled']) ? $pp_settings['enabled'] : '';
+            $pp_standard['enabled'] = !empty($pp_standard['enabled']) ? $pp_standard['enabled'] : '';
+            $pp_settings['paypal_marketing_solutions_cid_production'] = !empty($pp_settings['paypal_marketing_solutions_cid_production']) ? $pp_settings['paypal_marketing_solutions_cid_production'] : '';
+            
+            if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || ( !empty($pp_payflow['enabled']) && $pp_payflow['enabled']=='yes' )) {
                 // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
                 if ( get_option('woocommerce_force_ssl_checkout')=='no' && ! class_exists( 'WordPressHTTPS' ) && !get_user_meta($user_id, 'ignore_pp_ssl') )
                     echo '<div class="error"><p>' . sprintf(__('WooCommerce PayPal Payments Pro requires that the %sForce secure checkout%s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '<a href="'.admin_url('admin.php?page=wc-settings&tab=checkout#woocommerce_enable_guest_checkout').'">', "</a>", '"'.esc_url(add_query_arg("ignore_pp_ssl",0)).'"', __("Hide this notice", 'paypal-for-woocommerce'))  . '</p></div>';
-                if ((@$pp_pro['testmode']=='yes' || @$pp_payflow['testmode']=='yes' || @$pp_settings['testmode']=='yes') && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
+                if (($pp_pro['testmode']=='yes' || $pp_payflow['testmode']=='yes' || $pp_settings['testmode']=='yes') && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
                     $testmodes = array();
-                    if (@$pp_pro['enabled']=='yes' && @$pp_pro['testmode']=='yes') $testmodes[] = 'PayPal Pro';
-                    if (@$pp_payflow['enabled']=='yes' && @$pp_payflow['testmode']=='yes') $testmodes[] = 'PayPal Pro PayFlow';
-                    if (@$pp_settings['enabled']=='yes' && @$pp_settings['testmode']=='yes') $testmodes[] = 'PayPal Express';
+                    if ($pp_pro['enabled']=='yes' && $pp_pro['testmode']=='yes') $testmodes[] = 'PayPal Pro';
+                    if ($pp_payflow['enabled']=='yes' && $pp_payflow['testmode']=='yes') $testmodes[] = 'PayPal Pro PayFlow';
+                    if ($pp_settings['enabled']=='yes' && $pp_settings['testmode']=='yes') $testmodes[] = 'PayPal Express';
                     $testmodes_str = implode(", ", $testmodes);
                     echo '<div class="error"><p>' . sprintf(__('WooCommerce PayPal Payments ( %s ) is currently running in Sandbox mode and will NOT process any actual payments. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), $testmodes_str, '"'.esc_url(add_query_arg("ignore_pp_sandbox",0)).'"',  __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
                 }
-            } elseif (@$pp_settings['enabled']=='yes'){
-                if (@$pp_settings['testmode']=='yes' && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
+            } elseif ($pp_settings['enabled']=='yes'){
+                if ($pp_settings['testmode']=='yes' && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
                     echo '<div class="error"><p>' . sprintf(__('WooCommerce PayPal Express is currently running in Sandbox mode and will NOT process any actual payments. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("ignore_pp_sandbox",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
                 }
             }
-            if(@$pp_settings['enabled']=='yes' && @$pp_standard['enabled']=='yes' && !get_user_meta($user_id, 'ignore_pp_check')){
+            if($pp_settings['enabled']=='yes' && $pp_standard['enabled']=='yes' && !get_user_meta($user_id, 'ignore_pp_check')){
                 echo '<div class="error"><p>' . sprintf(__('You currently have both PayPal (standard) and Express Checkout enabled.  It is recommended that you disable the standard PayPal from <a href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paypal">the settings page</a> when using Express Checkout. | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("ignore_pp_check",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
             }
 
@@ -266,14 +275,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
             }
            
-            if( !get_user_meta($user_id, 'is_disable_paypal_marketing_solutions_notice') && empty(@$pp_settings['paypal_marketing_solutions_cid_production']) ) {
+            if( !get_user_meta($user_id, 'is_disable_paypal_marketing_solutions_notice') && empty($pp_settings['paypal_marketing_solutions_cid_production']) ) {
                 echo '<div class="notice notice-info"><p>' . sprintf(__('PayPal Marketing Solutions is now available in Express Checkout! Make sure to <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_paypal_marketing_solutions">activate Marketing Solutions</a> for valuable analytics about your visitors as well as increased conversion rates and higher average order amounts on your site! | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("is_disable_paypal_marketing_solutions_notice",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
             }
             
             if( !empty($_GET['reset_paypal_marketing_solutions']) && $_GET['reset_paypal_marketing_solutions'] == 1 ) {
-                @$pp_settings['paypal_marketing_solutions_cid_production'] = '';
-                @$pp_settings['paypal_marketing_solutions_enabled'] = '';
-                update_option('woocommerce_paypal_express_settings', @$pp_settings);
+                $pp_settings['paypal_marketing_solutions_cid_production'] = '';
+                $pp_settings['paypal_marketing_solutions_enabled'] = '';
+                update_option('woocommerce_paypal_express_settings', $pp_settings);
                 echo '<div class="notice notice-success"><p>' . sprintf(__('Successfully reset PayPal Marketing Solutions.', 'paypal-for-woocommerce')) . '</p></div>';
                 $set_ignore_tag_url =  remove_query_arg( 'reset_paypal_marketing_solutions' );
                 wp_redirect($set_ignore_tag_url);
@@ -363,6 +372,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if( !empty($post) ) {
                 $_enable_ec_button = get_post_meta($post->ID, '_enable_ec_button', true);
             }
+            $pp_settings['enabled'] = !empty($pp_settings['enabled']) ? $pp_settings['enabled'] : '';
+            $pp_settings['show_on_product_page'] = !empty($pp_settings['show_on_product_page']) ? $pp_settings['show_on_product_page'] : '';
             $enable_in_context_checkout_flow = !empty($pp_settings['enable_in_context_checkout_flow']) ? $pp_settings['enable_in_context_checkout_flow'] : 'no';
             wp_register_script( 'angelleye_frontend', plugins_url( '/assets/js/angelleye-frontend.js' , __FILE__ ), array( 'jquery' ), WC_VERSION, true );
             $translation_array = array(
@@ -386,7 +397,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if ( ! is_admin() && is_checkout() ) {
                 wp_enqueue_style( 'ppe_checkout', plugins_url( 'assets/css/checkout.css' , __FILE__ ) );
             }
-            if ( ! is_admin() && is_single() && @$pp_settings['enabled']=='yes' && @$pp_settings['show_on_product_page']=='yes' && $_enable_ec_button == 'yes') {
+            if ( ! is_admin() && is_single() && $pp_settings['enabled']=='yes' && $pp_settings['show_on_product_page']=='yes' && $_enable_ec_button == 'yes') {
                 wp_enqueue_style( 'ppe_single', plugins_url( 'assets/css/single.css' , __FILE__ ) );
                 wp_enqueue_script('angelleye_button');
             }
@@ -498,7 +509,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Donate function
          */
         function donate_message() {
-            if (@$_GET['page']=='wc-settings' && @$_GET['tab']=='checkout' && in_array( @$_GET['section'], array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'braintree', 'paypal_advanced', 'paypal_credit_card_rest')) && !get_user_meta(get_current_user_id(), 'ignore_pp_donate') ) {
+            if (!empty($_GET['page']) && !empty($_GET['tab']) && !empty($_GET['section']) && $_GET['page'] == 'wc-settings' && $_GET['tab'] == 'checkout' && in_array( $_GET['section'], array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'braintree', 'paypal_advanced', 'paypal_credit_card_rest')) && !get_user_meta(get_current_user_id(), 'ignore_pp_donate') ) {
                 ?>
                 <div class="updated welcome-panel notice" id="paypal-for-woocommerce-donation">
                     <div style="float:left; margin: 19px 16px 19px 0;" id="plugin-icon-paypal-for-woocommerce" ></div>
@@ -556,18 +567,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
             $product_cats = get_categories( $args );
             include_once( 'template/admin.php' );
-        }
-        
-        static public function curPageURL() {
-            $pageURL = 'http';
-            if (@$_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
-            $pageURL .= "://";
-            if ($_SERVER["SERVER_PORT"] != "80") {
-                $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-            } else {
-                $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-            }
-            return $pageURL;
         }
         
        function angelleye_product_type_options_own($product_type){
