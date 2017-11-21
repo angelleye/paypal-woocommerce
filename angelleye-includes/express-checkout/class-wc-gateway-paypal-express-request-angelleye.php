@@ -460,8 +460,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if($cancel_url == false) {
                 $cancel_url = wc_get_cart_url();
             }
+            $cancel_url = add_query_arg( 'utm_nooverride', '1', $cancel_url );
             $order_total = '';
-            $returnurl = urldecode(add_query_arg('pp_action', 'get_express_checkout_details', WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
+            $returnurl = urldecode(add_query_arg( array('pp_action' => 'get_express_checkout_details', 'utm_nooverride' => 1), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
             if( !empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true && !empty($_GET['key'])) {
                 if (version_compare(WC_VERSION, '3.0', '<')) {
                     $order_id = woocommerce_get_order_id_by_order_key($_GET['key']);
@@ -476,6 +477,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     'pay_for_order' => true,
                     'key' => $_GET['key'],
                     'order_id' => $order_id,
+                    'utm_nooverride' => 1
                 ), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE') ) );
                 WC()->session->set( 'order_awaiting_payment', $order_id );
             } else {
