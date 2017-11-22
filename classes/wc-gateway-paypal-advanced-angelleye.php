@@ -61,7 +61,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->label_textcolor = $this->get_option('label_textcolor');
         $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
-        $this->loginid = $this->get_option('loginid');
         $this->user = $this->get_option('user', $this->loginid);
         $this->mobilemode = $this->get_option('mobilemode', 'yes');
         if ( is_ssl() || get_option( 'woocommerce_force_ssl_checkout' ) == 'yes' ) {
@@ -82,6 +81,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         $this->hostaddr = $this->testmode == true ? $this->testurl : $this->liveurl;
         $this->softdescriptor = $this->get_option('softdescriptor', '');
+        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');       
+
 
         if ($this->debug == 'yes')
             $this->log = new WC_Logger();
@@ -92,6 +93,12 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_api_wc_gateway_paypal_advanced_angelleye', array($this, 'relay_response'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_advanced_encrypt_gateway_api'), 10, 1);
         $this->customer_id;
+        if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id);
+        } else {
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id);
+        }
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
     }
 
@@ -523,84 +530,39 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         $silentposturl = add_query_arg('wc-api', 'WC_Gateway_PayPal_Advanced_AngellEYE', add_query_arg('silent', 'true', $this->home_url));
         $paypal_args['SILENTPOSTURL[' . strlen($silentposturl) . ']'] = $silentposturl;
-
-        // If prices include tax or have order discounts, send the whole order as a single item
-        $is_prices_include_tax = version_compare(WC_VERSION, '3.0', '<') ? 'yes' === $order->prices_include_tax : $order->get_prices_include_tax();
         
+        $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         
-        if (($is_prices_include_tax  || $order->get_total_discount() > 0 || $length_error > 1) && $order->get_subtotal() > 0) {
-
-            // Don't pass items - paypal borks tax due to prices including tax. PayPal has no option for tax inclusive pricing sadly. Pass 1 item for the order items overall
-            $item_names = array();
-
-            if (sizeof($order->get_items()) > 0) {
-
-                if ($length_error <= 1) {
-                    foreach ($order->get_items() as $item) {
-                        if ($item['qty']) {
-                            $item_names[] = $item['name'] . ' x ' . $item['qty'];
-                        }
-                    }
-                } else {
-                    $item_names[] = "All selected items, refer to Woocommerce order details";
-                }
-                $items_str = sprintf(__('Order %s', 'paypal-for-woocommerce'), $order->get_order_number()) . " - " . implode(', ', $item_names);
-                $items_names_str = $this->paypal_advanced_item_name($items_str);
-                $items_desc_str = $this->paypal_advanced_item_desc($items_str);
-                $paypal_args['L_NAME0[' . strlen($items_names_str) . ']'] = $items_names_str;
-                $paypal_args['L_DESC0[' . strlen($items_desc_str) . ']'] = $items_desc_str;
-                $paypal_args['L_QTY0'] = 1;
-                if ($order->get_subtotal() == 0) {
-                    $paypal_args['L_COST0'] = number_format(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2, '.', '');
-                } else {
-                    $paypal_args['FREIGHTAMT'] = number_format(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2, '.', '');
-                    $paypal_args['L_COST0'] = number_format($order->get_total() - round(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2), 2, '.', '');
-                }
-
-                //determine ITEMAMT
-                $paypal_args['ITEMAMT'] = $paypal_args['L_COST0'] * $paypal_args['L_QTY0'];
-            }
-        } else {
-
+        if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
+            $paypal_args['discount'] = $PaymentData['discount_amount'];
+        }
             
-             // Tax
-            $paypal_args['TAXAMT'] = $order->get_total_tax();
-
-            //ITEM AMT, total amount
-            $paypal_args['ITEMAMT'] = 0;
-
-
-            // Cart Contents
+        $paypal_args['ITEMAMT'] = 0;
+        if ($this->send_items) {
             $item_loop = 0;
-            if (sizeof($order->get_items()) > 0 && $order->get_subtotal() > 0) {
-                foreach ($order->get_items() as $item) {
-                    if ($item['qty']) {
-                        $product = $order->get_product_from_item($item);
-                        $item_name = $item['name'];
-                        $paypal_args['L_NAME' . $item_loop . '[' . strlen($item_name) . ']'] = $item_name;
-                        if (is_object($product)) {
-                            $paypal_args['L_SKU' . $item_loop] = $product->get_sku();
-                        }
-                        $paypal_args['L_QTY' . $item_loop] = $item['qty'];
-                        $paypal_args['L_COST' . $item_loop] = $order->get_item_total($item, false, false); /* No Tax , No Round) */
-                        $paypal_args['L_TAXAMT' . $item_loop] = $order->get_item_tax($item, false); /* No Round it */
-
-                        //calculate ITEMAMT
-                        $paypal_args['ITEMAMT'] += $order->get_line_total($item, false, false); /* No tax, No Round */
-
-                        $item_loop++;
-                    }
+            foreach ($PaymentData['order_items'] as $_item) {
+                $paypal_args['L_NUMBER' . $item_loop] = $_item['number'];
+                $paypal_args['L_NAME' . $item_loop] = $_item['name'];
+                $paypal_args['L_COST' . $item_loop] = $_item['amt'];
+                $paypal_args['L_QTY' . $item_loop] = $_item['qty'];
+                if ($_item['number']) {
+                    $paypal_args['L_SKU' . $item_loop] = $_item['number'];
                 }
-            } else {
-                $paypal_args['L_NAME0'] = sprintf(__('Shipping via %s', 'paypal-for-woocommerce'), $order->get_shipping_method());
-                $paypal_args['L_QTY0'] = 1;
-                $paypal_args['L_COST0'] = number_format(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2, '.', '');
-                $paypal_args['ITEMAMT'] = number_format(version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_total_shipping() : $order->get_shipping_total() + $order->get_shipping_tax(), 2, '.', '');
+                $item_loop++;
             }
+            $paypal_args['ITEMAMT'] = $PaymentData['itemamt'];
         }
 
-        try {
+        if( $order->get_total() != $PaymentData['shippingamt'] ) {
+            $paypal_args['FREIGHTAMT'] = $PaymentData['shippingamt'];
+        } else {
+            $paypal_args['FREIGHTAMT'] = 0.00;
+        }
 
+        $paypal_args['TAXAMT'] = $PaymentData['taxamt'];
+        $paypal_param = $paypal_args;
+
+        try {
 
             $postData = '';
             $logData = '';
@@ -610,6 +572,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 $postData .= '&' . $key . '=' . $val;
                 if (strpos($key, 'PWD') === 0) {
                     $logData .= '&PWD=XXXX';
+                    $paypal_param[$key] = 'XXXX';
                 } else {
                     $logData .= '&' . $key . '=' . $val;
                 }
@@ -620,9 +583,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
             // Log
             if ($this->debug == 'yes') {
-
-            $logData = trim($logData, '&');
+                $logData = trim($logData, '&');
                 $this->log->add('paypal_advanced', sprintf(__('Requesting for the Secured Token for the order %s with following URL and Paramaters: %s', 'paypal-for-woocommerce'), $order->get_order_number(), $this->hostaddr . '?' . $logData));
+                $this->log->add('paypal_advanced', 'Request: ' . print_r($paypal_param, true));
             }
 
             /* Using Curl post necessary information to the Paypal Site to generate the secured token */
@@ -809,6 +772,13 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'label' => __('Enable PayPal sandbox', 'paypal-for-woocommerce'),
                 'default' => 'yes',
                 'description' => sprintf(__('PayPal sandbox can be used to test payments. Sign up for a developer account <a href="%s">here</a>', 'paypal-for-woocommerce'), 'https://developer.paypal.com/'),
+            ),
+            'send_items' => array(
+                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
+                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
+                'default' => 'yes'
             ),
             'transtype' => array(
                 'title' => __('Transaction Type', 'paypal-for-woocommerce'),
