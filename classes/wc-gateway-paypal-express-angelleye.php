@@ -1114,12 +1114,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
                                 if( !empty($paypal_express_checkout['shipping_details']['email'])) {
                                     $this->posted['billing_email'] = $paypal_express_checkout['shipping_details']['email'];
+                                } elseif( !empty ($paypal_express_checkout['ExpresscheckoutDetails']['EMAIL'])) {
+                                    $this->posted['billing_email'] = $paypal_express_checkout['ExpresscheckoutDetails']['EMAIL'];
                                 }
                                 if( !empty($paypal_express_checkout['shipping_details']['first_name'])) {
                                     $this->posted['billing_first_name'] = $paypal_express_checkout['shipping_details']['first_name'];
+                                } elseif( !empty ($paypal_express_checkout['ExpresscheckoutDetails']['FIRSTNAME'])) {
+                                    $this->posted['billing_first_name'] = $paypal_express_checkout['ExpresscheckoutDetails']['FIRSTNAME'];
                                 }
                                 if( !empty($paypal_express_checkout['shipping_details']['last_name'])) {
                                     $this->posted['billing_last_name'] = $paypal_express_checkout['shipping_details']['last_name'];
+                                } elseif( !empty ($paypal_express_checkout['ExpresscheckoutDetails']['LASTNAME'])) {
+                                    $this->posted['billing_last_name'] = $paypal_express_checkout['ExpresscheckoutDetails']['LASTNAME'];
                                 }
                                 $this->posted['payment_method'] = $this->id;
                             }
