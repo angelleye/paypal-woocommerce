@@ -868,7 +868,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     if ($update_count == 0) {
                         $update_count = 'zero';
                     }
-                    $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=tabs&processed=' . $update_count);
+                    $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=tools&processed=' . $update_count);
                     echo $redirect_url;
                 } else {
                     //echo 'failed';
