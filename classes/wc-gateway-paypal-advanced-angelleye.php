@@ -48,10 +48,17 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if ($this->testmode == false) {
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
-        $this->loginid = $this->get_option('loginid');
-        $this->resellerid = $this->get_option('resellerid');
-        $this->transtype = $this->get_option('transtype');
-        $this->password = $this->get_option('password');
+        if( $this->testmode == true ) {
+            $this->loginid = $this->get_option('sandbox_loginid');
+            $this->resellerid = $this->get_option('sandbox_resellerid');
+            $this->user = $this->get_option('sandbox_user', $this->loginid);
+            $this->password = $this->get_option('sandbox_password');
+        } else {
+            $this->loginid = $this->get_option('loginid');
+            $this->resellerid = $this->get_option('resellerid');
+            $this->user = $this->get_option('user', $this->loginid);
+            $this->password = $this->get_option('password');
+        }
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->invoice_id_prefix = $this->get_option('invoice_prefix', 'WC-PPADV');
         $this->page_collapse_bgcolor = $this->get_option('page_collapse_bgcolor');
@@ -61,7 +68,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->label_textcolor = $this->get_option('label_textcolor');
         $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
-        $this->user = $this->get_option('user', $this->loginid);
+        $this->transtype = $this->get_option('transtype');
         $this->mobilemode = $this->get_option('mobilemode', 'yes');
         if ( is_ssl() || get_option( 'woocommerce_force_ssl_checkout' ) == 'yes' ) {
             $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
@@ -694,6 +701,17 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             jQuery(document).ready(function ($) {
                 jQuery('.paypal_for_woocommerce_color_field').wpColorPicker();
             });
+             jQuery('#woocommerce_paypal_advanced_testmode').change(function () {
+                var production = jQuery('#woocommerce_paypal_advanced_resellerid, #woocommerce_paypal_advanced_loginid, #woocommerce_paypal_advanced_user, #woocommerce_paypal_advanced_password').closest('tr'),
+                sandbox = jQuery('#woocommerce_paypal_advanced_sandbox_resellerid, #woocommerce_paypal_advanced_sandbox_loginid, #woocommerce_paypal_advanced_sandbox_user, #woocommerce_paypal_advanced_sandbox_password').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    sandbox.show();
+                    production.hide();
+                } else {
+                    sandbox.hide();
+                    production.show();
+                }
+            }).change();
         </script>
         <?php
     }
@@ -727,11 +745,12 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'default' => __('PayPal Advanced description', 'paypal-for-woocommerce')
             ),
-            'loginid' => array(
-                'title' => __('Merchant Login', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => '',
-                'default' => ''
+            'testmode' => array(
+                'title' => __('PayPal sandbox', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable PayPal sandbox', 'paypal-for-woocommerce'),
+                'default' => 'yes',
+                'description' => sprintf(__('PayPal sandbox can be used to test payments. Sign up for a developer account <a href="%s">here</a>', 'paypal-for-woocommerce'), 'https://developer.paypal.com/'),
             ),
             'resellerid' => array(
                 'title' => __('Partner', 'paypal-for-woocommerce'),
@@ -739,13 +758,43 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Enter your PayPal Advanced Partner. If you purchased the account directly from PayPal, use PayPal.', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
-            'user' => array(
-                'title' => __('User (or Merchant Login if no designated user is set up for the account)', 'paypal-for-woocommerce'),
+            'loginid' => array(
+                'title' => __('Vendor (Merchant Login)', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Enter your PayPal Advanced user account for this site.', 'paypal-for-woocommerce'),
+                'description' => '',
+                'default' => ''
+            ),
+            'user' => array(
+                'title' => __('User (optional)', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If you set up one or more additional users on the account, this value is the ID of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
             'password' => array(
+                'title' => __('Password', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => __('Enter your PayPal Advanced account password.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'sandbox_resellerid' => array(
+                'title' => __('Partner', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Enter your PayPal Advanced Partner. If you purchased the account directly from PayPal, use PayPal.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'sandbox_loginid' => array(
+                'title' => __('Vendor (Merchant Login)', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => '',
+                'default' => ''
+            ),
+            'sandbox_user' => array(
+                'title' => __('User (optional)', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If you set up one or more additional users on the account, this value is the ID of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'sandbox_password' => array(
                 'title' => __('Password', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('Enter your PayPal Advanced account password.', 'paypal-for-woocommerce'),
@@ -765,13 +814,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('The value entered here will be displayed on the buyer\'s credit card statement.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
-            ),
-            'testmode' => array(
-                'title' => __('PayPal sandbox', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('Enable PayPal sandbox', 'paypal-for-woocommerce'),
-                'default' => 'yes',
-                'description' => sprintf(__('PayPal sandbox can be used to test payments. Sign up for a developer account <a href="%s">here</a>', 'paypal-for-woocommerce'), 'https://developer.paypal.com/'),
             ),
             'send_items' => array(
                 'title' => __('Send Item Details', 'paypal-for-woocommerce'),

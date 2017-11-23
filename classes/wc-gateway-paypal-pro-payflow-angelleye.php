@@ -166,13 +166,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'default' => __('Pay with your credit card.', 'paypal-for-woocommerce')
             ),
-            'testmode' => array(
-                'title' => __('Test Mode', 'paypal-for-woocommerce'),
-                'label' => __('Enable PayPal Sandbox/Test Mode', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Place the payment gateway in development mode.', 'paypal-for-woocommerce'),
-                'default' => 'no'
-            ),
+           
             'invoice_id_prefix' => array(
                 'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
                 'type' => 'text',
@@ -184,13 +178,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__))),
                 'class' => 'button_upload'
             ),
-            'debug' => array(
-                'title' => __('Debug Log', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('Enable logging', 'paypal-for-woocommerce'),
-                'default' => 'no',
-                'description' => sprintf(__('Log PayPal events inside <code>%s</code>', 'paypal-for-woocommerce'), wc_get_log_file_path('paypal_pro_payflow')),
-            ),
+            
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -210,67 +198,64 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
 									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce')
             ),
-            'sandbox_paypal_vendor' => array(
-                'title' => __('Sandbox PayPal Vendor', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('Your merchant login ID that you created when you registered for the account.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'sandbox_paypal_password' => array(
-                'title' => __('Sandbox PayPal Password', 'paypal-for-woocommerce'),
-                'type' => 'password',
-                'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'sandbox_paypal_user' => array(
-                'title' => __('Sandbox PayPal User', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('If you set up one or more additional users on the account, this value is the ID
-of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
-                'default' => ''
+             'testmode' => array(
+                'title' => __('PayPal Sandbox', 'paypal-for-woocommerce'),
+                'label' => __('Enable PayPal Sandbox/Test Mode', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Place the payment gateway in development mode.', 'paypal-for-woocommerce'),
+                'default' => 'no'
             ),
             'sandbox_paypal_partner' => array(
-                'title' => __('Sandbox PayPal Partner', 'paypal-for-woocommerce'),
+                'title' => __('Partner', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('The ID provided to you by the authorized PayPal Reseller who registered you for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank.', 'paypal-for-woocommerce'),
                 'default' => 'PayPal'
             ),
-            'paypal_vendor' => array(
-                'title' => __('Live PayPal Vendor', 'paypal-for-woocommerce'),
+            'sandbox_paypal_vendor' => array(
+                'title' => __('Vendor (Merchant Login)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Your merchant login ID that you created when you registered for the account.', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
-            'paypal_password' => array(
-                'title' => __('Live PayPal Password', 'paypal-for-woocommerce'),
-                'type' => 'password',
-                'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
+            
             'sandbox_paypal_user' => array(
-                'title' => __('Sandbox PayPal User', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('If you set up one or more additional users on the account, this value is the ID of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'sandbox_paypal_partner' => array(
-                'title' => __('Sandbox PayPal Partner', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('The ID provided to you by the authorized PayPal Reseller who registered you for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank.', 'paypal-for-woocommerce'),
-            ),
-            'paypal_user' => array(
-                'title' => __('Live PayPal User', 'paypal-for-woocommerce'),
+                'title' => __('User (optional)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('If you set up one or more additional users on the account, this value is the ID
 of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
+            'sandbox_paypal_password' => array(
+                'title' => __('Password', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
             'paypal_partner' => array(
-                'title' => __('Live PayPal Partner', 'paypal-for-woocommerce'),
+                'title' => __('Partner', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('The ID provided to you by the authorized PayPal Reseller who registered you
 for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank.', 'paypal-for-woocommerce'),
                 'default' => 'PayPal'
+            ),
+            'paypal_vendor' => array(
+                'title' => __('Vendor (Merchant Login)', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Your merchant login ID that you created when you registered for the account.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'paypal_user' => array(
+                'title' => __('User (optional)', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If you set up one or more additional users on the account, this value is the ID
+of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'paypal_password' => array(
+                'title' => __('Password', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
+                'default' => ''
             ),
             'send_items' => array(
                 'title' => __('Send Item Details', 'paypal-for-woocommerce'),
@@ -361,6 +346,13 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'description' => __('Display card holder first and last name in credit card form.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
+            'debug' => array(
+                'title' => __('Debug Log', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable logging', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'description' => sprintf(__('Log PayPal events inside <code>%s</code>', 'paypal-for-woocommerce'), wc_get_log_file_path('paypal_pro_payflow')),
+            ),
             'is_encrypt' => array(
                 'title' => __('', 'paypal-for-woocommerce'),
                 'label' => __('', 'paypal-for-woocommerce'),
@@ -370,6 +362,29 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
             )
         );
         $this->form_fields = apply_filters('angelleye_fc_form_fields', $this->form_fields);
+    }
+    
+    
+    
+    public function admin_options() {
+        ?>
+        <table class="form-table">
+            <?php $this->generate_settings_html(); ?>
+        </table>
+        <script type="text/javascript">
+            jQuery('#woocommerce_paypal_pro_payflow_testmode').change(function () {
+                var sandbox = jQuery('#woocommerce_paypal_pro_payflow_sandbox_paypal_partner, #woocommerce_paypal_pro_payflow_sandbox_paypal_vendor, #woocommerce_paypal_pro_payflow_sandbox_paypal_user, #woocommerce_paypal_pro_payflow_sandbox_paypal_password').closest('tr'),
+                production = jQuery('#woocommerce_paypal_pro_payflow_paypal_partner, #woocommerce_paypal_pro_payflow_paypal_vendor, #woocommerce_paypal_pro_payflow_paypal_user, #woocommerce_paypal_pro_payflow_paypal_password').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    sandbox.show();
+                    production.hide();
+                } else {
+                    sandbox.hide();
+                    production.show();
+                }
+            }).change();
+        </script>
+        <?php
     }
 
     /**
