@@ -37,7 +37,7 @@ Fully supports WooCommerce payment tokens, so buyers can choose to save their pa
 If you are using WooCommerce Subscriptions to manage subscription profiles you will be able to accept any of our PayPal payment gateways for subscription sign-up and payments.
 
 = FREE PayPal Payments Pro Account =
-By using our plugin we can get you hooked up with PayPal Payments Pro with no monthly fee! (U.S. and Canada merchants only) [Contact us](https://www.angelleye.com/contact-us) for details.
+By using our plugin we can get you hooked up with PayPal Payments Pro with no monthly fee! (U.S. and Canada merchants only) [Submit a request](https://www.angelleye.com/free-paypal-pro-account-request/?utm_source=paypal-for-woocommerce&utm_medium=readme&utm_campaign=free_paypal_pro) and we'll get you hooked up!
 
 = PayPal Plus Information =
 The BETA version of PayPal Plus that we had included with this plugin has been stripped out as of version 1.2.4.  We have moved PayPal Plus to its own separate plugin so that we may focus on all the different features and functionality it needs to work with the various countries it supports.  [Get the PayPal Plus Plugin!](https://www.angelleye.com/product/woocommerce-paypal-plus-plugin/)
