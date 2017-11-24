@@ -66,4 +66,8 @@ jQuery(document).ready(function ($) {
     // asyncronous JavaScript resources. Otherwise your function listening might not fire.
 
     $(".paypal_checkout_button").trigger('angelleye_paypal_checkout_button_js_loaded');
+    
+    if( $('.angelleye_button_single').width() < 327 ) {
+        $('.angelleye_button_single a.paypal_checkout_button img.ppcreditlogo.ec_checkout_page_button_type_pc').css('margin', '0px 0px');
+    } 
 });

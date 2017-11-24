@@ -154,8 +154,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <div id="more-info-popup" style="display:none;">
           <?php echo '<img width="886" height="549" src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg"/>'; ?>
         </div>
-        <p class="font11"><?php echo __("* As reported in Nielsen’s PayPal Credit Average Order Value Study for activity occurring from April 2015 to March 2016 (small merchants) and October 2015 to March 2016 (midsize merchants), which compared PayPal Credit transactions to credit and debit card transactions on websites that offer PayPal Credit as a payment option or within the PayPal Wallet. Nielsen measured 284890 transactions across 27 mid and small merchants. Copyright Nielsen 2016.", 'paypal-for-woocommerce'); ?></p>
-        <hr></hr>
+        
         <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
         <script>
         function display_notice_and_disable_marketing_solution() {
@@ -807,6 +806,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'paypal_marketing_solutions_cid_production' => array(
                 'type'        => 'hidden',
                 'default'     => '',
+            ),
+            'paypal_marketing_solutions_details_note' => array(
+                'type'        => 'title',
+                'default'     => '',
+                'description' => '<p class="font11">' . __("* As reported in Nielsen’s PayPal Credit Average Order Value Study for activity occurring from April 2015 to March 2016 (small merchants) and October 2015 to March 2016 (midsize merchants), which compared PayPal Credit transactions to credit and debit card transactions on websites that offer PayPal Credit as a payment option or within the PayPal Wallet. Nielsen measured 284890 transactions across 27 mid and small merchants. Copyright Nielsen 2016.", 'paypal-for-woocommerce') . '<hr>',
             )
            );
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
@@ -1110,12 +1114,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
                                 if( !empty($paypal_express_checkout['shipping_details']['email'])) {
                                     $this->posted['billing_email'] = $paypal_express_checkout['shipping_details']['email'];
+                                } elseif( !empty ($paypal_express_checkout['ExpresscheckoutDetails']['EMAIL'])) {
+                                    $this->posted['billing_email'] = $paypal_express_checkout['ExpresscheckoutDetails']['EMAIL'];
                                 }
                                 if( !empty($paypal_express_checkout['shipping_details']['first_name'])) {
                                     $this->posted['billing_first_name'] = $paypal_express_checkout['shipping_details']['first_name'];
+                                } elseif( !empty ($paypal_express_checkout['ExpresscheckoutDetails']['FIRSTNAME'])) {
+                                    $this->posted['billing_first_name'] = $paypal_express_checkout['ExpresscheckoutDetails']['FIRSTNAME'];
                                 }
                                 if( !empty($paypal_express_checkout['shipping_details']['last_name'])) {
                                     $this->posted['billing_last_name'] = $paypal_express_checkout['shipping_details']['last_name'];
+                                } elseif( !empty ($paypal_express_checkout['ExpresscheckoutDetails']['LASTNAME'])) {
+                                    $this->posted['billing_last_name'] = $paypal_express_checkout['ExpresscheckoutDetails']['LASTNAME'];
                                 }
                                 $this->posted['payment_method'] = $this->id;
                             }

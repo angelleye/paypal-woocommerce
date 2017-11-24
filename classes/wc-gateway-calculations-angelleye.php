@@ -25,7 +25,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
         public function __construct($payment_method = null) {
             $this->is_adjust = false;
             $this->payment_method = $payment_method;
-            if( $this->payment_method == 'paypal_pro_payflow' ) {
+            if( $this->payment_method == 'paypal_pro_payflow' || $this->payment_method == 'paypal_advanced') {
                 $this->is_separate_discount = true;
             }
             $is_zdp_currency = in_array(get_woocommerce_currency(), $this->zdp_currencies);

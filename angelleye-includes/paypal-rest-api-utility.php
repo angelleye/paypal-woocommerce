@@ -234,11 +234,12 @@ class PayPal_Rest_API_Utility {
         $this->payer->setPaymentMethod("credit_card");
         $this->payer->setFundingInstruments(array($this->fundingInstrument));
         if ($order->get_total() > 0) {
-        $this->set_item($order);
-        $this->set_item_list();
-        $this->set_detail_values();
-        $this->set_amount_values($order);
-        $this->set_transaction($order);
+            $this->set_item($order);
+            $this->set_item_list();
+            $this->angelleye_set_shipping_address($order);
+            $this->set_detail_values();
+            $this->set_amount_values($order);
+            $this->set_transaction($order);
             $this->set_payment();
         }
     }
@@ -826,6 +827,28 @@ class PayPal_Rest_API_Utility {
             $this->add_log(__('Error Payment state:' . $this->payment->state, 'paypal-for-woocommerce'));
         }
         
+    }
+    
+     public function angelleye_set_shipping_address($order) {
+        if ($order->needs_shipping_address()) {
+            $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
+            $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
+            $shipping_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_1 : $order->get_shipping_address_1();
+            $shipping_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_2 : $order->get_shipping_address_2();
+            $shipping_city = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_city : $order->get_shipping_city();
+            $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
+            $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
+            $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
+            $shipping_address_array = array('recipient_name' => $shipping_first_name . $shipping_last_name,
+                'line1' => $shipping_address_1,
+                'line2' => $shipping_address_2,
+                'city' => $shipping_city,
+                'state' => $shipping_state,
+                'postal_code' => $shipping_postcode,
+                'country_code' => $shipping_country
+            );
+            $this->item_list->setShippingAddress($shipping_address_array);
+        }
     }
 
 }
