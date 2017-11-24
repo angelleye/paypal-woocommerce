@@ -66,3 +66,9 @@ form.cart div.angelleye_button_single input.ec_product_page_button_type_textbutt
 .paypal_checkout_button.button.alt.ec_checkout_page_button_type_textbutton {
     margin: 3px 0 3px 0; 
 }
+input.single_add_to_cart_button.paypal_checkout_button {
+    padding: 0px !important;
+}
+.single_add_to_cart_button.paypal_checkout_button.paypal_checkout_button_cc {
+   float: left;
+}
