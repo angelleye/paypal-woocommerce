@@ -33,12 +33,12 @@ class PayPal_Rest_API_Utility {
     public $CreditCardToken;
 
     public function __construct($gateway) {
+        $this->gateway = $gateway;
+        if(!is_object($this->gateway)) {
+            return;
+        }
         $this->add_paypal_rest_api_lib();
         $this->create_transaction_method_obj();
-        $this->payment_method = (isset($_POST['payment_method'])) ? $_POST['payment_method'] : 'paypal_credit_card_rest';
-        if ($this->payment_method == 'paypal_credit_card_rest') {
-            $this->gateway = $gateway;
-        }
         $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'no');
         if ($this->testmode == false) {
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();

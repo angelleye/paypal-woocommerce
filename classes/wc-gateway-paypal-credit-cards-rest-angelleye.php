@@ -10,7 +10,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
     /**
      * Constructor
      */
-    protected $paypal_rest_api;
+    public $paypal_rest_api;
     public $customer_id;
 
     function __construct() {
