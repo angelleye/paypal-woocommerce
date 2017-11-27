@@ -23,6 +23,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
         public $is_separate_discount;
 
         public function __construct($payment_method = null) {
+            $this->order_items = array();
             $this->is_adjust = false;
             $this->payment_method = $payment_method;
             if( $this->payment_method == 'paypal_pro_payflow' || $this->payment_method == 'paypal_advanced') {
@@ -47,7 +48,6 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             WC()->cart->calculate_totals();
             $this->payment = array();
             $this->itemamt = 0;
-            $this->order_items = array();
             $roundedPayPalTotal = 0;
             $this->discount_amount = round(WC()->cart->get_cart_discount_total(), $this->decimals);
             if ($this->get_giftcard_amount() != false) {
