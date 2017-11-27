@@ -49,7 +49,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
 
     public function ec_is_express_checkout() {
-        if (sizeof(WC()->session) == 0) {
+        if ( ! class_exists( 'WooCommerce' ) || WC()->session == null ) {
             return false;
         }
         $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );

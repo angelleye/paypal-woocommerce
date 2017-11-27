@@ -220,7 +220,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_get_session_data($key = '') {
         try {
-            if (sizeof(WC()->session) == 0) {
+            if ( ! class_exists( 'WooCommerce' ) || WC()->session == null ) {
                 return false;
             }
             $session_data = WC()->session->get('paypal_express_checkout');
@@ -377,7 +377,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_add_body_class($classes) {
         try {
-            if (sizeof(WC()->session) == 0) {
+            if ( ! class_exists( 'WooCommerce' ) || WC()->session == null ) {
                 return $classes;
             }
             $paypal_express_terms = WC()->session->get('paypal_express_terms');
@@ -400,7 +400,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function ec_terms_express_checkout($checked_default) {
-        if (sizeof(WC()->session) == 0) {
+        if ( ! class_exists( 'WooCommerce' ) || WC()->session == null ) {
             return $checked_default;
         }
         if (!$this->ec_is_available() || !$this->function_helper->ec_is_express_checkout()) {
@@ -620,7 +620,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_ship_to_different_address_checked($bool) {
-        if (sizeof(WC()->session) == 0) {
+        if ( ! class_exists( 'WooCommerce' ) || WC()->session == null ) {
             return $bool;
         }
         $post_data = WC()->session->get('post_data');
@@ -794,7 +794,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_paypal_for_woocommerce_page_title($page_title) {
-        if (sizeof(WC()->session) == 0) {
+        if ( ! class_exists( 'WooCommerce' ) || WC()->session == null ) {
             return $page_title;
         }
         $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
