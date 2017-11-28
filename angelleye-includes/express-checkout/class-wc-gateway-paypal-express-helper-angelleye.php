@@ -940,22 +940,27 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         "x_nvp_user: " . $_POST['woocommerce_paypal_express_api_username']
                     );
                     $result_response = $this->angelleye_paypal_marketing_solutions_request($post, $headers);
-                    WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution request: ' . print_r($post, true) , 'info', 'paypal_marketing_solutions');
-                    $Response = json_decode($result_response['response']);
-                    WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution response: ' . json_encode($Response) , 'info', 'paypal_marketing_solutions');
-                    if(!empty($result_response['httpCode']) && $result_response['httpCode'] == 400) {
-                        if( !empty($Response->details[0]->issue ) && 'EXISTING_CONTAINER' == $Response->details[0]->issue ) {
-                            $cid_production = !empty($Response->details[0]->value) ? $Response->details[0]->value : '';
-                            $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = $cid_production;
-                        } else {
-                            $result['error_msg'] = !empty($Response->message) ? $Response->message : '';
-                            echo '<div class="notice error"><p>' . $result['error_msg'] . '</p></div>';
+                    if( !empty($result_response['response']) ) {
+                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution request: ' . print_r($post, true) , 'info', 'paypal_marketing_solutions');
+                        $Response = json_decode($result_response['response']);
+                        WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution response: ' . json_encode($Response) , 'info', 'paypal_marketing_solutions');
+                        if(!empty($result_response['httpCode']) && $result_response['httpCode'] == 400) {
+                            if( !empty($Response->details[0]->issue ) && 'EXISTING_CONTAINER' == $Response->details[0]->issue ) {
+                                $cid_production = !empty($Response->details[0]->value) ? $Response->details[0]->value : '';
+                                $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = $cid_production;
+                            } else {
+                                unset($_POST['woocommerce_paypal_express_paypal_marketing_solutions_enabled']);
+                                $result['error_msg'] = !empty($Response->message) ? $Response->message : '';
+                                echo '<div class="notice error"><p>' . $result['error_msg'] . '</p></div>';
+                            }
+                        } elseif(!empty($result_response['httpCode']) && $result_response['httpCode'] == 201) {
+                            $result['success'] = true;
+                            $link = $Response->links[0];
+                            $e = explode('/', $link->href);
+                            $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = end($e);
                         }
-                    } elseif(!empty($result_response['httpCode']) && $result_response['httpCode'] == 201) {
-                        $result['success'] = true;
-                        $link = $Response->links[0];
-                        $e = explode('/', $link->href);
-                        $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = end($e);
+                    } else {
+                        unset($_POST['woocommerce_paypal_express_paypal_marketing_solutions_enabled']);
                     }
                 }
             }
