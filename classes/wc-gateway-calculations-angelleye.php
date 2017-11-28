@@ -78,24 +78,26 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     $name = $product->get_title();
                 }
                 $name = AngellEYE_Gateway_Paypal::clean_product_title($name);
-                if ($product->is_type('variation')) {
-                    if (version_compare(WC_VERSION, '3.0', '<')) {
-                        $attributes = $product->get_variation_attributes();
-                        if (!empty($attributes) && is_array($attributes)) {
-                            foreach ($attributes as $key => $value) {
-                                $key = str_replace(array('attribute_pa_', 'attribute_'), '', $key);
-                                $desc .= ' ' . ucwords($key) . ': ' . $value;
+                if (is_object($product)) {
+                    if ($product->is_type('variation')) {
+                        if (version_compare(WC_VERSION, '3.0', '<')) {
+                            $attributes = $product->get_variation_attributes();
+                            if (!empty($attributes) && is_array($attributes)) {
+                                foreach ($attributes as $key => $value) {
+                                    $key = str_replace(array('attribute_pa_', 'attribute_'), '', $key);
+                                    $desc .= ' ' . ucwords($key) . ': ' . $value;
+                                }
+                                $desc = trim($desc);
+                            }
+                        } else {
+                            $attributes = $product->get_attributes();
+                            if (!empty($attributes) && is_array($attributes)) {
+                                foreach ($attributes as $key => $value) {
+                                    $desc .= ' ' . ucwords($key) . ': ' . $value;
+                                }
                             }
                             $desc = trim($desc);
                         }
-                    } else {
-                        $attributes = $product->get_attributes();
-                        if (!empty($attributes) && is_array($attributes)) {
-                            foreach ($attributes as $key => $value) {
-                                $desc .= ' ' . ucwords($key) . ': ' . $value;
-                            }
-                        }
-                        $desc = trim($desc);
                     }
                 }
                 $product_sku = null;
@@ -191,25 +193,26 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 }
                 $name = AngellEYE_Gateway_Paypal::clean_product_title($name);
                 $amount = round($values['line_subtotal'] / $values['qty'], $this->decimals);
-
-                if ($product->is_type('variation')) {
-                    if (version_compare(WC_VERSION, '3.0', '<')) {
-                        $attributes = $product->get_variation_attributes();
-                        if (!empty($attributes) && is_array($attributes)) {
-                            foreach ($attributes as $key => $value) {
-                                $key = str_replace(array('attribute_pa_', 'attribute_'), '', $key);
-                                $desc .= ' ' . ucwords($key) . ': ' . $value;
+                if (is_object($product)) {
+                    if ($product->is_type('variation')) {
+                        if (version_compare(WC_VERSION, '3.0', '<')) {
+                            $attributes = $product->get_variation_attributes();
+                            if (!empty($attributes) && is_array($attributes)) {
+                                foreach ($attributes as $key => $value) {
+                                    $key = str_replace(array('attribute_pa_', 'attribute_'), '', $key);
+                                    $desc .= ' ' . ucwords($key) . ': ' . $value;
+                                }
+                                $desc = trim($desc);
+                            }
+                        } else {
+                            $attributes = $product->get_attributes();
+                            if (!empty($attributes) && is_array($attributes)) {
+                                foreach ($attributes as $key => $value) {
+                                    $desc .= ' ' . ucwords($key) . ': ' . $value;
+                                }
                             }
                             $desc = trim($desc);
                         }
-                    } else {
-                        $attributes = $product->get_attributes();
-                        if (!empty($attributes) && is_array($attributes)) {
-                            foreach ($attributes as $key => $value) {
-                                $desc .= ' ' . ucwords($key) . ': ' . $value;
-                            }
-                        }
-                        $desc = trim($desc);
                     }
                 }
                 $item = array(
