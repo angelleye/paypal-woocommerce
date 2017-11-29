@@ -36,6 +36,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->is_us_or_uk = false;
         }
+        if(substr(get_option("woocommerce_default_country"), 0, 2) == 'US') {
+            $this->is_us = true;
+        } else {
+            $this->is_us = false;
+        }
         $this->init_form_fields();
         $this->init_settings();
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
@@ -150,7 +155,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
              <?php $this->generate_settings_html(); ?>
-        </table>  
+        </table> 
+        <?php if( $this->is_us == true ) { ?>
         <div id="more-info-popup" style="display:none;">
           <?php echo '<img width="886" height="549" src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg"/>'; ?>
         </div>
@@ -217,6 +223,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
         </script>
+        <?php } ?>
         <script type="text/javascript">
             var display_disable_terms = "<?php echo $display_disable_terms; ?>";
             <?php if ($guest_checkout === 'no') { ?>
@@ -751,7 +758,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'yes',
                 'class' => ''
             ),
-            'paypal_marketing_solutions' => array(
+         );
+        if( $this->is_us == true ) {
+            $this->form_fields['paypal_marketing_solutions'] = array(
                 'title'       => __( '<hr></hr>PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
 		'type'        => 'title',
 		'description' => __( '<div id="pms-muse-container">
@@ -764,25 +773,23 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                                 <p class="display_when_deactivated">' . __('By enabling, you acknowledge that you have agreed to, and accepted the terms of, the PayPal User Agreement, including the <a target="_blank" href="https://www.paypal.com/webapps/mpp/ua/useragreement-full">terms and conditions</a> thereof applicable to the PayPal Advertising Program.', 'wp-paypal-marketing-solutions') . '</p> 
                                                 <p class="display_msg_when_activated"></p>
 					</div>
-					
                                         <div class="wrap">
                                             <div id="angelleye_wp_marketing_solutions_button_production"></div>
                                             <div id="pms-paypalInsightsLink"><button class="paypal-px-btn view-paypal-insight-result">' . __('View Shopper Insights', '') . '</button></div>
-                                            
                                         </div>
 				</div>
 				<div class="pms-muse-right-container">
 					<div>
-						<img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse1.png"/>
-						<div><p>' . __('Merchants like you have increased their average order value (AOV) by <b>up to 68%*</b>.', 'wp-paypal-marketing-solutions') . '</p></div>
+                                            <img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse1.png"/>
+                                            <div><p>' . __('Merchants like you have increased their average order value (AOV) by <b>up to 68%*</b>.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
 					<div>
-						<img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse2.png"/>
-						<div><p>' . __('Join <b>20,000 merchants</b> who are promoting financing options on their site to boost sales.', 'wp-paypal-marketing-solutions') . '</p></div>
+                                            <img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse2.png"/>
+                                            <div><p>' . __('Join <b>20,000 merchants</b> who are promoting financing options on their site to boost sales.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
 					<div>
-						<img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse3.png"/>
-						<div><p>' . __('<b>Get insights</b> about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
+                                            <img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse3.png"/>
+                                            <div><p>' . __('<b>Get insights</b> about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
                                         <div class="wrap pms-center-moreinfo">
                                         <div>
@@ -790,29 +797,28 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                         </div>
 				</div>
 			</div>
-	', 'paypal-for-woocommerce' ),
-	),
-            
-           'paypal_marketing_solutions_enabled' => array(
-                'title'       => __( '', 'paypal-for-woocommerce' ),
-                'type'        => 'checkbox',
-                'label'       => '&nbsp;&nbsp;Enable PayPal Marketing Solutions',
-                'default'     => 'no',
-               'class' => 'checkbox',
-                'desc_tip'    => true,
-		'description' => __( 'This enables PayPal Marketing Solutions for valuable customer insights.' ),
-            ),
-            
-            'paypal_marketing_solutions_cid_production' => array(
+                ', 'paypal-for-woocommerce' ),
+            );
+            $this->form_fields['paypal_marketing_solutions_enabled'] = array(
+                  'title'       => __( '', 'paypal-for-woocommerce' ),
+                  'type'        => 'checkbox',
+                  'label'       => '&nbsp;&nbsp;Enable PayPal Marketing Solutions',
+                  'default'     => 'no',
+                 'class' => 'checkbox',
+                  'desc_tip'    => true,
+                  'description' => __( 'This enables PayPal Marketing Solutions for valuable customer insights.' ),
+            );
+            $this->form_fields['paypal_marketing_solutions_cid_production'] = array(
                 'type'        => 'hidden',
                 'default'     => '',
-            ),
-            'paypal_marketing_solutions_details_note' => array(
+
+            );
+            $this->form_fields['paypal_marketing_solutions_details_note'] = array(
                 'type'        => 'title',
                 'default'     => '',
                 'description' => '<p class="font11">' . __("* As reported in Nielsen’s PayPal Credit Average Order Value Study for activity occurring from April 2015 to March 2016 (small merchants) and October 2015 to March 2016 (midsize merchants), which compared PayPal Credit transactions to credit and debit card transactions on websites that offer PayPal Credit as a payment option or within the PayPal Wallet. Nielsen measured 284890 transactions across 27 mid and small merchants. Copyright Nielsen 2016.", 'paypal-for-woocommerce') . '<hr>',
-            )
-           );
+            );
+        }
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
     }
 

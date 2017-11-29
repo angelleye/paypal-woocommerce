@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           1.4.6.7
+ * Version:           1.4.6.8
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '1.4.6.7');
+    define('VERSION_PFW', '1.4.6.8');
 }
 
 /**
@@ -275,7 +275,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
             }
            
-            if( !get_user_meta($user_id, 'is_disable_paypal_marketing_solutions_notice') && empty($pp_settings['paypal_marketing_solutions_cid_production']) ) {
+            if( !get_user_meta($user_id, 'is_disable_paypal_marketing_solutions_notice') && empty($pp_settings['paypal_marketing_solutions_cid_production']) && substr(get_option("woocommerce_default_country"), 0, 2) == 'US' ) {
                 echo '<div class="notice notice-info"><p>' . sprintf(__('PayPal Marketing Solutions is now available in Express Checkout! Make sure to <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_paypal_marketing_solutions">activate Marketing Solutions</a> for valuable analytics about your visitors as well as increased conversion rates and higher average order amounts on your site! | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("is_disable_paypal_marketing_solutions_notice",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
             }
             
