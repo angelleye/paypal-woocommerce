@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
 if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
 
     class WC_Gateway_Calculation_AngellEYE {
-
         public $order_total;
         public $taxamt;
         public $shippingamt;
@@ -52,6 +51,9 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->discount_amount = round(WC()->cart->get_cart_discount_total(), $this->decimals);
             if ($this->get_giftcard_amount() != false) {
                 $this->discount_amount = round($this->discount_amount + $this->get_giftcard_amount(), $this->decimals);
+            }
+            if ($this->yith_get_giftcard_amount() != false) {
+                $this->discount_amount = round($this->discount_amount + $this->yith_get_giftcard_amount(), $this->decimals);
             }
             if (WC()->cart->has_discount() && $this->discount_amount == 0) {
                 $applied_coupons = WC()->cart->get_applied_coupons();
@@ -133,6 +135,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             }
 
             $this->order_total = round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
+            
             if ($this->itemamt == $this->discount_amount) {
                 unset($this->order_items);
                 $this->itemamt -= $this->discount_amount;
@@ -178,6 +181,12 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->discount_amount = round($order->get_total_discount(), $this->decimals);
             if ($order->get_discount_total() > 0 && $this->discount_amount == 0) {
                 $this->discount_amount = round($order->get_discount_total(), $this->decimals);
+            }
+            if ($this->get_giftcard_amount($order_id) != false) {
+                $this->discount_amount = round($this->discount_amount + $this->get_giftcard_amount($order_id), $this->decimals);
+            }
+            if ($this->yith_get_giftcard_amount() != false) {
+                $this->discount_amount = round($this->discount_amount + $this->yith_get_giftcard_amount(), $this->decimals);
             }
             $desc = '';
             foreach ($order->get_items() as $cart_item_key => $values) {
@@ -379,6 +388,20 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     }
                     return $giftCardPayment;
                 }
+            } else {
+                return false;
+            }
+        }
+        
+        public function yith_get_giftcard_amount() {
+            if (class_exists('YITH_YWGC_Cart_Checkout')) {
+                $amount = 0;
+                if ( isset( WC()->cart->applied_gift_cards ) ) {
+                    foreach ( WC()->cart->applied_gift_cards as $code ) {
+                        $amount += isset( WC()->cart->applied_gift_cards_amounts[ $code ] ) ?  WC()->cart->applied_gift_cards_amounts[ $code ] : 0;
+                    }
+                }
+                return $amount;
             } else {
                 return false;
             }
