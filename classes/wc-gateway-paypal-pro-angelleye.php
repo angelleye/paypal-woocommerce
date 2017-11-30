@@ -143,6 +143,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         $this->credit_card_month_field = $this->get_option('credit_card_month_field', 'names');
         $this->credit_card_year_field = $this->get_option('credit_card_year_field', 'four_digit');
+        $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
         if ($this->testmode == true) {
             $this->api_username = $this->get_option('sandbox_api_username');
             $this->api_password = $this->get_option('sandbox_api_password');
@@ -202,13 +203,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'default' => __('Pay with your credit card', 'paypal-for-woocommerce')
             ),
-            'testmode' => array(
-                'title' => __('Test Mode', 'paypal-for-woocommerce'),
-                'label' => __('Enable PayPal Sandbox/Test Mode', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Place the payment gateway in development mode.', 'paypal-for-woocommerce'),
-                'default' => 'no'
-            ),
+           
             'invoice_id_prefix' => array(
                 'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
                 'type' => 'text',
@@ -226,6 +221,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
                 'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
+            ),
+             'testmode' => array(
+                'title' => __('Test Mode', 'paypal-for-woocommerce'),
+                'label' => __('Enable PayPal Sandbox/Test Mode', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Place the payment gateway in development mode.', 'paypal-for-woocommerce'),
+                'default' => 'no'
             ),
             'sandbox_api_username' => array(
                 'title' => __('Sandbox API Username', 'paypal-for-woocommerce'),
@@ -318,6 +320,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     'Authorization' => 'Authorization',
                 ),
                 'default' => 'Sale'
+            ),
+            'pending_authorization_order_status' => array(
+                'title' => __('Pending Authorization Order Status', 'paypal-for-woocommerce'),
+                'label' => __('Pending Authorization Order Status.', 'paypal-for-woocommerce'),
+                'description' => __('Pending Authorization Order Status.'),
+                'type' => 'select',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'On Hold' => 'On Hold',
+                    'Processing' => 'Processing'
+                ),
+                'default' => 'On Hold',
+                'desc_tip' => true,
             ),
             'send_items' => array(
                 'title' => __('Send Item Details', 'paypal-for-woocommerce'),
@@ -427,6 +442,36 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         );
         $this->form_fields = apply_filters('angelleye_pc_form_fields', $this->form_fields);
     }
+    
+    
+    public function admin_options() {
+        ?>
+        <table class="form-table">
+            <?php $this->generate_settings_html(); ?>
+        </table>
+        <script type="text/javascript">
+            jQuery('#woocommerce_paypal_pro_payment_action').change(function () {
+                if ( this.value === 'Authorization' ) {
+                    jQuery('#woocommerce_paypal_pro_pending_authorization_order_status').closest('tr').show();
+                } else {
+                    jQuery('#woocommerce_paypal_pro_pending_authorization_order_status').closest('tr').hide();
+                }
+            }).change();
+            jQuery('#woocommerce_paypal_pro_testmode').change(function () {
+                var sandbox = jQuery('#woocommerce_paypal_pro_sandbox_api_username, #woocommerce_paypal_pro_sandbox_api_password, #woocommerce_paypal_pro_sandbox_api_signature').closest('tr'),
+                production = jQuery('#woocommerce_paypal_pro_api_username, #woocommerce_paypal_pro_api_password, #woocommerce_paypal_pro_api_signature').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    sandbox.show();
+                    production.hide();
+                } else {
+                    sandbox.hide();
+                    production.show();
+                }
+            }).change();
+        </script>
+        <?php
+    }
+    
 
     /**
      * Check if this gateway is enabled and available in the user's country
@@ -1140,7 +1185,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             // Add order note
-            $order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
+            $order->add_order_note(sprintf(__('PayPal Pro (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             //$order->add_order_note("PayPal Results: ".print_r($PayPalResult,true));
 
             /* Checkout Note */
@@ -1221,7 +1266,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     $this->save_payment_token($order, $TRANSACTIONID);
                 }
             }
-            
             // Payment complete
             if($PayPalResult['ACK'] == 'SuccessWithWarning' && !empty($PayPalResult['L_ERRORCODE0'])) {
                 if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && $PayPalResult['L_ERRORCODE0'] == '11610') {
@@ -1269,7 +1313,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                 $angelleye_utility = new AngellEYE_Utility(null, null);
                 $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['TRANSACTIONID']);
-                $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
                 $order->add_order_note('Payment Action: ' . $this->payment_action);
             }
 
@@ -1565,7 +1608,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
             $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
             $error_email_notify_mes = apply_filters('ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
-            $subject = "PayPal Express Checkout Error Notification";
+            $subject = "PayPal Pro Error Notification";
             $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', $subject);
             wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
         }
@@ -1990,16 +2033,21 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if( $this->payment_action == 'Sale') {
             $order->payment_complete($transaction_id);
         } else {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            if ( $old_wc ) {
-                if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
-                    $order->reduce_order_stock();
-                } 
+            if ( $this->payment_action  == 'Authorization') {
+                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                $this->angelleye_get_transaction_details($order_id, $transaction_id);
             } else {
-                wc_maybe_reduce_stock_levels( $order_id );
+                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                if ( $old_wc ) {
+                    if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                        $order->reduce_order_stock();
+                    } 
+                } else {
+                    wc_maybe_reduce_stock_levels( $order_id );
+                }
+                $order->update_status('on-hold');
             }
-            $order->update_status('on-hold');
         }
     }
     
@@ -2023,5 +2071,130 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
         }
     }
+    
+    public function angelleye_get_transaction_details($order_id, $transaction_id) {
+        $PayPalConfig = array(
+            'Sandbox' => $this->testmode,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+        );
+        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        $GTDFields = array(
+            'transactionid' => $transaction_id
+        );
+        $PayPalRequestData = array('GTDFields' => $GTDFields);
+        $get_transactionDetails_result = $PayPal->GetTransactionDetails($PayPalRequestData);
+        $this->log(print_r($get_transactionDetails_result, true));
+        $this->update_payment_status_by_paypal_responce($order_id, $get_transactionDetails_result, $transaction_id);
+    }
+    
+    public function update_payment_status_by_paypal_responce($orderid, $result, $transaction_id) {
+        try {
+            $order = wc_get_order($orderid);
+            $old_wc = version_compare( WC_VERSION, '3.0', '<' );
+            if(!empty($result['PAYMENTINFO_0_PAYMENTSTATUS'])) {
+                $payment_status = $result['PAYMENTINFO_0_PAYMENTSTATUS'];
+            } elseif ( !empty ($result['PAYMENTSTATUS'])) {
+                $payment_status = $result['PAYMENTSTATUS'];
+            }
+            if( !empty($result['PAYMENTINFO_0_TRANSACTIONTYPE']) ) {
+                $transaction_type = $result['PAYMENTINFO_0_TRANSACTIONTYPE'];
+            } elseif ( !empty ($result['TRANSACTIONTYPE'])) {
+                $transaction_type = $result['TRANSACTIONTYPE'];
+            }
+            if( !empty($result['PAYMENTINFO_0_TRANSACTIONID']) ) {
+                $transaction_id = $result['PAYMENTINFO_0_TRANSACTIONID'];
+            } elseif ( !empty ($result['BILLINGAGREEMENTID'])) {
+                $transaction_id = $result['BILLINGAGREEMENTID'];
+            }
+            if( !empty($result['PAYMENTINFO_0_PENDINGREASON']) ) {
+                $pending_reason = $result['PAYMENTINFO_0_PENDINGREASON'];
+            } elseif ( !empty ($result['PENDINGREASON'])) {
+                $pending_reason = $result['PENDINGREASON'];
+            }
+            switch (strtolower($payment_status)) :
+                case 'completed' :
+                    $order_status = version_compare(WC_VERSION, '3.0', '<') ? $order->status : $this->order->get_status();
+                    if ($order_status == 'completed') {
+                        break;
+                    }
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
+                        break;
+                    }
+                    $order->add_order_note(__('Payment Completed via PayPal Pro', 'paypal-for-woocommerce'));
+                    $order->payment_complete($transaction_id);
+                    break;
+                case 'pending' :
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'expresscheckout'))) {
+                        break;
+                    }
+                    switch (strtolower($pending_reason)) {
+                        case 'address':
+                            $pending_reason_text = __('Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile.', 'paypal-for-woocommerce');
+                            break;
+                        case 'authorization':
+                            $pending_reason_text = __('Authorization: The payment is pending because it has been authorized but not settled. You must capture the funds first.', 'paypal-for-woocommerce');
+                            break;
+                        case 'echeck':
+                            $pending_reason_text = __('eCheck: The payment is pending because it was made by an eCheck that has not yet cleared.', 'paypal-for-woocommerce');
+                            break;
+                        case 'intl':
+                            $pending_reason_text = __('intl: The payment is pending because you hold a non-U.S. account and do not have a withdrawal mechanism. You must manually accept or deny this payment from your Account Overview.', 'paypal-for-woocommerce');
+                            break;
+                        case 'multicurrency':
+                        case 'multi-currency':
+                            $pending_reason_text = __('Multi-currency: You do not have a balance in the currency sent, and you do not have your Payment Receiving Preferences set to automatically convert and accept this payment. You must manually accept or deny this payment.', 'paypal-for-woocommerce');
+                            break;
+                        case 'order':
+                            $pending_reason_text = __('Order: The payment is pending because it is part of an order that has been authorized but not settled.', 'paypal-for-woocommerce');
+                            break;
+                        case 'paymentreview':
+                            $pending_reason_text = __('Payment Review: The payment is pending while it is being reviewed by PayPal for risk.', 'paypal-for-woocommerce');
+                            break;
+                        case 'unilateral':
+                            $pending_reason_text = __('Unilateral: The payment is pending because it was made to an email address that is not yet registered or confirmed.', 'paypal-for-woocommerce');
+                            break;
+                        case 'verify':
+                            $pending_reason_text = __('Verify: The payment is pending because you are not yet verified. You must verify your account before you can accept this payment.', 'paypal-for-woocommerce');
+                            break;
+                        case 'other':
+                            $pending_reason_text = __('Other: For more information, contact PayPal customer service.', 'paypal-for-woocommerce');
+                            break;
+                        case 'none':
+                        default:
+                            $pending_reason_text = __('No pending reason provided.', 'paypal-for-woocommerce');
+                            break;
+                    }
+                    $order->add_order_note(sprintf(__('Payment via PayPal Pro Pending. PayPal reason: %s', 'paypal-for-woocommerce'), $pending_reason_text));
+                    if ( strtolower($pending_reason) == 'authorization' && $this->pending_authorization_order_status == 'Processing' ) {
+                        $order->payment_complete($transaction_id);
+                    } else {
+                        $order->update_status('on-hold');
+                        if ( $old_wc ) {
+                            if ( ! get_post_meta( $orderid, '_order_stock_reduced', true ) ) {
+                                $order->reduce_order_stock();
+                            } 
+                        } else {
+                            wc_maybe_reduce_stock_levels( $orderid );
+                        }
+                    }
+                    break;
+                case 'denied' :
+                case 'expired' :
+                case 'failed' :
+                case 'voided' :
+                    $order->update_status('failed', sprintf(__('Payment %s via PayPal Pro.', 'paypal-for-woocommerce'), strtolower($payment_status)));
+                    break;
+                default:
+                    break;
+            endswitch;
+            return;
+        } catch (Exception $ex) {
+            
+        }
+    }
+    
     
 }

@@ -30,6 +30,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'yes');
             $this->fraud_management_filters = $this->gateway->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
             $this->email_notify_order_cancellations = $this->gateway->get_option('email_notify_order_cancellations', 'no');
+            $this->pending_authorization_order_status = $this->gateway->get_option('pending_authorization_order_status', 'On Hold');
             if ($this->testmode == false) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
@@ -736,7 +737,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             switch (strtolower($payment_status)) :
                 case 'completed' :
-                    if ($order->status == 'completed') {
+                    $order_status = version_compare(WC_VERSION, '3.0', '<') ? $order->status : $this->order->get_status();
+                    if ($order_status == 'completed') {
                         break;
                     }
                     if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
@@ -751,49 +753,53 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     }
                     switch (strtolower($pending_reason)) {
                         case 'address':
-                            $pending_reason = __('Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('Address: The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set such that you want to manually accept or deny each of these payments. To change your preference, go to the Preferences section of your Profile.', 'paypal-for-woocommerce');
                             break;
                         case 'authorization':
-                            $pending_reason = __('Authorization: The payment is pending because it has been authorized but not settled. You must capture the funds first.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('Authorization: The payment is pending because it has been authorized but not settled. You must capture the funds first.', 'paypal-for-woocommerce');
                             break;
                         case 'echeck':
-                            $pending_reason = __('eCheck: The payment is pending because it was made by an eCheck that has not yet cleared.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('eCheck: The payment is pending because it was made by an eCheck that has not yet cleared.', 'paypal-for-woocommerce');
                             break;
                         case 'intl':
-                            $pending_reason = __('intl: The payment is pending because you hold a non-U.S. account and do not have a withdrawal mechanism. You must manually accept or deny this payment from your Account Overview.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('intl: The payment is pending because you hold a non-U.S. account and do not have a withdrawal mechanism. You must manually accept or deny this payment from your Account Overview.', 'paypal-for-woocommerce');
                             break;
                         case 'multicurrency':
                         case 'multi-currency':
-                            $pending_reason = __('Multi-currency: You do not have a balance in the currency sent, and you do not have your Payment Receiving Preferences set to automatically convert and accept this payment. You must manually accept or deny this payment.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('Multi-currency: You do not have a balance in the currency sent, and you do not have your Payment Receiving Preferences set to automatically convert and accept this payment. You must manually accept or deny this payment.', 'paypal-for-woocommerce');
                             break;
                         case 'order':
-                            $pending_reason = __('Order: The payment is pending because it is part of an order that has been authorized but not settled.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('Order: The payment is pending because it is part of an order that has been authorized but not settled.', 'paypal-for-woocommerce');
                             break;
                         case 'paymentreview':
-                            $pending_reason = __('Payment Review: The payment is pending while it is being reviewed by PayPal for risk.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('Payment Review: The payment is pending while it is being reviewed by PayPal for risk.', 'paypal-for-woocommerce');
                             break;
                         case 'unilateral':
-                            $pending_reason = __('Unilateral: The payment is pending because it was made to an email address that is not yet registered or confirmed.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('Unilateral: The payment is pending because it was made to an email address that is not yet registered or confirmed.', 'paypal-for-woocommerce');
                             break;
                         case 'verify':
-                            $pending_reason = __('Verify: The payment is pending because you are not yet verified. You must verify your account before you can accept this payment.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('Verify: The payment is pending because you are not yet verified. You must verify your account before you can accept this payment.', 'paypal-for-woocommerce');
                             break;
                         case 'other':
-                            $pending_reason = __('Other: For more information, contact PayPal customer service.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('Other: For more information, contact PayPal customer service.', 'paypal-for-woocommerce');
                             break;
                         case 'none':
                         default:
-                            $pending_reason = __('No pending reason provided.', 'paypal-for-woocommerce');
+                            $pending_reason_text = __('No pending reason provided.', 'paypal-for-woocommerce');
                             break;
                     }
-                    $order->add_order_note(sprintf(__('Payment via Express Checkout Pending. PayPal reason: %s.', 'paypal-for-woocommerce'), $pending_reason));
-                    $order->update_status('on-hold');
-                    if ( $old_wc ) {
-                        if ( ! get_post_meta( $orderid, '_order_stock_reduced', true ) ) {
-                            $order->reduce_order_stock();
-                        } 
+                    $order->add_order_note(sprintf(__('Payment via Express Checkout Pending. PayPal reason: %s.', 'paypal-for-woocommerce'), $pending_reason_text));
+                    if ( strtolower($pending_reason) == 'authorization' && $this->pending_authorization_order_status == 'Processing' ) {
+                        $order->payment_complete($transaction_id);
                     } else {
-                        wc_maybe_reduce_stock_levels( $orderid );
+                        $order->update_status('on-hold');
+                        if ( $old_wc ) {
+                            if ( ! get_post_meta( $orderid, '_order_stock_reduced', true ) ) {
+                                $order->reduce_order_stock();
+                            } 
+                        } else {
+                            wc_maybe_reduce_stock_levels( $orderid );
+                        }
                     }
                     break;
                 case 'denied' :

@@ -86,6 +86,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
         $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
         $this->show_on_minicart = $this->get_option('show_on_minicart', 'yes');
+        $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
         if ($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl');
             if (isset($this->notifyurl) && !empty($this->notifyurl)) {
@@ -225,6 +226,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         </script>
         <?php } ?>
         <script type="text/javascript">
+            jQuery('#woocommerce_paypal_express_payment_action').change(function () {
+                if ( this.value === 'Authorization' ) {
+                    jQuery('#woocommerce_paypal_express_pending_authorization_order_status').closest('tr').show();
+                } else {
+                    jQuery('#woocommerce_paypal_express_pending_authorization_order_status').closest('tr').hide();
+                }
+            }).change();
             var display_disable_terms = "<?php echo $display_disable_terms; ?>";
             <?php if ($guest_checkout === 'no') { ?>
                         jQuery("#woocommerce_paypal_express_skip_final_review").prop("checked", false);
@@ -637,6 +645,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'Order' => 'Order'
                 ),
                 'default' => 'Sale',
+                'desc_tip' => true,
+            ),
+            'pending_authorization_order_status' => array(
+                'title' => __('Pending Authorization Order Status', 'paypal-for-woocommerce'),
+                'label' => __('Pending Authorization Order Status.', 'paypal-for-woocommerce'),
+                'description' => __('Pending Authorization Order Status.'),
+                'type' => 'select',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'On Hold' => 'On Hold',
+                    'Processing' => 'Processing'
+                ),
+                'default' => 'On Hold',
                 'desc_tip' => true,
             ),
             'billing_address' => array(
