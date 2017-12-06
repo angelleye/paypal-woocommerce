@@ -90,6 +90,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->credit_card_month_field = $this->get_option('credit_card_month_field', 'names');
         $this->credit_card_year_field = $this->get_option('credit_card_year_field', 'four_digit');
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
+        $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
 
         /* 2.0.0 */
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
@@ -276,6 +277,19 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 ),
                 'default' => 'Sale'
             ),
+            'pending_authorization_order_status' => array(
+                'title' => __('Pending Authorization Order Status', 'paypal-for-woocommerce'),
+                'label' => __('Pending Authorization Order Status.', 'paypal-for-woocommerce'),
+                'description' => __('Pending Authorization Order Status.'),
+                'type' => 'select',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'On Hold' => 'On Hold',
+                    'Processing' => 'Processing'
+                ),
+                'default' => 'On Hold',
+                'desc_tip' => true,
+            ),
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
                 'type' => 'text',
@@ -372,6 +386,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             <?php $this->generate_settings_html(); ?>
         </table>
         <script type="text/javascript">
+            jQuery('#woocommerce_paypal_advanced_transtype').change(function () {
+                if ( this.value === 'Authorization' ) {
+                    jQuery('#woocommerce_paypal_pro_payflow_pending_authorization_order_status').closest('tr').show();
+                } else {
+                    jQuery('#woocommerce_paypal_pro_payflow_pending_authorization_order_status').closest('tr').hide();
+                }
+            }).change();
             jQuery('#woocommerce_paypal_pro_payflow_testmode').change(function () {
                 var sandbox = jQuery('#woocommerce_paypal_pro_payflow_sandbox_paypal_partner, #woocommerce_paypal_pro_payflow_sandbox_paypal_vendor, #woocommerce_paypal_pro_payflow_sandbox_paypal_user, #woocommerce_paypal_pro_payflow_sandbox_paypal_password').closest('tr'),
                 production = jQuery('#woocommerce_paypal_pro_payflow_paypal_partner, #woocommerce_paypal_pro_payflow_paypal_vendor, #woocommerce_paypal_pro_payflow_paypal_user, #woocommerce_paypal_pro_payflow_paypal_password').closest('tr');
@@ -753,16 +774,20 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         wc_maybe_reduce_stock_levels($order_id);
                     }
                 } else {
-                    if ($this->payment_action == "Authorization") {
-                        $order->update_status('on-hold');
-                        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-                        if ($old_wc) {
-                            if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
-                                $order->reduce_order_stock();
-                            }
+                    if ($this->payment_action == "Authorization" ) {
+                        if( $this->pending_authorization_order_status == 'Processing' ) {
+                            $order->payment_complete($PayPalResult['PNREF']);
                         } else {
-                            wc_maybe_reduce_stock_levels($order_id);
+                            $order->update_status('on-hold');
+                            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                            if ($old_wc) {
+                                if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
+                                    $order->reduce_order_stock();
+                                }
+                            } else {
+                                wc_maybe_reduce_stock_levels($order_id);
+                            }
                         }
                         if ($old_wc) {
                             update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
