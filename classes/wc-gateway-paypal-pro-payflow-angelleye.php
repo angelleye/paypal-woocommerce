@@ -386,7 +386,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             <?php $this->generate_settings_html(); ?>
         </table>
         <script type="text/javascript">
-            jQuery('#woocommerce_paypal_advanced_transtype').change(function () {
+            jQuery('#woocommerce_paypal_pro_payflow_payment_action').change(function () {
                 if ( this.value === 'Authorization' ) {
                     jQuery('#woocommerce_paypal_pro_payflow_pending_authorization_order_status').closest('tr').show();
                 } else {
