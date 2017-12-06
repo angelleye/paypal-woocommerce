@@ -910,6 +910,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 if($this->show_on_cart == 'yes') {
                     return true;
                 }
+            } 
+            if($this->show_on_cart == 'yes' && $this->show_on_minicart == 'yes') {
+                return true;
             }
         } else {
             return false;
