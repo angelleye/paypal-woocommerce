@@ -16,5 +16,6 @@ if (is_set_class) {
     jQuery('#express_checkout_button_text').hide();
     jQuery('.woocommerce-message').hide();
     jQuery('#checkout_paypal_message').hide();
+    jQuery('.express-checkout.express-hide-terms .wc-terms-and-conditions input[type="checkbox"]').prop('checked', true);
 }
 });

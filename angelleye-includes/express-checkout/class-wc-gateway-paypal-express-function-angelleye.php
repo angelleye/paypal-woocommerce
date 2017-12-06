@@ -70,7 +70,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                     'result' => 'success',
                     'redirect' => $this->ec_get_checkout_url('set_express_checkout'),
                 );
-                if (isset($_POST['terms']) && wc_get_page_id('terms') > 0) {
+                if ((isset($_POST['terms']) || isset($_POST['legal'])) && wc_get_page_id('terms') > 0) {
                     WC()->session->set( 'paypal_express_terms', 1);
                 }
                 if (is_ajax()) {

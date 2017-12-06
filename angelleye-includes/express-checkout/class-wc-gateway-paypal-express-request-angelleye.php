@@ -1230,7 +1230,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if (wc_get_page_id('terms') > 0 && apply_filters('woocommerce_checkout_show_terms', true)) {
             if ($this->disable_term) {
                 return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
-            } elseif (isset($_POST['terms']) && $_POST['terms'] == 'on') {
+            } elseif ( (isset($_POST['terms']) || isset ($_POST['legal'])) && $_POST['terms'] == 'on') {
                 return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
             } elseif ( !empty($paypal_express_terms) && $paypal_express_terms == true ) {
                 return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
