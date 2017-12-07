@@ -14,6 +14,7 @@ use PayPal\Api\Payment;
 use PayPal\Api\Transaction;
 use PayPal\Api\Refund;
 use PayPal\Api\Sale;
+use PayPal\Api\Authorization;
 
 class PayPal_Rest_API_Utility {
 
@@ -31,6 +32,7 @@ class PayPal_Rest_API_Utility {
     public $payment_method;
     public $gateway;
     public $CreditCardToken;
+    public $payment_action;
 
     public function __construct($gateway) {
         $this->gateway = $gateway;
@@ -53,7 +55,7 @@ class PayPal_Rest_API_Utility {
             $this->rest_client_id = $this->gateway->get_option('rest_client_id', false);
             $this->rest_secret_id = $this->gateway->get_option('rest_secret_id', false);
         }
-        
+        $this->payment_action = $this->gateway->get_option('payment_action', 'sale');
         if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
             $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
         } else {
@@ -104,8 +106,13 @@ class PayPal_Rest_API_Utility {
             if ($this->payment->state == "approved") {
                 $transactions = $this->payment->getTransactions();
                 $relatedResources = $transactions[0]->getRelatedResources();
-                $sale = $relatedResources[0]->getSale();
-                $saleId = $sale->getId();
+                if( $this->payment_action == 'sale' ) {
+                    $Sale = $relatedResources[0]->getSale();
+                    $transaction_id = $Sale->getId();
+                } else {
+                    $Authorization = $relatedResources[0]->getAuthorization();
+                    $transaction_id = $Authorization->getId();
+                }
                 do_action('before_save_payment_token', $order_id);
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
                 if(AngellEYE_Utility::angelleye_is_save_payment_token($this->gateway, $order_id)) {
@@ -140,7 +147,7 @@ class PayPal_Rest_API_Utility {
 
                     }
                 }
-                $order->payment_complete($saleId);
+                $order->payment_complete($transaction_id);
                 $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
                 if ($old_wc) {
                     update_post_meta($order->id, 'is_sandbox', $is_sandbox);
@@ -316,7 +323,7 @@ class PayPal_Rest_API_Utility {
      */
     public function set_payment() {
         $this->payment = new Payment();
-        $this->payment->setIntent("sale");
+        $this->payment->setIntent($this->payment_action);
         $this->payment->setPayer($this->payer);
         $this->payment->setTransactions(array($this->transaction));
     }
@@ -525,7 +532,12 @@ class PayPal_Rest_API_Utility {
 
             $reason = html_entity_decode($reason, ENT_NOQUOTES, 'UTF-8');
         }
-        $sale = Sale::get($order->get_transaction_id(), $this->getAuth());
+        if( $this->payment_action == 'sale' ) {
+            $Transaction = Sale::get($order->get_transaction_id(), $this->getAuth());
+        } else {
+            $Transaction = Authorization::get($order->get_transaction_id(), $this->getAuth());
+        }
+        
         $this->amount = new Amount();
         $this->amount->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
         $this->amount->setTotal($this->number_format($amount, $order));
@@ -533,18 +545,34 @@ class PayPal_Rest_API_Utility {
         $refund->setAmount($this->amount);
         try {
             $this->add_log('Refund Request: ' . print_r($refund, true));
-            $refundedSale = $sale->refund($refund, $this->getAuth());
-            if ($refundedSale->state == 'completed') {
-                $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
-                update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
-                if (isset($reason) && !empty($reason)) {
-                    $order->add_order_note('Reason for Refund :' . $reason);
+            if( $this->payment_action == 'sale' ) {
+                $refundedSale = $Transaction->refund($refund, $this->getAuth());
+                if ($refundedSale->state == 'completed') {
+                    $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
+                    update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
+                    if (isset($reason) && !empty($reason)) {
+                        $order->add_order_note('Reason for Refund :' . $reason);
+                    }
+                    $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
+                    if (!$max_remaining_refund > 0) {
+                        $order->update_status('refunded');
+                    }
+                    return true;
                 }
-                $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
-                if (!$max_remaining_refund > 0) {
-                    $order->update_status('refunded');
+            } else {
+                $refundedSale = $Transaction->void($this->getAuth());
+                if ($refundedSale->state == 'voided') {
+                    $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
+                    update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
+                    if (isset($reason) && !empty($reason)) {
+                        $order->add_order_note('Reason for Refund :' . $reason);
+                    }
+                    $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
+                    if (!$max_remaining_refund > 0) {
+                        $order->update_status('refunded');
+                    }
+                    return true;
                 }
-                return true;
             }
         } catch (PayPal\Exception\PayPalConnectionException $ex) {
             $this->add_log($ex->getData());
@@ -811,11 +839,16 @@ class PayPal_Rest_API_Utility {
         if ($this->payment->state == "approved") {
             $transactions = $this->payment->getTransactions();
             $relatedResources = $transactions[0]->getRelatedResources();
-            $sale = $relatedResources[0]->getSale();
-            $saleId = $sale->getId();
+            if( $this->payment_action == 'sale' ) {
+                $Sale = $relatedResources[0]->getSale();
+                $transaction_id = $Sale->getId();
+            } else {
+                $Authorization = $relatedResources[0]->getAuthorization();
+                $transaction_id = $Authorization->getId();
+            }
             do_action('before_save_payment_token', $order_id);
             $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
-            $order->payment_complete($saleId);
+            $order->payment_complete($transaction_id);
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
             if ($old_wc) {
                 update_post_meta($order->id, 'is_sandbox', $is_sandbox);
