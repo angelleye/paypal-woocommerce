@@ -870,9 +870,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 try {
                     $result = Braintree_Transaction::void($order->get_transaction_id());
                     if ($result->success) {
+                        $braintree_refunded_id = array();
+                        $braintree_refunded_id[$result->transaction->id] = $result->transaction->id;
                         $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
                         update_post_meta($order_id, 'Refund Transaction ID', $result->transaction->id);   
-                        update_post_meta($order_id, 'braintree_refunded_id', $result->transaction->id);
+                        update_post_meta($order_id, 'braintree_refunded_id', $braintree_refunded_id);
                         return true;
                     } else {
                         $error = '';
@@ -888,13 +890,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     return new WP_Error(404, $e->getMessage());
                 }
             } else {
-                return new WP_Error(404, 'braintree_refund-error', __('Oops, you cannot partially void this order. Please use the full order amount.', 'paypal-for-woocommerce'));
+                return new WP_Error(404, __('Oops, you cannot partially void this order. Please use the full order amount.', 'paypal-for-woocommerce'));
             }
         } elseif (isset($transaction->status) && ($transaction->status == 'settled' || $transaction->status == 'settling')) {
             try {
                 $result = Braintree_Transaction::refund($order->get_transaction_id(), $amount);
                 if ($result->success) {
-                    update_post_meta($order_id, 'braintree_refunded_id', $result->transaction->id);
+                    $braintree_refunded_id = array();
+                    $braintree_refunded_id[$result->transaction->id] = $result->transaction->id;
+                    update_post_meta($order_id, 'braintree_refunded_id', $braintree_refunded_id);
                     $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
                     return true;
                 } else {
@@ -1835,18 +1839,24 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     }
                 } 
                 if( !empty($transaction->status) && $transaction->status == 'voided' ) {
-                    $default_args = array(
-                        'amount' => $transaction->amount,
-                        'reason' => 'Data Synchronization from Braintree',
-                        'order_id' => $order_id,
-                        'refund_id' => 0,
-                        'line_items' => array(),
-                        'refund_payment' => false,
-                        'restock_items' => false,
-                    );
-                    wc_create_refund($default_args);
-                    $order->add_order_note(sprintf(__('Voided %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($transaction->amount, 2, '.', '')), $transaction->id));
-                    update_post_meta($order_id, 'braintree_refunded_id', $transaction->id);
+                    $braintree_refunded_id = get_post_meta($order_id, 'braintree_refunded_id', true);
+                    if (empty($braintree_refunded_id)) {
+                        $braintree_refunded_id = array();
+                    }
+                    if (!in_array($transaction->id, $braintree_refunded_id)) {
+                        $default_args = array(
+                            'amount' => $transaction->amount,
+                            'reason' => 'Data Synchronization from Braintree',
+                            'order_id' => $order_id,
+                            'refund_id' => 0,
+                            'line_items' => array(),
+                            'refund_payment' => false,
+                            'restock_items' => false,
+                        );
+                        wc_create_refund($default_args);
+                        $order->add_order_note(sprintf(__('Voided %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($transaction->amount, 2, '.', '')), $transaction->id));
+                        update_post_meta($order_id, 'braintree_refunded_id', $transaction->id);
+                    }
                 }
             }
         }
