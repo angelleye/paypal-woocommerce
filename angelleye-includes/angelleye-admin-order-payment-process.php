@@ -31,6 +31,9 @@ class AngellEYE_Admin_Order_Payment_Process {
             #angelleye_admin_order_reference_order {
                 display: none;
             }
+            label[for="angelleye_admin_order_reference_order-hide"] {
+                display: none;
+             }
         </style>
         <?php
     }
@@ -41,6 +44,9 @@ class AngellEYE_Admin_Order_Payment_Process {
             #angelleye_admin_order_reference_order {
                 display: block;
             }
+            label[for="angelleye_admin_order_reference_order-hide"] {
+                display: inline;
+             }
         </style>
         <?php
     }
@@ -51,6 +57,9 @@ class AngellEYE_Admin_Order_Payment_Process {
             #angelleye_admin_order_payment_process {
                 display: none;
             }
+            label[for="angelleye_admin_order_payment_process-hide"] {
+                display: none;
+             }
         </style>
         <?php
     }
@@ -61,6 +70,9 @@ class AngellEYE_Admin_Order_Payment_Process {
             #angelleye_admin_order_payment_process {
                 display: block;
             }
+            label[for="angelleye_admin_order_payment_process-hide"] {
+                display: inline;
+             }
         </style>
         <?php
     }
