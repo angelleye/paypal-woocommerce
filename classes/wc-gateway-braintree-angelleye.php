@@ -872,6 +872,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     if ($result->success) {
                         $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
                         update_post_meta($order_id, 'Refund Transaction ID', $result->transaction->id);   
+                        update_post_meta($order_id, 'braintree_refunded_id', $result->transaction->id);
                         return true;
                     } else {
                         $error = '';
@@ -893,6 +894,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             try {
                 $result = Braintree_Transaction::refund($order->get_transaction_id(), $amount);
                 if ($result->success) {
+                    update_post_meta($order_id, 'braintree_refunded_id', $result->transaction->id);
                     $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
                     return true;
                 } else {
