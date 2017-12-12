@@ -557,7 +557,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'origid' => '', // Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.
                 'custref' => '', //
                 'custcode' => '', //
-                'custip' => $this->get_user_ip(), //
+                'custip' => AngellEYE_Utility::get_user_ip(), //
                 'invnum' => $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#", "", $order->get_order_number())), //
                 'ponum' => '', //
                 'starttime' => '', // For inquiry transaction when using CUSTREF to specify the transaction.
@@ -832,7 +832,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $message .= __('Error Code: ', 'paypal-for-woocommerce') . $PayPalResult['RESULT'] . "\n";
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
                     $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
-                    $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+                    $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
                     $message .= __('Order ID: ') . $order_id . "\n";
                     $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
                     $message .= __('Customer Email: ') . $billing_email . "\n";
@@ -915,18 +915,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $form_html .= '</select>';
         $form_html .= '</p>';
         return $form_html;
-    }
-
-    /**
-     * Get user's IP address
-     */
-    function get_user_ip() {
-        if(class_exists('WC_Geolocation')) {
-            return WC_Geolocation::get_ip_address();
-        } else {
-            return !empty($_SERVER['HTTP_X_FORWARD_FOR']) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
-        }
-        
     }
 
     /**
@@ -1204,7 +1192,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'origid' => '',
             'custref' => '',
             'custcode' => '',
-            'custip' => $this->get_user_ip(),
+            'custip' => AngellEYE_Utility::get_user_ip(),
             'invnum' => '',
             'ponum' => '',
             'starttime' => '',
@@ -1312,7 +1300,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'origid' => '', // Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.
                 'custref' => '', //
                 'custcode' => '', //
-                'custip' => $this->get_user_ip(), //
+                'custip' => AngellEYE_Utility::get_user_ip(), //
                 'invnum' => $this->invoice_id_prefix . str_replace("#", "", $order->get_order_number()), //
                 'ponum' => '', //
                 'starttime' => '', // For inquiry transaction when using CUSTREF to specify the transaction.
@@ -1449,7 +1437,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $message .= __('Error Code: ', 'paypal-for-woocommerce') . $PayPalResult['RESULT'] . "\n";
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
                     $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
-                    $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+                    $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
                     $message .= __('Order ID: ') . $order_id . "\n";
                     $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
                     $message .= __('Customer Email: ') . $billing_email . "\n";
@@ -1517,7 +1505,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'origid' => $token_id,
                     'custref' => '',
                     'custcode' => '',
-                    'custip' => $this->get_user_ip(),
+                    'custip' => AngellEYE_Utility::get_user_ip(),
                     'invnum' => '',
                     'ponum' => '',
                     'starttime' => '',
@@ -1534,7 +1522,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $message .= __('Error Code: ', 'paypal-for-woocommerce') . $PayPalResult['RESULT'] . "\n";
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
                     $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
-                    $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+                    $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
                     $message = apply_filters('ae_pppf_error_email_message', $message);
                     $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Payments Pro (PayFlow) Error Notification");
                     wp_mail($admin_email, $subject, $message);

@@ -1402,7 +1402,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     'origid' => $token_id,
                     'custref' => '',
                     'custcode' => '',
-                    'custip' => $this->get_user_ip(),
+                    'custip' => AngellEYE_Utility::get_user_ip(),
                     'invnum' => '',
                     'ponum' => '',
                     'starttime' => '',
@@ -1419,7 +1419,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     $message .= __('Error Code: ', 'paypal-for-woocommerce') . $PayPalResult['RESULT'] . "\n";
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
                     $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
-                    $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+                    $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
                     $message = apply_filters('ae_pppf_error_email_message', $message);
                     $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Payments Pro (PayFlow) Error Notification");
                     wp_mail($admin_email, $subject, $message);

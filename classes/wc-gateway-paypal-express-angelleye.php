@@ -1370,7 +1370,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
             $message .= __('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg . "\n";
             $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
-            $message .= __('User IP: ', 'paypal-for-woocommerce') . $this->get_user_ip() . "\n";
+            $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
             $error_email_notify_mes = apply_filters('ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
             $subject = "PayPal Express Checkout Error Notification";
             $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', $subject);
@@ -1418,14 +1418,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
                 self::$log->log($level, $message, array('source' => $source));
             }
-        }
-    }
-
-    public function get_user_ip() {
-        if(class_exists('WC_Geolocation')) {
-            return WC_Geolocation::get_ip_address();
-        } else {
-            return (isset($_SERVER['HTTP_X_FORWARD_FOR']) && !empty($_SERVER['HTTP_X_FORWARD_FOR'])) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
         }
     }
 
