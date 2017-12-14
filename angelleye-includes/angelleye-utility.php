@@ -757,17 +757,16 @@ class AngellEYE_Utility {
             $order = wc_get_order($order_id);
         }
         $payment_action = '';
-        if ($current->id == 'paypal_express' || $current->id == 'paypal_pro') {
+        if ($current->id == 'paypal_express' || $current->id == 'paypal_pro' || $current->id == 'paypal_pro_payflow') {
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
             if ($payment_action == 'Sale' || $payment_action == 'DoCapture' || empty($payment_action)) {
                 return $boolean;
-            } else {
-                return false;
-            }
+            } 
         } else {
             return $boolean;
         }
+        return $boolean;
     }
 
     public function angelleye_write_request_response_api_log($PayPalResult) {
