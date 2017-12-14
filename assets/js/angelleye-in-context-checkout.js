@@ -71,7 +71,8 @@
                         'qty': $('.quantity .qty').val(),
                         'attributes': $('.variations_form').length ? get_attributes().data : [],
                         'wc-paypal_express-new-payment-method': $("#wc-paypal_express-new-payment-method").is(':checked'),
-                        'is_cc': $(event.target).hasClass('ec_checkout_page_button_type_pc')
+                        'is_cc': $(event.target).hasClass('ec_checkout_page_button_type_pc'),
+                        'product_id' : $("input[name=add-to-cart]").val()
                     };
                     $.ajax({
                         type: 'POST',
