@@ -159,7 +159,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         </table> 
         <?php if( $this->is_us == true ) { ?>
         <div id="more-info-popup" style="display:none;">
-          <?php echo '<img width="886" height="549" src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woocommerce-marketing-solutions-more-info.jpg"/>'; ?>
+          <iframe width="889" height="554" src="https://www.youtube.com/embed/hXWFn8_jUDc" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
         </div>
         
         <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
