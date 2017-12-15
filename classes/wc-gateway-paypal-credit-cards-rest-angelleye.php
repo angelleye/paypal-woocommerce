@@ -85,7 +85,13 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             <h3><?php echo (!empty($this->method_title) ) ? $this->method_title : __('Settings', 'paypal-for-woocommerce'); ?></h3>
             <?php echo (!empty($this->method_description) ) ? wpautop($this->method_description) : ''; ?>
             <table class="form-table">
-                <?php $this->generate_settings_html(); ?>
+            <?php 
+                if(version_compare(WC_VERSION,'2.6','<')) {
+                    AngellEYE_Utility::woo_compatibility_notice();    
+                } else {
+                   $this->generate_settings_html();
+                }
+            ?>
             </table>
             <script type="text/javascript">
                 jQuery('#woocommerce_paypal_credit_card_rest_testmode').change(function () {

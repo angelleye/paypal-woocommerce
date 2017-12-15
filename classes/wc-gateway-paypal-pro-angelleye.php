@@ -445,9 +445,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     
     
     public function admin_options() {
+        echo '<h2>' . esc_html( $this->get_method_title() ) . '</h2>';
+        echo wp_kses_post( wpautop( $this->get_method_description() ) );
         ?>
         <table class="form-table">
-            <?php $this->generate_settings_html(); ?>
+            <?php 
+            if(version_compare(WC_VERSION,'2.6','<')) {
+                AngellEYE_Utility::woo_compatibility_notice();    
+            } else {
+               $this->generate_settings_html(); 
+            }
+            ?>
         </table>
         <script type="text/javascript">
             jQuery('#woocommerce_paypal_pro_payment_action').change(function () {

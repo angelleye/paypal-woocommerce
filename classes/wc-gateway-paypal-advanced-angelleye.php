@@ -680,19 +680,20 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         <p><?php _e('PayPal Payments Advanced uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process.', 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
             <?php
-            //if user's currency is USD
-
-            if (!in_array(get_woocommerce_currency(), array('USD', 'CAD'))) {
-                ?>
-                <div class="inline error"><p><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal does not support your store currency.', 'paypal-for-woocommerce'); ?></p></div>
-                <?php
-                return;
+            if(version_compare(WC_VERSION,'2.6','<')) {
+                AngellEYE_Utility::woo_compatibility_notice();    
             } else {
-                // Generate the HTML For the settings form.
-                $this->checks();
-                $this->generate_settings_html();
+               if (!in_array(get_woocommerce_currency(), array('USD', 'CAD'))) {
+                    ?>
+                    <div class="inline error"><p><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal does not support your store currency.', 'paypal-for-woocommerce'); ?></p></div>
+                    <?php
+                    return;
+                } else {
+                    // Generate the HTML For the settings form.
+                    $this->checks();
+                    $this->generate_settings_html();
+                }
             }
-
             wp_enqueue_script('wp-color-picker');
             wp_enqueue_style('wp-color-picker');
             ?>

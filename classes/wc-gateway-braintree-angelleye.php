@@ -88,8 +88,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         <h3><?php _e('Braintree', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <table class="form-table">
-            <?php $this->generate_settings_html(); ?>
-            <?php $this->angelleye_display_mid_ui(); ?>
+            <?php 
+            if(version_compare(WC_VERSION,'2.6','<')) {
+                AngellEYE_Utility::woo_compatibility_notice();    
+            } else {
+               $this->generate_settings_html(); 
+               $this->angelleye_display_mid_ui();
+            }
+            ?>
             <script type="text/javascript">
                 jQuery('#woocommerce_braintree_sandbox').change(function () {
                     sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id').closest('tr'),

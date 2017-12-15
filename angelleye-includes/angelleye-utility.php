@@ -1953,4 +1953,8 @@ class AngellEYE_Utility {
         
         return $ip_address;
     }
+    
+    public static function woo_compatibility_notice() {
+        echo '<div class="inline error"><p>' . __('PayPal for WooCommerce requires WooCommerce version 2.6 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce') . '</p></div>';
+    }
 }

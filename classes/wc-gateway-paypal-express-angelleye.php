@@ -135,6 +135,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function admin_options() {
+        ?>
+        <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
+        <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
+        <table class="form-table">
+             <?php 
+            if(version_compare(WC_VERSION,'2.6','<')) {
+                AngellEYE_Utility::woo_compatibility_notice();    
+            } else {
+               $this->generate_settings_html(); 
+            }
+            ?>
+        </table> 
+        <?php
         add_thickbox();
         $guest_checkout = get_option('woocommerce_enable_guest_checkout', 'yes');
         if( 'yes' === get_option( 'woocommerce_registration_generate_username' ) && 'yes' === get_option( 'woocommerce_registration_generate_password' ) ) {
@@ -152,11 +165,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
         $report_home = 'https://business.paypal.com/merchantdata/reportHome?cid='.$this->paypal_marketing_solutions_cid_production;
         ?>
-        <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
-        <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
-        <table class="form-table">
-             <?php $this->generate_settings_html(); ?>
-        </table> 
         <?php if( $this->is_us == true ) { ?>
         <div id="more-info-popup" style="display:none;">
           <iframe width="889" height="554" src="https://www.youtube.com/embed/hXWFn8_jUDc" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
