@@ -91,6 +91,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             <?php 
             if(version_compare(WC_VERSION,'2.6','<')) {
                 AngellEYE_Utility::woo_compatibility_notice();    
+            } elseif (version_compare(phpversion(), '5.4.0', '<')) {
+                echo '<div class="inline error"><p>' . __('PayPal for WooCommerce requires PHP version 5.4.0 or higher.','paypal-for-woocommerce') . '</p></div>';
             } else {
                $this->generate_settings_html(); 
                $this->angelleye_display_mid_ui();
