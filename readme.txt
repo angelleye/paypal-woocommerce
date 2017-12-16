@@ -124,6 +124,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.7 - xx.xx.2017 =
+* Feature - Adds an option for what order status should be set when an order is Authorized but has not yet been captured. ([#883](https://github.com/angelleye/paypal-woocommerce/issues/883))
 * Tweak - Ensures that Express Checkout orders with no shipping required include the billing name/email in order details. ([#831](https://github.com/angelleye/paypal-woocommerce/issues/831))
 * Tweak - Passes the shipping address to PayPal when u sing REST direct credit cards. ([#775](https://github.com/angelleye/paypal-woocommerce/issues/775))
 * Tweak - Adjusts PayPal Credit button alignment. ([#766](https://github.com/angelleye/paypal-woocommerce/issues/766))
