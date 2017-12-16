@@ -127,6 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Ensures that Express Checkout orders with no shipping required include the billing name/email in order details. ([#831](https://github.com/angelleye/paypal-woocommerce/issues/831))
 * Tweak - Passes the shipping address to PayPal when u sing REST direct credit cards. ([#775](https://github.com/angelleye/paypal-woocommerce/issues/775))
 * Tweak - Adjusts PayPal Credit button alignment. ([#766](https://github.com/angelleye/paypal-woocommerce/issues/766))
+* Tweak - Adjustments to allow / disallow gateways based on the PHP version used on the site. ([#640](https://github.com/angelleye/paypal-woocommerce/issues/640))
 
 = 1.4.6.8 - 11.29.2017 =
 * Tweak - Adjustments to PayPal Marketing Solutions activation request. ([#948](https://github.com/angelleye/paypal-woocommerce/issues/948))
