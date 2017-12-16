@@ -658,7 +658,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'pending_authorization_order_status' => array(
                 'title' => __('Pending Authorization Order Status', 'paypal-for-woocommerce'),
                 'label' => __('Pending Authorization Order Status.', 'paypal-for-woocommerce'),
-                'description' => __('Pending Authorization Order Status.'),
+                'description' => __('Set the order status you would like to use when an order has been authorized but has not yet been captured.'),
                 'type' => 'select',
                 'class'    => 'wc-enhanced-select',
                 'options' => array(
