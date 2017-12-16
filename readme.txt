@@ -142,6 +142,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves PHP errors that sometimes occur with PayPal REST credit card settings. ([#943](https://github.com/angelleye/paypal-woocommerce/issues/943))
 * Fix - Resolves PHP errors that occur if the order does not contain WC product data (ie. custom data store). ([#945](https://github.com/angelleye/paypal-woocommerce/issues/945))
 * Fix - Better error handling if PayPal Marketing Solutions API call results in an empty response. ([#946](https://github.com/angelleye/paypal-woocommerce/issues/946))
+* Fix - Resolves incorrect labels on AVS/CVV2 details provided in email notifications. ([#952](https://github.com/angelleye/paypal-woocommerce/issues/952))
 
 = 1.4.6.8 - 11.29.2017 =
 * Tweak - Adjustments to PayPal Marketing Solutions activation request. ([#948](https://github.com/angelleye/paypal-woocommerce/issues/948))
