@@ -144,6 +144,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Better error handling if PayPal Marketing Solutions API call results in an empty response. ([#946](https://github.com/angelleye/paypal-woocommerce/issues/946))
 * Fix - Resolves incorrect labels on AVS/CVV2 details provided in email notifications. ([#952](https://github.com/angelleye/paypal-woocommerce/issues/952))
 * Fix - Resolves an issue where sometimes the Express Checkout In Context functionality was not working from the WC mini cart. ([#953](https://github.com/angelleye/paypal-woocommerce/issues/953))
+* Fix - Resolves an issue where a duplicate refund call would be triggered if an order page that was already refunded was refreshed. ([#955](https://github.com/angelleye/paypal-woocommerce/issues/955))
 
 = 1.4.6.8 - 11.29.2017 =
 * Tweak - Adjustments to PayPal Marketing Solutions activation request. ([#948](https://github.com/angelleye/paypal-woocommerce/issues/948))
