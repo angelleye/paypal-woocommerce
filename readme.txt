@@ -135,7 +135,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue with PayPal Advanced where orders could fail when additional fees are added via other plugins. ([#767](https://github.com/angelleye/paypal-woocommerce/issues/767))
 * Fix - Resolves an issue with the Terms and Conditions acceptance from the Express Checkout order review page. ([#916](https://github.com/angelleye/paypal-woocommerce/issues/916))
 * Fix - Resolves an issue where the Express Checkout button would sometimes get hidden if a coupon code was entered which makes the order free. ([#924](https://github.com/angelleye/paypal-woocommerce/issues/924))
-* Fix - Resolves a layout conflict with Express Checkout Marketing Solutions and Woo Pay for Payments. [(#935](https://github.com/angelleye/paypal-woocommerce/issues/935))
+* Fix - Resolves a layout conflict with Express Checkout Marketing Solutions and Woo Pay for Payments. ([#935](https://github.com/angelleye/paypal-woocommerce/issues/935))
+* Fix - Resolves an issue with Express Checkout In context based on button type and custom text settings. ([#938](https://github.com/angelleye/paypal-woocommerce/issues/938))
 
 = 1.4.6.8 - 11.29.2017 =
 * Tweak - Adjustments to PayPal Marketing Solutions activation request. ([#948](https://github.com/angelleye/paypal-woocommerce/issues/948))
