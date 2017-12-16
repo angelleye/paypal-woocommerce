@@ -123,6 +123,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.7 - xx.xx.2017 =
+* Tweak - Ensures that Express Checkout orders with no shipping required include the billing name/email in order details. ([#831](https://github.com/angelleye/paypal-woocommerce/issues/831))
+
 = 1.4.6.8 - 11.29.2017 =
 * Tweak - Adjustments to PayPal Marketing Solutions activation request. ([#948](https://github.com/angelleye/paypal-woocommerce/issues/948))
 
