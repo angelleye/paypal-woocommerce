@@ -146,6 +146,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue where sometimes the Express Checkout In Context functionality was not working from the WC mini cart. ([#953](https://github.com/angelleye/paypal-woocommerce/issues/953))
 * Fix - Resolves an issue where a duplicate refund call would be triggered if an order page that was already refunded was refreshed. ([#955](https://github.com/angelleye/paypal-woocommerce/issues/955))
 * Fix - Resolves an issue with refunds related to our Multi-Account premium extension plugin. ([#956](https://github.com/angelleye/paypal-woocommerce/issues/956))
+* Fix - Adjustments to ensure IPv4 is always used instead of IPv6 in API requests. ([#957](https://github.com/angelleye/paypal-woocommerce/issues/957))
 
 = 1.4.6.8 - 11.29.2017 =
 * Tweak - Adjustments to PayPal Marketing Solutions activation request. ([#948](https://github.com/angelleye/paypal-woocommerce/issues/948))
