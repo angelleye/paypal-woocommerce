@@ -131,6 +131,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjustments to allow / disallow gateways based on the PHP version used on the site. ([#640](https://github.com/angelleye/paypal-woocommerce/issues/640))
 * Tweak - Adjustments to the way reference transaction options are displayed on the WC order page based on screen options that are enabled. ([#867](https://github.com/angelleye/paypal-woocommerce/issues/867))
 * Tweak - Adjustments to default .pot language file. ([#877](https://github.com/angelleye/paypal-woocommerce/issues/877))
+* Fix - Resolves an issue with PayPal Advanced where orders could fail when additional fees are added via other plugins. ([#767](https://github.com/angelleye/paypal-woocommerce/issues/767))
 
 = 1.4.6.8 - 11.29.2017 =
 * Tweak - Adjustments to PayPal Marketing Solutions activation request. ([#948](https://github.com/angelleye/paypal-woocommerce/issues/948))
