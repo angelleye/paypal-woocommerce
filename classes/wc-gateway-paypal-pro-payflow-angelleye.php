@@ -91,6 +91,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->credit_card_year_field = $this->get_option('credit_card_year_field', 'four_digit');
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
+        $this->default_order_status = $this->get_option('default_order_status', 'Processing');
 
         /* 2.0.0 */
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
@@ -290,6 +291,19 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'default' => 'On Hold',
                 'desc_tip' => true,
             ),
+            'default_order_status' => array(
+                'title' => __('Default Order Status', 'paypal-for-woocommerce'),
+                'label' => __('Default Order Status.', 'paypal-for-woocommerce'),
+                'description' => __('Set the default order status for completed PayFlow credit card transactions.'),
+                'type' => 'select',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'Processing' => 'Processing',
+                    'Completed' => 'Completed'
+                ),
+                'default' => 'Processing',
+                'desc_tip' => true,
+            ),
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
                 'type' => 'text',
@@ -397,8 +411,10 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             jQuery('#woocommerce_paypal_pro_payflow_payment_action').change(function () {
                 if ( this.value === 'Authorization' ) {
                     jQuery('#woocommerce_paypal_pro_payflow_pending_authorization_order_status').closest('tr').show();
+                    jQuery('#woocommerce_paypal_pro_payflow_default_order_status').closest('tr').hide();
                 } else {
                     jQuery('#woocommerce_paypal_pro_payflow_pending_authorization_order_status').closest('tr').hide();
+                    jQuery('#woocommerce_paypal_pro_payflow_default_order_status').closest('tr').show();
                 }
             }).change();
             jQuery('#woocommerce_paypal_pro_payflow_testmode').change(function () {
@@ -808,7 +824,16 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $angelleye_utility = new AngellEYE_Utility(null, null);
                         $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
                     } else {
-                        $order->payment_complete($PayPalResult['PNREF']);
+                        if( $this->default_order_status == 'Completed' ) {
+                            $order->update_status('completed');
+                            if ($old_wc) {
+                               update_post_meta($order_id, '_transaction_id', $PayPalResult['PNREF']);
+                            } else {
+                               update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['PNREF']);
+                            }
+                        } else {
+                            $order->payment_complete($PayPalResult['PNREF']);
+                        }
                     }
                 }
 
@@ -1419,7 +1444,18 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $cvv2_response_order_note .= "\n";
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
-                $order->payment_complete($PayPalResult['PNREF']);
+                if( $this->default_order_status == 'Completed' ) {
+                     $order->update_status('completed');
+                     if ($old_wc) {
+                        update_post_meta($order_id, '_transaction_id', $PayPalResult['PNREF']);
+                    } else {
+                        update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['PNREF']);
+                    }
+                } else {
+                    $order->payment_complete($PayPalResult['PNREF']);
+                }
+                
+                
                 if ($this->payment_action == "Authorization") {
                     if ($old_wc) {
                         update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
