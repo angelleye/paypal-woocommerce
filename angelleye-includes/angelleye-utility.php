@@ -1957,4 +1957,21 @@ class AngellEYE_Utility {
     public static function woo_compatibility_notice() {
         echo '<div class="inline error"><p>' . __('PayPal for WooCommerce requires WooCommerce version 2.6 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce') . '</p></div>';
     }
+    
+    public static function is_display_angelleye_paypal_pro_payflow_reference_transaction_notice($paypal_pro_payflow) {
+        $is_display = false;
+        if(get_user_meta(get_current_user_id(), 'ignore_paypal_pro_payflow_reference_transaction_notice')) {
+            return $is_display;
+        }
+        if( $paypal_pro_payflow->enabled == 'no' ) {
+             return $is_display;
+        }
+        if (class_exists('WC_Subscriptions_Order')) {
+            return $is_display = true;
+        }
+        if( $paypal_pro_payflow->enabled == 'yes' && (!empty($_GET['page']) && $_GET['page'] == 'wc-settings' ) && (!empty($_GET['tab']) && $_GET['tab'] == 'checkout' ) && $paypal_pro_payflow->enable_tokenized_payments == 'yes' ) {
+             return $is_display = true;
+        }
+        return $is_display;
+    }
 }

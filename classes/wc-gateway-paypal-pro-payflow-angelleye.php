@@ -125,6 +125,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 
         $this->fraud_error_codes = array('125', '126', '127', '128');
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
+        add_action('admin_notices', array($this, 'angelleye_paypal_pro_payflow_reference_transaction_notice'));
     }
 
     public function add_log($message, $level = 'info') {
@@ -1684,6 +1685,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
     public function is_subscription($order_id) {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
+    }
+    
+    public function angelleye_paypal_pro_payflow_reference_transaction_notice() {
+        if(class_exists('AngellEYE_Utility')) {
+            if (AngellEYE_Utility::is_display_angelleye_paypal_pro_payflow_reference_transaction_notice($this) == true) {
+                echo '<div class="error"><p>' . sprintf(__("%s Require Reference Transactions enable. Read more how to <a target='_blank' href='https://www.angelleye.com/paypal-woocommerce-subscriptions/'>enable</a> Reference Transactions in PayPal account. <a href=%s>%s</a>", 'paypal-for-woocommerce'), $this->method_title, '"' . esc_url(add_query_arg("ignore_paypal_pro_payflow_reference_transaction_notice", 0)) . '"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+            }
+        }
     }
 
 }
