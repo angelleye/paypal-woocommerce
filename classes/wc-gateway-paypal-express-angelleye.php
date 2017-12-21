@@ -884,6 +884,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }
     }
+    
+    public function save_payment_method_checkbox() {
+        printf(
+                '<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+                        <input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" value="true" style="width:auto;" />
+                        <label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
+                </p>',
+                esc_attr( $this->id ),
+                apply_filters( 'cc_form_label_save_to_account', __( 'Save payment method to my account.', 'woocommerce' ), $this->id)
+        );
+    }
 
     public function process_subscription_payment($order_id) {
         $order = wc_get_order($order_id);

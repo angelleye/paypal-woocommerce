@@ -533,6 +533,17 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
+    public function save_payment_method_checkbox() {
+        printf(
+                '<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+                        <input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" value="true" style="width:auto;" />
+                        <label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
+                </p>',
+                esc_attr( $this->id ),
+                apply_filters( 'cc_form_label_save_to_account', __( 'Save payment method to my account.', 'woocommerce' ), $this->id)
+        );
+    }
+    
     private function get_posted_card() {
         $card_number = isset($_POST['braintree-card-number']) ? wc_clean($_POST['braintree-card-number']) : '';
         $card_cvc = isset($_POST['braintree-card-cvc']) ? wc_clean($_POST['braintree-card-cvc']) : '';

@@ -911,6 +911,17 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         }
         do_action('payment_fields_saved_payment_methods', $this);
     }
+    
+    public function save_payment_method_checkbox() {
+        printf(
+                '<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+                        <input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" value="true" style="width:auto;" />
+                        <label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
+                </p>',
+                esc_attr( $this->id ),
+                apply_filters( 'cc_form_label_save_to_account', __( 'Save payment method to my account.', 'woocommerce' ), $this->id)
+        );
+    }
 
     public function paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox() {
         $form_html = "";

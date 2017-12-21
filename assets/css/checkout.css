@@ -94,9 +94,6 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 .angelleyeOverlay {
     display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute;
 }
-.woocommerce .payment_methods li .payment_method_paypal_pro_payflow label, .woocommerce .payment_methods li .payment_method_paypal_pro label {
-    display: block !important;
-}
 .woocommerce .payment_methods li .payment_method_paypal_pro_payflow select, .woocommerce .payment_methods li .payment_method_paypal_pro select {
     display: inline-block !important;
 }
