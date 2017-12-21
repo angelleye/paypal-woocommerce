@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
-Tested up to: 4.9
-Stable tag: 1.4.6.8.1
+Tested up to: 4.9.1
+Stable tag: 1.4.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -123,7 +123,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.7 - xx.xx.2017 =
+= 1.4.7 - 12.21.2017 =
 * Feature - WooCommerce 3.3 compatibility based on beta release. ([#961](https://github.com/angelleye/paypal-woocommerce/issues/961))
 * Feature - Adds an option for what order status should be set when an order is Authorized but has not yet been captured. ([#883](https://github.com/angelleye/paypal-woocommerce/issues/883))
 * Feature - Adds Authorization functionality to PayPal REST credit cards. ([#813](https://github.com/angelleye/paypal-woocommerce/issues/813))
