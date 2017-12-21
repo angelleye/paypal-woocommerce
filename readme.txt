@@ -127,6 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - WooCommerce 3.3 compatibility based on beta release. ([#961](https://github.com/angelleye/paypal-woocommerce/issues/961))
 * Feature - Adds an option for what order status should be set when an order is Authorized but has not yet been captured. ([#883](https://github.com/angelleye/paypal-woocommerce/issues/883))
 * Feature - Adds Authorization functionality to PayPal REST credit cards. ([#813](https://github.com/angelleye/paypal-woocommerce/issues/813))
+* Feature - Adds an option for PayPal Pro 2.0 (PayFlow) to set the default WooCommerce order status for orders where payment is completed. ([#965](https://github.com/angelleye/paypal-woocommerce/issues/965))
 * Tweak - Adds a video about Marketing Solutions under the More Info button in that section of Express Checkout settings. ([#964](https://github.com/angelleye/paypal-woocommerce/issues/964))
 * Tweak - Ensures that Express Checkout orders with no shipping required include the billing name/email in order details. ([#831](https://github.com/angelleye/paypal-woocommerce/issues/831))
 * Tweak - Passes the shipping address to PayPal when u sing REST direct credit cards. ([#775](https://github.com/angelleye/paypal-woocommerce/issues/775))
