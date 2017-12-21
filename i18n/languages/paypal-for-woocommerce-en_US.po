@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the PayPal for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: PayPal for WooCommerce 1.4.6.8.1\n"
+"Project-Id-Version: PayPal for WooCommerce 1.4.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/paypal-for-"
 "woocommerce\n"
-"POT-Creation-Date: 2017-12-21 10:36+0530\n"
+"POT-Creation-Date: 2017-12-21 18:41+0530\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-12-21 11:30+0530\n"
+"PO-Revision-Date: 2017-12-21 18:47+0530\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.4\n"
 "Last-Translator: \n"
@@ -109,16 +109,16 @@ msgstr "PayPal DoCapture API call failed. "
 #: angelleye-includes/angelleye-utility.php:1748
 #: angelleye-includes/angelleye-utility.php:1794
 #: angelleye-includes/angelleye-utility.php:1854
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1421
-#: classes/wc-gateway-paypal-express-angelleye.php:1369
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1432
 #: classes/wc-gateway-paypal-express-angelleye.php:1380
-#: classes/wc-gateway-paypal-pro-angelleye.php:1346
-#: classes/wc-gateway-paypal-pro-angelleye.php:1598
+#: classes/wc-gateway-paypal-express-angelleye.php:1391
+#: classes/wc-gateway-paypal-pro-angelleye.php:1357
 #: classes/wc-gateway-paypal-pro-angelleye.php:1609
-#: classes/wc-gateway-paypal-pro-angelleye.php:1982
+#: classes/wc-gateway-paypal-pro-angelleye.php:1620
+#: classes/wc-gateway-paypal-pro-angelleye.php:1993
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:867
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1483
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1568
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1494
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1579
 #: paypal-for-woocommerce.php:571
 msgid "Detailed Error Message: "
 msgstr "Detailed Error Message: "
@@ -131,10 +131,10 @@ msgstr "Detailed Error Message: "
 #: angelleye-includes/angelleye-utility.php:721
 #: angelleye-includes/angelleye-utility.php:732
 #: angelleye-includes/angelleye-utility.php:739
-#: classes/wc-gateway-paypal-express-angelleye.php:1370
-#: classes/wc-gateway-paypal-express-angelleye.php:1379
-#: classes/wc-gateway-paypal-pro-angelleye.php:1599
-#: classes/wc-gateway-paypal-pro-angelleye.php:1608
+#: classes/wc-gateway-paypal-express-angelleye.php:1381
+#: classes/wc-gateway-paypal-express-angelleye.php:1390
+#: classes/wc-gateway-paypal-pro-angelleye.php:1610
+#: classes/wc-gateway-paypal-pro-angelleye.php:1619
 msgid "Short Error Message: "
 msgstr "Short Error Message: "
 
@@ -149,16 +149,16 @@ msgstr "Short Error Message: "
 #: angelleye-includes/angelleye-utility.php:1749
 #: angelleye-includes/angelleye-utility.php:1795
 #: angelleye-includes/angelleye-utility.php:1855
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1420
-#: classes/wc-gateway-paypal-express-angelleye.php:1371
-#: classes/wc-gateway-paypal-express-angelleye.php:1377
-#: classes/wc-gateway-paypal-pro-angelleye.php:1345
-#: classes/wc-gateway-paypal-pro-angelleye.php:1600
-#: classes/wc-gateway-paypal-pro-angelleye.php:1606
-#: classes/wc-gateway-paypal-pro-angelleye.php:1981
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1431
+#: classes/wc-gateway-paypal-express-angelleye.php:1382
+#: classes/wc-gateway-paypal-express-angelleye.php:1388
+#: classes/wc-gateway-paypal-pro-angelleye.php:1356
+#: classes/wc-gateway-paypal-pro-angelleye.php:1611
+#: classes/wc-gateway-paypal-pro-angelleye.php:1617
+#: classes/wc-gateway-paypal-pro-angelleye.php:1992
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:866
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1482
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1567
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1493
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1578
 msgid "Error Code: "
 msgstr "Error Code: "
 
@@ -168,10 +168,10 @@ msgstr "Error Code: "
 #: angelleye-includes/angelleye-utility.php:676
 #: angelleye-includes/angelleye-utility.php:714
 #: angelleye-includes/angelleye-utility.php:720
-#: classes/wc-gateway-paypal-express-angelleye.php:1372
-#: classes/wc-gateway-paypal-express-angelleye.php:1378
-#: classes/wc-gateway-paypal-pro-angelleye.php:1601
-#: classes/wc-gateway-paypal-pro-angelleye.php:1607
+#: classes/wc-gateway-paypal-express-angelleye.php:1383
+#: classes/wc-gateway-paypal-express-angelleye.php:1389
+#: classes/wc-gateway-paypal-pro-angelleye.php:1612
+#: classes/wc-gateway-paypal-pro-angelleye.php:1618
 msgid "Error Severity Code: "
 msgstr "Error Severity Code: "
 
@@ -625,7 +625,7 @@ msgstr ""
 "before using it on your site. <a href=%s>%s</a>"
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye.php:707
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1693
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1704
 #: paypal-for-woocommerce.php:219 paypal-for-woocommerce.php:226
 #: paypal-for-woocommerce.php:230 paypal-for-woocommerce.php:234
 #: paypal-for-woocommerce.php:238 paypal-for-woocommerce.php:253
@@ -666,7 +666,7 @@ msgid "Payment Completed via Express Checkout"
 msgstr "Payment Completed via Express Checkout"
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:756
-#: classes/wc-gateway-paypal-pro-angelleye.php:2137
+#: classes/wc-gateway-paypal-pro-angelleye.php:2148
 msgid ""
 "Address: The payment is pending because your customer did not include a "
 "confirmed shipping address and your Payment Receiving Preferences is set "
@@ -679,7 +679,7 @@ msgstr ""
 "change your preference, go to the Preferences section of your Profile."
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:759
-#: classes/wc-gateway-paypal-pro-angelleye.php:2140
+#: classes/wc-gateway-paypal-pro-angelleye.php:2151
 msgid ""
 "Authorization: The payment is pending because it has been authorized but not "
 "settled. You must capture the funds first."
@@ -688,7 +688,7 @@ msgstr ""
 "settled. You must capture the funds first."
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:762
-#: classes/wc-gateway-paypal-pro-angelleye.php:2143
+#: classes/wc-gateway-paypal-pro-angelleye.php:2154
 msgid ""
 "eCheck: The payment is pending because it was made by an eCheck that has not "
 "yet cleared."
@@ -697,7 +697,7 @@ msgstr ""
 "yet cleared."
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:765
-#: classes/wc-gateway-paypal-pro-angelleye.php:2146
+#: classes/wc-gateway-paypal-pro-angelleye.php:2157
 msgid ""
 "intl: The payment is pending because you hold a non-U.S. account and do not "
 "have a withdrawal mechanism. You must manually accept or deny this payment "
@@ -708,7 +708,7 @@ msgstr ""
 "from your Account Overview."
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:769
-#: classes/wc-gateway-paypal-pro-angelleye.php:2150
+#: classes/wc-gateway-paypal-pro-angelleye.php:2161
 msgid ""
 "Multi-currency: You do not have a balance in the currency sent, and you do "
 "not have your Payment Receiving Preferences set to automatically convert and "
@@ -719,7 +719,7 @@ msgstr ""
 "accept this payment. You must manually accept or deny this payment."
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:772
-#: classes/wc-gateway-paypal-pro-angelleye.php:2153
+#: classes/wc-gateway-paypal-pro-angelleye.php:2164
 msgid ""
 "Order: The payment is pending because it is part of an order that has been "
 "authorized but not settled."
@@ -728,7 +728,7 @@ msgstr ""
 "authorized but not settled."
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:775
-#: classes/wc-gateway-paypal-pro-angelleye.php:2156
+#: classes/wc-gateway-paypal-pro-angelleye.php:2167
 msgid ""
 "Payment Review: The payment is pending while it is being reviewed by PayPal "
 "for risk."
@@ -737,7 +737,7 @@ msgstr ""
 "for risk."
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:778
-#: classes/wc-gateway-paypal-pro-angelleye.php:2159
+#: classes/wc-gateway-paypal-pro-angelleye.php:2170
 msgid ""
 "Unilateral: The payment is pending because it was made to an email address "
 "that is not yet registered or confirmed."
@@ -746,7 +746,7 @@ msgstr ""
 "that is not yet registered or confirmed."
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:781
-#: classes/wc-gateway-paypal-pro-angelleye.php:2162
+#: classes/wc-gateway-paypal-pro-angelleye.php:2173
 msgid ""
 "Verify: The payment is pending because you are not yet verified. You must "
 "verify your account before you can accept this payment."
@@ -755,12 +755,12 @@ msgstr ""
 "verify your account before you can accept this payment."
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:784
-#: classes/wc-gateway-paypal-pro-angelleye.php:2165
+#: classes/wc-gateway-paypal-pro-angelleye.php:2176
 msgid "Other: For more information, contact PayPal customer service."
 msgstr "Other: For more information, contact PayPal customer service."
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:788
-#: classes/wc-gateway-paypal-pro-angelleye.php:2169
+#: classes/wc-gateway-paypal-pro-angelleye.php:2180
 msgid "No pending reason provided."
 msgstr "No pending reason provided."
 
@@ -801,8 +801,8 @@ msgid "Error Severity Code:"
 msgstr "Error Severity Code:"
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:896
-#: classes/wc-gateway-paypal-express-angelleye.php:1391
-#: classes/wc-gateway-paypal-pro-angelleye.php:1620
+#: classes/wc-gateway-paypal-express-angelleye.php:1402
+#: classes/wc-gateway-paypal-pro-angelleye.php:1631
 msgid "There was a problem paying with PayPal.  Please try another method."
 msgstr "There was a problem paying with PayPal.  Please try another method."
 
@@ -866,16 +866,16 @@ msgstr ""
 #: classes/wc-gateway-braintree-angelleye.php:431
 #: classes/wc-gateway-braintree-angelleye.php:436
 #: classes/wc-gateway-braintree-angelleye.php:448
-#: classes/wc-gateway-braintree-angelleye.php:702
-#: classes/wc-gateway-braintree-angelleye.php:707
-#: classes/wc-gateway-braintree-angelleye.php:712
-#: classes/wc-gateway-braintree-angelleye.php:717
-#: classes/wc-gateway-braintree-angelleye.php:722
-#: classes/wc-gateway-braintree-angelleye.php:1305
-#: classes/wc-gateway-braintree-angelleye.php:1314
-#: classes/wc-gateway-braintree-angelleye.php:1323
-#: classes/wc-gateway-braintree-angelleye.php:1332
-#: classes/wc-gateway-braintree-angelleye.php:1341
+#: classes/wc-gateway-braintree-angelleye.php:713
+#: classes/wc-gateway-braintree-angelleye.php:718
+#: classes/wc-gateway-braintree-angelleye.php:723
+#: classes/wc-gateway-braintree-angelleye.php:728
+#: classes/wc-gateway-braintree-angelleye.php:733
+#: classes/wc-gateway-braintree-angelleye.php:1316
+#: classes/wc-gateway-braintree-angelleye.php:1325
+#: classes/wc-gateway-braintree-angelleye.php:1334
+#: classes/wc-gateway-braintree-angelleye.php:1343
+#: classes/wc-gateway-braintree-angelleye.php:1352
 msgid "Error processing checkout. Please try again. "
 msgstr "Error processing checkout. Please try again. "
 
@@ -885,7 +885,7 @@ msgid "PayPal Credit Card (REST) payment completed"
 msgstr "PayPal Credit Card (REST) payment completed"
 
 #: angelleye-includes/paypal-rest-api-utility.php:483
-#: classes/wc-gateway-braintree-angelleye.php:948
+#: classes/wc-gateway-braintree-angelleye.php:959
 msgid ""
 "%s requires the %s PHP extension to function.  Contact your host or server "
 "administrator to configure and install the missing extension."
@@ -936,34 +936,34 @@ msgstr ""
 "only work in sandbox mode."
 
 #: classes/wc-gateway-braintree-angelleye.php:201
-#: classes/wc-gateway-braintree-angelleye.php:1448
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:185
-#: classes/wc-gateway-paypal-pro-angelleye.php:631
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1062
+#: classes/wc-gateway-braintree-angelleye.php:1459
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:196
+#: classes/wc-gateway-paypal-pro-angelleye.php:642
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1073
 msgid "Error processing checkout. Please try again."
 msgstr "Error processing checkout. Please try again."
 
 #: classes/wc-gateway-braintree-angelleye.php:208
 #: classes/wc-gateway-braintree-angelleye.php:214
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:192
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:198
-#: classes/wc-gateway-paypal-pro-angelleye.php:639
-#: classes/wc-gateway-paypal-pro-angelleye.php:654
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1092
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:203
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:209
+#: classes/wc-gateway-paypal-pro-angelleye.php:650
+#: classes/wc-gateway-paypal-pro-angelleye.php:665
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1103
 msgid "Card expiration date is invalid"
 msgstr "Card expiration date is invalid"
 
 #: classes/wc-gateway-braintree-angelleye.php:211
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:195
-#: classes/wc-gateway-paypal-pro-angelleye.php:644
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1085
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:206
+#: classes/wc-gateway-paypal-pro-angelleye.php:655
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1096
 msgid "Card security code is invalid (only digits are allowed)"
 msgstr "Card security code is invalid (only digits are allowed)"
 
 #: classes/wc-gateway-braintree-angelleye.php:217
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:201
-#: classes/wc-gateway-paypal-pro-angelleye.php:658
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1099
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:212
+#: classes/wc-gateway-paypal-pro-angelleye.php:669
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1110
 msgid "Card number is invalid"
 msgstr "Card number is invalid"
 
@@ -1114,8 +1114,17 @@ msgstr ""
 "Enter additional merchant account IDs if you do not want to use your "
 "Braintree account default. %1$sLearn more about merchant account IDs%2$s"
 
-#: classes/wc-gateway-braintree-angelleye.php:586
-#: classes/wc-gateway-braintree-angelleye.php:1286
+#: classes/wc-gateway-braintree-angelleye.php:543
+#: classes/wc-gateway-paypal-advanced-angelleye.php:951
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:172
+#: classes/wc-gateway-paypal-express-angelleye.php:895
+#: classes/wc-gateway-paypal-pro-angelleye.php:555
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:922
+msgid "Save payment method to my account."
+msgstr "Save payment method to my account."
+
+#: classes/wc-gateway-braintree-angelleye.php:597
+#: classes/wc-gateway-braintree-angelleye.php:1297
 msgid ""
 "Error: PayPal Powered by Braintree did not supply a payment nonce. Please "
 "try again later or use another means of payment."
@@ -1123,7 +1132,7 @@ msgstr ""
 "Error: PayPal Powered by Braintree did not supply a payment nonce. Please "
 "try again later or use another means of payment."
 
-#: classes/wc-gateway-braintree-angelleye.php:727
+#: classes/wc-gateway-braintree-angelleye.php:738
 msgid ""
 "Error: PayPal Powered by Braintree was unable to complete the transaction. "
 "Please try again later or use another means of payment."
@@ -1131,12 +1140,12 @@ msgstr ""
 "Error: PayPal Powered by Braintree was unable to complete the transaction. "
 "Please try again later or use another means of payment."
 
-#: classes/wc-gateway-braintree-angelleye.php:735
+#: classes/wc-gateway-braintree-angelleye.php:746
 msgid "Risk decision for this transaction %s, Risk ID for this transaction: %s"
 msgstr ""
 "Risk decision for this transaction %s, Risk ID for this transaction: %s"
 
-#: classes/wc-gateway-braintree-angelleye.php:739
+#: classes/wc-gateway-braintree-angelleye.php:750
 msgid ""
 "Error: PayPal Powered by Braintree was unable to complete the transaction. "
 "Please try again later or use another means of payment. Reason: %s"
@@ -1144,14 +1153,14 @@ msgstr ""
 "Error: PayPal Powered by Braintree was unable to complete the transaction. "
 "Please try again later or use another means of payment. Reason: %s"
 
-#: classes/wc-gateway-braintree-angelleye.php:819
-#: classes/wc-gateway-braintree-angelleye.php:1621
-#: classes/wc-gateway-paypal-express-angelleye.php:916
+#: classes/wc-gateway-braintree-angelleye.php:830
+#: classes/wc-gateway-braintree-angelleye.php:1632
+#: classes/wc-gateway-paypal-express-angelleye.php:927
 msgid "%s payment approved! Transaction ID: %s"
 msgstr "%s payment approved! Transaction ID: %s"
 
-#: classes/wc-gateway-braintree-angelleye.php:823
-#: classes/wc-gateway-braintree-angelleye.php:1624
+#: classes/wc-gateway-braintree-angelleye.php:834
+#: classes/wc-gateway-braintree-angelleye.php:1635
 msgid ""
 "Transaction was submitted to PayPal Braintree but not handled by WooCommerce "
 "order, transaction_id: %s, status: %s. Order was put in-hold."
@@ -1159,24 +1168,24 @@ msgstr ""
 "Transaction was submitted to PayPal Braintree but not handled by WooCommerce "
 "order, transaction_id: %s, status: %s. Order was put in-hold."
 
-#: classes/wc-gateway-braintree-angelleye.php:883
-#: classes/wc-gateway-braintree-angelleye.php:910
-#: classes/wc-gateway-braintree-angelleye.php:1843
+#: classes/wc-gateway-braintree-angelleye.php:894
+#: classes/wc-gateway-braintree-angelleye.php:921
+#: classes/wc-gateway-braintree-angelleye.php:1854
 msgid "Refunded %s - Transaction ID: %s"
 msgstr "Refunded %s - Transaction ID: %s"
 
-#: classes/wc-gateway-braintree-angelleye.php:901
+#: classes/wc-gateway-braintree-angelleye.php:912
 msgid ""
 "Oops, you cannot partially void this order. Please use the full order amount."
 msgstr ""
 "Oops, you cannot partially void this order. Please use the full order amount."
 
-#: classes/wc-gateway-braintree-angelleye.php:1069
+#: classes/wc-gateway-braintree-angelleye.php:1080
 msgid "An error occurred, please try again or try an alternate form of payment"
 msgstr ""
 "An error occurred, please try again or try an alternate form of payment"
 
-#: classes/wc-gateway-braintree-angelleye.php:1071
+#: classes/wc-gateway-braintree-angelleye.php:1082
 msgid ""
 "We cannot process your order with the payment information that you provided. "
 "Please use a different payment account or an alternate payment method."
@@ -1184,7 +1193,7 @@ msgstr ""
 "We cannot process your order with the payment information that you provided. "
 "Please use a different payment account or an alternate payment method."
 
-#: classes/wc-gateway-braintree-angelleye.php:1073
+#: classes/wc-gateway-braintree-angelleye.php:1084
 msgid ""
 "This order is being placed on hold for review. Please contact us to complete "
 "the transaction."
@@ -1192,7 +1201,7 @@ msgstr ""
 "This order is being placed on hold for review. Please contact us to complete "
 "the transaction."
 
-#: classes/wc-gateway-braintree-angelleye.php:1075
+#: classes/wc-gateway-braintree-angelleye.php:1086
 msgid ""
 "This order is being placed on hold for review due to an incorrect card "
 "verification number.  You may contact the store to complete the transaction."
@@ -1200,15 +1209,15 @@ msgstr ""
 "This order is being placed on hold for review due to an incorrect card "
 "verification number.  You may contact the store to complete the transaction."
 
-#: classes/wc-gateway-braintree-angelleye.php:1077
+#: classes/wc-gateway-braintree-angelleye.php:1088
 msgid "The card verification number is invalid, please try again."
 msgstr "The card verification number is invalid, please try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1079
+#: classes/wc-gateway-braintree-angelleye.php:1090
 msgid "Please enter your card verification number and try again."
 msgstr "Please enter your card verification number and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1081
+#: classes/wc-gateway-braintree-angelleye.php:1092
 msgid ""
 "That card type is not accepted, please use an alternate card or other form "
 "of payment."
@@ -1216,8 +1225,8 @@ msgstr ""
 "That card type is not accepted, please use an alternate card or other form "
 "of payment."
 
-#: classes/wc-gateway-braintree-angelleye.php:1083
-#: classes/wc-gateway-braintree-angelleye.php:1087
+#: classes/wc-gateway-braintree-angelleye.php:1094
+#: classes/wc-gateway-braintree-angelleye.php:1098
 msgid ""
 "The card type is invalid or does not correlate with the credit card number.  "
 "Please try again or use an alternate card or other form of payment."
@@ -1225,43 +1234,43 @@ msgstr ""
 "The card type is invalid or does not correlate with the credit card number.  "
 "Please try again or use an alternate card or other form of payment."
 
-#: classes/wc-gateway-braintree-angelleye.php:1085
+#: classes/wc-gateway-braintree-angelleye.php:1096
 msgid "Please select the card type and try again."
 msgstr "Please select the card type and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1089
+#: classes/wc-gateway-braintree-angelleye.php:1100
 msgid "The card number is invalid, please re-enter and try again."
 msgstr "The card number is invalid, please re-enter and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1091
+#: classes/wc-gateway-braintree-angelleye.php:1102
 msgid "Please enter your card number and try again."
 msgstr "Please enter your card number and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1093
+#: classes/wc-gateway-braintree-angelleye.php:1104
 msgid "The card expiration date is invalid, please re-enter and try again."
 msgstr "The card expiration date is invalid, please re-enter and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1095
+#: classes/wc-gateway-braintree-angelleye.php:1106
 msgid "The card expiration month is invalid, please re-enter and try again."
 msgstr "The card expiration month is invalid, please re-enter and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1097
+#: classes/wc-gateway-braintree-angelleye.php:1108
 msgid "The card expiration year is invalid, please re-enter and try again."
 msgstr "The card expiration year is invalid, please re-enter and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1099
+#: classes/wc-gateway-braintree-angelleye.php:1110
 msgid "Please enter your card expiration date and try again."
 msgstr "Please enter your card expiration date and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1101
+#: classes/wc-gateway-braintree-angelleye.php:1112
 msgid "The bank routing number is invalid, please re-enter and try again."
 msgstr "The bank routing number is invalid, please re-enter and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1103
+#: classes/wc-gateway-braintree-angelleye.php:1114
 msgid "The bank account number is invalid, please re-enter and try again."
 msgstr "The bank account number is invalid, please re-enter and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1105
+#: classes/wc-gateway-braintree-angelleye.php:1116
 msgid ""
 "The provided card is expired, please use an alternate card or other form of "
 "payment."
@@ -1269,7 +1278,7 @@ msgstr ""
 "The provided card is expired, please use an alternate card or other form of "
 "payment."
 
-#: classes/wc-gateway-braintree-angelleye.php:1107
+#: classes/wc-gateway-braintree-angelleye.php:1118
 msgid ""
 "The provided card was declined, please use an alternate card or other form "
 "of payment."
@@ -1277,7 +1286,7 @@ msgstr ""
 "The provided card was declined, please use an alternate card or other form "
 "of payment."
 
-#: classes/wc-gateway-braintree-angelleye.php:1109
+#: classes/wc-gateway-braintree-angelleye.php:1120
 msgid ""
 "Insufficient funds in account, please use an alternate card or other form of "
 "payment."
@@ -1285,7 +1294,7 @@ msgstr ""
 "Insufficient funds in account, please use an alternate card or other form of "
 "payment."
 
-#: classes/wc-gateway-braintree-angelleye.php:1111
+#: classes/wc-gateway-braintree-angelleye.php:1122
 msgid ""
 "The card is inactivate or not authorized for card-not-present transactions, "
 "please use an alternate card or other form of payment."
@@ -1293,7 +1302,7 @@ msgstr ""
 "The card is inactivate or not authorized for card-not-present transactions, "
 "please use an alternate card or other form of payment."
 
-#: classes/wc-gateway-braintree-angelleye.php:1113
+#: classes/wc-gateway-braintree-angelleye.php:1124
 msgid ""
 "The credit limit for the card has been reached, please use an alternate card "
 "or other form of payment."
@@ -1301,13 +1310,13 @@ msgstr ""
 "The credit limit for the card has been reached, please use an alternate card "
 "or other form of payment."
 
-#: classes/wc-gateway-braintree-angelleye.php:1115
+#: classes/wc-gateway-braintree-angelleye.php:1126
 msgid ""
 "The card verification number does not match. Please re-enter and try again."
 msgstr ""
 "The card verification number does not match. Please re-enter and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1117
+#: classes/wc-gateway-braintree-angelleye.php:1128
 msgid ""
 "The provided address does not match the billing address for cardholder. "
 "Please verify the address and try again."
@@ -1315,55 +1324,55 @@ msgstr ""
 "The provided address does not match the billing address for cardholder. "
 "Please verify the address and try again."
 
-#: classes/wc-gateway-braintree-angelleye.php:1210
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:289
-#: classes/wc-gateway-paypal-pro-angelleye.php:1537
-#: classes/wc-gateway-paypal-pro-angelleye.php:1554
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1116
+#: classes/wc-gateway-braintree-angelleye.php:1221
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:300
+#: classes/wc-gateway-paypal-pro-angelleye.php:1548
+#: classes/wc-gateway-paypal-pro-angelleye.php:1565
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1127
 msgid "Card number"
 msgstr "Card number"
 
-#: classes/wc-gateway-braintree-angelleye.php:1214
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:293
+#: classes/wc-gateway-braintree-angelleye.php:1225
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:304
 msgid "Expiry (MM/YY)"
 msgstr "Expiry (MM/YY)"
 
-#: classes/wc-gateway-braintree-angelleye.php:1215
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:294
-#: classes/wc-gateway-paypal-pro-angelleye.php:1547
+#: classes/wc-gateway-braintree-angelleye.php:1226
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:305
+#: classes/wc-gateway-paypal-pro-angelleye.php:1558
 msgid "MM / YY"
 msgstr "MM / YY"
 
-#: classes/wc-gateway-braintree-angelleye.php:1218
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:297
+#: classes/wc-gateway-braintree-angelleye.php:1229
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:308
 msgid "Card code"
 msgstr "Card code"
 
-#: classes/wc-gateway-braintree-angelleye.php:1219
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:298
-#: classes/wc-gateway-paypal-pro-angelleye.php:1543
-#: classes/wc-gateway-paypal-pro-angelleye.php:1560
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1122
+#: classes/wc-gateway-braintree-angelleye.php:1230
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:309
+#: classes/wc-gateway-paypal-pro-angelleye.php:1554
+#: classes/wc-gateway-paypal-pro-angelleye.php:1571
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1133
 msgid "CVC"
 msgstr "CVC"
 
-#: classes/wc-gateway-braintree-angelleye.php:1865
+#: classes/wc-gateway-braintree-angelleye.php:1876
 msgid "Voided %s - Transaction ID: %s"
 msgstr "Voided %s - Transaction ID: %s"
 
-#: classes/wc-gateway-braintree-angelleye.php:1884
+#: classes/wc-gateway-braintree-angelleye.php:1895
 msgid "Add merchant account ID for %s"
 msgstr "Add merchant account ID for %s"
 
-#: classes/wc-gateway-braintree-angelleye.php:1922
+#: classes/wc-gateway-braintree-angelleye.php:1933
 msgid "Merchant Account ID (%s)"
 msgstr "Merchant Account ID (%s)"
 
-#: classes/wc-gateway-braintree-angelleye.php:1932
+#: classes/wc-gateway-braintree-angelleye.php:1943
 msgid "Enter merchant account ID"
 msgstr "Enter merchant account ID"
 
-#: classes/wc-gateway-braintree-angelleye.php:1933
+#: classes/wc-gateway-braintree-angelleye.php:1944
 msgid "Remove this merchant account ID"
 msgstr "Remove this merchant account ID"
 
@@ -1404,16 +1413,16 @@ msgstr ""
 "Paypal Advanced error: Please enter your PayPal Advanced Account Password."
 
 #: classes/wc-gateway-paypal-advanced-angelleye.php:191
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1078
-#: classes/wc-gateway-paypal-pro-angelleye.php:1370
-#: classes/wc-gateway-paypal-pro-angelleye.php:1997
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1089
+#: classes/wc-gateway-paypal-pro-angelleye.php:1381
+#: classes/wc-gateway-paypal-pro-angelleye.php:2008
 msgid "There was a problem connecting to the payment gateway."
 msgstr "There was a problem connecting to the payment gateway."
 
 #: classes/wc-gateway-paypal-advanced-angelleye.php:194
 #: classes/wc-gateway-paypal-advanced-angelleye.php:614
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1081
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1326
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1092
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1337
 msgid "Empty response."
 msgstr "Empty response."
 
@@ -1445,15 +1454,15 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-advanced-angelleye.php:274
 #: classes/wc-gateway-paypal-advanced-angelleye.php:278
-#: classes/wc-gateway-paypal-advanced-angelleye.php:978
-#: classes/wc-gateway-paypal-advanced-angelleye.php:980
+#: classes/wc-gateway-paypal-advanced-angelleye.php:989
+#: classes/wc-gateway-paypal-advanced-angelleye.php:991
 msgid "Payment completed for the  (Order: %s)"
 msgstr "Payment completed for the  (Order: %s)"
 
 #: classes/wc-gateway-paypal-advanced-angelleye.php:301
 #: classes/wc-gateway-paypal-advanced-angelleye.php:634
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1019
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1338
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1030
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1349
 msgid "Error:"
 msgstr "Error:"
 
@@ -1708,32 +1717,32 @@ msgstr ""
 msgid "Log PayPal events, inside <code>%s</code>"
 msgstr "Log PayPal events, inside <code>%s</code>"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1008
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1019
 msgid "Secured Token generated successfully for the order %s"
 msgstr "Secured Token generated successfully for the order %s"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1044
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1055
 msgid "Partial refund is not supported"
 msgstr "Partial refund is not supported"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1089
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1100
 msgid "Response of the refund transaction: %s"
 msgstr "Response of the refund transaction: %s"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1093
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1104
 msgid "Successfully Refunded - Refund Transaction ID: %s"
 msgstr "Successfully Refunded - Refund Transaction ID: %s"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1097
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1098
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1108
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1109
 msgid "Refund Failed - Refund Transaction ID: %s, Error Msg: %s"
 msgstr "Refund Failed - Refund Transaction ID: %s, Error Msg: %s"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1125
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1136
 msgid "Browser Info: %s"
 msgstr "Browser Info: %s"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1131
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1142
 msgid ""
 "Show payment form(IFRAME) for the order %s as it is configured to use Layout "
 "C"
@@ -1741,16 +1750,16 @@ msgstr ""
 "Show payment form(IFRAME) for the order %s as it is configured to use Layout "
 "C"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1261
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1272
 msgid "Order %s"
 msgstr "Order %s"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1296
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1307
 msgid "Shipping via %s"
 msgstr "Shipping via %s"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1418
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1565
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1429
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1576
 msgid ""
 "PayPal Reference Transactions are not enabled on your account, some "
 "subscription management features are not enabled"
@@ -1758,21 +1767,21 @@ msgstr ""
 "PayPal Reference Transactions are not enabled on your account, some "
 "subscription management features are not enabled"
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1419
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1430
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:865
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1481
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1566
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1492
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1577
 msgid "PayFlow API call failed."
 msgstr "PayFlow API call failed."
 
-#: classes/wc-gateway-paypal-advanced-angelleye.php:1423
-#: classes/wc-gateway-paypal-express-angelleye.php:1381
-#: classes/wc-gateway-paypal-pro-angelleye.php:1347
-#: classes/wc-gateway-paypal-pro-angelleye.php:1610
-#: classes/wc-gateway-paypal-pro-angelleye.php:1983
+#: classes/wc-gateway-paypal-advanced-angelleye.php:1434
+#: classes/wc-gateway-paypal-express-angelleye.php:1392
+#: classes/wc-gateway-paypal-pro-angelleye.php:1358
+#: classes/wc-gateway-paypal-pro-angelleye.php:1621
+#: classes/wc-gateway-paypal-pro-angelleye.php:1994
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:869
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1485
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1570
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1496
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1581
 msgid "User IP: "
 msgstr "User IP: "
 
@@ -1898,13 +1907,13 @@ msgstr "Live API User Name"
 
 #: classes/wc-gateway-paypal-express-angelleye.php:429
 msgid ""
-"Get your live account API credentials from your PayPal account profile under "
-"the API Access section <br />or by using <a target=\"_blank\" href=\"https://"
-"www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run\">this tool</a>."
+"Get your live account API credentials from your PayPal account profile <br /"
+">or by using <a target=\"_blank\" href=\"https://www.paypal.com/us/cgi-bin/"
+"webscr?cmd=_login-api-run\">this tool</a>."
 msgstr ""
-"Get your live account API credentials from your PayPal account profile under "
-"the API Access section <br />or by using <a target=\"_blank\" href=\"https://"
-"www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run\">this tool</a>."
+"Get your live account API credentials from your PayPal account profile <br /"
+">or by using <a target=\"_blank\" href=\"https://www.paypal.com/us/cgi-bin/"
+"webscr?cmd=_login-api-run\">this tool</a>."
 
 #: classes/wc-gateway-paypal-express-angelleye.php:433
 #: classes/wc-gateway-paypal-pro-angelleye.php:257
@@ -2553,7 +2562,7 @@ msgstr ""
 msgid "Create a new billing agreement"
 msgstr "Create a new billing agreement"
 
-#: classes/wc-gateway-paypal-express-angelleye.php:1067
+#: classes/wc-gateway-paypal-express-angelleye.php:1078
 msgid ""
 "your order amount is zero, We were unable to process your order, please try "
 "again."
@@ -2696,30 +2705,30 @@ msgstr ""
 "For testing purposes you can use the card number 4916311462114485 with any "
 "CVC and a valid expiration date."
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:551
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:918
+#: classes/wc-gateway-paypal-pro-angelleye.php:562
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:929
 msgid "Expiration Date"
 msgstr "Expiration Date"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:553
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:920
+#: classes/wc-gateway-paypal-pro-angelleye.php:564
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:931
 msgid "Month"
 msgstr "Month"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:557
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:924
+#: classes/wc-gateway-paypal-pro-angelleye.php:568
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:935
 msgctxt "Month Names"
 msgid "F"
 msgstr "F"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:569
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:941
+#: classes/wc-gateway-paypal-pro-angelleye.php:580
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:952
 msgid "Year"
 msgstr "Year"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:664
+#: classes/wc-gateway-paypal-pro-angelleye.php:675
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:475
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1157
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1168
 msgid ""
 "Your processor is unable to process the Card Type in the currency requested. "
 "Please try another card type"
@@ -2727,93 +2736,93 @@ msgstr ""
 "Your processor is unable to process the Card Type in the currency requested. "
 "Please try another card type"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:776
+#: classes/wc-gateway-paypal-pro-angelleye.php:787
 msgid "Error in 3D secure authentication: "
 msgstr "Error in 3D secure authentication: "
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:790
+#: classes/wc-gateway-paypal-pro-angelleye.php:801
 msgid ""
 "Authentication unavailable. Please try a different payment method or card."
 msgstr ""
 "Authentication unavailable. Please try a different payment method or card."
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:880
+#: classes/wc-gateway-paypal-pro-angelleye.php:891
 msgid "3D Secure error: No liability shift"
 msgstr "3D Secure error: No liability shift"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:881
+#: classes/wc-gateway-paypal-pro-angelleye.php:892
 msgid ""
 "Authentication unavailable.  Please try a different payment method or card."
 msgstr ""
 "Authentication unavailable.  Please try a different payment method or card."
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:910
+#: classes/wc-gateway-paypal-pro-angelleye.php:921
 msgid "3D Secure error: %s"
 msgstr "3D Secure error: %s"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:911
+#: classes/wc-gateway-paypal-pro-angelleye.php:922
 msgid "Payer Authentication failed. Please try a different payment method."
 msgstr "Payer Authentication failed. Please try a different payment method."
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:944
+#: classes/wc-gateway-paypal-pro-angelleye.php:955
 msgid ""
 "Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>"
 msgstr ""
 "Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1190
-#: classes/wc-gateway-paypal-pro-angelleye.php:1930
+#: classes/wc-gateway-paypal-pro-angelleye.php:1201
+#: classes/wc-gateway-paypal-pro-angelleye.php:1941
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:684
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1405
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1416
 msgid "Empty PayPal response."
 msgstr "Empty PayPal response."
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1196
+#: classes/wc-gateway-paypal-pro-angelleye.php:1207
 msgid "PayPal Pro (Transaction ID: %s, Correlation ID: %s)"
 msgstr "PayPal Pro (Transaction ID: %s, Correlation ID: %s)"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1215
-#: classes/wc-gateway-paypal-pro-angelleye.php:1937
+#: classes/wc-gateway-paypal-pro-angelleye.php:1226
+#: classes/wc-gateway-paypal-pro-angelleye.php:1948
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:723
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1434
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1445
 msgid "Address Verification Result"
 msgstr "Address Verification Result"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1232
-#: classes/wc-gateway-paypal-pro-angelleye.php:1944
+#: classes/wc-gateway-paypal-pro-angelleye.php:1243
+#: classes/wc-gateway-paypal-pro-angelleye.php:1955
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:743
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1444
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1455
 msgid "Card Security Code Result"
 msgstr "Card Security Code Result"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1344
-#: classes/wc-gateway-paypal-pro-angelleye.php:1980
+#: classes/wc-gateway-paypal-pro-angelleye.php:1355
+#: classes/wc-gateway-paypal-pro-angelleye.php:1991
 msgid "DoDirectPayment API call failed."
 msgstr "DoDirectPayment API call failed."
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1348
-#: classes/wc-gateway-paypal-pro-angelleye.php:1984
+#: classes/wc-gateway-paypal-pro-angelleye.php:1359
+#: classes/wc-gateway-paypal-pro-angelleye.php:1995
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:870
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1486
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1497
 msgid "Order ID: "
 msgstr "Order ID: "
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1349
-#: classes/wc-gateway-paypal-pro-angelleye.php:1985
+#: classes/wc-gateway-paypal-pro-angelleye.php:1360
+#: classes/wc-gateway-paypal-pro-angelleye.php:1996
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:871
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1487
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1498
 msgid "Customer Name: "
 msgstr "Customer Name: "
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1350
-#: classes/wc-gateway-paypal-pro-angelleye.php:1986
+#: classes/wc-gateway-paypal-pro-angelleye.php:1361
+#: classes/wc-gateway-paypal-pro-angelleye.php:1997
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:872
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1488
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1499
 msgid "Customer Email: "
 msgstr "Customer Email: "
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1362
-#: classes/wc-gateway-paypal-pro-angelleye.php:1992
+#: classes/wc-gateway-paypal-pro-angelleye.php:1373
+#: classes/wc-gateway-paypal-pro-angelleye.php:2003
 msgid ""
 "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to "
 "an error: %s"
@@ -2821,88 +2830,88 @@ msgstr ""
 "PayPal Pro payment failed (Correlation ID: %s). Payment was rejected due to "
 "an error: %s"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1368
-#: classes/wc-gateway-paypal-pro-angelleye.php:1371
-#: classes/wc-gateway-paypal-pro-angelleye.php:1995
-#: classes/wc-gateway-paypal-pro-angelleye.php:1998
+#: classes/wc-gateway-paypal-pro-angelleye.php:1379
+#: classes/wc-gateway-paypal-pro-angelleye.php:1382
+#: classes/wc-gateway-paypal-pro-angelleye.php:2006
+#: classes/wc-gateway-paypal-pro-angelleye.php:2009
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:855
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:857
 msgid "Payment error:"
 msgstr "Payment error:"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1498
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1134
+#: classes/wc-gateway-paypal-pro-angelleye.php:1509
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1145
 msgid "Cardholder First Name"
 msgstr "Cardholder First Name"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1499
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1135
+#: classes/wc-gateway-paypal-pro-angelleye.php:1510
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1146
 msgid "First Name"
 msgstr "First Name"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1502
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1138
+#: classes/wc-gateway-paypal-pro-angelleye.php:1513
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1149
 msgid "Cardholder Last Name"
 msgstr "Cardholder Last Name"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1503
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1139
+#: classes/wc-gateway-paypal-pro-angelleye.php:1514
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1150
 msgid "Last Name"
 msgstr "Last Name"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1542
-#: classes/wc-gateway-paypal-pro-angelleye.php:1559
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1121
+#: classes/wc-gateway-paypal-pro-angelleye.php:1553
+#: classes/wc-gateway-paypal-pro-angelleye.php:1570
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1132
 msgid "Card Security Code"
 msgstr "Card Security Code"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1546
+#: classes/wc-gateway-paypal-pro-angelleye.php:1557
 msgid "Start Date (MM/YY)"
 msgstr "Start Date (MM/YY)"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1732
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1641
+#: classes/wc-gateway-paypal-pro-angelleye.php:1743
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1652
 msgid "Address Verification Details"
 msgstr "Address Verification Details"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1736
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1645
+#: classes/wc-gateway-paypal-pro-angelleye.php:1747
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1656
 msgid "AVS Response Code"
 msgstr "AVS Response Code"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1740
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1649
+#: classes/wc-gateway-paypal-pro-angelleye.php:1751
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1660
 msgid "AVS Response Message"
 msgstr "AVS Response Message"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1755
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1663
+#: classes/wc-gateway-paypal-pro-angelleye.php:1766
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1674
 msgid "Card Security Code Details"
 msgstr "Card Security Code Details"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1759
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1667
+#: classes/wc-gateway-paypal-pro-angelleye.php:1770
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1678
 msgid "CVV2 Response Code"
 msgstr "CVV2 Response Code"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1763
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1671
+#: classes/wc-gateway-paypal-pro-angelleye.php:1774
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1682
 msgid "CVV2 Response Message"
 msgstr "CVV2 Response Message"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:1934
+#: classes/wc-gateway-paypal-pro-angelleye.php:1945
 msgid "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
 msgstr "PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:2128
+#: classes/wc-gateway-paypal-pro-angelleye.php:2139
 msgid "Payment Completed via PayPal Pro"
 msgstr "Payment Completed via PayPal Pro"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:2172
+#: classes/wc-gateway-paypal-pro-angelleye.php:2183
 msgid "Payment via PayPal Pro Pending. PayPal reason: %s"
 msgstr "Payment via PayPal Pro Pending. PayPal reason: %s"
 
-#: classes/wc-gateway-paypal-pro-angelleye.php:2190
+#: classes/wc-gateway-paypal-pro-angelleye.php:2201
 msgid "Payment %s via PayPal Pro."
 msgstr "Payment %s via PayPal Pro."
 
@@ -3019,22 +3028,22 @@ msgid "PayPal Pro payment completed (PNREF: %s)"
 msgstr "PayPal Pro payment completed (PNREF: %s)"
 
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:725
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1436
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1447
 msgid "Address Match: %s"
 msgstr "Address Match: %s"
 
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:727
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1438
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1449
 msgid "Postal Match: %s"
 msgstr "Postal Match: %s"
 
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:745
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1446
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1457
 msgid "CVV2 Match: %s"
 msgstr "CVV2 Match: %s"
 
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:851
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1478
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1489
 msgid "PayPal Pro payment failed. Payment was rejected due to an error: "
 msgstr "PayPal Pro payment failed. Payment was rejected due to an error: "
 
@@ -3046,7 +3055,7 @@ msgstr ""
 "For testing purposes you can use the card number 4111111111111111 with any "
 "CVC and a valid expiration date."
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1241
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1252
 msgid ""
 "The payment was flagged by a fraud filter, please check your PayPal Manager "
 "account to review and accept or deny the payment."
@@ -3054,25 +3063,25 @@ msgstr ""
 "The payment was flagged by a fraud filter, please check your PayPal Manager "
 "account to review and accept or deny the payment."
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1416
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1427
 msgid "PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)"
 msgstr "PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)"
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1418
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1429
 msgid "PayPal Pro Payflow payment completed (PNREF: %s)"
 msgstr "PayPal Pro Payflow payment completed (PNREF: %s)"
 
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1693
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1704
 msgid ""
-"%s Require Reference Transactions enable. Read more how to <a "
-"target='_blank' href='https://www.angelleye.com/paypal-woocommerce-"
-"subscriptions/'>enable</a> Reference Transactions in PayPal account. <a href="
-"%s>%s</a>"
+"If using %s with Woo Token Payments (including the use of Woo Subscriptions) "
+"you will need to <a target='_blank' href='https://www.angelleye.com/paypal-"
+"woocommerce-subscriptions/'>enable Reference Transactions</a> in your PayPal/"
+"PayFlow Manager. | <a href=%s>%s</a>"
 msgstr ""
-"%s Require Reference Transactions enable. Read more how to <a "
-"target='_blank' href='https://www.angelleye.com/paypal-woocommerce-"
-"subscriptions/'>enable</a> Reference Transactions in PayPal account. <a href="
-"%s>%s</a>"
+"If using %s with Woo Token Payments (including the use of Woo Subscriptions) "
+"you will need to <a target='_blank' href='https://www.angelleye.com/paypal-"
+"woocommerce-subscriptions/'>enable Reference Transactions</a> in your PayPal/"
+"PayFlow Manager. | <a href=%s>%s</a>"
 
 #: paypal-for-woocommerce.php:158
 msgid "Docs"
