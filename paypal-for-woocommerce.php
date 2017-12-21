@@ -41,6 +41,9 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
 if (!defined('VERSION_PFW')) {
     define('VERSION_PFW', '1.4.6.8.1');
 }
+if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
+    define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
+}
 
 /**
  * Set global parameters
@@ -73,7 +76,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public $customer_id = '';
         public function __construct()
         {
-            
+            add_action('init', array($this, 'load_plugin_textdomain'));
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
             if( is_admin() ) {
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-admin-order-payment-process.php';
@@ -265,7 +268,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         //init function
         public function init(){
             if (!class_exists("WC_Payment_Gateway")) return;
-            load_plugin_textdomain( 'paypal-for-woocommerce', FALSE, basename( dirname( __FILE__ ) ) . '/i18n/languages/' );
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye.php';
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-payflow-angelleye.php' );
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-advanced-angelleye.php');
@@ -1065,9 +1067,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
              exit();
         }
         
-        
-        
-        
+        public function load_plugin_textdomain() {
+            load_plugin_textdomain( 'paypal-for-woocommerce', false, plugin_basename( dirname( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE ) ) . '/i18n/languages' );
+        }
     } 
     
 }
