@@ -1690,7 +1690,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     public function angelleye_paypal_pro_payflow_reference_transaction_notice() {
         if(class_exists('AngellEYE_Utility')) {
             if (AngellEYE_Utility::is_display_angelleye_paypal_pro_payflow_reference_transaction_notice($this) == true) {
-                echo '<div class="error"><p>' . sprintf(__("If using %s with WooCommerce Subscriptions you will need to <a target='_blank' href='https://www.angelleye.com/paypal-woocommerce-subscriptions/'>enable Reference Transactions</a> in your PayPal/PayFlow Manager. | <a href=%s>%s</a>", 'paypal-for-woocommerce'), $this->method_title, '"' . esc_url(add_query_arg("ignore_paypal_pro_payflow_reference_transaction_notice", 0)) . '"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+                echo '<div class="error"><p>' . sprintf(__("If using %s with Woo Token Payments (including the use of Woo Subscriptions) you will need to <a target='_blank' href='https://www.angelleye.com/paypal-woocommerce-subscriptions/'>enable Reference Transactions</a> in your PayPal/PayFlow Manager. | <a href=%s>%s</a>", 'paypal-for-woocommerce'), $this->method_title, '"' . esc_url(add_query_arg("ignore_paypal_pro_payflow_reference_transaction_notice", 0)) . '"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
             }
         }
     }
