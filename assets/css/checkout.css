@@ -97,6 +97,13 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 .woocommerce .payment_methods li .payment_method_paypal_pro_payflow select, .woocommerce .payment_methods li .payment_method_paypal_pro select {
     display: inline-block !important;
 }
+.woocommerce-checkout #payment ul.payment_methods li input[type=checkbox] {
+    margin: 0 7px 0 0;
+    vertical-align: middle;
+}
+p.woocommerce-SavedPaymentMethods-saveNew label {
+    vertical-align: middle;
+}
 @media only screen 
   and (min-device-width: 320px) 
   and (max-device-width: 480px) {

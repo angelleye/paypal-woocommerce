@@ -137,7 +137,6 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
 .form-row.woocommerce-SavedPaymentMethods-saveNew > label {
     display: inline-block;
     margin: 0.25em 0 0.5em;
-    vertical-align: middle;
     cursor: pointer;
 }
 .form-row.woocommerce-SavedPaymentMethods-saveNew input#wc-paypal_express-new-payment-method {
