@@ -426,7 +426,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'api_username' => array(
                 'title' => __('Live API User Name', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using <a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce'),
+                'description' => __('Get your live account API credentials from your PayPal account profile <br />or by using <a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
             'api_password' => array(

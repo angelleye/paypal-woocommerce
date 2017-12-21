@@ -249,7 +249,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'api_username' => array(
                 'title' => __('Live API Username', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Get your live account API credentials from your PayPal account profile under the API Access section <br />or by using
+                'description' => __('Get your live account API credentials from your PayPal account profile <br />or by using
 									<a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
