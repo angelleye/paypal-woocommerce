@@ -2,6 +2,7 @@
     clear: both;
     float: left;
     border: none;
+    position: relative;
 }
 .angelleye_cart_button a.paypal_checkout_button.img, a.paypal_checkout_button.img {
     border: none; padding: 0;
@@ -12,6 +13,7 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 }
 .angelleye_ec_save_to_accoount_box {
     clear: both;
+    position: relative;
 }
 .ec_checkout_page_button_type_customimage {
      border: medium none;
