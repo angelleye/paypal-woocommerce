@@ -155,6 +155,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Adjustments to ensure IPv4 is always used instead of IPv6 in API requests. ([#957](https://github.com/angelleye/paypal-woocommerce/issues/957))
 * Fix - Resolves compatibility issue with WPML translation. ([#959](https://github.com/angelleye/paypal-woocommerce/issues/959))
 * Fix - Resolves an issue where the PayPal Credit button was getting displayed on product pages even if no price was set for the product. ([#966](https://github.com/angelleye/paypal-woocommerce/issues/966))
+* Fix - Resolves design compatibility issue with AccessPress theme. ([#900](https://github.com/angelleye/paypal-woocommerce/issues/900))
 
 = 1.4.6.8 - 11.29.2017 =
 * Tweak - Adjustments to PayPal Marketing Solutions activation request. ([#948](https://github.com/angelleye/paypal-woocommerce/issues/948))
