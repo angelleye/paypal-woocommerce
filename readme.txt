@@ -137,6 +137,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Improvements for Google Analytics / Facebook Pixel tracking with Express Checkout. ([#929](https://github.com/angelleye/paypal-woocommerce/issues/929))
 * Tweak - Rearranges PayFlow credentials fields in settings to match the order displayed at manager.paypal.com. ([#940](https://github.com/angelleye/paypal-woocommerce/issues/940))
 * Tweak - Adjustments for PHP 7.2 compatibility. ([#942](https://github.com/angelleye/paypal-woocommerce/issues/942))
+* Tweak - Adds a notice in PayFlow about enabling reference transaction if you are using Woo token payments and/or Woo Subscriptions. ([#950](https://github.com/angelleye/paypal-woocommerce/issues/950))
 * Fix - Resolves an issue with PayPal Advanced where orders could fail when additional fees are added via other plugins. ([#767](https://github.com/angelleye/paypal-woocommerce/issues/767))
 * Fix - Resolves an issue with the Terms and Conditions acceptance from the Express Checkout order review page. ([#916](https://github.com/angelleye/paypal-woocommerce/issues/916))
 * Fix - Resolves an issue where the Express Checkout button would sometimes get hidden if a coupon code was entered which makes the order free. ([#924](https://github.com/angelleye/paypal-woocommerce/issues/924))
