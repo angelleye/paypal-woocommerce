@@ -218,7 +218,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'title' => __('Vendor (Merchant Login)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Your merchant login ID that you created when you registered for the account.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => 'angelleye'
             ),
             
             'sandbox_paypal_user' => array(
@@ -226,13 +226,13 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'text',
                 'description' => __('If you set up one or more additional users on the account, this value is the ID
 of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => 'paypalwoocommerce'
             ),
             'sandbox_paypal_password' => array(
                 'title' => __('Password', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => 'dwG7!Yp*PLY3'
             ),
             'paypal_partner' => array(
                 'title' => __('Partner', 'paypal-for-woocommerce'),
