@@ -1704,6 +1704,29 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 echo '<div class="error"><p>' . sprintf(__("If using %s with Woo Token Payments (including the use of Woo Subscriptions) you will need to <a target='_blank' href='https://www.angelleye.com/paypal-woocommerce-subscriptions/'>enable Reference Transactions</a> in your PayPal/PayFlow Manager. | <a href=%s>%s</a>", 'paypal-for-woocommerce'), $this->method_title, '"' . esc_url(add_query_arg("ignore_paypal_pro_payflow_reference_transaction_notice", 0)) . '"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
             }
         }
+        if(isset($_GET['section']) && $_GET['section']=='paypal_pro_payflow'){
+            if(!get_user_meta(get_current_user_id(), 'payflow_sb_autopopulate_credentials')){
+        echo '<div class="notice notice-info"><p>'.sprintf(__("<h3>Default PayFlow sandbox credentials</h3><table>
+                                                                    <tr>
+                                                                    <td><strong>Partner:</strong></td>
+                                                                    <td>PayPal</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                    <td><strong>Merchant Login:</strong></td>
+                                                                    <td>angelleye</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                    <td><strong>Username:</strong></td>
+                                                                    <td>paypalwoocommerce</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                    <td><strong>Password:</strong></td>
+                                                                    <td>dwG7!Yp*PLY3</td>
+                                                                    </tr>
+                                                                    </table><a href=%s>%s</a>", 'paypal-for-woocommerce'),
+                                                                    esc_url(add_query_arg("payflow_sb_autopopulate_credentials", 0)), __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+            }
+        }
     }
 
 }
