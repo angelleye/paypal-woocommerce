@@ -884,7 +884,18 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if ($this->gateway->error_email_notify) {
             $mailer = WC()->mailer();
             $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'PayPal Express Checkout Error Notification');
-            $message = sprintf(__('PayPal %s API call failed', 'paypal-for-woocommerce') . PHP_EOL . __('Detailed Error Message: %s', 'paypal-for-woocommerce') . PHP_EOL . __('Short Error Message: %s', 'paypal-for-woocommerce') . PHP_EOL . __('Error Code: %s', 'paypal-for-woocommerce') . PHP_EOL . __('Error Severity Code: %s', 'paypal-for-woocommerce'), $paypal_action_name, $ErrorLongMsg, $ErrorShortMsg, $ErrorCode, $ErrorSeverityCode);
+            $message = sprintf(
+                    "<strong>".__('PayPal %s API call failed', 'paypal-for-woocommerce')."</strong>" . PHP_EOL .PHP_EOL
+                    . __('<strong>Error Code:</strong> %s', 'paypal-for-woocommerce') . PHP_EOL 
+                    . __('<strong>Error Severity Code:</strong> %s', 'paypal-for-woocommerce') . PHP_EOL                    
+                    . __('<strong>Short Error Message:</strong> %s', 'paypal-for-woocommerce') . PHP_EOL 
+                    . __('<strong>Long Error Message:</strong> %s', 'paypal-for-woocommerce'), 
+                    $paypal_action_name, 
+                    $ErrorCode,
+                    $ErrorSeverityCode,
+                    $ErrorShortMsg,
+                    $ErrorLongMsg                    
+                    );
             $message = apply_filters('ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
             $message = $mailer->wrap_message($error_email_notify_subject, $message);
             $mailer->send(get_option('admin_email'), strip_tags($error_email_notify_subject), $message);

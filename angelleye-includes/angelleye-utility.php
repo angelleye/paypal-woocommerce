@@ -719,7 +719,7 @@ class AngellEYE_Utility {
                 $message .= __('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode . "\n";
                 $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
                 $message .= __('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg . "\n";
-                $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
+                $message .= __('Long Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
                 $ofw_error_email_notify_mes = apply_filters('angelleye_error_email_notify_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
                 $ofw_error_email_notify_subject = apply_filters('angelleye_error_email_notify_subject', $subject);
                 wp_mail($admin_email, $ofw_error_email_notify_subject, $ofw_error_email_notify_mes);
