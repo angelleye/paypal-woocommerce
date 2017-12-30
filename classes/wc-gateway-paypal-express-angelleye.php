@@ -323,10 +323,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
             $icon_two = "<img src=\"$image_path_two\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
-            return apply_filters('woocommerce_paypal_express_icon', $icon.$icon_two, $this->id);
+            return apply_filters('angelleye_ec_checkout_icon', $icon.$icon_two, $this->id);
         } else {
             $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
-            return apply_filters('woocommerce_paypal_express_icon', $icon, $this->id);
+            return apply_filters('angelleye_ec_checkout_icon', $icon, $this->id);
         }
     }
 
