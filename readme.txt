@@ -125,6 +125,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.7.1 - xx.xx.2018 =
 * Tweak - Adjusts hook name. ([#975](https://github.com/angelleye/paypal-woocommerce/issues/975))
+* Fix - Resolves an issue where WP user accounts were not created properly in some scenarios. ([#974](https://github.com/angelleye/paypal-woocommerce/issues/974))
 
 = 1.4.7 - 12.21.2017 =
 * Feature - WooCommerce 3.3 compatibility based on beta release. ([#961](https://github.com/angelleye/paypal-woocommerce/issues/961))
