@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
 Requires at least: 3.8
 Tested up to: 4.9.1
-Stable tag: 1.4.7
+Stable tag: 1.4.7.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -123,7 +123,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.7.1 - xx.xx.2018 =
+= 1.4.7.1 - 01.02.2018 =
 * Tweak - Adjusts hook name. ([#975](https://github.com/angelleye/paypal-woocommerce/issues/975))
 * Fix - Resolves an issue where WP user accounts were not created properly in some scenarios. ([#974](https://github.com/angelleye/paypal-woocommerce/issues/974))
 * Fix - Resolves an issue with PayPal Advanced where timeouts could occur with greater than 10 items in the shopping cart. ([#976](https://github.com/angelleye/paypal-woocommerce/issues/976))
