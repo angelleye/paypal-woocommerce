@@ -545,7 +545,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         }
             
         $paypal_args['ITEMAMT'] = 0;
-        if ($this->send_items) {
+        if ($this->send_items && ($length_error == 0 || count($PaymentData['order_items']) < 11 )) {
             $item_loop = 0;
             foreach ($PaymentData['order_items'] as $_item) {
                 $paypal_args['L_NUMBER' . $item_loop] = $_item['number'];
