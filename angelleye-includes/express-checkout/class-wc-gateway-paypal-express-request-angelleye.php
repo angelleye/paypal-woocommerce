@@ -1321,20 +1321,19 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     
     public function angelleye_process_customer($order_id) {
         $post_data = WC()->session->get( 'post_data' );
+        $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
         if( !empty($post_data) && !empty($post_data['billing_first_name']) && !empty($post_data['billing_last_name']) && !empty($post_data['billing_email']) ) {
-            $first_name = $post_data['billing_first_name'];
-            $last_name = $post_data['billing_last_name'];
-            $email = $post_data['billing_email'];
+            $first_name = !empty($post_data['billing_first_name']) ? $post_data['billing_first_name'] : '';
+            $last_name = !empty($post_data['billing_last_name']) ? $post_data['billing_last_name'] : '';
+            $email = !empty($post_data['billing_email']) ? $post_data['billing_email'] : '';
         } else {
-            $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
-            if( !empty($paypal_express_checkout) ) {
+            if( !empty ($paypal_express_checkout) ) {
                 $first_name = !empty($paypal_express_checkout['ExpresscheckoutDetails']['FIRSTNAME']) ? $paypal_express_checkout['ExpresscheckoutDetails']['FIRSTNAME'] : '';
                 $last_name = !empty($paypal_express_checkout['ExpresscheckoutDetails']['LASTNAME']) ? $paypal_express_checkout['ExpresscheckoutDetails']['LASTNAME'] : '';
                 $email = !empty($paypal_express_checkout['ExpresscheckoutDetails']['EMAIL']) ? $paypal_express_checkout['ExpresscheckoutDetails']['EMAIL'] : '';
-                
-            }
+            } 
         }
-        if( empty($first_name) || empty($last_name) || empty($email)) {
+        if( !empty($email)) {
             if (email_exists($email)) {
                 $customer_id = email_exists($email);
             } else {
