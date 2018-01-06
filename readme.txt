@@ -39,6 +39,8 @@ If you are using WooCommerce Subscriptions to manage subscription profiles you w
 = FREE PayPal Payments Pro Account =
 By using our plugin we can get you hooked up with PayPal Payments Pro with no monthly fee! (U.S. and Canada merchants only.)
 
+This availability is limited based on your monthly volume, so you will need to be doing at least $1,000/mo in sales in order to get this done.  If you are not at this level yet, enabling Express Checkout with our plugin will increase conversion rates on your site and help you get to that level.
+
 [Submit a request](https://www.angelleye.com/free-paypal-pro-account-request/?utm_source=paypal-for-woocommerce&utm_medium=readme&utm_campaign=free_paypal_pro) and we'll get you hooked up!
 
 = PayPal Plus Information =
