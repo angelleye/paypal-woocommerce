@@ -128,8 +128,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         add_action('admin_notices', array($this, 'angelleye_paypal_pro_payflow_reference_transaction_notice'));
     }
 
-    public function add_log($message, $level = 'info') {
-        $message = 'V'.VERSION_PFW. ' '.$message;
+    public function add_log($message, $level = 'info') {        
         if ($this->debug) {
             if (version_compare(WC_VERSION, '3.0', '<')) {
                 if (empty($this->log)) {
@@ -139,8 +138,11 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 if (empty($this->log)) {
                     $this->log = wc_get_logger();
-                }               
-                $this->log->log($level, $message, array('source' => 'paypal_pro_payflow'));
+                }     
+                $this->log->log($level,sprintf(__('PayPal for WooCommerce Version: %s', 'paypal-for-woocommerce'), VERSION_PFW),array('source' => 'paypal_pro_payflow'));
+                $this->log->log($level,sprintf(__('WooCommerce Version: %s', 'paypal-for-woocommerce'), WC_VERSION),array('source' => 'paypal_pro_payflow'));
+                $this->log->log($level,'Test Mode: ' . $this->testmode,array('source' => 'paypal_pro_payflow'));
+                $this->log->log($level, $message, array('source' => 'paypal_pro_payflow'),array('source' => 'paypal_pro_payflow'));              
             }
         }
     }
