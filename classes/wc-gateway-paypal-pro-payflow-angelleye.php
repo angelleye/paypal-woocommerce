@@ -129,6 +129,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function add_log($message, $level = 'info') {
+        $message = 'V'.VERSION_PFW. ' '.$message;
         if ($this->debug) {
             if (version_compare(WC_VERSION, '3.0', '<')) {
                 if (empty($this->log)) {
@@ -138,7 +139,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 if (empty($this->log)) {
                     $this->log = wc_get_logger();
-                }
+                }               
                 $this->log->log($level, $message, array('source' => 'paypal_pro_payflow'));
             }
         }
