@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
 
     class WC_Gateway_Calculation_AngellEYE {
+
         public $order_total;
         public $taxamt;
         public $shippingamt;
@@ -25,7 +26,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->order_items = array();
             $this->is_adjust = false;
             $this->payment_method = $payment_method;
-            if( $this->payment_method == 'paypal_pro_payflow' || $this->payment_method == 'paypal_advanced') {
+            if ($this->payment_method == 'paypal_pro_payflow' || $this->payment_method == 'paypal_advanced') {
                 $this->is_separate_discount = true;
             }
             $is_zdp_currency = in_array(get_woocommerce_currency(), $this->zdp_currencies);
@@ -135,7 +136,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             }
 
             $this->order_total = round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
-            
+
             if ($this->itemamt == $this->discount_amount) {
                 unset($this->order_items);
                 $this->itemamt -= $this->discount_amount;
@@ -256,7 +257,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->itemamt -= $this->discount_amount;
                 $this->order_total -= $this->discount_amount;
             } else {
-                if( $this->is_separate_discount == false ) {
+                if ($this->is_separate_discount == false) {
                     if ($this->discount_amount > 0) {
                         $discLineItem = array(
                             'name' => 'Discount',
@@ -296,7 +297,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 }
             }
             $this->itemamt = round($temp_roundedPayPalTotal, $this->decimals);
-            if( $this->is_separate_discount == true ) {
+            if ($this->is_separate_discount == true) {
                 $this->temp_total = round($this->itemamt + $this->taxamt + $this->shippingamt - $this->discount_amount, $this->decimals);
             } else {
                 $this->temp_total = round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
@@ -315,10 +316,12 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     } else {
                         foreach ($this->order_items as $key => $value) {
                             if ($value['qty'] == 1 && $this->is_adjust == false) {
-                                $this->order_items[$key]['amt'] = $this->order_items[$key]['amt'] + round($cartItemAmountDifference, $this->decimals);
-                                $this->order_total += round($cartItemAmountDifference, $this->decimals);
-                                $this->itemamt += round($cartItemAmountDifference, $this->decimals);
-                                $this->is_adjust = true;
+                                if ($this->order_items[$key]['amt'] * 1000 > 0) {
+                                    $this->order_items[$key]['amt'] = $this->order_items[$key]['amt'] + round($cartItemAmountDifference, $this->decimals);
+                                    $this->order_total += round($cartItemAmountDifference, $this->decimals);
+                                    $this->itemamt += round($cartItemAmountDifference, $this->decimals);
+                                    $this->is_adjust = true;
+                                }
                             }
                         }
                         if ($this->is_adjust == false) {
@@ -329,6 +332,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     }
                 }
             }
+            $this->angelleye_disable_line_item();
         }
 
         public function order_re_calculate($order) {
@@ -339,7 +343,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 }
             }
             $this->itemamt = $temp_roundedPayPalTotal;
-            if( $this->is_separate_discount == true ) {
+            if ($this->is_separate_discount == true) {
                 $this->temp_total = round($this->itemamt + $this->taxamt + $this->shippingamt - $this->discount_amount, $this->decimals);
             } else {
                 $this->temp_total = round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
@@ -358,10 +362,12 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     } else {
                         foreach ($this->order_items as $key => $value) {
                             if ($value['qty'] == 1 && $this->is_adjust == false) {
-                                $this->order_items[$key]['amt'] = $this->order_items[$key]['amt'] + round($cartItemAmountDifference, $this->decimals);
-                                $this->order_total += round($cartItemAmountDifference, $this->decimals);
-                                $this->itemamt += round($cartItemAmountDifference, $this->decimals);
-                                $this->is_adjust = true;
+                                if ($this->order_items[$key]['amt'] * 1000 > 0) {
+                                    $this->order_items[$key]['amt'] = $this->order_items[$key]['amt'] + round($cartItemAmountDifference, $this->decimals);
+                                    $this->order_total += round($cartItemAmountDifference, $this->decimals);
+                                    $this->itemamt += round($cartItemAmountDifference, $this->decimals);
+                                    $this->is_adjust = true;
+                                }
                             }
                         }
                         if ($this->is_adjust == false) {
@@ -372,6 +378,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     }
                 }
             }
+            $this->angelleye_disable_line_item();
         }
 
         public function get_giftcard_amount($order_id = null) {
@@ -392,13 +399,13 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 return false;
             }
         }
-        
+
         public function yith_get_giftcard_amount() {
             if (class_exists('YITH_YWGC_Cart_Checkout')) {
                 $amount = 0;
-                if ( isset( WC()->cart->applied_gift_cards ) ) {
-                    foreach ( WC()->cart->applied_gift_cards as $code ) {
-                        $amount += isset( WC()->cart->applied_gift_cards_amounts[ $code ] ) ?  WC()->cart->applied_gift_cards_amounts[ $code ] : 0;
+                if (isset(WC()->cart->applied_gift_cards)) {
+                    foreach (WC()->cart->applied_gift_cards as $code) {
+                        $amount += isset(WC()->cart->applied_gift_cards_amounts[$code]) ? WC()->cart->applied_gift_cards_amounts[$code] : 0;
                     }
                 }
                 return $amount;
@@ -407,7 +414,25 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             }
         }
 
+        public function angelleye_disable_line_item() {
+            if ($this->shippingamt * 1000 < 0) {
+                unset($this->order_items);
+                $this->order_total = WC()->cart->total;
+                $this->itemamt = WC()->cart->total;
+            }
+
+            if ($this->itemamt * 1000 < 0) {
+                unset($this->order_items);
+                $this->order_total = WC()->cart->total;
+                $this->itemamt = WC()->cart->total;
+            }
+        }
+
     }
+
+    
+
+    
 
     
 

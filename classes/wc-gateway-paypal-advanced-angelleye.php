@@ -1461,7 +1461,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     public function angelleye_paypal_advanced_encrypt_gateway_api($settings) {
         if( !empty($settings['resellerid'])) {
             $resellerid = $settings['resellerid'];
-        } 
+        } else {
+            $resellerid = '';
+        }
         if(strlen($resellerid) > 28 ) {
             return $settings;
         }
