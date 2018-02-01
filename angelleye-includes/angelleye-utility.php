@@ -1946,9 +1946,11 @@ class AngellEYE_Utility {
         }
         $ipv4_pattern = '/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/';
         if ( ! preg_match( $ipv4_pattern, $ip_address ) && filter_var($ip_address, FILTER_VALIDATE_IP,FILTER_FLAG_IPV6) ) {
-            return $ip_address = '';
-        } else {
-            return $ip_address;
+            $ip_address = '';
+        } 
+        $ip_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334';
+        if(strlen($ip_address) > 16) {
+            $ip_address = '';
         }
         
         return $ip_address;
