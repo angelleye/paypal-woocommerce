@@ -1507,6 +1507,7 @@ class AngellEYE_Utility {
      * @return type
      */
     public static function number_format($price) {
+        $price = str_replace(',', '.', $price);
         $decimals = 2;
         if (!self::currency_has_decimals(get_woocommerce_currency())) {
             $decimals = 0;
