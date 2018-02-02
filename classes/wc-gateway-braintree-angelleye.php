@@ -747,10 +747,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     update_post_meta($order_id, 'risk_id', $this->get_risk_id());
                     update_post_meta($order_id, 'risk_decision', $this->get_risk_decision());
                 }
-                $notice = sprintf(__('Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'paypal-for-woocommerce'), $this->response->message);
+                $notice = $this->get_message();
+                if( empty($notice) ) {
+                    $notice = sprintf(__('Error: PayPal Powered by Braintree was unable to complete the transaction. Please try again later or use another means of payment. Reason: %s', 'paypal-for-woocommerce'), $this->response->message);
+                }
                 wc_add_notice($notice, 'error');
                 $this->add_log("Error: Unable to complete transaction. Reason: {$this->response->message}");
                 $order->add_order_note("Error: Unable to complete transaction. Reason: {$this->response->message}");
+                $this->add_log('Braintree_Transaction::sale Response code: ' . print_r($this->get_status_code(), true));
+                $this->add_log('Braintree_Transaction::sale Response message: ' . print_r($this->get_status_message(), true));
                 return $success = false;
             }
             $this->add_log('Braintree_Transaction::sale Response code: ' . print_r($this->get_status_code(), true));
@@ -1166,6 +1171,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (isset($response_codes) && !empty($response_codes) && is_array($response_codes)) {
             foreach ($response_codes as $key => $value) {
                 $messages[] = isset($decline_codes[$key]) ? $this->get_user_message($key) : $value;
+            }
+        } else {
+            $code = $this->get_status_code();
+            if( !empty($decline_codes[$code]) ) {
+                $messages[] = $this->get_user_message($decline_codes[$code]);
             }
         }
         return implode(' ', $messages);
