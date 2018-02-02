@@ -57,8 +57,10 @@ $pp_settings = get_option( 'woocommerce_paypal_express_settings' );
 if (substr(get_option("woocommerce_default_country"),0,2) != 'US') {
     $pp_settings['show_paypal_credit'] = 'no';
 }
+if (is_admin() && !defined('DOING_AJAX')) {
 $pp_pro     = get_option('woocommerce_paypal_pro_settings');
 $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
+}
 
 
 if(!class_exists('AngellEYE_Gateway_Paypal')){
@@ -329,9 +331,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             global $pp_settings;
             global $post;
             $_enable_ec_button = 'no';
-            if( !empty($post) ) {
-                $_enable_ec_button = get_post_meta($post->ID, '_enable_ec_button', true);
-            }
+            
             $pp_settings['enabled'] = !empty($pp_settings['enabled']) ? $pp_settings['enabled'] : '';
             $pp_settings['show_on_product_page'] = !empty($pp_settings['show_on_product_page']) ? $pp_settings['show_on_product_page'] : '';
             $enable_in_context_checkout_flow = !empty($pp_settings['enable_in_context_checkout_flow']) ? $pp_settings['enable_in_context_checkout_flow'] : 'no';
@@ -357,9 +357,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if ( ! is_admin() && is_checkout() ) {
                 wp_enqueue_style( 'ppe_checkout', plugins_url( 'assets/css/checkout.css' , __FILE__ ) );
             }
-            if ( ! is_admin() && is_single() && $pp_settings['enabled']=='yes' && $pp_settings['show_on_product_page']=='yes' && $_enable_ec_button == 'yes') {
-                wp_enqueue_style( 'ppe_single', plugins_url( 'assets/css/single.css' , __FILE__ ) );
-                wp_enqueue_script('angelleye_button');
+            if ( ! is_admin() && is_single() && $pp_settings['enabled']=='yes' && $pp_settings['show_on_product_page']=='yes' ) {
+                if( !empty($post) ) {
+                    $_enable_ec_button = get_post_meta($post->ID, '_enable_ec_button', true);
+                }
+                if( $_enable_ec_button == 'yes' ) {
+                    wp_enqueue_style( 'ppe_single', plugins_url( 'assets/css/single.css' , __FILE__ ) );
+                    wp_enqueue_script('angelleye_button');
+                }
             }
 
         }

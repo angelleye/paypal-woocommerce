@@ -106,15 +106,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             add_action('woocommerce_email_before_order_table', array($this, 'angelleye_paypal_pro_payflow_email_instructions'), 10, 3);
         }
 
-        $this->enable_automated_account_creation_for_guest_checkouts = 'yes' === $this->get_option('enable_automated_account_creation_for_guest_checkouts', 'no');
-        $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
-        if ($this->supports('tokenization') && is_checkout() && $this->enable_guest_checkout && !is_user_logged_in() && $this->enable_automated_account_creation_for_guest_checkouts) {
-            $this->enable_automated_account_creation_for_guest_checkouts = true;
-            add_action('woocommerce_after_checkout_validation', array($this, 'enable_automated_account_creation_for_guest_checkouts'), 10, 1);
-        } else {
-            $this->enable_automated_account_creation_for_guest_checkouts = false;
-        }
-
         $this->customer_id;
         if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
             $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id);
