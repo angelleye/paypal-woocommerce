@@ -13,15 +13,19 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         try {
             global $wpdb;
             $this->version = $version;
-            $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
-            $this->setting = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
+            $this->setting = AngellEYE_Utility::angelleye_get_pre_option(false, 'woocommerce_paypal_express_settings');
+            //$row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
+            $this->setting = !empty($this->setting) ? $this->setting : array();
             $this->enabled = !empty($this->setting['enabled']) ? $this->setting['enabled'] : 'no';
             if( $this->enabled == 'yes' ) {
-                $paypal_pro_row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_pro_settings'));
-                $this->paypal_pro_setting = isset($paypal_pro_row->option_value) ? maybe_unserialize($paypal_pro_row->option_value) : array();
+                //$paypal_pro_row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_pro_settings'));
+                $this->paypal_pro_setting = AngellEYE_Utility::angelleye_get_pre_option(false, 'woocommerce_paypal_pro_settings');
+                $this->paypal_pro_setting = isset($this->paypal_pro_setting) ? $this->paypal_pro_setting : array();
                 $this->paypal_pro_enabled = !empty($this->paypal_pro_setting['enabled']) ? $this->paypal_pro_setting['enabled'] : 'no';
-                $paypal_flow_row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_pro_payflow_settings'));
-                $this->paypal_flow_setting = isset($paypal_flow_row->option_value) ? maybe_unserialize($paypal_flow_row->option_value) : array();
+                
+                //$paypal_flow_row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_pro_payflow_settings'));
+                $this->paypal_flow_setting = AngellEYE_Utility::angelleye_get_pre_option(false, 'woocommerce_paypal_pro_settings');
+                $this->paypal_flow_setting = !empty($this->paypal_flow_setting) ? $this->paypal_flow_setting : array();
                 $this->paypal_flow_enabled = !empty($this->paypal_flow_setting['enabled']) ? $this->paypal_flow_setting['enabled'] : 'no';
                 $this->enable_tokenized_payments = !empty($this->setting['enable_tokenized_payments']) ? $this->setting['enable_tokenized_payments'] : 'no';
                 $this->save_abandoned_checkout_value = !empty($this->setting['save_abandoned_checkout']) ? $this->setting['save_abandoned_checkout'] : 'no';
@@ -130,6 +134,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_filter('woocommerce_billing_fields', array($this, 'angelleye_optional_billing_fields'), 10, 1);
                 add_action('wp_enqueue_scripts', array($this, 'angelleye_paypal_marketing_solutions'), 10);
                 add_action('woocommerce_update_options_payment_gateways_paypal_express', array($this, 'angelleye_update_marketing_solution'), 10);
+                add_action( 'wp_enqueue_scripts', array($this, 'frontend_scripts'), 100 );
+                add_filter('body_class', array($this, 'add_body_classes'));
                 $this->is_order_completed = true;
             }
         } catch (Exception $ex) {
@@ -991,4 +997,58 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         curl_close($curl);
         return $result;
     }
+    
+    /**
+    * frontend_scripts function.
+    *
+    * @access public
+    * @return void
+    */
+    public function frontend_scripts() {
+        global $post;
+        $_enable_ec_button = 'no';
+        $this->setting['enabled'] = !empty($this->setting['enabled']) ? $this->setting['enabled'] : '';
+        $this->setting['show_on_product_page'] = !empty($this->setting['show_on_product_page']) ? $this->setting['show_on_product_page'] : '';
+        $enable_in_context_checkout_flow = !empty($this->setting['enable_in_context_checkout_flow']) ? $this->setting['enable_in_context_checkout_flow'] : 'no';
+        wp_register_script( 'angelleye_frontend', plugins_url( '/assets/js/angelleye-frontend.js' , __FILE__ ), array( 'jquery' ), WC_VERSION, true );
+        $translation_array = array(
+            'is_product' => is_product()? "yes" : "no",
+            'is_cart' => is_cart()? "yes":"no",
+            'is_checkout' => is_checkout()? "yes":"no",
+            'three_digits'  => __('3 digits usually found on the signature strip.', 'paypal-for-woocommerce'),
+            'four_digits'  => __('4 digits usually found on the front of the card.', 'paypal-for-woocommerce'),
+            'enable_in_context_checkout_flow' => $enable_in_context_checkout_flow
+        );
+        if($enable_in_context_checkout_flow == 'no') {
+            wp_localize_script( 'angelleye_frontend', 'angelleye_frontend', $translation_array );
+            wp_enqueue_script('angelleye_frontend');
+        }
+        if ( ! is_admin() && is_cart()){
+            wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/cart.css' , __FILE__ ) );
+        }
+        if ( ! is_admin() && is_checkout() ) {
+            wp_enqueue_style( 'ppe_checkout', plugins_url( 'assets/css/checkout.css' , __FILE__ ) );
+        }
+        if ( ! is_admin() && is_single() && $this->setting['enabled']=='yes' && $this->setting['show_on_product_page']=='yes' ) {
+            if( !empty($post) ) {
+                $_enable_ec_button = get_post_meta($post->ID, '_enable_ec_button', true);
+            }
+            if( $_enable_ec_button == 'yes' ) {
+                wp_enqueue_style( 'ppe_single', plugins_url( 'assets/css/single.css' , __FILE__ ) );
+                wp_enqueue_script('angelleye_button');
+            }
+        }
+    }
+    
+    /*
+    * Adds class name to HTML body to enable easy conditional CSS styling
+    * @access public
+    * @param array $classes
+    * @return array
+    */
+   public function add_body_classes($classes) {
+     if(!empty($this->setting['enabled']) && $this->setting['enabled'] == 'yes')
+       $classes[] = 'has_paypal_express_checkout';
+     return $classes;
+   }
 }

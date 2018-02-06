@@ -339,7 +339,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $skip_final_review_option_not_allowed_guest_checkout = '';
         $skip_final_review_option_not_allowed_terms = '';
         $skip_final_review_option_not_allowed_tokenized_payments = '';
-        
         $woocommerce_enable_guest_checkout = get_option('woocommerce_enable_guest_checkout');
         if( 'yes' === get_option( 'woocommerce_registration_generate_username' ) && 'yes' === get_option( 'woocommerce_registration_generate_password' ) ) {
             $woocommerce_enable_guest_checkout = 'yes';
