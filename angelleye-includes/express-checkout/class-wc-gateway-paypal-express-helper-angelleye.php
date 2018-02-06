@@ -1010,7 +1010,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         $this->setting['enabled'] = !empty($this->setting['enabled']) ? $this->setting['enabled'] : '';
         $this->setting['show_on_product_page'] = !empty($this->setting['show_on_product_page']) ? $this->setting['show_on_product_page'] : '';
         $enable_in_context_checkout_flow = !empty($this->setting['enable_in_context_checkout_flow']) ? $this->setting['enable_in_context_checkout_flow'] : 'no';
-        wp_register_script( 'angelleye_frontend', plugins_url( '/assets/js/angelleye-frontend.js' , __FILE__ ), array( 'jquery' ), WC_VERSION, true );
+        wp_register_script( 'angelleye_frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . '/assets/js/angelleye-frontend.js', array( 'jquery' ), WC_VERSION, true );
         $translation_array = array(
             'is_product' => is_product()? "yes" : "no",
             'is_cart' => is_cart()? "yes":"no",
@@ -1024,17 +1024,17 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             wp_enqueue_script('angelleye_frontend');
         }
         if ( ! is_admin() && is_cart()){
-            wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/cart.css' , __FILE__ ) );
+            wp_enqueue_style( 'ppe_cart', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/cart.css' );
         }
         if ( ! is_admin() && is_checkout() ) {
-            wp_enqueue_style( 'ppe_checkout', plugins_url( 'assets/css/checkout.css' , __FILE__ ) );
+            wp_enqueue_style( 'ppe_checkout', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/checkout.css' );
         }
         if ( ! is_admin() && is_single() && $this->setting['enabled']=='yes' && $this->setting['show_on_product_page']=='yes' ) {
             if( !empty($post) ) {
                 $_enable_ec_button = get_post_meta($post->ID, '_enable_ec_button', true);
             }
             if( $_enable_ec_button == 'yes' ) {
-                wp_enqueue_style( 'ppe_single', plugins_url( 'assets/css/single.css' , __FILE__ ) );
+                wp_enqueue_style( 'ppe_single', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/single.css' );
                 wp_enqueue_script('angelleye_button');
             }
         }
