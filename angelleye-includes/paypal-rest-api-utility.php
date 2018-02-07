@@ -131,16 +131,20 @@ class PayPal_Rest_API_Utility {
                             $creditcard_id = $this->card->getId();
                             $this->save_payment_token($order, $creditcard_id);
                             $token = new WC_Payment_Token_CC();
-                            $token->set_user_id( $customer_id );
                             $token->set_token( $creditcard_id );
                             $token->set_gateway_id( $this->payment_method );
                             $token->set_card_type( $this->card->type );
                             $token->set_last4( substr( $this->card->number, -4 ) );
                             $token->set_expiry_month( $this->card->expire_month );
                             $token->set_expiry_year( $this->card->expire_year );
-                            $save_result = $token->save();
-                            if ($save_result) {
-                                $order->add_payment_token($token);
+                            $token->set_user_id( $customer_id );
+                            if( $token->validate() ) {
+                                $save_result = $token->save();
+                                if ($save_result) {
+                                    $order->add_payment_token($token);
+                                }
+                            } else {
+                                $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
                             }
                         }
                     } catch (Exception $ex) {
@@ -653,19 +657,23 @@ class PayPal_Rest_API_Utility {
                 $customer_id = get_current_user_id();
                 $creditcard_id = $this->card->getId();
                 $token = new WC_Payment_Token_CC();
-                $token->set_user_id( $customer_id );
                 $token->set_token( $creditcard_id );
                 $token->set_gateway_id( $this->payment_method );
                 $token->set_card_type( $this->card->type );
                 $token->set_last4( substr( $this->card->number, -4 ) );
                 $token->set_expiry_month( $this->card->expire_month );
                 $token->set_expiry_year( $this->card->expire_year );
-                $save_result = $token->save();
-                if ($save_result) {
-                    return array(
-                        'result' => 'success',
-                        'redirect' => wc_get_account_endpoint_url('payment-methods')
-                    );
+                $token->set_user_id( $customer_id );
+                if( $token->validate() ) {
+                    $save_result = $token->save();
+                    if ($save_result) {
+                        return array(
+                            'result' => 'success',
+                            'redirect' => wc_get_account_endpoint_url('payment-methods')
+                        );
+                    }
+                } else {
+                    throw new Exception( __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ) );
                 }
             } else {
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
@@ -731,16 +739,20 @@ class PayPal_Rest_API_Utility {
                     $creditcard_id = $this->card->getId();
                     $this->save_payment_token($order, $creditcard_id);
                     $token = new WC_Payment_Token_CC();
-                    $token->set_user_id($customer_id);
                     $token->set_token($creditcard_id);
                     $token->set_gateway_id($this->payment_method);
                     $token->set_card_type($this->card->type);
                     $token->set_last4(substr($this->card->number, -4));
                     $token->set_expiry_month(date('m'));
                     $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
-                    $save_result = $token->save();
-                    if ($save_result) {
-                        $order->add_payment_token($token);
+                    $token->set_user_id($customer_id);
+                    if( $token->validate() ) {
+                        $save_result = $token->save();
+                        if ($save_result) {
+                            $order->add_payment_token($token);
+                        }
+                    } else {
+                        $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
                     }
                 }
             } catch (Exception $ex) {

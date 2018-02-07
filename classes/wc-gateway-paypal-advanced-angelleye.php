@@ -253,16 +253,20 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 }
                 $TRANSACTIONID = $_POST['PNREF'];
                 $token = new WC_Payment_Token_CC();
-                $token->set_user_id($customer_id);
                 $token->set_token($TRANSACTIONID);
                 $token->set_gateway_id($this->id);
                 $token->set_card_type('PayPal');
                 $token->set_last4($_POST['ACCT']);
                 $token->set_expiry_month(date('m'));
                 $token->set_expiry_year(date('Y', strtotime('+1 year')));
-                $save_result = $token->save();
-                if ($save_result) {
-                    $order->add_payment_token($token);
+                $token->set_user_id($customer_id);
+                if( $token->validate() ) {
+                    $save_result = $token->save();
+                    if ($save_result) {
+                        $order->add_payment_token($token);
+                    }
+                } else {
+                    $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
                 }
             }
             

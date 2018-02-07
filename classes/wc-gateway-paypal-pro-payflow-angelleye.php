@@ -761,7 +761,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         } else {
                             $customer_id = get_current_user_id();
                         }
-                        $token->set_user_id($customer_id);
+                       
                         $token->set_token($TRANSACTIONID);
                         $token->set_gateway_id($this->id);
                         $token->set_card_type(AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['acct']));
@@ -772,9 +772,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                             $expiry_year = $expiry_year + 2000;
                         }
                         $token->set_expiry_year($expiry_year);
-                        $save_result = $token->save();
-                        if ($save_result) {
-                            $order->add_payment_token($token);
+                        $token->set_user_id($customer_id);
+                        if( $token->validate() ) {
+                            $save_result = $token->save();
+                            if ($save_result) {
+                                $order->add_payment_token($token);
+                            }
+                        } else {
+                            $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
                         }
                     }
                 }
@@ -1248,7 +1253,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $TRANSACTIONID = $PayPalResult['PNREF'];
                 $this->are_reference_transactions_enabled($TRANSACTIONID);
                 $token = new WC_Payment_Token_CC();
-                $token->set_user_id($customer_id);
                 $token->set_token($TRANSACTIONID);
                 $token->set_gateway_id($this->id);
                 $token->set_card_type(AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['acct']));
@@ -1259,12 +1263,17 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $expiry_year = $expiry_year + 2000;
                 }
                 $token->set_expiry_year($expiry_year);
-                $save_result = $token->save();
-                if ($save_result) {
-                    return array(
-                        'result' => 'success',
-                        'redirect' => wc_get_account_endpoint_url('payment-methods')
-                    );
+                $token->set_user_id($customer_id);
+                if( $token->validate() ) {
+                    $save_result = $token->save();
+                    if ($save_result) {
+                        return array(
+                            'result' => 'success',
+                            'redirect' => wc_get_account_endpoint_url('payment-methods')
+                        );
+                    }
+                } else {
+                    throw new Exception( __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ) );
                 }
             }
         } else {

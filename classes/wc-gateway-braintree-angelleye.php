@@ -791,31 +791,40 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             if ($wc_existing_token == null) {
                                 if (!empty($transaction->creditCard['cardType']) && !empty($transaction->creditCard['last4'])) {
                                     $token = new WC_Payment_Token_CC();
-                                    $token->set_user_id($customer_id);
                                     $token->set_token($payment_method_token);
                                     $token->set_gateway_id($this->id);
                                     $token->set_card_type($transaction->creditCard['cardType']);
                                     $token->set_last4($transaction->creditCard['last4']);
                                     $token->set_expiry_month($transaction->creditCard['expirationMonth']);
                                     $token->set_expiry_year($transaction->creditCard['expirationYear']);
-                                    $save_result = $token->save();
-                                    if ($save_result) {
-                                        $order->add_payment_token($token);
+                                    $token->set_user_id($customer_id);
+                                    if( $token->validate() ) {
+                                        $save_result = $token->save();
+                                        if ($save_result) {
+                                            $order->add_payment_token($token);
+                                        }
+                                    } else {
+                                        $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
                                     }
+                                    
                                 } else {
                                     if (!empty($paymentMethod->billingAgreementId)) {
                                         $token = new WC_Payment_Token_CC();
                                         $customer_id = get_current_user_id();
-                                        $token->set_user_id($customer_id);
                                         $token->set_token($paymentMethod->billingAgreementId);
                                         $token->set_gateway_id($this->id);
                                         $token->set_card_type('PayPal Billing Agreement');
                                         $token->set_last4(substr($paymentMethod->billingAgreementId, -4));
                                         $token->set_expiry_month(date('m'));
                                         $token->set_expiry_year(date('Y', strtotime('+20 year')));
-                                        $save_result = $token->save();
-                                        if ($save_result) {
-                                            $order->add_payment_token($token);
+                                        $token->set_user_id($customer_id);
+                                        if( $token->validate() ) {
+                                            $save_result = $token->save();
+                                            if ($save_result) {
+                                                $order->add_payment_token($token);
+                                            }
+                                        } else {
+                                            $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
                                         }
                                     }
                                 }
@@ -1392,31 +1401,36 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $wc_existing_token = $this->get_token_by_token($payment_method_token);
         if ($wc_existing_token == null) {
             $token = new WC_Payment_Token_CC();
-            $token->set_user_id($customer_id);
+            
             $token->set_token($payment_method_token);
             $token->set_gateway_id($this->id);
             $token->set_card_type($braintree_method->cardType);
             $token->set_last4($braintree_method->last4);
             $token->set_expiry_month($braintree_method->expirationMonth);
             $token->set_expiry_year($braintree_method->expirationYear);
+            $token->set_user_id($customer_id);
+            if( $token->validate() ) {
             $save_result = $token->save();
-            if ($save_result) {
-                return array(
-                    'result' => 'success',
-                    '_payment_tokens_id' => $payment_method_token,
-                    'redirect' => wc_get_account_endpoint_url('payment-methods')
-                );
-            } else {
-                if ($zero_amount_payment == false) {
-                    wp_redirect(wc_get_account_endpoint_url('payment-methods'));
-                    exit;
-                } else {
+                if ($save_result) {
                     return array(
                         'result' => 'success',
                         '_payment_tokens_id' => $payment_method_token,
                         'redirect' => wc_get_account_endpoint_url('payment-methods')
                     );
+                } else {
+                    if ($zero_amount_payment == false) {
+                        wp_redirect(wc_get_account_endpoint_url('payment-methods'));
+                        exit;
+                    } else {
+                        return array(
+                            'result' => 'success',
+                            '_payment_tokens_id' => $payment_method_token,
+                            'redirect' => wc_get_account_endpoint_url('payment-methods')
+                        );
+                    }
                 }
+            } else {
+                throw new Exception( __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ) );
             }
         } else {
             if ($zero_amount_payment == false) {

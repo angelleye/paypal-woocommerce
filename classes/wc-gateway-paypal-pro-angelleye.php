@@ -1248,7 +1248,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                            $order->add_payment_token($token);
                         }
                     } else {
-                        $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'woocommerce' ));
+                        $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
                     }
                 }
             } else {
@@ -1667,8 +1667,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     'result' => 'success',
                     'redirect' => wc_get_account_endpoint_url('payment-methods')
                 );
-            }else {
-                throw new Exception( __( 'Invalid or missing payment token fields.', 'woocommerce' ) );
+            } else {
+                throw new Exception( __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ) );
             }
             
            

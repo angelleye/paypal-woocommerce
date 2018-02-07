@@ -1033,16 +1033,20 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             $billing_agreement_id = $this->paypal_response['BILLINGAGREEMENTID'];
             $token = new WC_Payment_Token_CC();
-            $token->set_user_id($customer_id);
             $token->set_token($billing_agreement_id);
             $token->set_gateway_id($this->gateway->id);
             $token->set_card_type('PayPal Billing Agreement');
             $token->set_last4(substr($billing_agreement_id, -4));
             $token->set_expiry_month(date('m'));
             $token->set_expiry_year(date('Y', strtotime('+20 years')));
-            $save_result = $token->save();
-            if ($save_result) {
-                $order->add_payment_token($token);
+            $token->set_user_id($customer_id);
+            if( $token->validate() ) {
+                $save_result = $token->save();
+                if ($save_result) {
+                    $order->add_payment_token($token);
+                }
+            } else {
+                throw new Exception( __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ) );
             }
         }
         if (!empty($this->paypal_response['BILLINGAGREEMENTID'])) {
