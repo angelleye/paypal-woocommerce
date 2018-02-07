@@ -690,9 +690,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
 
                         add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
-                        $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
                     } else {
-                        $order->add_order_note(sprintf(__('PayPal Pro payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
                     }
                     /* Checkout Note */
                     if (isset($_POST) && !empty($_POST['order_comments'])) {
@@ -839,7 +839,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'redirect' => $this->get_return_url($order)
                 );
             } else {
-                $order->update_status('failed', __('PayPal Pro payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce') . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"');
+                $order->update_status('failed', __('PayPal Pro Payflow payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce') . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"');
 
                 // Generate error message based on Error Display Type setting
                 if ($this->error_display_type == 'detailed') {
@@ -862,7 +862,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
                     $message .= __('Customer Email: ') . $billing_email . "\n";
                     $message = apply_filters('ae_pppf_error_email_message', $message);
-                    $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Pro Error Notification");
+                    $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Pro Payflow Error Notification");
                     wp_mail($admin_email, $subject, $message);
                 }
 
@@ -1477,7 +1477,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     return true;
                 }
             } else {
-                $order->update_status('failed', __('PayPal Pro payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce') . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"');
+                $order->update_status('failed', __('PayPal Pro Payflow payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce') . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"');
                 if ($this->error_email_notify) {
                     $admin_email = get_option("admin_email");
                     $message = __("PayFlow API call failed.", "paypal-for-woocommerce") . "\n\n";
@@ -1489,7 +1489,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
                     $message .= __('Customer Email: ') . $billing_email . "\n";
                     $message = apply_filters('ae_pppf_error_email_message', $message);
-                    $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Pro Error Notification");
+                    $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Pro Payflow Error Notification");
                     wp_mail($admin_email, $subject, $message);
                 }
                 return;
