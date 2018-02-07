@@ -1234,17 +1234,21 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     } else {
                         $customer_id = get_current_user_id();
                     }
-                    $token->set_user_id($customer_id);
                     $token->set_token( $TRANSACTIONID );
                     $token->set_gateway_id( $this->id );
                     $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
                     $token->set_last4( substr( $PayPalRequestData['CCDetails']['acct'], -4 ) );
                     $token->set_expiry_month( substr( $PayPalRequestData['CCDetails']['expdate'], 0,2 ) );
                     $token->set_expiry_year( substr( $PayPalRequestData['CCDetails']['expdate'], 2,5 ) );
-                    $this->save_payment_token($order, $TRANSACTIONID);
-                    $save_result = $token->save();
-                    if ($save_result) {
-                       $order->add_payment_token($token);
+                    $token->set_user_id($customer_id);
+                    if( $token->validate() ) {
+                        $this->save_payment_token($order, $TRANSACTIONID);
+                        $save_result = $token->save();
+                        if ($save_result) {
+                           $order->add_payment_token($token);
+                        }
+                    } else {
+                        $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'woocommerce' ));
                     }
                 }
             } else {
@@ -1650,18 +1654,23 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $customer_id = get_current_user_id();
             $TRANSACTIONID = $result['TRANSACTIONID'];
             $token = new WC_Payment_Token_CC();
-            $token->set_user_id( $customer_id );
             $token->set_token( $TRANSACTIONID );
             $token->set_gateway_id( $this->id );
             $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
             $token->set_last4( substr( $PayPalRequestData['CCDetails']['acct'], -4 ) );
             $token->set_expiry_month( substr( $PayPalRequestData['CCDetails']['expdate'], 0,2 ) );
             $token->set_expiry_year( substr( $PayPalRequestData['CCDetails']['expdate'], 2,5 ) );
-            $save_result = $token->save();
-            return array(
-                'result' => 'success',
-                'redirect' => wc_get_account_endpoint_url('payment-methods')
-            );
+            $token->set_user_id( $customer_id );
+            if( $token->validate() ) {
+                $save_result = $token->save();
+                return array(
+                    'result' => 'success',
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
+                );
+            }else {
+                throw new Exception( __( 'Invalid or missing payment token fields.', 'woocommerce' ) );
+            }
+            
            
         } else {
             $redirect_url = wc_get_account_endpoint_url('payment-methods');
