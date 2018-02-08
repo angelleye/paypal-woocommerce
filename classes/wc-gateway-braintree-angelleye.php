@@ -110,6 +110,21 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         production.show();
                     }
                 }).change();
+                
+                jQuery('#woocommerce_braintree_enable_braintree_drop_in').change(function () {
+                    var $kount_id_row = jQuery('.angelleye-kount-merchant-id').closest('tr');
+                    if (jQuery(this).is(':checked')) {
+                        if( jQuery("#woocommerce_braintree_fraud_tool option[value='kount_custom']").length == 0) {
+                            jQuery('#woocommerce_braintree_fraud_tool').append(jQuery("<option></option>").attr("value","kount_custom").text("Kount Custom")); 
+                        } 
+                    } else {
+                         alert('125');
+                        jQuery('#woocommerce_braintree_fraud_tool option[value="kount_custom"]').remove();
+                        $kount_id_row.hide();
+                    }
+                }).change();
+                
+                
                 jQuery('select.angelleye-fraud-tool').change(function () {
                     var $kount_id_row = jQuery('.angelleye-kount-merchant-id').closest('tr');
                     if ('kount_custom' === jQuery(this).val()) {
