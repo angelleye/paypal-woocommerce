@@ -1949,11 +1949,9 @@ class AngellEYE_Utility {
         if ( ! preg_match( $ipv4_pattern, $ip_address ) && filter_var($ip_address, FILTER_VALIDATE_IP,FILTER_FLAG_IPV6) ) {
             $ip_address = '';
         } 
-        $ip_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334';
         if(strlen($ip_address) > 16) {
             $ip_address = '';
         }
-        
         return $ip_address;
     }
     
