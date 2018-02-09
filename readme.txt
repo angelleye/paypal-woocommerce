@@ -126,6 +126,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.7.3 - 02.09.2018=
+* Fix - Resolves a problem with commas being used as decimal in some payment requests. ([#985](https://github.com/angelleye/paypal-woocommerce/issues/985))
 * Fix - Resolves rounding issues that can occur in PayFlow gateway. ([#987](https://github.com/angelleye/paypal-woocommerce/issues/987))
 
 = 1.4.7.2 - 01.16.2018 =
