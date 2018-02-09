@@ -125,6 +125,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.7.3 - 02.09.2018=
+* Fix - Resolves rounding issues that can occur in PayFlow gateway. ([#987](https://github.com/angelleye/paypal-woocommerce/issues/987))
+
 = 1.4.7.2 - 01.16.2018 =
 * Tweak - Removes unused / commented code that was causing a false flag with the Sucuri service. ([#981](https://github.com/angelleye/paypal-woocommerce/issues/981))
 
