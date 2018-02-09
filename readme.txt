@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjustments to Braintree Kount Custom functionality. ([#989](https://github.com/angelleye/paypal-woocommerce/issues/989)) ([#990](https://github.com/angelleye/paypal-woocommerce/issues/990))
 * Fix - Resolves a problem with commas being used as decimal in some payment requests. ([#985](https://github.com/angelleye/paypal-woocommerce/issues/985))
 * Fix - Resolves rounding issues that can occur in PayFlow gateway. ([#987](https://github.com/angelleye/paypal-woocommerce/issues/987))
+* Fix - Resolves an issue with "missing token" in some PayPal Pro requests. ([#993](https://github.com/angelleye/paypal-woocommerce/issues/993))
 
 = 1.4.7.2 - 01.16.2018 =
 * Tweak - Removes unused / commented code that was causing a false flag with the Sucuri service. ([#981](https://github.com/angelleye/paypal-woocommerce/issues/981))
