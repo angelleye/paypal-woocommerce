@@ -99,9 +99,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
             ?>
             <script type="text/javascript">
+                jQuery('.form-table').on('click', '.js-remove-merchant-account-id', function (e) {
+                    e.preventDefault();
+                    jQuery(this).closest('tr').delay(50).fadeOut(400, function () {
+                        jQuery(this).remove();
+                    });
+                });
                 jQuery('#woocommerce_braintree_sandbox').change(function () {
                     sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id').closest('tr'),
-                            production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id').closest('tr');
+                    production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id').closest('tr');
                     if (jQuery(this).is(':checked')) {
                         sandbox.show();
                         production.hide();
@@ -110,21 +116,20 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         production.show();
                     }
                 }).change();
-                
-                jQuery('#woocommerce_braintree_enable_braintree_drop_in').change(function () {
-                    var $kount_id_row = jQuery('.angelleye-kount-merchant-id').closest('tr');
-                    if (jQuery(this).is(':checked')) {
-                        if( jQuery("#woocommerce_braintree_fraud_tool option[value='kount_custom']").length == 0) {
-                            jQuery('#woocommerce_braintree_fraud_tool').append(jQuery("<option></option>").attr("value","kount_custom").text("Kount Custom")); 
-                        } 
-                    } else {
-                         alert('125');
-                        jQuery('#woocommerce_braintree_fraud_tool option[value="kount_custom"]').remove();
-                        $kount_id_row.hide();
+                jQuery('.js-add-merchant-account-id').click(function (e) {
+                    e.preventDefault();
+                    var row_fragment = '<?php echo $this->generate_merchant_account_id_html(); ?>',
+                    currency = jQuery('select#wc_braintree_merchant_account_id_currency').val();
+                    row_fragment = row_fragment.replace(/{{currency_display}}/g, currency).replace(/{{currency_code}}/g, currency.toLowerCase());
+                    if (jQuery('input[name="' + jQuery(row_fragment).find('.js-merchant-account-id-input').attr('name') + '"]').length) {
+                        return;
                     }
-                }).change();
-                
-                
+                    if (jQuery('.js-merchant-account-id-input').length) {
+                        jQuery('.js-merchant-account-id-input').closest('tr').last().after(row_fragment);
+                    } else {
+                        jQuery(this).closest('tr').after(row_fragment);
+                    }
+                });
                 jQuery('select.angelleye-fraud-tool').change(function () {
                     var $kount_id_row = jQuery('.angelleye-kount-merchant-id').closest('tr');
                     if ('kount_custom' === jQuery(this).val()) {
@@ -133,46 +138,20 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         $kount_id_row.hide();
                     }
                 }).change();
-
-
-                // sync add merchant account ID button text to selected currency
                 jQuery('select#wc_braintree_merchant_account_id_currency').change(function () {
                     jQuery('.js-add-merchant-account-id').text('<?php esc_html_e('Add merchant account ID for ', 'paypal-for-woocommerce'); ?>' + jQuery(this).val())
                 });
-
-                // add new merchant account ID field
-                jQuery('.js-add-merchant-account-id').click(function (e) {
-                    e.preventDefault();
-
-                    var row_fragment = '<?php echo $this->generate_merchant_account_id_html(); ?>',
-                            currency = jQuery('select#wc_braintree_merchant_account_id_currency').val();
-
-                    // replace currency placeholders with selected currency
-                    row_fragment = row_fragment.replace(/{{currency_display}}/g, currency).replace(/{{currency_code}}/g, currency.toLowerCase());
-
-                    // prevent adding more than 1 merchant account ID for the same currency
-                    if (jQuery('input[name="' + jQuery(row_fragment).find('.js-merchant-account-id-input').attr('name') + '"]').length) {
-                        return;
-                    }
-
-                    // inject field HTML
-                    if (jQuery('.js-merchant-account-id-input').length) {
-                        jQuery('.js-merchant-account-id-input').closest('tr').last().after(row_fragment);
+                jQuery('#woocommerce_braintree_enable_braintree_drop_in').change(function () {
+                    var $kount_id_row = jQuery('.angelleye-kount-merchant-id').closest('tr');
+                    if (jQuery(this).is(':checked')) {
+                        if( jQuery("#woocommerce_braintree_fraud_tool option[value='kount_custom']").length == 0) {
+                            jQuery('#woocommerce_braintree_fraud_tool').append(jQuery("<option></option>").attr("value","kount_custom").text("Kount Custom")); 
+                        } 
                     } else {
-                        jQuery(this).closest('tr').after(row_fragment);
+                        jQuery('#woocommerce_braintree_fraud_tool option[value="kount_custom"]').remove();
+                        $kount_id_row.hide();
                     }
-                });
-
-                jQuery('.form-table').on('click', '.js-remove-merchant-account-id', function (e) {
-                    e.preventDefault();
-
-                    jQuery(this).closest('tr').delay(50).fadeOut(400, function () {
-                        jQuery(this).remove();
-                    });
-                });
-
-
-
+                }).change();
             </script>
         </table> <?php
     }
