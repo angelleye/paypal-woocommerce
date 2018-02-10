@@ -125,6 +125,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.7.4 - 02.10.2018 =
+* Fix - Resolves a problem with PayFlow credit card button not displaying based on checkout settings. ([#996](https://github.com/angelleye/paypal-woocommerce/issues/996))
+
 = 1.4.7.3 - 02.09.2018 =
 * Tweak - Adjustments to Braintree Kount Custom functionality. ([#989](https://github.com/angelleye/paypal-woocommerce/issues/989)) ([#990](https://github.com/angelleye/paypal-woocommerce/issues/990))
 * Tweak - Adjustments to API calls with PayPal and WooCommerce to improve overall performance and load times. ([#991](https://github.com/angelleye/paypal-woocommerce/issues/991))
