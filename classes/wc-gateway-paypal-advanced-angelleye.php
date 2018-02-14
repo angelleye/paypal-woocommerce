@@ -772,7 +772,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'user' => array(
                 'title' => __('User (optional)', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('If you set up one or more additional users on the account, this value is the ID of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
+                'description' => __('If you created a user for API calls in your PayPal (PayFlow) Manager, enter that username here.  Otherwise, this should be the same value as Vendor (Merchant Login).', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
             'password' => array(
