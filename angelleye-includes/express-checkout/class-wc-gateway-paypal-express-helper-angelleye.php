@@ -1001,7 +1001,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         $this->setting['enabled'] = !empty($this->setting['enabled']) ? $this->setting['enabled'] : '';
         $this->setting['show_on_product_page'] = !empty($this->setting['show_on_product_page']) ? $this->setting['show_on_product_page'] : '';
         $enable_in_context_checkout_flow = !empty($this->setting['enable_in_context_checkout_flow']) ? $this->setting['enable_in_context_checkout_flow'] : 'no';
-        wp_register_script('angelleye_frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . '/assets/js/angelleye-frontend.js', array('jquery'), WC_VERSION, true);
+        wp_register_script('angelleye_frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-frontend.js', array('jquery'), WC_VERSION, true);
         $translation_array = array(
             'is_product' => is_product() ? "yes" : "no",
             'is_cart' => is_cart() ? "yes" : "no",
