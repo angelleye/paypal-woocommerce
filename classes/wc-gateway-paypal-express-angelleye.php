@@ -87,6 +87,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
         $this->show_on_minicart = $this->get_option('show_on_minicart', 'yes');
         $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
+        $this->enable_in_context_checkout_flow = $this->get_option('enable_in_context_checkout_flow', 'no');
         if ($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl');
             if (isset($this->notifyurl) && !empty($this->notifyurl)) {
@@ -221,6 +222,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 display_notice_and_disable_marketing_solution();
             }
         }).change();
+        
+        jQuery("#woocommerce_paypal_express_enable_in_context_checkout_flow").change(function () {
+           var in_context_checkout_part_tr =  jQuery(".in_context_checkout_part").closest('tr');
+           var in_context_checkout_part = jQuery(".in_context_checkout_part");
+            if (jQuery(this).is(':checked') === false) {
+                in_context_checkout_part_tr.hide();
+                in_context_checkout_part.hide();
+            } else {
+                in_context_checkout_part_tr.show();
+                in_context_checkout_part.show();
+            }
+        }).change();
+        
             
         jQuery('.view-paypal-insight-result').on('click', function (event) {
             event.preventDefault();
@@ -766,13 +780,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => __('If a buyer choose to pay with PayPal from the WooCommerce checkout page, but they never return from PayPal, this will save the order as pending with all available details to that point.  Note that this will not work when Express Checkout Shortcut buttons are used.'),
                 'default' => 'no'
             ),
-            'enable_in_context_checkout_flow' => array(
-                'title' => __('Enable In-Context', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('The enhanced PayPal Express Checkout with In-Context gives your customers a simplified checkout experience that keeps them at your website throughout the payment authorization process.', 'paypal-for-woocommerce'),
-                'default' => 'no'
-            ),
-            
             'debug' => array(
                 'title' => __('Debug', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -786,7 +793,64 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'yes',
                 'class' => ''
             ),
+            'display_enable_in_context_checkout_flow_section' => array(
+                'title' => __('<hr />', 'paypal-for-woocommerce'),
+                'type' => 'title',
+                'class' => '',
+                'description' => __('', 'paypal-for-woocommerce'),
+            ),
+            'enable_in_context_checkout_flow' => array(
+                'title' => __('Enable Smart Buttons', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('The enhanced PayPal Express Checkout with In-Context gives your customers a simplified checkout experience that keeps them at your website throughout the payment authorization process.', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
+            'button_styles' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'type' => 'title',
+                'class' => 'in_context_checkout_part',
+                'description' => '<div class="in_context_checkout_part">Customize your PayPal button with colors, sizes, shapes, layout and funding sources.</div>',
+            ),
+            'button_size' => array(
+                'title' => __('Button Size', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Type of PayPal Button Size (small | medium | responsive).', 'paypal-for-woocommerce'),
+                'default' => 'small',
+                'desc_tip' => true,
+                'options' => array(
+                    'small' => __('Small', 'paypal-for-woocommerce'),
+                    'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
+                ),
+            ),
+            'button_shape' => array(
+                'title' => __('Button Shape', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Type of PayPal Button Shape (pill | rect).', 'paypal-for-woocommerce'),
+                'default' => 'pill',
+                'desc_tip' => true,
+                'options' => array(
+                    'pill' => __('Pill', 'paypal-for-woocommerce'),
+                    'rect' => __('Rect', 'paypal-for-woocommerce')
+                ),
+            ),
+            'button_color' => array(
+                'title' => __('Button Color', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Type of PayPal Button Color (gold | blue | silver).', 'paypal-for-woocommerce'),
+                'default' => 'gold',
+                'desc_tip' => true,
+                'options' => array(
+                    'gold' => __('Gold', 'paypal-for-woocommerce'),
+                    'blue' => __('Blue', 'paypal-for-woocommerce'),
+                    'silver' => __('Silver', 'paypal-for-woocommerce')
+                ),
+            ),
          );
+        
         if( $this->is_us == true ) {
             $this->form_fields['paypal_marketing_solutions'] = array(
                 'title'       => __( '<hr></hr>PayPal Marketing Solutions', 'paypal-for-woocommerce' ),

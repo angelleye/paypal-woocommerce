@@ -31,6 +31,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->fraud_management_filters = $this->gateway->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
             $this->email_notify_order_cancellations = $this->gateway->get_option('email_notify_order_cancellations', 'no');
             $this->pending_authorization_order_status = $this->gateway->get_option('pending_authorization_order_status', 'On Hold');
+            $this->enable_in_context_checkout_flow = $this->gateway->get_option('enable_in_context_checkout_flow', 'no');
             if ($this->testmode == false) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
@@ -71,6 +72,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if (!empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '10486') {
             $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
             if( !empty($paypal_express_checkout['token'] ) ) {
+                
                 $payPalURL = $this->PAYPAL_URL . $paypal_express_checkout['token'];
                 wc_clear_notices();
                 wp_redirect($payPalURL, 302);
@@ -96,6 +98,17 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
     public function angelleye_redirect_action($url) {
         if (!empty($url)) {
+            
+            if($this->enable_in_context_checkout_flow) {
+                $query_str = parse_url($url, PHP_URL_QUERY);
+parse_str($query_str, $query_params);
+                    wp_send_json(array(
+                    'token' => $query_params['token']
+                    ));
+                    exit();
+                }
+            
+            
             if (!is_ajax()) {
                 wp_redirect($url);
                 exit;
@@ -676,6 +689,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->paypal_request = AngellEYE_Utility::angelleye_express_checkout_validate_shipping_address($this->paypal_request);
             $this->paypal_response = $this->paypal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'SetExpressCheckout');
+            
             return $this->paypal_response;
         } catch (Exception $ex) {
             
