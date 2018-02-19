@@ -224,3 +224,8 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
     line-height: 1.75;
     position: absolute;
 }
+
+.angelleye_smart_button_top, .angelleye_smart_button_bottom {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
