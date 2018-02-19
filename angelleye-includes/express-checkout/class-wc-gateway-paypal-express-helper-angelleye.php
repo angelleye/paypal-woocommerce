@@ -455,6 +455,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'generate_cart_nonce' => wp_create_nonce('_angelleye_generate_cart_nonce'),
                     'add_to_cart_ajaxurl' => WC_AJAX::get_endpoint('angelleye_ajax_generate_cart'),
                     'is_product' => is_product() ? "yes" : "no",
+                    'is_cart' => is_cart() ? "yes" : "no",
+                    'is_checkout' => is_checkout() ? "yes" : "no",
+                    'cart_button_possition' => $this->button_position,
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))
                         )
                 );

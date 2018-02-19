@@ -5,7 +5,22 @@
             setInterval(function () {
                 $('.woocommerce').unblock();
             }, 3000);
-            ['.angelleye_smart_button_top', '.angelleye_smart_button_bottom', '.angelleye_smart_button_checkout_top'].forEach(function (selector) {
+            
+            var angelleye_button_selector = [];
+            
+            if( angelleye_in_content_param.is_cart == 'yes') {
+                if(angelleye_in_content_param.cart_button_possition == 'both') {
+                    angelleye_button_selector.push(".angelleye_smart_button_top", ".angelleye_smart_button_bottom");
+                } else if(angelleye_in_content_param.cart_button_possition == 'bottom') {
+                    angelleye_button_selector.push(".angelleye_smart_button_bottom");
+                } else if (angelleye_in_content_param.cart_button_possition == 'top') {
+                    angelleye_button_selector.push(".angelleye_smart_button_top");
+                }
+            } else if(angelleye_in_content_param.is_checkout == 'yes') {
+                angelleye_button_selector.push(".angelleye_smart_button_checkout_top");
+            }
+            
+            angelleye_button_selector.forEach(function (selector) {
             paypal.Button.render({
                 env: 'sandbox',
                 style: {
