@@ -1,12 +1,10 @@
 ;
 (function ($, window, document) {
     if (angelleye_in_content_param.is_product == 'no') {
-        var target_url = '';
         window.paypalCheckoutReady = function () {
             setInterval(function () {
                 $('.woocommerce').unblock();
             }, 3000);
-            
             ['.angelleye_smart_button_top', '.angelleye_smart_button_bottom', '.angelleye_smart_button_checkout_top'].forEach(function (selector) {
             paypal.Button.render({
                 env: 'sandbox',
@@ -54,31 +52,6 @@
             }, selector );
             
             });
-            
-            //angelleye_in_content_param.set_express_checkout
-            
-            /*['.paypal_checkout_button', '.paypal_checkout_button_cc_top', '.paypal_checkout_button_cc_bottom', '.paypal_checkout_button_top', '.paypal_checkout_button_bottom', '.paypal_checkout_button_cc'].forEach(function (selector) {
-                paypal.checkout.setup(
-                        angelleye_in_content_param.payer_id,
-                        {
-                            environment: angelleye_in_content_param.environment,
-                            button: selector,
-                            locale: angelleye_in_content_param.locale,
-                            click: function (event) {
-                                event.preventDefault();
-                                paypal.checkout.initXO();
-                                target_url = $(event.target).parent().attr("href");
-                                if (typeof target_url === 'undefined' || target_url === null) {
-                                    target_url = $(event.target).attr("href");
-                                }
-                                if ($("#wc-paypal_express-new-payment-method").is(':checked')) {
-                                    target_url = target_url + "&ec_save_to_account=true";
-                                }
-                                paypal.checkout.startFlow(target_url);
-                            }
-                        }
-                );
-            });*/
         };
     } else {
         window.paypalCheckoutReady = function () {
