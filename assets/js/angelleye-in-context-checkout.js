@@ -14,21 +14,22 @@
             } else if(angelleye_in_content_param.is_checkout == 'yes') {
                 angelleye_button_selector.push(".angelleye_smart_button_checkout_top");
             }
-            
             angelleye_button_selector.forEach(function (selector) {
             paypal.Button.render({
-                env: 'sandbox',
+                env: angelleye_in_content_param.environment,
                 style: {
-                    size: 'medium',
-                    layout: 'vertical',
-                    shape: 'rect',
-                    tagline: false
+                    size: angelleye_in_content_param.button_size,
+                    color: angelleye_in_content_param.button_color,
+                    shape: angelleye_in_content_param.button_shape,
+                    label: angelleye_in_content_param.button_label,
+                    layout: angelleye_in_content_param.button_layout,
+                    tagline: angelleye_in_content_param.button_tagline
                 },
                 funding: {
-                    allowed: [paypal.FUNDING.CREDIT]
+                    allowed: JSON.parse(angelleye_in_content_param.allowed_funding_methods)
                 },
                 client: {
-                    sandbox: 'testoneusa_api1.gmail.com'
+                    sandbox: angelleye_in_content_param.payer_id
                 },
                 payment: function () {
                     $(selector).block({
@@ -60,7 +61,6 @@
                     return actions.redirect();
                 }
             }, selector );
-            
             });
         };
     } else {
@@ -73,11 +73,9 @@
                 select.each(function () {
                     var attribute_name = $(this).data('attribute_name') || $(this).attr('name');
                     var value = $(this).val() || '';
-
                     if (value.length > 0) {
                         chosen++;
                     }
-
                     count++;
                     data[ attribute_name ] = value;
                 });
@@ -88,17 +86,20 @@
                 };
             };
             paypal.Button.render({
-                env: 'sandbox',
+                env: angelleye_in_content_param.environment,
                 style: {
-                    size: 'medium',
-                    shape: 'rect',
-                    tagline: false
+                    size: angelleye_in_content_param.button_size,
+                    color: angelleye_in_content_param.button_color,
+                    shape: angelleye_in_content_param.button_shape,
+                    label: angelleye_in_content_param.button_label,
+                    layout: angelleye_in_content_param.button_layout,
+                    tagline: angelleye_in_content_param.button_tagline
                 },
                 funding: {
-                    allowed: [paypal.FUNDING.CREDIT]
+                    allowed: JSON.parse(angelleye_in_content_param.allowed_funding_methods)
                 },
                 client: {
-                    sandbox: 'testoneusa_api1.gmail.com'
+                    sandbox: angelleye_in_content_param.payer_id
                 },
                 payment: function (data, actions) {
                     console.log(data);
@@ -138,6 +139,7 @@
                     return actions.redirect();
                 },
                 onError: function (err) {
+                    alert(err);
                     return actions.redirect();
                 }
             }, '.angelleye_button_single');

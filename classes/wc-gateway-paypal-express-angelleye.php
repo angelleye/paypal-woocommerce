@@ -227,11 +227,29 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
            var in_context_checkout_part_tr =  jQuery(".in_context_checkout_part").closest('tr');
            var in_context_checkout_part = jQuery(".in_context_checkout_part");
             if (jQuery(this).is(':checked') === false) {
+                jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').show();
                 in_context_checkout_part_tr.hide();
                 in_context_checkout_part.hide();
             } else {
+                jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').hide();
                 in_context_checkout_part_tr.show();
                 in_context_checkout_part.show();
+            }
+        }).change();
+        
+        jQuery("#woocommerce_paypal_express_button_layout").change(function () {
+           var angelleye_button_label =  jQuery("#woocommerce_paypal_express_button_label").closest('tr');
+           var angelleye_button_tagline =  jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
+            if ( this.value === 'vertical' ) {
+                jQuery('#woocommerce_paypal_express_button_size option[value="small"]').remove();
+                angelleye_button_label.hide();
+                angelleye_button_tagline.hide();
+            } else {
+                if( jQuery("#woocommerce_paypal_express_button_size option[value='small']").length == 0) {
+                    jQuery('#woocommerce_paypal_express_button_size').append(jQuery("<option></option>").attr("value","small").text("Small")); 
+                }
+                angelleye_button_label.show();
+                angelleye_button_tagline.show();
             }
         }).change();
         
@@ -811,17 +829,55 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class' => 'in_context_checkout_part',
                 'description' => '<div class="in_context_checkout_part">Customize your PayPal button with colors, sizes, shapes, layout and funding sources.</div>',
             ),
+            'allowed_funding_methods' => array(
+                'title' => __('Show the specified funding method', 'paypal-for-woocommerce'),
+                'type' => 'multiselect',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Multiple funding sources (CREDIT | CARD | ELV).', 'paypal-for-woocommerce'),
+                'default' => 'medium',
+                'desc_tip' => true,
+                'options' => array(
+                    'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                    'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
+                    'elv' => __('Elektronisches Lastschriftverfahren', 'paypal-for-woocommerce'),
+                ),
+            ),
+            'button_layout' => array(
+                'title' => __('Button Layout', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Type of PayPal Button Layout (pill | rect).', 'paypal-for-woocommerce'),
+                'default' => 'horizontal',
+                'desc_tip' => true,
+                'options' => array(
+                    'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
+                    'vertical' => __('Vertical', 'paypal-for-woocommerce')
+                ),
+            ),
             'button_size' => array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
                 'description' => __('Type of PayPal Button Size (small | medium | responsive).', 'paypal-for-woocommerce'),
-                'default' => 'small',
+                'default' => 'medium',
                 'desc_tip' => true,
                 'options' => array(
                     'small' => __('Small', 'paypal-for-woocommerce'),
                     'medium' => __('Medium', 'paypal-for-woocommerce'),
                     'responsive' => __('Responsive', 'paypal-for-woocommerce'),
+                ),
+            ),
+            'button_color' => array(
+                'title' => __('Button Color', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Type of PayPal Button Color (gold | blue | silver).', 'paypal-for-woocommerce'),
+                'default' => 'gold',
+                'desc_tip' => true,
+                'options' => array(
+                    'gold' => __('Gold', 'paypal-for-woocommerce'),
+                    'blue' => __('Blue', 'paypal-for-woocommerce'),
+                    'silver' => __('Silver', 'paypal-for-woocommerce')
                 ),
             ),
             'button_shape' => array(
@@ -836,17 +892,32 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'rect' => __('Rect', 'paypal-for-woocommerce')
                 ),
             ),
-            'button_color' => array(
-                'title' => __('Button Color', 'paypal-for-woocommerce'),
+            'button_label' => array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Type of PayPal Button Color (gold | blue | silver).', 'paypal-for-woocommerce'),
-                'default' => 'gold',
+                'description' => __('Type of PayPal Button Label (checkout | credit | pay | buynow | paypal).', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
                 'desc_tip' => true,
                 'options' => array(
-                    'gold' => __('Gold', 'paypal-for-woocommerce'),
-                    'blue' => __('Blue', 'paypal-for-woocommerce'),
-                    'silver' => __('Silver', 'paypal-for-woocommerce')
+                    'checkout' => __('Checkout', 'paypal-for-woocommerce'),
+                    'credit' => __('Credit', 'paypal-for-woocommerce'),
+                    'pay' => __('Pay', 'paypal-for-woocommerce'),
+                    'buynow' => __('Buynow', 'paypal-for-woocommerce'),
+                    'paypal' => __('Paypal', 'paypal-for-woocommerce')
+                   
+                ),
+            ),
+            'button_tagline' => array(
+                'title' => __('Button Tagline ', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('To enable/disable the tagline/text beneath the button.', 'paypal-for-woocommerce'),
+                'default' => 'false',
+                'desc_tip' => true,
+                'options' => array(
+                    'false' => __('Disable', 'paypal-for-woocommerce'),
+                    'true' => __('Enable', 'paypal-for-woocommerce')
                 ),
             ),
          );

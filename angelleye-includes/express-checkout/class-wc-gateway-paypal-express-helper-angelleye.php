@@ -40,6 +40,15 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->testmode_value = !empty($this->setting['testmode']) ? $this->setting['testmode'] : 'yes';
                 $this->testmode = 'yes' === $this->testmode_value;
                 $this->billing_address_value = !empty($this->setting['billing_address']) ? $this->setting['billing_address'] : 'no';
+                $this->allowed_funding_methods = !empty($this->setting['allowed_funding_methods']) ? $this->setting['allowed_funding_methods'] : array(
+                    'credit', 'card', 'elv'
+                );
+                $this->button_size = !empty($this->setting['button_size']) ? $this->setting['button_size'] : 'medium';
+                $this->button_color = !empty($this->setting['button_color']) ? $this->setting['button_color'] : 'gold';
+                $this->button_shape = !empty($this->setting['button_shape']) ? $this->setting['button_shape'] : 'pill';
+                $this->button_label = !empty($this->setting['button_label']) ? $this->setting['button_label'] : 'checkout';
+                $this->button_tagline = !empty($this->setting['button_tagline']) ? $this->setting['button_tagline'] : 'false';
+                $this->button_layout = !empty($this->setting['button_layout']) ? $this->setting['button_layout'] : 'horizontal';
                 $this->billing_address = 'yes' === $this->billing_address_value;
                 $this->cancel_page = !empty($this->setting['cancel_page']) ? $this->setting['cancel_page'] : '';
                 $this->use_wp_locale_code = !empty($this->setting['use_wp_locale_code']) ? $this->setting['use_wp_locale_code'] : 'yes';
@@ -447,9 +456,15 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if(is_product() == false && 0 >= WC()->cart->total ) {
                 return false;
             }
+            if($this->button_layout == 'vertical') {
+                $this->button_label = '';
+                $this->button_tagline = '';
+                if( $this->button_size == 'small' ) {
+                    $this->button_size = 'medium';
+                }
+            }
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
             if ($this->angelleye_is_in_context_enable() == true && ( is_checkout() || is_product() || is_cart())) {
-                
                 wp_enqueue_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array(), null, true);
                 wp_enqueue_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.js', array('jquery'), $this->version, true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
@@ -466,8 +481,15 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'is_cart' => is_cart() ? "yes" : "no",
                     'is_checkout' => is_checkout() ? "yes" : "no",
                     'cart_button_possition' => $this->button_position,
+                    'button_size' => $this->button_size,
+                    'button_color' => $this->button_color,
+                    'button_shape' => $this->button_shape,
+                    'button_label' => $this->button_label,
+                    'button_tagline' => $this->button_tagline,
+                    'button_layout' => $this->button_layout,
+                    'allowed_funding_methods' => json_encode($this->allowed_funding_methods),
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))
-                        )
+                  )
                 );
             }
 
