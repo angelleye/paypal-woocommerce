@@ -68,12 +68,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function angelleye_redirect() {
+        $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
+        $payPalURL = $this->PAYPAL_URL . $paypal_express_checkout['token'];
         if (!empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '10486') {
-            $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
             if (!empty($paypal_express_checkout['token'])) {
-                $payPalURL = $this->PAYPAL_URL . $paypal_express_checkout['token'];
                 wc_clear_notices();
-                if ($this->enable_in_context_checkout_flow) {
+                if ($this->enable_in_context_checkout_flow === 'yes') {
                     wp_send_json(array(
                         'url' => $payPalURL
                     ));
@@ -86,7 +86,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         }
         unset(WC()->session->paypal_express_checkout);
         if (!is_ajax()) {
-            if ($this->enable_in_context_checkout_flow) {
+            if ($this->enable_in_context_checkout_flow === 'yes') {
                 wp_send_json(array(
                     'url' => $payPalURL
                 ));
@@ -96,7 +96,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 exit;
             }
         } else {
-            if ($this->enable_in_context_checkout_flow) {
+            if ($this->enable_in_context_checkout_flow === 'yes') {
                 wp_send_json(array(
                     'url' => $payPalURL
                 ));
@@ -118,7 +118,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_redirect_action($url) {
         if (!empty($url)) {
 
-            if ($this->enable_in_context_checkout_flow) {
+            if ($this->enable_in_context_checkout_flow === 'yes') {
                 $query_str = parse_url($url, PHP_URL_QUERY);
                 parse_str($query_str, $query_params);
                 wp_send_json(array(
@@ -1409,7 +1409,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function angelleye_wp_safe_redirect($url, $action = null) {
-        if ($this->enable_in_context_checkout_flow && $action == 'get_express_checkout_details') {
+        if ($this->enable_in_context_checkout_flow === 'yes' && $action == 'get_express_checkout_details') {
             wp_send_json(array(
                 'url' => $url
             ));

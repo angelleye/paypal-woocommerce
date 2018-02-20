@@ -2,12 +2,7 @@
 (function ($, window, document) {
     if (angelleye_in_content_param.is_product == 'no') {
         window.paypalCheckoutReady = function () {
-            setInterval(function () {
-                $('.woocommerce').unblock();
-            }, 3000);
-            
             var angelleye_button_selector = [];
-            
             if( angelleye_in_content_param.is_cart == 'yes') {
                 if(angelleye_in_content_param.cart_button_possition == 'both') {
                     angelleye_button_selector.push(".angelleye_smart_button_top", ".angelleye_smart_button_bottom");
@@ -36,7 +31,7 @@
                     sandbox: 'testoneusa_api1.gmail.com'
                 },
                 payment: function () {
-                    $('.cart').block({
+                    $(selector).block({
                         message: null,
                         overlayCSS: {
                             background: '#fff',
