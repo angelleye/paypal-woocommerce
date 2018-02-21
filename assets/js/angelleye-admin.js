@@ -1,4 +1,8 @@
 jQuery(document).ready(function ($) {
+    
+    jQuery('.display_smart_button_previews_button').html('<input type="button" name="angelleye_smart_button_preview_and_refresh" class="button-primary angelleye_smart_button_preview_and_refresh" value="Preview & Refresh Smart Button">');
+    
+    
     if (angelleye_admin.shop_based_us_or_uk=="no") {
         jQuery("#woocommerce_paypal_express_show_paypal_credit").attr("disabled",true);
         jQuery("label[for='woocommerce_paypal_express_show_paypal_credit']").css('color','#666');
@@ -280,4 +284,96 @@ jQuery(document).ready(function ($) {
                         jQuery('#angelleye_payment_submit_button').show();
                     }
                 });
+                
+                
+                
+                
+                jQuery('.in_context_checkout_part').change(function () {
+                display_angelleye_smart_button();
+            }).change();
+                
+                
+                
+                
+               jQuery(document).on('click', ".angelleye_smart_button_preview_and_refresh", function() {
+                    
+                    
+                    display_angelleye_smart_button();
+                    
+                    
+                    
+                });
+                
+                
+                
+                function display_angelleye_smart_button() {
+                    
+                    
+                    jQuery(".display_smart_button_previews").html('');
+                    
+                    var angelleye_env = jQuery('#woocommerce_paypal_express_testmode').is(':checked') ? 'sandbox' : 'production';
+                    
+                    if(angelleye_env === 'sandbox') {
+                        var payer_id = jQuery('#woocommerce_paypal_express_sandbox_api_username').val();
+                    } else {
+                        var payer_id = jQuery('#woocommerce_paypal_express_api_username').val();
+                    }
+                    
+                    
+                    var angelleye_size = jQuery("#woocommerce_paypal_express_button_size").val();
+                    var angelleye_color = jQuery("#woocommerce_paypal_express_button_color").val();
+                    var angelleye_shape = jQuery("#woocommerce_paypal_express_button_shape").val();
+                    var angelleye_label = jQuery("#woocommerce_paypal_express_button_label").val();
+                    var angelleye_layout = jQuery("#woocommerce_paypal_express_button_layout").val();
+                    var angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
+                    var angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery('#woocommerce_paypal_express_allowed_funding_methods').val();
+                    
+                    
+                    if(angelleye_layout === 'vertical') {
+                angelleye_label = '';
+                angelleye_tagline = '';
+                if( angelleye_size === 'small' ) {
+                    angelleye_size = 'medium';
+                }
+            }
+                    
+                    
+                    
+                     window.paypalCheckoutReady = function () {
+           
+     
+            paypal.Button.render({
+                env: angelleye_env,
+                style: {
+                    size: angelleye_size,
+                    color: angelleye_color,
+                    shape: angelleye_shape,
+                    label: angelleye_label,
+                    layout: angelleye_layout,
+                    tagline: angelleye_tagline
+                },
+                funding: {
+                    allowed: angelleye_woocommerce_paypal_express_allowed_funding_methods
+                },
+                client: {
+                    sandbox: payer_id,
+                    production: payer_id
+                },
+                payment: function () {
+                    
+                },
+                onAuthorize: function (data, actions) {
+                    
+                },
+                onCancel: function (data, actions) {
+                    
+                },
+                onError: function (err) {
+                    alert(err);
+                }
+            }, '.display_smart_button_previews' );
+            
+        };
+                }
+                
 });

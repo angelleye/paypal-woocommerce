@@ -223,6 +223,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }).change();
         
+   
+    jQuery('#woocommerce_paypal_express_allowed_funding_methods').closest('table').addClass('angelleye_smart_button_setting_left');
+    
+    
+        
         jQuery("#woocommerce_paypal_express_enable_in_context_checkout_flow").change(function () {
            var in_context_checkout_part_tr =  jQuery(".in_context_checkout_part").closest('tr');
            var in_context_checkout_part = jQuery(".in_context_checkout_part");
@@ -829,7 +834,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'in_context_checkout_part',
-                'description' => '<div class="in_context_checkout_part">Customize your PayPal button with colors, sizes, shapes, layout and funding sources.</div>',
+                'description' => '<div class="in_context_checkout_part angelleye_button_settings_selector">Customize your PayPal button with colors, sizes, shapes, layout and funding sources.</div>',
             ),
             'allowed_funding_methods' => array(
                 'title' => __('Show the specified funding method', 'paypal-for-woocommerce'),
@@ -922,6 +927,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'true' => __('Enable', 'paypal-for-woocommerce')
                 ),
             ),
+             'angelleye_smart_button_preview_title' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'type' => 'title',
+                'class' => '',
+                'description' => '<div><div class="display_smart_button_previews_button">Wow</div><div class="display_smart_button_previews">Wow</div></div>',
+            ),
+            
          );
         
         if( $this->is_us == true ) {
