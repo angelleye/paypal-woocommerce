@@ -29,7 +29,8 @@
                     allowed: JSON.parse(angelleye_in_content_param.allowed_funding_methods)
                 },
                 client: {
-                    sandbox: angelleye_in_content_param.payer_id
+                    sandbox: angelleye_in_content_param.payer_id,
+                    production: angelleye_in_content_param.payer_id
                 },
                 payment: function () {
                     $(selector).block({

@@ -330,12 +330,16 @@ jQuery(document).ready(function ($) {
                     
                     
                     if(angelleye_layout === 'vertical') {
-                angelleye_label = '';
-                angelleye_tagline = '';
-                if( angelleye_size === 'small' ) {
-                    angelleye_size = 'medium';
-                }
-            }
+                        angelleye_label = '';
+                        angelleye_tagline = '';
+                        if( angelleye_size === 'small' ) {
+                            angelleye_size = 'medium';
+                        }
+                    }
+                    
+                    if(angelleye_label === 'credit') {
+                        angelleye_color = '';
+                    }
                     
                     
                     

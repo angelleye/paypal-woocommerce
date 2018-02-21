@@ -280,6 +280,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     jQuery('#woocommerce_paypal_express_pending_authorization_order_status').closest('tr').hide();
                 }
             }).change();
+            
+            jQuery('#woocommerce_paypal_express_button_label').change(function () {
+                if ( this.value === 'credit' ) {
+                    jQuery('#woocommerce_paypal_express_button_color').closest('tr').hide();
+                } else {
+                    jQuery('#woocommerce_paypal_express_button_color').closest('tr').show();
+                    
+                }
+            }).change();
+            
+            
+            
             var display_disable_terms = "<?php echo $display_disable_terms; ?>";
             <?php if ($guest_checkout === 'no') { ?>
                         jQuery("#woocommerce_paypal_express_skip_final_review").prop("checked", false);
@@ -865,13 +877,30 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Type of PayPal Button Size (small | medium | responsive).', 'paypal-for-woocommerce'),
+                'description' => __('Type of PayPal Button Size (small | medium | large | responsive).', 'paypal-for-woocommerce'),
                 'default' => 'medium',
                 'desc_tip' => true,
                 'options' => array(
                     'small' => __('Small', 'paypal-for-woocommerce'),
                     'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'large' => __('Large', 'paypal-for-woocommerce'),
                     'responsive' => __('Responsive', 'paypal-for-woocommerce'),
+                ),
+            ),
+            'button_label' => array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Type of PayPal Button Label (checkout | credit | pay | buynow | paypal).', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => array(
+                    'checkout' => __('Checkout', 'paypal-for-woocommerce'),
+                    'credit' => __('Credit', 'paypal-for-woocommerce'),
+                    'pay' => __('Pay', 'paypal-for-woocommerce'),
+                    'buynow' => __('Buynow', 'paypal-for-woocommerce'),
+                    'paypal' => __('Paypal', 'paypal-for-woocommerce')
+                   
                 ),
             ),
             'button_color' => array(
@@ -899,22 +928,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'rect' => __('Rect', 'paypal-for-woocommerce')
                 ),
             ),
-            'button_label' => array(
-                'title' => __('Button Label', 'paypal-for-woocommerce'),
-                'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Type of PayPal Button Label (checkout | credit | pay | buynow | paypal).', 'paypal-for-woocommerce'),
-                'default' => 'checkout',
-                'desc_tip' => true,
-                'options' => array(
-                    'checkout' => __('Checkout', 'paypal-for-woocommerce'),
-                    'credit' => __('Credit', 'paypal-for-woocommerce'),
-                    'pay' => __('Pay', 'paypal-for-woocommerce'),
-                    'buynow' => __('Buynow', 'paypal-for-woocommerce'),
-                    'paypal' => __('Paypal', 'paypal-for-woocommerce')
-                   
-                ),
-            ),
             'button_tagline' => array(
                 'title' => __('Button Tagline ', 'paypal-for-woocommerce'),
                 'type' => 'select',
@@ -931,7 +944,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => '',
-                'description' => '<div><div class="display_smart_button_previews_button">Wow</div><div class="display_smart_button_previews">Wow</div></div>',
+                'description' => '<div><div class="display_smart_button_previews_button"></div><div class="display_smart_button_previews"></div></div>',
             ),
             
          );

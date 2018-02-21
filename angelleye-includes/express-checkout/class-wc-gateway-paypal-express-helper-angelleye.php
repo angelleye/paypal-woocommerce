@@ -463,6 +463,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->button_size = 'medium';
                 }
             }
+            if($this->button_label == 'credit') {
+                $this->button_color = '';
+            }
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
             if ($this->angelleye_is_in_context_enable() == true && ( is_checkout() || is_product() || is_cart())) {
                 wp_enqueue_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array(), null, true);
