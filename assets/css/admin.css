@@ -242,3 +242,6 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 .display_smart_button_previews {
     margin-top: 30px;
 }
+.angelleye_smart_button_preview_and_refresh {
+    display: none;
+}

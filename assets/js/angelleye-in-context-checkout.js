@@ -71,6 +71,7 @@
         };
     } else {
         window.paypalCheckoutReady = function () {
+            console.log(paypal.FUNDING);
             var get_attributes = function () {
                 var select = $('.variations_form').find('.variations select'),
                         data = {},

@@ -1,6 +1,6 @@
 jQuery(document).ready(function ($) {
     
-    jQuery('.display_smart_button_previews_button').html('<input type="button" name="angelleye_smart_button_preview_and_refresh" class="button-primary angelleye_smart_button_preview_and_refresh" value="Preview & Refresh Smart Button">');
+    jQuery('.display_smart_button_previews_button').html('<input type="hidden" name="angelleye_smart_button_preview_and_refresh" class="button-primary angelleye_smart_button_preview_and_refresh" value="Preview & Refresh Smart Button">');
     
     
     if (angelleye_admin.shop_based_us_or_uk=="no") {

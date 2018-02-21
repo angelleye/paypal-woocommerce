@@ -858,7 +858,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => array(
                     'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
                     'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
-                    'elv' => __('Elektronisches Lastschriftverfahren', 'paypal-for-woocommerce'),
+                    'elv' => __('ELV', 'paypal-for-woocommerce'),
+                    'venmo' => __('Venmo', 'paypal-for-woocommerce'),
                 ),
             ),
             'button_layout' => array(
