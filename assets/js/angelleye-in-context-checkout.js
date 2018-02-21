@@ -40,7 +40,10 @@
                             opacity: 0.6
                         }
                     });
-                    return paypal.request.post(angelleye_in_content_param.set_express_checkout).then(function (data) {
+                    var data_param = {
+                       request_from: 'JSv4'
+                    };
+                    return paypal.request.post(angelleye_in_content_param.set_express_checkout, data_param).then(function (data) {
                         return data.token;
                     });
                 },
@@ -48,7 +51,9 @@
                     var params = {
                         paymentToken: data.paymentToken,
                         payerID: data.payerID,
-                        token: data.paymentToken
+                        token: data.paymentToken,
+                        request_from: 'JSv4'
+                        
                     };
                     paypal.request.post(data.returnUrl, params).then(function (res) {
                         data.returnUrl = res.url;
@@ -103,7 +108,6 @@
                     sandbox: angelleye_in_content_param.payer_id
                 },
                 payment: function (data, actions) {
-                    console.log(data);
                     $('.cart').block({
                         message: null,
                         overlayCSS: {
@@ -117,10 +121,14 @@
                         'attributes': $('.variations_form').length ? get_attributes().data : [],
                         'wc-paypal_express-new-payment-method': $("#wc-paypal_express-new-payment-method").is(':checked'),
                         'is_cc': '',
-                        'product_id': $("input[name=add-to-cart]").val()
+                        'product_id': $("input[name=add-to-cart]").val(),
+                        'request_from': 'JSv4'
                     };
                     return paypal.request.post(angelleye_in_content_param.add_to_cart_ajaxurl, data_param).then(function (data) {
-                        return paypal.request.post(data.url).then(function (res) {
+                        var params = {
+                            request_from: 'JSv4'
+                        };
+                        return paypal.request.post(data.url, params).then(function (res) {
                             return res.token;
                         });
                     });
@@ -129,7 +137,8 @@
                     var params = {
                         paymentToken: data.paymentToken,
                         payerID: data.payerID,
-                        token: data.paymentToken
+                        token: data.paymentToken,
+                        request_from: 'JSv4'
                     };
                     paypal.request.post(data.returnUrl, params).then(function (res) {
                         data.returnUrl = res.url;
