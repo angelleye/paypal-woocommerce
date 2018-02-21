@@ -296,30 +296,16 @@ jQuery(document).ready(function ($) {
                 
                 
                jQuery(document).on('click', ".angelleye_smart_button_preview_and_refresh", function() {
-                    
-                    
                     display_angelleye_smart_button();
-                    
-                    
-                    
                 });
-                
-                
-                
                 function display_angelleye_smart_button() {
-                    
-                    
                     jQuery(".display_smart_button_previews").html('');
-                    
                     var angelleye_env = jQuery('#woocommerce_paypal_express_testmode').is(':checked') ? 'sandbox' : 'production';
-                    
                     if(angelleye_env === 'sandbox') {
                         var payer_id = jQuery('#woocommerce_paypal_express_sandbox_api_username').val();
                     } else {
                         var payer_id = jQuery('#woocommerce_paypal_express_api_username').val();
                     }
-                    
-                    
                     var angelleye_size = jQuery("#woocommerce_paypal_express_button_size").val();
                     var angelleye_color = jQuery("#woocommerce_paypal_express_button_color").val();
                     var angelleye_shape = jQuery("#woocommerce_paypal_express_button_shape").val();
@@ -327,8 +313,6 @@ jQuery(document).ready(function ($) {
                     var angelleye_layout = jQuery("#woocommerce_paypal_express_button_layout").val();
                     var angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
                     var angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery('#woocommerce_paypal_express_allowed_funding_methods').val();
-                    
-                    
                     if(angelleye_layout === 'vertical') {
                         angelleye_label = '';
                         angelleye_tagline = '';
@@ -336,48 +320,42 @@ jQuery(document).ready(function ($) {
                             angelleye_size = 'medium';
                         }
                     }
-                    
                     if(angelleye_label === 'credit') {
                         angelleye_color = '';
                     }
-                    
-                    
-                    
                      window.paypalCheckoutReady = function () {
-           
-     
-            paypal.Button.render({
-                env: angelleye_env,
-                style: {
-                    size: angelleye_size,
-                    color: angelleye_color,
-                    shape: angelleye_shape,
-                    label: angelleye_label,
-                    layout: angelleye_layout,
-                    tagline: angelleye_tagline
-                },
-                funding: {
-                    allowed: angelleye_woocommerce_paypal_express_allowed_funding_methods
-                },
-                client: {
-                    sandbox: payer_id,
-                    production: payer_id
-                },
-                payment: function () {
-                    
-                },
-                onAuthorize: function (data, actions) {
-                    
-                },
-                onCancel: function (data, actions) {
-                    
-                },
-                onError: function (err) {
-                    alert(err);
-                }
-            }, '.display_smart_button_previews' );
-            
-        };
+                        paypal.Button.render({
+                            env: angelleye_env,
+                            style: {
+                                size: angelleye_size,
+                                color: angelleye_color,
+                                shape: angelleye_shape,
+                                label: angelleye_label,
+                                layout: angelleye_layout,
+                                tagline: angelleye_tagline
+                            },
+                            funding: {
+                                allowed: angelleye_woocommerce_paypal_express_allowed_funding_methods
+                            },
+                            client: {
+                                sandbox: payer_id,
+                                production: payer_id
+                            },
+                            payment: function () {
+
+                            },
+                            onAuthorize: function (data, actions) {
+
+                            },
+                            onCancel: function (data, actions) {
+
+                            },
+                            onError: function (err) {
+                                alert(err);
+                            }
+                        }, '.display_smart_button_previews' );
+
+                    };
                 }
                 
 });
