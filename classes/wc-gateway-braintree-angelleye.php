@@ -43,6 +43,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->merchant_account_id = $this->sandbox == 'no' ? $this->get_option('merchant_account_id') : $this->get_option('sandbox_merchant_account_id');
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
+        $this->fraud_tool = $this->get_option('fraud_tool', 'basic');
+        $this->kount_merchant_id = ($this->fraud_tool == 'kount_custom') ? $this->get_option('kount_merchant_id') : '';
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
@@ -52,6 +54,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         add_action('admin_notices', array($this, 'checks'));
         add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_braintree_credit_card_form_fields'), 10, 2);
         $this->customer_id;
+        if ($this->fraud_tool == 'kount_standard' || $this->fraud_tool == 'kount_custom') {
+            add_filter('clean_url', array($this, 'adjust_fraud_script_tag'));
+            add_action('wp_print_footer_scripts', array($this, 'render_fraud_js'), 1);
+        }
        
     }
 
@@ -74,6 +80,25 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     } else {
                         sandbox.hide();
                         production.show();
+                    }
+                }).change();
+                jQuery('select.angelleye-fraud-tool').change(function () {
+                    var $kount_id_row = jQuery('.angelleye-kount-merchant-id').closest('tr');
+                    if ('kount_custom' === jQuery(this).val()) {
+                        $kount_id_row.show();
+                    } else {
+                        $kount_id_row.hide();
+                    }
+                }).change();
+                jQuery('#woocommerce_braintree_enable_braintree_drop_in').change(function () {
+                    var $kount_id_row = jQuery('.angelleye-kount-merchant-id').closest('tr');
+                    if (jQuery(this).is(':checked')) {
+                        if( jQuery("#woocommerce_braintree_fraud_tool option[value='kount_custom']").length == 0) {
+                            jQuery('#woocommerce_braintree_fraud_tool').append(jQuery("<option></option>").attr("value","kount_custom").text("Kount Custom")); 
+                        } 
+                    } else {
+                        jQuery('#woocommerce_braintree_fraud_tool option[value="kount_custom"]').remove();
+                        $kount_id_row.hide();
                     }
                 }).change();
             </script>
@@ -280,7 +305,30 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'hidden',
                 'default' => 'yes',
                 'class' => ''
-            )
+            ),
+            'advanced' => array(
+                'title' => __('Fraud Settings (Kount)', 'paypal-for-woocommerce'),
+                'type' => 'title',
+                'description' => 'Advanced Fraud Tools help to identify and prevent fraudulent activity before a transaction or verification ever reaches a customer’s bank. With the help of our partner, Kount, we use hundreds of fraud detection tests – ranging from device fingerprinting to proxy piercing – to analyze each credit card transaction or verification within milliseconds.',
+            ),
+            'fraud_tool' => array(
+                'title' => __('Fraud Tool', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'angelleye-fraud-tool wc-enhanced-select',
+                'default' => 'basic',
+                'desc_tip' => __('Select the fraud tool you want to use. Basic is enabled by default and requires no additional configuration. Kount Standard requires you to enable advanced fraud tools in your Braintree control panel. To use Kount Custom you must contact Braintree support.', 'paypal-for-woocommerce'),
+                'options' => array(
+                    'basic' => __('Basic', 'paypal-for-woocommerce'),
+                    'kount_standard' => __('Kount Standard', 'paypal-for-woocommerce'),
+                    'kount_custom' => __('Kount Custom', 'paypal-for-woocommerce')
+                )
+            ),
+            'kount_merchant_id' => array(
+                'title' => __('Kount Merchant ID', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'class' => 'angelleye-kount-merchant-id',
+                'desc_tip' => __('Speak with your account management team at Braintree to obtain your Kount Merchant ID.', 'paypal-for-woocommerce'),
+            ),
         );
     }
 
@@ -479,6 +527,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'postalCode' => $order->billing_postcode,
                 'countryCodeAlpha2' => $order->billing_country,
             );
+            if ($this->fraud_tool == 'kount_standard' || $this->fraud_tool == 'kount_custom') {
+                $device_data = self::get_posted_variable('device_data');
+                if (!empty($device_data)) {
+                    $device_data = wp_unslash($device_data);
+                    $request_data['deviceData'] = $device_data;
+                }
+            }
             $request_data['shipping'] = array(
                 'firstName' => $order->shipping_first_name,
                 'lastName' => $order->shipping_last_name,
@@ -961,6 +1016,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if( $this->enable_braintree_drop_in ) {
             wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/js/braintree-2.29.0.min.js', array(), WC_VERSION, false);
         }
+        if ($this->fraud_tool == 'kount_standard' || $this->fraud_tool == 'kount_custom') {
+            wp_enqueue_script('braintree-data', 'https://js.braintreegateway.com/v1/braintree-data.js', array('braintree-gateway'), WC_VERSION, true);
+        }
     }
     
     public static function get_posted_variable( $variable, $default = '' ) {
@@ -1189,5 +1247,48 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
         }
         return $settings;
+    }
+    
+    public function adjust_fraud_script_tag($url) {
+        if (strpos($url, 'braintree-data.js') !== false) {
+            $url = "{$url}' async='true";
+        }
+        if (strpos($url, 'https://js.braintreegateway.com/v2/braintree.js') !== false) {
+            return "$url' data-log-level='error";
+        }
+        return $url;
+    }
+
+    public function render_fraud_js() {
+        $environment = 'BraintreeData.environments.' . $this->environment;
+        $this->kount_merchant_id = ($this->fraud_tool == 'kount_custom') ? $this->get_option('kount_merchant_id') : '';
+
+        if ($this->fraud_tool == 'kount_custom' && !empty($this->kount_merchant_id)) {
+            $environment .= '.withId' . $this->kount_merchant_id;
+        }
+        ?>
+        <script>
+            jQuery(function ($) {
+                var form_id;
+                if ($('form.checkout').length) {
+                    form_id = $('form.checkout').attr('id') || 'checkout';
+                    if ('checkout' === form_id) {
+                        $('form.checkout').attr('id', form_id);
+                    }
+
+                } else if ($('form#order_review').length) {
+                    form_id = 'order_review'
+                } else if ($('form#add_payment_method').length) {
+                    form_id = 'add_payment_method'
+                }
+                if (!form_id) {
+                    return;
+                }
+                window.onBraintreeDataLoad = function () {
+                    BraintreeData.setup('<?php echo esc_js($this->merchant_id); ?>', form_id, <?php echo esc_js($environment); ?>);
+                }
+            });
+        </script>
+        <?php
     }
 }
