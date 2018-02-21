@@ -228,10 +228,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
            var in_context_checkout_part = jQuery(".in_context_checkout_part");
             if (jQuery(this).is(':checked') === false) {
                 jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').show();
+                jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').show();
                 in_context_checkout_part_tr.hide();
                 in_context_checkout_part.hide();
             } else {
                 jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').hide();
+                jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').hide();
                 in_context_checkout_part_tr.show();
                 in_context_checkout_part.show();
             }
