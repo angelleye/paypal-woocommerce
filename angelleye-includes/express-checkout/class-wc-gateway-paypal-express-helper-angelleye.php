@@ -43,12 +43,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->allowed_funding_methods = !empty($this->setting['allowed_funding_methods']) ? $this->setting['allowed_funding_methods'] : array(
                     'credit', 'card', 'elv'
                 );
-                $this->button_size = !empty($this->setting['button_size']) ? $this->setting['button_size'] : 'medium';
+                $this->button_size = !empty($this->setting['button_size']) ? $this->setting['button_size'] : 'small';
                 $this->button_color = !empty($this->setting['button_color']) ? $this->setting['button_color'] : 'gold';
                 $this->button_shape = !empty($this->setting['button_shape']) ? $this->setting['button_shape'] : 'pill';
                 $this->button_label = !empty($this->setting['button_label']) ? $this->setting['button_label'] : 'checkout';
                 $this->button_tagline = !empty($this->setting['button_tagline']) ? $this->setting['button_tagline'] : 'false';
                 $this->button_layout = !empty($this->setting['button_layout']) ? $this->setting['button_layout'] : 'horizontal';
+                $this->button_fundingicons = !empty($this->setting['button_fundingicons']) ? $this->setting['button_fundingicons'] : 'false';
                 $this->billing_address = 'yes' === $this->billing_address_value;
                 $this->cancel_page = !empty($this->setting['cancel_page']) ? $this->setting['cancel_page'] : '';
                 $this->use_wp_locale_code = !empty($this->setting['use_wp_locale_code']) ? $this->setting['use_wp_locale_code'] : 'yes';
@@ -459,10 +460,11 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if($this->button_layout == 'vertical') {
                 $this->button_label = '';
                 $this->button_tagline = '';
+                $this->button_fundingicons = '';
                 if( $this->button_size == 'small' ) {
                     $this->button_size = 'medium';
                 }
-            }
+            } 
             if($this->button_label == 'credit') {
                 $this->button_color = '';
             }
@@ -490,6 +492,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'button_label' => $this->button_label,
                     'button_tagline' => $this->button_tagline,
                     'button_layout' => $this->button_layout,
+                    'button_fundingicons' => $this->button_fundingicons,
                     'allowed_funding_methods' => json_encode($this->allowed_funding_methods),
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))
                   )

@@ -247,10 +247,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         jQuery("#woocommerce_paypal_express_button_layout").change(function () {
            var angelleye_button_label =  jQuery("#woocommerce_paypal_express_button_label").closest('tr');
            var angelleye_button_tagline =  jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
+           var angelleye_button_fundingicons =  jQuery("#woocommerce_paypal_express_button_fundingicons").closest('tr');
             if ( this.value === 'vertical' ) {
                 jQuery('#woocommerce_paypal_express_button_size option[value="small"]').remove();
                 angelleye_button_label.hide();
                 angelleye_button_tagline.hide();
+                angelleye_button_fundingicons.hide();
             } else {
                 if( jQuery("#woocommerce_paypal_express_button_size option[value='small']").length == 0) {
                     jQuery('#woocommerce_paypal_express_button_size').append(jQuery("<option></option>").attr("value","small").text("Small")); 
@@ -852,7 +854,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Show the specified funding method', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Multiple funding sources (CREDIT | CARD | ELV).', 'paypal-for-woocommerce'),
+                'description' => __('Multiple funding sources (CREDIT | CARD | ELV | Venmo).', 'paypal-for-woocommerce'),
                 'default' => 'medium',
                 'desc_tip' => true,
                 'options' => array(
@@ -866,7 +868,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Type of PayPal Button Layout (pill | rect).', 'paypal-for-woocommerce'),
+                'description' => __('Type of PayPal Button Layout (horizontal | vertical).', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
                 'options' => array(
@@ -879,7 +881,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
                 'description' => __('Type of PayPal Button Size (small | medium | large | responsive).', 'paypal-for-woocommerce'),
-                'default' => 'medium',
+                'default' => 'small',
                 'desc_tip' => true,
                 'options' => array(
                     'small' => __('Small', 'paypal-for-woocommerce'),
@@ -934,6 +936,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
                 'description' => __('To enable/disable the tagline/text beneath the button.', 'paypal-for-woocommerce'),
+                'default' => 'false',
+                'desc_tip' => true,
+                'options' => array(
+                    'false' => __('Disable', 'paypal-for-woocommerce'),
+                    'true' => __('Enable', 'paypal-for-woocommerce')
+                ),
+            ),
+            'button_fundingicons' => array(
+                'title' => __('Button Fundingicons ', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('To display or hide funding instrument icons beneath the payment button.', 'paypal-for-woocommerce'),
                 'default' => 'false',
                 'desc_tip' => true,
                 'options' => array(

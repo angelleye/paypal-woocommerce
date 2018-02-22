@@ -23,7 +23,8 @@
                     shape: angelleye_in_content_param.button_shape,
                     label: angelleye_in_content_param.button_label,
                     layout: angelleye_in_content_param.button_layout,
-                    tagline: angelleye_in_content_param.button_tagline
+                    tagline: angelleye_in_content_param.button_tagline,
+                    fundingicons : angelleye_in_content_param.button_fundingicons
                 },
                 funding: {
                     allowed: JSON.parse(angelleye_in_content_param.allowed_funding_methods)
@@ -71,7 +72,6 @@
         };
     } else {
         window.paypalCheckoutReady = function () {
-            console.log(paypal.FUNDING);
             var get_attributes = function () {
                 var select = $('.variations_form').find('.variations select'),
                         data = {},
@@ -100,7 +100,8 @@
                     shape: angelleye_in_content_param.button_shape,
                     label: angelleye_in_content_param.button_label,
                     layout: angelleye_in_content_param.button_layout,
-                    tagline: angelleye_in_content_param.button_tagline
+                    tagline: angelleye_in_content_param.button_tagline,
+                    fundingicons : angelleye_in_content_param.button_fundingicons
                 },
                 funding: {
                     allowed: JSON.parse(angelleye_in_content_param.allowed_funding_methods)
