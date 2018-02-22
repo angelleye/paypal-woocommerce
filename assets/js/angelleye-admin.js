@@ -312,6 +312,7 @@ jQuery(document).ready(function ($) {
                     var angelleye_label = jQuery("#woocommerce_paypal_express_button_label").val();
                     var angelleye_layout = jQuery("#woocommerce_paypal_express_button_layout").val();
                     var angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
+                    var angelleye_fundingicons = jQuery("#woocommerce_paypal_express_button_fundingicons").val();
                     var angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery('#woocommerce_paypal_express_allowed_funding_methods').val();
                     if(angelleye_layout === 'vertical') {
                         angelleye_label = '';
@@ -332,7 +333,8 @@ jQuery(document).ready(function ($) {
                                 shape: angelleye_shape,
                                 label: angelleye_label,
                                 layout: angelleye_layout,
-                                tagline: angelleye_tagline
+                                tagline: angelleye_tagline,
+                                fundingicons : angelleye_fundingicons
                             },
                             funding: {
                                 allowed: angelleye_woocommerce_paypal_express_allowed_funding_methods
