@@ -854,7 +854,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Show the specified funding method', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Multiple funding sources (CREDIT | CARD | ELV).', 'paypal-for-woocommerce'),
+                'description' => __('Multiple funding sources (CREDIT | CARD | ELV | Venmo).', 'paypal-for-woocommerce'),
                 'default' => 'medium',
                 'desc_tip' => true,
                 'options' => array(
@@ -868,7 +868,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Type of PayPal Button Layout (pill | rect).', 'paypal-for-woocommerce'),
+                'description' => __('Type of PayPal Button Layout (horizontal | vertical).', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
                 'options' => array(
@@ -881,7 +881,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
                 'description' => __('Type of PayPal Button Size (small | medium | large | responsive).', 'paypal-for-woocommerce'),
-                'default' => 'medium',
+                'default' => 'small',
                 'desc_tip' => true,
                 'options' => array(
                     'small' => __('Small', 'paypal-for-woocommerce'),
