@@ -232,6 +232,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
            var in_context_checkout_part_tr =  jQuery(".in_context_checkout_part").closest('tr');
            var in_context_checkout_part = jQuery(".in_context_checkout_part");
             if (jQuery(this).is(':checked') === false) {
+                jQuery('.display_smart_button_previews').html('');
                 jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').show();
                 jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').show();
                 in_context_checkout_part_tr.hide();
@@ -291,8 +292,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                 }
             }).change();
-            
-            
             
             var display_disable_terms = "<?php echo $display_disable_terms; ?>";
             <?php if ($guest_checkout === 'no') { ?>
@@ -931,11 +930,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'rect' => __('Rect', 'paypal-for-woocommerce')
                 ),
             ),
-            'button_tagline' => array(
-                'title' => __('Button Tagline ', 'paypal-for-woocommerce'),
+            'button_fundingicons' => array(
+                'title' => __('Button Fundingicons ', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('To enable/disable the tagline/text beneath the button.', 'paypal-for-woocommerce'),
+                'description' => __('To display or hide funding instrument icons beneath the payment button.', 'paypal-for-woocommerce'),
                 'default' => 'false',
                 'desc_tip' => true,
                 'options' => array(
@@ -943,11 +942,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'true' => __('Enable', 'paypal-for-woocommerce')
                 ),
             ),
-            'button_fundingicons' => array(
-                'title' => __('Button Fundingicons ', 'paypal-for-woocommerce'),
+            'button_tagline' => array(
+                'title' => __('Button Tagline ', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('To display or hide funding instrument icons beneath the payment button.', 'paypal-for-woocommerce'),
+                'description' => __('To enable/disable the tagline/text beneath the button.', 'paypal-for-woocommerce'),
                 'default' => 'false',
                 'desc_tip' => true,
                 'options' => array(
