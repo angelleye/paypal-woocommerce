@@ -3,71 +3,74 @@
     if (angelleye_in_content_param.is_product == 'no') {
         window.paypalCheckoutReady = function () {
             var angelleye_button_selector = [];
-            if( angelleye_in_content_param.is_cart == 'yes') {
-                if(angelleye_in_content_param.cart_button_possition == 'both') {
+            if (angelleye_in_content_param.is_cart == 'yes') {
+                if (angelleye_in_content_param.cart_button_possition == 'both') {
                     angelleye_button_selector.push(".angelleye_smart_button_top", ".angelleye_smart_button_bottom");
-                } else if(angelleye_in_content_param.cart_button_possition == 'bottom') {
+                } else if (angelleye_in_content_param.cart_button_possition == 'bottom') {
                     angelleye_button_selector.push(".angelleye_smart_button_bottom");
                 } else if (angelleye_in_content_param.cart_button_possition == 'top') {
                     angelleye_button_selector.push(".angelleye_smart_button_top");
                 }
-            } else if(angelleye_in_content_param.is_checkout == 'yes') {
+            } else if (angelleye_in_content_param.is_checkout == 'yes') {
                 angelleye_button_selector.push(".angelleye_smart_button_checkout_top");
             }
             angelleye_button_selector.forEach(function (selector) {
-            paypal.Button.render({
-                env: angelleye_in_content_param.environment,
-                style: {
-                    size: angelleye_in_content_param.button_size,
+                angelleye_product_style_object = {size: angelleye_in_content_param.button_size,
                     color: angelleye_in_content_param.button_color,
                     shape: angelleye_in_content_param.button_shape,
                     label: angelleye_in_content_param.button_label,
                     layout: angelleye_in_content_param.button_layout,
                     tagline: angelleye_in_content_param.button_tagline,
-                    fundingicons : angelleye_in_content_param.button_fundingicons
-                },
-                funding: {
-                    allowed: JSON.parse(angelleye_in_content_param.allowed_funding_methods)
-                },
-                client: {
-                    sandbox: angelleye_in_content_param.payer_id,
-                    production: angelleye_in_content_param.payer_id
-                },
-                payment: function () {
-                    $(selector).block({
-                        message: null,
-                        overlayCSS: {
-                            background: '#fff',
-                            opacity: 0.6
-                        }
-                    });
-                    var data_param = {
-                       request_from: 'JSv4'
-                    };
-                    return paypal.request.post(angelleye_in_content_param.set_express_checkout, data_param).then(function (data) {
-                        return data.token;
-                    });
-                },
-                onAuthorize: function (data, actions) {
-                    var params = {
-                        paymentToken: data.paymentToken,
-                        payerID: data.payerID,
-                        token: data.paymentToken,
-                        request_from: 'JSv4'
-                        
-                    };
-                    paypal.request.post(data.returnUrl, params).then(function (res) {
-                        data.returnUrl = res.url;
-                        actions.redirect();
-                    });
-                },
-                onCancel: function (data, actions) {
-                    return actions.redirect();
-                },
-                onError: function (err) {
-                    return actions.redirect();
+                    fundingicons: angelleye_in_content_param.button_fundingicons};
+
+                if (angelleye_in_content_param.button_layout === 'horizontal') {
+                    angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
                 }
-            }, selector );
+                paypal.Button.render({
+                    env: angelleye_in_content_param.environment,
+                    style: angelleye_product_style_object,
+                    funding: {
+                        allowed: JSON.parse(angelleye_in_content_param.allowed_funding_methods)
+                    },
+                    client: {
+                        sandbox: angelleye_in_content_param.payer_id,
+                        production: angelleye_in_content_param.payer_id
+                    },
+                    payment: function () {
+                        $(selector).block({
+                            message: null,
+                            overlayCSS: {
+                                background: '#fff',
+                                opacity: 0.6
+                            }
+                        });
+                        var data_param = {
+                            request_from: 'JSv4'
+                        };
+                        return paypal.request.post(angelleye_in_content_param.set_express_checkout, data_param).then(function (data) {
+                            return data.token;
+                        });
+                    },
+                    onAuthorize: function (data, actions) {
+                        var params = {
+                            paymentToken: data.paymentToken,
+                            payerID: data.payerID,
+                            token: data.paymentToken,
+                            request_from: 'JSv4'
+
+                        };
+                        paypal.request.post(data.returnUrl, params).then(function (res) {
+                            data.returnUrl = res.url;
+                            actions.redirect();
+                        });
+                    },
+                    onCancel: function (data, actions) {
+                        return actions.redirect();
+                    },
+                    onError: function (err) {
+                        return actions.redirect();
+                    }
+                }, selector);
             });
         };
     } else {
@@ -92,17 +95,20 @@
                     'data': data
                 };
             };
+            angelleye_cart_style_object = {size: angelleye_in_content_param.button_size,
+                color: angelleye_in_content_param.button_color,
+                shape: angelleye_in_content_param.button_shape,
+                label: angelleye_in_content_param.button_label,
+                layout: angelleye_in_content_param.button_layout,
+                tagline: angelleye_in_content_param.button_tagline,
+                fundingicons: angelleye_in_content_param.button_fundingicons};
+
+            if (angelleye_in_content_param.button_layout === 'horizontal') {
+                angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
+            }
             paypal.Button.render({
                 env: angelleye_in_content_param.environment,
-                style: {
-                    size: angelleye_in_content_param.button_size,
-                    color: angelleye_in_content_param.button_color,
-                    shape: angelleye_in_content_param.button_shape,
-                    label: angelleye_in_content_param.button_label,
-                    layout: angelleye_in_content_param.button_layout,
-                    tagline: angelleye_in_content_param.button_tagline,
-                    fundingicons : angelleye_in_content_param.button_fundingicons
-                },
+                style: angelleye_cart_style_object,
                 funding: {
                     allowed: JSON.parse(angelleye_in_content_param.allowed_funding_methods)
                 },
