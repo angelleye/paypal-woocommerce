@@ -1,4 +1,13 @@
 jQuery(document).ready(function ($) {
+    $('#woocommerce_paypal_express_button_fundingicons').change();
+    $('#woocommerce_paypal_express_button_fundingicons').change(function () {
+        var paypal_express_button_tagline = $('#woocommerce_paypal_express_button_tagline').closest('tr').hide();
+        if (this.value === 'true') {
+            paypal_express_button_tagline.hide();
+        } else {
+            paypal_express_button_tagline.show();
+        }
+    });
     jQuery('.display_smart_button_previews_button').html('<input type="hidden" name="angelleye_smart_button_preview_and_refresh" class="button-primary angelleye_smart_button_preview_and_refresh" value="Preview & Refresh Smart Button">');
     if (angelleye_admin.shop_based_us_or_uk == "no") {
         jQuery("#woocommerce_paypal_express_show_paypal_credit").attr("disabled", true);
@@ -254,6 +263,17 @@ jQuery(document).ready(function ($) {
     jQuery('.in_context_checkout_part').change(function () {
         display_angelleye_smart_button();
     }).change();
+    window.paypalCheckoutReady = function () {
+        display_angelleye_smart_button();
+    };
+    jQuery("#woocommerce_paypal_express_enable_in_context_checkout_flow").change(function () {
+
+        if (jQuery(this).is(':checked') === false) {
+
+        } else {
+            display_angelleye_smart_button();
+        }
+    }).change();
     function display_angelleye_smart_button() {
         jQuery(".display_smart_button_previews").html('');
         var angelleye_env = jQuery('#woocommerce_paypal_express_testmode').is(':checked') ? 'sandbox' : 'production';
@@ -270,6 +290,9 @@ jQuery(document).ready(function ($) {
         var angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
         var angelleye_fundingicons = jQuery("#woocommerce_paypal_express_button_fundingicons").val();
         var angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery('#woocommerce_paypal_express_allowed_funding_methods').val();
+        if(angelleye_woocommerce_paypal_express_allowed_funding_methods === null) {
+            angelleye_woocommerce_paypal_express_allowed_funding_methods = '';
+        }
         if (angelleye_layout === 'vertical') {
             angelleye_label = '';
             angelleye_tagline = '';
