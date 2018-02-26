@@ -41,8 +41,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->testmode = 'yes' === $this->testmode_value;
                 $this->billing_address_value = !empty($this->setting['billing_address']) ? $this->setting['billing_address'] : 'no';
                 $this->allowed_funding_methods = !empty($this->setting['allowed_funding_methods']) ? $this->setting['allowed_funding_methods'] : array(
-                    'credit', 'card', 'elv'
+                    'credit', 'card', 'elv', 'venmo'
                 );
+                $this->disallowed_funding_methods = !empty($this->setting['disallowed_funding_methods']) ? $this->setting['disallowed_funding_methods'] : array();
                 $this->button_size = !empty($this->setting['button_size']) ? $this->setting['button_size'] : 'small';
                 $this->button_color = !empty($this->setting['button_color']) ? $this->setting['button_color'] : 'gold';
                 $this->button_shape = !empty($this->setting['button_shape']) ? $this->setting['button_shape'] : 'pill';
@@ -494,6 +495,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'button_layout' => $this->button_layout,
                     'button_fundingicons' => $this->button_fundingicons,
                     'allowed_funding_methods' => json_encode($this->allowed_funding_methods),
+                    'disallowed_funding_methods' => json_encode($this->disallowed_funding_methods),
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))
                   )
                 );
