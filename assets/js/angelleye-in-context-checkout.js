@@ -14,11 +14,10 @@
             } else if (angelleye_in_content_param.is_checkout == 'yes') {
                 angelleye_button_selector.push(".angelleye_smart_button_checkout_top");
             }
-            angelleye_in_content_param.allowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
-            angelleye_in_content_param.disallowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
-
-            angelleye_in_content_param.allowed_funding_methods = jQuery.grep(angelleye_in_content_param.allowed_funding_methods, function (value) {
-                return jQuery.inArray(value, angelleye_in_content_param.disallowed_funding_methods) < 0;
+            allowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
+            disallowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
+            allowed_funding_methods_var = jQuery.grep(allowed_funding_methods_var, function (value) {
+                return jQuery.inArray(value, disallowed_funding_methods_var) < 0;
             });
             angelleye_cart_style_object = {size: angelleye_in_content_param.button_size,
                 color: angelleye_in_content_param.button_color,
@@ -26,11 +25,9 @@
                 label: angelleye_in_content_param.button_label,
                 layout: angelleye_in_content_param.button_layout,
                 tagline: angelleye_in_content_param.button_tagline
-                
+
             };
             angelleye_button_selector.forEach(function (selector) {
-
-
                 if (angelleye_in_content_param.button_layout === 'horizontal') {
                     angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
                 }
@@ -38,7 +35,8 @@
                     env: angelleye_in_content_param.environment,
                     style: angelleye_cart_style_object,
                     funding: {
-                        allowed: angelleye_in_content_param.allowed_funding_methods
+                        allowed: allowed_funding_methods_var,
+                        disallowed: jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods)
                     },
                     client: {
                         sandbox: angelleye_in_content_param.payer_id,
@@ -83,14 +81,14 @@
         };
     } else {
 
-        window.paypalCheckoutReady = function () {
-            angelleye_in_content_param.allowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
-            angelleye_in_content_param.disallowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
 
+        angelleye_in_content_param.allowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
+        angelleye_in_content_param.disallowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
+        window.paypalCheckoutReady = function () {
             angelleye_in_content_param.allowed_funding_methods = jQuery.grep(angelleye_in_content_param.allowed_funding_methods, function (value) {
                 return jQuery.inArray(value, angelleye_in_content_param.disallowed_funding_methods) < 0;
             });
-            console.log(angelleye_in_content_param.allowed_funding_methods);
+
             var get_attributes = function () {
                 var select = $('.variations_form').find('.variations select'),
                         data = {},
@@ -117,7 +115,7 @@
                 label: angelleye_in_content_param.button_label,
                 layout: angelleye_in_content_param.button_layout,
                 tagline: angelleye_in_content_param.button_tagline,
-                };
+            };
 
             if (angelleye_in_content_param.button_layout === 'horizontal') {
                 angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
@@ -126,7 +124,8 @@
                 env: angelleye_in_content_param.environment,
                 style: angelleye_cart_style_object,
                 funding: {
-                    allowed: angelleye_in_content_param.allowed_funding_methods
+                    allowed: angelleye_in_content_param.allowed_funding_methods,
+                    disallowed: angelleye_in_content_param.disallowed_funding_methods
                 },
                 client: {
                     sandbox: angelleye_in_content_param.payer_id
@@ -173,7 +172,6 @@
                     return actions.redirect();
                 },
                 onError: function (err) {
-                    alert(err);
                     return actions.redirect();
                 }
             }, '.angelleye_button_single');

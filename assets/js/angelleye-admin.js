@@ -1,13 +1,5 @@
 jQuery(document).ready(function ($) {
-    $('#woocommerce_paypal_express_button_fundingicons').change();
-    $('#woocommerce_paypal_express_button_fundingicons').change(function () {
-        var paypal_express_button_tagline = $('#woocommerce_paypal_express_button_tagline').closest('tr').hide();
-        if (this.value === 'true') {
-            paypal_express_button_tagline.hide();
-        } else {
-            paypal_express_button_tagline.show();
-        }
-    });
+
     jQuery('.display_smart_button_previews_button').html('<input type="hidden" name="angelleye_smart_button_preview_and_refresh" class="button-primary angelleye_smart_button_preview_and_refresh" value="Preview & Refresh Smart Button">');
     if (angelleye_admin.shop_based_us_or_uk == "no") {
         jQuery("#woocommerce_paypal_express_show_paypal_credit").attr("disabled", true);
@@ -290,9 +282,9 @@ jQuery(document).ready(function ($) {
         var angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
         var angelleye_fundingicons = jQuery("#woocommerce_paypal_express_button_fundingicons").val();
         var angelleye_woocommerce_paypal_express_allowed_funding_methods = ['credit', 'card', 'elv', 'venmo'];
-        
+
         var angelleye_woocommerce_paypal_express_disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
-        if(angelleye_woocommerce_paypal_express_disallowed_funding_methods === null) {
+        if (angelleye_woocommerce_paypal_express_disallowed_funding_methods === null) {
             angelleye_woocommerce_paypal_express_disallowed_funding_methods = '';
         }
         if (angelleye_layout === 'vertical') {
@@ -315,19 +307,17 @@ jQuery(document).ready(function ($) {
         if (angelleye_layout === 'horizontal') {
             style_object['fundingicons'] = angelleye_fundingicons;
         }
-        
-        angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery.grep(angelleye_woocommerce_paypal_express_allowed_funding_methods, function(value) {
+
+        angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery.grep(angelleye_woocommerce_paypal_express_allowed_funding_methods, function (value) {
             return jQuery.inArray(value, angelleye_woocommerce_paypal_express_disallowed_funding_methods) < 0;
         });
-        
-        
-        
         window.paypalCheckoutReady = function () {
             paypal.Button.render({
                 env: angelleye_env,
                 style: style_object,
                 funding: {
-                    allowed: angelleye_woocommerce_paypal_express_allowed_funding_methods
+                    allowed: angelleye_woocommerce_paypal_express_allowed_funding_methods,
+                    disallowed: angelleye_woocommerce_paypal_express_disallowed_funding_methods
                 },
                 client: {
                     sandbox: payer_id,

@@ -230,6 +230,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         
         jQuery("#woocommerce_paypal_express_enable_in_context_checkout_flow").change(function () {
            var in_context_checkout_part_tr =  jQuery(".in_context_checkout_part").closest('tr');
+           var in_context_checkout_part_tagline = jQuery(".in_context_checkout_part_tagline").closest('tr');
            var in_context_checkout_part = jQuery(".in_context_checkout_part");
             if (jQuery(this).is(':checked') === false) {
                 jQuery('.display_smart_button_previews').html('');
@@ -237,6 +238,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').show();
                 in_context_checkout_part_tr.hide();
                 in_context_checkout_part.hide();
+                in_context_checkout_part_tagline.hide();
             } else {
                 jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').hide();
                 jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').hide();
@@ -245,6 +247,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }).change();
         
+        
+        
+    
         jQuery("#woocommerce_paypal_express_button_layout").change(function () {
            var angelleye_button_label =  jQuery("#woocommerce_paypal_express_button_label").closest('tr');
            var angelleye_button_tagline =  jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
@@ -259,10 +264,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     jQuery('#woocommerce_paypal_express_button_size').append(jQuery("<option></option>").attr("value","small").text("Small")); 
                 }
                 angelleye_button_label.show();
-                angelleye_button_tagline.show();
+                angelleye_button_fundingicons.show();
+                if(jQuery('#woocommerce_paypal_express_button_fundingicons').val() !== 'true') {
+                    angelleye_button_tagline.show();
+                }
             }
         }).change();
         
+       
             
         jQuery('.view-paypal-insight-result').on('click', function (event) {
             event.preventDefault();
@@ -337,6 +346,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     production.show();
                 }
             }).change();
+            jQuery('#woocommerce_paypal_express_button_fundingicons').change(function () {
+            var paypal_express_button_tagline = jQuery('#woocommerce_paypal_express_button_tagline').closest('tr').hide();
+            if (this.value === 'true') {
+                paypal_express_button_tagline.hide();
+            } else {
+                paypal_express_button_tagline.show();
+            }
+        }).change();
         </script>
          <?php
     }
@@ -944,7 +961,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'button_tagline' => array(
                 'title' => __('Button Tagline ', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_tagline',
                 'description' => __('To enable/disable the tagline/text beneath the button.', 'paypal-for-woocommerce'),
                 'default' => 'false',
                 'desc_tip' => true,
