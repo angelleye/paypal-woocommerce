@@ -224,7 +224,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }).change();
         
    
-    jQuery('#woocommerce_paypal_express_allowed_funding_methods').closest('table').addClass('angelleye_smart_button_setting_left');
+    jQuery('#woocommerce_paypal_express_disallowed_funding_methods').closest('table').addClass('angelleye_smart_button_setting_left');
     
     
         
@@ -849,8 +849,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class' => 'in_context_checkout_part',
                 'description' => '<div class="in_context_checkout_part angelleye_button_settings_selector">Customize your PayPal button with colors, sizes, shapes, layout and funding sources.</div>',
             ),
-            'allowed_funding_methods' => array(
-                'title' => __('Show the specified funding method', 'paypal-for-woocommerce'),
+            'disallowed_funding_methods' => array(
+                'title' => __('Hide the specified funding method', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
                 'description' => __('Multiple funding sources (CREDIT | CARD | ELV | Venmo).', 'paypal-for-woocommerce'),
@@ -859,8 +859,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => array(
                     'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
                     'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
-                    'elv' => __('ELV', 'paypal-for-woocommerce'),
-                    'venmo' => __('Venmo', 'paypal-for-woocommerce'),
+                    'elv' => __('ELV', 'paypal-for-woocommerce')
                 ),
             ),
             'button_layout' => array(
