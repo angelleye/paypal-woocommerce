@@ -53,6 +53,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->button_fundingicons = !empty($this->setting['button_fundingicons']) ? $this->setting['button_fundingicons'] : 'false';
                 $this->billing_address = 'yes' === $this->billing_address_value;
                 $this->cancel_page = !empty($this->setting['cancel_page']) ? $this->setting['cancel_page'] : '';
+                
                 $this->use_wp_locale_code = !empty($this->setting['use_wp_locale_code']) ? $this->setting['use_wp_locale_code'] : 'yes';
                 $this->paypal_marketing_solutions_enabled = !empty($this->setting['paypal_marketing_solutions_enabled']) ? $this->setting['paypal_marketing_solutions_enabled'] : 'no';
                 $this->paypal_marketing_solutions_cid_production = !empty($this->setting['paypal_marketing_solutions_cid_production']) ? $this->setting['paypal_marketing_solutions_cid_production'] : '';
@@ -472,6 +473,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
             if ($this->angelleye_is_in_context_enable() == true && ( is_checkout() || is_product() || is_cart())) {
+                $cancel_url = !empty($this->cancel_page) ? get_permalink($this->cancel_page) : wc_get_cart_url();
                 wp_enqueue_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array(), null, true);
                 wp_enqueue_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.js', array('jquery'), $this->version, true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
@@ -495,6 +497,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'button_tagline' => $this->button_tagline,
                     'button_layout' => $this->button_layout,
                     'button_fundingicons' => $this->button_fundingicons,
+                    'cancel_page' => $cancel_url,
                     'allowed_funding_methods' => json_encode($this->allowed_funding_methods),
                     'disallowed_funding_methods' => json_encode($this->disallowed_funding_methods),
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))
