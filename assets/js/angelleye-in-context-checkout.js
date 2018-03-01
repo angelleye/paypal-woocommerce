@@ -169,10 +169,11 @@
                     });
                 },
                 onCancel: function (data, actions) {
-                    return actions.redirect();
+                    window.location.href = angelleye_in_content_param.cancel_page;
                 },
                 onError: function (err) {
-                    return actions.redirect();
+                    window.location.href = angelleye_in_content_param.cancel_page;
+                    
                 }
             }, '.angelleye_button_single');
         };
