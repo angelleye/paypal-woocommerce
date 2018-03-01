@@ -39,6 +39,7 @@ class PayPal_Rest_API_Utility {
         if(!is_object($this->gateway)) {
             return;
         }
+        $this->payment_method = $this->gateway->id;
         $this->add_paypal_rest_api_lib();
         $this->create_transaction_method_obj();
         $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'no');
