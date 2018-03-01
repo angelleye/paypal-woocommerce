@@ -230,9 +230,9 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     float: left;
 }
 #woocommerce_paypal_express_angelleye_smart_button_preview_title, .display_smart_button_previews, .display_smart_button_previews_button {
-    width: 49%;
+    
     float: right;
-    text-align: center;
+    margin-left: 100px;
 }
 
 #woocommerce_paypal_express_paypal_marketing_solutions {
@@ -245,3 +245,14 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 .angelleye_smart_button_preview_and_refresh {
     display: none;
 }
+@media screen and (max-width: 400px) {
+        .display_smart_button_previews {
+            width: 100%;
+        }
+    }
+
+    @media screen and (min-width: 400px) {
+        .display_smart_button_previews {
+           width: 250px;
+        }
+    }
