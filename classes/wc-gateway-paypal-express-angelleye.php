@@ -225,30 +225,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         
    
     jQuery('#woocommerce_paypal_express_disallowed_funding_methods').closest('table').addClass('angelleye_smart_button_setting_left');
-    
-    
-        
         jQuery("#woocommerce_paypal_express_enable_in_context_checkout_flow").change(function () {
-           var in_context_checkout_part_tr =  jQuery(".in_context_checkout_part").closest('tr');
-           var in_context_checkout_part_tagline = jQuery(".in_context_checkout_part_tagline").closest('tr');
-           var in_context_checkout_part = jQuery(".in_context_checkout_part");
+           
             if (jQuery(this).is(':checked') === false) {
                 jQuery('.display_smart_button_previews').html('');
                 jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').show();
                 jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').show();
-                in_context_checkout_part_tr.hide();
-                in_context_checkout_part.hide();
-                in_context_checkout_part_tagline.hide();
+                jQuery('.angelleye_smart_button_setting_left').hide();
             } else {
                 jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').hide();
                 jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').hide();
-                in_context_checkout_part_tr.show();
-                in_context_checkout_part.show();
+                jQuery('.angelleye_smart_button_setting_left').show();
             }
         }).change();
-        
-        
-        
     
         jQuery("#woocommerce_paypal_express_button_layout").change(function () {
            var angelleye_button_label =  jQuery("#woocommerce_paypal_express_button_label").closest('tr');
@@ -295,9 +284,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             
             jQuery('#woocommerce_paypal_express_button_label').change(function () {
                 if ( this.value === 'credit' ) {
+                    
                     jQuery('#woocommerce_paypal_express_button_color').closest('tr').hide();
                 } else {
                     jQuery('#woocommerce_paypal_express_button_color').closest('tr').show();
+                    
                     
                 }
             }).change();
@@ -347,12 +338,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
             }).change();
             jQuery('#woocommerce_paypal_express_button_fundingicons').change(function () {
-            var paypal_express_button_tagline = jQuery('#woocommerce_paypal_express_button_tagline').closest('tr').hide();
-            if (this.value === 'true') {
-                paypal_express_button_tagline.hide();
-            } else {
-                paypal_express_button_tagline.show();
-            }
+                var paypal_express_button_tagline = jQuery('#woocommerce_paypal_express_button_tagline').closest('tr').hide();
+                if (this.value === 'true') {
+                    paypal_express_button_tagline.hide();
+                } else {
+                    if( jQuery("#woocommerce_paypal_express_button_layout").val() !== 'vertical' ) {
+                        paypal_express_button_tagline.show();
+                    }
+                    paypal_express_button_tagline.show();
+                }
         }).change();
         </script>
          <?php
@@ -961,7 +955,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'button_tagline' => array(
                 'title' => __('Button Tagline ', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part_tagline',
+                'class' => 'wc-enhanced-select in_context_checkout_part_tagline in_context_checkout_part',
                 'description' => __('To enable/disable the tagline/text beneath the button.', 'paypal-for-woocommerce'),
                 'default' => 'false',
                 'desc_tip' => true,
