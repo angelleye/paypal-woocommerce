@@ -253,15 +253,18 @@ jQuery(document).ready(function ($) {
         }
     });
     jQuery('.in_context_checkout_part').change(function () {
+        jQuery(".display_smart_button_previews").html('');
         display_angelleye_smart_button();
     }).change();
     
     window.paypalCheckoutReady = function () {
+         
         display_angelleye_smart_button();
     };
-    
+   
     function display_angelleye_smart_button() {
-        jQuery(".display_smart_button_previews").html('');
+        
+        
         var angelleye_env = jQuery('#woocommerce_paypal_express_testmode').is(':checked') ? 'sandbox' : 'production';
         if (angelleye_env === 'sandbox') {
             var payer_id = jQuery('#woocommerce_paypal_express_sandbox_api_username').val();
@@ -293,6 +296,7 @@ jQuery(document).ready(function ($) {
             angelleye_color = '';
             angelleye_fundingicons = '';
         }
+        
         var style_object = {size: angelleye_size,
             color: angelleye_color,
             shape: angelleye_shape,
@@ -300,9 +304,14 @@ jQuery(document).ready(function ($) {
             layout: angelleye_layout,
             tagline: angelleye_tagline};
 
-        if (angelleye_layout === 'horizontal') {
+         var disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
+                if (disallowed_funding_methods === null) {
+                    disallowed_funding_methods = [];
+                }            
+        if (angelleye_layout === 'horizontal' && (jQuery.inArray('card', disallowed_funding_methods)  > -1 === false) && angelleye_label !== 'credit' && angelleye_fundingicons === "true") {
             style_object['fundingicons'] = angelleye_fundingicons;
         }
+        
 
         console.log(style_object);
         angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery.grep(angelleye_woocommerce_paypal_express_allowed_funding_methods, function (value) {
