@@ -1,5 +1,16 @@
 ;
 (function ($, window, document) {
+     function is_funding_icon_should_show_in_content() {
+        var disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
+        if (disallowed_funding_methods === null) {
+            disallowed_funding_methods = [];
+        }
+        if (jQuery.inArray('card', disallowed_funding_methods)  > -1 ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     if (angelleye_in_content_param.is_product == 'no') {
         window.paypalCheckoutReady = function () {
             var angelleye_button_selector = [];
@@ -27,8 +38,9 @@
                 tagline: angelleye_in_content_param.button_tagline
 
             };
+            
             angelleye_button_selector.forEach(function (selector) {
-                if (angelleye_in_content_param.button_layout === 'horizontal') {
+                if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit') {
                     angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
                 }
                 paypal.Button.render({
@@ -114,12 +126,15 @@
                 shape: angelleye_in_content_param.button_shape,
                 label: angelleye_in_content_param.button_label,
                 layout: angelleye_in_content_param.button_layout,
-                tagline: angelleye_in_content_param.button_tagline,
+                tagline: angelleye_in_content_param.button_tagline
             };
-
-            if (angelleye_in_content_param.button_layout === 'horizontal') {
+            
+            if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit' && angelleye_in_content_param.button_fundingicons === "true") {
                 angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
             }
+            
+            
+            
             paypal.Button.render({
                 env: angelleye_in_content_param.environment,
                 style: angelleye_cart_style_object,
