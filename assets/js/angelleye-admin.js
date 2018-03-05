@@ -253,7 +253,7 @@ jQuery(document).ready(function ($) {
         }
     });
     jQuery('.in_context_checkout_part').change(function () {
-        jQuery(".display_smart_button_previews").html('');
+        
         display_angelleye_smart_button();
     }).change();
     
@@ -264,7 +264,7 @@ jQuery(document).ready(function ($) {
    
     function display_angelleye_smart_button() {
         
-        
+        jQuery(".display_smart_button_previews").html('');
         var angelleye_env = jQuery('#woocommerce_paypal_express_testmode').is(':checked') ? 'sandbox' : 'production';
         if (angelleye_env === 'sandbox') {
             var payer_id = jQuery('#woocommerce_paypal_express_sandbox_api_username').val();
