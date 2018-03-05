@@ -181,6 +181,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (jQuery.inArray('card', disallowed_funding_methods)  > -1 ) {
                 return false;
             } else {
+                if( jQuery("#woocommerce_paypal_express_button_layout").val() === "vertical" ) {
+                    return false;
+                }
                 return true;
             }
         }
