@@ -313,6 +313,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     jQuery('#woocommerce_paypal_express_button_color').closest('tr').show();
                     if( is_funding_icon_should_show_php() === true) {
                         jQuery('#woocommerce_paypal_express_button_fundingicons').closest('tr').show();
+                        if(jQuery('#woocommerce_paypal_express_button_fundingicons').val() !== 'true') {
+                            paypal_express_button_tagline.show();
+                        }
                     } else {
                         paypal_express_button_tagline.show();
                     }
