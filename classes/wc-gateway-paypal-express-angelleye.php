@@ -166,6 +166,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
         $report_home = 'https://business.paypal.com/merchantdata/reportHome?cid='.$this->paypal_marketing_solutions_cid_production;
         ?>
+        <script>
+        function display_notice_and_disable_marketing_solution() {
+            jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('disabled', 'disabled');
+            jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('readonly', 'readonly'); 
+            jQuery('.display_msg_when_activated').html('');
+            jQuery('.display_msg_when_activated').html('<span class="pms-red">PayPal Marketing Solutions only available for Live mode.<br/><br/></span>');
+        }
+        </script>
         <?php if( $this->is_us == true ) { ?>
         <div id="more-info-popup" style="display:none;">
           <iframe width="889" height="554" src="https://www.youtube.com/embed/hXWFn8_jUDc" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
@@ -173,26 +181,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         
         <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
         <script>
-        function is_funding_icon_should_show_php() {
-            var disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
-            if (disallowed_funding_methods === null) {
-                disallowed_funding_methods = [];
-            }
-            if (jQuery.inArray('card', disallowed_funding_methods)  > -1 ) {
-                return false;
-            } else {
-                if( jQuery("#woocommerce_paypal_express_button_layout").val() === "vertical" ) {
-                    return false;
-                }
-                return true;
-            }
-        }
-        function display_notice_and_disable_marketing_solution() {
-            jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('disabled', 'disabled');
-            jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('readonly', 'readonly'); 
-            jQuery('.display_msg_when_activated').html('');
-            jQuery('.display_msg_when_activated').html('<span class="pms-red">PayPal Marketing Solutions only available for Live mode.<br/><br/></span>');
-        }
+        
+        
         var muse_options_production = {
             onContainerCreate: callback_onsuccess_production,
             url: '<?php echo $this->home_url; ?>',
@@ -220,7 +210,34 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             <?php
         }
         ?>
-        jQuery("#woocommerce_paypal_express_testmode, #woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature").on('keyup change keypress', function (){
+        
+         jQuery('.view-paypal-insight-result').on('click', function (event) {
+            event.preventDefault();
+            var win = window.open('<?php echo $report_home; ?>', '_blank');
+            win.focus();
+        });
+        function callback_onsuccess_production(containerId) {
+            muse_options_production.cid = containerId;
+        }
+        MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
+        </script>
+        <?php } ?>
+        <script type="text/javascript">
+            function is_funding_icon_should_show_php() {
+                var disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
+                if (disallowed_funding_methods === null) {
+                    disallowed_funding_methods = [];
+                }
+                if (jQuery.inArray('card', disallowed_funding_methods)  > -1 ) {
+                    return false;
+                } else {
+                    if( jQuery("#woocommerce_paypal_express_button_layout").val() === "vertical" ) {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            jQuery("#woocommerce_paypal_express_testmode, #woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature").on('keyup change keypress', function (){
             if (jQuery(this).is(':checked') === false) {
                 var api_username = (jQuery('#woocommerce_paypal_express_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_username').val() : jQuery('#woocommerce_paypal_express_api_username').text();
                     var api_password = (jQuery('#woocommerce_paypal_express_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_password').val() : jQuery('#woocommerce_paypal_express_api_password').text();
@@ -237,13 +254,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }).change();
         
-   
-    jQuery('#woocommerce_paypal_express_disallowed_funding_methods').closest('table').addClass('angelleye_smart_button_setting_left');
         jQuery("#woocommerce_paypal_express_enable_in_context_checkout_flow").change(function () {
             if (jQuery(this).is(':checked') === false) {
                 jQuery('.display_smart_button_previews').hide();
                 jQuery('.angelleye_button_settings_selector').hide();
-                jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').show();
+                jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').hide();
                 jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').show();
                 jQuery('.angelleye_smart_button_setting_left').hide();
             } else {
@@ -278,19 +293,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         }).change();
-         jQuery('.view-paypal-insight-result').on('click', function (event) {
-            event.preventDefault();
-            var win = window.open('<?php echo $report_home; ?>', '_blank');
-            win.focus();
-        });
-        function callback_onsuccess_production(containerId) {
-            muse_options_production.cid = containerId;
-        }
-        MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
-        </script>
-        <?php } ?>
-        <script type="text/javascript">
-            
             jQuery('#woocommerce_paypal_express_payment_action').change(function () {
                 if ( this.value === 'Authorization' ) {
                     jQuery('#woocommerce_paypal_express_pending_authorization_order_status').closest('tr').show();
