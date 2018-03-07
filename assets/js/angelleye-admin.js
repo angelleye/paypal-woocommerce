@@ -278,7 +278,6 @@ jQuery(document).ready(function ($) {
         }
         
         if( api_username.length === 0 || api_password.length === 0 || api_signature.length === 0 ) {
-            console.log('false');
             return false;
         }
         jQuery(".display_smart_button_previews").html('');

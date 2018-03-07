@@ -83,10 +83,12 @@
                         });
                     },
                     onCancel: function (data, actions) {
+                        $(selector).unblock();
                         return actions.redirect();
                     },
-                    onError: function (err) {
-                        return actions.redirect();
+                    onError: function (err, actions) {
+                        $(selector).unblock();
+                       window.location.href = angelleye_in_content_param.cancel_page;
                     }
                 }, selector);
             });
@@ -184,9 +186,11 @@
                     });
                 },
                 onCancel: function (data, actions) {
-                    window.location.href = angelleye_in_content_param.cancel_page;
+                     $('.cart').unblock();
+                    return actions.redirect();
                 },
-                onError: function (err) {
+                onError: function (err, actions) {
+                    $('.cart').unblock();
                     window.location.href = angelleye_in_content_param.cancel_page;
                     
                 }
