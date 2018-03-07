@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($) {
-
+    jQuery('#woocommerce_paypal_express_disallowed_funding_methods').closest('table').addClass('angelleye_smart_button_setting_left');
     jQuery('.display_smart_button_previews_button').html('<input type="hidden" name="angelleye_smart_button_preview_and_refresh" class="button-primary angelleye_smart_button_preview_and_refresh" value="Preview & Refresh Smart Button">');
     if (angelleye_admin.shop_based_us_or_uk == "no") {
         jQuery("#woocommerce_paypal_express_show_paypal_credit").attr("disabled", true);
@@ -253,17 +253,34 @@ jQuery(document).ready(function ($) {
         }
     });
     jQuery('.in_context_checkout_part').change(function () {
-        
+
         display_angelleye_smart_button();
     }).change();
-    
+
     window.paypalCheckoutReady = function () {
-         
+
         display_angelleye_smart_button();
     };
-   
+
     function display_angelleye_smart_button() {
+        if( $('#woocommerce_paypal_express_testmode').length ) {
+            if( jQuery('#woocommerce_paypal_express_testmode').is(':checked') ) {
+                var api_username = ($('#woocommerce_paypal_express_sandbox_api_username').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_username').val() : $('#woocommerce_paypal_express_sandbox_api_username').text();
+                var api_password = ($('#woocommerce_paypal_express_sandbox_api_password').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_password').val() : $('#woocommerce_paypal_express_sandbox_api_password').text();
+                var api_signature = ($('#woocommerce_paypal_express_sandbox_api_signature').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_signature').val() : $('#woocommerce_paypal_express_sandbox_api_signature').text();
+            } else {
+                var api_username = ($('#woocommerce_paypal_express_api_username').val().length > 0) ? $('#woocommerce_paypal_express_api_username').val() : $('#woocommerce_paypal_express_api_username').text();
+                var api_password = ($('#woocommerce_paypal_express_api_password').val().length > 0) ? $('#woocommerce_paypal_express_api_password').val() : $('#woocommerce_paypal_express_api_password').text();
+                var api_signature = ($('#woocommerce_paypal_express_api_signature').val().length > 0) ? $('#woocommerce_paypal_express_api_signature').val() : $('#woocommerce_paypal_express_api_signature').text();
+            }
+        } else {
+            return false;
+        }
         
+        if( api_username.length === 0 || api_password.length === 0 || api_signature.length === 0 ) {
+            console.log('false');
+            return false;
+        }
         jQuery(".display_smart_button_previews").html('');
         var angelleye_env = jQuery('#woocommerce_paypal_express_testmode').is(':checked') ? 'sandbox' : 'production';
         if (angelleye_env === 'sandbox') {
@@ -296,7 +313,7 @@ jQuery(document).ready(function ($) {
             angelleye_color = '';
             angelleye_fundingicons = '';
         }
-        
+
         var style_object = {size: angelleye_size,
             color: angelleye_color,
             shape: angelleye_shape,
@@ -304,16 +321,13 @@ jQuery(document).ready(function ($) {
             layout: angelleye_layout,
             tagline: angelleye_tagline};
 
-         var disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
-                if (disallowed_funding_methods === null) {
-                    disallowed_funding_methods = [];
-                }            
-        if (angelleye_layout === 'horizontal' && (jQuery.inArray('card', disallowed_funding_methods)  > -1 === false) && angelleye_label !== 'credit' && angelleye_fundingicons === "true") {
+        var disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
+        if (disallowed_funding_methods === null) {
+            disallowed_funding_methods = [];
+        }
+        if (angelleye_layout === 'horizontal' && (jQuery.inArray('card', disallowed_funding_methods) > -1 === false) && angelleye_label !== 'credit' && angelleye_fundingicons === "true") {
             style_object['fundingicons'] = angelleye_fundingicons;
         }
-        
-
-        console.log(style_object);
         angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery.grep(angelleye_woocommerce_paypal_express_allowed_funding_methods, function (value) {
             return jQuery.inArray(value, angelleye_woocommerce_paypal_express_disallowed_funding_methods) < 0;
         });
