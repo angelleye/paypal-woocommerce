@@ -40,61 +40,66 @@
             };
             
             angelleye_button_selector.forEach(function (selector) {
-                if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit') {
-                    angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
-                }
-                paypal.Button.render({
-                    env: angelleye_in_content_param.environment,
-                    style: angelleye_cart_style_object,
-                    funding: {
-                        allowed: allowed_funding_methods_var,
-                        disallowed: jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods)
-                    },
-                    client: {
-                        sandbox: angelleye_in_content_param.payer_id,
-                        production: angelleye_in_content_param.payer_id
-                    },
-                    payment: function () {
-                        $(selector).block({
-                            message: null,
-                            overlayCSS: {
-                                background: '#fff',
-                                opacity: 0.6
-                            }
-                        });
-                        var data_param = {
-                            request_from: 'JSv4'
-                        };
-                        return paypal.request.post(angelleye_in_content_param.set_express_checkout, data_param).then(function (data) {
-                            return data.token;
-                        });
-                    },
-                    onAuthorize: function (data, actions) {
-                        var params = {
-                            paymentToken: data.paymentToken,
-                            payerID: data.payerID,
-                            token: data.paymentToken,
-                            request_from: 'JSv4'
-
-                        };
-                        paypal.request.post(data.returnUrl, params).then(function (res) {
-                            data.returnUrl = res.url;
-                            actions.redirect();
-                        });
-                    },
-                    onCancel: function (data, actions) {
-                        $(selector).unblock();
-                        return actions.redirect();
-                    },
-                    onError: function (err, actions) {
-                        $(selector).unblock();
-                       window.location.href = angelleye_in_content_param.cancel_page;
+                if(selector.length > 0) {
+                    if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit') {
+                        angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
                     }
-                }, selector);
-            });
+                    paypal.Button.render({
+                        env: angelleye_in_content_param.environment,
+                        style: angelleye_cart_style_object,
+                        funding: {
+                            allowed: allowed_funding_methods_var,
+                            disallowed: jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods)
+                        },
+                        client: {
+                            sandbox: angelleye_in_content_param.payer_id,
+                            production: angelleye_in_content_param.payer_id
+                        },
+                        payment: function () {
+                            $(selector).block({
+                                message: null,
+                                overlayCSS: {
+                                    background: '#fff',
+                                    opacity: 0.6
+                                }
+                            });
+                            var data_param = {
+                                request_from: 'JSv4'
+                            };
+                            return paypal.request.post(angelleye_in_content_param.set_express_checkout, data_param).then(function (data) {
+                                return data.token;
+                            });
+                        },
+                        onAuthorize: function (data, actions) {
+                            var params = {
+                                paymentToken: data.paymentToken,
+                                payerID: data.payerID,
+                                token: data.paymentToken,
+                                request_from: 'JSv4'
+
+                            };
+                            paypal.request.post(data.returnUrl, params).then(function (res) {
+                                data.returnUrl = res.url;
+                                actions.redirect();
+                            });
+                        },
+                        onCancel: function (data, actions) {
+                            $(selector).unblock();
+                            return actions.redirect();
+                        },
+                        onError: function (err, actions) {
+                            $(selector).unblock();
+                           window.location.href = angelleye_in_content_param.cancel_page;
+                        }
+                    }, selector);
+                }
+                });
+                
         };
     } else {
 
+        if( jQuery('.angelleye_button_single').length ) { 
+       
 
         angelleye_in_content_param.allowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
         angelleye_in_content_param.disallowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
@@ -191,10 +196,13 @@
                 },
                 onError: function (err, actions) {
                     $('.cart').unblock();
-                    window.location.href = angelleye_in_content_param.cancel_page;
+                    if( jQuery('.angelleye_button_single').length ) { 
+                        window.location.href = angelleye_in_content_param.cancel_page;
+                    }
                     
                 }
             }, '.angelleye_button_single');
         };
+    }
     }
 })(jQuery, window, document);
