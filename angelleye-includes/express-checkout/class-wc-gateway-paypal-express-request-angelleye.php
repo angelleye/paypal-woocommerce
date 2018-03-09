@@ -31,7 +31,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->fraud_management_filters = $this->gateway->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
             $this->email_notify_order_cancellations = $this->gateway->get_option('email_notify_order_cancellations', 'no');
             $this->pending_authorization_order_status = $this->gateway->get_option('pending_authorization_order_status', 'On Hold');
-            $this->enable_in_context_checkout_flow = $this->gateway->get_option('enable_in_context_checkout_flow', 'no');
+            $this->enable_in_context_checkout_flow = $this->gateway->get_option('enable_in_context_checkout_flow', 'yes');
             if ($this->testmode == false) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }

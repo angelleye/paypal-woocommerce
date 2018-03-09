@@ -87,7 +87,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
         $this->show_on_minicart = $this->get_option('show_on_minicart', 'yes');
         $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
-        $this->enable_in_context_checkout_flow = $this->get_option('enable_in_context_checkout_flow', 'no');
+        $this->enable_in_context_checkout_flow = $this->get_option('enable_in_context_checkout_flow', 'yes');
         if ($this->enable_notifyurl == 'yes') {
             $this->notifyurl = $this->get_option('notifyurl');
             if (isset($this->notifyurl) && !empty($this->notifyurl)) {
@@ -904,7 +904,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Enable Smart Buttons', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('The enhanced PayPal Express Checkout with In-Context gives your customers a simplified checkout experience that keeps them at your website throughout the payment authorization process.', 'paypal-for-woocommerce'),
-                'default' => 'no'
+                'default' => 'yes'
             ),
             'button_styles' => array(
                 'title' => __('', 'paypal-for-woocommerce'),
