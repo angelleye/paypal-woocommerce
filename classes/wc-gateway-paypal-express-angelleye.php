@@ -254,21 +254,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         }).change();
         
-        jQuery("#woocommerce_paypal_express_enable_in_context_checkout_flow").change(function () {
-            if (jQuery(this).is(':checked') === false) {
-                jQuery('.display_smart_button_previews').hide();
-                jQuery('.angelleye_button_settings_selector').hide();
-                jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').hide();
-                jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').show();
-                jQuery('.angelleye_smart_button_setting_left').hide();
-            } else {
-                jQuery('.angelleye_button_settings_selector').show();
-                jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').hide();
-                jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').hide();
-                jQuery('.angelleye_smart_button_setting_left').show();
-                jQuery('.display_smart_button_previews').show();
-            }
-        }).change();
+        
          jQuery("#woocommerce_paypal_express_button_layout").change(function () {
            var angelleye_button_label =  jQuery("#woocommerce_paypal_express_button_label").closest('tr');
            var angelleye_button_tagline =  jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
@@ -381,7 +367,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
         }).change();
         jQuery('#woocommerce_paypal_express_disallowed_funding_methods').change(function () {
-                <?php if( $this->show_paypal_credit == 'no') { ?>
+                <?php if( $this->is_us_or_uk == false) { ?>
                            var disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
                             if (disallowed_funding_methods === null) {
                                 disallowed_funding_methods = [];
