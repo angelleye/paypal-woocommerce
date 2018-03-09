@@ -347,8 +347,8 @@ jQuery(document).ready(function ($) {
             return jQuery.inArray(value, angelleye_woocommerce_paypal_express_disallowed_funding_methods) < 0;
         });
         
-        var angelleye_woocommerce_paypal_express_disallowed_funding_methods = angelleye_woocommerce_paypal_express_disallowed_funding_methods.filter(function(elem){
-            return elem !== 'venmo'; 
+        var angelleye_woocommerce_paypal_express_disallowed_funding_methods = $.grep(angelleye_woocommerce_paypal_express_disallowed_funding_methods, function(e){ 
+            return e !== 'venmo'; 
         });
         
         window.paypalCheckoutReady = function () {
