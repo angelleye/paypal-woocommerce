@@ -346,6 +346,11 @@ jQuery(document).ready(function ($) {
         angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery.grep(angelleye_woocommerce_paypal_express_allowed_funding_methods, function (value) {
             return jQuery.inArray(value, angelleye_woocommerce_paypal_express_disallowed_funding_methods) < 0;
         });
+        
+        var angelleye_woocommerce_paypal_express_disallowed_funding_methods = angelleye_woocommerce_paypal_express_disallowed_funding_methods.filter(function(elem){
+            return elem !== 'venmo'; 
+        });
+        
         window.paypalCheckoutReady = function () {
             paypal.Button.render({
                 env: angelleye_env,

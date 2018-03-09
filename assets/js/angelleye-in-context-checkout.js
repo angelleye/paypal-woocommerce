@@ -27,9 +27,7 @@
             }
             allowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
             disallowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
-            allowed_funding_methods_var = jQuery.grep(allowed_funding_methods_var, function (value) {
-                return jQuery.inArray(value, disallowed_funding_methods_var) < 0;
-            });
+            
             angelleye_cart_style_object = {size: angelleye_in_content_param.button_size,
                 color: angelleye_in_content_param.button_color,
                 shape: angelleye_in_content_param.button_shape,
@@ -103,11 +101,9 @@
 
         angelleye_in_content_param.allowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
         angelleye_in_content_param.disallowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
+        
         window.paypalCheckoutReady = function () {
-            angelleye_in_content_param.allowed_funding_methods = jQuery.grep(angelleye_in_content_param.allowed_funding_methods, function (value) {
-                return jQuery.inArray(value, angelleye_in_content_param.disallowed_funding_methods) < 0;
-            });
-
+           
             var get_attributes = function () {
                 var select = $('.variations_form').find('.variations select'),
                         data = {},

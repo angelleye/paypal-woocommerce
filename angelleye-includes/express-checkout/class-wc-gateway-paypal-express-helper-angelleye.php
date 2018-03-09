@@ -474,6 +474,14 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
             if ($this->angelleye_is_in_context_enable() == true && ( is_checkout() || is_product() || is_cart())) {
                 $cancel_url = !empty($this->cancel_page) ? get_permalink($this->cancel_page) : wc_get_cart_url();
+                $allowed_funding_methods_json = json_encode(array_values(array_diff($this->allowed_funding_methods, $this->disallowed_funding_methods)));
+                if( !empty($this->disallowed_funding_methods['venmo']) ) {
+                    unset($this->disallowed_funding_methods['venmo']);
+                }
+                if (($key = array_search('venmo', $this->disallowed_funding_methods)) !== false) {
+                    unset($this->disallowed_funding_methods[$key]);
+                }
+                $disallowed_funding_methods_json = json_encode($this->disallowed_funding_methods);
                 wp_enqueue_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array(), null, true);
                 wp_enqueue_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.js', array('jquery'), $this->version, true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
@@ -498,8 +506,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'button_layout' => $this->button_layout,
                     'button_fundingicons' => $this->button_fundingicons,
                     'cancel_page' => $cancel_url,
-                    'allowed_funding_methods' => json_encode($this->allowed_funding_methods),
-                    'disallowed_funding_methods' => json_encode($this->disallowed_funding_methods),
+                    'allowed_funding_methods' => $allowed_funding_methods_json,
+                    'disallowed_funding_methods' => $disallowed_funding_methods_json,
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))
                   )
                 );
