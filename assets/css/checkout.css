@@ -117,12 +117,7 @@ p.woocommerce-SavedPaymentMethods-saveNew label {
             margin-left: 0px;
             margin-top: 12px;
       }
-      
-      .woocommerce form .form-row-first, .woocommerce form .form-row-last, .woocommerce-page form .form-row-first, .woocommerce-page form .form-row-last {
-          width: 100%;
-      }
       .woocommerce form .form-row-last, .woocommerce-page form .form-row-last {
           float: left;
       }
-      
   }
