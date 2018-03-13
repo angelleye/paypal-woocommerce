@@ -1956,7 +1956,7 @@ class AngellEYE_Utility {
     }
     
     public static function woo_compatibility_notice() {
-        echo '<div class="inline error"><p>' . __('PayPal for WooCommerce requires WooCommerce version 2.6 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce') . '</p></div>';
+        echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . __('PayPal for WooCommerce requires WooCommerce version 2.6 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce') . '</div></div>';
     }
     
     public static function is_display_angelleye_paypal_pro_payflow_reference_transaction_notice($paypal_pro_payflow) {

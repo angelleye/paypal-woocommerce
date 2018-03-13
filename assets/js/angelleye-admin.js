@@ -1,3 +1,21 @@
+jQuery(function () {
+    var el_notice = jQuery(".angelleye-notice");
+    el_notice.fadeIn(750);
+    jQuery(".angelleye-notice-dismiss").click(function(e){
+        e.preventDefault();
+        jQuery( this ).parent().parent(".angelleye-notice").fadeOut(600, function () {
+            jQuery( this ).parent().parent(".angelleye-notice").remove();
+        });
+        notify_wordpress(jQuery( this ).data("msg"));
+    });
+    function notify_wordpress(message) {
+        var param = {
+            action: 'angelleye_dismiss_notice',
+            data: message
+        };
+        jQuery.post(ajaxurl, param);
+    }
+});
 jQuery(document).ready(function ($) {
     jQuery('#woocommerce_paypal_express_disallowed_funding_methods').closest('table').addClass('angelleye_smart_button_setting_left');
     jQuery('.display_smart_button_previews_button').html('<input type="hidden" name="angelleye_smart_button_preview_and_refresh" class="button-primary angelleye_smart_button_preview_and_refresh" value="Preview & Refresh Smart Button">');

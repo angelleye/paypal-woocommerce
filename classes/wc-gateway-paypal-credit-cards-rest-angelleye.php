@@ -89,7 +89,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
                 if(version_compare(WC_VERSION,'2.6','<')) {
                     AngellEYE_Utility::woo_compatibility_notice();    
                 } elseif (version_compare(phpversion(), '5.3.0', '<')) {
-                    echo '<div class="inline error"><p>' . __('PayPal for WooCommerce requires PHP version 5.3.0 or higher.','paypal-for-woocommerce') . '</p></div>';
+                    echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . __('PayPal for WooCommerce requires PHP version 5.3.0 or higher.','paypal-for-woocommerce') . '</div></div>';
                 } else {
                    $this->generate_settings_html();
                 }
@@ -109,7 +109,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
                 }).change();
             </script><?php
         } else {
-            ?><div class="inline error"><p><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal does not support your store currency.', 'paypal-for-woocommerce'); ?></p></div> <?php
+            ?><div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message"><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal does not support your store currency.', 'paypal-for-woocommerce'); ?></div></div> <?php
         }
     }
 

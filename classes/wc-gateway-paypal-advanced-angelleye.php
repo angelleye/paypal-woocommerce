@@ -119,11 +119,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             return;
         }
         if (!$this->loginid) {
-            echo '<div class="inline error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Merchant Login.', 'paypal-for-woocommerce')) . '</p></div>';
+            echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Merchant Login.', 'paypal-for-woocommerce')) . '</div></div>';
         } elseif (!$this->resellerid) {
-            echo '<div class="inline error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Partner.', 'paypal-for-woocommerce')) . '</p></div>';
+            echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Partner.', 'paypal-for-woocommerce')) . '</div></div>';
         } elseif (!$this->password) {
-            echo '<div class="inline error"><p>' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Password.', 'paypal-for-woocommerce')) . '</p></div>';
+            echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('Paypal Advanced error: Please enter your PayPal Advanced Account Password.', 'paypal-for-woocommerce')) . '</div></div>';
         }
     }
 
@@ -689,7 +689,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             } else {
                if (!in_array(get_woocommerce_currency(), array('USD', 'CAD'))) {
                     ?>
-                    <div class="inline error"><p><strong><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal does not support your store currency.', 'paypal-for-woocommerce'); ?></p></div>
+                    <div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message"><?php _e('Gateway Disabled', 'paypal-for-woocommerce'); ?></strong>: <?php _e('PayPal does not support your store currency.', 'paypal-for-woocommerce'); ?></div></div>
                     <?php
                     return;
                 } else {
