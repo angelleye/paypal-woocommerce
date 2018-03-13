@@ -577,7 +577,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
                 $post_data = WC()->session->get('post_data');
                 if (!empty($post_data)) {
-                    $SECFields['addroverride'] = WC()->cart->needs_shipping() ? 1 : 0;
+                    $SECFields['addroverride'] = 1;
                     if (!empty($post_data['ship_to_different_address'])) {
                         $shiptoname = '';
                         if (!empty($post_data['shipping_first_name']) && !empty($post_data['shipping_last_name'])) {
