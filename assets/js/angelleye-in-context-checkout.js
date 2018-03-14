@@ -27,7 +27,9 @@
             }
             allowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
             disallowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
-            
+            if (angelleye_in_content_param.is_us_or_uk == "no") {
+                angelleye_in_content_param.disallowed_funding_methods.push("credit");
+            }
             angelleye_cart_style_object = {size: angelleye_in_content_param.button_size,
                 color: angelleye_in_content_param.button_color,
                 shape: angelleye_in_content_param.button_shape,
@@ -64,6 +66,7 @@
                             var data_param = {
                                 request_from: 'JSv4'
                             };
+                            
                             return paypal.request.post(angelleye_in_content_param.set_express_checkout, data_param).then(function (data) {
                                 return data.token;
                             });
@@ -76,7 +79,9 @@
                                 request_from: 'JSv4'
 
                             };
+                            console.log(params);
                             paypal.request.post(data.returnUrl, params).then(function (res) {
+                                console.log(res);
                                 data.returnUrl = res.url;
                                 actions.redirect();
                             });
@@ -101,6 +106,10 @@
 
         angelleye_in_content_param.allowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
         angelleye_in_content_param.disallowed_funding_methods = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
+        
+        if (angelleye_in_content_param.is_us_or_uk == "no") {
+            angelleye_in_content_param.disallowed_funding_methods.push("credit");
+        }
         
         window.paypalCheckoutReady = function () {
            
@@ -169,6 +178,7 @@
                         var params = {
                             request_from: 'JSv4'
                         };
+                        console.log(params);
                         return paypal.request.post(data.url, params).then(function (res) {
                             return res.token;
                         });
@@ -181,8 +191,10 @@
                         token: data.paymentToken,
                         request_from: 'JSv4'
                     };
+                    console.log(params);
                     paypal.request.post(data.returnUrl, params).then(function (res) {
                         data.returnUrl = res.url;
+                        console.log(res);
                         actions.redirect();
                     });
                 },

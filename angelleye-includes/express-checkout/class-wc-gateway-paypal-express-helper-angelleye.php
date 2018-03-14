@@ -40,9 +40,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->testmode_value = !empty($this->setting['testmode']) ? $this->setting['testmode'] : 'yes';
                 $this->testmode = 'yes' === $this->testmode_value;
                 $this->billing_address_value = !empty($this->setting['billing_address']) ? $this->setting['billing_address'] : 'no';
-                $this->allowed_funding_methods = !empty($this->setting['allowed_funding_methods']) ? $this->setting['allowed_funding_methods'] : array(
-                    'credit', 'card', 'elv', 'venmo'
-                );
                 $this->disallowed_funding_methods = !empty($this->setting['disallowed_funding_methods']) ? $this->setting['disallowed_funding_methods'] : array();
                 $this->button_size = !empty($this->setting['button_size']) ? $this->setting['button_size'] : 'small';
                 $this->button_color = !empty($this->setting['button_color']) ? $this->setting['button_color'] : 'gold';
@@ -65,6 +62,18 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->is_us_or_uk = true;
                 } else {
                     $this->is_us_or_uk = false;
+                }
+                if($this->is_us_or_uk == true) {
+                    $this->allowed_funding_methods = !empty($this->setting['allowed_funding_methods']) ? $this->setting['allowed_funding_methods'] : array(
+                        'credit', 'card', 'elv', 'venmo'
+                    );
+                } else {
+                    $this->allowed_funding_methods = !empty($this->setting['allowed_funding_methods']) ? $this->setting['allowed_funding_methods'] : array(
+                        'card', 'elv', 'venmo'
+                    );
+                    if( !empty($this->allowed_funding_methods['credit']) ) {
+                        unset($this->allowed_funding_methods['credit']);
+                    }
                 }
                 $this->show_paypal_credit = !empty($this->setting['show_paypal_credit']) ? $this->setting['show_paypal_credit'] : 'yes';
                 if ($this->is_us_or_uk == false) {
@@ -506,6 +515,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'button_layout' => $this->button_layout,
                     'button_fundingicons' => $this->button_fundingicons,
                     'cancel_page' => $cancel_url,
+                    'is_us_or_uk' => $this->is_us_or_uk ? "yes" : 'no',
                     'allowed_funding_methods' => $allowed_funding_methods_json,
                     'disallowed_funding_methods' => $disallowed_funding_methods_json,
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))

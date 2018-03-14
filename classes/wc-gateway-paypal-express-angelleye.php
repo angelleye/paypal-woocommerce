@@ -41,6 +41,33 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->is_us = false;
         }
+        if( $this->is_us_or_uk ) {
+            $this->disallowed_funding_methods_array = array(
+                'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
+                'elv' => __('ELV', 'paypal-for-woocommerce'),
+                'venmo' => __('VENMO', 'paypal-for-woocommerce')
+            );
+            $this->button_label_array = array(
+                'checkout' => __('Checkout', 'paypal-for-woocommerce'),
+                'credit' => __('Credit', 'paypal-for-woocommerce'),
+                'pay' => __('Pay', 'paypal-for-woocommerce'),
+                'buynow' => __('Buynow', 'paypal-for-woocommerce'),
+                'paypal' => __('PayPal', 'paypal-for-woocommerce')
+            );
+        } else {
+            $this->disallowed_funding_methods_array = array(
+                'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
+                'elv' => __('ELV', 'paypal-for-woocommerce'),
+                'venmo' => __('VENMO', 'paypal-for-woocommerce')
+            );
+            $this->button_label_array = array(
+                'checkout' => __('Checkout', 'paypal-for-woocommerce'),
+                'pay' => __('Pay', 'paypal-for-woocommerce'),
+                'buynow' => __('Buynow', 'paypal-for-woocommerce'),
+                'paypal' => __('PayPal', 'paypal-for-woocommerce')
+            );
+        }
         $this->init_form_fields();
         $this->init_settings();
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
@@ -373,15 +400,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
         }).change();
         jQuery('#woocommerce_paypal_express_disallowed_funding_methods').change(function () {
-                <?php if( $this->is_us_or_uk == false) { ?>
-                           var disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
-                            if (disallowed_funding_methods === null) {
-                                disallowed_funding_methods = [];
-                            }
-                            disallowed_funding_methods.push("credit");
-                           jQuery("#woocommerce_paypal_express_disallowed_funding_methods").val(disallowed_funding_methods);
-                           jQuery('#woocommerce_paypal_express_button_label option[value="credit"]').remove();
-                <?php } ?>
             if( is_funding_icon_should_show_php() === false) {
                 jQuery("#woocommerce_paypal_express_button_fundingicons").closest('tr').hide();
                 if( jQuery('#woocommerce_paypal_express_button_label').val() !== 'buynow' ) {
@@ -913,12 +931,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Multiple funding sources (CREDIT | CARD | ELV | Venmo).', 'paypal-for-woocommerce'),
                 'default' => 'medium',
                 'desc_tip' => true,
-                'options' => array(
-                    'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
-                    'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
-                    'elv' => __('ELV', 'paypal-for-woocommerce'),
-                    'venmo' => __('VENMO', 'paypal-for-woocommerce')
-                ),
+                'options' => $this->disallowed_funding_methods_array,
             ),
             'button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
@@ -953,14 +966,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Type of PayPal Button Label (checkout | credit | pay | buynow | paypal).', 'paypal-for-woocommerce'),
                 'default' => 'checkout',
                 'desc_tip' => true,
-                'options' => array(
-                    'checkout' => __('Checkout', 'paypal-for-woocommerce'),
-                    'credit' => __('Credit', 'paypal-for-woocommerce'),
-                    'pay' => __('Pay', 'paypal-for-woocommerce'),
-                    'buynow' => __('Buynow', 'paypal-for-woocommerce'),
-                    'paypal' => __('Paypal', 'paypal-for-woocommerce')
-                   
-                ),
+                'options' => $this->button_label_array,
             ),
             'button_color' => array(
                 'title' => __('Button Color', 'paypal-for-woocommerce'),

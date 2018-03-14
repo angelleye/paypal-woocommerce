@@ -287,7 +287,6 @@ jQuery(document).ready(function ($) {
         }
     });
     jQuery('.in_context_checkout_part').change(function () {
-
         display_angelleye_smart_button();
     }).change();
 
@@ -328,8 +327,11 @@ jQuery(document).ready(function ($) {
         var angelleye_layout = jQuery("#woocommerce_paypal_express_button_layout").val();
         var angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
         var angelleye_fundingicons = jQuery("#woocommerce_paypal_express_button_fundingicons").val();
-        var angelleye_woocommerce_paypal_express_allowed_funding_methods = ['credit', 'card', 'elv', 'venmo'];
-
+        if (angelleye_admin.shop_based_us_or_uk == "no") {
+            var angelleye_woocommerce_paypal_express_allowed_funding_methods = ['card', 'elv', 'venmo'];
+        } else {
+            var angelleye_woocommerce_paypal_express_allowed_funding_methods = ['credit', 'card', 'elv', 'venmo'];
+        }
         var angelleye_woocommerce_paypal_express_disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
         if (angelleye_woocommerce_paypal_express_disallowed_funding_methods === null) {
             angelleye_woocommerce_paypal_express_disallowed_funding_methods = '';
@@ -367,6 +369,9 @@ jQuery(document).ready(function ($) {
         var angelleye_woocommerce_paypal_express_disallowed_funding_methods = jQuery.grep(angelleye_woocommerce_paypal_express_disallowed_funding_methods, function(e){ 
             return e !== 'venmo'; 
         });
+        if (angelleye_admin.shop_based_us_or_uk == "no") {
+            angelleye_woocommerce_paypal_express_disallowed_funding_methods.push("credit");
+        }
         window.paypalCheckoutReady = function () {
             paypal.Button.render({
                 env: angelleye_env,
