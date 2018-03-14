@@ -400,6 +400,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
         }).change();
         jQuery('#woocommerce_paypal_express_disallowed_funding_methods').change(function () {
+            if( jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val()) ) {
+                
+                if( jQuery("#woocommerce_paypal_express_button_label option[value='credit']").length === 0) {
+                    jQuery('#woocommerce_paypal_express_button_label').append(jQuery("<option></option>").attr("value","credit").text("Credit"));
+                }
+                
+            } else {
+                 jQuery('#woocommerce_paypal_express_button_label option[value="credit"]').remove();
+            }
+            
             if( is_funding_icon_should_show_php() === false) {
                 jQuery("#woocommerce_paypal_express_button_fundingicons").closest('tr').hide();
                 if( jQuery('#woocommerce_paypal_express_button_label').val() !== 'buynow' ) {

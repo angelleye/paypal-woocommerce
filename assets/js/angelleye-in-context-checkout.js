@@ -79,9 +79,7 @@
                                 request_from: 'JSv4'
 
                             };
-                            console.log(params);
                             paypal.request.post(data.returnUrl, params).then(function (res) {
-                                console.log(res);
                                 data.returnUrl = res.url;
                                 actions.redirect();
                             });
@@ -178,7 +176,6 @@
                         var params = {
                             request_from: 'JSv4'
                         };
-                        console.log(params);
                         return paypal.request.post(data.url, params).then(function (res) {
                             return res.token;
                         });
@@ -191,10 +188,8 @@
                         token: data.paymentToken,
                         request_from: 'JSv4'
                     };
-                    console.log(params);
                     paypal.request.post(data.returnUrl, params).then(function (res) {
                         data.returnUrl = res.url;
-                        console.log(res);
                         actions.redirect();
                     });
                 },
