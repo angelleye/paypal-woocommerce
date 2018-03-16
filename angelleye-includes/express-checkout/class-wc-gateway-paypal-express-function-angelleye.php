@@ -113,10 +113,10 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
     
     public function angelleye_paypal_for_woocommerce_needs_shipping($SECFields) {
-		if ( ! wc_shipping_enabled() ) {
-			$SECFields['noshipping'] = 1;
-			return $SECFields;
-		}
+        if ( ! wc_shipping_enabled() ) {
+            $SECFields['noshipping'] = 1;
+            return $SECFields;
+        }
         $is_required = 0;
         $is_not_required = 0;
         if (sizeof(WC()->cart->get_cart()) != 0) {
