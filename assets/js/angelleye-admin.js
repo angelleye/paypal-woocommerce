@@ -380,10 +380,6 @@ jQuery(document).ready(function ($) {
                     allowed: angelleye_woocommerce_paypal_express_allowed_funding_methods,
                     disallowed: angelleye_woocommerce_paypal_express_disallowed_funding_methods
                 },
-                client: {
-                    sandbox: payer_id,
-                    production: payer_id
-                },
                 payment: function () {
 
                 },
