@@ -935,10 +935,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => '<div class="in_context_checkout_part angelleye_button_settings_selector">Customize your PayPal button with colors, sizes, shapes, layout and funding sources.</div>',
             ),
             'disallowed_funding_methods' => array(
-                'title' => __('Hide the specified funding method', 'paypal-for-woocommerce'),
+                'title' => __('Hide Specific Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Multiple funding sources (CREDIT | CARD | ELV | Venmo).', 'paypal-for-woocommerce'),
+                'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => 'medium',
                 'desc_tip' => true,
                 'options' => $this->disallowed_funding_methods_array,
@@ -947,7 +947,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Type of PayPal Button Layout (horizontal | vertical).', 'paypal-for-woocommerce'),
+                'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
                 'options' => array(
@@ -959,7 +959,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Type of PayPal Button Size (small | medium | large | responsive).', 'paypal-for-woocommerce'),
+                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
                 'options' => array(
@@ -973,7 +973,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Button Label', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Type of PayPal Button Label (checkout | credit | pay | buynow | paypal).', 'paypal-for-woocommerce'),
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
                 'default' => 'checkout',
                 'desc_tip' => true,
                 'options' => $this->button_label_array,
@@ -982,7 +982,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Button Color', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Type of PayPal Button Color (gold | blue | silver).', 'paypal-for-woocommerce'),
+                'description' => __('Set the color you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
                 'default' => 'gold',
                 'desc_tip' => true,
                 'options' => array(
@@ -995,7 +995,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Button Shape', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Type of PayPal Button Shape (pill | rect).', 'paypal-for-woocommerce'),
+                'description' => __('Set the shape you would like to use for the buttons.', 'paypal-for-woocommerce'),
                 'default' => 'pill',
                 'desc_tip' => true,
                 'options' => array(
@@ -1004,10 +1004,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 ),
             ),
             'button_fundingicons' => array(
-                'title' => __('Button Fundingicons ', 'paypal-for-woocommerce'),
+                'title' => __('Credit Card Icons ', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('To display or hide funding instrument icons beneath the payment button.', 'paypal-for-woocommerce'),
+                'description' => __('Enable this to display credit card icons below the PayPal buttons.', 'paypal-for-woocommerce'),
                 'default' => 'false',
                 'desc_tip' => true,
                 'options' => array(
@@ -1019,7 +1019,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Button Tagline ', 'paypal-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part_tagline in_context_checkout_part',
-                'description' => __('To enable/disable the tagline/text beneath the button.', 'paypal-for-woocommerce'),
+                'description' => __('Enable this to display a tagline below the PayPal buttons..', 'paypal-for-woocommerce'),
                 'default' => 'false',
                 'desc_tip' => true,
                 'options' => array(
