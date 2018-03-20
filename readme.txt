@@ -127,6 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.8 - xx.xx.2018 =
 * Feature - Express Checkout JSv4 Smart Button Integration. ([#997](https://github.com/angelleye/paypal-woocommerce/issues/997))
+* Tweak - Adjusts CSS on checkout page to avoid conflicts. ([#1013](https://github.com/angelleye/paypal-woocommerce/issues/1013))
 * Fix - Resolves an issue with token payments in Paypal REST DCC. ([#1011](https://github.com/angelleye/paypal-woocommerce/issues/1011))
 
 = 1.4.7.4 - 02.10.2018 =
