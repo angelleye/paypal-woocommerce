@@ -52,7 +52,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'checkout' => __('Checkout', 'paypal-for-woocommerce'),
                 'credit' => __('Credit', 'paypal-for-woocommerce'),
                 'pay' => __('Pay', 'paypal-for-woocommerce'),
-                'buynow' => __('Buynow', 'paypal-for-woocommerce'),
+                'buynow' => __('Buy Now', 'paypal-for-woocommerce'),
                 'paypal' => __('PayPal', 'paypal-for-woocommerce')
             );
         } else {
@@ -64,7 +64,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->button_label_array = array(
                 'checkout' => __('Checkout', 'paypal-for-woocommerce'),
                 'pay' => __('Pay', 'paypal-for-woocommerce'),
-                'buynow' => __('Buynow', 'paypal-for-woocommerce'),
+                'buynow' => __('Buy Now', 'paypal-for-woocommerce'),
                 'paypal' => __('PayPal', 'paypal-for-woocommerce')
             );
         }
