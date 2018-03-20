@@ -902,7 +902,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         } else {
             $ErrorSeverityCode = '';
         }
-        $order->add_order_note(sprintf(__('PayPal %s API call failed:', 'paypal-for-woocommerce') . __('Detailed Error Message:', 'paypal-for-woocommerce') . PHP_EOL . __('Short Error Message:', 'paypal-for-woocommerce') . PHP_EOL . __('Error Code:', 'paypal-for-woocommerce') . PHP_EOL . __('Error Severity Code:', 'paypal-for-woocommerce'), $paypal_action_name, $ErrorLongMsg, $ErrorShortMsg, $ErrorCode, $ErrorSeverityCode));
+        $order->add_order_note(sprintf(__('PayPal %s API call failed:', 'paypal-for-woocommerce') . __('Detailed Error Message: %s', 'paypal-for-woocommerce') . PHP_EOL . __('Short Error Message: %s', 'paypal-for-woocommerce') . PHP_EOL . __('Error Code: %s', 'paypal-for-woocommerce') . PHP_EOL . __('Error Severity Code: %s', 'paypal-for-woocommerce'), $paypal_action_name, $ErrorLongMsg, $ErrorShortMsg, $ErrorCode, $ErrorSeverityCode));
     }
 
     public function angelleye_write_error_log_and_send_email_notification($paypal_action_name) {

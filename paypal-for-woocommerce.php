@@ -44,6 +44,10 @@ if (!defined('VERSION_PFW')) {
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
 }
+if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_BASENAME' ) ) {
+    define( 'PAYPAL_FOR_WOOCOMMERCE_BASENAME', plugin_basename( __FILE__ ) );
+}
+
 
 /**
  * Set global parameters
@@ -235,7 +239,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
            
             if( !get_user_meta($user_id, 'is_disable_paypal_marketing_solutions_notice') && empty($pp_settings['paypal_marketing_solutions_cid_production']) && substr(get_option("woocommerce_default_country"), 0, 2) == 'US' ) {
-                echo '<div class="notice notice-info"><p>' . sprintf(__('PayPal Marketing Solutions is now available in Express Checkout! Make sure to <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_paypal_marketing_solutions">activate Marketing Solutions</a> for valuable analytics about your visitors as well as increased conversion rates and higher average order amounts on your site! | <a href=%s>%s</a>', 'paypal-for-woocommerce'), '"'.esc_url(add_query_arg("is_disable_paypal_marketing_solutions_notice",0)).'"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+                echo '<div class="notice notice-info angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('PayPal Marketing Solutions is now available in Express Checkout! Make sure to <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_paypal_marketing_solutions">activate Marketing Solutions</a> for valuable analytics about your visitors as well as increased conversion rates and higher average order amounts on your site!', 'paypal-for-woocommerce')) . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="is_disable_paypal_marketing_solutions_notice">Dismiss</button></div></div>';
             }
             
             if( !empty($_GET['reset_paypal_marketing_solutions']) && $_GET['reset_paypal_marketing_solutions'] == 1 ) {
