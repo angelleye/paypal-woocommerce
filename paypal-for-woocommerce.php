@@ -44,6 +44,10 @@ if (!defined('VERSION_PFW')) {
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
 }
+if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_BASENAME' ) ) {
+    define( 'PAYPAL_FOR_WOOCOMMERCE_BASENAME', plugin_basename( __FILE__ ) );
+}
+
 
 /**
  * Set global parameters
