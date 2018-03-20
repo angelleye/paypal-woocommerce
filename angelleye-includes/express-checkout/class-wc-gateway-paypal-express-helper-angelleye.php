@@ -1130,18 +1130,20 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 foreach($options['plugins'] as $each_plugin) {
                     if ($each_plugin == PAYPAL_FOR_WOOCOMMERCE_BASENAME) {
                         $angelleye_enable_btn_ms = get_option('angelleye_enable_btn_ms', 'no');
-                        if( empty($this->paypal_marketing_solutions_cid_sandbox) && $angelleye_enable_btn_ms == 'no' ) {
-                            if( $this->is_us == true && $this->testmode == false && !empty($this->api_username) && !empty($this->api_password) && !empty($this->api_signature) ) {
-                                $this->angelleye_enable_paypal_marketing_solution($this->api_username, $this->api_password, $this->api_signature);
+                        if( $angelleye_enable_btn_ms == 'no' ) {
+                            update_option('angelleye_enable_btn_ms', 'yes');
+                            if( empty($this->paypal_marketing_solutions_cid_sandbox) && $angelleye_enable_btn_ms == 'no' ) {
+                                if( $this->is_us == true && $this->testmode == false && !empty($this->api_username) && !empty($this->api_password) && !empty($this->api_signature) ) {
+                                    $this->angelleye_enable_paypal_marketing_solution($this->api_username, $this->api_password, $this->api_signature);
+                                }
                             }
+                            $this->setting['enable_in_context_checkout_flow'] = 'yes';
+                            update_option('woocommerce_paypal_express_settings', $this->setting);
                         }
-                        
-                        
                     }
                 }
             }
         }
-        
     }
     
     public function angelleye_enable_paypal_marketing_solution($api_username, $api_password, $api_signature) {
@@ -1161,7 +1163,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 "x_nvp_user: " . $api_username
             );
             $result_response = $this->angelleye_paypal_marketing_solutions_request($post, $headers);
-            update_option('angelleye_enable_btn_ms', 'yes');
             if (!empty($result_response['response'])) {
                 WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution request: ' . print_r($post, true), 'info', 'paypal_marketing_solutions');
                 $Response = json_decode($result_response['response']);
@@ -1181,8 +1182,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     update_option('woocommerce_paypal_express_settings', $this->setting);
                 }
             } 
-            $this->setting['enable_in_context_checkout_flow'] = 'yes';
-            update_option('woocommerce_paypal_express_settings', $this->setting);
+            
         } catch (Exception $ex) {
 
         }
