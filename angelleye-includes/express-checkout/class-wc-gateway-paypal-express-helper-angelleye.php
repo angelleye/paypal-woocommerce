@@ -1125,12 +1125,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     if ($each_plugin == PAYPAL_FOR_WOOCOMMERCE_BASENAME) {
                         $angelleye_enable_btn_ms = get_option('angelleye_enable_btn_ms', 'no');
                         if( $angelleye_enable_btn_ms == 'no' ) {
-                            update_option('angelleye_enable_btn_ms', 'yes');
                             if( empty($this->paypal_marketing_solutions_cid_sandbox) && $angelleye_enable_btn_ms == 'no' ) {
                                 if( $this->is_us == true && $this->testmode == false && !empty($this->api_username) && !empty($this->api_password) && !empty($this->api_signature) ) {
                                     $this->angelleye_enable_paypal_marketing_solution($this->api_username, $this->api_password, $this->api_signature);
                                 }
                             }
+                            update_option('angelleye_enable_btn_ms', 'yes');
                             $this->setting['enable_in_context_checkout_flow'] = 'yes';
                             update_option('woocommerce_paypal_express_settings', $this->setting);
                         }
