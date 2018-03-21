@@ -490,12 +490,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if ($this->angelleye_is_in_context_enable() == true && ( is_checkout() || is_product() || is_cart())) {
                 $cancel_url = !empty($this->cancel_page) ? get_permalink($this->cancel_page) : wc_get_cart_url();
                 $allowed_funding_methods_json = json_encode(array_values(array_diff($this->allowed_funding_methods, $this->disallowed_funding_methods)));
-                if( !empty($this->disallowed_funding_methods['venmo']) ) {
-                    unset($this->disallowed_funding_methods['venmo']);
-                }
-                if (($key = array_search('venmo', $this->disallowed_funding_methods)) !== false) {
-                    unset($this->disallowed_funding_methods[$key]);
-                }
                 $disallowed_funding_methods_json = json_encode($this->disallowed_funding_methods);
                 wp_enqueue_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array(), null, true);
                 wp_enqueue_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.js', array('jquery'), $this->version, true);

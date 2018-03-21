@@ -65,3 +65,19 @@ a.paypal_checkout_button img.ec_checkout_page_button_type_pc {
 div.wc-proceed-to-checkout a.paypal_checkout_button {
     border: medium none;
 }
+
+.angelleye_smart_button_top, .angelleye_smart_button_bottom {
+    min-width: 150px;
+    max-width: 250px;
+}
+@media screen and (max-width: 400px) {
+    .angelleye_smart_button_top, .angelleye_smart_button_bottom {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 400px) {
+    .angelleye_smart_button_top, .angelleye_smart_button_bottom {
+       width: 250px;
+    }
+}

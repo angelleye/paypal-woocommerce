@@ -366,9 +366,6 @@ jQuery(document).ready(function ($) {
         angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery.grep(angelleye_woocommerce_paypal_express_allowed_funding_methods, function (value) {
             return jQuery.inArray(value, angelleye_woocommerce_paypal_express_disallowed_funding_methods) < 0;
         });
-        var angelleye_woocommerce_paypal_express_disallowed_funding_methods = jQuery.grep(angelleye_woocommerce_paypal_express_disallowed_funding_methods, function(e){ 
-            return e !== 'venmo'; 
-        });
         if (angelleye_admin.shop_based_us_or_uk == "no") {
             angelleye_woocommerce_paypal_express_disallowed_funding_methods.push("credit");
         }

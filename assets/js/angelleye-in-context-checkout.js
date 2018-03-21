@@ -1,7 +1,7 @@
 ;
 (function ($, window, document) {
      function is_funding_icon_should_show_in_content() {
-        var disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
+        var disallowed_funding_methods = angelleye_in_content_param.disallowed_funding_methods;
         if (disallowed_funding_methods === null) {
             disallowed_funding_methods = [];
         }
@@ -138,9 +138,6 @@
             if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit' && angelleye_in_content_param.button_fundingicons === "true") {
                 angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
             }
-            
-            
-            
             paypal.Button.render({
                 env: angelleye_in_content_param.environment,
                 style: angelleye_cart_style_object,

@@ -45,8 +45,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->disallowed_funding_methods_array = array(
                 'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
                 'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
-                'elv' => __('ELV', 'paypal-for-woocommerce'),
-                'venmo' => __('VENMO', 'paypal-for-woocommerce')
+                'elv' => __('ELV', 'paypal-for-woocommerce')
             );
             $this->button_label_array = array(
                 'checkout' => __('Checkout', 'paypal-for-woocommerce'),
@@ -58,8 +57,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->disallowed_funding_methods_array = array(
                 'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
-                'elv' => __('ELV', 'paypal-for-woocommerce'),
-                'venmo' => __('VENMO', 'paypal-for-woocommerce')
+                'elv' => __('ELV', 'paypal-for-woocommerce')
             );
             $this->button_label_array = array(
                 'checkout' => __('Checkout', 'paypal-for-woocommerce'),
@@ -988,7 +986,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => array(
                     'gold' => __('Gold', 'paypal-for-woocommerce'),
                     'blue' => __('Blue', 'paypal-for-woocommerce'),
-                    'silver' => __('Silver', 'paypal-for-woocommerce')
+                    'silver' => __('Silver', 'paypal-for-woocommerce'),
+                    'black' => __('Black', 'paypal-for-woocommerce')
                 ),
             ),
             'button_shape' => array(
