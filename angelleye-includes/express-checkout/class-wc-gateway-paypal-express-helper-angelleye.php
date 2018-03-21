@@ -1127,6 +1127,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         if( $angelleye_enable_btn_ms == 'no' ) {
                             if( empty($this->paypal_marketing_solutions_cid_sandbox) && $angelleye_enable_btn_ms == 'no' ) {
                                 if( $this->is_us == true && $this->testmode == false && !empty($this->api_username) && !empty($this->api_password) && !empty($this->api_signature) ) {
+                                    $this->api_username = AngellEYE_Utility::crypting($this->api_username, $action = 'd');
+                                    $this->api_password = AngellEYE_Utility::crypting($this->api_password, $action = 'd');
+                                    $this->api_signature = AngellEYE_Utility::crypting($this->api_signature, $action = 'd');
                                     $this->angelleye_enable_paypal_marketing_solution($this->api_username, $this->api_password, $this->api_signature);
                                 }
                             }
@@ -1157,8 +1160,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 "x_nvp_user: " . $api_username
             );
             $result_response = $this->angelleye_paypal_marketing_solutions_request($post, $headers);
+            WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution request: ' . print_r($post, true), 'info', 'paypal_marketing_solutions');
             if (!empty($result_response['response'])) {
-                WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution request: ' . print_r($post, true), 'info', 'paypal_marketing_solutions');
                 $Response = json_decode($result_response['response']);
                 WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution response: ' . json_encode($Response), 'info', 'paypal_marketing_solutions');
                 if (!empty($result_response['httpCode']) && $result_response['httpCode'] == 400) {
@@ -1175,6 +1178,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->setting['paypal_marketing_solutions_enabled'] = 'yes';
                     update_option('woocommerce_paypal_express_settings', $this->setting);
                 }
+            } else {
+                WC_Gateway_PayPal_Express_AngellEYE::log('PayPal Marketing Solution response: ' . print_r($result_response, true), 'info', 'paypal_marketing_solutions');
             } 
             
         } catch (Exception $ex) {
