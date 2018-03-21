@@ -288,7 +288,7 @@ jQuery(document).ready(function ($) {
     });
     jQuery('.in_context_checkout_part').change(function () {
         display_angelleye_smart_button();
-    }).change();
+    });
 
     window.paypalCheckoutReady = function () {
 

@@ -207,7 +207,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
         <script>
         
-        
+        <?php if (!empty($this->paypal_marketing_solutions_cid_production)) { ?>
         var muse_options_production = {
             onContainerCreate: callback_onsuccess_production,
             url: '<?php echo $this->home_url; ?>',
@@ -217,6 +217,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             env: 'production',
             cid: '<?php echo $this->paypal_marketing_solutions_cid_production; ?>'
         }
+        <?php } ?>
         jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').closest('tr').hide();
         jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('tr').find('th').hide(); 
         
@@ -241,10 +242,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             var win = window.open('<?php echo $report_home; ?>', '_blank');
             win.focus();
         });
+        <?php if (!empty($this->paypal_marketing_solutions_cid_production)) { ?>
         function callback_onsuccess_production(containerId) {
             muse_options_production.cid = containerId;
         }
         MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
+        <?php } ?>
         </script>
         <?php } ?>
         <script type="text/javascript">
