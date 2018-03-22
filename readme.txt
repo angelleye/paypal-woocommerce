@@ -1,10 +1,10 @@
 ﻿=== PayPal for WooCommerce ===
 Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
-Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest
+Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 4.9.4
-Stable tag: 1.4.7.4
+Stable tag: 1.4.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -16,7 +16,7 @@ Upgrade your WooCommerce PayPal experience for free!  Developed by an Ace Certif
 
 Easily add PayPal payment options to your WordPress / WooCommerce website.
 
- * PayPal Express Checkout / PayPal Credit
+ * PayPal Express Checkout / PayPal Smart Payment Buttons
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayPal Manager / PayFlow Gateway)
  * PayPal Plus (Germany, Brazil, Mexico)
@@ -125,7 +125,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.8 - xx.xx.2018 =
+= 1.4.8 - 03.22.2018 =
 * Feature - Adds the new Smart Payment Buttons to Express Checkout. ([#997](https://github.com/angelleye/paypal-woocommerce/issues/997)) ([#1026](https://github.com/angelleye/paypal-woocommerce/issues/1026)) ([#1010](https://github.com/angelleye/paypal-woocommerce/issues/1010))
 * Tweak - Adjusts CSS on checkout page to avoid conflicts. ([#1013](https://github.com/angelleye/paypal-woocommerce/issues/1013))
 * Tweak - Adjusts the way the addresses are sent to PayPal when the WooCommerce checkout page is used. ([#1014](https://github.com/angelleye/paypal-woocommerce/issues/1014))
