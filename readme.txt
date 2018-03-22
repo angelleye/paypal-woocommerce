@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Express Checkout JSv4 Smart Button Integration. ([#997](https://github.com/angelleye/paypal-woocommerce/issues/997))
 * Tweak - Adjusts CSS on checkout page to avoid conflicts. ([#1013](https://github.com/angelleye/paypal-woocommerce/issues/1013))
 * Tweak - Adjusts the way the addresses are sent to PayPal when the WooCommerce checkout page is used. ([#1014](https://github.com/angelleye/paypal-woocommerce/issues/1014))
+* Tweak - Performance adjustments in Express Checkout settings panel.  ([#1027](https://github.com/angelleye/paypal-woocommerce/issues/1027))
 * Fix - Resolves an issue with token payments in Paypal REST DCC. ([#1011](https://github.com/angelleye/paypal-woocommerce/issues/1011))
 
 = 1.4.7.4 - 02.10.2018 =
