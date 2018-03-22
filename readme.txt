@@ -131,6 +131,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjusts the way the addresses are sent to PayPal when the WooCommerce checkout page is used. ([#1014](https://github.com/angelleye/paypal-woocommerce/issues/1014))
 * Tweak - Performance adjustments in Express Checkout settings panel.  ([#1027](https://github.com/angelleye/paypal-woocommerce/issues/1027))
 * Fix - Resolves an issue with token payments in Paypal REST DCC. ([#1011](https://github.com/angelleye/paypal-woocommerce/issues/1011))
+* Fix - Resolves an issue with order notes being saved when API calls fails. ([#1022](https://github.com/angelleye/paypal-woocommerce/pull/1022))
 
 = 1.4.7.4 - 02.10.2018 =
 * Fix - Resolves a problem with PayFlow credit card button not displaying based on checkout settings. ([#996](https://github.com/angelleye/paypal-woocommerce/issues/996))
