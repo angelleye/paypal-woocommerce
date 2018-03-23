@@ -125,6 +125,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.8.1 - 03.23.2018 =
+* Feature - Adds Google Analytics click tracking option to PayPal Smart Payment Buttons. ([#1033](https://github.com/angelleye/paypal-woocommerce/issues/1033))
+
 = 1.4.8 - 03.22.2018 =
 * Feature - Adds the new Smart Payment Buttons to Express Checkout. ([#997](https://github.com/angelleye/paypal-woocommerce/issues/997)) ([#1026](https://github.com/angelleye/paypal-woocommerce/issues/1026)) ([#1010](https://github.com/angelleye/paypal-woocommerce/issues/1010))
 * Tweak - Adjusts CSS on checkout page to avoid conflicts. ([#1013](https://github.com/angelleye/paypal-woocommerce/issues/1013))
