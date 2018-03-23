@@ -126,7 +126,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.8.1 - 03.23.2018 =
-* Feature - Adds Google Analytics click tracking option to PayPal Smart Payment Buttons. ([#1033](https://github.com/angelleye/paypal-woocommerce/issues/1033))
+* Feature - Adds Google Analytics click tracking option and performance adjustments to PayPal Smart Payment Buttons. ([#1033](https://github.com/angelleye/paypal-woocommerce/issues/1033))
 * Tweak - Updates paypal_transaction post type arguments for better performance. ([#1031](https://github.com/angelleye/paypal-woocommerce/pull/1031))
 
 = 1.4.8 - 03.22.2018 =
