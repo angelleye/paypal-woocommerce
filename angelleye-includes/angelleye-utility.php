@@ -957,23 +957,8 @@ class AngellEYE_Utility {
             ),
             'description' => __('This is where you can add new PayPal Transaction to your store.', 'paypal-for-woocommerce'),
             'public' => false,
-            'show_ui' => false,
-            'capability_type' => 'post',
-            'capabilities' => array(
-                'create_posts' => false, // Removes support for the "Add New" function
-            ),
-            'map_meta_cap' => true,
-            'publicly_queryable' => true,
-            'exclude_from_search' => false,
-            'hierarchical' => false, // Hierarchical causes memory issues - WP loads all records!
-            'rewrite' => array('slug' => 'paypal_ipn'),
-            'query_var' => true,
-            'supports' => array('', ''),
-            'has_archive' => true,
-            'show_in_nav_menus' => FALSE
-                        )
-                )
-        );
+            'query_var' => false,
+        ) ) );
     }
 
     public function angelleye_paypal_for_woocommerce_order_action_meta_box($post_type, $post) {
