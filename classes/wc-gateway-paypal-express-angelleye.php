@@ -1029,6 +1029,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'true' => __('Enable', 'paypal-for-woocommerce')
                 ),
             ),
+            'enable_google_analytics_click' => array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable Google Analytics Click Tracking.'),
+                'default' => 'no'
+            ),
              'angelleye_smart_button_preview_title' => array(
                 'title' => __('', 'paypal-for-woocommerce'),
                 'type' => 'title',

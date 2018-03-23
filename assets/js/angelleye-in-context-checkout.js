@@ -84,6 +84,17 @@
                             $(selector).unblock();
                             return actions.redirect();
                         },
+                        onClick: function() {
+                            if( angelleye_in_content_param.enable_google_analytics_click === 'yes') {
+                                if (typeof ga  != 'undefined' && $.isFunction(ga)) {
+                                    ga('send', {
+                                        hitType: 'event',
+                                        eventCategory: 'Checkout',
+                                        eventAction: 'button_click'
+                                    });
+                                }
+                            }
+                        },
                         onError: function (err, actions) {
                             $(selector).unblock();
                            window.location.href = angelleye_in_content_param.cancel_page;
@@ -186,6 +197,17 @@
                 onCancel: function (data, actions) {
                      $('.cart').unblock();
                     return actions.redirect();
+                },
+                onClick: function() {
+                    if( angelleye_in_content_param.enable_google_analytics_click === 'yes') {
+                        if (typeof ga  != 'undefined' && $.isFunction(ga)) {
+                            ga('send', {
+                                hitType: 'event',
+                                eventCategory: 'Checkout',
+                                eventAction: 'button_click'
+                            });
+                        }
+                    }
                 },
                 onError: function (err, actions) {
                     $('.cart').unblock();

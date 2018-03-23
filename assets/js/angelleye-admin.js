@@ -28,6 +28,7 @@ jQuery(document).ready(function ($) {
             jQuery('.display_smart_button_previews').show();
             jQuery('.angelleye_button_settings_selector').show();
             jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').hide();
+            jQuery('woocommerce_paypal_express_enable_google_analytics_click').closest('tr').hide();
             jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').hide();
             jQuery('.angelleye_smart_button_setting_left').show();
         } else {
@@ -36,6 +37,7 @@ jQuery(document).ready(function ($) {
             jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').show();
             jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').show();
             jQuery('.angelleye_smart_button_setting_left').hide();
+            jQuery('woocommerce_paypal_express_enable_google_analytics_click').closest('tr').show();
 
         }
     }).change();

@@ -81,6 +81,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     }
                 }
                 $this->show_paypal_credit = !empty($this->setting['show_paypal_credit']) ? $this->setting['show_paypal_credit'] : 'yes';
+                $this->enable_google_analytics_click = !empty($this->setting['enable_google_analytics_click']) ? $this->setting['enable_google_analytics_click'] : 'no';
+                
                 if ($this->is_us_or_uk == false) {
                     $this->show_paypal_credit = 'no';
                 }
@@ -106,7 +108,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 2);
                     }
                 }
-                add_action('upgrader_process_complete', array($this, 'angelleye_update_default_settings'), 10, 2);
+                add_action('init', array($this, 'angelleye_update_default_settings'), 10);
                 add_action('woocommerce_add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
                 add_action('woocommerce_checkout_billing', array($this, 'ec_set_checkout_post_data'));
                 add_action('woocommerce_available_payment_gateways', array($this, 'ec_disable_gateways'));
@@ -517,6 +519,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'is_us_or_uk' => $this->is_us_or_uk ? "yes" : 'no',
                     'allowed_funding_methods' => $allowed_funding_methods_json,
                     'disallowed_funding_methods' => $disallowed_funding_methods_json,
+                    'enable_google_analytics_click' => $this->enable_google_analytics_click,
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))
                   )
                 );
@@ -1118,28 +1121,18 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         return $classes;
     }
     
-    public function angelleye_update_default_settings($upgrader_object, $options) {
-        if( defined( 'PAYPAL_FOR_WOOCOMMERCE_BASENAME' ) && !empty($options) ) {
-            if ($options['action'] == 'update' && $options['type'] == 'plugin' ) {
-                foreach($options['plugins'] as $each_plugin) {
-                    if ($each_plugin == PAYPAL_FOR_WOOCOMMERCE_BASENAME) {
-                        $angelleye_enable_btn_ms = get_option('angelleye_enable_btn_ms', 'no');
-                        if( $angelleye_enable_btn_ms == 'no' ) {
-                            if( empty($this->paypal_marketing_solutions_cid_sandbox) && $angelleye_enable_btn_ms == 'no' ) {
-                                if( $this->is_us == true && $this->testmode == false && !empty($this->api_username) && !empty($this->api_password) && !empty($this->api_signature) ) {
-                                    $this->api_username = AngellEYE_Utility::crypting($this->api_username, $action = 'd');
-                                    $this->api_password = AngellEYE_Utility::crypting($this->api_password, $action = 'd');
-                                    $this->api_signature = AngellEYE_Utility::crypting($this->api_signature, $action = 'd');
-                                    $this->angelleye_enable_paypal_marketing_solution($this->api_username, $this->api_password, $this->api_signature);
-                                }
-                            }
-                            update_option('angelleye_enable_btn_ms', 'yes');
-                            $this->setting['enable_in_context_checkout_flow'] = 'yes';
-                            update_option('woocommerce_paypal_express_settings', $this->setting);
-                        }
-                    }
+    public function angelleye_update_default_settings() {
+        $angelleye_enable_btn_ms = get_option('angelleye_enable_btn_ms', 'no');
+        if( $angelleye_enable_btn_ms == 'no' ) {
+            if( empty($this->paypal_marketing_solutions_cid_production) && $angelleye_enable_btn_ms == 'no' ) {
+                if( $this->is_us == true && $this->testmode == false && !empty($this->api_username) && !empty($this->api_password) && !empty($this->api_signature) ) {
+                    $this->api_username = AngellEYE_Utility::crypting($this->api_username, $action = 'd');
+                    $this->api_password = AngellEYE_Utility::crypting($this->api_password, $action = 'd');
+                    $this->api_signature = AngellEYE_Utility::crypting($this->api_signature, $action = 'd');
+                    $this->angelleye_enable_paypal_marketing_solution($this->api_username, $this->api_password, $this->api_signature);
                 }
             }
+            update_option('angelleye_enable_btn_ms', 'yes');
         }
     }
     
