@@ -90,7 +90,7 @@
                                     ga('send', {
                                         hitType: 'event',
                                         eventCategory: 'Checkout',
-                                        eventAction: 'button_click'
+                                        eventAction: 'paypal_button_click'
                                     });
                                 }
                             }
