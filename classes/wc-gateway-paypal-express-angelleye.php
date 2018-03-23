@@ -936,7 +936,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => '<div class="in_context_checkout_part angelleye_button_settings_selector">Customize your PayPal button with colors, sizes, shapes, layout and funding sources.</div>',
             ),
             'disallowed_funding_methods' => array(
-                'title' => __('Hide Specific Funding Method(s)', 'paypal-for-woocommerce'),
+                'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
@@ -1030,7 +1030,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 ),
             ),
             'enable_google_analytics_click' => array(
-                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'title' => __('Google Analytics', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('Enable Google Analytics Click Tracking.'),
                 'default' => 'no'
