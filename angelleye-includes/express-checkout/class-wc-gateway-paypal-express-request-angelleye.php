@@ -271,7 +271,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if (empty($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'])) {
                     $this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] = '';
                 }
-                if ($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] == 'Completed') {
+                if( $this->is_angelleye_baid_required() == true ) {
+                    if( empty($this->paypal_response['BILLINGAGREEMENTID']) ) {
+                         $order->update_status('on-hold', __('Billing Agreement required for tokenized payments', 'paypal-for-woocommerce'));
+                    } else {
+                        $order->payment_complete($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+                    }
+                } elseif ($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] == 'Completed') {
                     $order->payment_complete($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                 } elseif (empty($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS']) && !empty($this->paypal_response['BILLINGAGREEMENTID'])) {
                     $order->payment_complete($this->paypal_response['BILLINGAGREEMENTID']);
@@ -282,7 +288,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     } else {
                         update_post_meta($order->get_id(), '_transaction_id', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                     }
-                    WC()->cart->empty_cart();
                 }
                 $payeremail = WC()->session->get('payeremail');
                 if ($old_wc) {
@@ -307,8 +312,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 } else {
                     update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
                 }
-
-                if ($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] == 'Completed') {
+                if( $this->is_angelleye_baid_required() == true ) {
+                    if( empty($this->paypal_response['BILLINGAGREEMENTID']) ) {
+                         $order->update_status('on-hold', __('Billing Agreement required for tokenized payments', 'paypal-for-woocommerce'));
+                    } else {
+                        $order->payment_complete($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+                    }
+                } elseif ($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] == 'Completed') {
                     $order->payment_complete($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
                 } else {
                     if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && (!empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '11610')) {
@@ -346,6 +356,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_wp_safe_redirect(add_query_arg('utm_nooverride', '1', $this->gateway->get_return_url($order)), 'do_express_checkout_payment');
                 exit();
             } else {
+                $this->function_helper->ec_clear_session_data();
                 $this->angelleye_add_order_note_with_error($order, $paypal_action_name = 'DoExpressCheckoutPayment');
                 $this->angelleye_write_error_log_and_send_email_notification($paypal_action_name = 'DoExpressCheckoutPayment');
                 $this->angelleye_redirect();
@@ -1434,6 +1445,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             wp_safe_redirect($url);
             exit;
         }
+    }
+    
+    public function is_angelleye_baid_required() {
+        $ec_save_to_account = WC()->session->get('ec_save_to_account');
+        if ( ( isset($ec_save_to_account) && $ec_save_to_account == 'on') || AngellEYE_Utility::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() || AngellEYE_Utility::is_cart_contains_subscription() == true  ) {
+            return true;
+        }
+        return false;
     }
 
 }
