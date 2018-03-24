@@ -508,6 +508,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'is_cart' => is_cart() ? "yes" : "no",
                     'is_checkout' => is_checkout() ? "yes" : "no",
                     'cart_button_possition' => $this->button_position,
+                    'is_display_on_checkout' => ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both' ) ? 'yes' : 'no',
                     'button_size' => $this->button_size,
                     'button_color' => $this->button_color,
                     'button_shape' => $this->button_shape,

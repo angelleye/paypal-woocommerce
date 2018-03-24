@@ -22,7 +22,7 @@
                 } else if (angelleye_in_content_param.cart_button_possition == 'top') {
                     angelleye_button_selector.push(".angelleye_smart_button_top");
                 }
-            } else if (angelleye_in_content_param.is_checkout == 'yes') {
+            } else if (angelleye_in_content_param.is_checkout == 'yes' && angelleye_in_content_param.is_display_on_checkout == 'yes') {
                 angelleye_button_selector.push(".angelleye_smart_button_checkout_top");
             }
             allowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
@@ -40,7 +40,7 @@
             };
             
             angelleye_button_selector.forEach(function (selector) {
-                if(selector.length > 0) {
+                if(selector.length > 0 && jQuery(selector).length > 0) {
                     if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit') {
                         angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
                     }
