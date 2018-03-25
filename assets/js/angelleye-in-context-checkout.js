@@ -11,13 +11,13 @@
             }
             window.paypalCheckoutReady = function () {
                 var get_attributes = function () {
-                    var select = $('.variations_form').find('.variations select'),
+                    var select = jQuery('.variations_form').find('.variations select'),
                             data = {},
                             count = 0,
                             chosen = 0;
                     select.each(function () {
-                        var attribute_name = $(this).data('attribute_name') || $(this).attr('name');
-                        var value = $(this).val() || '';
+                        var attribute_name = jQuery(this).data('attribute_name') || jQuery(this).attr('name');
+                        var value = jQuery(this).val() || '';
                         if (value.length > 0) {
                             chosen++;
                         }
@@ -49,7 +49,7 @@
                         disallowed: angelleye_in_content_param.disallowed_funding_methods
                     },
                     payment: function (data, actions) {
-                        $('.cart').block({
+                        jQuery('.cart').block({
                             message: null,
                             overlayCSS: {
                                 background: '#fff',
@@ -58,11 +58,11 @@
                         });
                         var data_param = {
                             'nonce': angelleye_in_content_param.generate_cart_nonce,
-                            'qty': $('.quantity .qty').val(),
-                            'attributes': $('.variations_form').length ? get_attributes().data : [],
-                            'wc-paypal_express-new-payment-method': $("#wc-paypal_express-new-payment-method").is(':checked'),
+                            'qty': jQuery('.quantity .qty').val(),
+                            'attributes': jQuery('.variations_form').length ? get_attributes().data : [],
+                            'wc-paypal_express-new-payment-method': jQuery("#wc-paypal_express-new-payment-method").is(':checked'),
                             'is_cc': '',
-                            'product_id': $("input[name=add-to-cart]").val(),
+                            'product_id': jQuery("input[name=add-to-cart]").val(),
                             'request_from': 'JSv4'
                         };
                         return paypal.request.post(angelleye_in_content_param.add_to_cart_ajaxurl, data_param).then(function (data) {
@@ -87,12 +87,12 @@
                         });
                     },
                     onCancel: function (data, actions) {
-                        $('.cart').unblock();
+                        jQuery('.cart').unblock();
                         return actions.redirect();
                     },
                     onClick: function () {
                         if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
-                            if (typeof ga != 'undefined' && $.isFunction(ga)) {
+                            if (typeof ga != 'undefined' && jQuery.isFunction(ga)) {
                                 ga('send', {
                                     hitType: 'event',
                                     eventCategory: 'Checkout',
@@ -102,7 +102,7 @@
                         }
                     },
                     onError: function (err, actions) {
-                        $('.cart').unblock();
+                        jQuery('.cart').unblock();
                         if (jQuery('.angelleye_button_single').length) {
                             window.location.href = angelleye_in_content_param.cancel_page;
                         }
@@ -167,7 +167,7 @@ function display_smart_button_on_cart_checkout() {
                         disallowed: jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods)
                     },
                     payment: function () {
-                        $(selector).block({
+                        jQuery(selector).block({
                             message: null,
                             overlayCSS: {
                                 background: '#fff',
@@ -196,12 +196,12 @@ function display_smart_button_on_cart_checkout() {
                         });
                     },
                     onCancel: function (data, actions) {
-                        $(selector).unblock();
+                        jQuery(selector).unblock();
                         return actions.redirect();
                     },
                     onClick: function () {
                         if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
-                            if (typeof ga != 'undefined' && $.isFunction(ga)) {
+                            if (typeof ga != 'undefined' && jQuery.isFunction(ga)) {
                                 ga('send', {
                                     hitType: 'event',
                                     eventCategory: 'Checkout',
@@ -211,7 +211,7 @@ function display_smart_button_on_cart_checkout() {
                         }
                     },
                     onError: function (err, actions) {
-                        $(selector).unblock();
+                        jQuery(selector).unblock();
                         window.location.href = angelleye_in_content_param.cancel_page;
                     }
                 }, selector);
