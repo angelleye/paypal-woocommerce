@@ -125,6 +125,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.8.3 - 03.25.2018 =
+* Fix - Resolves a jQuery conflict with Smart Buttons when shipping methods are switched on the cart page. ([#1040](https://github.com/angelleye/paypal-woocommerce/issues/1040))
+
 = 1.4.8.2 - 03.24.2018 =
 * Fix - Resolves a redirect loop on the cart page caused by a jQuery conflict with Smart Buttons and some 3rd party plugins. ([#1038](https://github.com/angelleye/paypal-woocommerce/issues/1038))
 
