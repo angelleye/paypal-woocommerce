@@ -170,7 +170,7 @@ function display_smart_button_on_cart_checkout() {
                         disallowed: jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods)
                     },
                     payment: function () {
-                        jQuery(selector).block({
+                        jQuery('.woocommerce').block({
                             message: null,
                             overlayCSS: {
                                 background: '#fff',
@@ -199,7 +199,7 @@ function display_smart_button_on_cart_checkout() {
                         });
                     },
                     onCancel: function (data, actions) {
-                        jQuery(selector).unblock();
+                        jQuery('.woocommerce').unblock();
                         return actions.redirect();
                     },
                     onClick: function () {
@@ -214,7 +214,7 @@ function display_smart_button_on_cart_checkout() {
                         }
                     },
                     onError: function (err, actions) {
-                        jQuery(selector).unblock();
+                        jQuery('.woocommerce').unblock();
                         window.location.href = angelleye_in_content_param.cancel_page;
                     }
                 }, selector);
