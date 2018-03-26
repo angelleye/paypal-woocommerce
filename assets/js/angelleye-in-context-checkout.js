@@ -135,10 +135,14 @@ function display_smart_button_on_cart_checkout() {
             } else if (angelleye_in_content_param.cart_button_possition == 'top') {
                 angelleye_button_selector.push(".angelleye_smart_button_top");
             }
+            
         } else if (angelleye_in_content_param.is_checkout == 'yes' && angelleye_in_content_param.is_display_on_checkout == 'yes') {
             angelleye_button_selector.push(".angelleye_smart_button_checkout_top");
         }
+        
+        angelleye_button_selector.push(".angelleye_smart_button_mini");
         allowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
+      
         disallowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
         if (angelleye_in_content_param.is_us_or_uk == "no") {
             angelleye_in_content_param.disallowed_funding_methods.push("credit");
@@ -150,10 +154,9 @@ function display_smart_button_on_cart_checkout() {
             layout: angelleye_in_content_param.button_layout,
             tagline: ( angelleye_in_content_param.button_tagline === "true" ) ? true : false
         };
-
         angelleye_button_selector.forEach(function (selector) {
+            jQuery(selector).html("");
             if (selector.length > 0 && jQuery(selector).length > 0) {
-                jQuery(selector).html('');
                 if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit') {
                     if(angelleye_in_content_param.button_fundingicons === 'true') {
                         angelleye_cart_style_object['fundingicons'] = ( angelleye_in_content_param.button_fundingicons === "true" ) ? true : false;
@@ -220,9 +223,13 @@ function display_smart_button_on_cart_checkout() {
 
     };
 }
-
-jQuery(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout', function (event) {
-    display_smart_button_on_cart_checkout();
+jQuery( function( $ ) {
+$(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout wc_fragments_loaded', function (event) {
+    if( angelleye_in_content_param.is_product == 'no' ) {
+        display_smart_button_on_cart_checkout();
+    }
 });
+});
+
 
 

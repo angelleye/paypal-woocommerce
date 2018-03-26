@@ -467,14 +467,16 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         return $text;
     }
 
-    public function ec_enqueue_scripts_product_page() {
+    public function ec_enqueue_scripts_product_page($is_mini_cart = false) {
         try {
             $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
             if (is_order_received_page()) {
                 return false;
             }
-            if(is_product() == false && 0 >= WC()->cart->total ) {
-                return false;
+            if(is_product() == false && 0 >= WC()->cart->total) {
+                if($this->show_on_cart == 'no' && $this->show_on_minicart == 'no') {
+                    return false;
+                }
             }
             if($this->button_layout == 'vertical') {
                 $this->button_label = '';
@@ -489,7 +491,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->button_fundingicons = '';
             }
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
-            if ($this->angelleye_is_in_context_enable() == true && ( is_checkout() || is_product() || is_cart())) {
+            if ($this->angelleye_is_in_context_enable() == true && ( is_checkout() || is_product() || is_cart() || is_shop())) {
                 $cancel_url = !empty($this->cancel_page) ? get_permalink($this->cancel_page) : wc_get_cart_url();
                 $allowed_funding_methods_json = json_encode(array_values(array_diff($this->allowed_funding_methods, $this->disallowed_funding_methods)));
                 $disallowed_funding_methods_json = json_encode($this->disallowed_funding_methods);
@@ -554,10 +556,15 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function mini_cart_button() {
         if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
+            
             $this->woocommerce_before_cart();
+            
             $mini_cart_button_html = '';
-            $mini_cart_button_html .= $this->woocommerce_paypal_express_checkout_button_angelleye($return = true);
+            $mini_cart_button_html .= $this->woocommerce_paypal_express_checkout_button_angelleye($return = true, 'mini');
             $mini_cart_button_html .= "<div class='clear'></div>";
+          
+                    
+            
             echo apply_filters('angelleye_ec_mini_cart_button_html', $mini_cart_button_html);
         }
     }
@@ -579,6 +586,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $class_top = 'paypal_checkout_button_top';
                 $class_cc_top = 'paypal_checkout_button_cc_top';
                 $angelleye_smart_button = 'angelleye_smart_button_top';
+            } elseif($possition == 'mini') {
+                $class_top = 'paypal_checkout_button_top';
+                $class_cc_top = 'paypal_checkout_button_cc_top';
+                $angelleye_smart_button = 'angelleye_smart_button_mini';
             } else {
                 $class_top = 'paypal_checkout_button_bottom';
                 $class_cc_top = 'paypal_checkout_button_cc_bottom';
@@ -608,7 +619,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $cart_button_html .= $paypal_credit_button_markup;
                 }
             } else {
-                echo "<div class='$angelleye_smart_button'></div>";
+                if ($return == true) {
+                    return "<div class='$angelleye_smart_button'></div>";
+                } else {
+                    echo "<div class='$angelleye_smart_button'></div>";
+                }
+                
             }
             if ($this->enable_tokenized_payments == 'yes') {
                 $cart_button_html .= $this->function_helper->angelleye_ec_save_payment_method_checkbox();
@@ -719,7 +735,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
         WC()->cart->calculate_totals();
         $payment_gateways_count = 0;
-        echo "<style>table.cart td.actions .input-text, table.cart td.actions .button, table.cart td.actions .checkout-button {margin-bottom: 0.53em !important}</style>";
+        echo "<style>table.cart td.actions .input-text, table.cart td.actions .button, table.cart td.actions .checkout-button {margin-bottom: 0.53em !important;}</style>";
         if ($this->enabled == 'yes' && 0 < WC()->cart->total) {
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
             unset($payment_gateways['paypal_pro']);
