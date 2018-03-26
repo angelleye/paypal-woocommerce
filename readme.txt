@@ -125,6 +125,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.8.4 = 03.26.2018 =
+* Fix - More adjustments to jQuery with Smart Buttons on cart page. ([#1044](https://github.com/angelleye/paypal-woocommerce/issues/1044))
+
 = 1.4.8.3 - 03.25.2018 =
 * Fix - Resolves a jQuery conflict with Smart Buttons when shipping methods are switched on the cart page. ([#1040](https://github.com/angelleye/paypal-woocommerce/issues/1040))
 
