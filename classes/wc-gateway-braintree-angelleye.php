@@ -1189,10 +1189,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             return;
         }
         if ($this->enable_braintree_drop_in) {
-            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/v2/braintree.js', array(), WC_VERSION, false);
+            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/v2/braintree.js', array(), VERSION_PFW, false);
         }
         if ($this->fraud_tool == 'kount_standard' || $this->fraud_tool == 'kount_custom') {
-            wp_enqueue_script('braintree-data', 'https://js.braintreegateway.com/v1/braintree-data.js', array('braintree-gateway'), WC_VERSION, true);
+            wp_enqueue_script('braintree-data', 'https://js.braintreegateway.com/v1/braintree-data.js', array('braintree-gateway'), VERSION_PFW, true);
         }
     }
 
