@@ -736,7 +736,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                                     if (jQuery(".checkout-button, .button.checkout.wc-forward").is("input")) {
                                         jQuery(".checkout-button, .button.checkout.wc-forward").val("' . $checkout_button_display_text . '");
                                     } else {
-                                        jQuery(".checkout-button, .button.checkout.wc-forward").html("<span>' . $checkout_button_display_text . '</span>");
+                                        jQuery(".checkout-button, .button.checkout.wc-forward").html("' . $checkout_button_display_text . '");
                                     }
                                 });
                               </script>';

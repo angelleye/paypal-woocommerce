@@ -221,6 +221,9 @@ function display_smart_button_on_cart_checkout() {
     };
 }
 
-jQuery(document.body).on('updated_shipping_method', function () {
+jQuery(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout', function (event) {
+    alert(event.type);
     display_smart_button_on_cart_checkout();
 });
+
+
