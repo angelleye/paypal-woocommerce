@@ -35,11 +35,11 @@
                     shape: angelleye_in_content_param.button_shape,
                     label: angelleye_in_content_param.button_label,
                     layout: angelleye_in_content_param.button_layout,
-                    tagline: angelleye_in_content_param.button_tagline
+                    tagline: ( angelleye_in_content_param.button_tagline === "true") ? true : false
                 };
-
+                console.log(angelleye_cart_style_object);
                 if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit' && angelleye_in_content_param.button_fundingicons === "true") {
-                    angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
+                    angelleye_cart_style_object['fundingicons'] = ( angelleye_in_content_param.button_fundingicons === "true") ? true : false;
                 }
                 paypal.Button.render({
                     env: angelleye_in_content_param.environment,
@@ -149,16 +149,18 @@ function display_smart_button_on_cart_checkout() {
             shape: angelleye_in_content_param.button_shape,
             label: angelleye_in_content_param.button_label,
             layout: angelleye_in_content_param.button_layout,
-            tagline: angelleye_in_content_param.button_tagline
-
+            tagline: ( angelleye_in_content_param.button_tagline === "true" ) ? true : false
         };
 
         angelleye_button_selector.forEach(function (selector) {
             if (selector.length > 0 && jQuery(selector).length > 0) {
                 jQuery(selector).html('');
                 if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit') {
-                    angelleye_cart_style_object['fundingicons'] = angelleye_in_content_param.button_fundingicons;
+                    if(angelleye_in_content_param.button_fundingicons === 'true') {
+                        angelleye_cart_style_object['fundingicons'] = ( angelleye_in_content_param.button_fundingicons === "true" ) ? true : false;
+                    }
                 }
+                console.log(angelleye_cart_style_object);
                 paypal.Button.render({
                     env: angelleye_in_content_param.environment,
                     style: angelleye_cart_style_object,

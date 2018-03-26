@@ -356,14 +356,15 @@ jQuery(document).ready(function ($) {
             shape: angelleye_shape,
             label: angelleye_label,
             layout: angelleye_layout,
-            tagline: angelleye_tagline};
+            tagline: ( angelleye_tagline === "true" ) ? true : false
+        };
 
         var disallowed_funding_methods = jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val();
         if (disallowed_funding_methods === null) {
             disallowed_funding_methods = [];
         }
         if (angelleye_layout === 'horizontal' && (jQuery.inArray('card', disallowed_funding_methods) > -1 === false) && angelleye_label !== 'credit' && angelleye_fundingicons === "true") {
-            style_object['fundingicons'] = angelleye_fundingicons;
+            style_object['fundingicons'] = ( angelleye_fundingicons === "true" ) ? true : false;
         }
         angelleye_woocommerce_paypal_express_allowed_funding_methods = jQuery.grep(angelleye_woocommerce_paypal_express_allowed_funding_methods, function (value) {
             return jQuery.inArray(value, angelleye_woocommerce_paypal_express_disallowed_funding_methods) < 0;
