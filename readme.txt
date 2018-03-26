@@ -128,6 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.4.8.4 = 03.26.2018 =
 * Tweak - Adjusts some Smart Button options under settings to avoid confusion. ([#1032](https://github.com/angelleye/paypal-woocommerce/issues/1032))
 * Tweak - Adjusts progress spinner provided by WooCommerce when used with Smart Buttons / In Context checkout flow. ([#1048](https://github.com/angelleye/paypal-woocommerce/issues/1048))
+* Tweak - Version tracking on CSS / jQuery to help avoid caching conflicts. ([#1051](https://github.com/angelleye/paypal-woocommerce/issues/1051))
 * Fix - More adjustments to jQuery with Smart Buttons on cart page. ([#1044](https://github.com/angelleye/paypal-woocommerce/issues/1044))
 * Fix - Resolves an issue with Smart Buttons on the Woo mini-cart. ([#1042](https://github.com/angelleye/paypal-woocommerce/issues/1042))
 
