@@ -127,6 +127,8 @@ function is_funding_icon_should_show_in_content() {
 function display_smart_button_on_cart_checkout() {
     window.paypalCheckoutReady = function () {
         var angelleye_button_selector = [];
+        var allowed_funding_methods_var = [];
+        var disallowed_funding_methods_var = [];
         if (angelleye_in_content_param.is_cart == 'yes') {
             if (angelleye_in_content_param.cart_button_possition == 'both') {
                 angelleye_button_selector.push(".angelleye_smart_button_top", ".angelleye_smart_button_bottom");
@@ -139,14 +141,16 @@ function display_smart_button_on_cart_checkout() {
         } else if (angelleye_in_content_param.is_checkout == 'yes' && angelleye_in_content_param.is_display_on_checkout == 'yes') {
             angelleye_button_selector.push(".angelleye_smart_button_checkout_top");
         }
-        
         angelleye_button_selector.push(".angelleye_smart_button_mini");
-        allowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
-      
+       
         disallowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
+        allowed_funding_methods_var = jQuery.parseJSON(angelleye_in_content_param.allowed_funding_methods);
         if (angelleye_in_content_param.is_us_or_uk == "no") {
-            angelleye_in_content_param.disallowed_funding_methods.push("credit");
+            
+            disallowed_funding_methods_var.push("credit");
         }
+         
+        
         angelleye_cart_style_object = {size: angelleye_in_content_param.button_size,
             color: angelleye_in_content_param.button_color,
             shape: angelleye_in_content_param.button_shape,
@@ -156,6 +160,9 @@ function display_smart_button_on_cart_checkout() {
         };
         angelleye_button_selector.forEach(function (selector) {
             jQuery(selector).html("");
+            disallowed_funding_methods_var = jQuery.grep(disallowed_funding_methods_var, function(value) {
+               return value !== 'venmo';
+            });
             if (selector.length > 0 && jQuery(selector).length > 0) {
                 if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit') {
                     if(angelleye_in_content_param.button_fundingicons === 'true') {
@@ -167,7 +174,7 @@ function display_smart_button_on_cart_checkout() {
                     style: angelleye_cart_style_object,
                     funding: {
                         allowed: allowed_funding_methods_var,
-                        disallowed: jQuery.parseJSON(angelleye_in_content_param.disallowed_funding_methods)
+                        disallowed: disallowed_funding_methods_var
                     },
                     payment: function () {
                         jQuery('.woocommerce').block({
@@ -224,7 +231,7 @@ function display_smart_button_on_cart_checkout() {
     };
 }
 jQuery( function( $ ) {
-$(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout wc_fragments_loaded', function (event) {
+$(document.body).on('updated_shipping_method wc_fragments_refreshed wc_fragments_loaded', function (event) {
     if( angelleye_in_content_param.is_product == 'no' ) {
         display_smart_button_on_cart_checkout();
     }
