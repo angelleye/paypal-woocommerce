@@ -79,5 +79,6 @@ div.wc-proceed-to-checkout a.paypal_checkout_button {
 @media screen and (min-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom {
        width: 250px;
+       margin: 0 auto 0 auto;
     }
 }
