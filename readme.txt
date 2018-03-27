@@ -125,7 +125,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.8.4 = 03.27.2018 =
+= 1.4.8.4 - 03.27.2018 =
 * Tweak - Adjusts some Smart Button options under settings to avoid confusion. ([#1032](https://github.com/angelleye/paypal-woocommerce/issues/1032))
 * Tweak - Adjusts progress spinner provided by WooCommerce when used with Smart Buttons / In Context checkout flow. ([#1048](https://github.com/angelleye/paypal-woocommerce/issues/1048))
 * Tweak - Version tracking on CSS / jQuery to help avoid caching conflicts. ([#1051](https://github.com/angelleye/paypal-woocommerce/issues/1051))
