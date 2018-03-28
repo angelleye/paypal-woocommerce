@@ -1213,6 +1213,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             wp_redirect(get_permalink(wc_get_page_id('cart')));
             exit();
+        } else {
+            if( !empty($this->paypal_response['PAYMENTINFO_0_PROTECTIONELIGIBILITY']) ) {
+                $order->add_order_note('Seller Protection Status: ' . $this->paypal_response['PAYMENTINFO_0_PROTECTIONELIGIBILITY']);
+            }
         }
     }
 
