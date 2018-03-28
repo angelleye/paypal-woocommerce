@@ -831,29 +831,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             wp_die(__('Cheatin&#8217; huh?', 'woocommerce-gateway-paypal-express-checkout'));
         }
         WC()->shipping->reset_shipping();
-
         $product_id = $_POST['product_id'];
-
-        $product = wc_get_product($product_id);
-        if (is_object($product)) {
-            if (!defined('WOOCOMMERCE_CART')) {
-                define('WOOCOMMERCE_CART', true);
-            }
-            $qty = !isset($_POST['qty']) ? 1 : absint($_POST['qty']);
-            if ($product->is_type('variation') || $product->is_type('variable')) {
-                $attributes = array_map('wc_clean', $_POST['attributes']);
-                if (version_compare(WC_VERSION, '3.0', '<')) {
-                    $variation_id = $product->get_matching_variation($attributes);
-                } else {
-                    $data_store = WC_Data_Store::load('product');
-                    $variation_id = $data_store->find_matching_product_variation($product, $attributes);
-                }
-                WC()->cart->add_to_cart($product->get_id(), $qty, $variation_id, $attributes);
-            } elseif ($product->is_type('simple')) {
-                WC()->cart->add_to_cart($product->get_id(), $qty);
-            }
-            WC()->cart->calculate_totals();
-        }
         $url = esc_url_raw(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
         if (!empty($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == 'true') {
             $url = add_query_arg('ec_save_to_account', 'true', $url);
@@ -861,7 +839,40 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if (!empty($_POST['is_cc']) && $_POST['is_cc'] == 'true') {
             $url = add_query_arg('use_paypal_credit', 'true', $url);
         }
-        wp_send_json(array('url' => $url));
+        try {
+            $product = wc_get_product($product_id);
+            if (is_object($product)) {
+                if (!defined('WOOCOMMERCE_CART')) {
+                    define('WOOCOMMERCE_CART', true);
+                }
+                $qty = !isset($_POST['qty']) ? 1 : absint($_POST['qty']);
+                if ($product->is_type('variation') || $product->is_type('variable')) {
+                    $attributes = array_map('wc_clean', $_POST['attributes']);
+                    if (version_compare(WC_VERSION, '3.0', '<')) {
+                        $variation_id = $product->get_matching_variation($attributes);
+                    } else {
+                        $data_store = WC_Data_Store::load('product');
+                        $variation_id = $data_store->find_matching_product_variation($product, $attributes);
+                    }
+                    $bool = $this->angelleye_is_product_already_in_cart($product->get_id(), $qty, $variation_id, $attributes);
+                    if($bool == false) {
+                        WC()->cart->add_to_cart($product->get_id(), $qty, $variation_id, $attributes);
+                    }
+                } elseif ($product->is_type('simple')) {
+                    $bool = $this->angelleye_is_product_already_in_cart($product->get_id(), $qty);
+                    if( $bool == false ) {
+                        WC()->cart->add_to_cart($product->get_id(), $qty);
+                    }
+                }
+                WC()->cart->calculate_totals();
+            }
+            wp_send_json(array('url' => $url));
+        } catch (Exception $ex) {
+            wp_send_json(array('url' => $url));
+        } finally {
+            wp_send_json(array('url' => $url));
+        }
+        
     }
 
     public function angelleye_in_content_js($url) {
@@ -1201,6 +1212,32 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
         }
         
+    }
+    
+    public function angelleye_is_product_already_in_cart($product_id = 0, $quantity = 1, $variation_id = 0, $variation = array(), $cart_item_data = array()) {
+        $product_id   = absint( $product_id );
+        $variation_id = absint( $variation_id );
+        if ( 'product_variation' === get_post_type( $product_id ) ) {
+            $variation_id = $product_id;
+            $product_id   = wp_get_post_parent_id( $variation_id );
+        }
+        $product_data = wc_get_product( $variation_id ? $variation_id : $product_id );
+        $quantity     = apply_filters( 'woocommerce_add_to_cart_quantity', $quantity, $product_id );
+        if ( $quantity <= 0 || ! $product_data || 'trash' === $product_data->get_status() ) {
+            return false;
+        }
+        $cart_item_data = (array) apply_filters( 'woocommerce_add_cart_item_data', $cart_item_data, $product_id, $variation_id, $quantity );
+        $cart_id        = WC()->cart->generate_cart_id( $product_id, $variation_id, $variation, $cart_item_data );
+        $cart_item_key  = WC()->cart->find_product_in_cart( $cart_id );
+        if ( $product_data->is_sold_individually() ) {
+            $quantity      = apply_filters( 'woocommerce_add_to_cart_sold_individually_quantity', 1, $quantity, $product_id, $variation_id, $cart_item_data );
+            $found_in_cart = apply_filters( 'woocommerce_add_to_cart_sold_individually_found_in_cart', $cart_item_key && WC()->cart->cart_contents[ $cart_item_key ]['quantity'] > 0, $product_id, $variation_id, $cart_item_data, $cart_id );
+            if ( $found_in_cart ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
 }

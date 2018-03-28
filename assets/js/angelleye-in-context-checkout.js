@@ -69,6 +69,7 @@
                             var params = {
                                 request_from: 'JSv4'
                             };
+                            console.log(data);
                             return paypal.request.post(data.url, params).then(function (res) {
                                 return res.token;
                             });
