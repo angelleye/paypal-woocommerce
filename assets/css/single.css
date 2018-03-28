@@ -10,8 +10,12 @@
     position: relative;
 }
 .single_add_to_cart_button.disabled {
-    opacity: 0.4;
+    opacity: 0.2;
     cursor: not-allowed;
+    display: none;
+}
+.single_add_to_cart_button {
+    display: inline-block;
 }
 .single_variation_wrap_angelleye:disabled, .single_add_to_cart_button:disabled {
     opacity: 0.4;

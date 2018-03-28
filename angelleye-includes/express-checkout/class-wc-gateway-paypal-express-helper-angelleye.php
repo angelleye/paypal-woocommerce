@@ -170,43 +170,48 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if ($this->enabled == 'yes' && $this->show_on_product_page == 'yes' && $is_ec_button_enable_product_level == 'yes') {
                 $ec_html_button = '';
                 $_product = wc_get_product($product->get_id());
-                if ($_product->is_type('simple') && (version_compare(WC_VERSION, '3.0', '<') == false)) {
-                    ?>
-                    <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
-                    <?php
-                }
-                $ec_html_button .= '<div class="angelleye_button_single">';
-                $button_dynamic_class = 'single_variation_wrap_angelleye_' . $product->get_id();
-                $hide = '';
-                if ($_product->is_type('variation') || $_product->is_type('external') || $_product->get_price() == 0 || $_product->get_price() == '') {
-                    $hide = 'display:none;';
-                }
-                if ($this->enable_in_context_checkout_flow == 'no') {
-                    $add_to_cart_action = esc_url(add_query_arg('express_checkout', '1'));
-                    switch ($this->checkout_with_pp_button_type) {
-                        case 'textbutton':
-                            $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="button" style="' . $hide . '"  class="single_add_to_cart_button button alt paypal_checkout_button single_variation_wrap_angelleye paypal_checkout_button button alt ec_product_page_button_type_textbutton "' . $button_dynamic_class . '" name="express_checkout"  value="' . $this->pp_button_type_text_button . '"/>';
-                            break;
-                        case "paypalimage":
-                            $button_img = WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage();
-                            $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="image" src="' . $button_img . '" style="' . $hide . '"  class="single_add_to_cart_button button alt paypal_checkout_button single_variation_wrap_angelleye ec_product_page_button_type_paypalimage ' . $button_dynamic_class . '" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '"/>';
-                            break;
-                        case "customimage":
-                            $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="image" src="' . $this->pp_button_type_my_custom . '" style="' . $hide . '"  class="single_add_to_cart_button button alt paypal_checkout_button single_variation_wrap_angelleye ec_product_page_button_type_customimage ' . $button_dynamic_class . '" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '"/>';
-                            break;
+                if ( $_product->is_type('variation') || $_product->is_type('variable') || $_product->is_type('simple') ) {
+                    if ($_product->is_type('simple') && (version_compare(WC_VERSION, '3.0', '<') == false)) {
+                        ?>
+                        <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
+                        <?php
                     }
-                    if ($this->show_paypal_credit == 'yes') {
-                        $paypal_credit_button_markup = '<a  style="' . $hide . '" class="single_add_to_cart_button paypal_checkout_button paypal_checkout_button_cc" href="' . esc_url(add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))))) . '" >';
-                        $paypal_credit_button_markup .= '<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png" width="148" height="26" class="ppcreditlogo ec_checkout_page_button_type_pc"  align="top" alt="' . __('Check out with PayPal Credit', 'paypal-for-woocommerce') . '" />';
-                        $paypal_credit_button_markup .= '</a>';
-                        $ec_html_button .= $paypal_credit_button_markup;
+                    if($_product->is_type('simple') && ($_product->get_price() == 0 || $_product->get_price() == '')) {
+                        return false;
                     }
+                    $button_dynamic_class = 'single_variation_wrap_angelleye_' . $product->get_id();
+                    $hide = '';
+                    if ($_product->is_type('variation') || $_product->is_type('variable') || $_product->get_price() == 0 || $_product->get_price() == '') {
+                        //$hide = 'display:none;';
+                    }
+                    $ec_html_button .= '<div class="angelleye_button_single single_add_to_cart_button" style="' . $hide . '">';
+                    if ($this->enable_in_context_checkout_flow == 'no') {
+                        $add_to_cart_action = esc_url(add_query_arg('express_checkout', '1'));
+                        switch ($this->checkout_with_pp_button_type) {
+                            case 'textbutton':
+                                $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="button" style="' . $hide . '"  class="single_add_to_cart_button button alt paypal_checkout_button single_variation_wrap_angelleye paypal_checkout_button button alt ec_product_page_button_type_textbutton "' . $button_dynamic_class . '" name="express_checkout"  value="' . $this->pp_button_type_text_button . '"/>';
+                                break;
+                            case "paypalimage":
+                                $button_img = WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage();
+                                $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="image" src="' . $button_img . '" style="' . $hide . '"  class="single_add_to_cart_button button alt paypal_checkout_button single_variation_wrap_angelleye ec_product_page_button_type_paypalimage ' . $button_dynamic_class . '" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '"/>';
+                                break;
+                            case "customimage":
+                                $ec_html_button .= '<input data-action="' . esc_url($add_to_cart_action) . '" type="image" src="' . $this->pp_button_type_my_custom . '" style="' . $hide . '"  class="single_add_to_cart_button button alt paypal_checkout_button single_variation_wrap_angelleye ec_product_page_button_type_customimage ' . $button_dynamic_class . '" name="express_checkout" value="' . __('Pay with PayPal', 'paypal-for-woocommerce') . '"/>';
+                                break;
+                        }
+                        if ($this->show_paypal_credit == 'yes') {
+                            $paypal_credit_button_markup = '<a  style="' . $hide . '" class="single_add_to_cart_button paypal_checkout_button paypal_checkout_button_cc" href="' . esc_url(add_query_arg('use_paypal_credit', 'true', add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))))) . '" >';
+                            $paypal_credit_button_markup .= '<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-small.png" width="148" height="26" class="ppcreditlogo ec_checkout_page_button_type_pc"  align="top" alt="' . __('Check out with PayPal Credit', 'paypal-for-woocommerce') . '" />';
+                            $paypal_credit_button_markup .= '</a>';
+                            $ec_html_button .= $paypal_credit_button_markup;
+                        }
+                    }
+                    $ec_html_button .= '</div>';
+                    if ($this->enable_tokenized_payments == 'yes') {
+                        $ec_html_button .= $this->function_helper->angelleye_ec_save_payment_method_checkbox();
+                    }
+                    echo apply_filters('angelleye_ec_product_page_buy_now_button', $ec_html_button);
                 }
-                $ec_html_button .= '</div>';
-                if ($this->enable_tokenized_payments == 'yes') {
-                    $ec_html_button .= $this->function_helper->angelleye_ec_save_payment_method_checkbox();
-                }
-                echo apply_filters('angelleye_ec_product_page_buy_now_button', $ec_html_button);
             }
         } catch (Exception $ex) {
             

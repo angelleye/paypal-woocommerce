@@ -82,7 +82,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 }
                 $name = AngellEYE_Gateway_Paypal::clean_product_title($name);
                 if (is_object($product)) {
-                    if ($product->is_type('variation')) {
+                    if ($product->is_type('variation') || $product->is_type('variable')) {
                         if (version_compare(WC_VERSION, '3.0', '<')) {
                             $attributes = $product->get_variation_attributes();
                             if (!empty($attributes) && is_array($attributes)) {
@@ -204,7 +204,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $name = AngellEYE_Gateway_Paypal::clean_product_title($name);
                 $amount = round($values['line_subtotal'] / $values['qty'], $this->decimals);
                 if (is_object($product)) {
-                    if ($product->is_type('variation')) {
+                    if ($product->is_type('variation') || $product->is_type('variable')) {
                         if (version_compare(WC_VERSION, '3.0', '<')) {
                             $attributes = $product->get_variation_attributes();
                             if (!empty($attributes) && is_array($attributes)) {

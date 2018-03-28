@@ -48,6 +48,7 @@
                         disallowed: angelleye_in_content_param.disallowed_funding_methods
                     },
                     payment: function (data, actions) {
+                        
                         jQuery('.cart').block({
                             message: null,
                             overlayCSS: {
