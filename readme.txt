@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.8.5 - 03.28.2018 =
 * Feature - Adds PayPal Seller Protection Status to WooCommerce order notes. ([#1053](https://github.com/angelleye/paypal-woocommerce/issues/1053))
+* Feature - Adds -OR- between the Proceed to Checkout button and PayPal buttons on cart page, with filter to adjust. ([#1061](https://github.com/angelleye/paypal-woocommerce/issues/1061))
 * Tweak - Adjusts error handling with Express Checkout token is not available. ([#1047](https://github.com/angelleye/paypal-woocommerce/issues/1047))
 * Tweak - Hides PayPal Smart Payment Buttons on external products. ([#1054](https://github.com/angelleye/paypal-woocommerce/issues/1054))
 * Tweak - Update PayPal Smart Payment Button JS to use minified version. ([#1056](https://github.com/angelleye/paypal-woocommerce/issues/1056))
