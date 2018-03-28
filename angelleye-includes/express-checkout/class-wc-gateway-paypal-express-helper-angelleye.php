@@ -840,7 +840,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 define('WOOCOMMERCE_CART', true);
             }
             $qty = !isset($_POST['qty']) ? 1 : absint($_POST['qty']);
-            if ($product->is_type('variable')) {
+            if ($product->is_type('variation') || $product->is_type('variable')) {
                 $attributes = array_map('wc_clean', $_POST['attributes']);
                 if (version_compare(WC_VERSION, '3.0', '<')) {
                     $variation_id = $product->get_matching_variation($attributes);
