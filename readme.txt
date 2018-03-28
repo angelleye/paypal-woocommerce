@@ -134,6 +134,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Update PayPal Smart Payment Button JS to use minified version. ([#1056](https://github.com/angelleye/paypal-woocommerce/issues/1056))
 * Fix - Resolves a duplicate note added to WooCommerce order when an order is refunded. ([#1057](https://github.com/angelleye/paypal-woocommerce/issues/1057))
 * Fix - Resolves an issue where PayPal buttons fail from the product page if the item is already in the cart. ([#1036](https://github.com/angelleye/paypal-woocommerce/issues/1036))
+* Fix - Resolves an issue where Marketing Solutions was automatically becoming enabled. ([#1041](https://github.com/angelleye/paypal-woocommerce/issues/1041))
 
 = 1.4.8.4 - 03.27.2018 =
 * Tweak - Adjusts some Smart Button options under settings to avoid confusion. ([#1032](https://github.com/angelleye/paypal-woocommerce/issues/1032))
