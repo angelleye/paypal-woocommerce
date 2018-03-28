@@ -133,6 +133,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjusts error handling with Express Checkout token is not available. ([#1047](https://github.com/angelleye/paypal-woocommerce/issues/1047))
 * Tweak - Hides PayPal Smart Payment Buttons on external products. ([#1054](https://github.com/angelleye/paypal-woocommerce/issues/1054))
 * Tweak - Update PayPal Smart Payment Button JS to use minified version. ([#1056](https://github.com/angelleye/paypal-woocommerce/issues/1056))
+* Tweak - Adjusts PayPal Smart Payment Button preview in the settings panel. ([#1063](https://github.com/angelleye/paypal-woocommerce/issues/1063))
 * Fix - Resolves a duplicate note added to WooCommerce order when an order is refunded. ([#1057](https://github.com/angelleye/paypal-woocommerce/issues/1057))
 * Fix - Resolves an issue where PayPal buttons fail from the product page if the item is already in the cart. ([#1036](https://github.com/angelleye/paypal-woocommerce/issues/1036))
 * Fix - Resolves an issue where Marketing Solutions was automatically becoming enabled. ([#1041](https://github.com/angelleye/paypal-woocommerce/issues/1041))
