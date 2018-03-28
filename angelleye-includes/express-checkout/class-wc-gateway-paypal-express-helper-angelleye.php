@@ -871,10 +871,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             wp_send_json(array('url' => $url));
         } catch (Exception $ex) {
             wp_send_json(array('url' => $url));
-        } finally {
-            wp_send_json(array('url' => $url));
-        }
-        
+        } 
     }
 
     public function angelleye_in_content_js($url) {
