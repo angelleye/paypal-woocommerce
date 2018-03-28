@@ -1462,10 +1462,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['REFUNDTRANSACTIONID']);
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
-            $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
-            if (!$max_remaining_refund > 0) {
-                $order->update_status('refunded');
-            }
             if (ob_get_length()) ob_end_clean();
             return true;
         } else {

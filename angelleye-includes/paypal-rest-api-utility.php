@@ -558,10 +558,6 @@ class PayPal_Rest_API_Utility {
                     if (isset($reason) && !empty($reason)) {
                         $order->add_order_note('Reason for Refund :' . $reason);
                     }
-                    $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
-                    if (!$max_remaining_refund > 0) {
-                        $order->update_status('refunded');
-                    }
                     return true;
                 }
             } else {
@@ -571,10 +567,6 @@ class PayPal_Rest_API_Utility {
                     update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
                     if (isset($reason) && !empty($reason)) {
                         $order->add_order_note('Reason for Refund :' . $reason);
-                    }
-                    $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
-                    if (!$max_remaining_refund > 0) {
-                        $order->update_status('refunded');
                     }
                     return true;
                 }

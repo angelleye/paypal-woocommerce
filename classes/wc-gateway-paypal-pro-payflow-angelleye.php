@@ -1040,11 +1040,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
             update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['PNREF']);
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);
-            $max_remaining_refund = wc_format_decimal($order->get_total() - $order->get_total_refunded());
-            if (!$max_remaining_refund > 0) {
-                $order->update_status('refunded');
-            }
-
             if (ob_get_length())
                 ob_end_clean();
             return true;
