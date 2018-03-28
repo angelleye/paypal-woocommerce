@@ -301,7 +301,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
             );
             wp_localize_script( 'angelleye_admin', 'angelleye_admin', $translation_array );
-            wp_enqueue_script('angelleye-in-context-checkout-js-admin', 'https://www.paypalobjects.com/api/checkout.js', array(), null, true);
+            wp_enqueue_script('angelleye-in-context-checkout-js-admin', 'https://www.paypalobjects.com/api/checkout.min.js', array(), null, true);
             wp_enqueue_script( 'angelleye_admin');
             
         }
