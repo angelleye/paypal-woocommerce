@@ -102,6 +102,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 3. Your logo and cart items accurately displayed on PayPal Express Checkout review pages.
 4. Direct credit card processing option available with PayPal Payments Pro.
 5. WooCommerce Payment Tokens - Save to Account option displayed to buyer during checkout.
+6. PayPal Credit banner ad displayed on site via Marketing Solutions option (contracted).
+7. PayPal Credit banner ad displayed on site via Marketing Solutions option (expanded).
 
 == Frequently Asked Questions ==
 
