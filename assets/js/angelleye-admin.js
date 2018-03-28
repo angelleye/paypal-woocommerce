@@ -375,23 +375,35 @@ jQuery(document).ready(function ($) {
         }
         window.paypalCheckoutReady = function () {
             paypal.Button.render({
-                env: angelleye_env,
+                env: 'sandbox',
+                client: {
+                    sandbox:    'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R'
+                },
                 style: style_object,
                 funding: {
                     allowed: angelleye_woocommerce_paypal_express_allowed_funding_methods,
                     disallowed: angelleye_woocommerce_paypal_express_disallowed_funding_methods
                 },
-                payment: function () {
-
+                payment: function(data, actions) {
+                    return actions.payment.create({
+                        payment: {
+                            transactions: [
+                                {
+                                    amount: { total: '0.01', currency: 'USD' }
+                                }
+                            ]
+                        }
+                    });
                 },
                 onAuthorize: function (data, actions) {
-
+                    return actions.payment.execute().then(function() {
+                       window.alert('Payment Complete!');
+                   });
                 },
                 onCancel: function (data, actions) {
 
                 },
                 onError: function (err) {
-                    alert(err);
                 }
             }, '.display_smart_button_previews');
 
