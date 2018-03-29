@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.8.6 - 03.29.2018 =
+* Fix - Resolves a PHP syntax error. ([#1064](https://github.com/angelleye/paypal-woocommerce/issues/1064))
+
 = 1.4.8.5 - 03.28.2018 =
 * Feature - Adds PayPal Seller Protection Status to WooCommerce order notes. ([#1053](https://github.com/angelleye/paypal-woocommerce/issues/1053))
 * Feature - Adds -OR- between the Proceed to Checkout button and PayPal buttons on cart page, with filter to adjust. ([#1061](https://github.com/angelleye/paypal-woocommerce/issues/1061))
