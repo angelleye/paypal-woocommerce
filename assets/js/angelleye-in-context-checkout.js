@@ -23,7 +23,7 @@ jQuery(function ($) {
                 allowed_funding_methods_single_array = $.parseJSON(angelleye_in_content_param.allowed_funding_methods);
                 disallowed_funding_methods_single_array = $.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
                 if (angelleye_in_content_param.is_us_or_uk == "no") {
-                    disallowed_funding_methods_single_array("credit");
+                    disallowed_funding_methods_single_array.push("credit");
                 }
                 var get_attributes = function () {
                     var select = $('.variations_form').find('.variations select'),
