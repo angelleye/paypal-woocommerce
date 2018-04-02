@@ -71,6 +71,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     }
                 }
             }
+            $desc = '';
             foreach (WC()->cart->cart_contents as $cart_item_key => $values) {
                 $amount = round($values['line_subtotal'] / $values['quantity'], $this->decimals);
                 if (version_compare(WC_VERSION, '3.0', '<')) {
@@ -190,6 +191,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             if ($this->yith_get_giftcard_amount() != false) {
                 $this->discount_amount = round($this->discount_amount + $this->yith_get_giftcard_amount(), $this->decimals);
             }
+            $desc = '';
             foreach ($order->get_items() as $cart_item_key => $values) {
                 $product = $order->get_product_from_item($values);
                 $product_sku = null;
