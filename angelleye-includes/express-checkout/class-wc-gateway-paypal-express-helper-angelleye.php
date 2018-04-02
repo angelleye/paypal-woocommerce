@@ -848,13 +848,17 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     define('WOOCOMMERCE_CART', true);
                 }
                 $qty = !isset($_POST['qty']) ? 1 : absint($_POST['qty']);
-                if ($product->is_type('variation') || $product->is_type('variable')) {
-                    $attributes = array_map('wc_clean', $_POST['attributes']);
-                    if (version_compare(WC_VERSION, '3.0', '<')) {
-                        $variation_id = $product->get_matching_variation($attributes);
+                if ($product->is_type('variable')) {
+                    $attributes = array_map('wc_clean', json_decode(stripslashes($_POST['attributes']), true));
+                    if(!empty($_POST['variation_id'])) {
+                        $variation_id = $_POST['variation_id'];
                     } else {
-                        $data_store = WC_Data_Store::load('product');
-                        $variation_id = $data_store->find_matching_product_variation($product, $attributes);
+                        if (version_compare(WC_VERSION, '3.0', '<')) {
+                            $variation_id = $product->get_matching_variation($attributes);
+                        } else {
+                            $data_store = WC_Data_Store::load('product');
+                            $variation_id = $data_store->find_matching_product_variation($product, $attributes);
+                        }
                     }
                     $bool = $this->angelleye_is_product_already_in_cart($product->get_id(), $qty, $variation_id, $attributes);
                     if($bool == false) {
@@ -1177,6 +1181,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 return false;
             }
         }
+        return false;
     }
 
 }

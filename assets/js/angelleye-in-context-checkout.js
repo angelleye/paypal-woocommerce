@@ -73,10 +73,11 @@ jQuery(function ($) {
                         var data_param = {
                             'nonce': angelleye_in_content_param.generate_cart_nonce,
                             'qty': $('.quantity .qty').val(),
-                            'attributes': $('.variations_form').length ? get_attributes().data : [],
+                            'attributes': $('.variations_form').length ? JSON.stringify(get_attributes().data) : [],
                             'wc-paypal_express-new-payment-method': $("#wc-paypal_express-new-payment-method").is(':checked'),
                             'is_cc': '',
                             'product_id': $("input[name=add-to-cart]").val(),
+                            'variation_id': $("input[name=variation_id").val(),
                             'request_from': 'JSv4'
                         };
                         return paypal.request.post(angelleye_in_content_param.add_to_cart_ajaxurl, data_param).then(function (data) {
