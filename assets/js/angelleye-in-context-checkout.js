@@ -78,7 +78,8 @@ jQuery(function ($) {
                             'is_cc': '',
                             'product_id': $("input[name=add-to-cart]").val(),
                             'variation_id': $("input[name=variation_id").val(),
-                            'request_from': 'JSv4'
+                            'request_from': 'JSv4',
+                            'express_checkout' : 'true'
                         };
                         return paypal.request.post(angelleye_in_content_param.add_to_cart_ajaxurl, data_param).then(function (data) {
                             var params = {
