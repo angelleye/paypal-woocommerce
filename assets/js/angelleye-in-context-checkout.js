@@ -63,13 +63,7 @@ jQuery(function ($) {
                         disallowed: disallowed_funding_methods_single_array
                     },
                     payment: function (data, actions) {
-                        $('.cart').block({
-                            message: null,
-                            overlayCSS: {
-                                background: '#fff',
-                                opacity: 0.6
-                            }
-                        });
+                        $('.cart').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                         var data_param = {
                             'nonce': angelleye_in_content_param.generate_cart_nonce,
                             'qty': $('.quantity .qty').val(),
@@ -79,7 +73,7 @@ jQuery(function ($) {
                             'product_id': $("input[name=add-to-cart]").val(),
                             'variation_id': $("input[name=variation_id]").val(),
                             'request_from': 'JSv4',
-                            'express_checkout' : 'true'
+                            'express_checkout': 'true'
                         };
                         return paypal.request.post(angelleye_in_content_param.add_to_cart_ajaxurl, data_param).then(function (data) {
                             var params = {
@@ -124,7 +118,6 @@ jQuery(function ($) {
                         }
                     }
                 }, '.angelleye_button_single');
-
             };
         }
     }
@@ -180,13 +173,7 @@ jQuery(function ($) {
                             disallowed: disallowed_funding_methods_var
                         },
                         payment: function () {
-                            $('.woocommerce').block({
-                                message: null,
-                                overlayCSS: {
-                                    background: '#fff',
-                                    opacity: 0.6
-                                }
-                            });
+                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var data_param = {
                                 request_from: 'JSv4'
                             };
