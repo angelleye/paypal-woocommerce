@@ -9,8 +9,8 @@
 #paypal_ec_paypal_credit_button, #paypal_ec_button, .paypal_ec_textbutton {
     position: relative;
 }
-.single_add_to_cart_button.disabled {
-    opacity: 0.2;
+.angelleye_button_single.disabled {
+    opacity: 0.4;
     cursor: not-allowed;
     display: none;
 }

@@ -77,7 +77,7 @@ jQuery(function ($) {
                             'wc-paypal_express-new-payment-method': $("#wc-paypal_express-new-payment-method").is(':checked'),
                             'is_cc': '',
                             'product_id': $("input[name=add-to-cart]").val(),
-                            'variation_id': $("input[name=variation_id").val(),
+                            'variation_id': $("input[name=variation_id]").val(),
                             'request_from': 'JSv4',
                             'express_checkout' : 'true'
                         };
