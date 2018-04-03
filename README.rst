@@ -8,9 +8,9 @@ This is a PayPal extension for the WooCommerce shopping cart system on WordPress
 Requirements
 *******************
 
--  PHP version 5.3+.
+-  PHP version 5.6+.
 -  WordPress 3.8+
--  WooCommerce 2.3+
+-  WooCommerce 3.0+
 
 ************
 Installation
