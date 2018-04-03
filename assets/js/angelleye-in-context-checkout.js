@@ -2,10 +2,8 @@ jQuery(function ($) {
     if (typeof angelleye_in_content_param === 'undefined') {
         return false;
     }
-    $(document).ready(function () {
-        display_smart_button_on_cart_checkout();
-        display_smart_button_on_product_page();
-    });
+    display_smart_button_on_cart_checkout();
+    display_smart_button_on_product_page();
     function is_funding_icon_should_show_in_content() {
         var disallowed_funding_methods = angelleye_in_content_param.disallowed_funding_methods;
         if (disallowed_funding_methods === null) {
