@@ -130,6 +130,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.4.8.7 - 04.03.2018 =
 * Tweak - Adjusts the CSS for PayPal Smart Buttons in the WooCommerce mini-cart. ([#1072](https://github.com/angelleye/paypal-woocommerce/issues/1072))
 * Fix - Resolves a PHP error happening when some types of variable products are in the cart. ([#1069](https://github.com/angelleye/paypal-woocommerce/issues/1069))([#1071](https://github.com/angelleye/paypal-woocommerce/issues/1071))([#1078](https://github.com/angelleye/paypal-woocommerce/issues/1078))
+* Fix - Resolves a conflict with UPS and USPS plugins on the Express Checkout review page. ([#1079](https://github.com/angelleye/paypal-woocommerce/issues/1079))
 
 = 1.4.8.6 - 03.29.2018 =
 * Tweak - Adjustments to Smart Buttons in mini-cart. ([#1042](https://github.com/angelleye/paypal-woocommerce/issues/1042))
