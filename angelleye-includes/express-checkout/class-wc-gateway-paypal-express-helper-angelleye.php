@@ -792,15 +792,17 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function maybe_add_shipping_information($packages) {
-        if ($this->function_helper->ec_is_express_checkout() || $this->ec_get_session_data('shipping_details')) {
-            $destination = $this->ec_get_session_data('shipping_details');
-            if (!empty($destination)) {
-                $packages[0]['destination']['country'] = $destination['country'];
-                $packages[0]['destination']['state'] = $destination['state'];
-                $packages[0]['destination']['postcode'] = $destination['postcode'];
-                $packages[0]['destination']['city'] = $destination['city'];
-                $packages[0]['destination']['address'] = $destination['address_1'];
-                $packages[0]['destination']['address_2'] = $destination['address_2'];
+        if ( ! is_ajax() ) {
+            if ($this->function_helper->ec_is_express_checkout() || $this->ec_get_session_data('shipping_details')) {
+                $destination = $this->ec_get_session_data('shipping_details');
+                if (!empty($destination)) {
+                    $packages[0]['destination']['country'] = $destination['country'];
+                    $packages[0]['destination']['state'] = $destination['state'];
+                    $packages[0]['destination']['postcode'] = $destination['postcode'];
+                    $packages[0]['destination']['city'] = $destination['city'];
+                    $packages[0]['destination']['address'] = $destination['address_1'];
+                    $packages[0]['destination']['address_2'] = $destination['address_2'];
+                }
             }
         }
         return $packages;
