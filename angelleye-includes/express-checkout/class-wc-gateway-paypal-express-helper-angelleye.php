@@ -109,7 +109,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     }
                 }
                 add_action('wp_head', array($this, 'angelleye_add_header_meta'), 0);
-                add_action('woocommerce_add_to_cart_redirect', array($this, 'add_to_cart_redirect'));
+                add_action('woocommerce_add_to_cart_redirect', array($this, 'add_to_cart_redirect'), 9999);
                 add_action('woocommerce_checkout_billing', array($this, 'ec_set_checkout_post_data'));
                 add_action('woocommerce_available_payment_gateways', array($this, 'ec_disable_gateways'));
                 add_filter('body_class', array($this, 'ec_add_body_class'));
