@@ -109,15 +109,17 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 if (is_object($product)) {
                     $product_sku = $product->get_sku();
                 }
-                $item = array(
-                    'name' => html_entity_decode(wc_trim_string($name ? $name : __('Item', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
-                    'desc' => html_entity_decode(wc_trim_string($desc, 127), ENT_NOQUOTES, 'UTF-8'),
-                    'qty' => $values['quantity'],
-                    'amt' => AngellEYE_Gateway_Paypal::number_format($amount),
-                    'number' => $product_sku
-                );
-                $this->order_items[] = $item;
-                $roundedPayPalTotal += round($amount * $values['quantity'], $this->decimals);
+                if ($amount * 1000 > 0) {
+                    $item = array(
+                        'name' => html_entity_decode(wc_trim_string($name ? $name : __('Item', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
+                        'desc' => html_entity_decode(wc_trim_string($desc, 127), ENT_NOQUOTES, 'UTF-8'),
+                        'qty' => $values['quantity'],
+                        'amt' => AngellEYE_Gateway_Paypal::number_format($amount),
+                        'number' => $product_sku
+                    );
+                    $this->order_items[] = $item;
+                    $roundedPayPalTotal += round($amount * $values['quantity'], $this->decimals);
+                }
             }
 
             $this->taxamt = round(WC()->cart->tax_total + WC()->cart->shipping_tax_total, $this->decimals);
@@ -228,15 +230,17 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                         }
                     }
                 }
-                $item = array(
-                    'name' => html_entity_decode(wc_trim_string($name ? $name : __('Item', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
-                    'desc' => html_entity_decode(wc_trim_string($desc, 127), ENT_NOQUOTES, 'UTF-8'),
-                    'qty' => $values['qty'],
-                    'amt' => AngellEYE_Gateway_Paypal::number_format($amount),
-                    'number' => $product_sku,
-                );
-                $this->order_items[] = $item;
-                $roundedPayPalTotal += round($amount * $values['qty'], $this->decimals);
+                if ($amount * 1000 > 0) {
+                    $item = array(
+                        'name' => html_entity_decode(wc_trim_string($name ? $name : __('Item', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
+                        'desc' => html_entity_decode(wc_trim_string($desc, 127), ENT_NOQUOTES, 'UTF-8'),
+                        'qty' => $values['qty'],
+                        'amt' => AngellEYE_Gateway_Paypal::number_format($amount),
+                        'number' => $product_sku,
+                    );
+                    $this->order_items[] = $item;
+                    $roundedPayPalTotal += round($amount * $values['qty'], $this->decimals);
+                }
             }
             foreach ($order->get_fees() as $cart_item_key => $fee_values) {
                 $fee_item_name = version_compare(WC_VERSION, '3.0', '<') ? $fee_values['name'] : $fee_values->get_name();
