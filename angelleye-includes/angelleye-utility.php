@@ -811,25 +811,29 @@ class AngellEYE_Utility {
                 'title' => __('Sandbox Client ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => 'Enter your Sandbox PayPal Rest API Client ID',
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'rest_secret_id_sandbox' => array(
                 'title' => __('Sandbox Secret ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('Enter your Sandbox PayPal Rest API Secret ID.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'rest_client_id' => array(
                 'title' => __('Live Client ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => 'Enter your PayPal Rest API Client ID',
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'rest_secret_id' => array(
                 'title' => __('Live Secret ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('Enter your PayPal Rest API Secret ID.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'payment_action' => array(
                 'title' => __('Payment Action', 'paypal-for-woocommerce'),

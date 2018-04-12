@@ -761,49 +761,57 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Partner', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Enter your PayPal Advanced Partner. If you purchased the account directly from PayPal, use PayPal.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'loginid' => array(
                 'title' => __('Vendor (Merchant Login)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => '',
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'user' => array(
                 'title' => __('User (optional)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('If you created a user for API calls in your PayPal (PayFlow) Manager, enter that username here.  Otherwise, this should be the same value as Vendor (Merchant Login).', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'password' => array(
                 'title' => __('Password', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('Enter your PayPal Advanced account password.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'sandbox_resellerid' => array(
                 'title' => __('Partner', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Enter your PayPal Advanced Partner. If you purchased the account directly from PayPal, use PayPal.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'sandbox_loginid' => array(
                 'title' => __('Vendor (Merchant Login)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => '',
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'sandbox_user' => array(
                 'title' => __('User (optional)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('If you set up one or more additional users on the account, this value is the ID of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'sandbox_password' => array(
                 'title' => __('Password', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('Enter your PayPal Advanced account password.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'default' => '',
+                'custom_attributes' => array( 'automcomplete' => 'off'),
             ),
             'enable_tokenized_payments' => array(
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
