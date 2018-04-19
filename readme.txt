@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.8.8 - 04.xx.2018 =
+* Tweak - Adds priority to Express Checkout hooks to ensure it always redirects as expected. ([#1086](https://github.com/angelleye/paypal-woocommerce/issues/1086))
+
 = 1.4.8.7 - 04.03.2018 =
 * Tweak - Performance adjustments for PayPal Smart Buttons. ([#1080](https://github.com/angelleye/paypal-woocommerce/issues/1080))
 * Tweak - Adjusts the CSS for PayPal Smart Buttons in the WooCommerce mini-cart. ([#1072](https://github.com/angelleye/paypal-woocommerce/issues/1072))
