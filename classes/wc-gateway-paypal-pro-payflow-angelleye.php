@@ -204,14 +204,14 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'text',
                 'description' => __('The ID provided to you by the authorized PayPal Reseller who registered you for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank.', 'paypal-for-woocommerce'),
                 'default' => 'PayPal',
-                'custom_attributes' => array( 'automcomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'off'),
             ),
             'sandbox_paypal_vendor' => array(
                 'title' => __('Vendor (Merchant Login)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Your merchant login ID that you created when you registered for the account.', 'paypal-for-woocommerce'),
                 'default' => '',
-                'custom_attributes' => array( 'automcomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'off'),
             ),
             
             'sandbox_paypal_user' => array(
@@ -220,14 +220,14 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('If you set up one or more additional users on the account, this value is the ID
 of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
                 'default' => '',
-                'custom_attributes' => array( 'automcomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'off'),
             ),
             'sandbox_paypal_password' => array(
                 'title' => __('Password', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
                 'default' => '',
-                'custom_attributes' => array( 'automcomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'off'),
             ),
             'paypal_partner' => array(
                 'title' => __('Partner', 'paypal-for-woocommerce'),
@@ -235,14 +235,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'description' => __('The ID provided to you by the authorized PayPal Reseller who registered you
 for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank.', 'paypal-for-woocommerce'),
                 'default' => 'PayPal',
-                'custom_attributes' => array( 'automcomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'off'),
             ),
             'paypal_vendor' => array(
                 'title' => __('Vendor (Merchant Login)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Your merchant login ID that you created when you registered for the account.', 'paypal-for-woocommerce'),
                 'default' => '',
-                'custom_attributes' => array( 'automcomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'off'),
             ),
             'paypal_user' => array(
                 'title' => __('User (optional)', 'paypal-for-woocommerce'),
@@ -250,14 +250,14 @@ for the Payflow SDK. If you purchased your account directly from PayPal, use Pay
                 'description' => __('If you set up one or more additional users on the account, this value is the ID
 of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
                 'default' => '',
-                'custom_attributes' => array( 'automcomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'off'),
             ),
             'paypal_password' => array(
                 'title' => __('Password', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
                 'default' => '',
-                'custom_attributes' => array( 'automcomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'off'),
             ),
             'send_items' => array(
                 'title' => __('Send Item Details', 'paypal-for-woocommerce'),
