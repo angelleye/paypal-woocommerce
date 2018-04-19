@@ -32,16 +32,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'multiple_subscriptions',
         );
         if (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'GB') {
-            $this->is_us_or_uk = true;
+            $this->is_paypal_credit_enable = true;
         } else {
-            $this->is_us_or_uk = false;
+            $this->is_paypal_credit_enable = false;
         }
         if(substr(get_option("woocommerce_default_country"), 0, 2) == 'US') {
             $this->is_us = true;
         } else {
             $this->is_us = false;
         }
-        if( $this->is_us_or_uk ) {
+        if( $this->is_paypal_credit_enable ) {
             $this->disallowed_funding_methods_array = array(
                 'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
                 'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
@@ -119,7 +119,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->notifyurl = str_replace('&amp;', '&', $this->notifyurl);
             }
         }
-        if ($this->is_us_or_uk == false) {
+        if ($this->is_paypal_credit_enable == false) {
             $this->show_paypal_credit = 'no';
         }
         if ($this->testmode == true) {
@@ -721,8 +721,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Show the PayPal Credit button next to the Express Checkout button.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
-                'description' => ($this->is_us_or_uk == false) ? __('Currently disabled because PayPal Credit is only available for U.S. and U.K merchants.', 'paypal-for-woocommerce') : "",
-                'desc_tip' => ($this->is_us_or_uk) ? true : false,
+                'description' => ($this->is_paypal_credit_enable == false) ? __('Currently disabled because PayPal Credit is only available for U.S.', 'paypal-for-woocommerce') : "",
+                'desc_tip' => ($this->is_paypal_credit_enable) ? true : false,
             ),
             'use_wp_locale_code' => array(
                 'title' => __('Use WordPress Locale Code', 'paypal-for-woocommerce'),

@@ -58,17 +58,17 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 if ($this->testmode == false) {
                     $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
                 }
-                if (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'GB') {
-                    $this->is_us_or_uk = true;
+                if (substr(get_option("woocommerce_default_country"), 0, 2) == 'US') {
+                    $this->is_paypal_credit_enable = true;
                 } else {
-                    $this->is_us_or_uk = false;
+                    $this->is_paypal_credit_enable = false;
                 }
                 if(substr(get_option("woocommerce_default_country"), 0, 2) == 'US') {
                     $this->is_us = true;
                 } else {
                     $this->is_us = false;
                 }
-                if($this->is_us_or_uk == true) {
+                if($this->is_paypal_credit_enable == true) {
                     $this->allowed_funding_methods = !empty($this->setting['allowed_funding_methods']) ? $this->setting['allowed_funding_methods'] : array(
                         'credit', 'card', 'elv', 'venmo'
                     );
@@ -83,7 +83,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->show_paypal_credit = !empty($this->setting['show_paypal_credit']) ? $this->setting['show_paypal_credit'] : 'yes';
                 $this->enable_google_analytics_click = !empty($this->setting['enable_google_analytics_click']) ? $this->setting['enable_google_analytics_click'] : 'no';
                 
-                if ($this->is_us_or_uk == false) {
+                if ($this->is_paypal_credit_enable == false) {
                     $this->show_paypal_credit = 'no';
                 }
                 if ($this->testmode == true) {
@@ -524,7 +524,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'button_layout' => $this->button_layout,
                     'button_fundingicons' => $this->button_fundingicons,
                     'cancel_page' => $cancel_url,
-                    'is_us_or_uk' => $this->is_us_or_uk ? "yes" : 'no',
+                    'is_paypal_credit_enable' => $this->is_paypal_credit_enable ? "yes" : 'no',
                     'allowed_funding_methods' => $allowed_funding_methods_json,
                     'disallowed_funding_methods' => $disallowed_funding_methods_json,
                     'enable_google_analytics_click' => $this->enable_google_analytics_click,

@@ -20,7 +20,7 @@ jQuery(function ($) {
             window.paypalCheckoutReady = function () {
                 allowed_funding_methods_single_array = $.parseJSON(angelleye_in_content_param.allowed_funding_methods);
                 disallowed_funding_methods_single_array = $.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
-                if (angelleye_in_content_param.is_us_or_uk == "no") {
+                if (angelleye_in_content_param.is_paypal_credit_enable == "no") {
                     disallowed_funding_methods_single_array.push("credit");
                 }
                 var get_attributes = function () {
@@ -139,7 +139,7 @@ jQuery(function ($) {
             angelleye_button_selector.push(".angelleye_smart_button_mini");
             disallowed_funding_methods_var = $.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
             allowed_funding_methods_var = $.parseJSON(angelleye_in_content_param.allowed_funding_methods);
-            if (angelleye_in_content_param.is_us_or_uk == "no") {
+            if (angelleye_in_content_param.is_paypal_credit_enable == "no") {
                 disallowed_funding_methods_var.push("credit");
             }
             angelleye_cart_style_object = {size: angelleye_in_content_param.button_size,
