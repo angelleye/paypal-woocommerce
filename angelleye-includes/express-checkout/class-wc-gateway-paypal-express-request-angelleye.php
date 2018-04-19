@@ -249,8 +249,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     wc_add_notice($message, 'error');
                 }
                 if (wc_notice_count('error') > 0) {
-                    wp_redirect(get_permalink(wc_get_page_id('cart')));
-                    exit;
+                    $this->angelleye_redirect();
                 }
             }
 
@@ -1003,8 +1002,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if (AngellEYE_Utility::is_cart_contains_subscription() == false) {
                     wc_add_notice(sprintf(__('We do not sell in your country, please try again with another address.', 'paypal-for-woocommerce')), 'error');
                 }
-                wp_redirect(get_permalink(wc_get_page_id('cart')));
-                exit;
+                $this->angelleye_redirect();
             }
         }
         if (isset($this->paypal_response['FIRSTNAME'])) {
@@ -1212,8 +1210,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if (AngellEYE_Utility::is_cart_contains_subscription() == false) {
                 wc_add_notice(__('Thank you for your recent order. Unfortunately it has been cancelled and refunded. Please contact our customer support team.', 'paypal-for-woocommerce'), 'error');
             }
-            wp_redirect(get_permalink(wc_get_page_id('cart')));
-            exit();
+            $this->angelleye_redirect();
         } else {
             if( !empty($this->paypal_response['PAYMENTINFO_0_PROTECTIONELIGIBILITY']) ) {
                 $order->add_order_note('Seller Protection Status: ' . $this->paypal_response['PAYMENTINFO_0_PROTECTIONELIGIBILITY']);
