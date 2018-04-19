@@ -19,7 +19,7 @@ jQuery(function () {
 jQuery(document).ready(function ($) {
     jQuery('#woocommerce_paypal_express_disallowed_funding_methods').closest('table').addClass('angelleye_smart_button_setting_left');
     jQuery('.display_smart_button_previews_button').html('<input type="hidden" name="angelleye_smart_button_preview_and_refresh" class="button-primary angelleye_smart_button_preview_and_refresh" value="Preview & Refresh Smart Button">');
-    if (angelleye_admin.shop_based_us_or_uk == "no") {
+    if (angelleye_admin.shop_based_us == "no") {
         jQuery("#woocommerce_paypal_express_show_paypal_credit").attr("disabled", true);
         jQuery("label[for='woocommerce_paypal_express_show_paypal_credit']").css('color', '#666');
     }
@@ -329,7 +329,7 @@ jQuery(document).ready(function ($) {
         var angelleye_layout = jQuery("#woocommerce_paypal_express_button_layout").val();
         var angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
         var angelleye_fundingicons = jQuery("#woocommerce_paypal_express_button_fundingicons").val();
-        if (angelleye_admin.shop_based_us_or_uk == "no") {
+        if (angelleye_admin.shop_based_us == "no") {
             var angelleye_woocommerce_paypal_express_allowed_funding_methods = ['card', 'elv', 'venmo'];
         } else {
             var angelleye_woocommerce_paypal_express_allowed_funding_methods = ['credit', 'card', 'elv', 'venmo'];
@@ -370,7 +370,7 @@ jQuery(document).ready(function ($) {
             return jQuery.inArray(value, angelleye_woocommerce_paypal_express_disallowed_funding_methods) < 0;
         });
         
-        if (angelleye_admin.shop_based_us_or_uk == "no") {
+        if (angelleye_admin.shop_based_us == "no") {
             angelleye_woocommerce_paypal_express_disallowed_funding_methods.push("credit");
         }
         window.paypalCheckoutReady = function () {
