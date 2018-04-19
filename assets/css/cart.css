@@ -71,7 +71,7 @@ div.wc-proceed-to-checkout a.paypal_checkout_button {
     max-width: 250px;
 }
 .angelleye-proceed-to-checkout-button-separator {
-    display: block;
+    display:inline-block;
     opacity: .8;
     margin: 0 0 1em;
     text-align: center;
