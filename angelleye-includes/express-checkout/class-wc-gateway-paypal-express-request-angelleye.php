@@ -89,16 +89,25 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $this->function_helper->ec_clear_session_data();
         if (!is_ajax()) {
             if (!empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
-                wp_send_json(array(
-                    'url' => $payPalURL
-                ));
-                exit();
+                if (wc_notice_count('error') > 0) {
+                    wp_send_json(array(
+                        'url' => get_permalink(wc_get_page_id('cart'))
+                    ));
+                    exit();
+                } else {
+                     wp_send_json(array(
+                        'url' => $payPalURL
+                    ));
+                    exit();
+                }
+                
             } else {
                 wp_redirect(get_permalink(wc_get_page_id('cart')));
                 exit;
             }
         } else {
             if (!empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
+                
                 wp_send_json(array(
                     'url' => $payPalURL
                 ));
