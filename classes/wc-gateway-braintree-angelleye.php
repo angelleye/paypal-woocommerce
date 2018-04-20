@@ -64,17 +64,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
-        if ($this->enable_braintree_drop_in) {
-            add_action('wp_enqueue_scripts', array($this, 'payment_scripts'), 0);
-        }
+        add_action('wp_enqueue_scripts', array($this, 'payment_scripts'), 0);
         add_action('admin_notices', array($this, 'checks'));
         add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_braintree_credit_card_form_fields'), 10, 2);
         $this->customer_id;
-        if ($this->fraud_tool == 'kount_standard' || $this->fraud_tool == 'kount_custom') {
-            add_filter('clean_url', array($this, 'adjust_fraud_script_tag'));
-            add_action('wp_print_footer_scripts', array($this, 'render_fraud_js'), 1);
-        }
-
+        add_filter('clean_url', array($this, 'adjust_fraud_script_tag'));
         add_action('woocommerce_admin_order_data_after_order_details', array($this, 'woocommerce_admin_order_data_after_order_details'), 10, 1);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_update_settings'), 10, 1);
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
@@ -141,17 +135,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 jQuery('select#wc_braintree_merchant_account_id_currency').change(function () {
                     jQuery('.js-add-merchant-account-id').text('<?php esc_html_e('Add merchant account ID for ', 'paypal-for-woocommerce'); ?>' + jQuery(this).val())
                 });
-                jQuery('#woocommerce_braintree_enable_braintree_drop_in').change(function () {
-                    var $kount_id_row = jQuery('.angelleye-kount-merchant-id').closest('tr');
-                    if (jQuery(this).is(':checked')) {
-                        if( jQuery("#woocommerce_braintree_fraud_tool option[value='kount_custom']").length == 0) {
-                            jQuery('#woocommerce_braintree_fraud_tool').append(jQuery("<option></option>").attr("value","kount_custom").text("Kount Custom")); 
-                        } 
-                    } else {
-                        jQuery('#woocommerce_braintree_fraud_tool option[value="kount_custom"]').remove();
-                        $kount_id_row.hide();
-                    }
-                }).change();
+                
             </script>
         </table> <?php
     }
@@ -393,6 +377,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             echo wpautop(wptexturize($this->description));
         }
         $this->tokenization_script();
+        ?>
+        <script type="text/javascript">
+            var braintree_data_collector_kount = [];
+            braintree_data_collector_kount['environment'] = '<?php echo $this->environment; ?>';
+            <?php if( $this->fraud_tool == 'kount_custom' && !empty($this->kount_merchant_id) ) { ?>
+            braintree_data_collector_kount['merchantId'] = '<?php echo $this->kount_merchant_id; ?>';
+            <?php } ?>
+        </script>
+        <?php 
         if ($this->enable_braintree_drop_in) {
             $this->angelleye_braintree_lib();
             $this->add_log('Begin Braintree_ClientToken::generate Request');
@@ -465,9 +458,16 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 var $form = jQuery('form.checkout, #order_review');
                 var ccForm = jQuery('form.checkout');
                 var clientToken = "<?php echo $clientToken; ?>";
+                
                 braintree.setup(clientToken, "dropin", {
                     container: "braintree-payment-form",
-                    onReady: function () {
+                    dataCollector: {
+                        kount: braintree_data_collector_kount
+                      },
+                    onReady: function (braintreeInstance) {
+                        jQuery('.woocommerce-error, .braintree-device-data', ccForm).remove();
+                        console.log(braintreeInstance.deviceData);
+                        ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + braintreeInstance.deviceData + ">");
                         jQuery.each(jQuery('#braintree-payment-form').children('iFrame'),
                                 function (index) {
                                     if (index > 0) {
@@ -478,11 +478,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     onError: function (a) {
                         if ("VALIDATION" === a.type) {
                             if (is_angelleye_braintree_selected()) {
+                                jQuery('.woocommerce-error, .braintree-device-data', ccForm).remove();
                                 jQuery('.woocommerce-error, .braintree-token', ccForm).remove();
                                 ccForm.prepend('<ul class="woocommerce-error"><li>' + a.message + '</li></ul>');
                                 return $form.unblock();
                             }
                         } else {
+                            jQuery('.woocommerce-error, .braintree-device-data', ccForm).remove();
                             jQuery('.woocommerce-error, .braintree-token', ccForm).remove();
                             ccForm.prepend('<ul class="woocommerce-error"><li>' + a.message + '</li></ul>');
                             return $form.unblock();
@@ -505,9 +507,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                      ccForm = jQuery('#braintree-cc-form');
                     if (obj.nonce) {
                         jQuery('.woocommerce-error, .braintree-token', ccForm).remove();
-                        if (jQuery('#device_data').length) {
-                            ccForm.append('<input type="hidden" id="device_data" name="device_data" value="' + jQuery('#device_data').val() + '"/>');
-                        }
                         ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + obj.nonce + '"/>');
                         $form.submit();
                     }
@@ -528,6 +527,16 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             <?php
         } else {
             parent::payment_fields();
+            ?>
+            <script type="text/javascript">
+            var ccForm = jQuery('form.checkout');
+            var dataCollector = braintree.data.setup({
+                kount: braintree_data_collector_kount
+              });
+              jQuery('.woocommerce-error, .braintree-device-data', ccForm).remove();
+              ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + dataCollector.deviceData + ">");
+            </script>
+            <?php
             do_action('payment_fields_saved_payment_methods', $this);
         }
     }
@@ -624,13 +633,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'countryCodeAlpha2' => $billing_country,
             );
 
-            if ($this->fraud_tool == 'kount_standard' || $this->fraud_tool == 'kount_custom') {
-                $device_data = self::get_posted_variable('device_data');
-                if (!empty($device_data)) {
-                    $device_data = wp_unslash($device_data);
-                    $request_data['deviceData'] = $device_data;
-                }
+            
+            $device_data = self::get_posted_variable('device_data');
+            if (!empty($device_data)) {
+                $device_data = wp_unslash($device_data);
+                $request_data['deviceData'] = $device_data;
             }
+            
 
             $request_data['shipping'] = array(
                 'firstName' => version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name(),
@@ -659,6 +668,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $token = WC_Payment_Tokens::get($token_id);
                     $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
                     $request_data['paymentMethodToken'] = $token->get_token();
+                    $request_data['creditCard'] = array(
+                        'cardholderName' => $billing_first_name . ' ' . $billing_last_name
+                    );
                 }
             } else {
                 $request_data['paymentMethodNonce'] = $payment_method_nonce;
@@ -739,7 +751,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $order->add_order_note("Error: Unable to complete transaction. Reason: " . $e->getMessage());
                 return $success = false;
             }
-
+            $this->add_log('Full Respnse' . print_r($this->response, true));
             if (!$this->response->success) {
                 if ($this->has_risk_data()) {
                     $order->add_order_note(sprintf(__('Risk decision for this transaction %s, Risk ID for this transaction: %s', 'paypal-for-woocommerce'), $this->get_risk_decision(), $this->get_risk_id()));
@@ -771,6 +783,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     update_post_meta($order_id, 'is_sandbox', $this->sandbox);
                 } else {
                     update_post_meta($order->get_id(), 'is_sandbox', $this->sandbox);
+                }
+                if ($this->has_risk_data()) {
+                    $order->add_order_note(sprintf(__('Risk decision for this transaction %s, Risk ID for this transaction: %s', 'paypal-for-woocommerce'), $this->get_risk_decision(), $this->get_risk_id()));
+                    update_post_meta($order_id, 'risk_id', $this->get_risk_id());
+                    update_post_meta($order_id, 'risk_decision', $this->get_risk_decision());
                 }
                 $transaction = Braintree_Transaction::find($this->response->transaction->id);
                 $this->save_payment_token($order, $transaction->creditCard['token']);
@@ -1193,12 +1210,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (!$this->is_available()) {
             return;
         }
-        if ($this->enable_braintree_drop_in) {
-            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/v2/braintree.js', array(), VERSION_PFW, false);
-        }
-        if ($this->fraud_tool == 'kount_standard' || $this->fraud_tool == 'kount_custom') {
-            wp_enqueue_script('braintree-data', 'https://js.braintreegateway.com/v1/braintree-data.js', array('braintree-gateway'), VERSION_PFW, true);
-        }
+        wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/js/braintree-2.32.1.min.js', array(), VERSION_PFW, false);
     }
 
     public static function get_posted_variable($variable, $default = '') {
@@ -1772,46 +1784,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function adjust_fraud_script_tag($url) {
-        if (strpos($url, 'braintree-data.js') !== false) {
-            $url = "{$url}' async='true";
-        }
         if (strpos($url, 'https://js.braintreegateway.com/v2/braintree.js') !== false) {
             return "$url' data-log-level='error";
         }
         return $url;
-    }
-
-    public function render_fraud_js() {
-        $environment = 'BraintreeData.environments.' . $this->environment;
-        $this->kount_merchant_id = ($this->fraud_tool == 'kount_custom') ? $this->get_option('kount_merchant_id') : '';
-
-        if ($this->fraud_tool == 'kount_custom' && !empty($this->kount_merchant_id)) {
-            $environment .= '.withId' . $this->kount_merchant_id;
-        }
-        ?>
-        <script>
-            jQuery(function ($) {
-                var form_id;
-                if ($('form.checkout').length) {
-                    form_id = $('form.checkout').attr('id') || 'checkout';
-                    if ('checkout' === form_id) {
-                        $('form.checkout').attr('id', form_id);
-                    }
-
-                } else if ($('form#order_review').length) {
-                    form_id = 'order_review'
-                } else if ($('form#add_payment_method').length) {
-                    form_id = 'add_payment_method'
-                }
-                if (!form_id) {
-                    return;
-                }
-                window.onBraintreeDataLoad = function () {
-                    BraintreeData.setup('<?php echo esc_js($this->merchant_id); ?>', form_id, <?php echo esc_js($environment); ?>);
-                }
-            });
-        </script>
-        <?php
     }
 
     public function has_risk_data() {
