@@ -673,6 +673,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             } else {
                 $request_data['paymentMethodNonce'] = $payment_method_nonce;
+                $request_data['creditCard'] = array(
+                    'cardholderName' => $billing_first_name . ' ' . $billing_last_name
+                );
             }
             if (is_user_logged_in()) {
                 $customer_id = get_current_user_id();
