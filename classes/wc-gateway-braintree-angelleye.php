@@ -667,9 +667,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $token = WC_Payment_Tokens::get($token_id);
                     $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
                     $request_data['paymentMethodToken'] = $token->get_token();
-                    $request_data['creditCard'] = array(
-                        'cardholderName' => $billing_first_name . ' ' . $billing_last_name
-                    );
                 }
             } else {
                 $request_data['paymentMethodNonce'] = $payment_method_nonce;
