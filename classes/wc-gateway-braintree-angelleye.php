@@ -454,11 +454,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     <div id="braintree-payment-form"></div>
                 </fieldset>
             </div>
+        <?php if( is_ajax()) { ?>
             <script>
                 var $form = jQuery('form.checkout, #order_review');
                 var ccForm = jQuery('form.checkout');
                 var clientToken = "<?php echo $clientToken; ?>";
-                
                 braintree.setup(clientToken, "dropin", {
                     container: "braintree-payment-form",
                     dataCollector: {
@@ -524,8 +524,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             </script>
             <?php
+        }
         } else {
             parent::payment_fields();
+            if(is_ajax()) {
             ?>
             <script type="text/javascript">
             var ccForm = jQuery('form.checkout');
@@ -535,8 +537,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
               jQuery('.woocommerce-error, .braintree-device-data', ccForm).remove();
               ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + dataCollector.deviceData + ">");
             </script>
-            <?php
+            <?php } 
+            
             do_action('payment_fields_saved_payment_methods', $this);
+            
         }
     }
 
