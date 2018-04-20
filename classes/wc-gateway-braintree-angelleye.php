@@ -466,7 +466,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                       },
                     onReady: function (braintreeInstance) {
                         jQuery('.woocommerce-error, .braintree-device-data', ccForm).remove();
-                        console.log(braintreeInstance.deviceData);
                         ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + braintreeInstance.deviceData + ">");
                         jQuery.each(jQuery('#braintree-payment-form').children('iFrame'),
                                 function (index) {
