@@ -131,6 +131,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adds priority to Express Checkout hooks to ensure it always redirects as expected. ([#1086](https://github.com/angelleye/paypal-woocommerce/issues/1086))
 * Tweak - Disables autocomplete on API credential fields to keep browser auto-fillers from populating fields with incorrect data. ([#1088](https://github.com/angelleye/paypal-woocommerce/issues/1088))
 * Tweak - Adds validation to ensure the AMT is always a numeric value. ([#1090](https://github.com/angelleye/paypal-woocommerce/issues/1090))
+* Tweak - Adjustments to CSS for PayPal buttons on the cart page to avoid conflicts with some themes. ([#1096](https://github.com/angelleye/paypal-woocommerce/issues/1096))
 * Fix - Resolves jQuery conflict in admin panel. [#1092](https://github.com/angelleye/paypal-woocommerce/issues/1092))
 * Fix - Resolves a bug in the Braintree Kount Custom fraud tools. [(#1020](https://github.com/angelleye/paypal-woocommerce/issues/1020))
 
