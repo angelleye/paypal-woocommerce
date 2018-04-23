@@ -132,6 +132,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Disables autocomplete on API credential fields to keep browser auto-fillers from populating fields with incorrect data. ([#1088](https://github.com/angelleye/paypal-woocommerce/issues/1088))
 * Tweak - Adds validation to ensure the AMT is always a numeric value. ([#1090](https://github.com/angelleye/paypal-woocommerce/issues/1090))
 * Fix - Resolves jQuery conflict in admin panel. [#1092](https://github.com/angelleye/paypal-woocommerce/issues/1092))
+* Fix - Resolves a bug in the Braintree Kount Custom fraud tools. [(#1020](https://github.com/angelleye/paypal-woocommerce/issues/1020))
 
 = 1.4.8.7 - 04.03.2018 =
 * Tweak - Performance adjustments for PayPal Smart Buttons. ([#1080](https://github.com/angelleye/paypal-woocommerce/issues/1080))
