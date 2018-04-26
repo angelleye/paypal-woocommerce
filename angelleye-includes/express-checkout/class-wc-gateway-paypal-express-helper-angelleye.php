@@ -875,11 +875,15 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
                 WC()->cart->calculate_totals();
             }
-            if (ob_get_length()) ob_end_clean();
+            if (ob_get_length()) {
+                ob_end_clean();
+            }
              ob_start();
             wp_send_json(array('url' => $url));
         } catch (Exception $ex) {
-            if (ob_get_length()) ob_end_clean();
+            if (ob_get_length()) {
+                ob_end_clean();
+            }
             ob_start();
             wp_send_json(array('url' => $url));
         } 
