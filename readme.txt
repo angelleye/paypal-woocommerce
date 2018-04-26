@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.8.9 - 04.26.2018 =
+* Fix - Resolves an issue with Smart Button jQuery conflict. ([#1106](https://github.com/angelleye/paypal-woocommerce/issues/1106)) ([#1110](https://github.com/angelleye/paypal-woocommerce/issues/1110)) ([#1112](https://github.com/angelleye/paypal-woocommerce/issues/1112))
+
 = 1.4.8.8 - 04.23.2018 =
 * Feature - Ensures WooCommerce 3.4 compatibility. ([#1098](https://github.com/angelleye/paypal-woocommerce/issues/1098))
 * Tweak - Adds priority to Express Checkout hooks to ensure it always redirects as expected. ([#1086](https://github.com/angelleye/paypal-woocommerce/issues/1086))
