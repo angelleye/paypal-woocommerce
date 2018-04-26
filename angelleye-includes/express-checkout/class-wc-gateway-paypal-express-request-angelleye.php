@@ -76,6 +76,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 WC()->session->set('is_smart_button_popup_closed', 'yes');
                 wc_clear_notices();
                 if (!empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
+                    if (ob_get_length()) ob_end_clean();
+                ob_start();
                     wp_send_json(array(
                         'url' => $payPalURL
                     ));
@@ -89,6 +91,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $this->function_helper->ec_clear_session_data();
         if (!is_ajax()) {
             if (!empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
+                if (ob_get_length()) ob_end_clean();
+                ob_start();
                 if (wc_notice_count('error') > 0) {
                     wp_send_json(array(
                         'url' => get_permalink(wc_get_page_id('cart'))
@@ -107,7 +111,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
         } else {
             if (!empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
-                
+                if (ob_get_length()) ob_end_clean();
+                ob_start();
                 wp_send_json(array(
                     'url' => $payPalURL
                 ));
@@ -118,6 +123,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     'redirect' => get_permalink(wc_get_page_id('cart')),
                 );
                 if ($this->function_helper->ec_is_version_gte_2_4()) {
+                    if (ob_get_length()) ob_end_clean();
+                    ob_start();
                     wp_send_json($args);
                 } else {
                     echo '<!--WC_START-->' . json_encode($args) . '<!--WC_END-->';
@@ -130,6 +137,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if (!empty($url)) {
 
             if (!empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
+                if (ob_get_length()) ob_end_clean();
+                ob_start();
                 $query_str = parse_url($url, PHP_URL_QUERY);
                 parse_str($query_str, $query_params);
                 wp_send_json(array(
@@ -143,6 +152,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 wp_redirect($url);
                 exit;
             } else {
+                if (ob_get_length()) ob_end_clean();
+                ob_start();
                 $args = array(
                     'result' => 'success',
                     'redirect' => $url,
@@ -1475,6 +1486,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             exit;
         }
         if (!empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
+            if (ob_get_length()) ob_end_clean();
+                ob_start();
             wp_send_json(array(
                 'url' => $url
             ));
