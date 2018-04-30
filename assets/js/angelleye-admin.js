@@ -380,6 +380,7 @@ jQuery(document).ready(function ($) {
                     sandbox:    'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R'
                 },
                 style: style_object,
+                locale: angelleye_admin.locale,
                 funding: {
                     allowed: angelleye_woocommerce_paypal_express_allowed_funding_methods,
                     disallowed: angelleye_woocommerce_paypal_express_disallowed_funding_methods

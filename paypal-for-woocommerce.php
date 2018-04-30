@@ -278,7 +278,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         public function admin_scripts()
         {
-            global $post;
+            global $post,$pp_settings;
             if( !empty($post->ID) ) {
                 $payment_method = get_post_meta($post->ID, '_payment_method', true);
                 $payment_action = get_post_meta($post->ID, '_payment_action', true);
@@ -291,13 +291,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             wp_enqueue_script( 'jquery');
             // Localize the script with new data
             wp_register_script( 'angelleye_admin', plugins_url( '/assets/js/angelleye-admin.js' , __FILE__ ), array( 'jquery' ), VERSION_PFW);
-            
+            $this->use_wp_locale_code = !empty($pp_settings['use_wp_locale_code']) ? $pp_settings['use_wp_locale_code'] : 'yes';
             $translation_array = array(
                 'is_ssl' => AngellEYE_Gateway_Paypal::is_ssl()? "yes":"no",
                 'choose_image' => __('Choose Image', 'paypal-for-woocommerce'),
                 'shop_based_us' => (substr(get_option("woocommerce_default_country"), 0, 2) == 'US') ? "yes" : "no",
                 'payment_method' => $payment_method,
-                'payment_action' => $payment_action
+                'payment_action' => $payment_action,
+                'locale' => ($this->use_wp_locale_code === 'yes' && get_locale() != '') ? get_locale() : ''
 
             );
             wp_localize_script( 'angelleye_admin', 'angelleye_admin', $translation_array );

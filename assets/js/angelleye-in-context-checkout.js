@@ -56,6 +56,7 @@ jQuery(function ($) {
                 paypal.Button.render({
                     env: angelleye_in_content_param.environment,
                     style: angelleye_cart_style_object,
+                    locale: angelleye_in_content_param.locale,
                     funding: {
                         allowed: allowed_funding_methods_single_array,
                         disallowed: disallowed_funding_methods_single_array
@@ -166,6 +167,7 @@ jQuery(function ($) {
                     paypal.Button.render({
                         env: angelleye_in_content_param.environment,
                         style: angelleye_cart_style_object,
+                        locale: angelleye_in_content_param.locale,
                         funding: {
                             allowed: allowed_funding_methods_var,
                             disallowed: disallowed_funding_methods_var
