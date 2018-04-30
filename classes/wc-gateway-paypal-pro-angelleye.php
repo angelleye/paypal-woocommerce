@@ -1480,12 +1480,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     public function angelleye_woocommerce_credit_card_form_start($current_id) {
         if ($this->enable_cardholder_first_last_name && $current_id == $this->id) {
             $fields['card-cardholder-first'] = '<p class="form-row form-row-first">
-                    <label for="' . esc_attr($this->id) . '-card-cvc">' . __('Cardholder First Name', 'paypal-for-woocommerce') . '</label>
-                    <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First Name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-first' . '" />
+                    <label for="' . esc_attr($this->id) . '-card-first-name">' . __('Cardholder First Name', 'paypal-for-woocommerce') . '</label>
+                    <input id="' . esc_attr($this->id) . '-card-first-name" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First Name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-first' . '" />
             </p>';
             $fields['card-cardholder-last'] = '<p class="form-row form-row-last">
-                    <label for="' . esc_attr($this->id) . '-card-startdate">' . __('Cardholder Last Name', 'paypal-for-woocommerce') . '</label>
-                    <input id="' . esc_attr($this->id) . '-card-startdate" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __('Last Name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-last' . '" />
+                    <label for="' . esc_attr($this->id) . '-card-last-name">' . __('Cardholder Last Name', 'paypal-for-woocommerce') . '</label>
+                    <input id="' . esc_attr($this->id) . '-card-last-name" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __('Last Name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-last' . '" />
             </p>';
 
             foreach ($fields as $field) {
