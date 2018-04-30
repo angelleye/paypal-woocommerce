@@ -599,7 +599,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $class_top = 'paypal_checkout_button_bottom';
                 $class_cc_top = 'paypal_checkout_button_cc_bottom';
                 $angelleye_smart_button = 'angelleye_smart_button_bottom';
-                $angelleye_proceed_to_checkout_button_separator = '<div class="angelleye-proceed-to-checkout-button-separator">' .  __( '&mdash; OR &mdash;', 'woocommerce-gateway-paypal-express-checkout' ) . '</div>';
+                $angelleye_proceed_to_checkout_button_separator = '<div class="angelleye-proceed-to-checkout-button-separator">' .  __( '&mdash; OR &mdash;', 'paypal-for-woocommerce' ) . '</div>';
                 $cart_button_html .= apply_filters('angelleye_proceed_to_checkout_button_separator', $angelleye_proceed_to_checkout_button_separator);
             }
             if ($this->enable_in_context_checkout_flow == 'no') {
@@ -816,7 +816,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function wc_ajax_update_shipping_costs() {
         if (!wp_verify_nonce($_POST['nonce'], '_wc_angelleye_ppec_update_shipping_costs_nonce')) {
-            wp_die(__('Cheatin&#8217; huh?', 'woocommerce-gateway-paypal-express-checkout'));
+            wp_die(__('Cheatin&#8217; huh?', 'paypal-for-woocommerce'));
         }
         if (!defined('WOOCOMMERCE_CART')) {
             define('WOOCOMMERCE_CART', true);
@@ -833,7 +833,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         global $wpdb, $post, $product;
         $product_id = '';
         if (!wp_verify_nonce($_POST['nonce'], '_angelleye_generate_cart_nonce')) {
-            wp_die(__('Cheatin&#8217; huh?', 'woocommerce-gateway-paypal-express-checkout'));
+            wp_die(__('Cheatin&#8217; huh?', 'paypal-for-woocommerce'));
         }
         WC()->shipping->reset_shipping();
         $product_id = $_POST['product_id'];
