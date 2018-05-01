@@ -378,76 +378,69 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->tokenization_script();
         ?>
-        <script type="text/javascript">
-            var braintree_data_collector_kount = [];
-            braintree_data_collector_kount['environment'] = '<?php echo $this->environment; ?>';
-        <?php if ($this->fraud_tool == 'kount_custom' && !empty($this->kount_merchant_id)) { ?>
-                braintree_data_collector_kount['merchantId'] = '<?php echo $this->kount_merchant_id; ?>';
-        <?php } ?>
-        </script>
         <?php
-        if ($this->enable_braintree_drop_in) {
-            $this->angelleye_braintree_lib();
-            $this->add_log('Begin Braintree_ClientToken::generate Request');
-            try {
-                if (is_user_logged_in()) {
-                    $customer_id = get_current_user_id();
-                    $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
-                    $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
-                    if (!empty($braintree_customer_id) && !empty($this->merchant_account_id)) {
-                        $clientToken = Braintree_ClientToken::generate(array('customerId' => $braintree_customer_id, 'merchantAccountId' => $this->merchant_account_id));
-                    } else if (!empty($braintree_customer_id)) {
-                        $clientToken = Braintree_ClientToken::generate(array('customerId' => $braintree_customer_id));
-                    } else {
-                        $clientToken = Braintree_ClientToken::generate();
-                    }
+        $this->angelleye_braintree_lib();
+        $this->add_log('Begin Braintree_ClientToken::generate Request');
+        try {
+            if (is_user_logged_in()) {
+                $customer_id = get_current_user_id();
+                $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
+                $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
+                if (!empty($braintree_customer_id) && !empty($this->merchant_account_id)) {
+                    $clientToken = Braintree_ClientToken::generate(array('customerId' => $braintree_customer_id, 'merchantAccountId' => $this->merchant_account_id));
+                } else if (!empty($braintree_customer_id)) {
+                    $clientToken = Braintree_ClientToken::generate(array('customerId' => $braintree_customer_id));
                 } else {
                     $clientToken = Braintree_ClientToken::generate();
                 }
-            } catch (Braintree_Exception_Authentication $e) {
-                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-                $this->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
-                wp_redirect(wc_get_cart_url());
-                exit;
-            } catch (Braintree_Exception_Authorization $e) {
-                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-                $this->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
-                wp_redirect(wc_get_cart_url());
-                exit;
-            } catch (Braintree_Exception_DownForMaintenance $e) {
-                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-                $this->add_log("Braintree_ClientToken::generate Exception: Request times out.");
-                wp_redirect(wc_get_cart_url());
-                exit;
-            } catch (Braintree_Exception_ServerError $e) {
-                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-                $this->add_log("Braintree_ClientToken::generate Braintree_Exception_ServerError" . $e->getMessage());
-                wp_redirect(wc_get_cart_url());
-                exit;
-            } catch (Braintree_Exception_SSLCertificate $e) {
-                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-                $this->add_log("Braintree_ClientToken::generate Braintree_Exception_SSLCertificate" . $e->getMessage());
-                wp_redirect(wc_get_cart_url());
-                exit;
-            } catch (InvalidArgumentException $e) {
-                if ($e->getMessage() == 'Customer specified by customer_id does not exist') {
-                    if (is_user_logged_in()) {
-                        $customer_id = get_current_user_id();
-                        delete_user_meta($customer_id, 'braintree_customer_id');
-                        $clientToken = Braintree_ClientToken::generate();
-                    }
-                } else {
-                    wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
-                    $this->add_log("Braintree_ClientToken::generate Braintree_Exception_NotFound" . $e->getMessage());
-                    wp_redirect(wc_get_cart_url());
-                    exit;
+            } else {
+                $clientToken = Braintree_ClientToken::generate();
+            }
+        } catch (Braintree_Exception_Authentication $e) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+            wp_redirect(wc_get_cart_url());
+            exit;
+        } catch (Braintree_Exception_Authorization $e) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+            wp_redirect(wc_get_cart_url());
+            exit;
+        } catch (Braintree_Exception_DownForMaintenance $e) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log("Braintree_ClientToken::generate Exception: Request times out.");
+            wp_redirect(wc_get_cart_url());
+            exit;
+        } catch (Braintree_Exception_ServerError $e) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log("Braintree_ClientToken::generate Braintree_Exception_ServerError" . $e->getMessage());
+            wp_redirect(wc_get_cart_url());
+            exit;
+        } catch (Braintree_Exception_SSLCertificate $e) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log("Braintree_ClientToken::generate Braintree_Exception_SSLCertificate" . $e->getMessage());
+            wp_redirect(wc_get_cart_url());
+            exit;
+        } catch (InvalidArgumentException $e) {
+            if ($e->getMessage() == 'Customer specified by customer_id does not exist') {
+                if (is_user_logged_in()) {
+                    $customer_id = get_current_user_id();
+                    delete_user_meta($customer_id, 'braintree_customer_id');
+                    $clientToken = Braintree_ClientToken::generate();
                 }
-            } catch (Exception $ex) {
-
-                $this->add_log("Braintree_ClientToken::generate Exception:" . $ex->getMessage());
+            } else {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->add_log("Braintree_ClientToken::generate Braintree_Exception_NotFound" . $e->getMessage());
                 wp_redirect(wc_get_cart_url());
                 exit;
             }
+        } catch (Exception $ex) {
+
+            $this->add_log("Braintree_ClientToken::generate Exception:" . $ex->getMessage());
+            wp_redirect(wc_get_cart_url());
+            exit;
+        }
+        if ($this->enable_braintree_drop_in) {
             ?>
             <div id="braintree-cc-form" class="wc-payment-form">
                 <fieldset>
@@ -544,16 +537,34 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if (is_ajax()) {
                 ?>
                 <script type="text/javascript">
-                    var ccForm = jQuery('form.checkout');
-                    var dataCollector = braintree.data.setup({
-                        kount: braintree_data_collector_kount
-                    });
-                    jQuery('.woocommerce-error, .braintree-device-data', ccForm).remove();
-                    ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + dataCollector.deviceData + ">");
+                    (function ($) {
+                        $(function () {
+                            var ccForm = $('form.checkout');
+                            var clientToken = "<?php echo $clientToken; ?>";
+                            braintree.client.create({
+                                authorization: clientToken
+                            }, function (err, clientInstance) {
+                                console.log(err);
+                                if( typeof braintree.dataCollector !== 'undefined' || braintree.dataCollector !== null ){
+                                braintree.dataCollector.create({
+                                    client: clientInstance,
+                                    kount: true
+                                }, function (err, dataCollectorInstance) {
+                                    if (err) {
+                                        $('.woocommerce-error, .braintree-device-data', ccForm).remove();
+                                        return;
+                                    }
+                                    if(dataCollectorInstance.deviceData) {
+                                        ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + dataCollectorInstance.deviceData + ">");
+                                    }
+                                });
+                                }
+                            });
+                        });
+                    }(jQuery));
                 </script>
                 <?php
             }
-
             do_action('payment_fields_saved_payment_methods', $this);
         }
     }
@@ -1221,7 +1232,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (!$this->is_available()) {
             return;
         }
-        wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.10.0/js/dropin.min.js', array(), null, false);
+        if ($this->enable_braintree_drop_in) {
+            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.10.0/js/dropin.min.js', array('jquery'), null, false);
+        } else {
+            
+            wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.32.1/js/client.min.js', array('jquery'), null, true);
+            wp_enqueue_script('braintree-data-collector', 'https://js.braintreegateway.com/web/3.32.1/js/data-collector.min.js', array('jquery'), null, true);
+        }
     }
 
     public static function get_posted_variable($variable, $default = '') {
