@@ -55,10 +55,10 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
                 return $state;
             }
             if (!empty($valid_states) && is_array($valid_states) && sizeof($valid_states) > 0) {
-                if (!in_array($state, array_keys($valid_states))) {
+                if (!in_array(strtoupper($state), array_keys($valid_states))) {
                     return false;
                 } else {
-                    return $state;
+                    return strtoupper($state);
                 }
             }
             return $state;
