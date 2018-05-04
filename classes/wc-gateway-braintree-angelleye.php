@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * WC_Gateway_Braintree_AngellEYE class.
