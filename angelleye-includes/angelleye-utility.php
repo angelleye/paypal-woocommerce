@@ -2007,4 +2007,26 @@ class AngellEYE_Utility {
         return maybe_unserialize( $value );
 
         }
+        
+        public static function get_button_locale_code() {
+            $_supportedLocale = array(
+                'en_US', 'fr_XC', 'es_XC', 'zh_XC', 'en_AU', 'de_DE', 'nl_NL',
+                'fr_FR', 'pt_BR', 'fr_CA', 'zh_CN', 'ru_RU', 'en_GB', 'zh_HK',
+                'he_IL', 'it_IT', 'ja_JP', 'pl_PL', 'pt_PT', 'es_ES', 'sv_SE', 'zh_TW', 'tr_TR'
+            );
+            $wpml_locale = self::angelleye_ec_get_wpml_locale();
+            if ($wpml_locale) {
+                if (in_array($wpml_locale, $_supportedLocale)) {
+                    return $wpml_locale;
+                }
+            }
+            $locale = get_locale();
+            if (get_locale() != '') {
+                $locale = substr(get_locale(), 0, 5);
+            }
+            if (!in_array($locale, $_supportedLocale)) {
+                $locale = 'en_US';
+            }
+            return $locale;
+        }
 }

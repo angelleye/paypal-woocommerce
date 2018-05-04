@@ -298,7 +298,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 'shop_based_us' => (substr(get_option("woocommerce_default_country"), 0, 2) == 'US') ? "yes" : "no",
                 'payment_method' => $payment_method,
                 'payment_action' => $payment_action,
-                'locale' => ($this->use_wp_locale_code === 'yes' && get_locale() != '') ? get_locale() : ''
+                'locale' => ($this->use_wp_locale_code === 'yes' && AngellEYE_Utility::get_button_locale_code() != '') ? AngellEYE_Utility::get_button_locale_code() : ''
 
             );
             wp_localize_script( 'angelleye_admin', 'angelleye_admin', $translation_array );

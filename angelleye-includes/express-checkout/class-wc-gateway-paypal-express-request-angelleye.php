@@ -608,7 +608,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'noshipping' => '',
                 'allownote' => 1,
                 'addroverride' => '',
-                'localecode' => ($this->gateway->use_wp_locale_code == 'yes' && get_locale() != '') ? get_locale() : '',
+                'localecode' => ($this->gateway->use_wp_locale_code == 'yes' && AngellEYE_Utility::get_button_locale_code() != '') ? AngellEYE_Utility::get_button_locale_code() : '',
                 'pagestyle' => $this->gateway->page_style,
                 'hdrimg' => $this->gateway->checkout_logo_hdrimg,
                 'logoimg' => $this->gateway->checkout_logo,

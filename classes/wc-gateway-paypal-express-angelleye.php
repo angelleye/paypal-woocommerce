@@ -1285,33 +1285,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         return $settings;
     }
 
-    public static function get_button_locale_code() {
-        $_supportedLocale = array(
-            'en_US', 'fr_XC', 'es_XC', 'zh_XC', 'en_AU', 'de_DE', 'nl_NL',
-            'fr_FR', 'pt_BR', 'fr_CA', 'zh_CN', 'ru_RU', 'en_GB', 'zh_HK',
-            'he_IL', 'it_IT', 'ja_JP', 'pl_PL', 'pt_PT', 'es_ES', 'sv_SE', 'zh_TW', 'tr_TR'
-        );
-        $wpml_locale = self::angelleye_ec_get_wpml_locale();
-        if ($wpml_locale) {
-            if (in_array($wpml_locale, $_supportedLocale)) {
-                return $wpml_locale;
-            }
-        }
-        $locale = get_locale();
-        if (get_locale() != '') {
-            $locale = substr(get_locale(), 0, 5);
-        }
-        if (!in_array($locale, $_supportedLocale)) {
-            $locale = 'en_US';
-        }
-        return $locale;
-    }
-
     public static function angelleye_get_paypalimage() {
-        if (self::get_button_locale_code() == 'en_US') {
-            $image_path = plugins_url('/assets/images/dynamic-image/' . self::get_button_locale_code() . '.png', plugin_basename(dirname(__FILE__)));
+        if (AngellEYE_Utility::get_button_locale_code() == 'en_US') {
+            $image_path = plugins_url('/assets/images/dynamic-image/' . AngellEYE_Utility::get_button_locale_code() . '.png', plugin_basename(dirname(__FILE__)));
         } else {
-            $image_path = plugins_url('/assets/images/dynamic-image/' . self::get_button_locale_code() . '.gif', plugin_basename(dirname(__FILE__)));
+            $image_path = plugins_url('/assets/images/dynamic-image/' . AngellEYE_Utility::get_button_locale_code() . '.gif', plugin_basename(dirname(__FILE__)));
             if ( is_ssl() || get_option( 'woocommerce_force_ssl_checkout' ) == 'yes' ) {
                 $image_path = preg_replace("/^http:/i", "https:", $image_path);
             }

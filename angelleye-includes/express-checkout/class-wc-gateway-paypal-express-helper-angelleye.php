@@ -504,7 +504,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 wp_enqueue_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.js', array('jquery'), $this->version, false);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
                     'environment' => ( $this->testmode == true) ? 'sandbox' : 'production',
-                    'locale' => ($this->use_wp_locale_code === 'yes' && get_locale() != '') ? get_locale() : '',
+                    'locale' => ($this->use_wp_locale_code === 'yes' && AngellEYE_Utility::get_button_locale_code() != '') ? AngellEYE_Utility::get_button_locale_code() : '',
                     'start_flow' => esc_url(add_query_arg(array('startcheckout' => 'true'), wc_get_page_permalink('cart'))),
                     'show_modal' => apply_filters('woocommerce_paypal_express_checkout_show_cart_modal', true),
                     'update_shipping_costs_nonce' => wp_create_nonce('_wc_angelleye_ppec_update_shipping_costs_nonce'),
