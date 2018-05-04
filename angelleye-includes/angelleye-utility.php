@@ -2029,4 +2029,19 @@ class AngellEYE_Utility {
             }
             return $locale;
         }
+        
+        public static function angelleye_ec_get_wpml_locale() {
+            $locale = false;
+            if(defined('ICL_LANGUAGE_CODE') && function_exists('icl_object_id')){
+                global $sitepress;
+                if ( isset( $sitepress )) { // avoids a fatal error with Polylang
+                    $locale = $sitepress->get_current_language();
+                } else if ( function_exists( 'pll_current_language' ) ) { // adds Polylang support
+                    $locale = pll_current_language('locale'); //current selected language requested on the broswer
+                } else if ( function_exists( 'pll_default_language' ) ) {
+                    $locale = pll_default_language('locale'); //default lanuage of the blog
+                }
+            } 
+            return $locale;
+        }
 }
