@@ -1709,25 +1709,27 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         }
         if(isset($_GET['section']) && $_GET['section']=='paypal_pro_payflow'){
             if(!get_user_meta(get_current_user_id(), 'payflow_sb_autopopulate_credentials')){
-        echo '<div class="notice notice-info"><p>'.sprintf(__("<h3>Default PayFlow sandbox credentials</h3><table>
-                                                                    <tr>
-                                                                    <td><strong>Partner:</strong></td>
-                                                                    <td>PayPal</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                    <td><strong>Merchant Login:</strong></td>
-                                                                    <td>angelleye</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                    <td><strong>Username:</strong></td>
-                                                                    <td>paypalwoocommerce</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                    <td><strong>Password:</strong></td>
-                                                                    <td>dwG7!Yp*PLY3</td>
-                                                                    </tr>
-                                                                    </table><a href=%s>%s</a>", 'paypal-for-woocommerce'),
-                                                                    esc_url(add_query_arg("payflow_sb_autopopulate_credentials", 0)), __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+        echo '<div class="notice notice-info"><p>'.sprintf(__("<h3>Default PayFlow Sandbox Credentials</h3>
+                <p>These values have been auto-filled into the sandbox credential fields so that you can quickly run test orders.  If you have your own PayPal Manager test account you can update the values accordingly.</p>
+                <table>
+                <tr>
+                <td align='right'><strong>Partner:</strong></td>
+                <td>PayPal</td>
+                </tr>
+                <tr>
+                <td align='right'><strong>Merchant Login:</strong></td>
+                <td>angelleye</td>
+                </tr>
+                <tr>
+                <td align='right'><strong>Username:</strong></td>
+                <td>paypalwoocommerce</td>
+                </tr>
+                <tr>
+                <td align='right'><strong>Password:</strong></td>
+                <td>dwG7!Yp*PLY3</td>
+                </tr>
+                </table><br /><a href=%s>%s</a>", 'paypal-for-woocommerce'),
+                esc_url(add_query_arg("payflow_sb_autopopulate_credentials", 0)), __("Hide this notice.", 'paypal-for-woocommerce')) . '</p></div>';
             }
         }
     }
