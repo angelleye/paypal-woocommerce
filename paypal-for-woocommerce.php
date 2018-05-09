@@ -138,7 +138,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 			'<!-- This site has installed the %1$s %2$s - %3$s -->',
 			esc_html( 'PayPal for WooCommerce' ),			
 			( 'v' . VERSION_PFW ),
-			esc_url( 'https://www.angelleye.com/product-category/plugins/wordpress-plugins/woocommerce-extensions/' )
+			esc_url( 'https://www.angelleye.com/product/woocommerce-paypal-plugin/' )
 		);
 	}
         
