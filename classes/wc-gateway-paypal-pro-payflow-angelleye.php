@@ -210,8 +210,8 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'title' => __('Vendor (Merchant Login)', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Your merchant login ID that you created when you registered for the account.', 'paypal-for-woocommerce'),
-                'default' => '',
                 'custom_attributes' => array( 'autocomplete' => 'off'),
+                'default' => 'angelleye'
             ),
             
             'sandbox_paypal_user' => array(
@@ -219,15 +219,15 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'text',
                 'description' => __('If you set up one or more additional users on the account, this value is the ID
 of the user authorized to process transactions. Otherwise, leave this field blank.', 'paypal-for-woocommerce'),
-                'default' => '',
                 'custom_attributes' => array( 'autocomplete' => 'off'),
+                'default' => 'paypalwoocommerce'
             ),
             'sandbox_paypal_password' => array(
                 'title' => __('Password', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
-                'default' => '',
                 'custom_attributes' => array( 'autocomplete' => 'off'),
+                'default' => 'dwG7!Yp*PLY3'
             ),
             'paypal_partner' => array(
                 'title' => __('Partner', 'paypal-for-woocommerce'),
@@ -1705,6 +1705,29 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         if(class_exists('AngellEYE_Utility')) {
             if (AngellEYE_Utility::is_display_angelleye_paypal_pro_payflow_reference_transaction_notice($this) == true) {
                 echo '<div class="error"><p>' . sprintf(__("If using %s with Woo Token Payments (including the use of Woo Subscriptions) you will need to <a target='_blank' href='https://www.angelleye.com/paypal-woocommerce-subscriptions/'>enable Reference Transactions</a> in your PayPal/PayFlow Manager. | <a href=%s>%s</a>", 'paypal-for-woocommerce'), $this->method_title, '"' . esc_url(add_query_arg("ignore_paypal_pro_payflow_reference_transaction_notice", 0)) . '"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
+            }
+        }
+        if(isset($_GET['section']) && $_GET['section']=='paypal_pro_payflow'){
+            if(!get_user_meta(get_current_user_id(), 'payflow_sb_autopopulate_credentials')){
+        echo '<div class="notice notice-info"><p>'.sprintf(__("<h3>Default PayFlow sandbox credentials</h3><table>
+                                                                    <tr>
+                                                                    <td><strong>Partner:</strong></td>
+                                                                    <td>PayPal</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                    <td><strong>Merchant Login:</strong></td>
+                                                                    <td>angelleye</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                    <td><strong>Username:</strong></td>
+                                                                    <td>paypalwoocommerce</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                    <td><strong>Password:</strong></td>
+                                                                    <td>dwG7!Yp*PLY3</td>
+                                                                    </tr>
+                                                                    </table><a href=%s>%s</a>", 'paypal-for-woocommerce'),
+                                                                    esc_url(add_query_arg("payflow_sb_autopopulate_credentials", 0)), __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
             }
         }
     }

@@ -173,7 +173,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $user_id = $current_user->ID;
             
             /* If user clicks to ignore the notice, add that to their user meta */
-            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'is_disable_paypal_marketing_solutions_notice', 'ignore_paypal_pro_payflow_reference_transaction_notice');
+            $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'is_disable_paypal_marketing_solutions_notice', 'ignore_paypal_pro_payflow_reference_transaction_notice','payflow_sb_autopopulate_credentials');
             
             foreach ($notices as $notice) {
                 if ( isset($_GET[$notice]) && '0' == $_GET[$notice] ) {
