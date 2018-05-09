@@ -134,13 +134,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         public function paypal_for_woo_head_mark() {
-		echo sprintf(
-			'<!-- This site has installed the %1$s %2$s - %3$s -->',
-			esc_html( 'PayPal for WooCommerce' ),			
-			( 'v' . VERSION_PFW ),
-			esc_url( 'https://www.angelleye.com/product/woocommerce-paypal-plugin/' )
-		);
-	}
+            echo sprintf(
+                '<!-- This site has installed %1$s %2$s - %3$s -->',
+                esc_html( 'PayPal for WooCommerce' ),
+                ( 'v' . VERSION_PFW ),
+                esc_url( 'https://www.angelleye.com/product/woocommerce-paypal-plugin/' )
+            );
+            echo chr(10) . chr(13);
+	    }
         
         /*
          * Adds class name to HTML body to enable easy conditional CSS styling
