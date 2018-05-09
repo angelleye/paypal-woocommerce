@@ -131,6 +131,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Makes use of the option to send locale code from WordPress to PayPal with Smart Buttons to update button language accordingly. ([#1105](https://github.com/angelleye/paypal-woocommerce/issues/1105))
 * Cleanup - Adjusts incorrect text-domain in some code. ([#1107](https://github.com/angelleye/paypal-woocommerce/issues/1107))
 * Cleanup - Adjusts element IDs in some code to ensure they are accurate and unique. ([#1113](https://github.com/angelleye/paypal-woocommerce/issues/1113))
+* Cleanup - Adjusts the handling of the state code returned by PayPal within WooCommerce. ([#1066](https://github.com/angelleye/paypal-woocommerce/pull/1066))
 
 = 1.4.8.9 - 04.26.2018 =
 * Fix - Resolves an issue with Smart Button jQuery conflict. ([#1106](https://github.com/angelleye/paypal-woocommerce/issues/1106)) ([#1110](https://github.com/angelleye/paypal-woocommerce/issues/1110)) ([#1112](https://github.com/angelleye/paypal-woocommerce/issues/1112))
