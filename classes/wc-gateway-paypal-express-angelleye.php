@@ -868,6 +868,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class' => 'angelleye_enable_notifyurl',
                 'desc_tip' => true,
             ),
+            'notifyurl' => array(
+                'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Your URL for receiving Instant Payment Notification (IPN) for transactions.', 'paypal-for-woocommerce'),
+                'class' => 'angelleye_notifyurl',
+                'desc_tip' => true,
+            ),
             'prevent_to_add_additional_item' => array(
                 'title' => __('Prevent Adding Extra Item', 'paypal-for-woocommerce'),
                 'label' => __('Prevent adding an addition unit to the shopping cart when the Express Checkout button is pushed from the product page.', 'paypal-for-woocommerce'),
@@ -875,13 +882,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('By default, clicking the PayPal Express Checkout button from the product page adds 1 unit of that item to the cart before sending the user to PayPal.  This option will disable that, and send the user without adding an additional unit.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => '',
-                'desc_tip' => true,
-            ),
-            'notifyurl' => array(
-                'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('Your URL for receiving Instant Payment Notification (IPN) for transactions.', 'paypal-for-woocommerce'),
-                'class' => 'angelleye_notifyurl',
                 'desc_tip' => true,
             ),
             'order_cancellations' => array(
