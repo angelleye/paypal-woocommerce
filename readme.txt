@@ -128,6 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.9 - 05.xx.2018 =
+* Feature - Adds setting to include a custom message below the page header on the Express Checkout review page. ([#1119](https://github.com/angelleye/paypal-woocommerce/issues/1119))
 * Tweak - Makes use of the option to send locale code from WordPress to PayPal with Smart Buttons to update button language accordingly. ([#1105](https://github.com/angelleye/paypal-woocommerce/issues/1105))
 * Cleanup - Adjusts incorrect text-domain in some code. ([#1107](https://github.com/angelleye/paypal-woocommerce/issues/1107))
 * Cleanup - Adjusts element IDs in some code to ensure they are accurate and unique. ([#1113](https://github.com/angelleye/paypal-woocommerce/issues/1113))
