@@ -131,6 +131,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds setting to include a custom message below the page header on the Express Checkout review page. ([#1119](https://github.com/angelleye/paypal-woocommerce/issues/1119))
 * Feature - Adds default sandbox credentials for PayFlow so you don't have to setup your own test account for sandbox testing. ([#962](https://github.com/angelleye/paypal-woocommerce/issues/962))
 * Tweak - Makes use of the option to send locale code from WordPress to PayPal with Smart Buttons to update button language accordingly. ([#1105](https://github.com/angelleye/paypal-woocommerce/issues/1105))
+* Tweak - Adds WooCommerce and PayPal for WooCommerce version tags to PayFlow log files. ([#979](https://github.com/angelleye/paypal-woocommerce/issues/979))
 * Cleanup - Adjusts the formatting of admin error email notification. ([#862](https://github.com/angelleye/paypal-woocommerce/issues/862))
 * Cleanup - Adjusts IPN options in Express Checkout settings so they are grouped together. ([#978](https://github.com/angelleye/paypal-woocommerce/issues/978))
 * Cleanup - Adjusts incorrect text-domain in some code. ([#1107](https://github.com/angelleye/paypal-woocommerce/issues/1107))
