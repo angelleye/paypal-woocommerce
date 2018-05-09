@@ -616,7 +616,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'order_review_page_custom_message' => array(
                 'title' => __('Order Review Message', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('This controls the message of order review page which the user sees during checkout.', 'paypal-for-woocommerce'),
+                'description' => __('This message will be displayed below the page header on the Order Review page.', 'paypal-for-woocommerce'),
                 'desc_tip' => true,
                 'default' => ''
             ),
