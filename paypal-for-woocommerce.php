@@ -129,8 +129,32 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_get_checkout_order_received_url', array($this, 'angelleye_woocommerce_get_checkout_order_received_url'), 10, 2);
             add_action('wp_ajax_wp_paypal_paypal_marketing_solutions_express_checkout_save', array($this, 'wp_paypal_paypal_marketing_solutions_express_checkout_save'));
             
+            add_action( 'wp_head', array( $this, 'paypal_for_woo_head_mark' ), 1 );            
             $this->customer_id;
         }
+
+        public function paypal_for_woo_head_mark() {
+		echo sprintf(
+			'<!-- This site has installed the %1$s %2$s - %3$s -->',
+			esc_html( 'PayPal for WooCommerce' ),			
+			( 'v' . VERSION_PFW ),
+			esc_url( 'https://www.angelleye.com/product-category/plugins/wordpress-plugins/woocommerce-extensions/' )
+		);
+	}
+        
+        /*
+         * Adds class name to HTML body to enable easy conditional CSS styling
+         * @access public
+         * @param array $classes
+         * @return array
+         */
+        public function add_body_classes($classes) {
+          global $pp_settings;
+          if(!empty($pp_settings['enabled']) && $pp_settings['enabled'] == 'yes')
+            $classes[] = 'has_paypal_express_checkout';
+          return $classes;
+        }
+
 
         /**
          * Return the plugin action links.  This will only be called if the plugin
