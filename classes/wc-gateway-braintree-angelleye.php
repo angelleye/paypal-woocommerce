@@ -468,7 +468,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     if (is_angelleye_braintree_selected()) {
                                         $('.woocommerce-error, .braintree-device-data', ccForm).remove();
                                         $('.woocommerce-error, .braintree-token', ccForm).remove();
-                                        alert(createErr);
                                         ccForm.prepend('<ul class="woocommerce-error"><li>' + createErr + '</li></ul>');
                                     }
                                     $form.unblock();
@@ -480,11 +479,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         if (requestPaymentMethodErr) {
                                             if (is_angelleye_braintree_selected()) {
                                                 instance.clearSelectedPaymentMethod();
-                                                errorMessagesDiv.textContent = 'Transaction failed. Please select a different payment method.';
                                                 $('.woocommerce-error, .braintree-device-data', ccForm).remove();
                                                 $('.woocommerce-error, .braintree-token', ccForm).remove();
-                                                alert(createErr);
-                                                ccForm.prepend('<ul class="woocommerce-error"><li>' + requestPaymentMethodErr + '</li></ul>');
+                                                ccForm.prepend('<ul class="woocommerce-error"><li>' + requestPaymentMethodErr + '</li><li></li></ul>');
                                             }
                                             $form.unblock();
                                             return;
