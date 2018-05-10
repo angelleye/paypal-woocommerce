@@ -60,7 +60,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->softdescriptor_value = $this->get_option('softdescriptor', '');
         $this->softdescriptor = $this->get_softdescriptor();
         $this->fraud_tool = $this->get_option('fraud_tool', 'basic');
-        $this->kount_merchant_id = ($this->fraud_tool == 'kount_custom') ? $this->get_option('kount_merchant_id') : '';
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
@@ -355,12 +354,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     'kount_custom' => __('Kount Custom', 'paypal-for-woocommerce')
                 )
             ),
-            'kount_merchant_id' => array(
-                'title' => __('Kount Merchant ID', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'class' => 'angelleye-kount-merchant-id',
-                'desc_tip' => __('Speak with your account management team at Braintree to obtain your Kount Merchant ID.', 'paypal-for-woocommerce'),
-            ),
             'merchant_account_id_title' => array(
                 'title' => __('Merchant Account IDs', 'paypal-for-woocommerce'),
                 'type' => 'title',
@@ -382,7 +375,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->angelleye_braintree_lib();
         $this->add_log('Begin Braintree_ClientToken::generate Request');
         try {
-            if (is_user_logged_in()) {
+            if (is_user_logged_in() && $this->enable_tokenized_payments == 'yes') {
                 $customer_id = get_current_user_id();
                 $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
                 $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
@@ -461,16 +454,22 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             braintree.dropin.create({
                                 authorization: clientToken,
                                 container: "#braintree-payment-form",
+                                locale: '<?php echo AngellEYE_Utility::get_button_locale_code(); ?>',
+                                paypal: {
+                                    flow: 'vault'
+                                },
+                                <?php if($this->fraud_tool != 'basic') { ?>
                                 dataCollector: {
                                     kount: true // Required if Kount fraud data collection is enabled
                                 }
+                                <?php } ?>
                             }, function (createErr, instance) {
                                 if (createErr) {
                                     if (is_angelleye_braintree_selected()) {
                                         $('.woocommerce-error, .braintree-device-data', ccForm).remove();
                                         $('.woocommerce-error, .braintree-token', ccForm).remove();
                                         alert(createErr);
-                                        ccForm.prepend('<ul class="woocommerce-error" id="jignesh"><li>' + createErr + '</li></ul>');
+                                        ccForm.prepend('<ul class="woocommerce-error"><li>' + createErr + '</li></ul>');
                                     }
                                     $form.unblock();
                                     return;
@@ -478,14 +477,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 $('form.checkout').on('checkout_place_order_braintree', function (event) {
                                     event.preventDefault();
                                     instance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
-                                        if (createErr) {
+                                        if (requestPaymentMethodErr) {
                                             if (is_angelleye_braintree_selected()) {
                                                 instance.clearSelectedPaymentMethod();
                                                 errorMessagesDiv.textContent = 'Transaction failed. Please select a different payment method.';
                                                 $('.woocommerce-error, .braintree-device-data', ccForm).remove();
                                                 $('.woocommerce-error, .braintree-token', ccForm).remove();
                                                 alert(createErr);
-                                                ccForm.prepend('<ul class="woocommerce-error" id="jignesh"><li>' + requestPaymentMethodErr + '</li></ul>');
+                                                ccForm.prepend('<ul class="woocommerce-error"><li>' + requestPaymentMethodErr + '</li></ul>');
                                             }
                                             $form.unblock();
                                             return;
@@ -544,7 +543,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             braintree.client.create({
                                 authorization: clientToken
                             }, function (err, clientInstance) {
-                                console.log(err);
+                                <?php if($this->fraud_tool != 'basic') { ?>
                                 if( typeof braintree.dataCollector !== 'undefined' || braintree.dataCollector !== null ){
                                 braintree.dataCollector.create({
                                     client: clientInstance,
@@ -559,6 +558,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     }
                                 });
                                 }
+                                <?php } ?>
                             });
                         });
                     }(jQuery));
