@@ -403,6 +403,18 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         ?>
         <table class="form-table">
             <?php 
+             if(!get_user_meta(get_current_user_id(), 'payflow_sb_autopopulate_credentials')){
+               echo '<div class="notice notice-info"><p>'.sprintf(__("<h3>Default PayFlow Sandbox Credentials</h3>
+                <p>These values have been auto-filled into the sandbox credential fields so that you can quickly run test orders. If you have your own PayPal Manager test account you can update the values accordingly.</p>
+                <strong>Partner:</strong> PayPal<br/>
+                <strong>Merchant Login:</strong> angelleye<br/>
+               
+               <strong>Username:</strong> paypalwoocommerce<br/>
+               
+                <strong>Password:</strong> dwG7!Yp*PLY3<br/> 
+                <br /><a href=%s>%s</a>", 'paypal-for-woocommerce'),
+                esc_url(add_query_arg("payflow_sb_autopopulate_credentials", 0)), __("Hide this notice.", 'paypal-for-woocommerce')) . '</p></div>';
+            }
             if(version_compare(WC_VERSION,'2.6','<')) {
                 AngellEYE_Utility::woo_compatibility_notice();    
             } else {
@@ -1708,31 +1720,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         if(class_exists('AngellEYE_Utility')) {
             if (AngellEYE_Utility::is_display_angelleye_paypal_pro_payflow_reference_transaction_notice($this) == true) {
                 echo '<div class="error"><p>' . sprintf(__("If using %s with Woo Token Payments (including the use of Woo Subscriptions) you will need to <a target='_blank' href='https://www.angelleye.com/paypal-woocommerce-subscriptions/'>enable Reference Transactions</a> in your PayPal/PayFlow Manager. | <a href=%s>%s</a>", 'paypal-for-woocommerce'), $this->method_title, '"' . esc_url(add_query_arg("ignore_paypal_pro_payflow_reference_transaction_notice", 0)) . '"', __("Hide this notice", 'paypal-for-woocommerce')) . '</p></div>';
-            }
-        }
-        if(isset($_GET['section']) && $_GET['section']=='paypal_pro_payflow'){
-            if(!get_user_meta(get_current_user_id(), 'payflow_sb_autopopulate_credentials')){
-        echo '<div class="notice notice-info"><p>'.sprintf(__("<h3>Default PayFlow Sandbox Credentials</h3>
-                <p>These values have been auto-filled into the sandbox credential fields so that you can quickly run test orders.  If you have your own PayPal Manager test account you can update the values accordingly.</p>
-                <table>
-                <tr>
-                <td align='right'><strong>Partner:</strong></td>
-                <td>PayPal</td>
-                </tr>
-                <tr>
-                <td align='right'><strong>Merchant Login:</strong></td>
-                <td>angelleye</td>
-                </tr>
-                <tr>
-                <td align='right'><strong>Username:</strong></td>
-                <td>paypalwoocommerce</td>
-                </tr>
-                <tr>
-                <td align='right'><strong>Password:</strong></td>
-                <td>dwG7!Yp*PLY3</td>
-                </tr>
-                </table><br /><a href=%s>%s</a>", 'paypal-for-woocommerce'),
-                esc_url(add_query_arg("payflow_sb_autopopulate_credentials", 0)), __("Hide this notice.", 'paypal-for-woocommerce')) . '</p></div>';
             }
         }
     }
