@@ -440,7 +440,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     <div id="braintree-payment-form"></div>
                 </fieldset>
             </div>
-            <?php if (is_ajax()) { ?>
+            <?php if (is_ajax() || is_checkout_pay_page()) { ?>
                 <script type="text/javascript">
                     (function ($) {
                         $(function () {
@@ -450,7 +450,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             });
                             var button = document.querySelector('#place_order');
                             var $form = $('form.checkout, #order_review');
-                            var ccForm = $('form.checkout');
+                            var ccForm = $('form.checkout, #order_review');
                             var clientToken = "<?php echo $clientToken; ?>";
                             braintree.dropin.create({
                                 authorization: clientToken,
@@ -514,6 +514,12 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         }
                         $('form.checkout').on('checkout_place_order_braintree', function () {
                             return braintreeFormHandler();
+                        });
+                        $( 'form#order_review' ).on( 'submit', function () {
+                            return braintreeFormHandler();
+                        });
+                        $( 'form#add_payment_method' ).on( 'submit', function () {
+                             return braintreeFormHandler();
                         });
                         function braintreeFormHandler() {
                             if ($('#payment_method_braintree').is(':checked')) {
