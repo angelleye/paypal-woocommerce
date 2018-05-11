@@ -448,6 +448,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 $('.braintree-token').remove();
                                 $('.braintree-device-data').remove();
                             });
+                            var button = document.querySelector('#place_order');
                             var $form = $('form.checkout, #order_review');
                             var ccForm = $('form.checkout');
                             var clientToken = "<?php echo $clientToken; ?>";
@@ -457,9 +458,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 locale: '<?php echo AngellEYE_Utility::get_button_locale_code(); ?>',
                                 paypal: {
                                     flow: 'vault'
-                                },
+                                }
                                 <?php if($this->fraud_tool != 'basic') { ?>
-                                dataCollector: {
+                                , dataCollector: {
                                     kount: true // Required if Kount fraud data collection is enabled
                                 }
                                 <?php } ?>
@@ -473,21 +474,22 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     $form.unblock();
                                     return;
                                 }
-                                $('form.checkout').on('checkout_place_order_braintree', function (event) {
-                                    event.preventDefault();
-                                    instance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
-                                        if (requestPaymentMethodErr) {
-                                            if (is_angelleye_braintree_selected()) {
+                                if (is_angelleye_braintree_selected()) {
+                                    button.addEventListener('click', function () {
+                                        instance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
+                                            $(document.body).on('checkout_error', function () {
+                                                $('.braintree-token').remove();
+                                                $('.braintree-device-data').remove();
+                                                instance.clearSelectedPaymentMethod();
+                                            });
+                                            if (requestPaymentMethodErr) {
                                                 instance.clearSelectedPaymentMethod();
                                                 $('.woocommerce-error, .braintree-device-data', ccForm).remove();
                                                 $('.woocommerce-error, .braintree-token', ccForm).remove();
                                                 ccForm.prepend('<ul class="woocommerce-error"><li>' + requestPaymentMethodErr + '</li><li></li></ul>');
+                                                $form.unblock();
+                                                return;
                                             }
-                                            $form.unblock();
-                                            return;
-                                        }
-
-                                        if (is_angelleye_braintree_selected()) {
                                             if (payload.nonce) {
                                                 $('.woocommerce-error, .braintree-token', ccForm).remove();
                                                 ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
@@ -498,9 +500,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                             if (payload.nonce) {
                                                 $form.submit();
                                             }
-                                        }
+                                        });
                                     });
-                                });
+                                }
                             });
                         });
                         function is_angelleye_braintree_selected() {
