@@ -128,6 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.9 - 05.xx.2018 =
+* Feature - Upgrades Braintree SDK from v2 to v3. ([#1122](https://github.com/angelleye/paypal-woocommerce/issues/1122))
 * Feature - Adds setting to include a custom message below the page header on the Express Checkout review page. ([#1119](https://github.com/angelleye/paypal-woocommerce/issues/1119))
 * Feature - Adds default sandbox credentials for PayFlow so you don't have to setup your own test account for sandbox testing. ([#962](https://github.com/angelleye/paypal-woocommerce/issues/962))
 * Tweak - Makes use of the option to send locale code from WordPress to PayPal with Smart Buttons to update button language accordingly. ([#1105](https://github.com/angelleye/paypal-woocommerce/issues/1105))
