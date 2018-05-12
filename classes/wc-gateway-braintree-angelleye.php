@@ -520,6 +520,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             return braintreeFormHandler();
                         });
                         $( 'form#add_payment_method' ).on( 'submit', function () {
+                             $('.woocommerce-error').remove();
                              return braintreeFormHandler();
                         });
                         function braintreeFormHandler() {
