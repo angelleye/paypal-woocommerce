@@ -451,6 +451,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             var button = document.querySelector('#place_order');
                             var $form = $('form.checkout, #order_review');
                             var ccForm = $('form.checkout, #order_review');
+                            var unique_form_for_validation = $('form.checkout');
                             var clientToken = "<?php echo $clientToken; ?>";
                             braintree.dropin.create({
                                 authorization: clientToken,
@@ -467,9 +468,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }, function (createErr, instance) {
                                 if (createErr) {
                                     if (is_angelleye_braintree_selected()) {
-                                        $('.woocommerce-error, .braintree-device-data', ccForm).remove();
-                                        $('.woocommerce-error, .braintree-token', ccForm).remove();
-                                        ccForm.prepend('<ul class="woocommerce-error"><li>' + createErr + '</li></ul>');
+                                        $('.braintree-device-data', ccForm).remove();
+                                        $('.braintree-token', ccForm).remove();
+                                        unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + createErr + '</li></ul>');
                                     }
                                     $form.unblock();
                                     return;
@@ -484,18 +485,18 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                             });
                                             if (requestPaymentMethodErr) {
                                                 instance.clearSelectedPaymentMethod();
-                                                $('.woocommerce-error, .braintree-device-data', ccForm).remove();
-                                                $('.woocommerce-error, .braintree-token', ccForm).remove();
-                                                ccForm.prepend('<ul class="woocommerce-error"><li>' + requestPaymentMethodErr + '</li><li></li></ul>');
+                                                $('.braintree-device-data', ccForm).remove();
+                                                $('.braintree-token', ccForm).remove();
+                                                unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + requestPaymentMethodErr + '</li><li></li></ul>');
                                                 $form.unblock();
                                                 return;
                                             }
                                             if (payload.nonce) {
-                                                $('.woocommerce-error, .braintree-token', ccForm).remove();
-                                                ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
+                                                $('.braintree-token', ccForm).remove();
+                                                unique_form_for_validation.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
                                             }
                                             if (payload.deviceData) {
-                                                ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + payload.deviceData + ">");
+                                                unique_form_for_validation.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + payload.deviceData + ">");
                                             }
                                             if (payload.nonce) {
                                                 $form.submit();
@@ -524,7 +525,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         function braintreeFormHandler() {
                             if ($('#payment_method_braintree').is(':checked')) {
                                 if (0 === $('input.braintree-token').size()) {
-                                    return false;
+                                   return false;
                                 }
                             }
                             return true;
@@ -545,6 +546,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         $(function () {
                             var ccForm = $('form.checkout');
                             var clientToken = "<?php echo $clientToken; ?>";
+                            var unique_form_for_validation = $('form.checkout');
                             braintree.client.create({
                                 authorization: clientToken
                             }, function (err, clientInstance) {
@@ -555,11 +557,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     kount: true
                                 }, function (err, dataCollectorInstance) {
                                     if (err) {
-                                        $('.woocommerce-error, .braintree-device-data', ccForm).remove();
+                                        $('.braintree-device-data', ccForm).remove();
                                         return;
                                     }
                                     if(dataCollectorInstance.deviceData) {
-                                        ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + dataCollectorInstance.deviceData + ">");
+                                        unique_form_for_validation.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + dataCollectorInstance.deviceData + ">");
                                     }
                                 });
                                 }
