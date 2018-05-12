@@ -910,7 +910,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function get_braintree_options() {
-        return array('submitForSettlement' => true, 'storeInVaultOnSuccess' => 'true');
+        return array('submitForSettlement' => true, 'storeInVaultOnSuccess' => (is_user_logged_in() && $this->enable_braintree_drop_in) ? true : false);
     }
 
     public static function multibyte_loaded() {
