@@ -443,6 +443,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             <?php if (is_ajax() || is_checkout_pay_page()) { ?>
                 <script type="text/javascript">
                     (function ($) {
+                        function is_angelleye_braintree_selected() {
+                            if ($('#payment_method_braintree').is(':checked')) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
                         $(function () {
                             $(document.body).on('checkout_error', function () {
                                 $('.braintree-token').remove();
@@ -506,13 +513,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 }
                             });
                         });
-                        function is_angelleye_braintree_selected() {
-                            if ($('#payment_method_braintree').is(':checked')) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
+                        
                         $('form.checkout').on('checkout_place_order_braintree', function () {
                             return braintreeFormHandler();
                         });
