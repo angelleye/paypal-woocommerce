@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
-Tested up to: 4.9.4
-Stable tag: 1.4.8.10
+Tested up to: 4.9.6
+Stable tag: 1.4.9
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.9 - 05.xx.2018 =
+= 1.4.9 - 05.23.2018 =
 * Feature - Upgrades Braintree SDK from v2 to v3. ([#1101](https://github.com/angelleye/paypal-woocommerce/issues/1101)) ([#1122](https://github.com/angelleye/paypal-woocommerce/issues/1122))
 * Feature - Adds setting to include a custom message below the page header on the Express Checkout review page. ([#1119](https://github.com/angelleye/paypal-woocommerce/issues/1119))
 * Feature - Adds default sandbox credentials for PayFlow so you don't have to setup your own test account for sandbox testing. ([#962](https://github.com/angelleye/paypal-woocommerce/issues/962))
