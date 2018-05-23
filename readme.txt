@@ -128,6 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.9 - 05.23.2018 =
+* Compatibility - Check for compatibility with WooCommerce 3.4. ([#1126](https://github.com/angelleye/paypal-woocommerce/issues/1126))
 * Feature - Upgrades Braintree SDK from v2 to v3. ([#1101](https://github.com/angelleye/paypal-woocommerce/issues/1101)) ([#1122](https://github.com/angelleye/paypal-woocommerce/issues/1122))
 * Feature - Adds setting to include a custom message below the page header on the Express Checkout review page. ([#1119](https://github.com/angelleye/paypal-woocommerce/issues/1119))
 * Feature - Adds default sandbox credentials for PayFlow so you don't have to setup your own test account for sandbox testing. ([#962](https://github.com/angelleye/paypal-woocommerce/issues/962))
