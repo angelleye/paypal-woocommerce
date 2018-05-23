@@ -134,6 +134,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Makes use of the option to send locale code from WordPress to PayPal with Smart Buttons to update button language accordingly. ([#1105](https://github.com/angelleye/paypal-woocommerce/issues/1105))
 * Tweak - Adds WooCommerce and PayPal for WooCommerce version tags to PayFlow log files. ([#979](https://github.com/angelleye/paypal-woocommerce/issues/979))
 * Tweak - Adds PayPal for WooCommerce version to HTML comments so we can view source to see the current plugin version installed. ([#980](https://github.com/angelleye/paypal-woocommerce/issues/980))
+* Tweak - Adjusts REST CC log files. ([#1125](https://github.com/angelleye/paypal-woocommerce/issues/1125))
 * Cleanup - Adjusts the formatting of admin error email notification. ([#862](https://github.com/angelleye/paypal-woocommerce/issues/862))
 * Cleanup - Adjusts IPN options in Express Checkout settings so they are grouped together. ([#978](https://github.com/angelleye/paypal-woocommerce/issues/978))
 * Cleanup - Adjusts incorrect text-domain in some code. ([#1107](https://github.com/angelleye/paypal-woocommerce/issues/1107))
@@ -836,5 +837,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.4.5 =
+= 1.4.9 =
 After updating, make sure to clear any caching / CDN plugins you may be using.  Also, go into the plugin's gateway settings, review everything, and click Save even if you do not make any changes.
