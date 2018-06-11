@@ -213,6 +213,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         function admin_notices() {
             global $current_user, $pp_settings ;
             $user_id = $current_user->ID;
+            if ( !current_user_can( 'manage_woocommerce' ) ) {
+                return false;
+            }
             $pp_pro = get_option('woocommerce_paypal_pro_settings');
             $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
             $pp_standard = get_option('woocommerce_paypal_settings');
