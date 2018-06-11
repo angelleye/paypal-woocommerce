@@ -227,6 +227,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $pp_standard['enabled'] = !empty($pp_standard['enabled']) ? $pp_standard['enabled'] : '';
             $pp_settings['paypal_marketing_solutions_cid_production'] = !empty($pp_settings['paypal_marketing_solutions_cid_production']) ? $pp_settings['paypal_marketing_solutions_cid_production'] : '';
             
+            if (version_compare(phpversion(), '5.4', '<')) {
+                echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf( __('PayPal for WooCommerce requires PHP version 5.4 or higher. You are using version %s.','paypal-for-woocommerce'), phpversion()) . '</div></div>';
+            }
+            
             if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || ( !empty($pp_payflow['enabled']) && $pp_payflow['enabled']=='yes' )) {
                 // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
                 if ( get_option('woocommerce_force_ssl_checkout')=='no' && ! class_exists( 'WordPressHTTPS' ) && !get_user_meta($user_id, 'ignore_pp_ssl') )
