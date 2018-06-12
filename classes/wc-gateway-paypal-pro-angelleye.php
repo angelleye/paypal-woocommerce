@@ -1604,7 +1604,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
         $message = '';
         if ($this->error_email_notify) {
-            $admin_email = get_option("admin_email");
+            $recipients = array_map( 'trim', explode( ',', $this->recipient ) );
+            $recipients = array_filter( $recipients, 'is_email' );
+            $all_emails = implode( ', ', $recipients );
             $message .= __($request_name . " API call failed.", "paypal-for-woocommerce") . "\n\n";
             $message .= __('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode . "\n";
             $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
@@ -1614,7 +1616,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $error_email_notify_mes = apply_filters('ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
             $subject = "PayPal Pro Error Notification";
             $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', $subject);
-            wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
+            wp_mail($all_emails, $error_email_notify_subject, $error_email_notify_mes);
         }
         if ($this->error_display_type == 'detailed') {
             $sec_error_notice = $ErrorCode . ' - ' . $ErrorLongMsg;

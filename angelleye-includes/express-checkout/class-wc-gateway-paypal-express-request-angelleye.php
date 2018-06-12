@@ -997,6 +997,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         }
         if ($this->gateway->error_email_notify) {
             $mailer = WC()->mailer();
+            $recipients = array_map( 'trim', explode( ',', $this->gateway->recipient ) );
+            $recipients = array_filter( $recipients, 'is_email' );
+            $all_emails = implode( ', ', $recipients );
             $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'PayPal Express Checkout Error Notification');
             $message = sprintf(
                     "<strong>".__('PayPal %s API call failed', 'paypal-for-woocommerce')."</strong>" . PHP_EOL .PHP_EOL
@@ -1012,7 +1015,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     );
             $message = apply_filters('ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
             $message = $mailer->wrap_message($error_email_notify_subject, $message);
-            $mailer->send(get_option('admin_email'), strip_tags($error_email_notify_subject), $message);
+            $mailer->send($all_emails, strip_tags($error_email_notify_subject), $message);
         }
         if ($this->gateway->error_display_type == 'detailed') {
             $sec_error_notice = $ErrorCode . ' - ' . $ErrorLongMsg;
