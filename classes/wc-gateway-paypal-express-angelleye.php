@@ -1354,6 +1354,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $paypal_express_request->angelleye_get_express_checkout_details();
                     $order_id = absint(WC()->session->get('order_awaiting_payment'));
                     if( !empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true ) {
+                        $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
+                        $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
+                        AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
+                        if ($this->billing_address && !empty($shipping_details)) {
+                            AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'billing');
+                        }
                     } else {
                         if ( $order_id > 0 && ( $order = wc_get_order( $order_id ) ) && $order->has_status( array( 'pending', 'failed' ) ) ) {
                             $_POST = WC()->session->get( 'post_data' );
