@@ -18,6 +18,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public $confirm_order_id;
     public $order_param;
     public $user_email_address;
+    public $recipient;
 
     public function __construct($gateway) {
         try {
@@ -1336,7 +1337,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
         $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
         $this->paypal_response = $this->paypal->DoReferenceTransaction($PayPalRequestData);
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify, $this->gateway->recipient);
         WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->testmode);
         WC_Gateway_PayPal_Express_AngellEYE::log('Endpoint: ' . $this->gateway->API_Endpoint);
         $PayPalRequest = isset($this->paypal_response['RAWREQUEST']) ? $this->paypal_response['RAWREQUEST'] : '';
@@ -1432,7 +1433,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $this->paypal_response = $this->paypal->RefundTransaction($PayPalRequestData);
 
 
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'RefundTransaction', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'RefundTransaction', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify, $this->gateway->recipient);
         WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->testmode);
         WC_Gateway_PayPal_Express_AngellEYE::log('Endpoint: ' . $this->gateway->API_Endpoint);
         $PayPalRequest = isset($this->paypal_response['RAWREQUEST']) ? $this->paypal_response['RAWREQUEST'] : '';

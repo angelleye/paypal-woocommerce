@@ -538,15 +538,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             update_post_meta( $post_id, '_enable_ec_button', $_enable_ec_button );
         }
         
-        public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true) {
+        public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true, $recipient) {
             if( isset( $PayPalResult['CURL_ERROR'] ) ){
                 try {
                         if($error_email_notify == true) {
-                            $admin_email = get_option("admin_email");
+                            $recipients = array_map( 'trim', explode( ',', $recipient ) );
+                            $recipients = array_filter( $recipients, 'is_email' );
+                            $all_emails = implode( ', ', $recipients );
                             $message = __( $methos_name . " call failed." , "paypal-for-woocommerce" )."\n\n";
                             $message .= __( 'Error Code: 0' ,'paypal-for-woocommerce' ) . "\n";
                             $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $PayPalResult['CURL_ERROR'];
-                            wp_mail($admin_email, $gateway . " Error Notification",$message);
+                            wp_mail($all_emails, $gateway . " Error Notification",$message);
                         }
                         $display_error = 'There was a problem connecting to the payment gateway.';
                         wc_add_notice($display_error, 'error');

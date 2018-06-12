@@ -41,6 +41,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
+        $this->recipient = $this->get_option('recipient', get_option( 'admin_email' ));
         $this->error_display_type = $this->get_option('error_display_type', 'no');
         $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
@@ -181,7 +182,16 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'checkbox',
                 'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
-                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
+                'description' => __('This will send a detailed error emails are sent to chosen recipient(s) when PayPal API error occurs.', 'paypal-for-woocommerce'),
+                'desc_tip' => true
+            ),
+            'recipient'  => array(
+                'title'       => __( 'Recipient(s)', 'woocommerce' ),
+                'type'        => 'text',
+                'description' => sprintf( __( 'Enter recipients (comma separated) for this email. Defaults to %s.', 'woocommerce' ), '<code>' . esc_attr( get_option( 'admin_email' ) ) . '</code>' ),
+                'placeholder' => '',
+                'default'     => get_option( 'admin_email' ),
+                'desc_tip'    => true,
             ),
             'error_display_type' => array(
                 'title' => __('Error Display Type', 'paypal-for-woocommerce'),
@@ -443,6 +453,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     production.show();
                 }
             }).change();
+            jQuery('#woocommerce_paypal_pro_payflow_error_email_notify').change(function () {
+                var paypal_pro_payflow_recipient = jQuery('#woocommerce_paypal_pro_payflow_recipient').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    paypal_pro_payflow_recipient.show();
+                } else {
+                    paypal_pro_payflow_recipient.hide();
+                }
+            }).change();
         </script>
         <?php
     }
@@ -684,7 +702,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
              *  cURL Error Handling #146
              *  @since    1.1.8
              */
-            AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
+            AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify, $this->recipient);
 
 
             $this->add_log('PayFlow Endpoint: ' . $PayPal->APIEndPoint);
@@ -1057,7 +1075,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
          *  cURL Error Handling #146
          *  @since    1.1.8
          */
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify, $this->recipient);
 
         add_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
         if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {

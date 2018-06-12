@@ -85,6 +85,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
         $this->error_email_notify = $this->get_option('error_email_notify');
+        $this->recipient = $this->get_option('recipient', get_option( 'admin_email' ));
         $this->error_display_type = $this->get_option('error_display_type'); 
         //$this->enable_3dsecure = 'yes' === $this->get_option('enable_3dsecure', 'no');
         $this->enable_3dsecure = false;
@@ -218,9 +219,18 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
+                'label' => __('Enable email notifications for errors.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
-                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
+                'description' => __('This will send a detailed error emails are sent to chosen recipient(s) when PayPal API error occurs.', 'paypal-for-woocommerce'),
+                'desc_tip' => true
+            ),
+            'recipient'  => array(
+                'title'       => __( 'Recipient(s)', 'woocommerce' ),
+                'type'        => 'text',
+                'description' => sprintf( __( 'Enter recipients (comma separated) for this email. Defaults to %s.', 'woocommerce' ), '<code>' . esc_attr( get_option( 'admin_email' ) ) . '</code>' ),
+                'placeholder' => '',
+                'default'     => get_option( 'admin_email' ),
+                'desc_tip'    => true,
             ),
              'testmode' => array(
                 'title' => __('Test Mode', 'paypal-for-woocommerce'),
@@ -448,6 +458,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     sandbox.hide();
                     production.show();
+                }
+            }).change();
+            jQuery('#woocommerce_paypal_pro_error_email_notify').change(function () {
+                var paypal_pro_recipient = jQuery('#woocommerce_paypal_pro_recipient').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    paypal_pro_recipient.show();
+                } else {
+                    paypal_pro_recipient.hide();
                 }
             }).change();
         </script>
@@ -1161,7 +1179,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
          * @since    1.1.8
          */
 
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoDirectPayment', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoDirectPayment', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify, $this->recipient);
 
 
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
@@ -1457,7 +1475,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
          * @since    1.1.8
          */
 
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'RefundTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'RefundTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify, $this->recipient);
 
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
@@ -1911,7 +1929,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'softdescriptor' => ''
         );
         $PayPalResult = $PayPal->DoReferenceTransaction($PayPalRequestData);
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoReferenceTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoReferenceTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify, $this->recipient);
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
         $this->log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
