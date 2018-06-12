@@ -355,6 +355,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     update_post_meta($order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                     update_post_meta($order->get_id(), 'paypal_email', $payeremail);
                 }
+                
                 if ($old_wc) {
                     update_post_meta($order_id, 'PayPal Transaction Fee', isset($this->paypal_response['PAYMENTINFO_0_FEEAMT']) ? $this->paypal_response['PAYMENTINFO_0_FEEAMT'] : '');
                 } else {
