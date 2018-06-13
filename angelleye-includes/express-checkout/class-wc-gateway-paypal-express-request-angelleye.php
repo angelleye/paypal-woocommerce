@@ -1026,6 +1026,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function angelleye_write_paypal_request_log($paypal_action_name) {
+        WC_Gateway_PayPal_Express_AngellEYE::log('Environment: ' . $this->testmode);
         if ($paypal_action_name == 'SetExpressCheckout') {
             WC_Gateway_PayPal_Express_AngellEYE::log('Redirecting to PayPal');
             WC_Gateway_PayPal_Express_AngellEYE::log(sprintf(__('PayPal for WooCommerce Version: %s', 'paypal-for-woocommerce'), VERSION_PFW));
