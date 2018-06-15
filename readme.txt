@@ -139,6 +139,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adds email address to Express Checkout requests when available. ([PFW-55](https://github.com/angelleye/paypal-woocommerce/pull/1133))
 * Fix - Resolves issues with some account creation options during checkout with Express Checkout. ([PFW-21](https://github.com/angelleye/paypal-woocommerce/pull/1137))
 * Fix - Resolves an issue where the shipping address was sometimes not updated in the WooCommerce order. ([PFW-57](https://github.com/angelleye/paypal-woocommerce/pull/1139))
+* Fix - Resolves a problem in some mobile browsers where the last name field was getting hidden during checkout. ([PFW-126](https://github.com/angelleye/paypal-woocommerce/pull/1141))
 
 = 1.4.9 - 05.23.2018 =
 * Compatibility - Check for compatibility with WooCommerce 3.4. ([#1126](https://github.com/angelleye/paypal-woocommerce/issues/1126))
