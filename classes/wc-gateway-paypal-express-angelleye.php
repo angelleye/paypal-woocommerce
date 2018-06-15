@@ -606,7 +606,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Enable email notifications for errors.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
-                'description' => __('This will send a detailed error emails are sent to chosen recipient(s) when PayPal API error occurs.', 'paypal-for-woocommerce'),
+                'description' => __('This will send a detailed error email to specified recipient(s) when PayPal API error occurs.', 'paypal-for-woocommerce'),
                 'desc_tip' => true
             ),
             'recipient'  => array(
