@@ -128,6 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.10 - xx.xx.2018 =
+* Feature - Adds ability to specify one or more email addresses to use for PayPal API error notifications. ([PFW-19](https://github.com/angelleye/paypal-woocommerce/pull/1138))
 * Tweak - Hides admin notices from non-admin user roles. ([PFW-7](https://github.com/angelleye/paypal-woocommerce/pull/1136))
 * Tweak - Adds billing phone number to PayFlow requests. ([PFW-2](https://github.com/angelleye/paypal-woocommerce/pull/1145/))
 
