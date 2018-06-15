@@ -696,6 +696,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['origid'] = get_post_meta($order_id, '_payment_tokens', true);
                 $log['origid'] = get_post_meta($order_id, '_payment_tokens', true);
             }
+            $this->add_log('Environment: ' . $this->testmode);
             $this->add_log('PayFlow Request: ' . print_r($log, true));
             $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
 
@@ -1027,6 +1028,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         do_action('angelleye_before_fc_refund', $order_id, $amount, $reason);
 
         $order = wc_get_order($order_id);
+        $this->add_log('Environment: ' . $this->testmode);
         $this->add_log('Begin Refund');
         $this->add_log('Order ID: ' . print_r($order_id, true));
         $this->add_log('Transaction ID: ' . print_r($order->get_transaction_id(), true));
@@ -1280,6 +1282,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'partialauth' => '',
             'authcode' => ''
         );
+        $this->add_log('Environment: ' . $this->testmode);
         $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_express_set_express_checkout_request_args', $PayPalRequestData));
         if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
             if (in_array($PayPalResult['RESULT'], $this->fraud_error_codes)) {
@@ -1448,7 +1451,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['origid'] = $payment_token;
             }
             $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
-
+            $this->add_log('Environment: ' . $this->testmode);
             $this->add_log('PayFlow Endpoint: ' . $PayPal->APIEndPoint);
             $this->add_log('PayFlow Response: ' . print_r($PayPalResult, true));
 
@@ -1612,6 +1615,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'partialauth' => '',
                     'authcode' => ''
                 );
+                $this->add_log('Environment: ' . $this->testmode);
                 $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
                 if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 117)) {
                     $admin_email = get_option("admin_email");
