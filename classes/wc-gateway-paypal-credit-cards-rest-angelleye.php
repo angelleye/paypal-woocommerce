@@ -88,8 +88,8 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             <?php 
                 if(version_compare(WC_VERSION,'2.6','<')) {
                     AngellEYE_Utility::woo_compatibility_notice();    
-                } elseif (version_compare(phpversion(), '5.3.0', '<')) {
-                    echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . __('PayPal for WooCommerce requires PHP version 5.3.0 or higher.','paypal-for-woocommerce') . '</div></div>';
+                } elseif (version_compare(phpversion(), '5.4', '<')) {
+                    echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . __('PayPal for WooCommerce requires PHP version 5.4 or higher.','paypal-for-woocommerce') . '</div></div>';
                 } else {
                    $this->generate_settings_html();
                 }
