@@ -126,7 +126,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 = Does PayPal for WooCommerce support latest PHP version?
-* Yes PayPal for WooCommerce support PHP version 7 or greater.
+* Yes PayPal for WooCommerce supports PHP 5.6+, PHP 7.0+
 
 == Changelog ==
 
