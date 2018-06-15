@@ -84,6 +84,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->save_abandoned_checkout = 'yes' === $this->get_option('save_abandoned_checkout', 'no');
         self::$log_enabled = $this->debug;
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
+        $this->recipient = $this->get_option('recipient', get_option( 'admin_email' ));
         $this->show_on_checkout = $this->get_option('show_on_checkout', 'top');
         $this->paypal_account_optional = $this->get_option('paypal_account_optional', 'no');
         $this->error_display_type = $this->get_option('error_display_type', 'detailed');
@@ -432,6 +433,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                 }
         }).change();
+        jQuery('#woocommerce_paypal_express_error_email_notify').change(function () {
+            var paypal_express_recipient = jQuery('#woocommerce_paypal_express_recipient').closest('tr');
+            if (jQuery(this).is(':checked')) {
+                paypal_express_recipient.show();
+            } else {
+                paypal_express_recipient.hide();
+            }
+        }).change();
+        
         </script>
          <?php
     }
@@ -594,10 +604,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
+                'label' => __('Enable email notifications for errors.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
-                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce'),
+                'description' => __('This will send a detailed error emails are sent to chosen recipient(s) when PayPal API error occurs.', 'paypal-for-woocommerce'),
                 'desc_tip' => true
+            ),
+            'recipient'  => array(
+                'title'       => __( 'Recipient(s)', 'woocommerce' ),
+                'type'        => 'text',
+                'description' => sprintf( __( 'Enter recipients (comma separated) for this email. Defaults to %s.', 'woocommerce' ), '<code>' . esc_attr( get_option( 'admin_email' ) ) . '</code>' ),
+                'placeholder' => '',
+                'default'     => get_option( 'admin_email' ),
+                'desc_tip'    => true,
             ),
             'invoice_id_prefix' => array(
                 'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
@@ -1582,7 +1600,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!empty($PayPalRequest) && !empty($action_name)) {
             if ('SetExpressCheckout' == $action_name) {
                 $PayPalResult = $PayPal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_set_express_checkout_request_args', $PayPalRequest));
-                AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'SetExpressCheckout', $gateway = 'PayPal Express Checkout', $this->error_email_notify);
+                AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'SetExpressCheckout', $gateway = 'PayPal Express Checkout', $this->error_email_notify, $this->recipient);
                 self::log('Test Mode: ' . $this->testmode);
                 self::log('Endpoint: ' . $this->API_Endpoint);
                 $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
@@ -1642,7 +1660,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         self::log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
         $message = '';
         if ($this->error_email_notify) {
-            $admin_email = get_option("admin_email");
+            $recipients = array_map( 'trim', explode( ',', $this->recipient ) );
+            $recipients = array_filter( $recipients, 'is_email' );
+            $all_emails = implode( ', ', $recipients );
             $message .= __($request_name . " API call failed.", "paypal-for-woocommerce") . "\n\n";
             $message .= __('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode . "\n";
             $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
@@ -1652,7 +1672,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $error_email_notify_mes = apply_filters('ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
             $subject = "PayPal Express Checkout Error Notification";
             $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', $subject);
-            wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
+            wp_mail($all_emails, $error_email_notify_subject, $error_email_notify_mes);
         }
         if ($this->error_display_type == 'detailed') {
             $sec_error_notice = $ErrorCode . ' - ' . $ErrorLongMsg;
