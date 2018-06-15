@@ -659,9 +659,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
 
             if (empty($_GET['pay_for_order'])) {
-
                 $post_data = WC()->session->get('post_data');
                 if (!empty($post_data)) {
+                    if( !empty($post_data['billing_email']) ) {
+                        $SECFields['email'] = $post_data['billing_email'];
+                    }
                     $SECFields['addroverride'] = 1;
                     if (!empty($post_data['ship_to_different_address'])) {
                         $shiptoname = '';
@@ -672,14 +674,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         } elseif (!empty($post_data['shipping_last_name'])) {
                             $shiptoname = $post_data['shipping_last_name'];
                         }
-
                         if (!empty($post_data['shipping_company'])) {
                             $shipping_company = $post_data['shipping_company'];
                             $Payment['shiptoname'] = wc_clean(stripslashes($shipping_company . ' - ' . $shiptoname));
                         } else {
                             $Payment['shiptoname'] = wc_clean(stripslashes($shiptoname));
                         }
-
                         $Payment['shiptostreet'] = !empty($post_data['shipping_address_1']) ? $post_data['shipping_address_1'] : '';
                         $Payment['shiptostreet2'] = !empty($post_data['shipping_address_2']) ? $post_data['shipping_address_2'] : '';
                         $Payment['shiptocity'] = !empty($post_data['shipping_city']) ? wc_clean(stripslashes($post_data['shipping_city'])) : '';
