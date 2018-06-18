@@ -552,7 +552,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
             ),
             'api_details'           => array(
-                'title'       => __( 'API credentials', 'paypal-for-woocommerce' ),
+                'title'       => __( 'API Credentials', 'paypal-for-woocommerce' ),
                 'type'        => 'title',
                 'description' => '',
             ),
@@ -851,8 +851,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
             ),
             'email_notify_order_cancellations' => array(
-                'title' => __('Order canceled/refunded Email Notifications', 'paypal-for-woocommerce'),
-                'label' => __('Enable buyer email notifications for Order canceled/refunded', 'paypal-for-woocommerce'),
+                'title' => __('Order Cancelled / Refunded Email Notifications', 'paypal-for-woocommerce'),
+                'label' => __('Enable buyer email notifications for Order cancelled/refunded', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => __('This will send buyer email notifications for Order canceled/refunded when Auto Cancel / Refund Orders option is selected.', 'paypal-for-woocommerce'),
                 'default' => 'no',
@@ -860,7 +860,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
             ),
             'advanced'              => array(
-		'title'       => __( 'Advanced options', 'paypal-for-woocommerce' ),
+		'title'       => __( 'Advanced Options', 'paypal-for-woocommerce' ),
 		'type'        => 'title',
 		'description' => '',
             ),
@@ -997,7 +997,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('', 'paypal-for-woocommerce'),
             ),
             'smart_buttons'           => array(
-                'title'       => __( 'Smart Buttons', 'paypal-for-woocommerce' ),
+                'title'       => __( 'Smart Payment Buttons', 'paypal-for-woocommerce' ),
                 'type'        => 'title',
                 'description' => '',
             ),
