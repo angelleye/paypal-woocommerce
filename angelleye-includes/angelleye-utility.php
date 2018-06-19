@@ -136,6 +136,11 @@ class AngellEYE_Utility {
 
         add_action('woocommerce_process_shop_order_meta', array($this, 'save'), 50, 2);
         add_action('woocommerce_admin_order_data_after_shipping_address', array($this, 'angelleye_paypal_for_woocommerce_billing_agreement_details'), 10, 1);
+        add_filter('woocommerce_paypal_express_checkout_request_body', array($this, 'angelleye_paypal_express_checkout_request_body'), 999, 1);
+        add_filter('wc_braintree_transaction_data', array($this, 'angelleye_braintree_transaction_data'), 999, 1);
+        add_filter('woocommerce-gateway-paypal-pro_request', array($this, 'angelleye_gateway_paypal_pro_request'), 999, 1);
+        add_filter('woocommerce_gateway_paypal_pro_payflow_post_data', array($this, 'angelleye_gateway_paypal_pro_payflow_post_data'), 999, 1);
+        
     }
 
     public function angelleye_woocommerce_order_actions($order_actions = array()) {
@@ -2043,5 +2048,33 @@ class AngellEYE_Utility {
                 }
             } 
             return $locale;
+        }
+        
+        public function angelleye_paypal_express_checkout_request_body($param) {
+            if( !empty($param['BUTTONSOURCE'] ) ) {
+                $param['BUTTONSOURCE'] = 'AngellEYE_SP_WooCommerce';
+            }
+            return $param;
+        }
+        
+        public function angelleye_braintree_transaction_data($param){
+            if( !empty($param['channel'] ) ) {
+                $param['channel'] = 'AngellEYEPayPalforWoo_BT';
+            }
+            return $param;
+        }
+        
+        public function angelleye_gateway_paypal_pro_request($param) {
+            if( !empty($param['BUTTONSOURCE'] ) ) {
+               $param['BUTTONSOURCE'] = 'AngellEYE_SP_WooCommerce'; 
+            }
+            return $param;
+        }
+        
+        public function angelleye_gateway_paypal_pro_payflow_post_data($param) {
+            if( !empty($param['BUTTONSOURCE'] ) ) {
+                $param['BUTTONSOURCE'] = 'AngellEYE_SP_WooCommerce';
+            }
+            return $param;
         }
 }
