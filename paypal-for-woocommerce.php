@@ -92,9 +92,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'plugins_loaded', array($this, 'init'));
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
-            if(is_admin()) {
-                add_action( 'admin_notices', array($this, 'admin_notices') );
-            }
+            
+            add_action( 'admin_notices', array($this, 'admin_notices') );
             add_action( 'admin_init', array($this, 'set_ignore_tag'));
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
             add_action( 'woocommerce_sections_checkout', array( $this, 'donate_message' ), 11 );
@@ -213,9 +212,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         function admin_notices() {
             global $current_user, $pp_settings ;
             $user_id = $current_user->ID;
-            if ( !current_user_can( 'manage_woocommerce' ) ) {
-                return false;
-            }
             $pp_pro = get_option('woocommerce_paypal_pro_settings');
             $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
             $pp_standard = get_option('woocommerce_paypal_settings');
@@ -230,10 +226,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $pp_settings['enabled'] = !empty($pp_settings['enabled']) ? $pp_settings['enabled'] : '';
             $pp_standard['enabled'] = !empty($pp_standard['enabled']) ? $pp_standard['enabled'] : '';
             $pp_settings['paypal_marketing_solutions_cid_production'] = !empty($pp_settings['paypal_marketing_solutions_cid_production']) ? $pp_settings['paypal_marketing_solutions_cid_production'] : '';
-            
-            if (version_compare(phpversion(), '5.4', '<')) {
-                echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf( __('PayPal for WooCommerce requires PHP version 5.4 or higher. You are using version %s.','paypal-for-woocommerce'), phpversion()) . '</div></div>';
-            }
             
             if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || ( !empty($pp_payflow['enabled']) && $pp_payflow['enabled']=='yes' )) {
                 // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
@@ -546,17 +538,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             update_post_meta( $post_id, '_enable_ec_button', $_enable_ec_button );
         }
         
-        public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true, $recipient) {
+        public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true) {
             if( isset( $PayPalResult['CURL_ERROR'] ) ){
                 try {
                         if($error_email_notify == true) {
-                            $recipients = array_map( 'trim', explode( ',', $recipient ) );
-                            $recipients = array_filter( $recipients, 'is_email' );
-                            $all_emails = implode( ', ', $recipients );
+                            $admin_email = get_option("admin_email");
                             $message = __( $methos_name . " call failed." , "paypal-for-woocommerce" )."\n\n";
                             $message .= __( 'Error Code: 0' ,'paypal-for-woocommerce' ) . "\n";
                             $message .= __( 'Detailed Error Message: ' , 'paypal-for-woocommerce') . $PayPalResult['CURL_ERROR'];
-                            wp_mail($all_emails, $gateway . " Error Notification",$message);
+                            wp_mail($admin_email, $gateway . " Error Notification",$message);
                         }
                         $display_error = 'There was a problem connecting to the payment gateway.';
                         wc_add_notice($display_error, 'error');

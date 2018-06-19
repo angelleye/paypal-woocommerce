@@ -231,7 +231,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if (empty($_POST['woocommerce_checkout_update_totals']) && 0 === $notice_count) {
             try {
                 WC()->session->set('post_data', $_POST);
-                $this->process_customer($_POST);
                 if (isset($_POST['payment_method']) && 'paypal_express' === $_POST['payment_method'] && $this->function_helper->ec_notice_count('error') == 0) {
                     $this->function_helper->ec_redirect_after_checkout();
                 }
@@ -1145,47 +1144,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 echo '<div class="woocommerce-info angelleye-order-review-page-message" role="alert">' . $this->order_review_page_custom_message . '</div>';
             }
         }
-    }
-    
-    public function process_customer( $data ) {
-        $customer_id = apply_filters( 'woocommerce_checkout_customer_id', get_current_user_id() );
-        if ( ! is_user_logged_in() && ( WC()->checkout->is_registration_required() || ! empty( $data['createaccount'] ) ) ) {
-            $username    = ! empty( $data['account_username'] ) ? $data['account_username'] : '';
-            $password    = ! empty( $data['account_password'] ) ? $data['account_password'] : '';
-            $customer_id = wc_create_new_customer( $data['billing_email'], $username, $password );
-            if ( is_wp_error( $customer_id ) ) {
-                    throw new Exception( $customer_id->get_error_message() );
-            }
-            wp_set_current_user( $customer_id );
-            wc_set_customer_auth_cookie( $customer_id );
-            WC()->session->set( 'reload_checkout', true );
-            WC()->cart->calculate_totals();
-        }
-        if ( $customer_id && is_multisite() && is_user_logged_in() && ! is_user_member_of_blog() ) {
-                add_user_to_blog( get_current_blog_id(), $customer_id, 'customer' );
-        }
-        if ( $customer_id && apply_filters( 'woocommerce_checkout_update_customer_data', true) ) {
-                $customer = new WC_Customer( $customer_id );
-                if ( ! empty( $data['billing_first_name'] ) ) {
-                    $customer->set_first_name( $data['billing_first_name'] );
-                }
-                if ( ! empty( $data['billing_last_name'] ) ) {
-                    $customer->set_last_name( $data['billing_last_name'] );
-                }
-                if ( is_email( $customer->get_display_name() ) ) {
-                    $customer->set_display_name( $data['billing_first_name'] . ' ' . $data['billing_last_name'] );
-                }
-                foreach ( $data as $key => $value ) {
-                    if ( is_callable( array( $customer, "set_{$key}" ) ) ) {
-                        $customer->{"set_{$key}"}( $value );
-                    } elseif ( 0 === stripos( $key, 'billing_' ) || 0 === stripos( $key, 'shipping_' ) ) {
-                        $customer->update_meta_data( $key, $value );
-                    }
-                }
-                do_action( 'woocommerce_checkout_update_customer', $customer, $data );
-                $customer->save();
-        }
-        do_action( 'woocommerce_checkout_update_user_meta', $customer_id, $data );
     }
 
 }

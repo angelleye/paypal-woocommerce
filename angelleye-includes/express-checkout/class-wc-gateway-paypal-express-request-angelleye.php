@@ -18,7 +18,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public $confirm_order_id;
     public $order_param;
     public $user_email_address;
-    public $recipient;
 
     public function __construct($gateway) {
         try {
@@ -356,17 +355,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     update_post_meta($order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                     update_post_meta($order->get_id(), 'paypal_email', $payeremail);
                 }
-                
-                if ($old_wc) {
-                    update_post_meta($order_id, 'PayPal Transaction Fee', isset($this->paypal_response['PAYMENTINFO_0_FEEAMT']) ? $this->paypal_response['PAYMENTINFO_0_FEEAMT'] : '');
-                } else {
-                    update_post_meta($order->get_id(), 'PayPal Transaction Fee', isset($this->paypal_response['PAYMENTINFO_0_FEEAMT']) ? $this->paypal_response['PAYMENTINFO_0_FEEAMT'] : '');
-                }
-                if ($old_wc) {
-                    update_post_meta($order_id, 'Payment Type', isset($this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE']) ? $this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE'] : '');
-                } else {
-                    update_post_meta($order->get_id(), 'Payment Type', isset($this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE']) ? $this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE'] : '');
-                }
                 $order->add_order_note(sprintf(__('%s payment Transaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : ''));
                 WC()->cart->empty_cart();
                 wc_clear_notices();
@@ -670,11 +658,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
 
             if (empty($_GET['pay_for_order'])) {
+
                 $post_data = WC()->session->get('post_data');
                 if (!empty($post_data)) {
-                    if( !empty($post_data['billing_email']) ) {
-                        $SECFields['email'] = $post_data['billing_email'];
-                    }
                     $SECFields['addroverride'] = 1;
                     if (!empty($post_data['ship_to_different_address'])) {
                         $shiptoname = '';
@@ -685,12 +671,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         } elseif (!empty($post_data['shipping_last_name'])) {
                             $shiptoname = $post_data['shipping_last_name'];
                         }
+
                         if (!empty($post_data['shipping_company'])) {
                             $shipping_company = $post_data['shipping_company'];
                             $Payment['shiptoname'] = wc_clean(stripslashes($shipping_company . ' - ' . $shiptoname));
                         } else {
                             $Payment['shiptoname'] = wc_clean(stripslashes($shiptoname));
                         }
+
                         $Payment['shiptostreet'] = !empty($post_data['shipping_address_1']) ? $post_data['shipping_address_1'] : '';
                         $Payment['shiptostreet2'] = !empty($post_data['shipping_address_2']) ? $post_data['shipping_address_2'] : '';
                         $Payment['shiptocity'] = !empty($post_data['shipping_city']) ? wc_clean(stripslashes($post_data['shipping_city'])) : '';
@@ -1008,9 +996,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         }
         if ($this->gateway->error_email_notify) {
             $mailer = WC()->mailer();
-            $recipients = array_map( 'trim', explode( ',', $this->gateway->recipient ) );
-            $recipients = array_filter( $recipients, 'is_email' );
-            $all_emails = implode( ', ', $recipients );
             $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'PayPal Express Checkout Error Notification');
             $message = sprintf(
                     "<strong>".__('PayPal %s API call failed', 'paypal-for-woocommerce')."</strong>" . PHP_EOL .PHP_EOL
@@ -1026,7 +1011,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     );
             $message = apply_filters('ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
             $message = $mailer->wrap_message($error_email_notify_subject, $message);
-            $mailer->send($all_emails, strip_tags($error_email_notify_subject), $message);
+            $mailer->send(get_option('admin_email'), strip_tags($error_email_notify_subject), $message);
         }
         if ($this->gateway->error_display_type == 'detailed') {
             $sec_error_notice = $ErrorCode . ' - ' . $ErrorLongMsg;
@@ -1041,7 +1026,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function angelleye_write_paypal_request_log($paypal_action_name) {
-        WC_Gateway_PayPal_Express_AngellEYE::log('Environment: ' . $this->testmode);
         if ($paypal_action_name == 'SetExpressCheckout') {
             WC_Gateway_PayPal_Express_AngellEYE::log('Redirecting to PayPal');
             WC_Gateway_PayPal_Express_AngellEYE::log(sprintf(__('PayPal for WooCommerce Version: %s', 'paypal-for-woocommerce'), VERSION_PFW));
@@ -1352,7 +1336,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
         $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
         $this->paypal_response = $this->paypal->DoReferenceTransaction($PayPalRequestData);
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify, $this->gateway->recipient);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify);
         WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->testmode);
         WC_Gateway_PayPal_Express_AngellEYE::log('Endpoint: ' . $this->gateway->API_Endpoint);
         $PayPalRequest = isset($this->paypal_response['RAWREQUEST']) ? $this->paypal_response['RAWREQUEST'] : '';
@@ -1448,7 +1432,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $this->paypal_response = $this->paypal->RefundTransaction($PayPalRequestData);
 
 
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'RefundTransaction', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify, $this->gateway->recipient);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'RefundTransaction', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify);
         WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->testmode);
         WC_Gateway_PayPal_Express_AngellEYE::log('Endpoint: ' . $this->gateway->API_Endpoint);
         $PayPalRequest = isset($this->paypal_response['RAWREQUEST']) ? $this->paypal_response['RAWREQUEST'] : '';

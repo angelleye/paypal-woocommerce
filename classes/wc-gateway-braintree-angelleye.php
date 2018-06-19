@@ -728,7 +728,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
 
             if ($this->debug) {
-                $this->add_log('Environment: ' . $this->environment);
                 $this->add_log('Begin Braintree_Transaction::sale request');
                 $this->add_log('Order: ' . print_r($order->get_order_number(), true));
                 $log = $request_data;

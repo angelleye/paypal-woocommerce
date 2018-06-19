@@ -41,7 +41,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
-        $this->recipient = $this->get_option('recipient', get_option( 'admin_email' ));
         $this->error_display_type = $this->get_option('error_display_type', 'no');
         $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
@@ -182,16 +181,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'checkbox',
                 'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
-                'description' => __('This will send a detailed error email to specified recipient(s) when PayPal API errors occur.', 'paypal-for-woocommerce'),
-                'desc_tip' => true
-            ),
-            'recipient'  => array(
-                'title'       => __( 'Recipient(s)', 'woocommerce' ),
-                'type'        => 'text',
-                'description' => sprintf( __( 'Enter recipients (comma separated) for this email. Defaults to %s.', 'woocommerce' ), '<code>' . esc_attr( get_option( 'admin_email' ) ) . '</code>' ),
-                'placeholder' => '',
-                'default'     => get_option( 'admin_email' ),
-                'desc_tip'    => true,
+                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
             ),
             'error_display_type' => array(
                 'title' => __('Error Display Type', 'paypal-for-woocommerce'),
@@ -453,14 +443,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     production.show();
                 }
             }).change();
-            jQuery('#woocommerce_paypal_pro_payflow_error_email_notify').change(function () {
-                var paypal_pro_payflow_recipient = jQuery('#woocommerce_paypal_pro_payflow_recipient').closest('tr');
-                if (jQuery(this).is(':checked')) {
-                    paypal_pro_payflow_recipient.show();
-                } else {
-                    paypal_pro_payflow_recipient.hide();
-                }
-            }).change();
         </script>
         <?php
     }
@@ -568,9 +550,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $billing_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_postcode : $order->get_billing_postcode();
             $billing_country = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_country : $order->get_billing_country();
             $billing_state = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_state : $order->get_billing_state();
-            $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
-            $billing_email = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email();
-            
+            $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_email : $order->get_billing_email();
+
             if (!empty($_POST['paypal_pro_payflow-card-cardholder-first'])) {
                 $firstname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']);
             } else {
@@ -603,7 +584,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'orderid' => $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number()), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
                 'orderdesc' => 'Order ' . $order->get_order_number() . ' on ' . get_bloginfo('name'), //
                 'billtoemail' => $billing_email, // Account holder's email address.
-                'billtophonenum' => $billing_phone, // Account holder's phone number.
+                'billtophonenum' => '', // Account holder's phone number.
                 'billtofirstname' => $firstname, // Account holder's first name.
                 'billtomiddlename' => '', // Account holder's middle name.
                 'billtolastname' => $lastname, // Account holder's last name.
@@ -696,7 +677,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['origid'] = get_post_meta($order_id, '_payment_tokens', true);
                 $log['origid'] = get_post_meta($order_id, '_payment_tokens', true);
             }
-            $this->add_log('Environment: ' . $this->testmode);
             $this->add_log('PayFlow Request: ' . print_r($log, true));
             $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
 
@@ -704,7 +684,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
              *  cURL Error Handling #146
              *  @since    1.1.8
              */
-            AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify, $this->recipient);
+            AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
 
 
             $this->add_log('PayFlow Endpoint: ' . $PayPal->APIEndPoint);
@@ -1028,7 +1008,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         do_action('angelleye_before_fc_refund', $order_id, $amount, $reason);
 
         $order = wc_get_order($order_id);
-        $this->add_log('Environment: ' . $this->testmode);
         $this->add_log('Begin Refund');
         $this->add_log('Order ID: ' . print_r($order_id, true));
         $this->add_log('Transaction ID: ' . print_r($order->get_transaction_id(), true));
@@ -1078,7 +1057,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
          *  cURL Error Handling #146
          *  @since    1.1.8
          */
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify, $this->recipient);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
 
         add_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
         if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
@@ -1248,8 +1227,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $billtostate = (get_user_meta($customer_id, 'billing_state', true)) ? get_user_meta($customer_id, 'billing_state', true) : get_user_meta($customer_id, 'shipping_state', true);
         $billtocountry = (get_user_meta($customer_id, 'billing_country', true)) ? get_user_meta($customer_id, 'billing_country', true) : get_user_meta($customer_id, 'shipping_country', true);
         $billtozip = (get_user_meta($customer_id, 'billing_postcode', true)) ? get_user_meta($customer_id, 'billing_postcode', true) : get_user_meta($customer_id, 'shipping_postcode', true);
-        $billing_phone = (get_user_meta($customer_id, 'billing_phone', true)) ? get_user_meta($customer_id, 'billing_phone', true) : '';
-        
+
         $PayPalRequestData = array(
             'tender' => 'C',
             'trxtype' => 'A',
@@ -1261,7 +1239,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'orderid' => '',
             'orderdesc' => '',
             'billtoemail' => '',
-            'billtophonenum' => $billing_phone,
+            'billtophonenum' => '',
             'billtofirstname' => $billtofirstname,
             'billtomiddlename' => '',
             'billtolastname' => $billtolastname,
@@ -1282,7 +1260,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'partialauth' => '',
             'authcode' => ''
         );
-        $this->add_log('Environment: ' . $this->testmode);
         $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_express_set_express_checkout_request_args', $PayPalRequestData));
         if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
             if (in_array($PayPalResult['RESULT'], $this->fraud_error_codes)) {
@@ -1365,8 +1342,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $billing_email : $order->get_billing_email();
             $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
             $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
-            $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
-            
             $PayPalRequestData = array(
                 'tender' => 'C', // Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
                 'trxtype' => ($this->payment_action == 'Authorization' || $order->get_total() == 0 ) ? 'A' : 'S', // Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
@@ -1379,7 +1354,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'orderid' => $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number()), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
                 'orderdesc' => 'Order ' . $order->get_order_number() . ' on ' . get_bloginfo('name'), //
                 'billtoemail' => $billing_email, // Account holder's email address.
-                'billtophonenum' => $billing_phone, // Account holder's phone number.
+                'billtophonenum' => '', // Account holder's phone number.
                 'billtostreet' => $billing_address_1 . ' ' . $billing_address_2, // The cardholder's street address (number and street name).  150 char max
                 'billtocity' => $billing_city, // Bill to city.  45 char max
                 'billtostate' => $billing_state, // Bill to state.
@@ -1451,7 +1426,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['origid'] = $payment_token;
             }
             $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
-            $this->add_log('Environment: ' . $this->testmode);
+
             $this->add_log('PayFlow Endpoint: ' . $PayPal->APIEndPoint);
             $this->add_log('PayFlow Response: ' . print_r($PayPalResult, true));
 
@@ -1581,8 +1556,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $billtostate = (get_user_meta($customer_id, 'billing_state', true)) ? get_user_meta($customer_id, 'billing_state', true) : get_user_meta($customer_id, 'shipping_state', true);
                 $billtocountry = (get_user_meta($customer_id, 'billing_country', true)) ? get_user_meta($customer_id, 'billing_country', true) : get_user_meta($customer_id, 'shipping_country', true);
                 $billtozip = (get_user_meta($customer_id, 'billing_postcode', true)) ? get_user_meta($customer_id, 'billing_postcode', true) : get_user_meta($customer_id, 'shipping_postcode', true);
-                $billing_phone = (get_user_meta($customer_id, 'billing_phone', true)) ? get_user_meta($customer_id, 'billing_phone', true) : '';
-                
                 $PayPalRequestData = array(
                     'tender' => 'C',
                     'trxtype' => 'A',
@@ -1594,7 +1567,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'orderid' => '',
                     'orderdesc' => '',
                     'billtoemail' => '',
-                    'billtophonenum' => $billing_phone,
+                    'billtophonenum' => '',
                     'billtofirstname' => $billtofirstname,
                     'billtomiddlename' => '',
                     'billtolastname' => $billtolastname,
@@ -1615,7 +1588,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'partialauth' => '',
                     'authcode' => ''
                 );
-                $this->add_log('Environment: ' . $this->testmode);
                 $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
                 if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 117)) {
                     $admin_email = get_option("admin_email");

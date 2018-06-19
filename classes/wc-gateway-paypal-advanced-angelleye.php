@@ -1144,10 +1144,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->securetoken = $old_wc ? get_post_meta($order->id, '_secure_token', true) : get_post_meta($order->get_id(), '_secure_token', true);
 
         //Log the browser and its version
-        if ($this->debug == 'yes') {
-            $this->add_log('Environment: ' . $PF_MODE);
+        if ($this->debug == 'yes')
             $this->log->add('paypal_advanced', sprintf(__('Browser Info: %s', 'paypal-for-woocommerce'), $_SERVER['HTTP_USER_AGENT']));
-        }
+
         //display the form in IFRAME, if it is layout C, otherwise redirect to paypal site
         if ($this->layout == 'MINLAYOUT' || $this->layout == 'C') {
             //define the url

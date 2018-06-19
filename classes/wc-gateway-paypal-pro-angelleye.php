@@ -85,7 +85,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
         $this->error_email_notify = $this->get_option('error_email_notify');
-        $this->recipient = $this->get_option('recipient', get_option( 'admin_email' ));
         $this->error_display_type = $this->get_option('error_display_type'); 
         //$this->enable_3dsecure = 'yes' === $this->get_option('enable_3dsecure', 'no');
         $this->enable_3dsecure = false;
@@ -219,18 +218,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'error_email_notify' => array(
                 'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Enable email notifications for errors.', 'paypal-for-woocommerce'),
+                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
                 'default' => 'yes',
-                'description' => __('This will send a detailed error emails are sent to chosen recipient(s) when PayPal API error occurs.', 'paypal-for-woocommerce'),
-                'desc_tip' => true
-            ),
-            'recipient'  => array(
-                'title'       => __( 'Recipient(s)', 'woocommerce' ),
-                'type'        => 'text',
-                'description' => sprintf( __( 'Enter recipients (comma separated) for this email. Defaults to %s.', 'woocommerce' ), '<code>' . esc_attr( get_option( 'admin_email' ) ) . '</code>' ),
-                'placeholder' => '',
-                'default'     => get_option( 'admin_email' ),
-                'desc_tip'    => true,
+                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
             ),
              'testmode' => array(
                 'title' => __('Test Mode', 'paypal-for-woocommerce'),
@@ -458,14 +448,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     sandbox.hide();
                     production.show();
-                }
-            }).change();
-            jQuery('#woocommerce_paypal_pro_error_email_notify').change(function () {
-                var paypal_pro_recipient = jQuery('#woocommerce_paypal_pro_recipient').closest('tr');
-                if (jQuery(this).is(':checked')) {
-                    paypal_pro_recipient.show();
-                } else {
-                    paypal_pro_recipient.hide();
                 }
             }).change();
         </script>
@@ -1179,12 +1161,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
          * @since    1.1.8
          */
 
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoDirectPayment', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify, $this->recipient);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoDirectPayment', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
 
 
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
-        $this->log('Environment: ' . $this->testmode);
+
         $this->log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
         $this->log('Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
 
@@ -1362,7 +1344,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 wp_mail($admin_email, $pc_error_email_subject, $pc_error_email_message);
             }
 
-            $this->log('Environment: ' . $this->testmode);
+
             $this->log('Error ' . print_r($PayPalResult['ERRORS'], true));
 
 
@@ -1475,11 +1457,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
          * @since    1.1.8
          */
 
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'RefundTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify, $this->recipient);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'RefundTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
 
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
-        $this->log('Environment: ' . $this->testmode);
+
         $this->log('Refund Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
         $this->log('Refund Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
 
@@ -1604,9 +1586,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->log(__('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode);
         $message = '';
         if ($this->error_email_notify) {
-            $recipients = array_map( 'trim', explode( ',', $this->recipient ) );
-            $recipients = array_filter( $recipients, 'is_email' );
-            $all_emails = implode( ', ', $recipients );
+            $admin_email = get_option("admin_email");
             $message .= __($request_name . " API call failed.", "paypal-for-woocommerce") . "\n\n";
             $message .= __('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode . "\n";
             $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
@@ -1616,7 +1596,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $error_email_notify_mes = apply_filters('ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
             $subject = "PayPal Pro Error Notification";
             $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', $subject);
-            wp_mail($all_emails, $error_email_notify_subject, $error_email_notify_mes);
+            wp_mail($admin_email, $error_email_notify_subject, $error_email_notify_mes);
         }
         if ($this->error_display_type == 'detailed') {
             $sec_error_notice = $ErrorCode . ' - ' . $ErrorLongMsg;
@@ -1685,7 +1665,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $token->set_user_id( $customer_id );
             if( $token->validate() ) {
                 $save_result = $token->save();
-                $this->log('Environment: ' . $this->testmode);
                 return array(
                     'result' => 'success',
                     'redirect' => wc_get_account_endpoint_url('payment-methods')
@@ -1932,10 +1911,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'softdescriptor' => ''
         );
         $PayPalResult = $PayPal->DoReferenceTransaction($PayPalRequestData);
-        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoReferenceTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify, $this->recipient);
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoReferenceTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
-        $this->log('Environment: ' . $this->testmode);
         $this->log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
         $this->log('Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
         if (empty($PayPalResult['RAWRESPONSE'])) {

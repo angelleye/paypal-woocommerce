@@ -125,22 +125,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you have a PayPal Manager account at http://manager.paypal.com as well as your regular PayPal account at http://www.paypal.com, then you are on Payments Pro 2.0.
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
-= Does PayPal for WooCommerce support latest PHP version?
-* Yes PayPal for WooCommerce supports PHP 5.6+, PHP 7.0+
-
 == Changelog ==
-
-= 1.4.10 - xx.xx.2018 =
-* Feature - Adds PayPal Payment Type and Transaction Fee to order meta data for Express Checkout orders. ([PFW-74](https://github.com/angelleye/paypal-woocommerce/pull/1146))
-* Feature - Adds ability to specify one or more email addresses to use for PayPal API error notifications. ([PFW-19](https://github.com/angelleye/paypal-woocommerce/pull/1138))
-* Tweak - Hides admin notices from non-admin user roles. ([PFW-7](https://github.com/angelleye/paypal-woocommerce/pull/1136))
-* Tweak - Adds billing phone number to PayFlow requests. ([PFW-2](https://github.com/angelleye/paypal-woocommerce/pull/1145/))
-* Tweak - Adds an admin notice to inform users when the PHP version on the server does not support plugin functionality. ([PFW-40](https://github.com/angelleye/paypal-woocommerce/pull/1135))
-* Tweak - Adds environment label (sandbox or production) to API logs. ([PFW-48](https://github.com/angelleye/paypal-woocommerce/pull/1140))
-* Tweak - Adds email address to Express Checkout requests when available. ([PFW-55](https://github.com/angelleye/paypal-woocommerce/pull/1133))
-* Fix - Resolves issues with some account creation options during checkout with Express Checkout. ([PFW-21](https://github.com/angelleye/paypal-woocommerce/pull/1137))
-* Fix - Resolves an issue where the shipping address was sometimes not updated in the WooCommerce order. ([PFW-57](https://github.com/angelleye/paypal-woocommerce/pull/1139))
-* Fix - Resolves a problem in some mobile browsers where the last name field was getting hidden during checkout. ([PFW-126](https://github.com/angelleye/paypal-woocommerce/pull/1141))
 
 = 1.4.9 - 05.23.2018 =
 * Compatibility - Check for compatibility with WooCommerce 3.4. ([#1126](https://github.com/angelleye/paypal-woocommerce/issues/1126))
