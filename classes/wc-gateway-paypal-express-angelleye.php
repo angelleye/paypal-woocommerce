@@ -601,7 +601,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'custom_attributes' => array( 'autocomplete' => 'off'),
             ),
-            'shopping_cart_checkout_page_display'           => array(
+            'shopping_cart_checkout_page_display' => array(
                 'title'       => __( 'Shopping Cart, Checkout and Product Page Display', 'paypal-for-woocommerce' ),
                 'type'        => 'title',
                 'description' => '',
