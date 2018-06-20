@@ -152,7 +152,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $query_str = parse_url($url, PHP_URL_QUERY);
                 parse_str($query_str, $query_params);
                 wp_send_json(array(
-                    'token' => $query_params['token']
+                    'token' => wc_clean($query_params['token'])
                 ));
                 exit();
             }
@@ -241,7 +241,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if ($this->angelleye_ec_force_to_display_checkout_page()) {
                     if ($this->angelleye_ec_force_to_display_checkout_page()) {
                         if (!empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true && !empty($_GET['key'])) {
-                            WC()->session->set('order_awaiting_payment', $_GET['order_id']);
+                            WC()->session->set('order_awaiting_payment', absint( wp_unslash( $_GET['order_id'] ) ) ) ;
                         } else {
                             $this->angelleye_wp_safe_redirect(wc_get_checkout_url(), 'get_express_checkout_details');
                         }
@@ -592,7 +592,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         'utm_nooverride' => 1
                                     ), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
                 }
-                WC()->session->set('order_awaiting_payment', $order_id);
+                WC()->session->set('order_awaiting_payment', absint( wp_unslash( $order_id) ) );
             } else {
                 $this->cart_param = $this->gateway_calculation->cart_calculation();
                 $order_total = WC()->cart->total;
@@ -703,13 +703,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                             $Payment['shiptoname'] = wc_clean(stripslashes($shiptoname));
                         }
 
-                        $Payment['shiptostreet'] = !empty($post_data['billing_address_1']) ? $post_data['billing_address_1'] : '';
-                        $Payment['shiptostreet2'] = !empty($post_data['billing_address_2']) ? $post_data['billing_address_2'] : '';
+                        $Payment['shiptostreet'] = !empty($post_data['billing_address_1']) ? wc_clean($post_data['billing_address_1']) : '';
+                        $Payment['shiptostreet2'] = !empty($post_data['billing_address_2']) ? wc_clean($post_data['billing_address_2']) : '';
                         $Payment['shiptocity'] = !empty($post_data['billing_city']) ? wc_clean(stripslashes($post_data['billing_city'])) : '';
-                        $Payment['shiptostate'] = !empty($post_data['billing_state']) ? $post_data['billing_state'] : '';
-                        $Payment['shiptozip'] = !empty($post_data['billing_postcode']) ? $post_data['billing_postcode'] : '';
-                        $Payment['shiptocountrycode'] = !empty($post_data['billing_country']) ? $post_data['billing_country'] : '';
-                        $Payment['shiptophonenum'] = !empty($post_data['billing_phone']) ? $post_data['billing_phone'] : '';
+                        $Payment['shiptostate'] = !empty($post_data['billing_state']) ? wc_clean($post_data['billing_state']) : '';
+                        $Payment['shiptozip'] = !empty($post_data['billing_postcode']) ? wc_clean($post_data['billing_postcode']) : '';
+                        $Payment['shiptocountrycode'] = !empty($post_data['billing_country']) ? wc_clean($post_data['billing_country']) : '';
+                        $Payment['shiptophonenum'] = !empty($post_data['billing_phone']) ? wc_clean($post_data['billing_phone']) : '';
                     }
                 } elseif (is_user_logged_in()) {
                     if (version_compare(WC_VERSION, '3.0', '<')) {
@@ -1272,7 +1272,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $PayPalRequestData = array();
         $referenceid = get_post_meta($order_id, '_payment_tokens_id', true);
         if (!empty($_POST['wc-paypal_express-payment-token'])) {
-            $token_id = $_POST['wc-paypal_express-payment-token'];
+            $token_id = wc_clean($_POST['wc-paypal_express-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
             $referenceid = $token->get_token();
         }

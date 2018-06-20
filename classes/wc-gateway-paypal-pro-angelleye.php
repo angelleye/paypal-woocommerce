@@ -1187,7 +1187,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
                 $checkout_note = array(
                     'ID' => $order_id,
-                    'post_excerpt' => $_POST['order_comments'],
+                    'post_excerpt' => wc_clean($_POST['order_comments']),
                 );
                 wp_update_post($checkout_note);
             }

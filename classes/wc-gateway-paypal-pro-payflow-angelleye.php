@@ -133,7 +133,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->log->log($level,sprintf(__('PayPal for WooCommerce Version: %s', 'paypal-for-woocommerce'), VERSION_PFW),array('source' => 'paypal_pro_payflow'));
                 $this->log->log($level,sprintf(__('WooCommerce Version: %s', 'paypal-for-woocommerce'), WC_VERSION),array('source' => 'paypal_pro_payflow'));
                 $this->log->log($level,'Test Mode: ' . $this->testmode,array('source' => 'paypal_pro_payflow'));
-                $this->log->log($level, $message, array('source' => 'paypal_pro_payflow'),array('source' => 'paypal_pro_payflow'));              
+                $this->log->log($level, $message, array('source' => 'paypal_pro_payflow'));              
             }
         }
     }
@@ -722,7 +722,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         // Update post 37
                         $checkout_note = array(
                             'ID' => $order_id,
-                            'post_excerpt' => $_POST['order_comments'],
+                            'post_excerpt' => wc_clean($_POST['order_comments']),
                         );
                         wp_update_post($checkout_note);
                     }

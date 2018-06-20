@@ -1238,7 +1238,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
             $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
             $result = $paypal_express_request->DoReferenceTransaction($order_id);
-            if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+            if (!empty($result['ACK']) && $result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                 $paypal_express_request->update_payment_status_by_paypal_responce($order_id, $result);
                 return array(
                     'result' => 'success',
@@ -1256,8 +1256,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         try {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
                 $result = $this->angelleye_ex_doreference_transaction($order_id);
-                if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
-                    $_POST = WC()->session->get( 'post_data' );
+                if (!empty($result['ACK']) && $result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                     $order->payment_complete($result['TRANSACTIONID']);
                     $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
                     WC()->cart->empty_cart();
@@ -1276,7 +1275,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 } else {
                     if( empty($_POST['shipping_country'] ) ) {
                         $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
-                        $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
+                        $shipping_details = isset($paypal_express_checkout['shipping_details']) ? wp_unslash($paypal_express_checkout['shipping_details']) : array();
                         AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
                     }
                 }
@@ -1284,7 +1283,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ($this->billing_address && empty($post_data)) {
                     if( empty($_POST['billing_country'] ) ) {
                         $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
-                        $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
+                        $shipping_details = isset($paypal_express_checkout['shipping_details']) ? wp_unslash($paypal_express_checkout['shipping_details']) : array();
                         AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'billing');
                     }
                 }
@@ -1314,7 +1313,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (isset($_POST['terms']) && wc_get_page_id('terms') > 0) {
                     WC()->session->set( 'paypal_express_terms', true );
                 }
-                WC()->session->set( 'post_data', $_POST);
+                WC()->session->set( 'post_data', wp_unslash($_POST));
                 $_GET['pp_action'] = 'set_express_checkout';
                 $this->handle_wc_api();
             }
@@ -1516,7 +1515,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             AngellEYE_Utility::angelleye_set_address($order_id, $billing_address, 'billing');
                         }
                         $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
-                        $shipping_details = isset($paypal_express_checkout['shipping_details']) ? $paypal_express_checkout['shipping_details'] : array();
+                        $shipping_details = isset($paypal_express_checkout['shipping_details']) ? wp_unslash($paypal_express_checkout['shipping_details']) : array();
                         AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
                         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
                         if ($old_wc) {
@@ -1613,7 +1612,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'Payments' => $Payments
         );
         $result = $this->paypal_express_checkout_token_request_handler($PayPalRequest, 'SetExpressCheckout');
-        if ($result['ACK'] == 'Success') {
+        if (!empty($result['ACK']) && $result['ACK'] == 'Success') {
             return array(
                 'result' => 'success',
                 'redirect' => $this->PAYPAL_URL . $result['TOKEN']
@@ -1651,13 +1650,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         if (!empty($_GET['method_name']) && $_GET['method_name'] == 'paypal_express') {
             if ($_GET['action_name'] == 'SetExpressCheckout') {
-                $PayPalResult = $PayPal->GetExpressCheckoutDetails($_GET['token']);
+                $PayPalResult = $PayPal->GetExpressCheckoutDetails(wc_clean($_GET['token']));
                 if ($PayPalResult['ACK'] == 'Success') {
-                    $data = array(
-                        'METHOD' => 'CreateBillingAgreement',
-                        'TOKEN' => $_GET['token']
-                    );
-                    $billing_result = $PayPal->CreateBillingAgreement($_GET['token']);
+                    $billing_result = $PayPal->CreateBillingAgreement(wc_clean($_GET['token']));
                     if ($billing_result['ACK'] == 'Success') {
                         if (!empty($billing_result['BILLINGAGREEMENTID'])) {
                             $billing_agreement_id = $billing_result['BILLINGAGREEMENTID'];
