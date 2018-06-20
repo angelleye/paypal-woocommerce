@@ -6,7 +6,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
     public function __construct() {
         $this->id = 'paypal_advanced';
-
         $this->has_fields = true;
         $this->home_url = is_ssl() ? home_url('/', 'https') : home_url('/'); //set the urls (cancel or return) based on SSL
         $this->testurl = 'https://pilot-payflowpro.paypal.com';
@@ -165,7 +164,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'VENDOR' => $this->loginid,
             'PARTNER' => $this->resellerid,
             'PWD[' . strlen($this->password) . ']' => $this->password,
-            'ORIGID' => $_POST['PNREF'],
+            'ORIGID' => wc_clean($_POST['PNREF']),
             'TENDER' => 'C',
             'TRXTYPE' => 'I',
             'BUTTONSOURCE' => 'AngellEYE_SP_WooCommerce'
@@ -218,7 +217,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     private function success_handler($order, $order_id, $silent_post) {
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $_secure_token = $old_wc ? get_post_meta($order->id, '_secure_token', true) : get_post_meta($order->get_id(), '_secure_token', true);
-        if ($_secure_token == $_REQUEST['SECURETOKEN']) {
+        if (!empty($_REQUEST['SECURETOKEN']) && $_secure_token == $_REQUEST['SECURETOKEN']) {
             if ($this->debug == 'yes') {
                 $this->log->add('paypal_advanced', __('Relay Response Tokens Match', 'paypal-for-woocommerce'));
             }
@@ -240,7 +239,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         // Handle response
         if ($inq_result == 'Approved') {//if approved
             // Payment complete
-            $this->save_payment_token($order, $_POST['PNREF']);
+            $this->save_payment_token($order, wc_clean($_POST['PNREF']));
             
             do_action('before_save_payment_token', $order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
@@ -251,12 +250,12 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 } else {
                     $customer_id = get_current_user_id();
                 }
-                $TRANSACTIONID = $_POST['PNREF'];
+                $TRANSACTIONID = wc_clean($_POST['PNREF']);
                 $token = new WC_Payment_Token_CC();
                 $token->set_token($TRANSACTIONID);
                 $token->set_gateway_id($this->id);
                 $token->set_card_type('PayPal');
-                $token->set_last4($_POST['ACCT']);
+                $token->set_last4(wc_clean($_POST['ACCT']));
                 $token->set_expiry_month(date('m'));
                 $token->set_expiry_year(date('Y', strtotime('+1 year')));
                 $token->set_user_id($customer_id);
@@ -270,7 +269,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 }
             }
             
-            $order->payment_complete($_POST['PNREF']);
+            $order->payment_complete(wc_clean($_POST['PNREF']));
             // Remove cart
             WC()->cart->empty_cart();
             
@@ -302,7 +301,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         // 12-0 messages
         wc_clear_notices();
         // Add error
-        wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . urldecode($_POST['RESPMSG']) . '"', 'error');
+        wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . urldecode(wc_clean($_POST['RESPMSG'])) . '"', 'error');
 
         //redirect to the checkout page, if not silent post
         if ($silent_post === false) {
@@ -335,7 +334,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     private function decline_handler($order, $order_id, $silent_post) {
 
 
-        $order->update_status('failed', __('Payment failed via PayPal Advanced because of.', 'paypal-for-woocommerce') . '&nbsp;' . $_POST['RESPMSG']);
+        $order->update_status('failed', __('Payment failed via PayPal Advanced because of.', 'paypal-for-woocommerce') . '&nbsp;' . wc_clean($_POST['RESPMSG']));
 
         if ($this->debug == 'yes') {
             $this->log->add('paypal_advanced', sprintf(__('Status has been changed to failed for order %s', 'paypal-for-woocommerce'), $order->get_order_number()));
@@ -363,9 +362,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         //log the event
         if ($silent_post === true) {
-            $this->add_log(sprintf(__('Silent Relay Response Triggered: %s', 'paypal-for-woocommerce'), print_r($_REQUEST, true)));
+            $this->add_log(sprintf(__('Silent Relay Response Triggered: %s', 'paypal-for-woocommerce'), print_r(wp_unslash($_REQUEST, true))));
         } else {
-            $this->add_log(sprintf(__('Relay Response Triggered: %s', 'paypal-for-woocommerce'), print_r($_REQUEST, true)));
+            $this->add_log(sprintf(__('Relay Response Triggered: %s', 'paypal-for-woocommerce'), print_r(wp_unslash($_REQUEST, true))));
         }
         //if valid request
         if (!isset($_REQUEST['INVOICE'])) { // Redirect to homepage, if any invalid request or hack
@@ -376,7 +375,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             }
         }
         // get Order ID
-        $order_id = $_REQUEST['USER1'];
+        $order_id = absint( wp_unslash( $_REQUEST['USER1']));
 
         // Create order object
         $order = new WC_Order($order_id);
@@ -442,7 +441,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         static $length_error = 0;
         $this->add_log(sprintf(__('Requesting for the Secured Token for the order %s', 'paypal-for-woocommerce'), $order->get_order_number()));
         // Generate unique id
-        $this->secure_token_id = uniqid(substr($_SERVER['HTTP_HOST'], 0, 9), true);
+        $this->secure_token_id = uniqid(substr(sanitize_text_field( wp_unslash($_SERVER['HTTP_HOST'])), 0, 9), true);
 
         // Prepare paypal_ars array to pass to paypal to generate the secure token
         $paypal_args = array();

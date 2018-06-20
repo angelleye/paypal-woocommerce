@@ -436,14 +436,4 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
         }
 
     }
-
-    
-
-    
-
-    
-
-    
-
-    
 endif;

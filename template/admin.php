@@ -4,8 +4,8 @@
  */
 ?>
 <?php
-$active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general_settings';
-$gateway = isset($_GET['gateway']) ? $_GET['gateway'] : 'paypal_payment_gateway_products';
+$active_tab = isset($_GET['tab']) ? wc_clean($_GET['tab']) : 'general_settings';
+$gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_payment_gateway_products';
 ?>
 <div class="wrap">
     <h2><?php echo esc_html(get_admin_page_title()); ?></h2>

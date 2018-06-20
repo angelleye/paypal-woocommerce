@@ -848,13 +848,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 		return number_format( $price, $decimals, '.', '' );
 	}
         
-        public function angelleye_paypal_express_checkout_process_checkout_fields() {
-            $this->set_session('checkout_form_post_data', serialize($_POST));
-        }
-        
-        private function set_session($key, $value) {
-            WC()->session->set( $key, $value );
-        }
         public function http_api_curl_ec_add_curl_parameter($handle, $r, $url ) {
             $Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
             if ( (strstr( $url, 'https://' ) && strstr( $url, '.paypal.com' )) && isset($Force_tls_one_point_two) && $Force_tls_one_point_two == 'yes' ) {
@@ -885,7 +878,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function wc_gateway_payment_token_api_parser() {
-            if( !empty($_GET['do_action']) && $_GET['do_action'] = 'update_payment_method') {
+            if( !empty($_GET['do_action']) && $_GET['do_action'] == 'update_payment_method') {
                 if( !empty($_GET['method_name']) && $_GET['method_name'] == 'paypal_express') {
                     switch ($_GET['action_name']) {
                        case 'SetExpressCheckout':
@@ -903,8 +896,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
         public function angelleye_express_checkout_decrypt_gateway_api($bool) {
             $gateway_settings = AngellEYE_Utility::angelleye_get_pre_option($bool, 'woocommerce_paypal_express_settings');
-            //$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings' ) );
-            //$gateway_settings = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
             if( !empty($gateway_settings) && !empty($gateway_settings['is_encrypt'])) {
                 $gateway_settings_key_array = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
                 foreach ($gateway_settings_key_array as $gateway_setting_key => $gateway_settings_value) {
@@ -918,9 +909,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
         public function angelleye_paypal_advanced_decrypt_gateway_api($bool) {
-            //global $wpdb;
-            //$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_advanced_settings' ) );
-            //$gateway_settings = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
             $gateway_settings = AngellEYE_Utility::angelleye_get_pre_option($bool, 'woocommerce_paypal_advanced_settings');
             if( !empty($gateway_settings) && !empty($gateway_settings['is_encrypt'])) {
                 $gateway_settings_key_array = array('loginid', 'resellerid', 'user', 'password');
@@ -935,9 +923,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
         public function angelleye_paypal_credit_card_rest_decrypt_gateway_api($bool) {
-            //global $wpdb;
-            //$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_credit_card_rest_settings' ) );
-            //$gateway_settings = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
             $gateway_settings = AngellEYE_Utility::angelleye_get_pre_option($bool, 'woocommerce_paypal_credit_card_rest_settings');
             if( !empty($gateway_settings) && !empty($gateway_settings['is_encrypt'])) {
                 $gateway_settings_key_array = array('rest_client_id_sandbox', 'rest_secret_id_sandbox', 'rest_client_id', 'rest_secret_id');
@@ -952,9 +937,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
         public function angelleye_paypal_pro_decrypt_gateway_api($bool) {
-            //global $wpdb;
-            //$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_pro_settings' ) );
-            //$gateway_settings = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
             $gateway_settings = AngellEYE_Utility::angelleye_get_pre_option($bool, 'woocommerce_paypal_pro_settings');
             if( !empty($gateway_settings) && !empty($gateway_settings['is_encrypt'])) {
                 $gateway_settings_key_array = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
@@ -969,9 +951,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
         public function angelleye_paypal_pro_payflow_decrypt_gateway_api($bool) {
-            //global $wpdb;
-            //$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_pro_payflow_settings' ) );
-            //$gateway_settings = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
             $gateway_settings = AngellEYE_Utility::angelleye_get_pre_option($bool, 'woocommerce_paypal_pro_payflow_settings');
             if( !empty($gateway_settings) && !empty($gateway_settings['is_encrypt'])) {
                 $gateway_settings_key_array = array('sandbox_paypal_vendor', 'sandbox_paypal_password', 'sandbox_paypal_user', 'sandbox_paypal_partner', 'paypal_vendor', 'paypal_password', 'paypal_user', 'paypal_partner');
@@ -1004,9 +983,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_braintree_decrypt_gateway_api($bool) {
-            //global $wpdb;
-            //$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_braintree_settings' ) );
-            //$gateway_settings = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
             $gateway_settings = AngellEYE_Utility::angelleye_get_pre_option($bool, 'woocommerce_braintree_settings');
             if( !empty($gateway_settings) && !empty($gateway_settings['is_encrypt'])) {
                 $gateway_settings_key_array = array('sandbox_public_key', 'sandbox_private_key', 'sandbox_merchant_id', 'public_key', 'private_key', 'merchant_id');
@@ -1044,7 +1020,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if( !empty($_POST['action']) && $_POST['action'] == 'wp_paypal_paypal_marketing_solutions_express_checkout_save' ) {
                 if( !empty($_POST['cid_production']) ) {
                     $woocommerce_paypal_express_settings = get_option('woocommerce_paypal_express_settings');
-                    $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = $_POST['cid_production'];
+                    $woocommerce_paypal_express_settings['paypal_marketing_solutions_cid_production'] = wc_clean($_POST['cid_production']);
                     update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
                 }
             }
