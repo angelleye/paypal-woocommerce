@@ -771,14 +771,16 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $Payment['shiptozip'] = $shipping_postcode;
                 $Payment['shiptocountrycode'] = $shipping_country;
             }
-            if ($this->gateway->send_items) {
-                $Payment['order_items'] = $this->cart_param['order_items'];
-            } else {
-                $Payment['order_items'] = array();
+            if(!empty($this->cart_param['is_calculation_mismatch']) && $this->cart_param['is_calculation_mismatch'] == false) {
+                if ($this->gateway->send_items) {
+                    $Payment['order_items'] = $this->cart_param['order_items'];
+                } else {
+                    $Payment['order_items'] = array();
+                }
+                $Payment['taxamt'] = $this->cart_param['taxamt'];
+                $Payment['shippingamt'] = $this->cart_param['shippingamt'];
+                $Payment['itemamt'] = $this->cart_param['itemamt'];
             }
-            $Payment['taxamt'] = $this->cart_param['taxamt'];
-            $Payment['shippingamt'] = $this->cart_param['shippingamt'];
-            $Payment['itemamt'] = $this->cart_param['itemamt'];
             array_push($Payments, $Payment);
             $PayPalRequestData = array(
                 'SECFields' => $SECFields,
