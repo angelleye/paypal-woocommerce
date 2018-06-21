@@ -1912,7 +1912,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_update_settings($settings) {
         if (!empty($_POST['woocommerce_braintree_merchant_account_id'])) {
-            $settings['merchant_account_id'] = $_POST['woocommerce_braintree_merchant_account_id'];
+            $settings['merchant_account_id'] = wc_clean($_POST['woocommerce_braintree_merchant_account_id']);
         } else {
             $settings['merchant_account_id'] = '';
         }

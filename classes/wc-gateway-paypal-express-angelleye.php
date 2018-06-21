@@ -1856,14 +1856,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $website_name = get_bloginfo('name');
                     $website_url = get_bloginfo('url');
                     $website_url = str_ireplace('www.', '', parse_url($website_url, PHP_URL_HOST));
-                    $post = '{"owner_id":"woocommerce_container","owner_type":"PAYPAL","application_context":{"terms_accepted":true,"bn_code":"AngellEYE_SP_WooCommerce_MS","partner_name":"' . $website_name . '"},"name":"woocommerce_container","description":"Container created from PayPal for WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"' . $_POST['woocommerce_paypal_express_api_username'] . '-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"mobile-flow","value":"credit"},{"id":"is-mobile-enabled","value":"true"},{"id":"is-desktop-enabled","value":"true"},{"id":"limit","value":"3"}]}, {"tag_definition_id": "analytics", "enabled": true, "configuration": [{"id": "analytics-id", "value": "' . $_POST['woocommerce_paypal_express_api_username'] . '-1"}]}]}';
+                    $post = '{"owner_id":"woocommerce_container","owner_type":"PAYPAL","application_context":{"terms_accepted":true,"bn_code":"AngellEYE_SP_WooCommerce_MS","partner_name":"' . $website_name . '"},"name":"woocommerce_container","description":"Container created from PayPal for WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"' . wc_clean($_POST['woocommerce_paypal_express_api_username']) . '-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"mobile-flow","value":"credit"},{"id":"is-mobile-enabled","value":"true"},{"id":"is-desktop-enabled","value":"true"},{"id":"limit","value":"3"}]}, {"tag_definition_id": "analytics", "enabled": true, "configuration": [{"id": "analytics-id", "value": "' . wc_clean($_POST['woocommerce_paypal_express_api_username']) . '-1"}]}]}';
                     $headers = array(
                         'Accept: application/json',
                         'Content-Type: application/json',
                         'Content-Length: ' . strlen($post),
-                        "x_nvp_pwd: " . $_POST['woocommerce_paypal_express_api_password'],
-                        "x_nvp_signature: " . $_POST['woocommerce_paypal_express_api_signature'],
-                        "x_nvp_user: " . $_POST['woocommerce_paypal_express_api_username']
+                        "x_nvp_pwd: " . wc_clean($_POST['woocommerce_paypal_express_api_password']),
+                        "x_nvp_signature: " . wc_clean($_POST['woocommerce_paypal_express_api_signature']),
+                        "x_nvp_user: " . wc_clean($_POST['woocommerce_paypal_express_api_username'])
                     );
                     $result_response = $this->angelleye_paypal_marketing_solutions_request($post, $headers);
                     if (!empty($result_response['response'])) {
