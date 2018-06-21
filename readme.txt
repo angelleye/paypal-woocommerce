@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.11 - 06.21.2018 =
+* Tweak - Further sanitization and validation for privacy and security. ([PFW-156](https://github.com/angelleye/paypal-woocommerce/pull/1149))
+
 = 1.4.10 - 06.20.2018 =
 * Feature - Adds PayPal Payment Type and Transaction Fee to order meta data for Express Checkout orders. ([PFW-74](https://github.com/angelleye/paypal-woocommerce/pull/1146))
 * Feature - Adds ability to specify one or more email addresses to use for PayPal API error notifications. ([PFW-19](https://github.com/angelleye/paypal-woocommerce/pull/1138))
