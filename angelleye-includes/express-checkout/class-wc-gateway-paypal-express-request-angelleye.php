@@ -579,7 +579,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         'pp_action' => 'get_express_checkout_details',
                         'pay_for_order' => true,
                         'request_from' => 'JSv4',
-                        'key' => $_GET['key'],
+                        'key' => wc_clean($_GET['key']),
                         'order_id' => $order_id,
                         'utm_nooverride' => 1
                                     ), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
@@ -587,7 +587,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $returnurl = urldecode(add_query_arg(array(
                         'pp_action' => 'get_express_checkout_details',
                         'pay_for_order' => true,
-                        'key' => $_GET['key'],
+                        'key' => wc_clean($_GET['key']),
                         'order_id' => $order_id,
                         'utm_nooverride' => 1
                                     ), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
