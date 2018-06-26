@@ -134,7 +134,8 @@ jQuery(function ($) {
                 } else if (angelleye_in_content_param.cart_button_possition == 'top') {
                     angelleye_button_selector.push(".angelleye_smart_button_top");
                 }
-            } else if (angelleye_in_content_param.is_checkout == 'yes' && angelleye_in_content_param.is_display_on_checkout == 'yes') {
+            } 
+            if (angelleye_in_content_param.is_checkout == 'yes' && angelleye_in_content_param.is_display_on_checkout == 'yes') {
                 angelleye_button_selector.push(".angelleye_smart_button_checkout_top");
             }
             angelleye_button_selector.push(".angelleye_smart_button_mini");
