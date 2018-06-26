@@ -1135,15 +1135,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             return $state;
         }
         $states = WC()->countries->get_states($cc);
-       
-        foreach ($states as $state_code => $state_value) {
-            
-            if (strtolower($state_code) == strtolower($state)) {
-                return strtoupper($state_code);
-            }
-         }
-        
-         
+        if( !empty($states) ) {
+            foreach ($states as $state_code => $state_value) {
+                if (strtolower($state_code) == strtolower($state)) {
+                    return strtoupper($state_code);
+                }
+             }
+        }
         return $state;
     }
 
