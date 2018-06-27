@@ -318,6 +318,8 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     width: 110px !important;
     height: 31px !important;
     clear: both;
+    float: left;
+    margin-top: 20px;
 }
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
