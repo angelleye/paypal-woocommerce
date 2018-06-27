@@ -1141,7 +1141,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                         <div class="wrap">
                                             <div id="angelleye_wp_marketing_solutions_button_production"></div>
                                             <div id="pms-paypalInsightsLink"><button class="paypal-px-btn view-paypal-insight-result">' . __('View Shopper Insights', 'paypal-for-woocommerce') . '</button></div>
-                                            <div><button class="paypal-px-btn angelleye-reset-pms">' . __('Reset', 'paypal-for-woocommerce') . '</button></div>
+                                            <div><a href="'.esc_url(add_query_arg("ignore_pp_sandbox",0)).'" class="paypal-px-btn angelleye-reset-pms">' . __('Reset', 'paypal-for-woocommerce') . '</a></div>
                                         </div>
 				</div>
 				<div class="pms-muse-right-container">
