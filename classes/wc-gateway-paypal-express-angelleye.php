@@ -224,6 +224,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <?php
         if (!empty($this->paypal_marketing_solutions_cid_production)) {
             ?> jQuery('#pms-paypalInsightsLink').show();
+                jQuery('.angelleye-reset-pms').show();
                 jQuery('.display_when_deactivated').hide();
                 jQuery('.pms-view-more').hide();
                 
@@ -232,7 +233,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             ?> 
             display_notice_and_disable_marketing_solution();
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').css({'width': '50%', 'top': '-65px'}); jQuery('#pms-paypalInsightsLink').hide(); jQuery('#angelleye_wp_marketing_solutions_button_production').hide(); 
+            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').css({'width': '50%', 'top': '-65px'}); jQuery('.angelleye-reset-pms').hide(); jQuery('#pms-paypalInsightsLink').hide(); jQuery('#angelleye_wp_marketing_solutions_button_production').hide(); 
             <?php
         }
         ?>
@@ -1139,7 +1140,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					</div>
                                         <div class="wrap">
                                             <div id="angelleye_wp_marketing_solutions_button_production"></div>
-                                            <div id="pms-paypalInsightsLink"><button class="paypal-px-btn view-paypal-insight-result">' . __('View Shopper Insights', '') . '</button></div>
+                                            <div id="pms-paypalInsightsLink"><button class="paypal-px-btn view-paypal-insight-result">' . __('View Shopper Insights', 'paypal-for-woocommerce') . '</button></div>
+                                            <div><a href="'.esc_url(add_query_arg("reset_paypal_marketing_solutions",1)).'"><button type="button" class="paypal-px-btn angelleye-reset-pms"> ' . __('Reset', 'paypal-for-woocommerce') . '</button></a></div>
                                         </div>
 				</div>
 				<div class="pms-muse-right-container">
@@ -1854,7 +1856,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $cid_production = '';
                     $result = array();
                     $website_name = get_bloginfo('name');
-                    $website_url = get_bloginfo('url');
+                    $website_url = 'https://www.google.com/';//get_bloginfo('url');
                     $website_url = str_ireplace('www.', '', parse_url($website_url, PHP_URL_HOST));
                     $post = '{"owner_id":"woocommerce_container","owner_type":"PAYPAL","application_context":{"terms_accepted":true,"bn_code":"AngellEYE_SP_WooCommerce_MS","partner_name":"' . $website_name . '"},"name":"woocommerce_container","description":"Container created from PayPal for WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"' . wc_clean($_POST['woocommerce_paypal_express_api_username']) . '-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"mobile-flow","value":"credit"},{"id":"is-mobile-enabled","value":"true"},{"id":"is-desktop-enabled","value":"true"},{"id":"limit","value":"3"}]}, {"tag_definition_id": "analytics", "enabled": true, "configuration": [{"id": "analytics-id", "value": "' . wc_clean($_POST['woocommerce_paypal_express_api_username']) . '-1"}]}]}';
                     $headers = array(
