@@ -314,6 +314,11 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 .notice.notice-info.angelleye-notice {
     border-left: 4px solid #00a0d2;
 }
+.angelleye-reset-pms {
+    width: 110px !important;
+    height: 31px !important;
+    clear: both;
+}
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
         display: block;
