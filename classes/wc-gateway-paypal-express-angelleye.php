@@ -456,16 +456,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($this->checkout_with_pp_button_type == 'customimage') {
             $image_path = $this->pp_button_type_my_custom;
         }
-        if ( is_ssl() || get_option( 'woocommerce_force_ssl_checkout' ) == 'yes' ) {
+        if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
             $image_path = str_replace( 'http:', 'https:', $image_path );
         }
         if ($this->paypal_account_optional == 'no' && $this->show_paypal_credit == 'yes' && $this->checkout_with_pp_button_type == 'paypalimage') {
             $image_path = plugins_url('/assets/images/paypal.png', plugin_basename(dirname(__FILE__)));
-            if ( is_ssl() || get_option( 'woocommerce_force_ssl_checkout' ) == 'yes' ) {
+            if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
                 $image_path = str_replace( 'http:', 'https:', $image_path );
             }
             $image_path_two = plugins_url('/assets/images/PP_credit_logo.png', plugin_basename(dirname(__FILE__)));
-            if ( is_ssl() || get_option( 'woocommerce_force_ssl_checkout' ) == 'yes' ) {
+            if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
                 $image_path_two = str_replace( 'http:', 'https:', $image_path_two );
             }
             $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
@@ -480,7 +480,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public function init_form_fields() {
         $rest_url = get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=paypal_express&pms_reset=true';
         $require_ssl = '';
-        if (!AngellEYE_Gateway_Paypal::is_ssl()) {
+        if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
             $require_ssl = __('This image requires an SSL host.  Please upload your image to <a target="_blank" href="http://www.sslpic.com">www.sslpic.com</a> and enter the image URL here.', 'paypal-for-woocommerce');
         }
         $skip_final_review_option_not_allowed_guest_checkout = '';
@@ -1353,7 +1353,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $image_path = plugins_url('/assets/images/dynamic-image/' . AngellEYE_Utility::get_button_locale_code() . '.png', plugin_basename(dirname(__FILE__)));
         } else {
             $image_path = plugins_url('/assets/images/dynamic-image/' . AngellEYE_Utility::get_button_locale_code() . '.gif', plugin_basename(dirname(__FILE__)));
-            if ( is_ssl() || get_option( 'woocommerce_force_ssl_checkout' ) == 'yes' ) {
+            if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
                 $image_path = preg_replace("/^http:/i", "https:", $image_path);
             }
         }
