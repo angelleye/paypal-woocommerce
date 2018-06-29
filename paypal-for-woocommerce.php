@@ -270,6 +270,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if( !get_user_meta($user_id, 'is_disable_smart_button_notice') && (empty($pp_settings['enable_in_context_checkout_flow']) || $pp_settings['enable_in_context_checkout_flow'] == 'no') ) {
                 echo '<div class="notice notice-info angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('Check out the new PayPal Smart Buttons feature now <a target="_self" href="'.get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=paypal_express#woocommerce_paypal_express_display_enable_in_context_checkout_flow_section">available</a> in Express Checkout!', 'paypal-for-woocommerce')) . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="is_disable_smart_button_notice">Dismiss</button></div></div>';
             }
+            if( !get_user_meta($user_id, 'is_disable_pw_premium_extension_notice') ) {
+                echo '<div class="notice notice-info angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf( __( 'Visit our PayPal for WooCoomerce <a href="%1$s">premium extensions</a> developed by Angell EYE.', 'paypal-for-woocommerce' ), admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_woocommerce_premium_extension#paypal_woocommerce_premium_extension')) . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="is_disable_pw_premium_extension_notice">Dismiss</button></div></div>';
+            }
             
             if( !empty($_GET['reset_paypal_marketing_solutions']) && $_GET['reset_paypal_marketing_solutions'] == 1 ) {
                 $pp_settings['paypal_marketing_solutions_cid_production'] = '';
@@ -1035,7 +1038,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             global $current_user;
             $user_id = $current_user->ID;
             if( !empty($_POST['action']) && $_POST['action'] == 'angelleye_dismiss_notice' ) {
-                $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'is_disable_paypal_marketing_solutions_notice', 'ignore_paypal_pro_payflow_reference_transaction_notice', 'is_disable_smart_button_notice');
+                $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'is_disable_paypal_marketing_solutions_notice', 'ignore_paypal_pro_payflow_reference_transaction_notice', 'is_disable_smart_button_notice', 'is_disable_pw_premium_extension_notice');
                 foreach ($notices as $notice) {
                     if ( !empty($_POST['data']) && $_POST['data'] == $notice) {
                         add_user_meta($user_id, $notice, 'true', true);
