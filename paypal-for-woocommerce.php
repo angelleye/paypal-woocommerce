@@ -229,8 +229,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             
             if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || ( !empty($pp_payflow['enabled']) && $pp_payflow['enabled']=='yes' )) {
                 // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
-                if ( get_option('woocommerce_force_ssl_checkout')=='no' && ! class_exists( 'WordPressHTTPS' ) && !get_user_meta($user_id, 'ignore_pp_ssl') )
-                    echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('WooCommerce PayPal Payments Pro requires that the %s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode.', 'paypal-for-woocommerce'), '<a href="'.admin_url('admin.php?page=wc-settings&tab=checkout#woocommerce_enable_guest_checkout').'">Force secure checkout</a>')  . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_pp_ssl">Dismiss</button></div></div>';
+                if ( !is_ssl() && !get_user_meta($user_id, 'ignore_pp_ssl') )
+                    echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('WooCommerce PayPal Payments Pro requires that the %s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode.', 'paypal-for-woocommerce'), '<a href="'.admin_url('admin.php?page=wc-settings&tab=advanced#woocommerce_force_ssl_checkout').'">Force secure checkout</a>')  . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_pp_ssl">Dismiss</button></div></div>';
                 if (($pp_pro['testmode']=='yes' || $pp_payflow['testmode']=='yes' || $pp_settings['testmode']=='yes') && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
                     $testmodes = array();
                     if ($pp_pro['enabled']=='yes' && $pp_pro['testmode']=='yes') $testmodes[] = 'PayPal Pro';
@@ -318,7 +318,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             wp_register_script( 'angelleye_admin', plugins_url( '/assets/js/angelleye-admin.js' , __FILE__ ), array( 'jquery' ), VERSION_PFW);
             $this->use_wp_locale_code = !empty($pp_settings['use_wp_locale_code']) ? $pp_settings['use_wp_locale_code'] : 'yes';
             $translation_array = array(
-                'is_ssl' => AngellEYE_Gateway_Paypal::is_ssl()? "yes":"no",
+                'is_ssl' => is_ssl() ? "yes":"no",
                 'choose_image' => __('Choose Image', 'paypal-for-woocommerce'),
                 'shop_based_us' => (substr(get_option("woocommerce_default_country"), 0, 2) == 'US') ? "yes" : "no",
                 'payment_method' => $payment_method,
@@ -446,17 +446,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
        
-        /**
-         * Check if site is SSL ready
-         *
-         */
-        static public function is_ssl()
-        {
-            if (is_ssl() || get_option('woocommerce_force_ssl_checkout') == 'yes' || class_exists('WordPressHTTPS'))
-                return true;
-            return false;
-        }
-
         public function angelleye_admin_menu_own(){
         	$this->plugin_screen_hook_suffix = add_submenu_page(
 			'options-general.php', 

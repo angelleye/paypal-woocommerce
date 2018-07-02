@@ -36,7 +36,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $this->init_form_fields();
         $this->init_settings();
         $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
-        if (is_ssl()) {
+        if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
             $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
         $this->icon = apply_filters('woocommerce_paypal_credit_card_rest_icon', $this->icon);
