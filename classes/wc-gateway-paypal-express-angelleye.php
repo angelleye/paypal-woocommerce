@@ -1240,13 +1240,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $result = $paypal_express_request->DoReferenceTransaction($order_id);
             if (!empty($result['ACK']) && $result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                 $paypal_express_request->update_payment_status_by_paypal_responce($order_id, $result);
-                return array(
-                    'result' => 'success',
-                    'redirect' => add_query_arg( 'utm_nooverride', '1', $this->get_return_url($order) )
-                );
             } else {
-                $redirect_url = get_permalink(wc_get_page_id('cart'));
-                $this->paypal_express_checkout_error_handler($request_name = 'DoReferenceTransaction', $redirect_url, $result);
+                $ErrorCode = urldecode(!empty($result["L_ERRORCODE0"]) ? $result["L_ERRORCODE0"] : '');
+                $ErrorLongMsg = urldecode(!empty($result["L_LONGMESSAGE0"]) ? $result["L_LONGMESSAGE0"] : '');
+                $order->add_order_note($ErrorCode . ' - ' . $ErrorLongMsg);
+                $this->paypal_express_checkout_error_handler($request_name = 'DoReferenceTransaction', '', $result);
             }
         }
     }
@@ -1717,19 +1715,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if(function_exists('wc_add_notice')) {
                 wc_add_notice($error_display_type_message, 'error');
             }
+            if(is_admin()) {
+                return false;
+            }
+            if (!is_ajax()) {
+                wp_redirect($redirect_url);
+                exit;
+            } else {
+                return array(
+                    'result' => 'fail',
+                    'redirect' => $redirect_url
+                );
+            }
         }
-        if(is_admin()) {
-            return false;
-        }
-        if (!is_ajax()) {
-            wp_redirect($redirect_url);
-            exit;
-        } else {
-            return array(
-                'result' => 'fail',
-                'redirect' => $redirect_url
-            );
-        }
+        
     }
 
     public static function log($message, $level = 'info', $source = null) {
