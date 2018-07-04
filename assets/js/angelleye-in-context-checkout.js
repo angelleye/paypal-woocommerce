@@ -126,6 +126,9 @@ jQuery(function ($) {
             var angelleye_button_selector = [];
             var allowed_funding_methods_var = [];
             var disallowed_funding_methods_var = [];
+            if (angelleye_in_content_param.is_checkout == 'yes' && angelleye_in_content_param.is_display_on_checkout == 'yes') {
+                angelleye_button_selector.push(".angelleye_smart_button_checkout_top");
+            }
             if (angelleye_in_content_param.is_cart == 'yes') {
                 if (angelleye_in_content_param.cart_button_possition == 'both') {
                     angelleye_button_selector.push(".angelleye_smart_button_top", ".angelleye_smart_button_bottom");
@@ -135,9 +138,6 @@ jQuery(function ($) {
                     angelleye_button_selector.push(".angelleye_smart_button_top");
                 }
             } 
-            if (angelleye_in_content_param.is_checkout == 'yes' && angelleye_in_content_param.is_display_on_checkout == 'yes') {
-                angelleye_button_selector.push(".angelleye_smart_button_checkout_top");
-            }
             angelleye_button_selector.push(".angelleye_smart_button_mini");
             disallowed_funding_methods_var = $.parseJSON(angelleye_in_content_param.disallowed_funding_methods);
             allowed_funding_methods_var = $.parseJSON(angelleye_in_content_param.allowed_funding_methods);
@@ -215,10 +215,13 @@ jQuery(function ($) {
                         }
                     }, selector);
                 }
+                if(selector === "angelleye_smart_button_checkout_top") {
+                    return false;
+                }
             });
         };
     }
-    $(document.body).on('updated_shipping_method wc_fragments_refreshed wc_fragments_loaded', function (event) {
+    $(document.body).on('wc_fragments_refreshed', function (event) {
         display_smart_button_on_cart_checkout();
     });
 });
