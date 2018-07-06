@@ -100,6 +100,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->api_signature = !empty($this->setting['api_signature']) ? $this->setting['api_signature'] : '';
                 }
                 $this->angelleye_skip_text = !empty($this->setting['angelleye_skip_text']) ? $this->setting['angelleye_skip_text'] : 'Skip the forms and pay faster with PayPal!';
+                $this->skip_final_review = !empty($this->setting['skip_final_review']) ? $this->setting['skip_final_review'] : 'no';
                 add_action('woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'), 10);
                 if ($this->save_abandoned_checkout == false) {
                     if (version_compare(WC_VERSION, '3.0', '<')) {
@@ -529,7 +530,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'allowed_funding_methods' => $allowed_funding_methods_json,
                     'disallowed_funding_methods' => $disallowed_funding_methods_json,
                     'enable_google_analytics_click' => $this->enable_google_analytics_click,
-                    'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))
+                    'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))),
+                    'zcommit' => $this->angelleye_ec_force_to_display_checkout_page_js() == true ? 'false' : 'true'
                   )
                 );
             }
@@ -1145,5 +1147,38 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
         }
     }
+    
+    public function angelleye_ec_force_to_display_checkout_page_js() {
+        $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
+        $this->must_create_account = $this->enable_guest_checkout || is_user_logged_in() ? false : true;
+        $force_to_display_checkout_page = true;
+        if ($this->skip_final_review == 'no') {
+            return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
+        }
+        if ('yes' === get_option('woocommerce_registration_generate_username') && 'yes' === get_option('woocommerce_registration_generate_password')) {
+            $this->must_create_account = false;
+        }
+        if ($this->must_create_account) {
+            return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
+        }
+        if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+            return apply_filters('angelleye_ec_force_to_display_checkout_page', true);
+        }
+        $paypal_express_terms = WC()->session->get('paypal_express_terms');
+        if (wc_get_page_id('terms') > 0 && apply_filters('woocommerce_checkout_show_terms', true)) {
+            if ($this->disable_term) {
+                return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
+            } elseif ((isset($_POST['terms']) || isset($_POST['legal'])) && $_POST['terms'] == 'on') {
+                return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
+            } elseif (!empty($paypal_express_terms) && $paypal_express_terms == true) {
+                return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
+            }
+        }
+        if ($this->skip_final_review == 'yes') {
+            return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
+        }
+        return apply_filters('angelleye_ec_force_to_display_checkout_page', $force_to_display_checkout_page);
+    }
+
 
 }
