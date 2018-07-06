@@ -1039,7 +1039,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Hide Card Type(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Card Type(s) selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
+                'description' => __('Individual credit card type(s) selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => 'medium',
                 'desc_tip' => true,
                 'options' => $this->disallowed_card_types,
