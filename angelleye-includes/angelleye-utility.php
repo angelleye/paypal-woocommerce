@@ -874,6 +874,13 @@ class AngellEYE_Utility {
                 'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
                 'class' => 'button_upload'
             ),
+            'change_proceed_checkout_button_text' => array(
+                'title' => __('Change Proceed to Checkout button text?', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true
+            ),
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
                 'type' => 'text',

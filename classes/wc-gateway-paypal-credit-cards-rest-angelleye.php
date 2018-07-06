@@ -61,6 +61,10 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         }
         $this->payment_action = $this->get_option('payment_action', 'sale');
         $this->softdescriptor = $this->get_option('softdescriptor', '');
+        $this->order_button_text_value = $this->get_option('change_proceed_checkout_button_text');
+        if( !empty($this->order_button_text_value) ) {
+            $this->order_button_text = $this->order_button_text_value;
+        }
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_notices', array($this, 'checks'));
         add_filter( 'woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_credit_card_rest_credit_card_form_fields'), 10, 2);

@@ -67,6 +67,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         add_action('admin_notices', array($this, 'checks'));
         add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_braintree_credit_card_form_fields'), 10, 2);
         $this->customer_id;
+        $this->order_button_text_value = $this->get_option('change_proceed_checkout_button_text');
+        if( !empty($this->order_button_text_value) ) {
+            $this->order_button_text = $this->order_button_text_value;
+        }
         add_filter('clean_url', array($this, 'adjust_fraud_script_tag'));
         add_action('woocommerce_admin_order_data_after_order_details', array($this, 'woocommerce_admin_order_data_after_order_details'), 10, 1);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_update_settings'), 10, 1);
@@ -309,6 +313,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
+            ),
+            'change_proceed_checkout_button_text' => array(
+                'title' => __('Change Proceed to Checkout button text?', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true
             ),
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
