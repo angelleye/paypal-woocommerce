@@ -57,6 +57,7 @@ jQuery(function ($) {
                     env: angelleye_in_content_param.environment,
                     style: angelleye_cart_style_object,
                     locale: angelleye_in_content_param.locale,
+                    commit: (angelleye_in_content_param.zcommit === "false") ? false : true,
                     funding: {
                         allowed: allowed_funding_methods_single_array,
                         disallowed: disallowed_funding_methods_single_array
@@ -122,6 +123,7 @@ jQuery(function ($) {
     }
 
     function display_smart_button_on_cart_checkout() {
+        console.log(angelleye_in_content_param);
         window.paypalCheckoutReady = function () {
             var angelleye_button_selector = [];
             var allowed_funding_methods_var = [];
@@ -169,6 +171,7 @@ jQuery(function ($) {
                         env: angelleye_in_content_param.environment,
                         style: angelleye_cart_style_object,
                         locale: angelleye_in_content_param.locale,
+                        commit: (angelleye_in_content_param.zcommit === "false") ? false : true,
                         funding: {
                             allowed: allowed_funding_methods_var,
                             disallowed: disallowed_funding_methods_var

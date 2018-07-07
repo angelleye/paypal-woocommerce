@@ -66,6 +66,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'paypal' => __('PayPal', 'paypal-for-woocommerce')
             );
         }
+        $this->disallowed_card_types = array(
+            'visa'   => esc_html_x( 'Visa', 'credit card type', 'paypal-for-woocommerce' ),
+            'mastercard'     => esc_html_x( 'MasterCard', 'credit card type', 'paypal-for-woocommerce' ),
+            'amex'   => esc_html_x( 'American Express', 'credit card type', 'paypal-for-woocommerce' ),
+            'discover'   => esc_html_x( 'Discover', 'credit card type', 'paypal-for-woocommerce' ),
+            'maestro' => esc_html_x( 'Maestro', 'credit card type', 'paypal-for-woocommerce' ),
+            'jcb'    => esc_html_x( 'JCB', 'credit card type', 'paypal-for-woocommerce' ),
+        );
         $this->init_form_fields();
         $this->init_settings();
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
@@ -399,7 +407,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             } else {
                  jQuery('#woocommerce_paypal_express_button_label option[value="credit"]').remove();
             }
-            
+            if( jQuery.inArray('card', jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val()) ) {
+                jQuery("#woocommerce_paypal_express_disallowed_card_types").closest('tr').show();
+            } else {
+                jQuery("#woocommerce_paypal_express_disallowed_card_types").closest('tr').hide();
+            }
             if( is_funding_icon_should_show_php() === false) {
                 jQuery("#woocommerce_paypal_express_button_fundingicons").closest('tr').hide();
                 jQuery("#woocommerce_paypal_express_button_fundingicons").val("false");
@@ -1022,6 +1034,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'medium',
                 'desc_tip' => true,
                 'options' => $this->disallowed_funding_methods_array,
+            ),
+            'disallowed_card_types' => array(
+                'title' => __('Hide Card Type(s)', 'paypal-for-woocommerce'),
+                'type' => 'multiselect',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Individual credit card type(s) selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
+                'default' => 'medium',
+                'desc_tip' => true,
+                'options' => $this->disallowed_card_types,
             ),
             'button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
