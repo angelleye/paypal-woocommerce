@@ -57,7 +57,7 @@ jQuery(function ($) {
                     env: angelleye_in_content_param.environment,
                     style: angelleye_cart_style_object,
                     locale: angelleye_in_content_param.locale,
-                    commit: angelleye_in_content_param.commit,
+                    commit: (angelleye_in_content_param.zcommit === "false") ? false : true,
                     funding: {
                         allowed: allowed_funding_methods_single_array,
                         disallowed: disallowed_funding_methods_single_array
