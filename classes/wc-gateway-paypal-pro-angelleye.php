@@ -169,7 +169,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
        
         $this->customer_id;
-        
+        if( !empty($this->order_button_text_value) ) {
+            $this->order_button_text = $this->order_button_text_value;
+        }
         if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
             $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
         } else {
