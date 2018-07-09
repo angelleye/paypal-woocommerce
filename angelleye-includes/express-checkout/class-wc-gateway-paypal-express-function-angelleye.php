@@ -6,18 +6,6 @@ if (!defined('ABSPATH')) {
 
 class WC_Gateway_PayPal_Express_Function_AngellEYE {
 
-    public static function is_ssl_enable() {
-        try {
-            if (is_ssl() || get_option('woocommerce_force_ssl_checkout') == 'yes') {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception $ex) {
-            
-        }
-    }
-
     public function express_checkout_is_available() {
         try {
             $is_enable = $this->express_checkout_get_option('enabled');

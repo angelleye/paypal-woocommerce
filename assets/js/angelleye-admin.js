@@ -373,6 +373,15 @@ jQuery(document).ready(function ($) {
         if (angelleye_admin.shop_based_us == "no") {
             angelleye_woocommerce_paypal_express_disallowed_funding_methods.push("credit");
         }
+        if(jQuery.inArray('card', angelleye_woocommerce_paypal_express_allowed_funding_methods) > -1 === true) {
+            var woocommerce_paypal_express_disallowed_card_types = jQuery('#woocommerce_paypal_express_disallowed_card_types').val();
+            if (woocommerce_paypal_express_disallowed_card_types === null) {
+                woocommerce_paypal_express_disallowed_card_types = [];
+            }
+            jQuery.grep(woocommerce_paypal_express_disallowed_card_types, function (value) {
+                angelleye_woocommerce_paypal_express_disallowed_funding_methods.push(value);
+            });
+        }
         window.paypalCheckoutReady = function () {
             paypal.Button.render({
                 env: 'sandbox',

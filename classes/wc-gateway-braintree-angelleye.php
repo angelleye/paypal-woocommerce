@@ -15,7 +15,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     function __construct() {
         $this->id = 'braintree';
         $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
-        if (is_ssl() || get_option('woocommerce_force_ssl_checkout') == 'yes') {
+        if (is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' )) {
             $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
         $this->icon = apply_filters('woocommerce_braintree_icon', $this->icon);
@@ -149,7 +149,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (version_compare(phpversion(), '5.2.1', '<')) {
             echo '<div class="error"><p>' . sprintf(__('Braintree Error: Braintree requires PHP 5.2.1 and above. You are using version %s.', 'paypal-for-woocommerce'), phpversion()) . '</p></div>';
         }
-        if ('no' == get_option('woocommerce_force_ssl_checkout') && !class_exists('WordPressHTTPS') && $this->enable_braintree_drop_in == false && $this->sandbox == false) {
+        if (!is_ssl() && $this->enable_braintree_drop_in == false && $this->sandbox == false) {
             echo '<div class="error"><p>' . sprintf(__('Braintree is enabled, but the <a href="%s">force SSL option</a> is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - Braintree custome credit card UI will only work in sandbox mode.', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout')) . '</p></div>';
         }
         $this->add_dependencies_admin_notices();

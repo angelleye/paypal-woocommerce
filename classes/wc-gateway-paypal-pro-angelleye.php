@@ -117,7 +117,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         
         //fix ssl for image icon
         $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
-        if ( is_ssl() || get_option( 'woocommerce_force_ssl_checkout' ) == 'yes' ) {
+        if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
             $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
         $this->icon = apply_filters('woocommerce_paypal_pro_icon', $this->icon);
@@ -462,7 +462,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      */
     function is_available() {
         if ($this->enabled == "yes") :
-            if ($this->testmode == false && get_option('woocommerce_force_ssl_checkout') == 'no' && !class_exists('WordPressHTTPS')) return false;
+            if ($this->testmode == false && !is_ssl()) return false;
             // Currency check
             if (!in_array(get_woocommerce_currency(), apply_filters('woocommerce_paypal_pro_supported_currencies', array('AUD', 'CAD', 'CZK', 'DKK', 'EUR', 'HUF', 'JPY', 'NOK', 'NZD', 'PLN', 'GBP', 'SGD', 'SEK', 'CHF', 'USD')))) return false;
             // Required fields check
