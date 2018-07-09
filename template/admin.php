@@ -122,6 +122,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                 <?php
                 if (isset($_POST['submit']) && !empty($_POST['submit'])) {
                     update_option('Force_tls_one_point_two', (isset($_POST['Force_tls_one_point_two']) && wc_clean($_POST['Force_tls_one_point_two']) == 'on') ? 'yes' : 'no' );
+                    update_option('change_proceed_checkout_button_text', isset($_POST['change_proceed_checkout_button_text']) ? wc_clean($_POST['change_proceed_checkout_button_text']) : '' );
                     echo '<div class="updated"><p>' . __('Settings were saved successfully.', 'paypal-for-woocommerce') . '</p></div>';
                 }
                 $Force_tls_one_point_two = get_option('Force_tls_one_point_two');
@@ -142,12 +143,12 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                             </tr>
                             <?php 
                             global $wpdb;
+                            $change_proceed_checkout_button_text = get_option('change_proceed_checkout_button_text');
                             $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
                             $this->setting = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
                             $this->paypal_marketing_solutions_cid_production = !empty($this->setting['paypal_marketing_solutions_cid_production']) ? $this->setting['paypal_marketing_solutions_cid_production'] : '';
                             if( !empty($this->paypal_marketing_solutions_cid_production) ) {
                             ?>
-
                             <tr valign="top" class="">
                                 <th class="titledesc" scope="row"><?php echo __('PayPal Marketing Solutions', 'paypal-for-woocommerce'); ?></th>
                                 <td class="forminp forminp-checkbox">
@@ -159,6 +160,16 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                                 </td>
                             </tr>
                             <?php } ?>
+                            <tr valign="top" class="">
+                                <th class="titledesc" scope="row"><?php echo __('Checkout Button Text', 'paypal-for-woocommerce'); ?></th>
+                                <td class="forminp forminp-checkbox">
+                                    <fieldset>
+                                        <div>
+                                            <input type="text" class="regular-text" name="change_proceed_checkout_button_text" value="<?php echo $change_proceed_checkout_button_text; ?>"><span><br/><?php __('Set a value here to override the "Proceed to Checkout" text displayed on the WooCommerce cart page.', 'paypal-for-woocommerce'); ?></span>
+                                        </div> 														
+                                    </fieldset>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                     <?php submit_button(); ?>

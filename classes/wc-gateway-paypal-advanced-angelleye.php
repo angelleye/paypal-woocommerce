@@ -75,10 +75,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->icon = apply_filters('woocommerce_paypal_advanced_icon', $this->icon);
         $this->mobilemode = 'yes' === $this->get_option('mobilemode', 'yes');
         $this->layout = $this->get_option('layout', 'C');
-        $this->order_button_text_value = $this->get_option('change_proceed_checkout_button_text');
-        if( !empty($this->order_button_text_value) ) {
-            $this->order_button_text = $this->order_button_text_value;
-        }
         switch ($this->layout) {
             case 'A': $this->layout = 'TEMPLATEA';
                 break;
@@ -823,13 +819,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
-            ),
-            'change_proceed_checkout_button_text' => array(
-                'title' => __('Change Proceed to Checkout button text?', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('', 'paypal-for-woocommerce'),
-                'default' => '',
-                'desc_tip' => true
             ),
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),

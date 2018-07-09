@@ -756,16 +756,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             if ($this->enabled == 'yes' && $payment_gateway_count == 1) {
                 if ($this->paypal_pro_enabled == 'yes' || $this->paypal_flow_enabled == 'yes') {
-                    $checkout_button_display_text = $this->show_on_cart == 'yes' ? __('Pay with Credit Card', 'paypal-for-woocommerce') : __('Proceed to Checkout', 'paypal-for-woocommerce');
-                    echo '<script type="text/javascript">
-                                jQuery(document).ready(function(){
-                                    if (jQuery(".checkout-button, .button.checkout.wc-forward").is("input")) {
-                                        jQuery(".checkout-button, .button.checkout.wc-forward").val("' . $checkout_button_display_text . '");
-                                    } else {
-                                        jQuery(".checkout-button, .button.checkout.wc-forward").html("' . $checkout_button_display_text . '");
-                                    }
-                                });
-                              </script>';
+                    
                 } elseif ($this->show_on_cart == 'yes') {
                     echo '<style> input.checkout-button,
                                  a.checkout-button, .button.checkout.wc-forward, a.checkout-button.wc-forward {
@@ -777,6 +768,22 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                                 </style>';
                 }
             }
+            $change_proceed_checkout_button_text = get_option('change_proceed_checkout_button_text');
+            if(!empty($change_proceed_checkout_button_text)) {
+                $proceed_checkout_button_text = $change_proceed_checkout_button_text;
+            } else {
+                $proceed_checkout_button_text = __('Proceed to Checkout', 'paypal-for-woocommerce');
+            }
+            $checkout_button_display_text = $this->show_on_cart == 'yes' ? __('Pay with Credit Card', 'paypal-for-woocommerce') : __('Proceed to Checkout', 'paypal-for-woocommerce');
+                    echo '<script type="text/javascript">
+                                jQuery(document).ready(function(){
+                                    if (jQuery(".checkout-button, .button.checkout.wc-forward").is("input")) {
+                                        jQuery(".checkout-button, .button.checkout.wc-forward").val("' . $proceed_checkout_button_text . '");
+                                    } else {
+                                        jQuery(".checkout-button, .button.checkout.wc-forward").html("' . $proceed_checkout_button_text . '");
+                                    }
+                                });
+                              </script>';
         }
     }
 

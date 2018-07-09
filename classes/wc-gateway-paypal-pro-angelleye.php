@@ -169,7 +169,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
        
         $this->customer_id;
-        $this->order_button_text_value = $this->get_option('change_proceed_checkout_button_text');
         if( !empty($this->order_button_text_value) ) {
             $this->order_button_text = $this->order_button_text_value;
         }
@@ -368,13 +367,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Display Address Verification Result (AVS) and Card Security Code Result (CVV2) Results in Admin Order Email.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'desc_tip' => true,
-            ),
-            'change_proceed_checkout_button_text' => array(
-                'title' => __('Change Proceed to Checkout button text?', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('', 'paypal-for-woocommerce'),
-                'default' => '',
-                'desc_tip' => true
             ),
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
