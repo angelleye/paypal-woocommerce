@@ -746,7 +746,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         WC()->cart->calculate_totals();
         $payment_gateways_count = 0;
         echo "<style>table.cart td.actions .input-text, table.cart td.actions .button, table.cart td.actions .checkout-button {margin-bottom: 0.53em !important;}</style>";
-        if ($this->enabled == 'yes' && 0 < WC()->cart->total) {
+        if ( 0 < WC()->cart->total) {
             $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
             unset($payment_gateways['paypal_pro']);
             unset($payment_gateways['paypal_pro_payflow']);
@@ -774,16 +774,15 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             } else {
                 $proceed_checkout_button_text = __('Proceed to Checkout', 'paypal-for-woocommerce');
             }
-            $checkout_button_display_text = $this->show_on_cart == 'yes' ? __('Pay with Credit Card', 'paypal-for-woocommerce') : __('Proceed to Checkout', 'paypal-for-woocommerce');
-                    echo '<script type="text/javascript">
-                                jQuery(document).ready(function(){
-                                    if (jQuery(".checkout-button, .button.checkout.wc-forward").is("input")) {
-                                        jQuery(".checkout-button, .button.checkout.wc-forward").val("' . $proceed_checkout_button_text . '");
-                                    } else {
-                                        jQuery(".checkout-button, .button.checkout.wc-forward").html("' . $proceed_checkout_button_text . '");
-                                    }
-                                });
-                              </script>';
+            echo '<script type="text/javascript">
+             jQuery(document).ready(function(){
+                 if (jQuery(".checkout-button, .button.checkout.wc-forward").is("input")) {
+                     jQuery(".checkout-button, .button.checkout.wc-forward").val("' . $proceed_checkout_button_text . '");
+                 } else {
+                     jQuery(".checkout-button, .button.checkout.wc-forward").html("' . $proceed_checkout_button_text . '");
+                 }
+             });
+           </script>';
         }
     }
 
