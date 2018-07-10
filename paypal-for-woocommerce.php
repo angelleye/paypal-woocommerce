@@ -47,7 +47,9 @@ if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_BASENAME' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_BASENAME', plugin_basename( __FILE__ ) );
 }
-
+if (!defined('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH')) {
+    define('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ));
+}
 
 /**
  * Set global parameters
