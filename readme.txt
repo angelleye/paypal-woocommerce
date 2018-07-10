@@ -134,6 +134,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue where Smart Buttons would not display on Checkout page when Page Setup options were changed from default. ([PFW-147](https://github.com/angelleye/paypal-woocommerce/pull/1151))
 * Fix - Resolves some PHP notices. ([PFW-135](https://github.com/angelleye/paypal-woocommerce/pull/1152))
 * Fix - Adjusts the check for SSL to coincide with changes made in recent updates to WooCommerce. ([PFW-168](https://github.com/angelleye/paypal-woocommerce/pull/1155))
+* Fix - Resolves an issue with error handling related to Woo Subscription payment failures. ([PFW-171](https://github.com/angelleye/paypal-woocommerce/pull/1158))
 
 = 1.4.11 - 06.21.2018 =
 * Tweak - Further data sanitization and validation for privacy and security. ([PFW-156](https://github.com/angelleye/paypal-woocommerce/pull/1149))
