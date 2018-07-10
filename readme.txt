@@ -130,7 +130,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.4.12 - xx.xx.2018 =
 * Feature - Adds ability to hide individual credit card types from Express Checkout Smart Payment Buttons. ([PFW-179](https://github.com/angelleye/paypal-woocommerce/pull/1159))
 * Tweak - Adjustments to JS around Express Checkout Smart Buttons to improve performance. ([PFW-135](https://github.com/angelleye/paypal-woocommerce/pull/1157))
-* Tweak - Removes unnecessary admin notices to avoid clutter. ([PFW-164](https://github.com/angelleye/paypal-woocommerce/pull/1156))
+* Tweak - Removes unnecessary admin notices to avoid clutter. ([PFW-164](https://github.com/angelleye/paypal-woocommerce/pull/1156)) ([PFW-174](https://github.com/angelleye/paypal-woocommerce/pull/1160)) ([PFW-175](https://github.com/angelleye/paypal-woocommerce/pull/1161))
 * Fix - Resolves an issue where Smart Buttons would not display on Checkout page when Page Setup options were changed from default. ([PFW-147](https://github.com/angelleye/paypal-woocommerce/pull/1151))
 * Fix - Resolves some PHP notices. ([PFW-135](https://github.com/angelleye/paypal-woocommerce/pull/1152))
 * Fix - Adjusts the check for SSL to coincide with changes made in recent updates to WooCommerce. ([PFW-168](https://github.com/angelleye/paypal-woocommerce/pull/1155))
