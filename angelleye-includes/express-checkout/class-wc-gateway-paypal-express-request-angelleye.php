@@ -771,7 +771,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $Payment['shiptozip'] = $shipping_postcode;
                 $Payment['shiptocountrycode'] = $shipping_country;
             }
-            if(!empty($this->cart_param['is_calculation_mismatch']) && $this->cart_param['is_calculation_mismatch'] == false) {
+            if(isset($this->cart_param['is_calculation_mismatch']) && $this->cart_param['is_calculation_mismatch'] == false) {
                 if ($this->gateway->send_items) {
                     $Payment['order_items'] = $this->cart_param['order_items'];
                 } else {
