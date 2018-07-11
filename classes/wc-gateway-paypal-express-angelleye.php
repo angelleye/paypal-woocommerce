@@ -1461,13 +1461,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             }
                             $this->angelleye_check_cart_items();
                             $order_id = WC()->checkout()->create_order($this->posted);
+
                             if (is_wp_error($order_id)) {
                                 throw new Exception($order_id->get_error_message());
                             }
+
+                            /** Creating Order Object for fresh created order */
+                            $order = wc_get_order($order_id);
+
                             if ( ! is_user_logged_in() && WC()->checkout->is_registration_required($order_id) ) {
                                 $paypal_express_request->angelleye_process_customer($order_id);
                             }
-                            do_action('woocommerce_checkout_order_processed', $order_id, $this->posted);
+                            do_action('woocommerce_checkout_order_processed', $order_id, $this->posted, $order);
                         } else {
                             $_POST = WC()->session->get( 'post_data' );
                             $this->posted = WC()->session->get( 'post_data' );
@@ -1511,12 +1516,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             if (is_wp_error($order_id)) {
                                 throw new Exception($order_id->get_error_message());
                             }
+
+                            /** Creating Order Object for fresh created order */
+                            $order = wc_get_order($order_id);
+
                             if ( ! is_user_logged_in() && WC()->checkout->is_registration_required() ) {
                                 $paypal_express_request->angelleye_process_customer($order_id);
                             }
-                            do_action('woocommerce_checkout_order_processed', $order_id, $this->posted);
+                            do_action('woocommerce_checkout_order_processed', $order_id, $this->posted, $order);
                         }
-                        $order = wc_get_order($order_id);
+                        if(!$order instanceof WC_Order) {
+                            $order = wc_get_order($order_id);
+                        }
                         $post_data = WC()->session->get('post_data');
                         if ($this->billing_address && empty($post_data)) {
                             $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
