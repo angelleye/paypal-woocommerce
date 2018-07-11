@@ -165,7 +165,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                                 <td class="forminp forminp-checkbox">
                                     <fieldset>
                                         <div>
-                                            <input type="text" class="regular-text" name="change_proceed_checkout_button_text" value="<?php echo $change_proceed_checkout_button_text; ?>"><span><br/><?php __('Set a value here to override the "Proceed to Checkout" text displayed on the WooCommerce cart page.', 'paypal-for-woocommerce'); ?></span>
+                                            <input type="text" class="regular-text" name="change_proceed_checkout_button_text" value="<?php echo $change_proceed_checkout_button_text; ?>"><span><br/><?php echo __('Set a value here to override the "Proceed to Checkout" text displayed on the WooCommerce cart page.', 'paypal-for-woocommerce'); ?></span>
                                         </div> 														
                                     </fieldset>
                                 </td>
