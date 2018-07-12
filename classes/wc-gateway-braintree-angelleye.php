@@ -510,10 +510,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
                                         $('.braintree-device-data', ccForm).remove();
                                         $('.braintree-token', ccForm).remove();
+                                        $('.woocommerce-error').remove();
+                                        $('.is_submit').remove();
                                         unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
                                         $form.unblock();
-                                        $form.submit();
-                                        return true;
                                     }
                                     if (payload) {
                                         $('.braintree-token', ccForm).remove();
