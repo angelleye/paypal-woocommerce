@@ -1924,7 +1924,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $button_text = sprintf(__('Add merchant account ID for %s', 'paypal-for-woocommerce'), $base_currency);
         ?>
         <tr valign="top">
-            <th scope="row" class="titledesc">
+            <th scope="row" class="titledesc" style="width: 400px;">
                 <select id="wc_braintree_merchant_account_id_currency" class="wc-enhanced-select">
                     <?php foreach (get_woocommerce_currencies() as $code => $name) : ?>
                         <option <?php selected($code, $base_currency); ?> value="<?php echo esc_attr($code); ?>">
