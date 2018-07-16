@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.13 - 07.16.2018 =
+* [[PFW-189](https://github.com/angelleye/paypal-woocommerce/pull/1169)] - Feature - WooCommerce One Click Upsell Compatibility.
+
 = 1.4.12 - 07.16.2018 =
 * Feature - Adds ability to hide individual credit card types from Express Checkout Smart Payment Buttons. ([PFW-179](https://github.com/angelleye/paypal-woocommerce/pull/1159))
 * Feature - Adds option to override the Proceed to Checkout button text on the Woo cart page. ([PFW-183](https://github.com/angelleye/paypal-woocommerce/pull/1168)) ([PFW-193](https://github.com/angelleye/paypal-woocommerce/pull/1167))
