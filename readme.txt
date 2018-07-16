@@ -142,6 +142,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves some PHP notices. ([PFW-135](https://github.com/angelleye/paypal-woocommerce/pull/1152))
 * Fix - Adjusts the check for SSL to coincide with changes made in recent updates to WooCommerce. ([PFW-168](https://github.com/angelleye/paypal-woocommerce/pull/1155))
 * Fix - Resolves an issue with error handling related to Woo Subscription payment failures. ([PFW-171](https://github.com/angelleye/paypal-woocommerce/pull/1158))
+* Fix - Resolves a problem with order amount not displaying properly in Express Checkout screens. ([PFW-176](https://github.com/angelleye/paypal-woocommerce/pull/1165))
 * Fix - Resolves incorrect handling of "skip final review" when Smart Buttons are used in Express Checkout. ([PFW-178](https://github.com/angelleye/paypal-woocommerce/pull/1162))
 
 = 1.4.11 - 06.21.2018 =
