@@ -130,6 +130,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.4.13 - 07.16.2018 =
 * [[PFW-189](https://github.com/angelleye/paypal-woocommerce/pull/1169)] - Feature - WooCommerce One Click Upsell Compatibility.
 * [[PFW-190](https://github.com/angelleye/paypal-woocommerce/pull/1173)] - Tweak - Resolves a CSS conflict in Braintree settings panel.
+* [[PFW-200](https://github.com/angelleye/paypal-woocommerce/pull/1174)] - Tweak - Adjustments to JS related to Braintree data validation.
 
 = 1.4.12 - 07.16.2018 =
 * Feature - Adds ability to hide individual credit card types from Express Checkout Smart Payment Buttons. ([PFW-179](https://github.com/angelleye/paypal-woocommerce/pull/1159))
