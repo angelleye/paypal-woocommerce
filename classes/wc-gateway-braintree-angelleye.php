@@ -504,27 +504,30 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                             if(is_angelleye_braintree_selected()) {
                                 checkout_form.addEventListener('submit', function (event) {
-                                if(is_angelleye_braintree_selected()) {
                                 dropinInstance.requestPaymentMethod(function (err, payload) {
                                     if(err) {
-                                        unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
+                                        $('.woocommerce-error').remove();
                                         $('.braintree-device-data', ccForm).remove();
                                         $('.braintree-token', ccForm).remove();
                                         $('.woocommerce-error').remove();
                                         $('.is_submit').remove();
                                         unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
                                         $form.unblock();
+                                        var scrollElement           = $( '.woocommerce-error' );
+                                        if ( ! scrollElement.length ) {
+                                           scrollElement = $( '.form.checkout' );
+                                        }
+                                        $.scroll_to_notices( scrollElement );
+                                        return false;
                                     }
                                     if (payload) {
+                                        unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
                                         $('.braintree-token', ccForm).remove();
                                         unique_form_for_validation.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
                                         unique_form_for_validation.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + payload.deviceData + ">");
                                         $form.submit();
                                     } 
                                 });
-                                } else {
-                                    return true;
-                                }
                                });
                             }
                         });
