@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 4.9.7
-Stable tag: 1.4.12
+Stable tag: 1.4.13
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,8 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.13 - 07.16.2018 =
+= 1.4.13 - 07.17.2018 =
 * [[PFW-189](https://github.com/angelleye/paypal-woocommerce/pull/1169)] - Feature - WooCommerce One Click Upsell Compatibility.
+* [[PFW-180](https://github.com/angelleye/paypal-woocommerce/pull/1172)] - Tweak - Adjusts optional/required fields on Express Checkout review page.
 * [[PFW-190](https://github.com/angelleye/paypal-woocommerce/pull/1173)] - Tweak - Resolves a CSS conflict in Braintree settings panel.
 * [[PFW-200](https://github.com/angelleye/paypal-woocommerce/pull/1174)] - Tweak - Adjustments to JS related to Braintree data validation.
 
@@ -142,6 +143,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves some PHP notices. ([PFW-135](https://github.com/angelleye/paypal-woocommerce/pull/1152))
 * Fix - Adjusts the check for SSL to coincide with changes made in recent updates to WooCommerce. ([PFW-168](https://github.com/angelleye/paypal-woocommerce/pull/1155))
 * Fix - Resolves an issue with error handling related to Woo Subscription payment failures. ([PFW-171](https://github.com/angelleye/paypal-woocommerce/pull/1158))
+* Fix - Resolves a problem with order amount not displaying properly in Express Checkout screens. ([PFW-176](https://github.com/angelleye/paypal-woocommerce/pull/1165))
 * Fix - Resolves incorrect handling of "skip final review" when Smart Buttons are used in Express Checkout. ([PFW-178](https://github.com/angelleye/paypal-woocommerce/pull/1162))
 
 = 1.4.11 - 06.21.2018 =
@@ -873,5 +875,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.4.12 =
+= 1.4.13 =
 After updating, make sure to clear any caching / CDN plugins you may be using.  Also, go into the plugin's gateway settings, review everything, and click Save even if you do not make any changes.
