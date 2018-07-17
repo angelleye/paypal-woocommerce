@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
-Tested up to: 4.9.6
-Stable tag: 1.4.11
+Tested up to: 4.9.7
+Stable tag: 1.4.12
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,15 +127,22 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.12 - xx.xx.2018 =
+= 1.4.13 - 07.16.2018 =
+* [[PFW-189](https://github.com/angelleye/paypal-woocommerce/pull/1169)] - Feature - WooCommerce One Click Upsell Compatibility.
+* [[PFW-190](https://github.com/angelleye/paypal-woocommerce/pull/1173)] - Tweak - Resolves a CSS conflict in Braintree settings panel.
+* [[PFW-200](https://github.com/angelleye/paypal-woocommerce/pull/1174)] - Tweak - Adjustments to JS related to Braintree data validation.
+
+= 1.4.12 - 07.16.2018 =
 * Feature - Adds ability to hide individual credit card types from Express Checkout Smart Payment Buttons. ([PFW-179](https://github.com/angelleye/paypal-woocommerce/pull/1159))
-* Feature - Adds option to override the Proceed to Checkout button text on the Woo cart page. ([PFW-183](https://github.com/angelleye/paypal-woocommerce/pull/1168))
-* Tweak - Adjustments to JS around Express Checkout Smart Buttons to improve performance. ([PFW-135](https://github.com/angelleye/paypal-woocommerce/pull/1157))
+* Feature - Adds option to override the Proceed to Checkout button text on the Woo cart page. ([PFW-183](https://github.com/angelleye/paypal-woocommerce/pull/1168)) ([PFW-193](https://github.com/angelleye/paypal-woocommerce/pull/1167))
+* Tweak - Adjustments to JS around Express Checkout Smart Buttons to improve performance. ([PFW-135](https://github.com/angelleye/paypal-woocommerce/pull/1157)) ([PFW-178](https://github.com/angelleye/paypal-woocommerce/pull/1162))
 * Tweak - Removes unnecessary admin notices to avoid clutter. ([PFW-164](https://github.com/angelleye/paypal-woocommerce/pull/1156)) ([PFW-174](https://github.com/angelleye/paypal-woocommerce/pull/1160)) ([PFW-175](https://github.com/angelleye/paypal-woocommerce/pull/1161))
+* Fix - Resolves some PHP notices. ([PFW-136](https://github.com/angelleye/paypal-woocommerce/pull/1152))
 * Fix - Resolves an issue where Smart Buttons would not display on Checkout page when Page Setup options were changed from default. ([PFW-147](https://github.com/angelleye/paypal-woocommerce/pull/1151))
 * Fix - Resolves some PHP notices. ([PFW-135](https://github.com/angelleye/paypal-woocommerce/pull/1152))
 * Fix - Adjusts the check for SSL to coincide with changes made in recent updates to WooCommerce. ([PFW-168](https://github.com/angelleye/paypal-woocommerce/pull/1155))
 * Fix - Resolves an issue with error handling related to Woo Subscription payment failures. ([PFW-171](https://github.com/angelleye/paypal-woocommerce/pull/1158))
+* Fix - Resolves a problem with order amount not displaying properly in Express Checkout screens. ([PFW-176](https://github.com/angelleye/paypal-woocommerce/pull/1165))
 * Fix - Resolves incorrect handling of "skip final review" when Smart Buttons are used in Express Checkout. ([PFW-178](https://github.com/angelleye/paypal-woocommerce/pull/1162))
 
 = 1.4.11 - 06.21.2018 =
@@ -867,5 +874,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.4.9 =
+= 1.4.12 =
 After updating, make sure to clear any caching / CDN plugins you may be using.  Also, go into the plugin's gateway settings, review everything, and click Save even if you do not make any changes.
