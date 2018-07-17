@@ -157,9 +157,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
                 add_filter('the_title', array($this, 'angelleye_paypal_for_woocommerce_page_title'), 99, 1);
                 add_action('template_redirect', array($this, 'angelleye_redirect_to_checkout_page'));
-                add_filter('woocommerce_billing_fields', array($this, 'angelleye_optional_billing_fields'), 10, 1);
                 add_action('wp_enqueue_scripts', array($this, 'angelleye_paypal_marketing_solutions'), 10);
-
                 add_action('wp_enqueue_scripts', array($this, 'frontend_scripts'), 100);
                 add_filter('body_class', array($this, 'add_body_classes'));
                 $this->is_order_completed = true;
@@ -290,6 +288,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if (!$this->function_helper->ec_is_express_checkout() || !$this->ec_get_session_data('shipping_details')) {
                 return;
             }
+            $post_data = WC()->session->get('post_data');
             foreach ($this->ec_get_session_data('shipping_details') as $field => $value) {
                 if (!empty($value)) {
                     if ('state' == $field) {
@@ -309,12 +308,14 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     } else {
                         if ($this->angelleye_is_need_to_set_billing_address() == true) {
                             $_POST['billing_' . $field] = wc_clean(stripslashes($value));
+                        } elseif(empty($post_data)) {
+                            $_POST['billing_' . $field] = wc_clean(stripslashes($value));
                         }
                         $_POST['shipping_' . $field] = wc_clean(stripslashes($value));
                     }
                 }
             }
-            $post_data = WC()->session->get('post_data');
+            
             $_POST['order_comments'] = isset($post_data['order_comments']) ? wc_clean($post_data['order_comments']) : '';
             if (!empty($post_data)) {
                 foreach ($post_data as $key => $value) {
@@ -322,18 +323,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         $_POST[$key] = is_string($value) ? wc_clean(stripslashes($value)) : $value;
                     }
                 }
-            } else {
-                if ($this->angelleye_is_need_to_set_billing_address() == false) {
-                    $shipping_details = $this->ec_get_session_data('shipping_details');
-                    if (!empty($shipping_details)) {
-                        $_POST['billing_first_name'] = !empty($shipping_details['first_name']) ? wc_clean($shipping_details['first_name']) : '';
-                        $_POST['billing_last_name'] = !empty($shipping_details['last_name']) ? wc_clean($shipping_details['last_name']) : '';
-                        $_POST['billing_company'] = !empty($shipping_details['company']) ? wc_clean(stripslashes($shipping_details['company'])) : '';
-                        $_POST['billing_email'] = !empty($shipping_details['email']) ? wc_clean($shipping_details['email']) : '';
-                        $_POST['billing_phone'] = !empty($shipping_details['phone']) ? wc_clean($shipping_details['phone']) : '';
-                    }
-                }
-            }
+            } 
             $this->chosen = true;
         } catch (Exception $ex) {
             
@@ -947,21 +937,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         } else {
             return false;
         }
-    }
-
-    public function angelleye_optional_billing_fields($address_fields) {
-        if ($this->function_helper->ec_is_express_checkout()) {
-            $address_fields['billing_email']['required'] = false;
-            $address_fields['billing_country']['required'] = false;
-            $address_fields['billing_state']['required'] = false;
-            $address_fields['billing_first_name']['required'] = false;
-            $address_fields['billing_last_name']['required'] = false;
-            $address_fields['billing_address_1']['required'] = false;
-            $address_fields['billing_address_2']['required'] = false;
-            $address_fields['billing_postcode']['required'] = false;
-            $address_fields['billing_city']['required'] = false;
-        }
-        return $address_fields;
     }
 
     public function angelleye_shipping_sec_title() {
