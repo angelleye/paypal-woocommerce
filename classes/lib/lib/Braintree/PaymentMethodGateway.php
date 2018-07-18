@@ -138,12 +138,23 @@ class PaymentMethodGateway
             'verificationMerchantAccountId',
             'verifyCard',
             'verificationAmount',
+            'usBankAccountVerificationMethod',
             ['paypal' => [
                 'payee_email',
+                'payeeEmail',
                 'order_id',
+                'orderId',
                 'custom_field',
+                'customField',
                 'description',
                 'amount',
+                ['shipping' =>
+                    [
+                        'firstName', 'lastName', 'company', 'countryName',
+                        'countryCodeAlpha2', 'countryCodeAlpha3', 'countryCodeNumeric',
+                        'extendedAddress', 'locality', 'postalCode', 'region',
+                        'streetAddress'],
+                ],
             ]],
         ];
         return [
@@ -164,7 +175,7 @@ class PaymentMethodGateway
 
     public static function createSignature()
     {
-        $signature = array_merge(self::baseSignature(), ['customerId']);
+        $signature = array_merge(self::baseSignature(), ['customerId', 'paypalRefreshToken', 'paypalVaultWithoutUpgrade']);
         return $signature;
     }
 
@@ -280,11 +291,6 @@ class PaymentMethodGateway
         } else if (isset($response['amexExpressCheckoutCard'])) {
             return new Result\Successful(
                 AmexExpressCheckoutCard::factory($response['amexExpressCheckoutCard']),
-                "paymentMethod"
-            );
-        } else if (isset($response['europeBankAccount'])) {
-            return new Result\Successful(
-                EuropeBankAccount::factory($response['europeBankAccount']),
                 "paymentMethod"
             );
         } else if (isset($response['usBankAccount'])) {
