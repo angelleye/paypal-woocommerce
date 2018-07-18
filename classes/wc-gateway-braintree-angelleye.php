@@ -377,7 +377,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->description) {
             echo wpautop(wptexturize($this->description));
         }
-        $this->tokenization_script();
+        if ( $this->supports( 'tokenization' ) ) {
+            $this->tokenization_script();
+        }
         ?>
         <?php
         $this->angelleye_braintree_lib();
@@ -566,6 +568,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     }(jQuery));
                 </script>
                 <?php
+                if ( $this->supports( 'tokenization' ) && is_checkout() ) {
+                    if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                        $this->save_payment_method_checkbox();
+                    }
+                }
             }
         } else {
             parent::payment_fields();
@@ -602,6 +609,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 </script>
                 <?php
             }
+            
             do_action('payment_fields_saved_payment_methods', $this);
         }
     }
@@ -738,7 +746,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if (is_user_logged_in()) {
                 $customer_id = get_current_user_id();
                 $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
-                if (!empty($braintree_customer_id)) {
+                if (!empty($braintree_customer_id) && AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                     $request_data['customerId'] = $braintree_customer_id;
                 } else {
                     $request_data['customer'] = array(
@@ -852,7 +860,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $transaction = Braintree_Transaction::find($this->response->transaction->id);
                 $this->save_payment_token($order, $transaction->creditCard['token']);
                 do_action('before_save_payment_token', $order_id);
-                if ($this->supports('tokenization')) {
+                if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                     try {
                         if (!empty($transaction->creditCard) && !empty($transaction->customer['id'])) {
                             if (0 != $order->get_user_id()) {
