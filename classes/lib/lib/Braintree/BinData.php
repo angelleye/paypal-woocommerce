@@ -1,7 +1,7 @@
 <?php
 namespace Braintree;
 
-class FacilitatorDetails extends Base
+class BinData extends Base
 {
     public static function factory($attributes)
     {
@@ -17,14 +17,14 @@ class FacilitatorDetails extends Base
     }
 
     /**
-     * returns a string representation of the facilitator details
+     * returns a string representation of the bin data
      * @return string
      */
     public function  __toString()
     {
         return __CLASS__ . '[' .
-                Util::attributesToString($this->_attributes) .']';
+            Util::attributesToString($this->_attributes) .']';
     }
 
 }
-class_alias('Braintree\FacilitatorDetails', 'Braintree_FacilitatorDetails');
+class_alias('Braintree\BinData', 'Braintree_BinData');
