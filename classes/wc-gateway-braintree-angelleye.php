@@ -60,6 +60,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->softdescriptor_value = $this->get_option('softdescriptor', '');
         $this->softdescriptor = $this->get_softdescriptor();
         $this->fraud_tool = $this->get_option('fraud_tool', 'basic');
+        $this->payment_action = $this->get_option('payment_action', 'Sale');
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
@@ -621,7 +622,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
      */
     public function process_payment($order_id) {
         $order = new WC_Order($order_id);
-        $success = $this->angelleye_do_payment($order);
+        if( $this->payment_action == 'Sale' ) {
+            $success = $this->angelleye_do_payment($order);
+        } else {
+            $success = $this->angelleye_save_payment_auth($order);
+        }
         if ($success == true) {
             return array(
                 'result' => 'success',
@@ -1993,5 +1998,154 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         <?php
         return trim(preg_replace("/[\n\r\t]/", '', ob_get_clean()));
     }
-
+    
+    public function angelleye_save_payment_auth($order) {
+        $success = true;
+        $this->validate_fields();
+        $this->angelleye_braintree_lib();
+        $customer_id = get_current_user_id();
+        $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
+        if (!empty($braintree_customer_id)) {
+            $result = $this->braintree_create_payment_method_auth($braintree_customer_id);
+            if (!empty($result) && $result != false && $result->success == true) {
+                $return = $this->braintree_save_payment_method_auth($customer_id, $result, $order);
+                return $return;
+            } else {
+                $verification = $result->creditCardVerification;
+                $success = false;
+            }
+        } else {
+            $braintree_customer_id = $this->braintree_create_customer_auth($customer_id);
+            if (!empty($braintree_customer_id)) {
+                $result = $this->braintree_create_payment_method_auth($braintree_customer_id);
+                if (!empty($result) && $result != false && $result->success == true) {
+                    $return = $this->braintree_save_payment_method_auth($customer_id, $result);
+                    return $return;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return $success;
+    }
+    
+    public function braintree_create_customer_auth($customer_id) {
+        $user = get_user_by('id', $customer_id);
+        $firstName = (get_user_meta($customer_id, 'billing_first_name', true)) ? get_user_meta($customer_id, 'billing_first_name', true) : get_user_meta($customer_id, 'shipping_first_name', true);
+        $lastName = (get_user_meta($customer_id, 'billing_last_name', true)) ? get_user_meta($customer_id, 'billing_last_name', true) : get_user_meta($customer_id, 'shipping_last_name', true);
+        $company = (get_user_meta($customer_id, 'billing_company', true)) ? get_user_meta($customer_id, 'billing_company', true) : get_user_meta($customer_id, 'shipping_company', true);
+        $billing_email = (get_user_meta($customer_id, 'billing_email', true)) ? get_user_meta($customer_id, 'billing_email', true) : get_user_meta($customer_id, 'shipping_last_name', true);
+        $billing_email = ($billing_email) ? $billing_email : $user->user_email;
+        $firstName = ($firstName) ? $firstName : $user->first_name;
+        $lastName = ($lastName) ? $lastName : $user->last_name;
+        $create_customer_request = array('firstName' => $firstName,
+            'lastName' => $lastName,
+            'company' => $company,
+            'email' => $billing_email,
+            'phone' => '',
+            'fax' => '',
+            'website' => ''
+        );
+        $result = Braintree_Customer::create(apply_filters('angelleye_woocommerce_braintree_create_customer_request_args', $create_customer_request));
+        if ($result->success == true) {
+            if (!empty($result->customer->id)) {
+                update_user_meta($customer_id, 'braintree_customer_id', $result->customer->id);
+                return $result->customer->id;
+            }
+        }
+    }
+    
+    public function braintree_create_payment_method_auth($braintree_customer_id) {
+        if ($this->enable_braintree_drop_in) {
+            $payment_method_nonce = self::get_posted_variable('braintree_token');
+            if (!empty($payment_method_nonce)) {
+                $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce, 'options' => array('failOnDuplicatePaymentMethod' => true));
+                $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
+                $payment_method_request['options']['verifyCard'] = true;
+                if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
+                    $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
+                }
+            } else {
+                $this->add_log("Error: The payment_method_nonce was unexpectedly empty");
+                wc_add_notice(__('Error: PayPal Powered by Braintree did not supply a payment nonce. Please try again later or use another means of payment.', 'paypal-for-woocommerce'), 'error');
+                return false;
+            }
+        } else {
+            $card = $this->get_posted_card();
+            $payment_method_request = array('customerId' => $braintree_customer_id, 'cvv' => $card->cvc, 'expirationDate' => $card->exp_month . '/' . $card->exp_year, 'number' => $card->number);
+            $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
+            $payment_method_request['options']['verifyCard'] = true;
+            if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
+                $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
+            }
+        }
+        try {
+            if ($this->enable_braintree_drop_in) {
+                $result = Braintree_PaymentMethod::create($payment_method_request);
+            } else {
+                $result = Braintree_CreditCard::create($payment_method_request);
+            }
+            return $result;
+        } catch (Braintree_Exception_Authentication $e) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+            return false;
+        } catch (Braintree_Exception_Authorization $e) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+            return false;
+        } catch (Braintree_Exception_DownForMaintenance $e) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log("Braintree_ClientToken::generate Exception: Request times out.");
+            return false;
+        } catch (Braintree_Exception_ServerError $e) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            $this->add_log("Braintree_ClientToken::generate Braintree_Exception_ServerError" . $e->getMessage());
+            return false;
+        } catch (Braintree_Exception_SSLCertificate $e) {
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            return false;
+        } catch (Exception $ex) {
+            $this->add_log("Braintree_ClientToken::generate Exception:" . $ex->getMessage());
+            return false;
+        }
+    }
+    
+    
+    
+    public function braintree_save_payment_method_auth($customer_id, $result, $order) {
+        if (!empty($result->paymentMethod)) {
+            $braintree_method = $result->paymentMethod;
+        } elseif ($result->creditCard) {
+            $braintree_method = $result->creditCard;
+        } else {
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $this->angelleye_store_card_info($result, $order_id);
+            return false;
+        }
+        update_user_meta($customer_id, 'braintree_customer_id', $braintree_method->customerId);
+        $payment_method_token = $braintree_method->token;
+        if( !empty($payment_method_token) ) {
+            $order->update_status(__('Authorization only transaction', 'paypal-for-woocommerce'));
+            $this->save_payment_token($order, $payment_method_token);
+            return true;
+        } else {
+            $this->angelleye_store_card_info($result, $order_id);
+            return false;
+        }
+    }
+    
+    public function angelleye_store_card_info($result, $order_id) {
+        $verification = $result->creditCardVerification;
+        if( !empty($verification->status) ) {
+            update_post_meta($order_id, 'Card Verification Status', $verification->status);
+        }
+        $verification->processorResponseCode;
+        if( !empty($verification->processorResponseCode) ) {
+            update_post_meta($order_id, 'Processor ResponseCode', $verification->processorResponseCode);
+        }
+        if( !empty($verification->processorResponseText) ) {
+            update_post_meta($order_id, 'Processor Response Text', $verification->processorResponseText);
+        }
+    }
 }
