@@ -69,7 +69,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_braintree_credit_card_form_fields'), 10, 2);
         $this->customer_id;
         add_filter('clean_url', array($this, 'adjust_fraud_script_tag'));
-        add_action('woocommerce_admin_order_data_after_order_details', array($this, 'woocommerce_admin_order_data_after_order_details'), 10, 1);
+       // add_action('woocommerce_admin_order_data_after_order_details', array($this, 'woocommerce_admin_order_data_after_order_details'), 10, 1);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_update_settings'), 10, 1);
         do_action('angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null);
     }
@@ -2011,7 +2011,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $return = $this->braintree_save_payment_method_auth($customer_id, $result, $order);
                 return $return;
             } else {
-                $verification = $result->creditCardVerification;
+                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                $this->angelleye_store_card_info($result, $order_id);
                 $success = false;
             }
         } else {
@@ -2019,7 +2020,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if (!empty($braintree_customer_id)) {
                 $result = $this->braintree_create_payment_method_auth($braintree_customer_id);
                 if (!empty($result) && $result != false && $result->success == true) {
-                    $return = $this->braintree_save_payment_method_auth($customer_id, $result);
+                    $return = $this->braintree_save_payment_method_auth($customer_id, $result, $order);
                     return $return;
                 } else {
                     return false;
@@ -2059,7 +2060,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enable_braintree_drop_in) {
             $payment_method_nonce = self::get_posted_variable('braintree_token');
             if (!empty($payment_method_nonce)) {
-                $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce, 'options' => array('failOnDuplicatePaymentMethod' => true));
+                $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce);
                 $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
                 $payment_method_request['options']['verifyCard'] = true;
                 if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
@@ -2114,23 +2115,24 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     
     
     public function braintree_save_payment_method_auth($customer_id, $result, $order) {
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (!empty($result->paymentMethod)) {
             $braintree_method = $result->paymentMethod;
         } elseif ($result->creditCard) {
             $braintree_method = $result->creditCard;
         } else {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-            $this->angelleye_store_card_info($result, $order_id);
             return false;
         }
         update_user_meta($customer_id, 'braintree_customer_id', $braintree_method->customerId);
         $payment_method_token = $braintree_method->token;
         if( !empty($payment_method_token) ) {
-            $order->update_status(__('Authorization only transaction', 'paypal-for-woocommerce'));
+            update_post_meta($order_id, '_first_transaction_id', $payment_method_token);
+            $payment_order_meta = array('_transaction_id' => $payment_method_token, '_payment_action' => $this->payment_action);
+            AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
+            $order->update_status('on-hold', __('Authorization only transaction', 'paypal-for-woocommerce'));
             $this->save_payment_token($order, $payment_method_token);
             return true;
         } else {
-            $this->angelleye_store_card_info($result, $order_id);
             return false;
         }
     }
