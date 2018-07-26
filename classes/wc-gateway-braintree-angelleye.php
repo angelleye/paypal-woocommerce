@@ -2150,4 +2150,42 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             update_post_meta($order_id, 'Processor Response Text', $verification->processorResponseText);
         }
     }
+    
+    public function pfw_braintree_do_capture($request_data = array(), $order) {
+        $this->angelleye_braintree_lib();
+        if ($this->debug) {
+            $this->add_log('Begin Braintree_Transaction::sale request');
+            $this->add_log('Order: ' . print_r($order->get_order_number(), true));
+        }
+        try {
+            $this->response = Braintree_Transaction::sale($request_data);
+        } catch (Braintree_Exception_Authentication $e) {
+            $order->add_order_note($e->getMessage());
+            $this->add_log("Braintree_Transaction::sale Braintree_Exception_Authentication: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+            return $success = false;
+        } catch (Braintree_Exception_Authorization $e) {
+            $order->add_order_note($e->getMessage());
+            $this->add_log("Braintree_Transaction::sale Braintree_Exception_Authorization: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+            return $success = false;
+        } catch (Braintree_Exception_DownForMaintenance $e) {
+            $order->add_order_note($e->getMessage());
+            $this->add_log("Braintree_Transaction::sale Braintree_Exception_DownForMaintenance: Request times out.");
+            return $success = false;
+        } catch (Braintree_Exception_ServerError $e) {
+            $order->add_order_note($e->getMessage());
+            $this->add_log("Braintree_Transaction::sale Braintree_Exception_ServerError " . $e->getMessage());
+            return $success = false;
+        } catch (Braintree_Exception_SSLCertificate $e) {
+            $order->add_order_note($e->getMessage());
+            $this->add_log("Braintree_Transaction::sale Braintree_Exception_SSLCertificate " . $e->getMessage());
+            return $success = false;
+        } catch (Exception $e) {
+            $order->add_order_note($e->getMessage());
+            $this->add_log('Error: Unable to complete transaction. Reason: ' . $e->getMessage());
+            return $success = false;
+        }
+        
+        return $this->response;
+        
+    }
 }
