@@ -299,9 +299,6 @@ class AngellEYE_Utility {
                         $this->total_DoCapture = self::get_total('DoCapture', 'submitted_for_settlement', $order_id);
                         $paypal_payment_action = array();
                         $paypal_payment_action = array('DoCapture' => 'Capture');
-                        if ($this->total_DoCapture < ($order->get_total() - $order->get_total_refunded())) {
-                            unset($paypal_payment_action['DoCapture']);
-                        }
                         if ($this->total_DoCapture >= ($order->get_total() - $order->get_total_refunded())) {
                             unset($paypal_payment_action['DoCapture']);
                         }
