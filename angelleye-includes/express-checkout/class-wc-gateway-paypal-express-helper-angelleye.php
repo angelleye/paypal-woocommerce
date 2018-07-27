@@ -1156,6 +1156,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if( $template_name != 'cart/proceed-to-checkout-button.php' ) {
             return $template;
         }
+        $change_proceed_checkout_button_text = get_option('change_proceed_checkout_button_text');
+        if( empty($change_proceed_checkout_button_text) ) {
+            return $template;
+        }
         global $woocommerce;
         $_template = $template;
         if ( ! $template_path ) {
