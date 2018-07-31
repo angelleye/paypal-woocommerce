@@ -196,8 +196,10 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $inquiry_result_arr = array(); //stores the response in array format
         parse_str($response['body'], $inquiry_result_arr);
 
-        if ($inquiry_result_arr['RESULT'] == 0 && ($inquiry_result_arr['RESPMSG'] == 'Approved' || $inquiry_result_arr['RESPMSG'] == 'Verified')) {
+        if ($inquiry_result_arr['RESULT'] == 0 && ( $inquiry_result_arr['RESPMSG'] == 'Approved' || $inquiry_result_arr['RESPMSG'] == 'Verified')) {
             $order->add_order_note(sprintf(__('Received result of Inquiry Transaction for the  (Order: %s) and is successful', 'paypal-for-woocommerce'), $order->get_order_number()));
+            return 'Approved';
+        } else if ( $inquiry_result_arr['RESULT'] == 0 && ( substr($_REQUEST['RESPMSG'],0,9) == 'Approved:' || $inquiry_result_arr['RESPMSG'] == 'Verified') ) {
             return 'Approved';
         } else {
             $order->add_order_note(sprintf(__('Received result of Inquiry Transaction for the  (Order: %s) and with error:%s', 'paypal-for-woocommerce'), $order->get_order_number(), $inquiry_result_arr['RESPMSG']));
@@ -302,7 +304,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         wc_clear_notices();
         // Add error
         wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . urldecode(wc_clean($_POST['RESPMSG'])) . '"', 'error');
-
+        $order->add_order_note( __('Payment failed via PayPal Advanced because of.', 'paypal-for-woocommerce') . '&nbsp;' . wc_clean($_POST['RESPMSG']));
         //redirect to the checkout page, if not silent post
         if ($silent_post === false) {
             $this->redirect_to($order->get_checkout_payment_url(true));
@@ -410,6 +412,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 case 0 :
                     //handle exceptional cases
                     if ($_REQUEST['RESPMSG'] == 'Approved' || $_REQUEST['RESPMSG'] == 'Verified') {
+                        $this->success_handler($order, $order_id, $silent_post);
+                    } else if ( substr($_REQUEST['RESPMSG'],0,9) == 'Approved:') {
+                        $order->add_order_note( __('Payment warning via PayPal Advanced.', 'paypal-for-woocommerce') . '&nbsp;' . wc_clean($_POST['RESPMSG']));
                         $this->success_handler($order, $order_id, $silent_post);
                     } else if ($_REQUEST['RESPMSG'] == 'Declined') {
                         $this->decline_handler($order, $order_id, $silent_post);
