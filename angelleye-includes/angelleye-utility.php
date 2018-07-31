@@ -405,7 +405,7 @@ class AngellEYE_Utility {
         if( !empty($_POST['_regular_price'])) {
             $AMT = self::number_format(wc_clean( wp_unslash( $_POST['_regular_price'] ) ) );
         } elseif ($capture_total == null) {
-            $AMT = $this->get_amount_by_transaction_id($transaction_id);
+            $AMT = self::number_format($order->get_total());
         } else {
             $AMT = $capture_total;
         }
