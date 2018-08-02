@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.15 - xx.xx.2018 =
+* [PFW-216](https://github.com/angelleye/paypal-woocommerce/pull/1181) - Fix - Adds localization to confirmation message that was missing it.
+
 = 1.4.14 - 07.17.2018 =
 * [PFW-167](https://github.com/angelleye/paypal-woocommerce/pull/1171) - Tweak - Adjustments to Braintree data validation.
 
