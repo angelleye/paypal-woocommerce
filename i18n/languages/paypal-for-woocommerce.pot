@@ -460,6 +460,10 @@ msgstr ""
 msgid "PayPal Transaction History"
 msgstr ""
 
+#: angelleye-includes/angelleye-utility.php:1072
+msgid "Are you sure?"
+msgstr ""
+
 #: angelleye-includes/angelleye-utility.php:1099
 msgid "Order Total:"
 msgstr ""
