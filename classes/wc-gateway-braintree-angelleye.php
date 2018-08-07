@@ -580,6 +580,77 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             braintree.client.create({
                                 authorization: clientToken
                             }, function (err, clientInstance) {
+                                
+                                
+  braintree.hostedFields.create({
+    client: clientInstance,
+    style: {
+        'input': {
+            'font-size': '1.5em',
+'padding': '8px',
+'background-repeat': 'no-repeat',
+'background-position': 'right .618em center',
+'background-size': '32px 20px',
+'position': 'inherit',
+'background-color': '#FFF',
+'height': 'auto',
+'width': 'auto'
+
+        }
+    },
+    fields: {
+      number: {
+        selector: '#braintree-card-number',
+        placeholder: '1111 1111 1111 1111',
+        class:'wc-credit-card-form-card-number'
+      },
+      cvv: {
+        selector: '#braintree-card-cvc',
+        placeholder: '111'
+      },
+      expirationDate: {
+        selector: '#braintree-card-expiry',
+        placeholder: 'MM/YY'
+      }
+    }
+  }, function(err, hostedFieldsInstance) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    
+     hostedFieldsInstance.on('empty', function (event) {
+      
+      $('#braintree-card-number').removeClass();
+      $('#braintree-card-number').addClass("input-text wc-credit-card-form-card-number hosted-field-braintree braintree-hosted-fields-valid");
+    });
+
+   hostedFieldsInstance.on('cardTypeChange', function (event) {
+       if (event.cards.length === 1) {
+           $('#braintree-card-number').removeClass().addClass(event.cards[0].type.replace("master-card", "mastercard").replace("american-express", "amex").replace("diners-club", "dinersclub").replace("-", ""));
+           $('#braintree-card-number').addClass("input-text wc-credit-card-form-card-number hosted-field-braintree braintree-hosted-fields-valid");
+       }
+   });
+    
+    
+    
+      $('form.checkout').on('checkout_place_order_braintree', function (event) {
+      event.preventDefault();
+
+      hostedFieldsInstance.tokenize(function (err, payload) {
+        if (err) {
+          console.error(err);
+          return;
+        }
+
+        // This is where you would submit payload.nonce to your server
+        alert('Submit your nonce to your server here!');
+      });
+    });
+  });
+                                
+                                
+                                
                                 <?php if($this->fraud_tool != 'basic') { ?>
                                 if( typeof braintree.dataCollector !== 'undefined' || braintree.dataCollector !== null ){
                                 braintree.dataCollector.create({
@@ -1273,8 +1344,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.10.0/js/dropin.min.js', array('jquery'), null, false);
         } else {
             
-            wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.32.1/js/client.min.js', array('jquery'), null, true);
-            wp_enqueue_script('braintree-data-collector', 'https://js.braintreegateway.com/web/3.32.1/js/data-collector.min.js', array('jquery'), null, true);
+            wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.35.0/js/client.min.js', array('jquery'), null, true);
+            wp_enqueue_script('braintree-data-collector', 'https://js.braintreegateway.com/web/3.35.0/js/data-collector.min.js', array('jquery'), null, true);
+            wp_enqueue_script('braintree-gateway-hosted-fields', 'https://js.braintreegateway.com/web/3.35.0/js/hosted-fields.min.js', array('jquery'), null, true);
         }
     }
 
@@ -1312,18 +1384,18 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public function angelleye_braintree_credit_card_form_fields($default_fields, $current_gateway_id) {
         if ($current_gateway_id == $this->id) {
             $fields = array(
-                'card-number-field' => '<p class="form-row form-row-wide">
-                        <label for="' . esc_attr($this->id) . '-card-number">' . apply_filters('cc_form_label_card_number', __('Card number', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-                        <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
-                    </p>',
-                'card-expiry-field' => '<p class="form-row form-row-first">
-                        <label for="' . esc_attr($this->id) . '-card-expiry">' . apply_filters('cc_form_label_expiry', __('Expiry (MM/YY)', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-                        <input id="' . esc_attr($this->id) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry" inputmode="numeric" autocomplete="cc-exp" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="' . esc_attr__('MM / YY', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-expiry') . ' />
-                    </p>',
-                '<p class="form-row form-row-last">
-                        <label for="' . esc_attr($this->id) . '-card-cvc">' . apply_filters('cc_form_label_card_code', __('Card code', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-                        <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
-                    </p>'
+                'card-number-field' => '<div class="form-row form-row-wide">
+                        <label for="' . esc_attr($this->id) . '-card-number">' . apply_filters('cc_form_label_card_number', __('Card number', 'paypal-for-woocommerce'), $this->id) . '</label>
+                        <div id="' . esc_attr($this->id) . '-card-number"  class="input-text wc-credit-card-form-card-number hosted-field-braintree" />
+                    </div>',
+                'card-expiry-field' => '<div class="form-row form-row-first">
+                        <label for="' . esc_attr($this->id) . '-card-expiry">' . apply_filters('cc_form_label_expiry', __('Expiry (MM/YY)', 'paypal-for-woocommerce'), $this->id) . ' </label>
+                        <div id="' . esc_attr($this->id) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry hosted-field-braintree" />
+                    </div>',
+                'card-cvc-field' => '<div class="form-row form-row-last">
+                        <label for="' . esc_attr($this->id) . '-card-cvc">' . apply_filters('cc_form_label_card_code', __('Card code', 'paypal-for-woocommerce'), $this->id) . ' </label>
+                        <div id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc hosted-field-braintree" />
+                    </div>'
             );
             return $fields;
         } else {
