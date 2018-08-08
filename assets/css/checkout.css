@@ -106,14 +106,12 @@ p.woocommerce-SavedPaymentMethods-saveNew label {
 }
 
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree {
-    height:2em;padding:3px;border:1px solid #ccc;border-radius:3px;transition:border-color .16s;-webkit-transition:border-color .16s;background-color:#fff;
+    height:2em;padding:7px;border:1px solid #ccc;border-radius:3px;transition:border-color .16s;-webkit-transition:border-color .16s;background-color:#fff;
 }
 .hidden {
     display: none;
 }
-.woocommerce #payment div.payment_method_braintree iframe {
-  margin: 0 0 0 6px;
-}
+
 
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree {
     
@@ -127,7 +125,30 @@ background-position: right .618em center;
 background-size: 32px 20px;
 
 }
-
+#modal-angelleye-braintree {
+      
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 3000;
+  cursor: pointer;
+}
+#modal-angelleye-braintree iframe {
+    overflow: auto;
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #fff;
+  padding: 1em;
+  box-sizing: content-box;
+  border-radius: 5px;
+}
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.form-row {
     padding: 3px;
 }

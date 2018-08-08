@@ -170,7 +170,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function validate_fields() {
-        if (!$this->enable_braintree_drop_in) {
+        
             try {
                 if (isset($_POST['wc-braintree-payment-token']) && 'new' !== $_POST['wc-braintree-payment-token']) {
                     $token_id = wc_clean($_POST['wc-braintree-payment-token']);
@@ -180,28 +180,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     } else {
                         return true;
                     }
-                } else {
-                    $card = $this->get_posted_card();
-                    if (empty($card->exp_month) || empty($card->exp_year)) {
-                        throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
-                    }
-                    if (!ctype_digit($card->cvc)) {
-                        throw new Exception(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'));
-                    }
-                    if (!ctype_digit($card->exp_month) || !ctype_digit($card->exp_year) || $card->exp_month > 12 || $card->exp_month < 1 || $card->exp_year < date('y')) {
-                        throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
-                    }
-                    if (empty($card->number) || !ctype_digit($card->number)) {
-                        throw new Exception(__('Card number is invalid', 'paypal-for-woocommerce'));
-                    }
-                    return true;
-                }
+                } 
             } catch (Exception $e) {
                 wc_add_notice($e->getMessage(), 'error');
                 return false;
             }
-            return true;
-        } else {
+            
+        
             try {
                 if (isset($_POST['braintree_token']) && !empty($_POST['braintree_token'])) {
                     return true;
@@ -213,7 +198,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 return false;
             }
             return true;
-        }
+        
     }
 
     /**
@@ -570,21 +555,17 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             parent::payment_fields();
             ?>
-                <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
-                <div id="modal" class="hidden">
-  
-  <div class="bt-modal-frame">
-    
-    <div class="bt-modal-body"></div>
-    <div class="bt-modal-footer"><a id="text-close" href="#">Cancel</a></div>
-  </div>
-</div>
+                <div id="modal-angelleye-braintree" class="hidden">
+                    <div class="bt-modal-frame">
+                      <div class="bt-modal-body"></div>
+                      <div class="bt-modal-footer"><a id="text-close" href="#">Cancel</a></div>
+                    </div>
+                </div>
                 <?php 
             if (is_ajax()) {
                 ?>
                 <script type="text/javascript">
                     (function ($) {
-                            
                             $('form.checkout').on('checkout_place_order_braintree', function () {
                                 return braintreeFormHandler();
                             });
@@ -598,7 +579,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             function braintreeFormHandler() {
                                 if ($('#payment_method_braintree').is(':checked')) {
                                     if ( $('.is_submit').length) {
-                                       $('.is_submit').remove();
                                        return true;
                                     }
                                     if (0 === $('input.braintree-token').size()) {
@@ -607,8 +587,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 }
                                 return true;
                             }
-                        
-                            var modal = document.getElementById('modal');
+                            var $form = $('form.checkout, #order_review');
+                            var modal = document.getElementById('modal-angelleye-braintree');
                             var bankFrame = document.querySelector('.bt-modal-body');
                             var closeFrame = document.getElementById('text-close');
                             var ccForm = $('form.checkout');
@@ -622,7 +602,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             function onComponent(name) {
                                 return function (err, component) {
                                     if (err) {
-                                        console.log('component error:', err);
+                                        unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
+                                        move_to_error();
                                         return;
                                     }
                                     components[name] = component;
@@ -640,6 +621,16 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                  }
                                 }
                             }
+                            
+                            function move_to_error() {
+                                var $form = $('form.checkout, #order_review');
+                                $form.unblock();
+                                var scrollElement           = $( '.woocommerce-error' );
+                                if ( ! scrollElement.length ) {
+                                   scrollElement = $( '.form.checkout' );
+                                }
+                                $.scroll_to_notices( scrollElement );
+                            }
                             function addFrame(err, iframe) {
                                 bankFrame.appendChild(iframe);
                                 modal.classList.remove('hidden');
@@ -649,7 +640,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 modal.classList.add('hidden');
                                 iframe.parentNode.removeChild(iframe);
                             }
-                            onFetchClientToken(clientToken);
+                            if ( $('.is_submit').length == 0) {
+                                onFetchClientToken(clientToken);
+                            }
                             function onFetchClientToken(clientToken) {
                                 braintree.client.create({
                                     authorization: clientToken
@@ -657,7 +650,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                             function onClientCreate(err, client) {
                                 if (err) {
-                                    console.log('client error:', err);
+                                    unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
+                                    move_to_error();
                                     return;
                                 }
                                 components.client = client;
@@ -668,6 +662,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     kount: true
                                 }, function (err, dataCollectorInstance) {
                                     if (err) {
+                                        unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
+                                        move_to_error();
                                         $('.braintree-device-data', ccForm).remove();
                                         return;
                                     }
@@ -718,15 +714,27 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 components.threeDSecure.cancelVerifyCard(removeFrame());
                             });
                             $('form.checkout').on('checkout_place_order_braintree', function (event) {
+                                if ( $('.is_submit').length > 0) {
+                                    return true;
+                                }
+                                if( $('.braintree-token').lenght > 0) {
+                                    return true;
+                                }
                                 event.preventDefault();
                                 components.hostedFields.tokenize(function (err, payload) {
                                     if (err) {
-                                        console.log('tokenization error:', err);
+                                        unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
+                                        move_to_error();
                                         return;
                                     } else {
-                                        $('.is_submit').remove();
-                                        unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
+                                        
+                                        
+                                        <?php if($this->threed_secure_enabled === false) { ?>
+                                                    $('.is_submit').remove();
+                                                    unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
                                         unique_form_for_validation.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
+                                        $form.submit();
+                                        <?php } ?>
                                     }
                                     <?php if($this->threed_secure_enabled === true) { ?>
                                         components.threeDSecure.verifyCard({
@@ -736,12 +744,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                             removeFrame: removeFrame
                                         }, function (err, verification) {
                                             if (err) {
-                                                console.log('verification error:', err);
+                                                unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
+                                                move_to_error();
                                                 return;
                                             }
                                             $('.is_submit').remove();
+                                            $('.braintree-token').remove();
                                             unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
-                                            console.log('verification success:', verification);
+                                            unique_form_for_validation.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + verification.nonce + '"/>');
+                                            $form.submit();
                                         });
                                   <?php  } ?>
                                 });
@@ -820,7 +831,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
             $request_data = array();
             $this->angelleye_braintree_lib();
-            $card = $this->get_posted_card();
 
             $billing_company = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_company : $order->get_billing_company();
             $billing_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
@@ -863,23 +873,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'postalCode' => version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode(),
                 'countryCodeAlpha2' => version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country(),
             );
-            if ($this->enable_braintree_drop_in == false) {
-                if ((!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] == 'new') || empty($_POST['wc-braintree-payment-token'])) {
-                    $billing_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
-                    $billing_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
-                    $request_data['creditCard'] = array(
-                        'number' => $card->number,
-                        'expirationDate' => $card->exp_month . '/' . $card->exp_year,
-                        'cvv' => $card->cvc,
-                        'cardholderName' => $billing_first_name . ' ' . $billing_last_name
-                    );
-                } else if (is_user_logged_in() && (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] != 'new')) {
+            
+            if (is_user_logged_in() && (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] != 'new')) {
                     $customer_id = get_current_user_id();
                     $token_id = wc_clean($_POST['wc-braintree-payment-token']);
                     $token = WC_Payment_Tokens::get($token_id);
                     $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
                     $request_data['paymentMethodToken'] = $token->get_token();
-                }
             } else {
                 $request_data['paymentMethodNonce'] = $payment_method_nonce;
             }
