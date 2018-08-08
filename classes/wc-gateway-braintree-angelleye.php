@@ -1529,7 +1529,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function braintree_create_payment_method($braintree_customer_id, $zero_amount_payment = false) {
-        if ($this->enable_braintree_drop_in) {
+        
             $payment_method_nonce = self::get_posted_variable('braintree_token');
             if (!empty($payment_method_nonce)) {
                 $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce, 'options' => array('failOnDuplicatePaymentMethod' => true));
@@ -1542,20 +1542,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 wc_add_notice(__('Error: PayPal Powered by Braintree did not supply a payment nonce. Please try again later or use another means of payment.', 'paypal-for-woocommerce'), 'error');
                 return false;
             }
-        } else {
-            $card = $this->get_posted_card();
-            $payment_method_request = array('customerId' => $braintree_customer_id, 'cvv' => $card->cvc, 'expirationDate' => $card->exp_month . '/' . $card->exp_year, 'number' => $card->number);
-            $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
-            if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
-                $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
-            }
-        }
+        
         try {
-            if ($this->enable_braintree_drop_in) {
+            
                 $result = Braintree_PaymentMethod::create($payment_method_request);
-            } else {
-                $result = Braintree_CreditCard::create($payment_method_request);
-            }
+            
             return $result;
         } catch (Braintree_Exception_Authentication $e) {
             wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
