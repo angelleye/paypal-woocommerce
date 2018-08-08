@@ -108,6 +108,9 @@ p.woocommerce-SavedPaymentMethods-saveNew label {
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree {
     height:2em;padding:3px;border:1px solid #ccc;border-radius:3px;transition:border-color .16s;-webkit-transition:border-color .16s;background-color:#fff;
 }
+.hidden {
+    display: none;
+}
 .woocommerce #payment div.payment_method_braintree iframe {
   margin: 0 0 0 6px;
 }
