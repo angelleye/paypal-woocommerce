@@ -624,6 +624,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             
                             function move_to_error() {
                                 var $form = $('form.checkout, #order_review');
+                                
                                 $form.unblock();
                                 var scrollElement           = $( '.woocommerce-error' );
                                 if ( ! scrollElement.length ) {
@@ -691,7 +692,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     fields: {
                                       number: {
                                         selector: '#braintree-card-number',
-                                        placeholder: '1111 1111 1111 1111',
+                                        placeholder: '•••• •••• •••• ••••',
                                         class:'wc-credit-card-form-card-number'
                                       },
                                       cvv: {
@@ -714,6 +715,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 components.threeDSecure.cancelVerifyCard(removeFrame());
                             });
                             $('form.checkout').on('checkout_place_order_braintree', function (event) {
+                                $form.block({message:null,overlayCSS:{background:"#fff",opacity:.6}});
                                 if ( $('.is_submit').length > 0) {
                                     return true;
                                 }
@@ -798,6 +800,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
      * Process the payment
      */
     public function process_payment($order_id) {
+        $this->add_log(print_r($_POST, true));
         $order = new WC_Order($order_id);
         $success = $this->angelleye_do_payment($order);
         if ($success == true) {
