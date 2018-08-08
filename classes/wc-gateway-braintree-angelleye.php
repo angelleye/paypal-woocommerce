@@ -473,7 +473,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         var $form = $('form.checkout, #order_review');
                         var checkout_form = document.querySelector('form.checkout, form#order_review')
                         var ccForm = $('form.checkout, #order_review');
-                        var unique_form_for_validation = $('form.checkout');
+                        var unique_form_for_validation = $('form.checkout, form#order_review' );
                         var clientToken = "<?php echo $clientToken; ?>";
                         braintree.dropin.create({
                             authorization: clientToken,
@@ -562,7 +562,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     </div>
                 </div>
                 <?php 
-            if (is_ajax()) {
+            if (is_ajax() || is_checkout_pay_page()) {
                 ?>
                 <script type="text/javascript">
                     (function ($) {
@@ -624,7 +624,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             
                             function move_to_error() {
                                 var $form = $('form.checkout, #order_review');
-                                
                                 $form.unblock();
                                 var scrollElement           = $( '.woocommerce-error' );
                                 if ( ! scrollElement.length ) {
@@ -645,6 +644,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 onFetchClientToken(clientToken);
                             }
                             function onFetchClientToken(clientToken) {
+                                
                                 braintree.client.create({
                                     authorization: clientToken
                                 }, onClientCreate);
@@ -1423,7 +1423,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enable_braintree_drop_in) {
             wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.10.0/js/dropin.min.js', array('jquery'), null, false);
         } else {
-            
             wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.35.0/js/client.min.js', array('jquery'), null, true);
             wp_enqueue_script('braintree-data-collector', 'https://js.braintreegateway.com/web/3.35.0/js/data-collector.min.js', array('jquery'), null, true);
             wp_enqueue_script('braintree-three-d-secure', 'https://js.braintreegateway.com/web/3.35.0/js/three-d-secure.js', array('jquery'), null, true);
