@@ -566,6 +566,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 ?>
                 <script type="text/javascript">
                     (function ($) {
+                            $('#wc-braintree-cc-form').hide();
                             $('form.checkout').on('checkout_place_order_braintree', function () {
                                 return braintreeFormHandler();
                             });
@@ -650,6 +651,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 }, onClientCreate);
                             }
                             function onClientCreate(err, client) {
+                                $('#wc-braintree-cc-form').show();
                                 if (err) {
                                     unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
                                     move_to_error();
