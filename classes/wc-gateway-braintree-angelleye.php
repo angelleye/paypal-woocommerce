@@ -554,8 +554,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
         } else {
             parent::payment_fields();
+            
             ?>
-                <div id="modal-angelleye-braintree" class="hidden">
+                <div id="modal-angelleye-braintree" class="angelleye-braintree-hidden">
                     <div class="bt-modal-frame">
                       <div class="bt-modal-body"></div>
                       <div class="bt-modal-footer"><a id="text-close" href="#">Cancel</a></div>
@@ -566,7 +567,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 ?>
                 <script type="text/javascript">
                     (function ($) {
-                            $('#wc-braintree-cc-form').hide();
                             $('form.checkout').on('checkout_place_order_braintree', function () {
                                 return braintreeFormHandler();
                             });
@@ -634,15 +634,17 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                             function addFrame(err, iframe) {
                                 bankFrame.appendChild(iframe);
-                                modal.classList.remove('hidden');
+                                modal.classList.remove('angelleye-braintree-hidden');
                             }
                             function removeFrame() {
                                 var iframe = bankFrame.querySelector('iframe');
-                                modal.classList.add('hidden');
+                                modal.classList.add('angelleye-braintree-hidden');
                                 iframe.parentNode.removeChild(iframe);
                             }
                             if ( $('.is_submit').length == 0) {
-                                onFetchClientToken(clientToken);
+                                $(function() {
+                                    onFetchClientToken(clientToken);
+                                });
                             }
                             function onFetchClientToken(clientToken) {
                                 
@@ -699,11 +701,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                       },
                                       cvv: {
                                         selector: '#braintree-card-cvc',
-                                        placeholder: '111'
+                                        placeholder: 'CVC'
                                       },
                                       expirationDate: {
                                         selector: '#braintree-card-expiry',
-                                        placeholder: 'MM/YY'
+                                        placeholder: 'MM / YY'
                                       }
                                     }
                                 }, onComponent('hostedFields'));
@@ -1425,6 +1427,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enable_braintree_drop_in) {
             wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.10.0/js/dropin.min.js', array('jquery'), null, false);
         } else {
+            wp_enqueue_style('braintree_checkout', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/braintree-checkout.css', array(), VERSION_PFW);
             wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.35.0/js/client.min.js', array('jquery'), null, true);
             wp_enqueue_script('braintree-data-collector', 'https://js.braintreegateway.com/web/3.35.0/js/data-collector.min.js', array('jquery'), null, true);
             wp_enqueue_script('braintree-three-d-secure', 'https://js.braintreegateway.com/web/3.35.0/js/three-d-secure.js', array('jquery'), null, true);
@@ -1468,15 +1471,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $fields = array(
                 'card-number-field' => '<div class="form-row form-row-wide">
                         <label for="' . esc_attr($this->id) . '-card-number">' . apply_filters('cc_form_label_card_number', __('Card number', 'paypal-for-woocommerce'), $this->id) . '</label>
-                        <div id="' . esc_attr($this->id) . '-card-number"  class="input-text wc-credit-card-form-card-number hosted-field-braintree" />
+                        <div id="' . esc_attr($this->id) . '-card-number"  class="input-text wc-credit-card-form-card-number hosted-field-braintree"></div>
                     </div>',
                 'card-expiry-field' => '<div class="form-row form-row-first">
                         <label for="' . esc_attr($this->id) . '-card-expiry">' . apply_filters('cc_form_label_expiry', __('Expiry (MM/YY)', 'paypal-for-woocommerce'), $this->id) . ' </label>
-                        <div id="' . esc_attr($this->id) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry hosted-field-braintree" />
+                        <div id="' . esc_attr($this->id) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry hosted-field-braintree"></div>
                     </div>',
-                'card-cvc-field' => '<div class="form-row form-row-last">
+               'card-cvc-field' => '<div class="form-row form-row-last">
                         <label for="' . esc_attr($this->id) . '-card-cvc">' . apply_filters('cc_form_label_card_code', __('Card code', 'paypal-for-woocommerce'), $this->id) . ' </label>
-                        <div id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc hosted-field-braintree" />
+                        <div id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc hosted-field-braintree"></div>
                     </div>'
             );
             return $fields;
