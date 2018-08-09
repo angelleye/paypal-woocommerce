@@ -57,6 +57,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->enable_braintree_drop_in = $this->get_option('enable_braintree_drop_in') === "yes" ? true : false;
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
+        $this->threed_secure_enabled = 'yes' === $this->get_option('threed_secure_enabled', 'no');
         $this->softdescriptor_value = $this->get_option('softdescriptor', '');
         $this->softdescriptor = $this->get_softdescriptor();
         $this->fraud_tool = $this->get_option('fraud_tool', 'basic');
@@ -368,6 +369,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     'kount_custom' => __('Kount Custom', 'paypal-for-woocommerce')
                 )
             ),
+            'threed_secure_enabled' => array(
+                    'title'       => __( '3D Secure', 'paypal-for-woocommerce' ),
+                    'type'        => 'checkbox',
+                    'label'       => __( 'Enable 3D Secure', 'paypal-for-woocommerce' ),
+                    'description' => __( 'You must contact Braintree support to add this feature to your Braintree account before enabling this option.', 'paypal-for-woocommerce' ),
+                    'default'     => 'no',
+            ),
             'merchant_account_id_title' => array(
                 'title' => __('Merchant Account IDs', 'paypal-for-woocommerce'),
                 'type' => 'title',
@@ -383,7 +391,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->description) {
             echo wpautop(wptexturize($this->description));
         }
-        $this->tokenization_script();
+        if ( $this->supports( 'tokenization' ) ) {
+            $this->tokenization_script();
+        }
         ?>
         <?php
         $this->angelleye_braintree_lib();
@@ -499,6 +509,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         braintree.dropin.create({
                             authorization: clientToken,
                             container: "#braintree-payment-form",
+                            <?php if($this->threed_secure_enabled === true) { ?>
+                               threeDSecure: {
+                                amount: '<?php echo $this->get_order_total(); ?>',
+                              },     
+                            <?php } ?>
                             locale: '<?php echo AngellEYE_Utility::get_button_locale_code(); ?>',
                             paypal: {
                                 flow: 'vault'
@@ -534,6 +549,25 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         $.scroll_to_notices( scrollElement );
                                         return false;
                                     }
+                                    <?php if($this->threed_secure_enabled === true) { ?>
+                                    if (!payload.liabilityShifted && payload.type == 'CreditCard') {
+                                        dropinInstance.clearSelectedPaymentMethod();
+                                        $('.woocommerce-error').remove();
+                                        $('.braintree-device-data', ccForm).remove();
+                                        $('.braintree-token', ccForm).remove();
+                                        $('.woocommerce-error').remove();
+                                        $('.is_submit').remove();
+                                        var theedsecure_error = "<?php echo __('3D Secure error: No liability shift', 'paypal-for-woocommerce'); ?>";
+                                        unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + theedsecure_error + '</li></ul>');
+                                        $form.unblock();
+                                        var scrollElement           = $( '.woocommerce-error' );
+                                        if ( ! scrollElement.length ) {
+                                           scrollElement = $( '.form.checkout' );
+                                        }
+                                        $.scroll_to_notices( scrollElement );
+                                        return false;
+                                    }
+                                    <?php } ?>
                                     if (payload) {
                                         unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
                                         $('.braintree-token', ccForm).remove();
@@ -548,6 +582,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     }(jQuery));
                 </script>
                 <?php
+                if ( $this->supports( 'tokenization' ) && is_checkout() ) {
+                    if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                        $this->save_payment_method_checkbox();
+                    }
+                }
             }
         } else {
             parent::payment_fields();
@@ -584,6 +623,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 </script>
                 <?php
             }
+            
             do_action('payment_fields_saved_payment_methods', $this);
         }
     }
@@ -724,7 +764,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if (is_user_logged_in()) {
                 $customer_id = get_current_user_id();
                 $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
-                if (!empty($braintree_customer_id)) {
+                if (!empty($braintree_customer_id) && AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                     $request_data['customerId'] = $braintree_customer_id;
                 } else {
                     $request_data['customer'] = array(
@@ -838,7 +878,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $transaction = Braintree_Transaction::find($this->response->transaction->id);
                 $this->save_payment_token($order, $transaction->creditCard['token']);
                 do_action('before_save_payment_token', $order_id);
-                if ($this->supports('tokenization')) {
+                if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                     try {
                         if (!empty($transaction->creditCard) && !empty($transaction->customer['id'])) {
                             if (0 != $order->get_user_id()) {
