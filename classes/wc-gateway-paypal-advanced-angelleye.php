@@ -304,7 +304,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         wc_clear_notices();
         // Add error
         wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . urldecode(wc_clean($_POST['RESPMSG'])) . '"', 'error');
-        $order->add_order_note( __('Payment failed via PayPal Advanced because of.', 'paypal-for-woocommerce') . '&nbsp;' . wc_clean($_POST['RESPMSG']));
+        $order->add_order_note( __('Payment failed via PayPal Advanced:', 'paypal-for-woocommerce') . '&nbsp;' . wc_clean($_POST['RESPMSG']));
         //redirect to the checkout page, if not silent post
         if ($silent_post === false) {
             $this->redirect_to($order->get_checkout_payment_url(true));
@@ -336,7 +336,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     private function decline_handler($order, $order_id, $silent_post) {
 
 
-        $order->update_status('failed', __('Payment failed via PayPal Advanced because of.', 'paypal-for-woocommerce') . '&nbsp;' . wc_clean($_POST['RESPMSG']));
+        $order->update_status('failed', __('Payment failed via PayPal Advanced:', 'paypal-for-woocommerce') . '&nbsp;' . wc_clean($_POST['RESPMSG']));
 
         if ($this->debug == 'yes') {
             $this->log->add('paypal_advanced', sprintf(__('Status has been changed to failed for order %s', 'paypal-for-woocommerce'), $order->get_order_number()));
