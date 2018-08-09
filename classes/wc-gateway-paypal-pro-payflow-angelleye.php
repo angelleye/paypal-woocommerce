@@ -485,7 +485,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $card_exp_month = isset($_POST['paypal_pro_payflow_card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_month']) : '';
         $card_number = str_replace(array(' ', '-'), '', $card_number);
         $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
-        if ($card_type == 'amex' && (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD')) {
+        if ($card_type == 'amex' && (WC()->countries->get_base_country() != 'CA' || get_woocommerce_currency() != 'CAD')) {
             throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
         }
         if (strlen($card_exp_year) == 4) {
@@ -1178,7 +1178,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $card_exp_month = isset($_POST['paypal_pro_payflow_card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_month']) : '';
             $card_number = str_replace(array(' ', '-'), '', $card_number);
             $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
-            if ($card_type == 'amex' && (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD')) {
+           if ($card_type == 'amex' && (WC()->countries->get_base_country() != 'CA' || get_woocommerce_currency() != 'CAD')) {
                 throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
             }
             if (strlen($card_exp_year) == 4) {
