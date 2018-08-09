@@ -589,12 +589,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 return true;
                             }
                             var $form = $('form.checkout, #order_review');
+                            var checkout_form = document.querySelector('form.checkout, form#order_review')
                             var modal = document.getElementById('modal-angelleye-braintree');
                             var bankFrame = document.querySelector('.bt-modal-body');
                             var closeFrame = document.getElementById('text-close');
                             var ccForm = $('form.checkout');
                             var clientToken = "<?php echo $clientToken; ?>";
-                            var unique_form_for_validation = $('form.checkout');
+                            var unique_form_for_validation = $('form.checkout, #order_review');
                             var components = {
                                 client: null,
                                 threeDSecure: null,
@@ -718,7 +719,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             closeFrame.addEventListener('click', function () {
                                 components.threeDSecure.cancelVerifyCard(removeFrame());
                             });
-                            $('form.checkout').on('checkout_place_order_braintree', function (event) {
+                            checkout_form.addEventListener('submit', function (event) {
                                 $form.block({message:null,overlayCSS:{background:"#fff",opacity:.6}});
                                 if ( $('.is_submit').length > 0) {
                                     return true;
