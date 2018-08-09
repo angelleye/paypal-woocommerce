@@ -375,13 +375,22 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         'postcode' => WC()->checkout->get_value($type . '_postcode'),
                         'country' => WC()->checkout->get_value($type . '_country'),
                     );
+                    
+                    $shipping_details = $this->ec_get_session_data('shipping_details');
+                    $email = WC()->checkout->get_value($type . '_email');
+                    if(empty($email)) {
+                        $email = !empty($shipping_details['email']) ? $shipping_details['email'] : '';
+                    }
+                    $phone = WC()->checkout->get_value($type . '_phone');
+                    if(empty($phone)) {
+                        $phone = !empty($shipping_details['phone']) ? $shipping_details['phone'] : '';
+                    }
                     $formatted_address = WC()->countries->get_formatted_address($address);
                     $formatted_address = str_replace('<br/>-<br/>', '<br/>', $formatted_address);
                     echo $formatted_address;
-                    $shipping_details = $this->ec_get_session_data('shipping_details');
                     if (!empty($shipping_details)) {
-                        echo!empty($shipping_details['email']) ? '<p class="angelleye-woocommerce-customer-details-email">' . $shipping_details['email'] . '</p>' : '';
-                        echo!empty($shipping_details['phone']) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $shipping_details['phone'] . '</p>' : '';
+                        echo!empty($email) ? '<p class="angelleye-woocommerce-customer-details-email">' . $email . '</p>' : '';
+                        echo!empty($phone) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $phone . '</p>' : '';
                     }
                     ?>
                 </address>
