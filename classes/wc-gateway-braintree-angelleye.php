@@ -2251,10 +2251,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public function get_braintree_exception_message($e) {
         switch ( get_class( $e ) ) {
             case 'Braintree\Exception\Authentication':
-                    $message = __( 'Invalid Credentials, please double-check your API credentials (Merchant ID, Public Key, Private Key, and Merchant Account ID) and try again.', 'paypal-for-woocommerce' );
+                    $message = __( 'Failure - Invalid Credentials - The payment gateway is not configured properly.', 'paypal-for-woocommerce' );
             break;
             case 'Braintree\Exception\Authorization':
-                    $message = __( 'Authorization Failed, please verify the user for the API credentials provided can perform transactions and that the request data is correct.', 'paypal-for-woocommerce' );
+                    $message = __( 'Authorization Failure -  The seller account is not setup to process Authorization transactions.', 'paypal-for-woocommerce' );
             break;
             case 'Braintree\Exception\DownForMaintenance':
                     $message = __( 'Braintree is currently down for maintenance, please try again later.', 'paypal-for-woocommerce' );
