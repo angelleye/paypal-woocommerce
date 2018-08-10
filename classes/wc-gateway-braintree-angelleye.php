@@ -745,7 +745,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     }
                                     <?php if($this->threed_secure_enabled === true) { ?>
                                         components.threeDSecure.verifyCard({
-                                            amount: '10.00',
+                                            amount: '<?php echo $this->get_order_total(); ?>',
                                             nonce: payload.nonce,
                                             addFrame: addFrame,
                                             removeFrame: removeFrame
