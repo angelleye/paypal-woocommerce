@@ -2405,14 +2405,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $wc_existing_token = $this->get_token_by_token($payment_method_token);
                 $paymentMethod = Braintree_PaymentMethod::find($payment_method_token);
                 if ($wc_existing_token == null) {
-                    if (!empty($braintree_method->creditCard['cardType']) && !empty($braintree_method->creditCard['last4'])) {
+                    if (!empty($braintree_method->cardType) && !empty($braintree_method->last4)) {
                         $token = new WC_Payment_Token_CC();
                         $token->set_token($payment_method_token);
                         $token->set_gateway_id($this->id);
-                        $token->set_card_type($braintree_method->creditCard['cardType']);
-                        $token->set_last4($braintree_method->creditCard['last4']);
-                        $token->set_expiry_month($braintree_method->creditCard['expirationMonth']);
-                        $token->set_expiry_year($braintree_method->creditCard['expirationYear']);
+                        $token->set_card_type($braintree_method->cardType);
+                        $token->set_last4($braintree_method->last4);
+                        $token->set_expiry_month($braintree_method->expirationMonth);
+                        $token->set_expiry_year($braintree_method->expirationYear);
                         $token->set_user_id($customer_id);
                         if ($token->validate()) {
                             $save_result = $token->save();
