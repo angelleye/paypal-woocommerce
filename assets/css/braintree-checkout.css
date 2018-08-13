@@ -38,6 +38,3 @@
 .woocommerce-checkout #payment div.payment_box #wc-braintree-cc-form.wc-credit-card-form div.form-row,  .woocommerce #payment div.payment_box #wc-braintree-cc-form.wc-credit-card-form div.form-row{
     padding: 3px;
 }
-#wc-braintree-cc-form {
-    display: none;
-}
