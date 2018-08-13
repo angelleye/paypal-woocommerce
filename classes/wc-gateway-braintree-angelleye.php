@@ -497,7 +497,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         var $form = $('form.checkout, #order_review');
                         var checkout_form = document.querySelector('form.checkout, form#order_review')
                         var ccForm = $('form.checkout, #order_review');
-                        var unique_form_for_validation = $('form.checkout, form#order_review' );
+                        var unique_form_for_validation = $('form.checkout' );
                         var clientToken = "<?php echo $clientToken; ?>";
                         braintree.dropin.create({
                             authorization: clientToken,
@@ -641,7 +641,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             var closeFrame = document.getElementById('text-close');
                             var ccForm = $('form.checkout');
                             var clientToken = "<?php echo $clientToken; ?>";
-                            var unique_form_for_validation = $('form.checkout, #order_review');
+                            var unique_form_for_validation = $('form.checkout');
                             var components = {
                                 client: null,
                                 threeDSecure: null,
