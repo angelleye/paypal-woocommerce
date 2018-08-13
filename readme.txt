@@ -128,6 +128,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 1.4.15 - xx.xx.2018 =
+* [PFW-104](https://github.com/angelleye/paypal-woocommerce/pull/1182) - Feature - Adds Authorization and Capture functionality to Braintree.
+* [PFW-155](https://github.com/angelleye/paypal-woocommerce/pull/1179) - Tweak - Adjustment so the email address used on WC checkout page gets carried through when Express Checkout is used.
+* [PFW-170](https://github.com/angelleye/paypal-woocommerce/pull/1186) - Tweak - Adjustment to PayPal Advanced response handling.
+* [PFW-191](https://github.com/angelleye/paypal-woocommerce/pull/1187) - Tweak - Adjusts CSS related to admin notice.
+* [PFW-197](https://github.com/angelleye/paypal-woocommerce/pull/1178) - Tweak - Adjustment to Braintree token payments experience.
+* [PFW-203](https://github.com/angelleye/paypal-woocommerce/pull/1184) - Tweak - Adjustment to refunds so it pulls current open amount instead of original order amount by default.
+* [PFW-206](https://github.com/angelleye/paypal-woocommerce/pull/1183) - Fix - Resolves a problem with the Proceed to Checkout button localization/translation.
 * [PFW-216](https://github.com/angelleye/paypal-woocommerce/pull/1181) - Fix - Adds localization to confirmation message that was missing it.
 
 = 1.4.14 - 07.17.2018 =
