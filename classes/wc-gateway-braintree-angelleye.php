@@ -650,6 +650,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             function onComponent(name) {
                                 return function (err, component) {
                                     if (err) {
+                                        $('.woocommerce-error').remove();
                                         unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
                                         move_to_error();
                                         return;
@@ -703,6 +704,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                             function onClientCreate(err, client) {
                                 if (err) {
+                                    $('.woocommerce-error').remove();
                                     unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
                                     move_to_error();
                                     return;
@@ -715,6 +717,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     kount: true
                                 }, function (err, dataCollectorInstance) {
                                     if (err) {
+                                        $('.woocommerce-error').remove();
                                         unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
                                         move_to_error();
                                         $('.braintree-device-data', ccForm).remove();
@@ -780,6 +783,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 event.preventDefault();
                                 components.hostedFields.tokenize(function (err, payload) {
                                     if (err) {
+                                        $('.woocommerce-error').remove();
                                         unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
                                         move_to_error();
                                         return;
@@ -801,12 +805,12 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                             removeFrame: removeFrame
                                         }, function (err, verification) {
                                             if (err) {
+                                                $('.woocommerce-error').remove();
                                                 unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
                                                 move_to_error();
                                                 return;
                                             }
                                             $('.is_submit').remove();
-                                            $('.braintree-token').remove();
                                             unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
                                             unique_form_for_validation.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + verification.nonce + '"/>');
                                             $form.submit();
