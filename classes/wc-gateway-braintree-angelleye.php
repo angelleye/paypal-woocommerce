@@ -494,7 +494,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             $('.braintree-device-data').remove();
                         });
                         var button = document.querySelector('#place_order');
-                        var $form = $('form.checkout, #order_review');
+                        var $form = $( 'form.checkout, form#order_review, form#add_payment_method' );
                         var checkout_form = document.querySelector('form.checkout, form#order_review')
                         var ccForm = $('form.checkout, #order_review');
                         var unique_form_for_validation = $('form.checkout' );
@@ -562,10 +562,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     }
                                     <?php } ?>
                                     if (payload) {
-                                        unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
+                                        ccForm.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
                                         $('.braintree-token', ccForm).remove();
-                                        unique_form_for_validation.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
-                                        unique_form_for_validation.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + payload.deviceData + ">");
+                                        ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
+                                        ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + payload.deviceData + ">");
                                         $form.submit();
                                     } 
                                 });
@@ -634,12 +634,12 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 }
                                 return true;
                             }
-                            var $form = $('form.checkout, #order_review');
-                            var checkout_form = document.querySelector('form.checkout, form#order_review')
+                            var $form = $( 'form.checkout, form#order_review, form#add_payment_method' );
+                            var checkout_form = document.querySelector('form.checkout, form#order_review');
                             var modal = document.getElementById('modal-angelleye-braintree');
                             var bankFrame = document.querySelector('.bt-modal-body');
                             var closeFrame = document.getElementById('text-close');
-                            var ccForm = $('form.checkout');
+                            var ccForm = $('form.checkout, #order_review');
                             var clientToken = "<?php echo $clientToken; ?>";
                             var unique_form_for_validation = $('form.checkout');
                             var components = {
@@ -724,7 +724,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         return;
                                     }
                                     if(dataCollectorInstance.deviceData) {
-                                        unique_form_for_validation.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + dataCollectorInstance.deviceData + ">");
+                                        ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + dataCollectorInstance.deviceData + ">");
                                     }
                                 });
                                 }
@@ -773,7 +773,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                if($("input:radio[name='wc-braintree-payment-token']").is(":checked") && $("input[name='wc-braintree-payment-token']:checked").val() != 'new') {
                                     return false;
                                 }
-                                $form.block({message:null,overlayCSS:{background:"#fff",opacity:.6}});
+                                
                                 if ( $('.is_submit').length > 0) {
                                     return true;
                                 }
@@ -792,8 +792,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         
                                         <?php if($this->threed_secure_enabled === false) { ?>
                                                     $('.is_submit').remove();
-                                                    unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
-                                        unique_form_for_validation.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
+                                                    ccForm.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
+                                        ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
                                         $form.submit();
                                         <?php } ?>
                                     }
@@ -811,8 +811,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                                 return;
                                             }
                                             $('.is_submit').remove();
-                                            unique_form_for_validation.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
-                                            unique_form_for_validation.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + verification.nonce + '"/>');
+                                            ccForm.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
+                                            ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + verification.nonce + '"/>');
                                             $form.submit();
                                         });
                                   <?php  } ?>
