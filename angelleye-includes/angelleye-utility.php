@@ -29,6 +29,7 @@ class AngellEYE_Utility {
     public $max_authorize_amount;
     public $remain_authorize_amount;
     public $payflow_transstate;
+    public $order_id = null;
 
     public function __construct($plugin_name, $version) {
         $this->plugin_name = $plugin_name;
@@ -107,6 +108,7 @@ class AngellEYE_Utility {
             if (!class_exists('Angelleye_PayPal_PayFlow')) {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
             }
+            do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_payflow', $gateway_obj, $this, $this->order_id);
             $PayPalConfig = array(
                 'Sandbox' => $this->testmode,
                 'APIUsername' => $this->paypal_user,
@@ -155,6 +157,7 @@ class AngellEYE_Utility {
 
         $order = $theorder;
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
         $paypal_payment_action = array();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
@@ -363,6 +366,7 @@ class AngellEYE_Utility {
         }
         // ensure the authorization is still valid for capture
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
         if ($this->has_authorization_expired($order_id)) {
             return;
         }
@@ -387,11 +391,13 @@ class AngellEYE_Utility {
         }
         // ensure the authorization is still valid for capture
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
         if ($this->has_authorization_expired($order_id)) {
             return;
         }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
         $transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
         remove_action('woocommerce_order_action_wc_paypal_pro_docapture', array($this, 'angelleye_wc_paypal_pro_docapture'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
@@ -399,9 +405,10 @@ class AngellEYE_Utility {
     }
 
     public function pfw_do_capture($order, $transaction_id = null, $capture_total = null) {
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
         $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('DoCapture API call');
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if( !empty($_POST['_regular_price'])) {
             $AMT = self::number_format(wc_clean( wp_unslash( $_POST['_regular_price'] ) ) );
         } elseif ($capture_total == null) {
@@ -473,11 +480,12 @@ class AngellEYE_Utility {
      * @param type $order
      */
     public function angelleye_wc_paypal_express_dovoid($order) {
-        $this->add_ec_angelleye_paypal_php_library();
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         // ensure the authorization is still valid for capture
         if ($this->has_authorization_expired($order_id)) {
             return;
@@ -492,12 +500,13 @@ class AngellEYE_Utility {
      * @param type $order
      */
     public function angelleye_wc_paypal_pro_dovoid($order) {
-        $this->add_ec_angelleye_paypal_php_library();
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
         // ensure the authorization is still valid for capture
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         if ($this->has_authorization_expired($order_id)) {
             return;
         }
@@ -507,9 +516,10 @@ class AngellEYE_Utility {
     }
 
     public function call_do_void($order) {
-        $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('DoVoid API call');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         if (isset($_POST['angelleye_paypal_dovoid_transaction_dropdown']) && !empty($_POST['angelleye_paypal_dovoid_transaction_dropdown'])) {
             $transaction_id = wc_clean($_POST['angelleye_paypal_dovoid_transaction_dropdown']);
         } else {
@@ -574,9 +584,10 @@ class AngellEYE_Utility {
     }
 
     public function call_do_reauthorization($order) {
-        $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('DoReauthorization API call');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         if (isset($_POST['angelleye_paypal_doreauthorization_transaction_dropdown']) && !empty($_POST['angelleye_paypal_doreauthorization_transaction_dropdown'])) {
             $transaction_id = wc_clean($_POST['angelleye_paypal_doreauthorization_transaction_dropdown']);
         } else {
@@ -629,10 +640,12 @@ class AngellEYE_Utility {
      * @param type $order
      */
     public function angelleye_wc_paypal_pro_doreauthorization($order) {
-        $this->add_ec_angelleye_paypal_php_library();
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         remove_action('woocommerce_order_action_wc_paypal_pro_doreauthorization', array($this, 'angelleye_wc_paypal_pro_doreauthorization'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
         $this->call_do_reauthorization($order);
@@ -643,29 +656,34 @@ class AngellEYE_Utility {
      * @param type $order
      */
     public function angelleye_wc_paypal_express_doauthorization($order) {
-        $this->add_ec_angelleye_paypal_php_library();
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         remove_action('woocommerce_order_action_wc_paypal_express_doauthorization', array($this, 'angelleye_wc_paypal_express_doauthorization'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
         $this->call_do_authorization($order);
     }
     
     public function angelleye_wc_paypal_pro_doauthorization($order) {
-        $this->add_ec_angelleye_paypal_php_library();
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         remove_action('woocommerce_order_action_wc_paypal_pro_doauthorization', array($this, 'angelleye_wc_paypal_pro_doauthorization'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
         $this->call_do_authorization($order);
     }
 
     public function call_do_authorization($order) {
-        $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('DoAuthorization API call');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
         if (isset($transaction_id) && !empty($transaction_id)) {
@@ -1309,6 +1327,7 @@ class AngellEYE_Utility {
         }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
         $_first_transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
         if (empty($_first_transaction_id)) {
             return false;
@@ -1698,12 +1717,13 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_wc_paypal_pro_payflow_dovoid($order) {
-        $this->add_ec_angelleye_paypal_php_library();
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
         // ensure the authorization is still valid for capture
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         if ($this->has_authorization_expired($order_id)) {
             return;
         }
@@ -1730,10 +1750,10 @@ class AngellEYE_Utility {
     }
 
     public function call_paypal_pro_payflow_docapture($order, $transaction_id, $capture_total) {
-        $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('Delayed Capture API call');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         if( !empty($_POST['_regular_price'])) {
             $AMT = self::number_format(wc_clean( wp_unslash( $_POST['_regular_price'])));
         } elseif ($capture_total == null) {
@@ -1783,9 +1803,10 @@ class AngellEYE_Utility {
 
     public function call_paypal_pro_payflow_do_void($order) {
         $is_used_first_transaction_id = false;
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
         $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('DoVoid API call');
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (isset($_POST['angelleye_paypal_dovoid_transaction_dropdown']) && !empty($_POST['angelleye_paypal_dovoid_transaction_dropdown'])) {
             $transaction_id = wc_clean($_POST['angelleye_paypal_dovoid_transaction_dropdown']);
         } else {
@@ -1832,19 +1853,22 @@ class AngellEYE_Utility {
      * @param type $order
      */
     public function angelleye_wc_paypal_pro_payflow_doreauthorization($order) {
-        $this->add_ec_angelleye_paypal_php_library();
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
+        $this->add_ec_angelleye_paypal_php_library();
         remove_action('angelleye_wc_paypal_pro_payflow_doreauthorization', array($this, 'angelleye_wc_paypal_pro_payflow_doreauthorization'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
         $this->call_paypal_pro_payflow_do_doreauthorization($order);
     }
 
     public function call_paypal_pro_payflow_do_doreauthorization($order) {
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->order_id = $order_id;
         $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('Do Reauthorization API call');
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
         $AMT = $order->get_total();
