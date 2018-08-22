@@ -14,6 +14,8 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
      * @return void
      */
     public $customer_id;
+    public $PayPal;
+    public $credentials;
 
     function __construct() {
         $this->id = 'paypal_pro_payflow';
@@ -521,25 +523,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
 
-        if (!class_exists('Angelleye_PayPal')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
-        }
-        if (!class_exists('Angelleye_PayPal_PayFlow')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
-        }
-
-        /**
-         * Create PayPal_PayFlow object.
-         */
-        $PayPalConfig = array(
-            'Sandbox' => $this->testmode,
-            'APIUsername' => $this->paypal_user,
-            'APIPassword' => trim($this->paypal_password),
-            'APIVendor' => $this->paypal_vendor,
-            'APIPartner' => $this->paypal_partner,
-            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-        );
-        $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+        $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
 
         try {
 
@@ -680,7 +664,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             
             $this->add_log('PayFlow Request: ' . print_r($log, true));
-            $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
+            $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
 
             /**
              *  cURL Error Handling #146
@@ -689,7 +673,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
 
 
-            $this->add_log('PayFlow Endpoint: ' . $PayPal->APIEndPoint);
+            $this->add_log('PayFlow Endpoint: ' . $this->PayPal->APIEndPoint);
             $this->add_log('PayFlow Response: ' . print_r($PayPalResult, true));
 
 
@@ -1020,25 +1004,12 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         /**
          * Check if the PayPal_PayFlow class has already been established.
          */
-        if (!class_exists('Angelleye_PayPal')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
-        }
-        if (!class_exists('Angelleye_PayPal_PayFlow')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
-        }
+        
 
         /**
          * Create PayPal_PayFlow object.
          */
-        $PayPalConfig = array(
-            'Sandbox' => $this->testmode,
-            'APIUsername' => $this->paypal_user,
-            'APIPassword' => trim($this->paypal_password),
-            'APIVendor' => $this->paypal_vendor,
-            'APIPartner' => $this->paypal_partner,
-            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-        );
-        $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+        $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
         $PayPalRequestData = array(
             'TENDER' => 'C', // C = credit card, P = PayPal
             'TRXTYPE' => 'C', //  S=Sale, A= Auth, C=Credit, D=Delayed Capture, V=Void
@@ -1046,14 +1017,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'AMT' => $amount,
             'CURRENCY' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()
         );
-
-        $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+        $PayPalResult = $this->PayPal->ProcessTransaction($PayPalRequestData);
 
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
 
         $this->add_log('Refund Request: ' . print_r($PayPalRequestData, true));
-        $this->add_log('Refund Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
+        $this->add_log('Refund Response: ' . print_r($this->PayPal->NVPToArray($this->PayPal->MaskAPIResult($PayPalResponse)), true));
 
         /**
          *  cURL Error Handling #146
@@ -1206,21 +1176,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
     public function add_payment_method() {
         $customer_id = get_current_user_id();
-        if (!class_exists('Angelleye_PayPal')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
-        }
-        if (!class_exists('Angelleye_PayPal_PayFlow')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
-        }
-        $PayPalConfig = array(
-            'Sandbox' => $this->testmode,
-            'APIUsername' => $this->paypal_user,
-            'APIPassword' => trim($this->paypal_password),
-            'APIVendor' => $this->paypal_vendor,
-            'APIPartner' => $this->paypal_partner,
-            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-        );
-        $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+        $this->angelleye_load_paypal_payflow_class($this->gateway, $this, null);
         $this->validate_fields();
         $card = $this->get_posted_card();
 
@@ -1262,7 +1218,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'partialauth' => '',
             'authcode' => ''
         );
-        $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_express_set_express_checkout_request_args', $PayPalRequestData));
+        $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_express_set_express_checkout_request_args', $PayPalRequestData));
         if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
             if (in_array($PayPalResult['RESULT'], $this->fraud_error_codes)) {
                 wc_add_notice(__('The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.', 'paypal-for-woocommerce'), 'error');
@@ -1306,21 +1262,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     public function process_subscription_payment($order, $amount, $payment_token = null) {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        if (!class_exists('Angelleye_PayPal')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
-        }
-        if (!class_exists('Angelleye_PayPal_PayFlow')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
-        }
-        $PayPalConfig = array(
-            'Sandbox' => $this->testmode,
-            'APIUsername' => $this->paypal_user,
-            'APIPassword' => trim($this->paypal_password),
-            'APIVendor' => $this->paypal_vendor,
-            'APIPartner' => $this->paypal_partner,
-            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-        );
-        $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+        $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
         try {
 
             if (!empty($_POST['paypal_pro_payflow-card-cardholder-first'])) {
@@ -1427,9 +1369,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             if (!empty($payment_token)) {
                 $PayPalRequestData['origid'] = $payment_token;
             }
-            $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+            $PayPalResult = $this->PayPal->ProcessTransaction($PayPalRequestData);
 
-            $this->add_log('PayFlow Endpoint: ' . $PayPal->APIEndPoint);
+            $this->add_log('PayFlow Endpoint: ' . $this->PayPal->APIEndPoint);
             $this->add_log('PayFlow Response: ' . print_r($PayPalResult, true));
 
             if (empty($PayPalResult['RAWRESPONSE'])) {
@@ -1536,21 +1478,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $are_reference_transactions_enabled = get_option('are_reference_transactions_enabled', 'no');
             if ($are_reference_transactions_enabled == 'no') {
                 $customer_id = get_current_user_id();
-                if (!class_exists('Angelleye_PayPal')) {
-                    require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
-                }
-                if (!class_exists('Angelleye_PayPal_PayFlow')) {
-                    require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
-                }
-                $PayPalConfig = array(
-                    'Sandbox' => $this->testmode,
-                    'APIUsername' => $this->paypal_user,
-                    'APIPassword' => trim($this->paypal_password),
-                    'APIVendor' => $this->paypal_vendor,
-                    'APIPartner' => $this->paypal_partner,
-                    'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-                );
-                $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+                $this->angelleye_load_paypal_payflow_class($this->gateway, $this, null);
                 $this->validate_fields();
                 $card = $this->get_posted_card();
                 $billtofirstname = (get_user_meta($customer_id, 'billing_first_name', true)) ? get_user_meta($customer_id, 'billing_first_name', true) : get_user_meta($customer_id, 'shipping_first_name', true);
@@ -1590,7 +1518,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'partialauth' => '',
                     'authcode' => ''
                 );
-                $PayPalResult = $PayPal->ProcessTransaction($PayPalRequestData);
+                $PayPalResult = $this->PayPal->ProcessTransaction($PayPalRequestData);
                 if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 117)) {
                     $admin_email = get_option("admin_email");
                     $message = __("PayPal Reference Transactions are not enabled on your account, some subscription management features are not enabled", "paypal-for-woocommerce") . "\n\n";
@@ -1649,26 +1577,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         if ($sent_to_admin && 'paypal_pro_payflow' === $payment_method) {
             // Store source in the order
-            if (!class_exists('Angelleye_PayPal')) {
-                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
-            }
-            if (!class_exists('Angelleye_PayPal_PayFlow')) {
-                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
-            }
-            $PayPalConfig = array(
-                'Sandbox' => $this->testmode,
-                'APIUsername' => $this->paypal_user,
-                'APIPassword' => trim($this->paypal_password),
-                'APIVendor' => $this->paypal_vendor,
-                'APIPartner' => $this->paypal_partner,
-                'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-            );
-            $PayPal = new Angelleye_PayPal_PayFlow($PayPalConfig);
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $avscode = $old_wc ? get_post_meta($order->id, '_AVSADDR', true) : get_post_meta($order->get_id(), '_AVSADDR', true);
             if (!empty($avscode)) {
-                $avs_response_message = $PayPal->GetAVSCodeMessage($avscode);
+                $avs_response_message = $this->PayPal->GetAVSCodeMessage($avscode);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-avs-details-heading">' . __('Address Verification Details', 'paypal-for-woocommerce') . '</h3>' . PHP_EOL;
                 echo '<ul class="wc-avs-details order_details avs_details">' . PHP_EOL;
                 $avs_details_fields = apply_filters('angelleye_avs_details_fields', array(
@@ -1690,7 +1605,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $cvvmatch = $old_wc ? get_post_meta($order->id, '_CVV2MATCH', true) : get_post_meta($order->get_id(), '_CVV2MATCH', true);
             if (!empty($cvvmatch)) {
-                $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvvmatch);
+                $cvv2_response_message = $this->PayPal->GetCVV2CodeMessage($cvvmatch);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-cvv2-details-heading">' . __('Card Security Code Details', 'paypal-for-woocommerce') . '</h3>' . PHP_EOL;
                 echo '<ul class="wc-cvv2-details order_details cvv2_details">' . PHP_EOL;
                 $cvv_details_fields = apply_filters('angelleye_cvv2_details_fields', array(
@@ -1725,5 +1640,29 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
         }
     }
+    
+    public function angelleye_load_paypal_payflow_class($gateway, $current, $order_id = null) {
+        do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_payflow', $gateway, $current, $order_id);
+        $this->credentials = array(
+            'Sandbox' => $this->testmode,
+            'APIUsername' => $this->paypal_user,
+            'APIPassword' => trim($this->paypal_password),
+            'APIVendor' => $this->paypal_vendor,
+            'APIPartner' => $this->paypal_partner,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+        );
+        try {
+            if (!class_exists('Angelleye_PayPal')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+            }
+            if (!class_exists('Angelleye_PayPal_PayFlow')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.payflow.class.php' );
+            }
+            $this->PayPal = new Angelleye_PayPal_PayFlow($this->credentials);
+        } catch (Exception $ex) {
+            
+        }
+    }
+    
 
 }
