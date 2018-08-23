@@ -1211,24 +1211,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $userLogined = wp_get_current_user();
             $this->user_email_address = $userLogined->user_email;
             if ($old_wc) {
-                update_post_meta($order_id, '_billing_email', $userLogined->user_email);
                 update_post_meta($order_id, '_customer_user', $userLogined->ID);
             } else {
                 update_post_meta($order->get_id(), '_customer_user', $userLogined->ID);
-                update_post_meta($order->get_id(), '_billing_email', $userLogined->user_email);
-            }
-        } else {
-            $_billing_email = get_post_meta($order_id, '_billing_email', true);
-            if (!empty($_billing_email)) {
-                $this->user_email_address = $_billing_email;
-            } else {
-                $payeremail = WC()->session->get('payeremail');
-                $this->user_email_address = $payeremail;
-                if ($old_wc) {
-                    update_post_meta($order_id, '_billing_email', $payeremail);
-                } else {
-                    update_post_meta($order->get_id(), '_billing_email', $payeremail);
-                }
             }
         }
     }

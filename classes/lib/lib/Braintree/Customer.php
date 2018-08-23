@@ -7,7 +7,7 @@ namespace Braintree;
  *
  * <b>== More information ==</b>
  *
- * For more detailed information on Customers, see {@link http://www.braintreepayments.com/gateway/customer-api http://www.braintreepaymentsolutions.com/gateway/customer-api}
+ * For more detailed information on Customers, see {@link https://developers.braintreepayments.com/reference/response/customer/php https://developers.braintreepayments.com/reference/response/customer/php}
  *
  * @package    Braintree
  * @category   Resources
@@ -102,9 +102,9 @@ class Customer extends Base
      * @param string $id customer id
      * @return Customer
      */
-    public static function find($id)
+    public static function find($id, $associationFilterId = null)
     {
-        return Configuration::gateway()->customer()->find($id);
+        return Configuration::gateway()->customer()->find($id, $associationFilterId);
     }
 
     /**

@@ -51,6 +51,12 @@ class Configuration
             if ($kind == 'privateKey') {
                 $this->_privateKey = $value;
             }
+            if ($kind == 'timeout') {
+                $this->_timeout = $value;
+            }
+            if ($kind == 'acceptGzipEncoding') {
+                $this->_acceptGzipEncoding = $value;
+            }
         }
 
         if (isset($attribs['clientId']) || isset($attribs['accessToken'])) {
@@ -130,7 +136,7 @@ class Configuration
 
     /**
      * Sets or gets the SSL version to use for making requests. See
-     * http://php.net/manual/en/function.curl-setopt.php for possible
+     * https://php.net/manual/en/function.curl-setopt.php for possible
      * CURLOPT_SSLVERSION values.
      *
      * @param integer $value If provided, sets the SSL version
@@ -414,7 +420,7 @@ class Configuration
         return $this->_sslVersion;
     }
 
-    private function getAcceptGzipEncoding()
+    public function getAcceptGzipEncoding()
     {
         return $this->_acceptGzipEncoding;
     }
