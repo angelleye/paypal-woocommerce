@@ -1155,7 +1155,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
 
     public function get_posted_card() {
-        try {
             $card_number = isset($_POST['paypal_pro_payflow-card-number']) ? wc_clean($_POST['paypal_pro_payflow-card-number']) : '';
             $card_cvc = isset($_POST['paypal_pro_payflow-card-cvc']) ? wc_clean($_POST['paypal_pro_payflow-card-cvc']) : '';
             $card_exp_year = isset($_POST['paypal_pro_payflow_card_expiration_year']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_year']) : '';
@@ -1187,9 +1186,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         'start_month' => '',
                         'start_year' => ''
             );
-        } catch (Exception $ex) {
-
-        }
+        
     }
 
     public function add_payment_method() {
