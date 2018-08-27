@@ -1136,7 +1136,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $card_number = str_replace(array(' ', '-'), '', $card_number);
             $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
             if ($card_type == 'amex') {
-                if (WC()->countries->get_base_country() == 'CA' && get_woocommerce_currency() == 'USD' && apply_filters('angelleye_paypal_pro_payflow_amex_ca_usd', true)) {
+                if (WC()->countries->get_base_country() == 'CA' && get_woocommerce_currency() == 'USD' && apply_filters('angelleye_paypal_pro_payflow_amex_ca_usd', true, $this)) {
                     throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
                 }
                 if (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD' && get_woocommerce_currency() != 'CAD') {
