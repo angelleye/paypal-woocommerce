@@ -138,6 +138,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * [PFW-188](https://github.com/angelleye/paypal-woocommerce/pull/1194) - Fix - Resolves a problem with Sale transactions failing when using token payments.
 * [PFW-206](https://github.com/angelleye/paypal-woocommerce/pull/1183) - Fix - Resolves a problem with the Proceed to Checkout button localization/translation.
 * [PFW-216](https://github.com/angelleye/paypal-woocommerce/pull/1181) - Fix - Adds localization to confirmation message that was missing it.
+* [PFW-221](https://github.com/angelleye/paypal-woocommerce/pull/1191) - Fix - Resolves some PHP notices that get displayed when the plugin is activated with debug mode enabled.
 
 = 1.4.14 - 07.17.2018 =
 * [PFW-167](https://github.com/angelleye/paypal-woocommerce/pull/1171) - Tweak - Adjustments to Braintree data validation.
