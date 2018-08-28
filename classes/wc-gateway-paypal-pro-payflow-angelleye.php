@@ -479,25 +479,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
      */
     function process_payment($order_id) {
         $order = new WC_Order($order_id);
-        $card_number = isset($_POST['paypal_pro_payflow-card-number']) ? wc_clean($_POST['paypal_pro_payflow-card-number']) : '';
-        $card_cvc = isset($_POST['paypal_pro_payflow-card-cvc']) ? wc_clean($_POST['paypal_pro_payflow-card-cvc']) : '';
-        $card_exp_year = isset($_POST['paypal_pro_payflow_card_expiration_year']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_year']) : '';
-        $card_exp_month = isset($_POST['paypal_pro_payflow_card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_month']) : '';
-        $card_number = str_replace(array(' ', '-'), '', $card_number);
-        $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
-        if ($card_type == 'amex' && (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD')) {
-            throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
-        }
-        if (strlen($card_exp_year) == 4) {
-            $card_exp_year = $card_exp_year - 2000;
-        }
-
-        $card_exp_month = (int) $card_exp_month;
-        if ($card_exp_month < 10) {
-            $card_exp_month = '0' . $card_exp_month;
-        }
+        $card = $this->get_posted_card();
         // Do payment with paypal
-        return $this->do_payment($order, $card_number, $card_exp_month . $card_exp_year, $card_cvc);
+        return $this->do_payment($order, $card->number, $card->exp_month . $card->exp_year, $card->cvc);
     }
 
     /**
@@ -1173,16 +1157,21 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
 
     public function get_posted_card() {
-        try {
             $card_number = isset($_POST['paypal_pro_payflow-card-number']) ? wc_clean($_POST['paypal_pro_payflow-card-number']) : '';
             $card_cvc = isset($_POST['paypal_pro_payflow-card-cvc']) ? wc_clean($_POST['paypal_pro_payflow-card-cvc']) : '';
             $card_exp_year = isset($_POST['paypal_pro_payflow_card_expiration_year']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_year']) : '';
             $card_exp_month = isset($_POST['paypal_pro_payflow_card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_month']) : '';
             $card_number = str_replace(array(' ', '-'), '', $card_number);
             $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
-            if ($card_type == 'amex' && (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD')) {
-                throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
+            if ($card_type == 'amex') {
+                if (WC()->countries->get_base_country() == 'CA' && get_woocommerce_currency() == 'USD' && apply_filters('angelleye_paypal_pro_payflow_amex_ca_usd', true, $this)) {
+                    throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
+                }
+                if (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD' && get_woocommerce_currency() != 'CAD') {
+                    throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
+                }
             }
+             
             if (strlen($card_exp_year) == 4) {
                 $card_exp_year = $card_exp_year - 2000;
             }
@@ -1199,9 +1188,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         'start_month' => '',
                         'start_year' => ''
             );
-        } catch (Exception $ex) {
-
-        }
+        
     }
 
     public function add_payment_method() {
