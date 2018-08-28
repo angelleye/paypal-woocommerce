@@ -670,13 +670,15 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['expdate'] = '';
                 $log['origid'] = $token->get_token();
             } else {
-                $log['acct'] = '****';
-                $log['cvv2'] = '****';
+                if ($this->is_subscription($order_id)) {
+                    $PayPalRequestData['origid'] = get_post_meta($order_id, '_payment_tokens', true);
+                    $log['origid'] = get_post_meta($order_id, '_payment_tokens', true);
+                } else {
+                    $log['acct'] = '****';
+                    $log['cvv2'] = '****';
+                }
             }
-            if ($this->is_subscription($order_id)) {
-                $PayPalRequestData['origid'] = get_post_meta($order_id, '_payment_tokens', true);
-                $log['origid'] = get_post_meta($order_id, '_payment_tokens', true);
-            }
+            
             $this->add_log('PayFlow Request: ' . print_r($log, true));
             $PayPalResult = $PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
 
