@@ -300,6 +300,14 @@ class AngellEYE_Utility {
                     case 'braintree' : {
                         $this->total_Order = $order->get_total();
                         $this->total_DoCapture = self::get_total('DoCapture', 'submitted_for_settlement', $order_id);
+                        if( $this->total_DoCapture == 0 ) {
+                            $this->total_DoCapture = self::get_total('DoCapture', 'settling', $order_id);
+                        }
+                        $this->total_Order = self::get_total('Order', 'Pending', $order_id);
+                        $this->total_DoVoid = self::get_total('DoVoid', '', $order_id);
+                        $this->total_Pending_DoAuthorization = self::get_total('DoAuthorization', 'Pending', $order_id);
+                        $this->total_Completed_DoAuthorization = self::get_total('DoAuthorization', 'Completed', $order_id);
+                        $this->total_DoReauthorization = self::get_total('DoReauthorization', '', $order_id);
                         $paypal_payment_action = array();
                         $paypal_payment_action = array('DoCapture' => 'Capture');
                         if ($this->total_DoCapture >= ($order->get_total() - $order->get_total_refunded())) {
