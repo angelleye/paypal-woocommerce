@@ -32,6 +32,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->email_notify_order_cancellations = $this->gateway->get_option('email_notify_order_cancellations', 'no');
             $this->pending_authorization_order_status = $this->gateway->get_option('pending_authorization_order_status', 'On Hold');
             $this->enable_in_context_checkout_flow = $this->gateway->get_option('enable_in_context_checkout_flow', 'yes');
+            $this->id = 'paypal_express';
             if ($this->testmode == false) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
