@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 4.9.7
-Stable tag: 1.4.14
+Stable tag: 1.4.15
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.15 - xx.xx.2018 =
+= 1.4.15 - 09.05.2018 =
 * [PFW-104](https://github.com/angelleye/paypal-woocommerce/pull/1182) - Feature - Adds Authorization and Capture functionality to Braintree.
 * [PFW-213](https://github.com/angelleye/paypal-woocommerce/pull/1188)[PFW-229](https://github.com/angelleye/paypal-woocommerce/pull/1201) - Feature - Upgrades Braintree Direct Credit Card form to use secure hosted payments fields.
 * [PFW-155](https://github.com/angelleye/paypal-woocommerce/pull/1179) - Tweak - Adjustment so the email address used on WC checkout page gets carried through when Express Checkout is used.
@@ -897,5 +897,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.4.14 =
+= 1.4.15 =
 After updating, make sure to clear any caching / CDN plugins you may be using.  Also, go into the plugin's gateway settings, review everything, and click Save even if you do not make any changes.
