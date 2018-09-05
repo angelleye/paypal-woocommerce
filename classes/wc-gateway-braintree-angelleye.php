@@ -457,7 +457,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     <div id="braintree-payment-form"></div>
                 </fieldset>
             </div>
-            <?php if (is_ajax() || is_checkout_pay_page()) { ?>
+            <?php if (is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) { ?>
                 <script type="text/javascript">
                     (function ($) {
                         $('form.checkout').on('checkout_place_order_braintree', function () {
@@ -472,6 +472,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         });
                         function braintreeFormHandler() {
                             if ($('#payment_method_braintree').is(':checked')) {
+                                console.log('test');
                                 if ( $('.is_submit').length) {
                                    $('.is_submit').remove();
                                    return true;
@@ -495,9 +496,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         });
                         var button = document.querySelector('#place_order');
                         var $form = $( 'form.checkout, form#order_review, form#add_payment_method' );
-                        var checkout_form = document.querySelector('form.checkout, form#order_review')
-                        var ccForm = $('form.checkout, #order_review');
-                        var unique_form_for_validation = $('form.checkout' );
+                        var checkout_form = document.querySelector('form.checkout, form#order_review, form#add_payment_method')
+                        var ccForm = $('form.checkout, #order_review, form#add_payment_method');
+                        var unique_form_for_validation = $('form.checkout, form#add_payment_method' );
                         var clientToken = "<?php echo $clientToken; ?>";
                         braintree.dropin.create({
                             authorization: clientToken,
@@ -592,7 +593,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     </div>
                 </div>
                 <?php 
-            if (is_ajax() || is_checkout_pay_page()) {
+            if (is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) {
                 ?>
                 <script type="text/javascript">
                     (function ($) {
@@ -635,13 +636,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 return true;
                             }
                             var $form = $( 'form.checkout, form#order_review, form#add_payment_method' );
-                            var checkout_form = document.querySelector('form.checkout, form#order_review');
+                            var checkout_form = document.querySelector('form.checkout, form#order_review, form#add_payment_method');
                             var modal = document.getElementById('modal-angelleye-braintree');
                             var bankFrame = document.querySelector('.bt-modal-body');
                             var closeFrame = document.getElementById('text-close');
-                            var ccForm = $('form.checkout, #order_review');
+                            var ccForm = $('form.checkout, #order_review, form#add_payment_method');
                             var clientToken = "<?php echo $clientToken; ?>";
-                            var unique_form_for_validation = $('form.checkout');
+                            var unique_form_for_validation = $('form.checkout, form#add_payment_method');
                             var components = {
                                 client: null,
                                 threeDSecure: null,
@@ -690,11 +691,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 iframe.parentNode.removeChild(iframe);
                             }
                             if ( $('.is_submit').length == 0) {
-                                if(is_angelleye_braintree_selected()) {
+                                
                                     $(function() {
                                         onFetchClientToken(clientToken);
                                     });
-                                }
+                                
                             }
                             function onFetchClientToken(clientToken) {
                                 
@@ -713,7 +714,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 <?php if($this->fraud_tool != 'basic') { ?>
                                 if( typeof braintree.dataCollector !== 'undefined' || braintree.dataCollector !== null ){
                                 braintree.dataCollector.create({
-                                    client: clientInstance,
+                                    client: client,
                                     kount: true
                                 }, function (err, dataCollectorInstance) {
                                     if (err) {
@@ -1587,6 +1588,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if ($result->success == true) {
                 $return = $this->braintree_save_payment_method($customer_id, $result, $zero_amount_payment);
                 return $return;
+            } else {
+                return array(
+                    'result' => 'failure',
+                    'redirect' => ''
+                );
             }
         } else {
             $braintree_customer_id = $this->braintree_create_customer($customer_id);
@@ -1595,13 +1601,18 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 if ($result->success == true) {
                     $return = $this->braintree_save_payment_method($customer_id, $result, $zero_amount_payment);
                     return $return;
+                } else {
+                    return array(
+                        'result' => 'failure',
+                        'redirect' => ''
+                    );
                 }
             }
         }
     }
 
     public function braintree_create_payment_method($braintree_customer_id, $zero_amount_payment = false) {
-            
+            $payment_method_nonce = self::get_posted_variable('braintree_token');
             if (!empty($payment_method_nonce)) {
                 $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce, 'options' => array('failOnDuplicatePaymentMethod' => true));
                 $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
