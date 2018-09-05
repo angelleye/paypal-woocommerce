@@ -550,7 +550,7 @@ class Angelleye_PayPal
 	 */
 	function GetAVSCodeMessage($AVSCode)
 	{					  
-		return $this->AVSCodes[$AVSCode];
+		return isset($this->AVSCodes[$AVSCode]) ? $this->AVSCodes[$AVSCode] : '';
 	}
 	
 	/**
@@ -562,7 +562,7 @@ class Angelleye_PayPal
 	 */
 	function GetCVV2CodeMessage($CVV2Code)
 	{
-		return $this->CVV2Codes[$CVV2Code];	
+		return isset($this->CVV2Codes[$CVV2Code]) ? $this->CVV2Codes[$CVV2Code] : '';
 	}
 	
 	/**
