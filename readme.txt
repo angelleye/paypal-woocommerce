@@ -142,6 +142,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * [PFW-221](https://github.com/angelleye/paypal-woocommerce/pull/1191) - Fix - Resolves some PHP notices that get displayed when the plugin is activated with debug mode enabled.
 * [PFW-222](https://github.com/angelleye/paypal-woocommerce/pull/1185) - Fix - Adds Invoice ID to DoCapture requests per new PayPal requirements.
 * [PFW-223](https://github.com/angelleye/paypal-woocommerce/pull/1190)[PFW-231](https://github.com/angelleye/paypal-woocommerce/pull/1192) - Fix - Resolves a duplicate error message sometimes displayed on Braintree payment failures.
+* [PFW-232](https://github.com/angelleye/paypal-woocommerce/pull/1193) - Fix - Resolves a problem where Braintree would not always work from the Woo checkout order page.
 
 = 1.4.14 - 07.17.2018 =
 * [PFW-167](https://github.com/angelleye/paypal-woocommerce/pull/1171) - Tweak - Adjustments to Braintree data validation.
