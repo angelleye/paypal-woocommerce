@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.15 - xx.xx.2018 =
 * [PFW-104](https://github.com/angelleye/paypal-woocommerce/pull/1182) - Feature - Adds Authorization and Capture functionality to Braintree.
+* [PFW-213](https://github.com/angelleye/paypal-woocommerce/pull/1188) - Feature - Upgrades Braintree Direct Credit Card form to use secure hosted payments fields.
 * [PFW-155](https://github.com/angelleye/paypal-woocommerce/pull/1179) - Tweak - Adjustment so the email address used on WC checkout page gets carried through when Express Checkout is used.
 * [PFW-170](https://github.com/angelleye/paypal-woocommerce/pull/1186) - Tweak - Adjustment to PayPal Advanced response handling.
 * [PFW-191](https://github.com/angelleye/paypal-woocommerce/pull/1187) - Tweak - Adjusts CSS related to admin notice.
