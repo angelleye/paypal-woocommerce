@@ -1703,18 +1703,27 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         update_user_meta($customer_id, 'braintree_customer_id', $braintree_method->customerId);
         $payment_method_token = $braintree_method->token;
-        
         $wc_existing_token = $this->get_token_by_token($payment_method_token);
         if ($wc_existing_token == null) {
             $token = new WC_Payment_Token_CC();
-
-            $token->set_token($payment_method_token);
-            $token->set_gateway_id($this->id);
-            $token->set_card_type($braintree_method->cardType);
-            $token->set_last4($braintree_method->last4);
-            $token->set_expiry_month($braintree_method->expirationMonth);
-            $token->set_expiry_year($braintree_method->expirationYear);
-            $token->set_user_id($customer_id);
+            if (!empty($braintree_method->cardType) && !empty($braintree_method->last4)) {
+                $token->set_token($payment_method_token);
+                $token->set_gateway_id($this->id);
+                $token->set_card_type($braintree_method->cardType);
+                $token->set_last4($braintree_method->last4);
+                $token->set_expiry_month($braintree_method->expirationMonth);
+                $token->set_expiry_year($braintree_method->expirationYear);
+                $token->set_user_id($customer_id);
+            } elseif (!empty($braintree_method->billingAgreementId)) {    
+               $customer_id = get_current_user_id();
+                $token->set_token($braintree_method->billingAgreementId);
+                $token->set_gateway_id($this->id);
+                $token->set_card_type('PayPal Billing Agreement');
+                $token->set_last4(substr($braintree_method->billingAgreementId, -4));
+                $token->set_expiry_month(date('m'));
+                $token->set_expiry_year(date('Y', strtotime('+20 year')));
+                $token->set_user_id($customer_id); 
+            }
             if ($token->validate()) {
                 $save_result = $token->save();
                 if ($save_result) {
