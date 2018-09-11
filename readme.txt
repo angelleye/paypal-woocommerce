@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.16 - xx.xx.2018 =
+* [PFW-234](https://github.com/angelleye/paypal-woocommerce/pull/1198) - Tweak - Adds required hooks for our PayPal for WooCommerce Multi-Account extension.
+
 = 1.4.15 - 09.05.2018 =
 * [PFW-104](https://github.com/angelleye/paypal-woocommerce/pull/1182) - Feature - Adds Authorization and Capture functionality to Braintree.
 * [PFW-213](https://github.com/angelleye/paypal-woocommerce/pull/1188)[PFW-229](https://github.com/angelleye/paypal-woocommerce/pull/1201) - Feature - Upgrades Braintree Direct Credit Card form to use secure hosted payments fields.
