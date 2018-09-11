@@ -14,7 +14,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     function __construct() {
         $this->id = 'braintree';
-        $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
+        $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/paypal-credit-card-logos.png', plugin_basename(dirname(__FILE__))));
         if (is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' )) {
             $this->icon = preg_replace("/^http:/i", "https:", $this->icon);
         }
@@ -321,7 +321,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'card_icon' => array(
                 'title' => __('Card Icon', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
+                'default' => plugins_url('/assets/images/paypal-credit-card-logos.png', plugin_basename(dirname(__FILE__))),
                 'class' => 'button_upload'
             ),
             'debug' => array(
