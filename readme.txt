@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.16 - xx.xx.2018 =
 * [PFW-234](https://github.com/angelleye/paypal-woocommerce/pull/1198) - Tweak - Adds required hooks for our PayPal for WooCommerce Multi-Account extension.
+* [PFW-186](https://github.com/angelleye/paypal-woocommerce/pull/1206) - Fix - Resolves a problem where the detailed vs. generic error display option was not functioning as expected.
 
 = 1.4.15 - 09.05.2018 =
 * [PFW-104](https://github.com/angelleye/paypal-woocommerce/pull/1182) - Feature - Adds Authorization and Capture functionality to Braintree.
