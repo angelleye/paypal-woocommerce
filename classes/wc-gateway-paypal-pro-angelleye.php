@@ -975,7 +975,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $DPFields = array(
             'paymentaction' => ($order->get_total() > 0) ? $this->payment_action : 'Authorization', // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
             'ipaddress' => AngellEYE_Utility::get_user_ip(),                            // Required.  IP address of the payer's browser.
-            'returnfmfdetails' => '1'                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
+            'returnfmfdetails' => '1',                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
+            'softdescriptor' => $this->softdescriptor
         );
 
 
@@ -1636,7 +1637,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $DPFields = array(
             'paymentaction' => 'Authorization',
             'ipaddress' => AngellEYE_Utility::get_user_ip(),
-            'returnfmfdetails' => '1'
+            'returnfmfdetails' => '1',
+            'softdescriptor' => $this->softdescriptor
         );
         $CCDetails = array(
             'creditcardtype' => $card->type,
@@ -1786,7 +1788,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $DPFields = array(
             'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
             'ipaddress' => AngellEYE_Utility::get_user_ip(), // Required.  IP address of the payer's browser.
-            'returnfmfdetails' => '1'                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
+            'returnfmfdetails' => '1',                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
+            'softdescriptor' => $this->softdescriptor
         );
         
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
@@ -1910,7 +1913,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'referenceid' => get_post_meta($order_id, '_payment_tokens_id', true),
             'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale',
             'returnfmfdetails' => '1',
-            'softdescriptor' => ''
+            'softdescriptor' => $this->softdescriptor
         );
         $PayPalResult = $PayPal->DoReferenceTransaction($PayPalRequestData);
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoReferenceTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
