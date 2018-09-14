@@ -99,14 +99,26 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 }
                 ob_start();
                 if (wc_notice_count('error') > 0) {
-                    wp_send_json(array(
-                        'url' => get_permalink(wc_get_page_id('cart'))
-                    ));
+                    if($this->save_abandoned_checkout == true) {
+                        wp_send_json(array(
+                            'url' => get_permalink(wc_get_page_id('cart'))
+                        ));
+                    } else {
+                        return array(
+                            'url' => get_permalink(wc_get_page_id('cart'))
+                        );
+                    }
                     exit();
                 } else {
-                     wp_send_json(array(
-                        'url' => $payPalURL
-                    ));
+                    if($this->save_abandoned_checkout == true) {
+                        wp_send_json(array(
+                           'url' => $payPalURL
+                       ));
+                    } else {
+                        return array(
+                           'url' => $payPalURL
+                       );
+                    }
                     exit();
                 }
                 
@@ -120,9 +132,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     ob_end_clean();
                 }
                 ob_start();
-                wp_send_json(array(
-                    'url' => $payPalURL
-                ));
+                if($this->save_abandoned_checkout == true) {
+                    wp_send_json(array(
+                        'url' => $payPalURL
+                    ));
+                } else {
+                    return $payPalURL;
+                }
                 exit();
             } else {
                 $args = array(
@@ -134,7 +150,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         ob_end_clean();
                     }
                     ob_start();
-                    wp_send_json($args);
+                    if($this->save_abandoned_checkout == true) {
+                        return $args;
+                    } else {
+                        wp_send_json($args);
+                    }
                 } else {
                     echo '<!--WC_START-->' . json_encode($args) . '<!--WC_END-->';
                 }
