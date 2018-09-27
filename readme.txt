@@ -127,8 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.16 - xx.xx.2018 =
+= 1.4.16 - 09.26.2018 =
 * [PFW-252](https://github.com/angelleye/paypal-woocommerce/pull/1204) - Feature - Adds SOFTDESCRIPTOR to direct credit card processing requests.
+* [PFW-31](https://github.com/angelleye/paypal-woocommerce/pull/1199)  - Tweak - Updates credit card icons for direct CC processing gateways to a more modern style.
 * [PFW-234](https://github.com/angelleye/paypal-woocommerce/pull/1198) - Tweak - Adds required hooks for our PayPal for WooCommerce Multi-Account extension.
 * [PFW-186](https://github.com/angelleye/paypal-woocommerce/pull/1206) - Fix - Resolves a problem where the detailed vs. generic error display option was not functioning as expected.
 
