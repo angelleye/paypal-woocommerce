@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 4.9.8
-Stable tag: 1.4.15
+Stable tag: 1.4.16
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,8 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.4.16 - xx.xx.2018 =
+= 1.4.16 - 09.26.2018 =
 * [PFW-252](https://github.com/angelleye/paypal-woocommerce/pull/1204) - Feature - Adds SOFTDESCRIPTOR to direct credit card processing requests.
+* [PFW-31](https://github.com/angelleye/paypal-woocommerce/pull/1199)  - Tweak - Updates credit card icons for direct CC processing gateways to a more modern style.
 * [PFW-234](https://github.com/angelleye/paypal-woocommerce/pull/1198) - Tweak - Adds required hooks for our PayPal for WooCommerce Multi-Account extension.
 * [PFW-186](https://github.com/angelleye/paypal-woocommerce/pull/1206) - Fix - Resolves a problem where the detailed vs. generic error display option was not functioning as expected.
 
@@ -902,5 +903,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.4.15 =
+= 1.4.16 =
 After updating, make sure to clear any caching / CDN plugins you may be using.  Also, go into the plugin's gateway settings, review everything, and click Save even if you do not make any changes.
