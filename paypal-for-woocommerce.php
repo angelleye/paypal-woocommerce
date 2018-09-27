@@ -13,9 +13,9 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 3.8
- * Tested up to: 4.9.7
+ * Tested up to: 4.9.8
  * WC requires at least: 3.0.0
- * WC tested up to: 3.4.3
+ * WC tested up to: 3.4.5
  *
  *************
  * Attribution
