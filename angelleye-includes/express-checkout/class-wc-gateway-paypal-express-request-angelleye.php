@@ -226,7 +226,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $mailer = WC()->mailer();
                         $subject = __('PayPal billing agreement was not created successfully', 'paypal-for-woocommerce');
                         $message = 'An order was placed that requires a PayPal billing agreement for reference transactions, however, this billing agreement was not created successfully.  Please contact PayPal to verify that you have Reference Transactions enabled on your account.  This is required for Woo token payments (including Woo Subscriptions orders.)';
-                        $message = $mailer->wrap_message($message);
+                        $message = $mailer->wrap_message($subject, $message);
                         $mailer->send($this->paypal_response['EMAIL'], strip_tags($subject), $message);
                         $this->angelleye_redirect();
                     } 
@@ -341,7 +341,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $mailer = WC()->mailer();
                         $subject = __('PayPal billing agreement was not created successfully', 'paypal-for-woocommerce');
                         $message = 'We\'re sorry, but something went wrong with your order. Someone from our service department will contact you about this soon.';
-                        $message = $mailer->wrap_message($message);
+                        $message = $mailer->wrap_message($subject, $message);
                         $payeremail = WC()->session->get('payeremail');
                         if( !empty($payeremail) ) {
                             $mailer->send($payeremail, strip_tags($subject), $message);
@@ -350,7 +350,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $mailer = WC()->mailer();
                         $subject = __('PayPal billing agreement was not created successfully', 'paypal-for-woocommerce');
                         $message = 'This order requires a Billing Agreement ID for Woo token payments, but this value was not returned by PayPal.  This typically means that Reference Transactions are not enabled for Express Checkout on the PayPal account.  Please contact PayPal to resolve this issue, and then have your customer try again.';
-                        $message = $mailer->wrap_message($message, __('Order #', 'paypal-for-woocommerce') . $order_id);
+                        $message = $mailer->wrap_message($subject, $message);
                         $mailer->send($this->user_email_address, strip_tags($subject), $message);
                         $mailer->send($admin_email, strip_tags($subject), $message);
                     } else {
