@@ -199,9 +199,17 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_set_express_checkout() {
         try {
             $this->angelleye_set_express_checkout_request();
-            if ($this->response_helper->ec_is_response_success_or_successwithwarning($this->paypal_response)) {
+            if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
                 $this->angelleye_redirect_action($this->paypal_response['REDIRECTURL']);
                 exit;
+            } elseif ($this->response_helper->ec_is_response_successwithwarning($this->paypal_response)) {
+                if( !empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '11452') {
+                    $this->angelleye_write_error_log_and_send_email_notification($paypal_action_name = 'SetExpressCheckout');
+                    $this->angelleye_redirect();
+                } else {
+                    $this->angelleye_redirect_action($this->paypal_response['REDIRECTURL']);
+                    exit;
+                }
             } else {
                 $this->angelleye_write_error_log_and_send_email_notification($paypal_action_name = 'SetExpressCheckout');
                 $this->angelleye_redirect();
