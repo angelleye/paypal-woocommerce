@@ -340,6 +340,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $order->update_status('on-hold', __('Billing Agreement required for tokenized payments', 'paypal-for-woocommerce'));
                         $mailer = WC()->mailer();
                         $subject = __('PayPal billing agreement was not created successfully', 'paypal-for-woocommerce');
+                        $subject .=  __('Order #', 'paypal-for-woocommerce') . $order_id;
                         $message = 'We\'re sorry, but something went wrong with your order. Someone from our service department will contact you about this soon.';
                         $message = $mailer->wrap_message($subject, $message);
                         $payeremail = WC()->session->get('payeremail');
@@ -348,7 +349,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         }
                         $admin_email = get_option("admin_email");
                         $mailer = WC()->mailer();
-                        $subject = __('PayPal billing agreement was not created successfully', 'paypal-for-woocommerce');
                         $message = 'This order requires a Billing Agreement ID for Woo token payments, but this value was not returned by PayPal.  This typically means that Reference Transactions are not enabled for Express Checkout on the PayPal account.  Please contact PayPal to resolve this issue, and then have your customer try again.';
                         $message = $mailer->wrap_message($subject, $message);
                         $mailer->send($this->user_email_address, strip_tags($subject), $message);
