@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.17 - 10.04.2018 =
+* [PFW-256](https://github.com/angelleye/paypal-woocommerce/pull/1212) - Fix - Resolves a PHP error related to order emails.
+
 = 1.4.16 - 09.26.2018 =
 * [PFW-252](https://github.com/angelleye/paypal-woocommerce/pull/1204) - Feature - Adds SOFTDESCRIPTOR to direct credit card processing requests.
 * [PFW-31](https://github.com/angelleye/paypal-woocommerce/pull/1199)  - Tweak - Updates credit card icons for direct CC processing gateways to a more modern style.
