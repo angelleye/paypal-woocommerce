@@ -199,9 +199,17 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_set_express_checkout() {
         try {
             $this->angelleye_set_express_checkout_request();
-            if ($this->response_helper->ec_is_response_success_or_successwithwarning($this->paypal_response)) {
+            if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
                 $this->angelleye_redirect_action($this->paypal_response['REDIRECTURL']);
                 exit;
+            } elseif ($this->response_helper->ec_is_response_successwithwarning($this->paypal_response)) {
+                if( !empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '11452') {
+                    $this->angelleye_write_error_log_and_send_email_notification($paypal_action_name = 'SetExpressCheckout');
+                    $this->angelleye_redirect();
+                } else {
+                    $this->angelleye_redirect_action($this->paypal_response['REDIRECTURL']);
+                    exit;
+                }
             } else {
                 $this->angelleye_write_error_log_and_send_email_notification($paypal_action_name = 'SetExpressCheckout');
                 $this->angelleye_redirect();
@@ -1043,7 +1051,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $error_display_type_message = sprintf(__('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce'));
         }
         $error_display_type_message = apply_filters('ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg);
-        if (AngellEYE_Utility::is_cart_contains_subscription() == false) {
+        if (function_exists('wc_add_notice')) {
             wc_add_notice($error_display_type_message, 'error');
         }
     }
