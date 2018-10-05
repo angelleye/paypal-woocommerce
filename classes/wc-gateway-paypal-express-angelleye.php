@@ -152,6 +152,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->version = "64";
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         $this->page_style = $this->get_option('page_style', '');
+        $this->review_button_label = $this->get_option('review_button_label', __('Place order', 'paypal-for-woocommerce'));
+        $this->checkout_button_label = $this->get_option('checkout_button_label', __('Proceed to PayPal', 'paypal-for-woocommerce'));
         add_action('woocommerce_update_options_payment_gateways_paypal_express', array($this, 'angelleye_update_marketing_solution'), 10);
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'), 999);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
@@ -162,6 +164,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-function-angelleye.php' );
         }
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
+        $this->order_button_text = ($this->function_helper->ec_is_express_checkout() == false) ?  $this->checkout_button_label :  $this->review_button_label;
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
         
         
@@ -623,6 +626,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => __('This controls the title of order review page which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'desc_tip' => true,
                 'default' => 'Review Order'
+            ),
+            'review_button_label' => array(
+                'title' => __('Order Review Button Label', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('This controls the label of order review page which the user sees during checkout.', 'paypal-for-woocommerce'),
+                'desc_tip' => true,
+                'default' => 'Place order'
+            ),
+            'checkout_button_label' => array(
+                'title' => __('Place Order Button Label', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('This controls the title of checkout page which the user sees during checkout.', 'paypal-for-woocommerce'),
+                'desc_tip' => true,
+                'default' => 'Proceed to PayPal'
             ),
             'order_review_page_custom_message' => array(
                 'title' => __('Order Review Message', 'paypal-for-woocommerce'),
