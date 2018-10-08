@@ -152,7 +152,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->version = "64";
         $this->Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
         $this->page_style = $this->get_option('page_style', '');
-        $this->review_button_label = $this->get_option('review_button_label', __('Place order', 'paypal-for-woocommerce'));
+        $this->review_button_label = $this->get_option('review_button_label', __('Place Order', 'paypal-for-woocommerce'));
         $this->checkout_button_label = $this->get_option('checkout_button_label', __('Proceed to PayPal', 'paypal-for-woocommerce'));
         add_action('woocommerce_update_options_payment_gateways_paypal_express', array($this, 'angelleye_update_marketing_solution'), 10);
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'), 999);
@@ -630,14 +630,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'review_button_label' => array(
                 'title' => __('Order Review Button Label', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('This controls the label of order review page which the user sees during checkout.', 'paypal-for-woocommerce'),
+                'description' => __('This controls the label of the button on the order review page which the buyer sees during checkout.', 'paypal-for-woocommerce'),
                 'desc_tip' => true,
                 'default' => 'Place order'
             ),
             'checkout_button_label' => array(
                 'title' => __('Place Order Button Label', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('This controls the title of checkout page which the user sees during checkout.', 'paypal-for-woocommerce'),
+                'description' => __('This controls the label of the button on the checkout page which the buyer sees during checkout.', 'paypal-for-woocommerce'),
                 'desc_tip' => true,
                 'default' => 'Proceed to PayPal'
             ),
