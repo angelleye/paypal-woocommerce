@@ -628,14 +628,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'Review Order'
             ),
             'review_button_label' => array(
-                'title' => __('Order Review Button Label', 'paypal-for-woocommerce'),
+                'title' => __('Order Review Page Button Label', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the label of the button on the order review page which the buyer sees during checkout.', 'paypal-for-woocommerce'),
                 'desc_tip' => true,
                 'default' => 'Place order'
             ),
             'checkout_button_label' => array(
-                'title' => __('Place Order Button Label', 'paypal-for-woocommerce'),
+                'title' => __('Checkout Page Button Label', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the label of the button on the checkout page which the buyer sees during checkout.', 'paypal-for-woocommerce'),
                 'desc_tip' => true,
