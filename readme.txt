@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.18 - 10.08.2018 =
+* [PFW-249](https://github.com/angelleye/paypal-woocommerce/pull/1214) - Feature - Adds ability to set values for submit buttons on Checkout and Order Review pages.
+
 = 1.4.17 - 10.04.2018 =
 * [PFW-256](https://github.com/angelleye/paypal-woocommerce/pull/1212) - Fix - Resolves a PHP error related to order emails.
 * [PFW-264](https://github.com/angelleye/paypal-woocommerce/pull/1211) - Fix - Better error handling for scenarios where Woo Subscriptions is being used with Express Checkout, but the PayPal account does not have Billing Agreements enabled.
