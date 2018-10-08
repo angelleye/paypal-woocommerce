@@ -912,5 +912,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.4.17 =
+= 1.4.18 =
 After updating, make sure to clear any caching / CDN plugins you may be using.  Also, go into the plugin's gateway settings, review everything, and click Save even if you do not make any changes.
