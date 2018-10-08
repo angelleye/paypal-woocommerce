@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.4.18 - 10.08.2018 =
 * [PFW-249](https://github.com/angelleye/paypal-woocommerce/pull/1214) - Feature - Adds ability to set values for submit buttons on Checkout and Order Review pages.
+* [PFW-262](https://github.com/angelleye/paypal-woocommerce/pull/1215) - Tweak - Adds PayPal Credit option to buyers/sellers in the UK (Previously only available in US).
 
 = 1.4.17 - 10.04.2018 =
 * [PFW-256](https://github.com/angelleye/paypal-woocommerce/pull/1212) - Fix - Resolves a PHP error related to order emails.
