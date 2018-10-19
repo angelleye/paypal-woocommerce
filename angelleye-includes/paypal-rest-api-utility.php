@@ -435,7 +435,7 @@ class PayPal_Rest_API_Utility {
         if (!class_exists('WC_Payment_Gateway')) {
             return;
         }
-        if (!class_exists('Angelleye_PayPal')) {
+        if (!class_exists('Angelleye_PayPal_WC')) {
             //require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/autoload.php' );
         }
         require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/autoload.php' );

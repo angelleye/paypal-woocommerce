@@ -12,6 +12,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      */
     private $centinel_client = false;
     public $customer_id;
+    public $PayPal;
     /**
      * __construct function.
      *
@@ -929,24 +930,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             wc_add_notice($pc_session_expired_error, "error");
         }
 
-        /*
-         * Check if the PayPal class has already been established.
-         */
-        if (!class_exists('Angelleye_PayPal')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
-        }
-
-        /*
-         * Create PayPal object.
-         */
-        $PayPalConfig = array(
-            'Sandbox' => $this->testmode,
-            'APIUsername' => $this->api_username,
-            'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature,
-            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-        );
-        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
 
         if (empty($GLOBALS['wp_rewrite'])) {
             $GLOBALS['wp_rewrite'] = new WP_Rewrite();
@@ -987,7 +972,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         );
 
         
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
         $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
         $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
@@ -1148,9 +1132,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'returnfmfdetails' => '1',
                 'softdescriptor' => $this->softdescriptor
             );
-            $PayPalResult = $PayPal->DoReferenceTransaction(apply_filters('angelleye_woocommerce_paypal_pro_do_reference_transaction_request_args', $PayPalRequestData));
+            $PayPalResult = $this->PayPal->DoReferenceTransaction(apply_filters('angelleye_woocommerce_paypal_pro_do_reference_transaction_request_args', $PayPalRequestData));
         } else {
-            $PayPalResult = $PayPal->DoDirectPayment(apply_filters('angelleye_woocommerce_paypal_pro_do_direct_payment_request_args', $PayPalRequestData));
+            $PayPalResult = $this->PayPal->DoDirectPayment(apply_filters('angelleye_woocommerce_paypal_pro_do_direct_payment_request_args', $PayPalRequestData));
         }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
@@ -1167,8 +1151,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
 
-        $this->log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
-        $this->log('Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
+        $this->log('Request: ' . print_r($this->PayPal->NVPToArray($this->PayPal->MaskAPIResult($PayPalRequest)), true));
+        $this->log('Response: ' . print_r($this->PayPal->NVPToArray($this->PayPal->MaskAPIResult($PayPalResponse)), true));
 
 
         if (empty($PayPalResult['RAWRESPONSE'])) {
@@ -1176,7 +1160,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             throw new Exception($pc_empty_response);
         }
 
-        if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
+        if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             // Add order note
             $order->add_order_note(sprintf(__('PayPal Pro (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             //$order->add_order_note("PayPal Results: ".print_r($PayPalResult,true));
@@ -1196,7 +1180,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
              * Add order notes for AVS result
              */
             $avs_response_code = isset($PayPalResult['AVSCODE']) ? $PayPalResult['AVSCODE'] : '';
-            $avs_response_message = $PayPal->GetAVSCodeMessage($avs_response_code);
+            $avs_response_message = $this->PayPal->GetAVSCodeMessage($avs_response_code);
             $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
             $avs_response_order_note .= "\n";
             $avs_response_order_note .= $avs_response_code;
@@ -1213,7 +1197,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
              * Add order notes for CVV2 result
              */
             $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
-            $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvv2_response_code);
+            $cvv2_response_message = $this->PayPal->GetCVV2CodeMessage($cvv2_response_code);
             $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
             $cvv2_response_order_note .= "\n";
             $cvv2_response_order_note .= $cvv2_response_code;
@@ -1402,24 +1386,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             return false;
         }
 
-        /*
-         * Check if the PayPal class has already been established.
-         */
-        if (!class_exists('Angelleye_PayPal')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
-        }
-
-        /*
-         * Create PayPal object.
-         */
-        $PayPalConfig = array(
-            'Sandbox' => $this->testmode,
-            'APIUsername' => $this->api_username,
-            'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature,
-            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-        );
-        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
         if ($reason) {
             if (255 < strlen($reason)) {
                 $reason = substr($reason, 0, 252) . '...';
@@ -1450,7 +1417,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $PayPalRequestData = array('RTFields' => $RTFields);
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
-        $PayPalResult = $PayPal->RefundTransaction(apply_filters('angelleye_woocommerce_paypal_pro_refund_request_args', $PayPalRequestData));
+        $PayPalResult = $this->PayPal->RefundTransaction(apply_filters('angelleye_woocommerce_paypal_pro_refund_request_args', $PayPalRequestData));
 
         /**
          *  cURL Error Handling #146
@@ -1462,10 +1429,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
 
-        $this->log('Refund Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
-        $this->log('Refund Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
+        $this->log('Refund Request: ' . print_r($this->PayPal->NVPToArray($this->PayPal->MaskAPIResult($PayPalRequest)), true));
+        $this->log('Refund Response: ' . print_r($this->PayPal->NVPToArray($this->PayPal->MaskAPIResult($PayPalResponse)), true));
 
-        if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
+        if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['REFUNDTRANSACTIONID']);
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
             if (ob_get_length()) ob_end_clean();
@@ -1618,19 +1585,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function add_payment_method() {
-        if (!class_exists('Angelleye_PayPal')) {
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
-        }
         $this->validate_fields();
         $card = $this->get_posted_card();
-        $PayPalConfig = array(
-            'Sandbox' => $this->testmode,
-            'APIUsername' => $this->api_username,
-            'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature,
-            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-        );
-        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        $this->angelleye_load_paypal_pro_class($this->gateway, $this, null);
         $DPFields = array(
             'paymentaction' => 'Authorization',
             'ipaddress' => AngellEYE_Utility::get_user_ip(),
@@ -1652,7 +1609,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'CCDetails' => $CCDetails,
             'PaymentDetails' => $PaymentDetails
         );
-        $result = $PayPal->DoDirectPayment(apply_filters('angelleye_woocommerce_do_direct_payment_request_args', $PayPalRequestData));
+        $result = $this->PayPal->DoDirectPayment(apply_filters('angelleye_woocommerce_do_direct_payment_request_args', $PayPalRequestData));
         if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
             $customer_id = get_current_user_id();
             $TRANSACTIONID = $result['TRANSACTIONID'];
@@ -1704,22 +1661,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     public function angelleye_paypal_pro_email_instructions($order, $sent_to_admin, $plain_text = false) {
         $payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
         if ( $sent_to_admin && 'paypal_pro' === $payment_method ) {
-            if (!class_exists('Angelleye_PayPal')) {
-                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
-            }
-            $PayPalConfig = array(
-            'Sandbox' => $this->testmode,
-            'APIUsername' => $this->api_username,
-            'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature,
-            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-        );
-        $PayPal = new Angelleye_PayPal($PayPalConfig);
             $old_wc = version_compare( WC_VERSION, '3.0', '<' );
             $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
+            $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
             $avscode = $old_wc ? get_post_meta( $order->id, '_AVSCODE', true ) : get_post_meta($order->get_id(), '_AVSCODE', true);
             if ( ! empty( $avscode ) ) {
-                $avs_response_message = $PayPal->GetAVSCodeMessage($avscode);
+                $avs_response_message = $this->PayPal->GetAVSCodeMessage($avscode);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'paypal-for-woocommerce' ) . '</h3>' . PHP_EOL;
                 echo '<ul class="wc-avs-details order_details avs_details">' . PHP_EOL;
                 $avs_details_fields = apply_filters( 'angelleye_avs_details_fields', array(
@@ -1742,7 +1689,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $old_wc = version_compare( WC_VERSION, '3.0', '<' );
             $cvvmatch = $old_wc ? get_post_meta( $order->id, '_CVV2MATCH', true ) : get_post_meta($order->get_id(), '_CVV2MATCH', true);
             if ( ! empty( $cvvmatch ) ) {
-                $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvvmatch);
+                $cvv2_response_message = $this->PayPal->GetCVV2CodeMessage($cvvmatch);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'paypal-for-woocommerce' ) . '</h3>' . PHP_EOL;
                 echo '<ul class="wc-cvv2-details order_details cvv2_details">' . PHP_EOL;
                 $cvv_details_fields = apply_filters( 'angelleye_cvv2_details_fields', array(
@@ -1767,29 +1714,18 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function process_subscription_payment($order) {
        $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
-        if (!class_exists('Angelleye_PayPal')) {
-             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php');
-        }
+       $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+       $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
         if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
         }
         $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
-        $PayPalConfig = array(
-            'Sandbox' => $this->testmode,
-            'APIUsername' => $this->api_username,
-            'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature,
-            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-        );
-        $PayPal = new Angelleye_PayPal($PayPalConfig);
         $DPFields = array(
             'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
             'ipaddress' => AngellEYE_Utility::get_user_ip(), // Required.  IP address of the payer's browser.
             'returnfmfdetails' => '1',                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
             'softdescriptor' => $this->softdescriptor
         );
-        
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
         $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
         $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
@@ -1912,27 +1848,27 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'returnfmfdetails' => '1',
             'softdescriptor' => $this->softdescriptor
         );
-        $PayPalResult = $PayPal->DoReferenceTransaction($PayPalRequestData);
+        $PayPalResult = $this->PayPal->DoReferenceTransaction($PayPalRequestData);
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'DoReferenceTransaction', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
-        $this->log('Request: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalRequest)), true));
-        $this->log('Response: ' . print_r($PayPal->NVPToArray($PayPal->MaskAPIResult($PayPalResponse)), true));
+        $this->log('Request: ' . print_r($this->PayPal->NVPToArray($this->PayPal->MaskAPIResult($PayPalRequest)), true));
+        $this->log('Response: ' . print_r($this->PayPal->NVPToArray($this->PayPal->MaskAPIResult($PayPalResponse)), true));
         if (empty($PayPalResult['RAWRESPONSE'])) {
             $pc_empty_response = apply_filters('ae_ppddp_paypal_response_empty_message', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult);
             throw new Exception($pc_empty_response);
         }
-        if ($PayPal->APICallSuccessful($PayPalResult['ACK'])) {
+        if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             $avs_response_code = isset($PayPalResult['AVSCODE']) ? $PayPalResult['AVSCODE'] : '';
-            $avs_response_message = $PayPal->GetAVSCodeMessage($avs_response_code);
+            $avs_response_message = $this->PayPal->GetAVSCodeMessage($avs_response_code);
             $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
             $avs_response_order_note .= "\n";
             $avs_response_order_note .= $avs_response_code;
             $avs_response_order_note .= $avs_response_message != '' ? ' - ' . $avs_response_message : '';
             $order->add_order_note($avs_response_order_note);
             $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
-            $cvv2_response_message = $PayPal->GetCVV2CodeMessage($cvv2_response_code);
+            $cvv2_response_message = $this->PayPal->GetCVV2CodeMessage($cvv2_response_code);
             $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
             $cvv2_response_order_note .= "\n";
             $cvv2_response_order_note .= $cvv2_response_code;
@@ -2067,19 +2003,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     }
     
     public function angelleye_get_transaction_details($order_id, $transaction_id) {
-        $PayPalConfig = array(
-            'Sandbox' => $this->testmode,
-            'APIUsername' => $this->api_username,
-            'APIPassword' => $this->api_password,
-            'APISignature' => $this->api_signature,
-            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
-        );
-        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
         $GTDFields = array(
             'transactionid' => $transaction_id
         );
         $PayPalRequestData = array('GTDFields' => $GTDFields);
-        $get_transactionDetails_result = $PayPal->GetTransactionDetails($PayPalRequestData);
+        $get_transactionDetails_result = $this->PayPal->GetTransactionDetails($PayPalRequestData);
         $this->log(print_r($get_transactionDetails_result, true));
         $this->update_payment_status_by_paypal_responce($order_id, $get_transactionDetails_result, $transaction_id);
     }
@@ -2188,6 +2117,21 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         } catch (Exception $ex) {
             
         }
+    }
+    
+    public function angelleye_load_paypal_pro_class($gateway, $current, $order_id = null) {
+        do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_pro', $gateway, $current, $order_id);
+        if (!class_exists('Angelleye_PayPal_WC')) {
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+        }
+        $PayPalConfig = array(
+            'Sandbox' => $this->testmode,
+            'APIUsername' => $this->api_username,
+            'APIPassword' => $this->api_password,
+            'APISignature' => $this->api_signature,
+            'Force_tls_one_point_two' => $this->Force_tls_one_point_two
+        );
+        $this->PayPal = new Angelleye_PayPal_WC($PayPalConfig);
     }
     
     

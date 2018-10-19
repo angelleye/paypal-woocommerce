@@ -1641,7 +1641,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
         try {
-            if (!class_exists('Angelleye_PayPal')) {
+            if (!class_exists('Angelleye_PayPal_WC')) {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
             }
             if (!class_exists('Angelleye_PayPal_PayFlow')) {

@@ -47,7 +47,7 @@ class AngellEYE_Utility {
         if (!class_exists('WC_Payment_Gateway')) {
             return false;
         }
-        if (!class_exists('Angelleye_PayPal')) {
+        if (!class_exists('Angelleye_PayPal_WC')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
 
@@ -89,7 +89,7 @@ class AngellEYE_Utility {
                 'APIPassword' => $this->api_password,
                 'APISignature' => $this->api_signature
             );
-            $this->paypal = new Angelleye_PayPal($PayPalConfig);
+            $this->paypal = new Angelleye_PayPal_WC($PayPalConfig);
         } elseif ($this->payment_method == 'paypal_pro_payflow') {
             $gateway_obj = new WC_Gateway_PayPal_Pro_PayFlow_AngellEYE();
             $this->ec_debug = $gateway_obj->get_option('debug');
