@@ -123,7 +123,6 @@ jQuery(function ($) {
     }
 
     function display_smart_button_on_cart_checkout() {
-        console.log(angelleye_in_content_param);
         window.paypalCheckoutReady = function () {
             var angelleye_button_selector = [];
             var allowed_funding_methods_var = [];

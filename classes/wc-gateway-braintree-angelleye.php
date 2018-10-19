@@ -459,6 +459,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             </div>
             <?php if (is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) { ?>
                 <script type="text/javascript">
+                    var angelleye_dropinInstance;
                     (function ($) {
                         $('form.checkout').on('checkout_place_order_braintree', function () {
                             return braintreeFormHandler();
@@ -472,7 +473,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         });
                         function braintreeFormHandler() {
                             if ($('#payment_method_braintree').is(':checked')) {
-                                console.log('test');
                                 if ( $('.is_submit').length) {
                                    $('.is_submit').remove();
                                    return true;
@@ -493,6 +493,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         $(document.body).on('checkout_error', function () {
                             $('.braintree-token').remove();
                             $('.braintree-device-data').remove();
+                            $('.is_submit').remove();
                         });
                         var button = document.querySelector('#place_order');
                         var $form = $( 'form.checkout, form#order_review, form#add_payment_method' );
@@ -518,11 +519,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                             <?php } ?>
                         }, function (createErr, dropinInstance) {
+                            angelleye_dropinInstance = dropinInstance;
                             if(is_angelleye_braintree_selected()) {
                                 $(document.body).on('checkout_error', function () {
                                     $('.braintree-token').remove();
                                     $('.braintree-device-data').remove();
-                                    dropinInstance.clearSelectedPaymentMethod();
+                                    $('.is_submit').remove();
+                                    if( typeof dropinInstance !== 'undefined') {
+                                        dropinInstance.clearSelectedPaymentMethod();
+                                    }
                                 });
                             }
                             if(is_angelleye_braintree_selected()) {
@@ -545,7 +550,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     }
                                     <?php if($this->threed_secure_enabled === true) { ?>
                                     if (!payload.liabilityShifted && payload.type == 'CreditCard') {
-                                        dropinInstance.clearSelectedPaymentMethod();
+                                        if( typeof dropinInstance !== 'undefined') {
+                                            dropinInstance.clearSelectedPaymentMethod();
+                                        }
                                         $('.woocommerce-error').remove();
                                         $('.braintree-device-data', ccForm).remove();
                                         $('.braintree-token', ccForm).remove();
@@ -596,6 +603,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if (is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) {
                 ?>
                 <script type="text/javascript">
+                    var angelleye_dropinInstance;
                     (function ($) {
                             function is_angelleye_braintree_selected() {
                                 if ($('#payment_method_braintree').is(':checked')) {
@@ -608,7 +616,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 $(document.body).on('checkout_error', function () {
                                     $('.braintree-token').remove();
                                     $('.braintree-device-data').remove();
-                                    dropinInstance.clearSelectedPaymentMethod();
+                                    $('.is_submit').remove();
                                 });
                             }
                             $('form.checkout').on('checkout_place_order_braintree', function () {
