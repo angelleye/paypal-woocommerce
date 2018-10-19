@@ -13,6 +13,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     private $centinel_client = false;
     public $customer_id;
     public $PayPal;
+    public $gateway;
     /**
      * __construct function.
      *
