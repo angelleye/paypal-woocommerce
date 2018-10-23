@@ -47,6 +47,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->error_display_type = $this->get_option('error_display_type', 'no');
         $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
+        $this->payment_action_authorization = $this->get_option('payment_action_authorization', 'Full Authorization');
 
         //fix ssl for image icon
         $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__))));
@@ -285,6 +286,17 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 ),
                 'default' => 'Sale'
             ),
+            'payment_action_authorization' => array(
+                'title' => __('Authorization Type', 'paypal-for-woocommerce'),
+                'description' => __(''),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select',
+                'options' => array(
+                    'Full Authorization' => __('Full Authorization', 'paypal-for-woocommerce'),
+                    'Card Verification' => __('Card Verification', 'paypal-for-woocommerce'),
+                ),
+                'default' => 'Full Authorization'
+            ),
             'pending_authorization_order_status' => array(
                 'title' => __('Pending Authorization Order Status', 'paypal-for-woocommerce'),
                 'label' => __('Pending Authorization Order Status.', 'paypal-for-woocommerce'),
@@ -429,9 +441,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         <script type="text/javascript">
             jQuery('#woocommerce_paypal_pro_payflow_payment_action').change(function () {
                 if ( this.value === 'Authorization' ) {
+                    jQuery('#woocommerce_paypal_pro_payflow_payment_action_authorization').closest('tr').show();
                     jQuery('#woocommerce_paypal_pro_payflow_pending_authorization_order_status').closest('tr').show();
                     jQuery('#woocommerce_paypal_pro_payflow_default_order_status').closest('tr').hide();
                 } else {
+                    jQuery('#woocommerce_paypal_pro_payflow_payment_action_authorization').closest('tr').hide();
                     jQuery('#woocommerce_paypal_pro_payflow_pending_authorization_order_status').closest('tr').hide();
                     jQuery('#woocommerce_paypal_pro_payflow_default_order_status').closest('tr').show();
                 }
@@ -534,12 +548,17 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
 
+            $order_amt = AngellEYE_Gateway_Paypal::number_format($order->get_total());
+            if( $this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification' ) {
+                $order_amt = '0.00';
+            }
+                    
             $PayPalRequestData = array(
                 'tender' => 'C', // Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
                 'trxtype' => ($this->payment_action == 'Authorization' || $order->get_total() == 0 ) ? 'A' : 'S', // Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
                 'acct' => $card_number, // Required for credit card transaction.  Credit card or purchase card number.
                 'expdate' => $card_exp, // Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
-                'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()), // Required.  Amount of the transaction.  Must have 2 decimal places.
+                'amt' => $order_amt, // Required.  Amount of the transaction.  Must have 2 decimal places.
                 'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), //
                 'dutyamt' => '', //
                 'freightamt' => '', //
@@ -675,15 +694,16 @@ of the user authorized to process transactions. Otherwise, leave this field blan
              * Check for errors or fraud filter warnings and proceed accordingly.
              */
             if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
-                // Add order note
+                if( $this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification' ) {
+                    $order->add_order_note('Card : ' . $PayPalResult['RESPMSG']);
+                    add_post_meta($order_id, 'payment_action_authorization', $this->payment_action_authorization);
+                }
                 if (in_array($PayPalResult['RESULT'], $this->fraud_error_codes)) {
                     $order->add_order_note($PayPalResult['RESPMSG']);
                     $order->add_order_note($PayPalResult['PREFPSMSG']);
                     $order->add_order_note("The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.");
                 } else {
-
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
-
                         add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
                         $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
                     } else {

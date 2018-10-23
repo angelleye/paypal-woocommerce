@@ -1769,12 +1769,13 @@ class AngellEYE_Utility {
         } else {
             $AMT = $capture_total;
         }
-
         $AMT = self::round($AMT - $order->get_total_refunded());
+        $payment_action_authorization = get_post_meta($order_id, 'payment_action_authorization', true);
+
         if (isset($transaction_id) && !empty($transaction_id)) {
             $PayPalRequestData = array(
                 'TENDER' => 'C', // C = credit card, P = PayPal
-                'TRXTYPE' => 'D', //  S=Sale, A= Auth, C=Credit, D=Delayed Capture, V=Void
+                'TRXTYPE' => (isset($payment_action_authorization) && $payment_action_authorization == 'Card Verification') ? 'S' : 'D', //  S=Sale, A= Auth, C=Credit, D=Delayed Capture, V=Void
                 'ORIGID' => $transaction_id,
                 'AMT' => $AMT,
                 'CAPTURECOMPLETE' => 'N'
