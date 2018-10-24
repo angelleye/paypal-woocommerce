@@ -682,8 +682,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $order->add_order_note("The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.");
                 } else {
                     if( isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
-                        $order->update_status('failed', __('PayPal Pro Payflow payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
-                        throw new Exception(__('PayPal Pro Payflow payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
+                        $order->update_status('failed', __('Payment failed due to a duplicate order ID.', 'paypal-for-woocommerce'));
+                        throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                     }
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
                         add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
@@ -1376,8 +1376,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $order->add_order_note("The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.");
                 } else {
                     if( isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
-                        $order->update_status('failed', __('PayPal Pro Payflow payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
-                        throw new Exception(__('PayPal Pro Payflow payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
+                        $order->update_status('failed', __('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
+                        throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                     }
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
                         add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
