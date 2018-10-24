@@ -130,6 +130,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.5.0 - xx.xx.2018=
 * [PFW-276](https://github.com/angelleye/paypal-woocommerce/pull/1221) - Feature - PayFlow - Adds additional data for Address Verification to Woo order notes.
 * [PFW-280](https://github.com/angelleye/paypal-woocommerce/pull/1219) - Fix - Braintree - Resolves a problem where failed data validation would break the Drop In UI in some cases.
+* [PFW-281](https://github.com/angelleye/paypal-woocommerce/pull/1220) - Fix - PayFlow - Resolves an issue with handling of duplicate order ID errors.
 
 = 1.4.18 - 10.08.2018 =
 * [PFW-249](https://github.com/angelleye/paypal-woocommerce/pull/1214) - Feature - Adds ability to set values for submit buttons on Checkout and Order Review pages.
