@@ -419,4 +419,12 @@ jQuery(document).ready(function ($) {
 
         };
     }
+    
+    jQuery('#woo_product_payment_action').change(function () {
+        if ( this.value === 'Authorization' ) {
+            jQuery('#woo_product_payment_action_authorization').closest('p').show();
+        } else {
+            jQuery('#woo_product_payment_action_authorization').closest('p').hide();
+        }
+    }).change();
 });
