@@ -1089,6 +1089,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woo_product_level_payment_action($gateways, $request = null, $order_id = null) {
+            if( is_null( WC()->cart ) ) {
+                return true;
+            }
             if ($request == null) {
                 $gateway_setting = $gateways;
             } else {
