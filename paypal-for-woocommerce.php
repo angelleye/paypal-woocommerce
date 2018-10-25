@@ -133,7 +133,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('woocommerce_product_data_tabs', array( $this, 'angelleye_paypal_for_woo_woocommerce_product_data_tabs' ), 99, 1);
             add_action('woocommerce_product_data_panels', array( $this, 'angelleye_paypal_for_woo_product_date_panels' ));
             add_action('woocommerce_process_product_meta', array( $this, 'angelleye_paypal_for_woo_product_process_product_meta' ));
-            add_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_payflow', array( $this, 'angelleye_paypal_for_woo_product_level_payment_action' ));
+            add_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_payflow', array( $this, 'angelleye_paypal_for_woo_product_level_payment_action' ), 10, 3);
             add_action( 'wp_head', array( $this, 'paypal_for_woo_head_mark' ), 1 );            
             $this->customer_id;
         }
@@ -1088,10 +1088,41 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
         
-        public function angelleye_paypal_for_woo_product_level_payment_action() {
-            
+        public function angelleye_paypal_for_woo_product_level_payment_action($gateways, $request = null, $order_id = null) {
+            if ($request == null) {
+                $gateway_setting = $gateways;
+            } else {
+                $gateway_setting = $request;
+            }
+            $payment_action = array();
+            if ( WC()->cart->is_empty() ) {
+                return true;
+            } else {
+                foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+                    $product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
+                    $woo_product_payment_action = get_post_meta( $product_id, 'woo_product_payment_action', true );
+                    if( !empty($woo_product_payment_action)) {
+                        $payment_action[$woo_product_payment_action] = $woo_product_payment_action;
+                        $woo_product_payment_action_authorization = get_post_meta( $product_id, 'woo_product_payment_action_authorization', true );
+                        if( !empty($woo_product_payment_action_authorization) ) {
+                            $payment_action[$woo_product_payment_action] = $woo_product_payment_action_authorization;
+                        }
+                    }
+                }
+                if( !empty($payment_action) ) {
+                    if( isset($payment_action['Authorization']) && !empty($payment_action['Authorization'])) {
+                        $gateway_setting->payment_action = 'Authorization';
+                        if($payment_action['Authorization'] == 'Full Authorization') {
+                            $gateway_setting->payment_action_authorization = 'Full Authorization';
+                        } elseif($payment_action['Authorization'] == 'Card Verification') {
+                            $gateway_setting->payment_action_authorization = 'Card Verification';
+                        }
+                    } elseif(isset($payment_action['Sale']) && !empty($payment_action['Sale'])) {
+                        $gateway_setting->payment_action = 'Sale';
+                    }
+                }
+            }
         }
     } 
-    
 }
 new AngellEYE_Gateway_Paypal();
