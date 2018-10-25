@@ -133,7 +133,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('woocommerce_product_data_tabs', array( $this, 'angelleye_paypal_for_woo_woocommerce_product_data_tabs' ), 99, 1);
             add_action('woocommerce_product_data_panels', array( $this, 'angelleye_paypal_for_woo_product_date_panels' ));
             add_action('woocommerce_process_product_meta', array( $this, 'angelleye_paypal_for_woo_product_process_product_meta' ));
-            
+            add_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_payflow', array( $this, 'angelleye_paypal_for_woo_product_level_payment_action' ));
             add_action( 'wp_head', array( $this, 'paypal_for_woo_head_mark' ), 1 );            
             $this->customer_id;
         }
@@ -1086,6 +1086,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } else {
                 update_post_meta( $post_id, 'woo_product_payment_action_authorization', '' );
             }
+        }
+        
+        public function angelleye_paypal_for_woo_product_level_payment_action() {
+            
         }
     } 
     
