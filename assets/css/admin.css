@@ -320,6 +320,16 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     margin: 3px 0px !important;
     padding: 0px;
 }
+.angelleye_avs_result li {
+    list-style-type: square;
+    padding: 0px 3px !important;
+    margin: 10px 0px 4px 13px;
+}
+.angelleye_avs_result_inner li {
+    list-style-type: square;
+    margin-left: 31px;
+    margin-bottom: 4px;
+}
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
         display: block;
