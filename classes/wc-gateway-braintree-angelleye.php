@@ -613,16 +613,24 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 });
                             }
                             $('form.checkout').on('checkout_place_order_braintree', function () {
-                                return braintreeFormHandler();
+                                if(is_angelleye_braintree_selected()) {
+                                    return braintreeFormHandler();
+                                }
                             });
                             $( 'form#order_review' ).on( 'submit', function () {
-                                return braintreeFormHandler();
+                                if(is_angelleye_braintree_selected()) {
+                                    return braintreeFormHandler();
+                                }
                             });
                             $( 'form#add_payment_method' ).on( 'submit', function () {
                                  $('.woocommerce-error').remove();
                                  return braintreeFormHandler();
                             });
                             function braintreeFormHandler() {
+                                if(is_angelleye_braintree_selected()) {
+                                } else {
+                                    return false;
+                                }
                                 if($("input:radio[name='wc-braintree-payment-token']").is(":checked") && $("input[name='wc-braintree-payment-token']:checked").val() != 'new') {
                                     return true;
                                 }
@@ -772,6 +780,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 components.threeDSecure.cancelVerifyCard(removeFrame());
                             });
                             checkout_form.addEventListener('submit', function (event) {
+                                if(is_angelleye_braintree_selected()) {
+                                } else {
+                                    return false;
+                                }
                                if($("input:radio[name='wc-braintree-payment-token']").is(":checked") && $("input[name='wc-braintree-payment-token']:checked").val() != 'new') {
                                     return false;
                                 }
