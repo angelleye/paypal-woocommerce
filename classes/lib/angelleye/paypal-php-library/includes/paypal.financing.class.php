@@ -31,7 +31,7 @@
  * @filesource
 */
 
-class Angelleye_PayPal_Financing extends Angelleye_PayPal
+class Angelleye_PayPal_Financing extends Angelleye_PayPal_WC
 {
 	var $AccessKey = '';
 	var $ClientSecret = '';

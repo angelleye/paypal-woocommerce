@@ -1385,7 +1385,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $are_reference_transactions_enabled = get_option('are_reference_transactions_enabled', 'no');
             if ($are_reference_transactions_enabled == 'no') {
                 $customer_id = get_current_user_id();
-                if (!class_exists('Angelleye_PayPal')) {
+                if (!class_exists('Angelleye_PayPal_WC')) {
                     require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
                 }
                 if (!class_exists('Angelleye_PayPal_PayFlow')) {

@@ -1670,7 +1670,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function paypal_express_checkout_token_request_handler($PayPalRequest = array(), $action_name = '') {
-        if (!class_exists('Angelleye_PayPal')) {
+        if (!class_exists('Angelleye_PayPal_WC')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
         }
         $PayPalConfig = array(
@@ -1680,7 +1680,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'APISignature' => $this->api_signature,
             'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
-        $PayPal = new Angelleye_PayPal($PayPalConfig);
+        $PayPal = new Angelleye_PayPal_WC($PayPalConfig);
         if (!empty($PayPalRequest) && !empty($action_name)) {
             if ('SetExpressCheckout' == $action_name) {
                 $PayPalResult = $PayPal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_set_express_checkout_request_args', $PayPalRequest));
