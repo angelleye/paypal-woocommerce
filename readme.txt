@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.4.19 - 10.27.2018 =
+* Tweak - Adds verification of compatibility with WooCommerce 3.5.0.
+
 = 1.4.18 - 10.08.2018 =
 * [PFW-249](https://github.com/angelleye/paypal-woocommerce/pull/1214) - Feature - Adds ability to set values for submit buttons on Checkout and Order Review pages.
 * [PFW-262](https://github.com/angelleye/paypal-woocommerce/pull/1215) - Tweak - Adds PayPal Credit option to buyers/sellers in the UK (Previously only available in US).
