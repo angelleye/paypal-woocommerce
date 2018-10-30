@@ -588,7 +588,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $card_start_month = '';
             $card_start_year = '';
         }
-
+        
+        $card_exp_month = (int) $card_exp_month;
+        if ($card_exp_month < 10) {
+            $card_exp_month = '0' . $card_exp_month;
+        }
+        
         if (strlen($card_exp_year) == 2) {
             $card_exp_year += 2000;
         }
