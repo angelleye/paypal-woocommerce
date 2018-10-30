@@ -136,7 +136,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Express Checkout - Resolves a conflict with some themes where PayPal Smart Buttons would get cut off. ([PFW-266](https://github.com/angelleye/paypal-woocommerce/pull/1228))
 * Fix - Braintree - Resolves a problem where failed data validation would break the Drop In UI in some cases.  ([PFW-280](https://github.com/angelleye/paypal-woocommerce/pull/1219)[PFW-283](https://github.com/angelleye/paypal-woocommerce/pull/1224))
 * Fix - PayFlow - Resolves an issue with handling of duplicate order ID errors.  ([PFW-281](https://github.com/angelleye/paypal-woocommerce/pull/1220))
-
+* Fix - DoDirectPayment - Resolves an issue related to token payments. ([PFW-287](https://github.com/angelleye/paypal-woocommerce/pull/1229))
 
 = 1.4.19 - 10.27.2018 =
 * Tweak - Adds verification of compatibility with WooCommerce 3.5.0.
