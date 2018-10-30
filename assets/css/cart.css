@@ -68,7 +68,7 @@ div.wc-proceed-to-checkout a.paypal_checkout_button {
 
 .angelleye_smart_button_top, .angelleye_smart_button_bottom {
     min-width: 150px;
-    max-width: 250px;
+    max-width: 500px;
 }
 .angelleye-proceed-to-checkout-button-separator {
     display:inline-block;
@@ -89,12 +89,14 @@ a.paypal_checkout_button_bottom {
 @media screen and (max-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom {
         width: 100%;
+        max-width: 500px;
     }
 }
 
 @media screen and (min-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom {
-       width: 250px;
+       min-width: 150px;
        margin: 0 auto 0 auto;
+       max-width: 500px;
     }
 }
