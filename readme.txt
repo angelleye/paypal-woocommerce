@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 4.9.8
-Stable tag: 1.4.18
+Stable tag: 1.4.19
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -132,6 +132,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * [PFW-284](https://github.com/angelleye/paypal-woocommerce/pull/1225) - Tweak - REST CC - Adjustments to error display on failed payments.
 * [PFW-280](https://github.com/angelleye/paypal-woocommerce/pull/1219)[PFW-283](https://github.com/angelleye/paypal-woocommerce/pull/1224) - Fix - Braintree - Resolves a problem where failed data validation would break the Drop In UI in some cases.
 * [PFW-281](https://github.com/angelleye/paypal-woocommerce/pull/1220) - Fix - PayFlow - Resolves an issue with handling of duplicate order ID errors.
+
+= 1.4.19 - 10.27.2018 =
+* Tweak - Adds verification of compatibility with WooCommerce 3.5.0.
 
 = 1.4.18 - 10.08.2018 =
 * [PFW-249](https://github.com/angelleye/paypal-woocommerce/pull/1214) - Feature - Adds ability to set values for submit buttons on Checkout and Order Review pages.
@@ -918,5 +921,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.4.18 =
+= 1.4.19 =
 After updating, make sure to clear any caching / CDN plugins you may be using.  Also, go into the plugin's gateway settings, review everything, and click Save even if you do not make any changes.
