@@ -232,11 +232,12 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
 .angelleye_smart_button_top, .angelleye_smart_button_bottom {
     margin-top: 10px;
     margin-bottom: 10px;
+    max-width: 500px;
 }
 
 .angelleye_smart_button_top, .angelleye_smart_button_bottom, .angelleye_smart_button_checkout_top {
     min-width: 150px;
-    max-width: 250px;
+    max-width: 500px;
 }
 @media screen and (max-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom, angelleye_smart_button_checkout_top {
@@ -246,6 +247,8 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
 
 @media screen and (min-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom, .angelleye_smart_button_checkout_top {
-       width: 250px;
+       min-width: 150px;
+       max-width: 500px;        
+
     }
 }
