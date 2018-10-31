@@ -630,6 +630,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $action_key = "_enable_ec_button";
                 } elseif ($pfw_bulk_action_type == 'enable_sandbox_mode' || $pfw_bulk_action_type == 'disable_sandbox_mode') {
                     $action_key = "_enable_sandbox_mode";
+                } elseif ($pfw_bulk_action_type == 'enable_payment_action' || $pfw_bulk_action_type == 'disable_payment_action') {
+                    $action_key = "enable_payment_action";
                 }
 
                 // All Products
@@ -763,8 +765,19 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                             $target_product_id = ( $target->post_parent != '0' ) ? $target->post_parent : $target->ID;
                             if (get_post_type($target_product_id) == 'product' && !in_array($target_product_id, $processed_product_id)) {
                                 if (!update_post_meta($target_product_id, $action_key, $is_enable)) {
-
+                                    update_post_meta( $target_product_id, 'woo_product_payment_action', wc_clean($_POST['payment_action']) );
+                                    if(!empty($_POST['payment_action']) && $_POST['payment_action'] == 'Authorization') {
+                                        update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', wc_clean($_POST['payment_action']) );
+                                    } else {
+                                        update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', wc_clean($_POST['authorization_type']) );
+                                    }
                                 } else {
+                                    update_post_meta( $target_product_id, 'woo_product_payment_action', wc_clean($_POST['payment_action']) );
+                                    if(!empty($_POST['payment_action']) && $_POST['payment_action'] == 'Authorization') {
+                                        update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', wc_clean($_POST['payment_action']) );
+                                    } else {
+                                        update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', wc_clean($_POST['authorization_type']) );
+                                    }
                                     $processed_product_id[$target_product_id] = $target_product_id;
                                 }
                             }
@@ -1047,6 +1060,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             ?>
             <div id="angelleye_paypal_for_woo_payment_action" class="panel woocommerce_options_panel">
                 <?php
+                woocommerce_wp_checkbox(
+                        array(
+                                'id'          => 'enable_payment_action',
+                                'label'       => __( 'Enable Payment Action', 'woocommerce' ),
+                        )
+                );
+                
                 woocommerce_wp_select(
                     array(
                             'id'          => 'woo_product_payment_action',
@@ -1078,6 +1098,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woo_product_process_product_meta($post_id) {
+            if ( 'yes' === $_REQUEST['enable_payment_action'] ) {
+                update_post_meta( $post_id, 'enable_payment_action', 'yes' );
+            } else {
+                update_post_meta( $post_id, 'enable_payment_action', '' );
+            }
             $woo_product_payment_action = !empty( $_POST['woo_product_payment_action'] ) ? wc_clean($_POST['woo_product_payment_action']) : '';
             update_post_meta( $post_id, 'woo_product_payment_action', $woo_product_payment_action );
             if( !empty($woo_product_payment_action) && 'Authorization' == $woo_product_payment_action) {
@@ -1103,12 +1128,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } else {
                 foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
                     $product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
-                    $woo_product_payment_action = get_post_meta( $product_id, 'woo_product_payment_action', true );
-                    if( !empty($woo_product_payment_action)) {
-                        $payment_action[$woo_product_payment_action] = $woo_product_payment_action;
-                        $woo_product_payment_action_authorization = get_post_meta( $product_id, 'woo_product_payment_action_authorization', true );
-                        if( !empty($woo_product_payment_action_authorization) ) {
-                            $payment_action[$woo_product_payment_action] = $woo_product_payment_action_authorization;
+                    $is_enable_payment_action = get_post_meta( $product_id, 'enable_payment_action', true );
+                    if( $is_enable_payment_action == 'yes') {
+                        $woo_product_payment_action = get_post_meta( $product_id, 'woo_product_payment_action', true );
+                        if( !empty($woo_product_payment_action)) {
+                            $payment_action[$woo_product_payment_action] = $woo_product_payment_action;
+                            $woo_product_payment_action_authorization = get_post_meta( $product_id, 'woo_product_payment_action_authorization', true );
+                            if( !empty($woo_product_payment_action_authorization) ) {
+                                $payment_action[$woo_product_payment_action] = $woo_product_payment_action_authorization;
+                            }
                         }
                     }
                 }
