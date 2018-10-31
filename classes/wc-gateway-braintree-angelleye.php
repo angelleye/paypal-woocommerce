@@ -62,6 +62,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->softdescriptor = $this->get_softdescriptor();
         $this->fraud_tool = $this->get_option('fraud_tool', 'basic');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
+        $this->enable_google_pay = $this->get_option('enable_google_pay', 'no');
+        $this->enable_apple_pay = $this->get_option('enable_apple_pay', 'no');
+        if($this->enable_google_pay == 'yes') {
+            $this->merchant_id_google_pay = $this->get_option('merchant_id_google_pay', '');
+            if(empty($this->merchant_id_google_pay)) {
+                $this->enable_google_pay = 'no';
+            }
+        }
+        
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
@@ -104,12 +113,20 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 jQuery('#woocommerce_braintree_sandbox').change(function () {
                     sandbox = jQuery('#woocommerce_braintree_sandbox_public_key, #woocommerce_braintree_sandbox_private_key, #woocommerce_braintree_sandbox_merchant_id').closest('tr'),
                             production = jQuery('#woocommerce_braintree_public_key, #woocommerce_braintree_private_key, #woocommerce_braintree_merchant_id').closest('tr');
+                            
                     if (jQuery(this).is(':checked')) {
                         sandbox.show();
                         production.hide();
                     } else {
                         sandbox.hide();
                         production.show();
+                    }
+                }).change();
+                jQuery('#woocommerce_braintree_enable_google_pay').change(function () {
+                    if (jQuery('#woocommerce_braintree_enable_google_pay').is(':checked')) {
+                        jQuery('#woocommerce_braintree_merchant_id_google_pay').closest('tr').show();
+                    } else {
+                        jQuery('#woocommerce_braintree_merchant_id_google_pay').closest('tr').hide();
                     }
                 }).change();
                 jQuery('.js-add-merchant-account-id').click(function (e) {
@@ -318,6 +335,27 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => '',
                 'desc_tip' => true,
             ),
+            'enable_apple_pay' => array(
+                'title' => __('Enable Apple Pay', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable Apple Pay', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'description' => ''
+            ),
+            'enable_google_pay' => array(
+                'title' => __('Enable Google Pay', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable Google Pay', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'description' => ''
+            ),
+            'merchant_id_google_pay' => array(
+                'title' => __('Google Pay Merchant ID', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Enter your Google Pay Merchant ID provided by Google.( optional for sandbox mode )', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true
+            ),
             'card_icon' => array(
                 'title' => __('Card Icon', 'paypal-for-woocommerce'),
                 'type' => 'text',
@@ -513,29 +551,32 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             paypal: {
                                 flow: 'vault'
                             },
+                            <?php if($this->enable_google_pay == 'yes') { ?>
                             googlePay: {
                                 <?php if($this->environment == 'production') { ?>
-                                merchantId: '01234567890123456789'
+                                merchantId: '<?php echo $this->merchant_id_google_pay; ?>'
                                 <?php } ?>
                                 transactionInfo: {
                                   totalPriceStatus: 'FINAL',
-                                  totalPrice: '10.00',
-                                  currencyCode: 'USD'
+                                  totalPrice: '<?php echo $this->get_order_total(); ?>',
+                                  currencyCode: '<?php echo get_woocommerce_currency(); ?>'
                                 },
                                 cardRequirements: {
                                   billingAddressRequired: true,
                                   allowedCardNetworks: ["AMEX", "DISCOVER", "JCB", "MASTERCARD", "VISA"]
                                 }
                             },
+                         <?php } if($this->enable_apple_pay == 'yes') { ?>
                             applePay: {
-                                displayName: 'My Store',
+                                displayName: '<?php echo get_bloginfo('name'); ?>',
                                 paymentRequest: {
                                   total: {
-                                    label: 'My Store',
-                                    amount: '19.99'
+                                    label: '<?php echo __('My Store', 'paypal-for-woocommerce'); ?>',
+                                    amount: '<?php echo $this->get_order_total(); ?>'
                                   }
                                 }
                             },
+                            <?php } ?>
                             venmo: {
                                 allowNewBrowserTab: false
                             }
