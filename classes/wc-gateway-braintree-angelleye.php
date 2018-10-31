@@ -512,6 +512,17 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             locale: '<?php echo AngellEYE_Utility::get_button_locale_code(); ?>',
                             paypal: {
                                 flow: 'vault'
+                            },
+                            googlePay: {
+                                transactionInfo: {
+                                  totalPriceStatus: 'FINAL',
+                                  totalPrice: '123.45',
+                                  currencyCode: 'USD'
+                                },
+                                cardRequirements: {
+                                  // We recommend collecting and passing billing address information with all Google Pay transactions as a best practice.
+                                  billingAddressRequired: true
+                                }
                             }
                             <?php if($this->fraud_tool != 'basic') { ?>
                             , dataCollector: {
