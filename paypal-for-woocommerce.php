@@ -1057,7 +1057,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                 'Authorization' => 'Authorization',
                             ),
                             'desc_tip'    => 'true',
-                            'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds through your PayPal account when you are ready to deliver.'),
+                            'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
                     )
                 );
                 woocommerce_wp_select(
