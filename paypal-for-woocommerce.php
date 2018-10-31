@@ -1063,14 +1063,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 woocommerce_wp_checkbox(
                         array(
                                 'id'          => 'enable_payment_action',
-                                'label'       => __( 'Enable Payment Action', 'woocommerce' ),
+                                'label'       => __( 'Enable Payment Action', 'paypal-for-woocommerce' ),
                         )
                 );
                 
                 woocommerce_wp_select(
                     array(
                             'id'          => 'woo_product_payment_action',
-                            'label'       => __( 'Payment Action', 'woocommerce' ),
+                            'label'       => __( 'Payment Action', 'paypal-for-woocommerce' ),
                             'options' => array(
                                 '' => 'Select Payment Action',
                                 'Sale' => 'Sale',
@@ -1083,7 +1083,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 woocommerce_wp_select(
                     array(
                             'id'          => 'woo_product_payment_action_authorization',
-                            'label'       => __( 'Authorization Type', 'woocommerce' ),
+                            'label'       => __( 'Authorization Type', 'paypal-for-woocommerce' ),
                             'options' => array(
                                 'Full Authorization' => 'Full Authorization',
                                 'Card Verification' => 'Card Verification',
