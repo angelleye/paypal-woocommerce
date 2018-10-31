@@ -514,15 +514,30 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 flow: 'vault'
                             },
                             googlePay: {
+                                <?php if($this->environment == 'production') { ?>
+                                merchantId: '01234567890123456789'
+                                <?php } ?>
                                 transactionInfo: {
                                   totalPriceStatus: 'FINAL',
-                                  totalPrice: '123.45',
+                                  totalPrice: '10.00',
                                   currencyCode: 'USD'
                                 },
                                 cardRequirements: {
-                                  // We recommend collecting and passing billing address information with all Google Pay transactions as a best practice.
-                                  billingAddressRequired: true
+                                  billingAddressRequired: true,
+                                  allowedCardNetworks: ["AMEX", "DISCOVER", "JCB", "MASTERCARD", "VISA"]
                                 }
+                            },
+                            applePay: {
+                                displayName: 'My Store',
+                                paymentRequest: {
+                                  total: {
+                                    label: 'My Store',
+                                    amount: '19.99'
+                                  }
+                                }
+                            },
+                            venmo: {
+                                allowNewBrowserTab: false
                             }
                             <?php if($this->fraud_tool != 'basic') { ?>
                             , dataCollector: {
