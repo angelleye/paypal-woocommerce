@@ -66,7 +66,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->enable_apple_pay = $this->get_option('enable_apple_pay', 'no');
         if($this->enable_google_pay == 'yes') {
             $this->merchant_id_google_pay = $this->get_option('merchant_id_google_pay', '');
-            if(empty($this->merchant_id_google_pay)) {
+            if(empty($this->merchant_id_google_pay) && $this->environment == 'production') {
                 $this->enable_google_pay = 'no';
             }
         }
