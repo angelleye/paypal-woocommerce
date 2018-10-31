@@ -202,6 +202,28 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                                 <option value="disable_express_checkout_button"><?php echo __('Disable Express Checkout Button', 'paypal-for-woocommerce'); ?></option>
                                 <option value="enable_sandbox_mode"><?php echo __('Enable Sandbox Mode', 'paypal-for-woocommerce'); ?></option>
                                 <option value="disable_sandbox_mode"><?php echo __('Disable Sandbox Mode', 'paypal-for-woocommerce'); ?></option>
+                                <option value="enable_payment_action"><?php echo __('Enable Payment Action', 'paypal-for-woocommerce'); ?></option>
+                                <option value="disable_payment_action"><?php echo __('Disable Payment Action', 'paypal-for-woocommerce'); ?></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section pfw-bulk-action-payment-action-type">
+                        <label for="pfw-bulk-action-payment-action-type"><?php echo __('Payment Action', 'paypal-for-woocommerce'); ?></label>
+                        <div>
+                            <select name="pfw-bulk-action-payment-action-type" id="pfw-bulk-action-payment-action-type">
+                                <option value=""><?php echo __('- Select...', 'paypal-for-woocommerce'); ?></option>
+                                <option value="Sale"><?php echo __('Sale', 'paypal-for-woocommerce'); ?></option>
+                                <option value="Authorization"><?php echo __('Authorization', 'paypal-for-woocommerce'); ?></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section pfw-bulk-action-payment-authorization-type">
+                        <label for="pfw-bulk-action-payment-authorization-type"><?php echo __('Authorization Type', 'paypal-for-woocommerce'); ?></label>
+                        <div>
+                            <select name="pfw-bulk-action-payment-authorization-type" id="pfw-bulk-action-payment-authorization-type">
+                                <option value=""><?php echo __('- Select...', 'paypal-for-woocommerce'); ?></option>
+                                <option value="Full Authorization"><?php echo __('Full Authorization', 'paypal-for-woocommerce'); ?></option>
+                                <option value="Card Verification"><?php echo __('Card Verification', 'paypal-for-woocommerce'); ?></option>
                             </select>
                         </div>
                     </div>
