@@ -765,18 +765,34 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                             $target_product_id = ( $target->post_parent != '0' ) ? $target->post_parent : $target->ID;
                             if (get_post_type($target_product_id) == 'product' && !in_array($target_product_id, $processed_product_id)) {
                                 if (!update_post_meta($target_product_id, $action_key, $is_enable)) {
-                                    update_post_meta( $target_product_id, 'woo_product_payment_action', wc_clean($_POST['payment_action']) );
-                                    if(!empty($_POST['payment_action']) && $_POST['payment_action'] == 'Authorization') {
-                                        update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', wc_clean($_POST['payment_action']) );
-                                    } else {
-                                        update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', wc_clean($_POST['authorization_type']) );
+                                    if( !empty($_POST['payment_action'])) {
+                                        if (update_post_meta( $target_product_id, 'woo_product_payment_action', wc_clean($_POST['payment_action']) ) ) {
+                                            $processed_product_id[$target_product_id] = $target_product_id;
+                                        }
+                                        if($_POST['payment_action'] == 'Authorization') {
+                                            if ( update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', wc_clean($_POST['authorization_type']) ) ) {
+                                                $processed_product_id[$target_product_id] = $target_product_id;
+                                            }
+                                        } else {
+                                            if (update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', '' ) ) {
+                                                $processed_product_id[$target_product_id] = $target_product_id;
+                                            }
+                                        }
                                     }
                                 } else {
-                                    update_post_meta( $target_product_id, 'woo_product_payment_action', wc_clean($_POST['payment_action']) );
-                                    if(!empty($_POST['payment_action']) && $_POST['payment_action'] == 'Authorization') {
-                                        update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', wc_clean($_POST['payment_action']) );
-                                    } else {
-                                        update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', wc_clean($_POST['authorization_type']) );
+                                    if( !empty($_POST['payment_action'])) {
+                                        if (update_post_meta( $target_product_id, 'woo_product_payment_action', wc_clean($_POST['payment_action']) ) ) {
+                                            $processed_product_id[$target_product_id] = $target_product_id;
+                                        }
+                                        if($_POST['payment_action'] == 'Authorization') {
+                                            if (update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', wc_clean($_POST['authorization_type']) ) ) {
+                                                $processed_product_id[$target_product_id] = $target_product_id;
+                                            }
+                                        } else {
+                                            if (update_post_meta( $target_product_id, 'woo_product_payment_action_authorization', '' ) ) {
+                                                $processed_product_id[$target_product_id] = $target_product_id;
+                                            }
+                                        }
                                     }
                                     $processed_product_id[$target_product_id] = $target_product_id;
                                 }
@@ -1077,7 +1093,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                 'Authorization' => 'Authorization',
                             ),
                             'desc_tip'    => 'true',
-                            'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds through your PayPal account when you are ready to deliver.'),
+                            'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
                     )
                 );
                 woocommerce_wp_select(
