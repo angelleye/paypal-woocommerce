@@ -1362,7 +1362,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         } catch (Exception $e) {
 
             if ($arr['RESULT'] != 7) {
-                wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . $e->getMessage() . '"', 'error');
+                if(function_exists('wc_add_notice')) {
+                    wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . $e->getMessage() . '"', 'error');
+                } else {
+                    $order->add_order_note(__('Error:', 'paypal-for-woocommerce') . ' "' . $e->getMessage() . '"');
+                }
                 $length_error = 0;
                 return;
             } else {
