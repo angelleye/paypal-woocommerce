@@ -1806,6 +1806,7 @@ class AngellEYE_Utility {
                 $payment_order_meta = array('_transaction_id' => $do_delayed_capture_result['PNREF']);
                 self::angelleye_add_order_meta($order_id, $payment_order_meta);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_delayed_capture_result, $order, 'DoCapture');
+                $this->angelleye_get_transactionDetails($do_delayed_capture_result['PNREF']);
                 $this->angelleye_get_transactionDetails($transaction_id);
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
                 
