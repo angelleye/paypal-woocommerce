@@ -292,10 +292,12 @@ class AngellEYE_Utility {
                                     if ($this->total_DoCapture > 0 || $this->total_DoVoid > 0) {
                                         unset($paypal_payment_action['DoVoid']);
                                     }
-                                    $payment_action_authorization = get_post_meta($order_id, 'payment_action_authorization', true);
-                                    if( !empty($payment_action_authorization) && $payment_action_authorization == 'Card Verification') {
-                                         unset($paypal_payment_action);
-                                         $paypal_payment_action = array('DoCapture' => 'Capture Sale');
+                                    if( isset($paypal_payment_action['DoCapture']) && !empty($paypal_payment_action['DoCapture'])) {
+                                        $payment_action_authorization = get_post_meta($order_id, 'payment_action_authorization', true);
+                                        if( !empty($payment_action_authorization) && $payment_action_authorization == 'Card Verification') {
+                                             unset($paypal_payment_action);
+                                             $paypal_payment_action = array('DoCapture' => 'Capture Sale');
+                                        }
                                     }
                                     return $paypal_payment_action;
                                 }
