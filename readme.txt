@@ -1,14 +1,14 @@
 ﻿=== PayPal for WooCommerce ===
 Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
-Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
+Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 4.9.8
-Stable tag: 1.4.19
+Stable tag: 1.5.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Upgrade your WooCommerce PayPal experience for free!  Developed by an Ace Certified PayPal Developer, Official PayPal Partner, PayPal Ambassador, and 3-time PayPal Star Developer Award Winner.
+One plugin for all things PayPal!  Express Checkout with Smart Payment Buttons, PayPal Pro, Braintree with Apple and Google Pay, PayPal Advanced, and more!
 
 == Description ==
 
@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.5.0 - xx.xx.2018 =
+= 1.5.0 - 11.02.2018 =
 
 * Feature - PayFlow - Adds an option to run Card Verification for Authorization instead of a full order authorization. ([PFW-272](https://github.com/angelleye/paypal-woocommerce/pull/1222))([PFW-292](https://github.com/angelleye/paypal-woocommerce/pull/1236))
 * Feature - PayFlow - Adds product-level option for Authorization or Sale. ([PFW-273](https://github.com/angelleye/paypal-woocommerce/pull/1223))
@@ -932,5 +932,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.4.19 =
+= 1.5.0 =
 After updating, make sure to clear any caching / CDN plugins you may be using.  Also, go into the plugin's gateway settings, review everything, and click Save even if you do not make any changes.
