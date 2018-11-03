@@ -277,7 +277,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'payment_action' => array(
                 'title' => __('Payment Action', 'paypal-for-woocommerce'),
                 'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
-                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.  You would need to capture funds through your PayPal account when you are ready to deliver.'),
+                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select',
                 'options' => array(
@@ -938,7 +938,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         <label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
                 </p>',
                 esc_attr( $this->id ),
-                apply_filters( 'cc_form_label_save_to_account', __( 'Save payment method to my account.', 'woocommerce' ), $this->id)
+                apply_filters( 'cc_form_label_save_to_account', __( 'Save payment method to my account.', 'paypal-for-woocommerce' ), $this->id)
         );
     }
 
