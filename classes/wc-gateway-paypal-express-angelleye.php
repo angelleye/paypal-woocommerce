@@ -1264,7 +1264,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         <label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
                 </p>',
                 esc_attr( $this->id ),
-                apply_filters( 'cc_form_label_save_to_account', __( 'Save payment method to my account.', 'woocommerce' ), $this->id)
+                apply_filters( 'cc_form_label_save_to_account', __( 'Save payment method to my account.', 'paypal-for-woocommerce' ), $this->id)
         );
     }
 

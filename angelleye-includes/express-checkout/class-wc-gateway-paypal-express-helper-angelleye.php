@@ -950,7 +950,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function angelleye_shipping_sec_title() {
         if ($this->function_helper->ec_is_express_checkout()) {
-            ?><h3><?php _e('Shipping details', 'woocommerce'); ?></h3> <?php
+            ?><h3><?php _e('Shipping details', 'paypal-for-woocommerce'); ?></h3> <?php
         }
     }
 

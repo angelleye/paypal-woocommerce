@@ -124,6 +124,7 @@ jQuery(document).ready(function ($) {
         $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-product-type').hide();
         $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-price-value').hide();
         $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-target-where-stock-value').hide();
+        
         $('#pfw-bulk-action-target-where-category').removeAttr('required');
         $('#pfw-bulk-action-target-where-product-type').removeAttr('required');
         $('#pfw-bulk-action-target-where-price-value').removeAttr('required');
@@ -139,6 +140,41 @@ jQuery(document).ready(function ($) {
         }
     });
     // change target where type -- toggle categories/value inputs
+    $('#pfw-bulk-action-type').change(function () {
+        console.log($(this).val());
+        $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-payment-action-type').hide(); 
+        $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-payment-authorization-type').hide();
+        if ($(this).val() == 'enable_payment_action') {
+            $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-payment-action-type').show(); 
+        } 
+    }).change();
+    $('#woo_product_payment_action').change(function () {
+        if ( $(this).val() === 'Authorization' ) {
+            $('#woo_product_payment_action_authorization').closest('p').show();
+        } else {
+            $('#woo_product_payment_action_authorization').closest('p').hide();
+        }
+    }).change();
+    $('#enable_payment_action').change(function () {
+        if ($(this).is(':checked')) {
+            $('.woo_product_payment_action_field').show();
+            if( $('#woo_product_payment_action').val() == 'Authorization') {
+                $('.woo_product_payment_action_authorization_field').show();
+            }
+        } else {
+            $('.woo_product_payment_action_field').hide();
+            $('.woo_product_payment_action_authorization_field').hide();
+        }
+    }).change();
+    $('#pfw-bulk-action-payment-action-type').change(function () {
+        if ($(this).val() == 'Authorization') {
+            $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-payment-authorization-type').show(); 
+        } else {
+            $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-payment-authorization-type').hide(); 
+        }
+    }).change();
+    
+    
     $('#pfw-bulk-action-target-where-type').change(function () {
         if ($(this).val() == 'category')
         {
@@ -187,6 +223,8 @@ jQuery(document).ready(function ($) {
             }
         }
     });
+    
+    
 
     // AJAX - Bulk enable/disable tool
     $('#woocommerce_paypal-for-woocommerce_options_form_bulk_tool_shipping').submit(function ()
@@ -203,6 +241,8 @@ jQuery(document).ready(function ($) {
         var actionTargetWhereProductType = $('#pfw-bulk-action-target-where-product-type').val();
         var actionTargetWherePriceValue = $('#pfw-bulk-action-target-where-price-value').val();
         var actionTargetWhereStockValue = $('#pfw-bulk-action-target-where-stock-value').val();
+        var payment_action = $('#pfw-bulk-action-payment-action-type').val();
+        var authorization_type = $('#pfw-bulk-action-payment-authorization-type').val();
         var data = {
             'action': 'pfw_ed_shipping_bulk_tool',
             'actionType': actionType,
@@ -212,6 +252,8 @@ jQuery(document).ready(function ($) {
             'actionTargetWhereProductType': actionTargetWhereProductType,
             'actionTargetWherePriceValue': actionTargetWherePriceValue,
             'actionTargetWhereStockValue': actionTargetWhereStockValue,
+            'payment_action' : payment_action,
+            'authorization_type' : authorization_type
         };
 
         // post it
@@ -420,11 +462,5 @@ jQuery(document).ready(function ($) {
         };
     }
     
-    jQuery('#woo_product_payment_action').change(function () {
-        if ( this.value === 'Authorization' ) {
-            jQuery('#woo_product_payment_action_authorization').closest('p').show();
-        } else {
-            jQuery('#woo_product_payment_action_authorization').closest('p').hide();
-        }
-    }).change();
+    
 });
