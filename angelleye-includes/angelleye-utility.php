@@ -292,6 +292,13 @@ class AngellEYE_Utility {
                                     if ($this->total_DoCapture > 0 || $this->total_DoVoid > 0) {
                                         unset($paypal_payment_action['DoVoid']);
                                     }
+                                    if( isset($paypal_payment_action['DoCapture']) && !empty($paypal_payment_action['DoCapture'])) {
+                                        $payment_action_authorization = get_post_meta($order_id, 'payment_action_authorization', true);
+                                        if( !empty($payment_action_authorization) && $payment_action_authorization == 'Card Verification') {
+                                             unset($paypal_payment_action);
+                                             $paypal_payment_action = array('DoCapture' => 'Capture Sale');
+                                        }
+                                    }
                                     return $paypal_payment_action;
                                 }
                                 break;
@@ -1784,10 +1791,17 @@ class AngellEYE_Utility {
             $do_delayed_capture_result = $this->paypal->ProcessTransaction($PayPalRequestData);
             $this->angelleye_write_request_response_api_log($do_delayed_capture_result);
             if (isset($do_delayed_capture_result['RESULT']) && ($do_delayed_capture_result['RESULT'] == 0 || $do_delayed_capture_result['RESULT'] == 126)) {
-                $order->add_order_note(__('PayPal Delayed Capture', 'paypal-for-woocommerce') .
-                        ' ( Response Code: ' . $do_delayed_capture_result['RESULT'] . ", " .
-                        ' Delayed Capture AUTHORIZATIONID: ' . $transaction_id . ' )'
-                );
+                if(isset($payment_action_authorization) && $payment_action_authorization == 'Card Verification') {
+                    $order->add_order_note(__('PayPal Sale Capture', 'paypal-for-woocommerce') .
+                            ' ( Response Code: ' . $do_delayed_capture_result['RESULT'] . ", " .
+                            ' Sale Capture Transaction ID: ' . $do_delayed_capture_result['PNREF'] . ' )'
+                    );
+                } else {
+                    $order->add_order_note(__('PayPal Delayed Capture', 'paypal-for-woocommerce') .
+                            ' ( Response Code: ' . $do_delayed_capture_result['RESULT'] . ", " .
+                            ' Delayed Capture AUTHORIZATIONID: ' . $do_delayed_capture_result['PNREF'] . ' )'
+                    );
+                }
 
                 $payment_order_meta = array('_transaction_id' => $do_delayed_capture_result['PNREF']);
                 self::angelleye_add_order_meta($order_id, $payment_order_meta);
@@ -1798,13 +1812,21 @@ class AngellEYE_Utility {
             } else {
                 $ErrorCode = urldecode($do_delayed_capture_result["RESULT"]);
                 $ErrorLongMsg = urldecode($do_delayed_capture_result["RESPMSG"]);
-                $this->ec_add_log(__('PayPal Delayed Capture API call failed. ', 'paypal-for-woocommerce'));
-                $this->ec_add_log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
-                $this->ec_add_log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
-                $order->add_order_note(__('PayPal Delayed Capture API call failed. ', 'paypal-for-woocommerce') .
+                if(isset($payment_action_authorization) && $payment_action_authorization == 'Card Verification') {
+                    $order->add_order_note(__('PayPal Sale Capture API call failed. ', 'paypal-for-woocommerce') .
                         ' ( Detailed Error Message: ' . $ErrorLongMsg . ", " .
                         ' Error Code: ' . $ErrorCode . ' )'
-                );
+                    );
+                    $this->ec_add_log(__('PayPal Sale Capture API call failed. ', 'paypal-for-woocommerce'));
+                } else {
+                    $order->add_order_note(__('PayPal Delayed Capture API call failed. ', 'paypal-for-woocommerce') .
+                        ' ( Detailed Error Message: ' . $ErrorLongMsg . ", " .
+                        ' Error Code: ' . $ErrorCode . ' )'
+                    );
+                    $this->ec_add_log(__('PayPal Delayed Capture API call failed. ', 'paypal-for-woocommerce'));
+                }
+                $this->ec_add_log(__('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg);
+                $this->ec_add_log(__('Error Code: ', 'paypal-for-woocommerce') . $ErrorCode);
                 //$this->call_error_email_notifications($subject = 'Delayed Capture failed', $method_name = 'Delayed Capture', $resArray = $do_delayed_capture_result);
             }
         }
