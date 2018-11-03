@@ -136,6 +136,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - PayFlow - Adds product-level option for Authorization or Sale. ([PFW-273](https://github.com/angelleye/paypal-woocommerce/pull/1223))([PFW-290](https://github.com/angelleye/paypal-woocommerce/pull/1231))
 * Feature - PayFlow - Adds additional data for Address Verification to Woo order notes. ([PFW-276](https://github.com/angelleye/paypal-woocommerce/pull/1221))
 * Tweak - REST CC - Adjustments to error display on failed payments. ([PFW-284](https://github.com/angelleye/paypal-woocommerce/pull/1225))
+* Tweak - PayFlow - Formatting adjustment for auth/capture AVS notes. ([PFW-293](https://github.com/angelleye/paypal-woocommerce/pull/1230))
 * Tweak - CSS tweaks to resolve mobile checkout form field issues. ([PWF-268](https://github.com/angelleye/paypal-woocommerce/pull/1227))
 * Tweak - Adjusts tool-tip related to Authorization and Capture functionality. ([PFW-291](https://github.com/angelleye/paypal-woocommerce/pull/1232))
 * Fix - Express Checkout - Resolves a conflict with some themes where PayPal Smart Buttons would get cut off. ([PFW-266](https://github.com/angelleye/paypal-woocommerce/pull/1228))

@@ -1425,11 +1425,25 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                  */
                 $avs_address_response_code = isset($PayPalResult['AVSADDR']) ? $PayPalResult['AVSADDR'] : '';
                 $avs_zip_response_code = isset($PayPalResult['AVSZIP']) ? $PayPalResult['AVSZIP'] : '';
+                $proc_avs_response_code = isset($PayPalResult['PROCAVS']) ? $PayPalResult['PROCAVS'] : '';
                 $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
-                $avs_response_order_note .= "\n";
-                $avs_response_order_note .= sprintf(__('Address Match: %s', 'paypal-for-woocommerce'), $avs_address_response_code);
-                $avs_response_order_note .= "\n";
-                $avs_response_order_note .= sprintf(__('Postal Match: %s', 'paypal-for-woocommerce'), $avs_zip_response_code);
+                $avs_response_order_note .= '<ul class="angelleye_avs_result">';
+                $avs_response_order_note .= '<li>' . sprintf(__('AVS: %s', 'paypal-for-woocommerce'), $proc_avs_response_code) . '</li>';
+                $avs_response_order_note .= '<ul class="angelleye_avs_result_inner">';
+                $avs_response_order_note .= '<li>' . sprintf(__('Address Match: %s', 'paypal-for-woocommerce'), $avs_address_response_code) . '</li>';
+                $avs_response_order_note .= '<li>' . sprintf(__('Postal Match: %s', 'paypal-for-woocommerce'), $avs_zip_response_code) . '</li>';
+                $avs_response_order_note .= "<ul>";
+                $avs_response_order_note .= '</ul>';
+                $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                if ($old_wc) {
+                    update_post_meta($order_id, '_AVSADDR', $avs_address_response_code);
+                    update_post_meta($order_id, '_AVSZIP', $avs_zip_response_code);
+                    update_post_meta($order_id, '_PROCAVS', $avs_zip_response_code);
+                } else {
+                    update_post_meta($order->get_id(), '_AVSADDR', $avs_address_response_code);
+                    update_post_meta($order->get_id(), '_AVSZIP', $avs_zip_response_code);
+                    update_post_meta($order->get_id(), '_PROCAVS', $avs_zip_response_code);
+                }
                 $order->add_order_note($avs_response_order_note);
                 /**
                  * Add order notes for CVV2 result
