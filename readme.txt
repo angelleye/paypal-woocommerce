@@ -129,7 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.5.0 - xx.xx.2018=
 * Feature - PayFlow - Adds an option to run Card Verification for Authorization instead of a full order authorization. ([PFW-272](https://github.com/angelleye/paypal-woocommerce/pull/1222))
-* Feature - PayFlow - Adds product-level option for Authorization or Sale. ([PFW-273](https://github.com/angelleye/paypal-woocommerce/pull/1223))
+* Feature - PayFlow - Adds product-level option for Authorization or Sale. ([PFW-273](https://github.com/angelleye/paypal-woocommerce/pull/1223))([PFW-290](https://github.com/angelleye/paypal-woocommerce/pull/1231))
 * Feature - PayFlow - Adds additional data for Address Verification to Woo order notes. ([PFW-276](https://github.com/angelleye/paypal-woocommerce/pull/1221))
 * Tweak - REST CC - Adjustments to error display on failed payments. ([PFW-284](https://github.com/angelleye/paypal-woocommerce/pull/1225))
 * Tweak - CSS tweaks to resolve mobile checkout form field issues. ([PWF-268](https://github.com/angelleye/paypal-woocommerce/pull/1227))
