@@ -670,7 +670,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             
             $this->add_log('PayFlow Request: ' . print_r($log, true));
             $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
-
             /**
              *  cURL Error Handling #146
              *  @since    1.1.8
@@ -816,6 +815,16 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         }
                     } else {
                         wc_maybe_reduce_stock_levels($order_id);
+                    }
+                    if($PayPalResult['RESULT'] == 125) {
+                        if ($this->error_display_type == 'detailed') {
+                            $fc_error_display_type = __('Payment error:', 'paypal-for-woocommerce') . ' ' . $PayPalResult['RESULT'] . '-' . $PayPalResult['RESPMSG'];
+                        } else {
+                            $fc_error_display_type = __('Payment error:', 'paypal-for-woocommerce') . ' There was a problem processing your payment.  Please try another method.';
+                        }
+                        $fc_error_display_type = apply_filters('ae_pppf_error_user_display_message', $fc_error_display_type, $PayPalResult['RESULT'], $PayPalResult['RESPMSG'], $PayPalResult);
+                        wc_add_notice($fc_error_display_type, "error");
+                        return;
                     }
                 } else {
                     if ($this->payment_action == "Authorization" ) {
