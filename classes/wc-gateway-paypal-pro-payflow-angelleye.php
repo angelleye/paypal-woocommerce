@@ -117,8 +117,9 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
             $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id);
         }
-
-        $this->fraud_error_codes = array('125', '126', '127', '128');
+        $this->fraud_codes = array('125', '128', '131', '126', '127');
+        $this->fraud_error_codes = array('125', '128', '131');
+        $this->fraud_warning_codes = array('126', '127');
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
         add_action('admin_notices', array($this, 'angelleye_paypal_pro_payflow_reference_transaction_notice'));
         
@@ -670,7 +671,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             
             $this->add_log('PayFlow Request: ' . print_r($log, true));
             $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
-
             /**
              *  cURL Error Handling #146
              *  @since    1.1.8
@@ -693,40 +693,15 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             /**
              * Check for errors or fraud filter warnings and proceed accordingly.
              */
-            if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
+            if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_warning_codes))) {
                 if( $this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification' ) {
                     $order->add_order_note('Card : ' . $PayPalResult['RESPMSG']);
                     add_post_meta($order_id, 'payment_action_authorization', $this->payment_action_authorization);
                 }
-                if (in_array($PayPalResult['RESULT'], $this->fraud_error_codes)) {
-                    $order->add_order_note($PayPalResult['RESPMSG']);
-                    $order->add_order_note($PayPalResult['PREFPSMSG']);
-                    $order->add_order_note("The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.");
-                } else {
-                    if( isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
-                        $order->update_status('failed', __('Payment failed due to a duplicate order ID.', 'paypal-for-woocommerce'));
-                        throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
-                    }
-                    if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
-                        add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
-                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
-                    } else {
-                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
-                    }
-                    /* Checkout Note */
-                    if (isset($_POST) && !empty($_POST['order_comments'])) {
-                        // Update post 37
-                        $checkout_note = array(
-                            'ID' => $order_id,
-                            'post_excerpt' => wc_clean($_POST['order_comments']),
-                        );
-                        wp_update_post($checkout_note);
-                    }
+                if( isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
+                    $order->update_status('failed', __('Payment failed due to a duplicate order ID.', 'paypal-for-woocommerce'));
+                    throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                 }
-
-                /**
-                 * Add order notes for AVS result
-                 */
                 $avs_address_response_code = isset($PayPalResult['AVSADDR']) ? $PayPalResult['AVSADDR'] : '';
                 $avs_zip_response_code = isset($PayPalResult['AVSZIP']) ? $PayPalResult['AVSZIP'] : '';
                 $proc_avs_response_code = isset($PayPalResult['PROCAVS']) ? $PayPalResult['PROCAVS'] : '';
@@ -749,25 +724,16 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     update_post_meta($order->get_id(), '_PROCAVS', $avs_zip_response_code);
                 }
                 $order->add_order_note($avs_response_order_note);
-
-                /**
-                 * Add order notes for CVV2 result
-                 */
                 $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
                 $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
                 $cvv2_response_order_note .= "\n";
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
-
                 if ($old_wc) {
                     update_post_meta($order_id, '_CVV2MATCH', $cvv2_response_code);
                 } else {
                     update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
                 }
-
                 $order->add_order_note($cvv2_response_order_note);
-
-                // Payment complete
-                //$order->add_order_note("PayPal Result".print_r($PayPalResult,true));
                 do_action('before_save_payment_token', $order_id);
                 if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                     $TRANSACTIONID = $PayPalResult['PNREF'];
@@ -784,7 +750,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         } else {
                             $customer_id = get_current_user_id();
                         }
-                       
                         $token->set_token($TRANSACTIONID);
                         $token->set_gateway_id($this->id);
                         $token->set_card_type(AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['acct']));
@@ -806,7 +771,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         }
                     }
                 }
-                if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_error_codes)) {
+                if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_warning_codes)) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                     $old_wc = version_compare(WC_VERSION, '3.0', '<');
                     $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
@@ -817,59 +782,50 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     } else {
                         wc_maybe_reduce_stock_levels($order_id);
                     }
-                } else {
-                    if ($this->payment_action == "Authorization" ) {
-                        if( $this->pending_authorization_order_status == 'Processing' ) {
-                            $order->payment_complete($PayPalResult['PNREF']);
-                        } else {
-                            $order->update_status('on-hold');
-                            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-                            if ($old_wc) {
-                                if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
-                                    $order->reduce_order_stock();
-                                }
-                            } else {
-                                wc_maybe_reduce_stock_levels($order_id);
-                            }
-                        }
-                        if ($old_wc) {
-                            update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
-                        } else {
-                            update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['PNREF']);
-                        }
-                        $payment_order_meta = array('_transaction_id' => $PayPalResult['PNREF'], '_payment_action' => $this->payment_action);
-                        AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
-                        AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
-                        $angelleye_utility = new AngellEYE_Utility(null, null);
-                        $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
+                } elseif ($this->payment_action == "Authorization" ) {
+                    if( $this->pending_authorization_order_status == 'Processing' ) {
+                        $order->payment_complete($PayPalResult['PNREF']);
                     } else {
-                        if( $this->default_order_status == 'Completed' ) {
-                            $order->update_status('completed');
-                            if ($old_wc) {
-                               update_post_meta($order_id, '_transaction_id', $PayPalResult['PNREF']);
-                            } else {
-                               update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['PNREF']);
+                        $order->update_status('on-hold');
+                        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                        if ($old_wc) {
+                            if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
+                                $order->reduce_order_stock();
                             }
                         } else {
-                            $order->payment_complete($PayPalResult['PNREF']);
+                            wc_maybe_reduce_stock_levels($order_id);
                         }
                     }
+                    if ($old_wc) {
+                        update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
+                    } else {
+                        update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['PNREF']);
+                    }
+                    $payment_order_meta = array('_transaction_id' => $PayPalResult['PNREF'], '_payment_action' => $this->payment_action);
+                    AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
+                    AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
+                    $angelleye_utility = new AngellEYE_Utility(null, null);
+                    $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
+                } else {
+                    if( $this->default_order_status == 'Completed' ) {
+                        $order->update_status('completed');
+                        if ($old_wc) {
+                           update_post_meta($order_id, '_transaction_id', $PayPalResult['PNREF']);
+                        } else {
+                           update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['PNREF']);
+                        }
+                    } else {
+                        $order->payment_complete($PayPalResult['PNREF']);
+                    }
                 }
-
-
-                // Remove cart
                 WC()->cart->empty_cart();
-
-                // Return thank you page redirect
                 return array(
                     'result' => 'success',
                     'redirect' => $this->get_return_url($order)
                 );
             } else {
                 $order->update_status('failed', __('PayPal Pro Payflow payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce') . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"');
-
-                // Generate error message based on Error Display Type setting
                 if ($this->error_display_type == 'detailed') {
                     $fc_error_display_type = __('Payment error:', 'paypal-for-woocommerce') . ' ' . $PayPalResult['RESULT'] . '-' . $PayPalResult['RESPMSG'];
                 } else {
@@ -877,8 +833,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 }
                 $fc_error_display_type = apply_filters('ae_pppf_error_user_display_message', $fc_error_display_type, $PayPalResult['RESULT'], $PayPalResult['RESPMSG'], $PayPalResult);
                 wc_add_notice($fc_error_display_type, "error");
-
-                // Notice admin if has any issue from PayPal
                 if ($this->error_email_notify) {
                     $admin_email = get_option("admin_email");
                     $message = __("PayFlow API call failed.", "paypal-for-woocommerce") . "\n\n";
@@ -893,7 +847,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Pro Payflow Error Notification");
                     wp_mail($admin_email, $subject, $message);
                 }
-
                 return;
             }
         } catch (Exception $e) {
@@ -1046,7 +999,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
 
         add_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
-        if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
+        if (isset($PayPalResult['RESULT']) && $PayPalResult['RESULT'] == 0) {
             update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['PNREF']);
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);
             if (ob_get_length())
@@ -1235,9 +1188,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'partialauth' => '',
             'authcode' => ''
         );
-        $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_express_set_express_checkout_request_args', $PayPalRequestData));
-        if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
-            if (in_array($PayPalResult['RESULT'], $this->fraud_error_codes)) {
+        $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_payflow_request_args', $PayPalRequestData));
+        if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_codes))) {
+            if (in_array($PayPalResult['RESULT'], $this->fraud_codes)) {
                 wc_add_notice(__('The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.', 'paypal-for-woocommerce'), 'error');
                 wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                 exit();
@@ -1395,34 +1348,17 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $fc_empty_response = apply_filters('ae_pppf_paypal_response_empty_message', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult);
                 throw new Exception($fc_empty_response);
             }
-            if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_error_codes))) {
-                if (in_array($PayPalResult['RESULT'], $this->fraud_error_codes)) {
-                    $order->add_order_note($PayPalResult['RESPMSG']);
-                    $order->add_order_note($PayPalResult['PREFPSMSG']);
-                    $order->add_order_note("The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.");
-                } else {
-                    if( isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
-                        $order->update_status('failed', __('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
-                        throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
-                    }
-                    if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
-                        add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
-                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
-                    } else {
-                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
-                    }
-                    /* Checkout Note */
-                    if (isset($_POST) && !empty($_POST['order_comments'])) {
-                        $checkout_note = array(
-                            'ID' => $order_id,
-                            'post_excerpt' => $_POST['order_comments'],
-                        );
-                        wp_update_post($checkout_note);
-                    }
+            if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_warning_codes))) {
+                if( isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
+                    $order->update_status('failed', __('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
+                    throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                 }
-                /**
-                 * Add order notes for AVS result
-                 */
+                if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
+                    add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
+                    $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
+                } else {
+                    $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
+                }
                 $avs_address_response_code = isset($PayPalResult['AVSADDR']) ? $PayPalResult['AVSADDR'] : '';
                 $avs_zip_response_code = isset($PayPalResult['AVSZIP']) ? $PayPalResult['AVSZIP'] : '';
                 $proc_avs_response_code = isset($PayPalResult['PROCAVS']) ? $PayPalResult['PROCAVS'] : '';
@@ -1445,27 +1381,23 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     update_post_meta($order->get_id(), '_PROCAVS', $avs_zip_response_code);
                 }
                 $order->add_order_note($avs_response_order_note);
-                /**
-                 * Add order notes for CVV2 result
-                 */
                 $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
                 $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
                 $cvv2_response_order_note .= "\n";
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
-                if( $this->default_order_status == 'Completed' ) {
-                     $order->update_status('completed');
-                     if ($old_wc) {
-                        update_post_meta($order_id, '_transaction_id', $PayPalResult['PNREF']);
+                if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_warning_codes)) {
+                    $order->update_status('on-hold', $PayPalResult['RESPMSG']);
+                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                    $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                    if ($old_wc) {
+                        if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
+                            $order->reduce_order_stock();
+                        }
                     } else {
-                        update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['PNREF']);
+                        wc_maybe_reduce_stock_levels($order_id);
                     }
-                } else {
-                    $order->payment_complete($PayPalResult['PNREF']);
-                }
-                
-                
-                if ($this->payment_action == "Authorization") {
+                } elseif ($this->payment_action == "Authorization") {
                     if ($old_wc) {
                         update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
                     } else {
@@ -1476,6 +1408,17 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                     $angelleye_utility = new AngellEYE_Utility(null, null);
                     $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
+                } else {
+                    if( $this->default_order_status == 'Completed' ) {
+                        $order->update_status('completed');
+                        if ($old_wc) {
+                           update_post_meta($order_id, '_transaction_id', $PayPalResult['PNREF']);
+                       } else {
+                           update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['PNREF']);
+                       }
+                   } else {
+                       $order->payment_complete($PayPalResult['PNREF']);
+                   }
                 }
                 $this->save_payment_token($order, $PayPalResult['PNREF']);
                 $this->are_reference_transactions_enabled($PayPalResult['PNREF']);
