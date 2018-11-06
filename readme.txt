@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 4.9.8
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -134,7 +134,6 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - PayFlow - Resolves an issue with the way Fraud Filter warnings were being handled. ([PFW-298](https://github.com/angelleye/paypal-woocommerce/pull/1238))
 
 = 1.5.0 - 11.02.2018 =
-
 * Feature - PayFlow - Adds an option to run Card Verification for Authorization instead of a full order authorization. ([PFW-272](https://github.com/angelleye/paypal-woocommerce/pull/1222))([PFW-292](https://github.com/angelleye/paypal-woocommerce/pull/1236))
 * Feature - PayFlow - Adds product-level option for Authorization or Sale. ([PFW-273](https://github.com/angelleye/paypal-woocommerce/pull/1223))
 * Feature - Braintree - Adds Apple and Google Pay to the Drop In UI experience. ([PFW-106](https://github.com/angelleye/paypal-woocommerce/pull/1233))
