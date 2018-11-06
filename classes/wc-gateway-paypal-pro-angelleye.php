@@ -87,17 +87,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
         $this->error_email_notify = $this->get_option('error_email_notify');
-        $this->error_display_type = $this->get_option('error_display_type'); 
+        $this->error_display_type = $this->get_option('error_display_type');
         //$this->enable_3dsecure = 'yes' === $this->get_option('enable_3dsecure', 'no');
         $this->enable_3dsecure = false;
         $this->liability_shift = 'yes' === $this->get_option('liability_shift', 'no');
-        $this->debug = 'yes' === $this->get_option('debug', 'no'); 
+        $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
         $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->softdescriptor = $this->get_option('softdescriptor', '');
-        $this->avs_cvv2_result_admin_email = 'yes' === $this->get_option('avs_cvv2_result_admin_email', 'no'); 
+        $this->avs_cvv2_result_admin_email = 'yes' === $this->get_option('avs_cvv2_result_admin_email', 'no');
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->notifyurl = '';
         if ($this->enable_notifyurl == 'yes') {
@@ -116,7 +116,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->enable_3dsecure = false;
             $this->centinel_url = $this->testmode == false ? $this->liveurl_3ds : $this->testurl_3ds;
         }
-        
+
         //fix ssl for image icon
         $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
         if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
@@ -164,12 +164,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enable_cardholder_first_last_name) {
             add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
         }
-        
+
         add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_paypal_pro_credit_card_form_fields'), 10, 2);
         if( $this->avs_cvv2_result_admin_email ) {
             add_action( 'woocommerce_email_before_order_table', array( $this, 'angelleye_paypal_pro_email_instructions' ), 10, 3 );
         }
-       
+
         $this->customer_id;
         if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
             $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
@@ -204,7 +204,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'default' => __('Pay with your credit card', 'paypal-for-woocommerce')
             ),
-           
+
             'invoice_id_prefix' => array(
                 'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
                 'type' => 'text',
@@ -417,18 +417,18 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         );
         $this->form_fields = apply_filters('angelleye_pc_form_fields', $this->form_fields);
     }
-    
-    
+
+
     public function admin_options() {
         echo '<h2>' . esc_html( $this->get_method_title() ) . '</h2>';
         echo wp_kses_post( wpautop( $this->get_method_description() ) );
         ?>
         <table class="form-table">
-            <?php 
+            <?php
             if(version_compare(WC_VERSION,'2.6','<')) {
-                AngellEYE_Utility::woo_compatibility_notice();    
+                AngellEYE_Utility::woo_compatibility_notice();
             } else {
-               $this->generate_settings_html(); 
+               $this->generate_settings_html();
             }
             ?>
         </table>
@@ -454,7 +454,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         </script>
         <?php
     }
-    
+
 
     /**
      * Check if this gateway is enabled and available in the user's country
@@ -519,7 +519,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         do_action('payment_fields_saved_payment_methods', $this);
     }
-    
+
     public function save_payment_method_checkbox() {
         printf(
                 '<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
@@ -588,12 +588,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $card_start_month = '';
             $card_start_year = '';
         }
-        
+
         $card_exp_month = (int) $card_exp_month;
         if ($card_exp_month < 10) {
             $card_exp_month = '0' . $card_exp_month;
         }
-        
+
         if (strlen($card_exp_year) == 2) {
             $card_exp_year += 2000;
         }
@@ -631,13 +631,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
 
             // Validate values
-            if (!ctype_digit($card->cvc)) {
+            if (!ctype_digit((string) $card->cvc)) {
                 throw new Exception(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'));
             }
 
             if (
-                    !ctype_digit($card->exp_month) ||
-                    !ctype_digit($card->exp_year) ||
+                    !ctype_digit((string) $card->exp_month) ||
+                    !ctype_digit((string) $card->exp_year) ||
                     $card->exp_month > 12 ||
                     $card->exp_month < 1 ||
                     $card->exp_year < date('y')
@@ -645,7 +645,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
             }
 
-            if (empty($card->number) || !ctype_digit($card->number)) {
+            if (empty($card->number) || !ctype_digit((string) $card->number)) {
                 throw new Exception(__('Card number is invalid', 'paypal-for-woocommerce'));
             }
 
@@ -702,7 +702,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             WC()->session->set('CardExpYear', $card->exp_year);
             $this->centinel_client->add('CardCode', $card->cvc);
             WC()->session->set('CardCode', $card->cvc);
-            
+
             $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
             $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
             $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
@@ -712,7 +712,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
             $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
             $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
-        
+
             $this->centinel_client->add('BillingFirstName', $billing_first_name);
             $this->centinel_client->add('BillingLastName', $billing_last_name);
             $this->centinel_client->add('BillingAddress1', $billing_address_1);
@@ -947,8 +947,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $firstname = wc_clean($_POST['paypal_pro-card-cardholder-first']);
         } else {
             $firstname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
-        }       
-           
+        }
+
         if(!empty($_POST['paypal_pro-card-cardholder-last'])) {
             $lastname = wc_clean($_POST['paypal_pro-card-cardholder-last']);
         } else {
@@ -977,7 +977,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'issuenumber' => ''                            // Issue number of Maestro or Solo card.  Two numeric digits max.
         );
 
-        
+
         $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
         $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
         $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
@@ -986,8 +986,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
         $billing_email = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email();
         $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
-        
-        
+
+
         $PayerInfo = array(
             'email' => $billing_email,                                // Email address of payer.
             'firstname' => $firstname, // Required.  Payer's first name.
@@ -1262,7 +1262,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     if ( $old_wc ) {
                         if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
                             $order->reduce_order_stock();
-                        } 
+                        }
                     } else {
                         wc_maybe_reduce_stock_levels( $order_id );
                     }
@@ -1278,7 +1278,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     if ( $old_wc ) {
                         if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
                             $order->reduce_order_stock();
-                        } 
+                        }
                     } else {
                         wc_maybe_reduce_stock_levels( $order_id );
                     }
@@ -1288,7 +1288,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
             }
-            
+
             if ($this->payment_action == "Authorization") {
                 if ($old_wc) {
                     update_post_meta($order_id, '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
@@ -1636,8 +1636,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 throw new Exception( __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ) );
             }
-            
-           
+
+
         } else {
             $redirect_url = wc_get_account_endpoint_url('payment-methods');
             $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
@@ -1663,7 +1663,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         return $settings;
     }
-    
+
     public function angelleye_paypal_pro_email_instructions($order, $sent_to_admin, $plain_text = false) {
         $payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
         if ( $sent_to_admin && 'paypal_pro' === $payment_method ) {
@@ -1742,7 +1742,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
         $billing_email = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email();
         $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
-        
+
         $PayerInfo = array(
             'email' => $billing_email, // Email address of payer.
             'firstname' => $billing_first_name, // Required.  Payer's first name.
@@ -1757,10 +1757,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'zip' => $billing_postcode, // Required.  Postal code of payer.
             'phonenum' => $billing_phone                        // Phone Number of payer.  20 char max.
         );
-        
+
         $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
         $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
-        
+
         $ShippingAddress = array(
             'shiptoname' => $shipping_first_name . ' ' . $shipping_last_name,                    // Required if shipping is included.  Person's name associated with this address.  32 char max.
             'shiptostreet' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1(),                    // Required if shipping is included.  First street address.  100 char max.
@@ -1771,7 +1771,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'shiptocountry' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country(),                    // Required if shipping is included.  Country code of shipping address.  2 char max.
             'shiptophonenum' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone()                    // Phone number for shipping address.  20 char max.
         );
-        
+
         $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
         $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
         $PaymentDetails = array(
@@ -1898,7 +1898,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 if ( $old_wc ) {
                     if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
                         $order->reduce_order_stock();
-                    } 
+                    }
                 } else {
                     wc_maybe_reduce_stock_levels( $order_id );
                 }
@@ -1942,7 +1942,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
-    
+
     public function free_signup_order_payment($order_id) {
         $order = new WC_Order($order_id);
         $this->log('Processing order #' . $order_id);
@@ -1958,9 +1958,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'result' => 'success',
                 'redirect' => $this->get_return_url($order)
             );
-        } 
+        }
     }
-    
+
     public function is_subscription($order_id) {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
     }
@@ -1978,7 +1978,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 if ( $old_wc ) {
                     if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
                         $order->reduce_order_stock();
-                    } 
+                    }
                 } else {
                     wc_maybe_reduce_stock_levels( $order_id );
                 }
@@ -1986,7 +1986,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
         }
     }
-    
+
     public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
         if( $this->testmode == false ) {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
@@ -2002,12 +2002,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                             $this->api_password = $this->get_option('sandbox_api_password');
                             $this->api_signature = $this->get_option('sandbox_api_signature');
                         }
-                    }        
+                    }
                 }
             }
         }
     }
-    
+
     public function angelleye_get_transaction_details($order_id, $transaction_id) {
         $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
         $GTDFields = array(
@@ -2018,7 +2018,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->log(print_r($get_transactionDetails_result, true));
         $this->update_payment_status_by_paypal_responce($order_id, $get_transactionDetails_result, $transaction_id);
     }
-    
+
     public function update_payment_status_by_paypal_responce($orderid, $result, $transaction_id) {
         try {
             $order = wc_get_order($orderid);
@@ -2104,7 +2104,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                         if ( $old_wc ) {
                             if ( ! get_post_meta( $orderid, '_order_stock_reduced', true ) ) {
                                 $order->reduce_order_stock();
-                            } 
+                            }
                         } else {
                             wc_maybe_reduce_stock_levels( $orderid );
                         }
@@ -2121,10 +2121,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             endswitch;
             return;
         } catch (Exception $ex) {
-            
+
         }
     }
-    
+
     public function angelleye_load_paypal_pro_class($gateway, $current, $order_id = null) {
         do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_pro', $gateway, $current, $order_id);
         if (!class_exists('Angelleye_PayPal_WC')) {
@@ -2139,6 +2139,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         );
         $this->PayPal = new Angelleye_PayPal_WC($PayPalConfig);
     }
-    
-    
+
+
 }
