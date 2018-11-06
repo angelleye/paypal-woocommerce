@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.5.2 - 11.06.2018 =
+* Feature - Special Request - Adds `ae_add_custom_order_note` hook to PayPal Pro, Braintree, and REST DCC gateways. ([PFW-300](https://github.com/angelleye/paypal-woocommerce/pull/1240))
+
 = 1.5.1 - 11.05.2018 =
 * Fix - PayFlow - Resolves an issue with the way Fraud Filter warnings were being handled. ([PFW-298](https://github.com/angelleye/paypal-woocommerce/pull/1238))
 
