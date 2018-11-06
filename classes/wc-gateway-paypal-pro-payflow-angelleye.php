@@ -728,14 +728,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
                 $cvv2_response_order_note .= "\n";
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
-                $cvv2_response_order_note = apply_filters('ae_pppf_order_note_for_card_security_code_result', $cvv2_response_order_note, $card, $token, $PayPalResult);
                 if ($old_wc) {
                     update_post_meta($order_id, '_CVV2MATCH', $cvv2_response_code);
                 } else {
                     update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
                 }
                 $order->add_order_note($cvv2_response_order_note);
-                do_action('ae_pppf_custom_order_note', $card, $token, $PayPalResult);
+                do_action('ae_pppf_custom_order_note', $order, $card, $token, $PayPalResult);
                 do_action('before_save_payment_token', $order_id);
                 if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                     $TRANSACTIONID = $PayPalResult['PNREF'];
@@ -1391,9 +1390,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
                 $cvv2_response_order_note .= "\n";
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
-                $cvv2_response_order_note = apply_filters('ae_pppf_order_note_for_card_security_code_result', $cvv2_response_order_note, $card, $token, $PayPalResult);
                 $order->add_order_note($cvv2_response_order_note);
-                do_action('ae_pppf_custom_order_note', $card, $token, $PayPalResult);
+                do_action('ae_pppf_custom_order_note', $order, $card, $token, $PayPalResult);
                 if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_warning_codes)) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                     $old_wc = version_compare(WC_VERSION, '3.0', '<');
