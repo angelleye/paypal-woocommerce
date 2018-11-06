@@ -1022,6 +1022,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
                     $request_data['paymentMethodToken'] = $token->get_token();
             } else {
+                $token = '';
                 $payment_method_nonce = self::get_posted_variable('braintree_token');
                 if (empty($payment_method_nonce)) {
                     $this->add_log("Error: The payment_method_nonce was unexpectedly empty");
@@ -1152,6 +1153,18 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }
                 $transaction = Braintree_Transaction::find($this->response->transaction->id);
                 $this->save_payment_token($order, $transaction->creditCard['token']);
+                if (!empty($transaction->creditCard['cardType']) && !empty($transaction->creditCard['last4'])) {
+                    $card = (object) array(
+                                'number' => $transaction->creditCard['last4'],
+                                'type' => $transaction->creditCard['cardType'],
+                                'cvc' => '',
+                                'exp_month' => $transaction->creditCard['expirationMonth'],
+                                'exp_year' => $transaction->creditCard['expirationYear'],
+                                'start_month' => '',
+                                'start_year' => ''
+                    );
+                    do_action('ae_add_custom_order_note', $order, $card, $token, array());
+                }
                 do_action('before_save_payment_token', $order_id);
                 if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                     try {
@@ -1881,6 +1894,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $payment_tokens_id = $token->get_token();
                 $this->save_payment_token($order, $payment_tokens_id);
                 $order->payment_complete($payment_tokens_id);
+                do_action('ae_add_custom_order_note', $order, $card = null, $token, array());
                 WC()->cart->empty_cart();
                 $result = array(
                     'result' => 'success',
@@ -2498,6 +2512,18 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         update_user_meta($customer_id, 'braintree_customer_id', $braintree_method->customerId);
         $payment_method_token = $braintree_method->token;
+        if (!empty($braintree_method->cardType) && !empty($braintree_method->last4)) {
+            $card = (object) array(
+                        'number' => $braintree_method->last4,
+                        'type' => $braintree_method->cardType,
+                        'cvc' => '',
+                        'exp_month' => $braintree_method->expirationMonth,
+                        'exp_year' => $braintree_method->expirationYear,
+                        'start_month' => '',
+                        'start_year' => ''
+            );
+            do_action('ae_add_custom_order_note', $order, $card, $token = null, array());
+        }
         do_action('before_save_payment_token', $order_id);
         if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
             try {

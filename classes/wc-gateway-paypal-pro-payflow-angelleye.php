@@ -523,7 +523,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     function do_payment($order, $card_number, $card_exp, $card_csc) {
 
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-
+        $card = $this->get_posted_card();
         $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
 
         try {
@@ -734,6 +734,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
                 }
                 $order->add_order_note($cvv2_response_order_note);
+                do_action('ae_add_custom_order_note', $order, $card, $token, $PayPalResult);
                 do_action('before_save_payment_token', $order_id);
                 if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                     $TRANSACTIONID = $PayPalResult['PNREF'];
@@ -1134,7 +1135,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             return (object) array(
                         'number' => $card_number,
-                        'type' => '',
+                        'type' => $card_type,
                         'cvc' => $card_cvc,
                         'exp_month' => $card_exp_month,
                         'exp_year' => $card_exp_year,
@@ -1232,6 +1233,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     public function process_subscription_payment($order, $amount, $payment_token = null) {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
+        $card = $this->get_posted_card();
         $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
         try {
 
@@ -1334,10 +1336,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
             if ($this->is_subscription($order_id)) {
-                $PayPalRequestData['origid'] = get_post_meta($order_id, '_payment_tokens_id', true);
+                $token_id = get_post_meta($order_id, '_payment_tokens_id', true);
+                $PayPalRequestData['origid'] = $token_id;
+                $token = WC_Payment_Tokens::get($token_id);
             }
             if (!empty($payment_token)) {
                 $PayPalRequestData['origid'] = $payment_token;
+                $token = WC_Payment_Tokens::get($payment_token);
             }
             $PayPalResult = $this->PayPal->ProcessTransaction($PayPalRequestData);
 
@@ -1386,6 +1391,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $cvv2_response_order_note .= "\n";
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
+                do_action('ae_add_custom_order_note', $order, $card, $token, $PayPalResult);
                 if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_warning_codes)) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                     $old_wc = version_compare(WC_VERSION, '3.0', '<');

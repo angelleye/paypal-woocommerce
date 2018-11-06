@@ -76,6 +76,8 @@ class PayPal_Rest_API_Utility {
         global $woocommerce;
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
+        $card = $this->get_posted_card();
+        $token = '';
         try {
             $this->set_trnsaction_obj_value($order, $card_data);
             try {
@@ -153,6 +155,7 @@ class PayPal_Rest_API_Utility {
                     }
                 }
                 $order->payment_complete($transaction_id);
+                do_action('ae_add_custom_order_note', $order, $card, $token, $transactions);
                 $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
                 if ($old_wc) {
                     update_post_meta($order->id, 'is_sandbox', $is_sandbox);
@@ -469,9 +472,10 @@ class PayPal_Rest_API_Utility {
         if (strlen($card_exp_year) == 2) {
             $card_exp_year += 2000;
         }
+        $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
         return (object) array(
                     'number' => $card_number,
-                    'type' => '',
+                    'type' => $card_type,
                     'cvc' => $card_cvc,
                     'exp_month' => $card_exp_month,
                     'exp_year' => $card_exp_year,
