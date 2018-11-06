@@ -601,10 +601,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if (strlen($card_start_year) == 2) {
             $card_start_year += 2000;
         }
-
+        
+        $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
+        
         return (object) array(
                     'number' => $card_number,
-                    'type' => '',
+                    'type' => $card_type,
                     'cvc' => $card_cvc,
                     'exp_month' => $card_exp_month,
                     'exp_year' => $card_exp_year,
@@ -935,7 +937,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $pc_session_expired_error = apply_filters('angelleye_pc_session_expired_error', sprintf(__('Sorry, your session has expired. <a href=%s>Return to homepage &rarr;</a>', 'paypal-for-woocommerce'), '"' . home_url() . '"'));
             wc_add_notice($pc_session_expired_error, "error");
         }
-
+        $card = $this->get_posted_card();
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
 
@@ -1141,6 +1143,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $PayPalResult = $this->PayPal->DoReferenceTransaction(apply_filters('angelleye_woocommerce_paypal_pro_do_reference_transaction_request_args', $PayPalRequestData));
         } else {
             $PayPalResult = $this->PayPal->DoDirectPayment(apply_filters('angelleye_woocommerce_paypal_pro_do_direct_payment_request_args', $PayPalRequestData));
+            $token = '';
         }
 
         // Pass data into class for processing with PayPal and load the response array into $PayPalResult
@@ -1216,6 +1219,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
                 update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
             }
+            do_action('ae_add_custom_order_note', $order, $card, $token, $PayPalResult);
             do_action('before_save_payment_token', $order_id);
             if(AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                 if( !empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new' ) {
@@ -1722,6 +1726,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
        $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
        $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
+       $card = $this->get_posted_card();
         if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
         }
@@ -1880,6 +1885,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $cvv2_response_order_note .= $cvv2_response_code;
             $cvv2_response_order_note .= $cvv2_response_message != '' ? ' - ' . $cvv2_response_message : '';
             $order->add_order_note($cvv2_response_order_note);
+            do_action('ae_add_custom_order_note', $order, $card, $token = null, $PayPalResult);
             $is_sandbox = $this->testmode;
             update_post_meta($order_id, 'is_sandbox', $is_sandbox);
             if ($this->payment_action == "Sale") {
