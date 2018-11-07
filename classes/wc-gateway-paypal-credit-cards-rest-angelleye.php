@@ -85,9 +85,9 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             <h3><?php echo (!empty($this->method_title) ) ? $this->method_title : __('Settings', 'paypal-for-woocommerce'); ?></h3>
             <?php echo (!empty($this->method_description) ) ? wpautop($this->method_description) : ''; ?>
             <table class="form-table">
-            <?php 
+            <?php
                 if(version_compare(WC_VERSION,'2.6','<')) {
-                    AngellEYE_Utility::woo_compatibility_notice();    
+                    AngellEYE_Utility::woo_compatibility_notice();
                 } elseif (version_compare(phpversion(), '5.3.0', '<')) {
                     echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . __('PayPal for WooCommerce requires PHP version 5.3.0 or higher.','paypal-for-woocommerce') . '</div></div>';
                 } else {
@@ -161,7 +161,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         }
         do_action('payment_fields_saved_payment_methods', $this);
     }
-    
+
     public function save_payment_method_checkbox() {
         printf(
                 '<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
@@ -198,19 +198,31 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
                     return true;
                 }
             }
+
             $card = $this->paypal_rest_api->get_posted_card();
+
             if (empty($card->exp_month) || empty($card->exp_year)) {
                 throw new Exception(__('Card expiration date is invalid', 'woocommerce-gateway-paypal-pro'));
             }
-            if (!ctype_digit($card->cvc)) {
+
+            if (!ctype_digit((string) $card->cvc)) {
                 throw new Exception(__('Card security code is invalid (only digits are allowed)', 'woocommerce-gateway-paypal-pro'));
             }
-            if (!ctype_digit($card->exp_month) || !ctype_digit($card->exp_year) || $card->exp_month > 12 || $card->exp_month < 1 || $card->exp_year < date('y')) {
+
+            if (
+                    !ctype_digit((string) $card->exp_month) ||
+                    !ctype_digit((string) $card->exp_year) ||
+                    $card->exp_month > 12 ||
+                    $card->exp_month < 1 ||
+                    $card->exp_year < date('y')
+            ) {
                 throw new Exception(__('Card expiration date is invalid', 'woocommerce-gateway-paypal-pro'));
             }
-            if (empty($card->number) || !ctype_digit($card->number)) {
+
+            if (empty($card->number) || !ctype_digit((string) $card->number)) {
                 throw new Exception(__('Card number is invalid', 'woocommerce-gateway-paypal-pro'));
             }
+
             return true;
         } catch (Exception $e) {
             wc_add_notice($e->getMessage(), 'error');
@@ -355,7 +367,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         }
         return $settings;
     }
-    
+
     public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
         if( $this->testmode == false ) {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
@@ -370,7 +382,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
                             $this->rest_client_id = $this->get_option('rest_client_id_sandbox', false);
                             $this->rest_secret_id = $this->get_option('rest_secret_id_sandbox', false);
                         }
-                    }        
+                    }
                 }
             }
         }
