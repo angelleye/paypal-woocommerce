@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.5.3 - 11.07.2018 =
+* Fix - Resolves a problem with expiration date validation in credit card gateways. ([PFW-301](https://github.com/angelleye/paypal-woocommerce/pull/1241))
+
 = 1.5.2 - 11.06.2018 =
 * Feature - Special Request - Adds `ae_add_custom_order_note` hook to PayPal Pro, Braintree, and REST DCC gateways. ([PFW-300](https://github.com/angelleye/paypal-woocommerce/pull/1240))
 
