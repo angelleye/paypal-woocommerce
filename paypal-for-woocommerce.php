@@ -1114,7 +1114,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woo_product_process_product_meta($post_id) {
-            if ( 'yes' === $_REQUEST['enable_payment_action'] ) {
+            if ( isset($_REQUEST['enable_payment_action']) && ('yes' === $_REQUEST['enable_payment_action']) ) {
                 update_post_meta( $post_id, 'enable_payment_action', 'yes' );
             } else {
                 update_post_meta( $post_id, 'enable_payment_action', '' );
