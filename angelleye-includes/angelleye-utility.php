@@ -831,7 +831,7 @@ class AngellEYE_Utility {
             $this->ec_add_log('Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
             $this->ec_add_log('Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
         } else {
-            $this->ec_add_log('LOG: ' . print_r($PayPalResult, true));
+            $this->ec_add_log('Response: ' . print_r($this->paypal->NVPToArray($PayPalResult['RAWRESPONSE']), true));
         }
     }
 
@@ -1475,7 +1475,6 @@ class AngellEYE_Utility {
             }
         } else {
             $get_transactionDetails_result = $this->inquiry_transaction($transaction_id);
-            $this->angelleye_write_request_response_api_log($get_transactionDetails_result);
             if ($get_transactionDetails_result['RESULT'] == 0 && ($get_transactionDetails_result['RESPMSG'] == 'Approved' || $get_transactionDetails_result['RESPMSG'] == 'Verified')) {
                 if ($get_transactionDetails_result['TRANSSTATE'] == 3) {
                     $get_transactionDetails_result['PAYMENTSTATUS'] = 'Pending';
@@ -1787,7 +1786,7 @@ class AngellEYE_Utility {
                 'AMT' => $AMT,
                 'CAPTURECOMPLETE' => 'N'
             );
-
+            $this->ec_add_log('Request: ' . print_r($PayPalRequestData, true));
             $do_delayed_capture_result = $this->paypal->ProcessTransaction($PayPalRequestData);
             $this->angelleye_write_request_response_api_log($do_delayed_capture_result);
             if (isset($do_delayed_capture_result['RESULT']) && ($do_delayed_capture_result['RESULT'] == 0 || $do_delayed_capture_result['RESULT'] == 126)) {
