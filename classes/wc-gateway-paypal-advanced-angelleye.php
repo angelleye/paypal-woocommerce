@@ -203,6 +203,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             return 'Approved';
         } else {
             $order->add_order_note(sprintf(__('Received result of Inquiry Transaction for the  (Order: %s) and with error:%s', 'paypal-for-woocommerce'), $order->get_order_number(), $inquiry_result_arr['RESPMSG']));
+             if(function_exists('wc_add_notice')) {
+                wc_add_notice(__('Error:', 'paypal-for-woocommerce') . ' "' . $inquiry_result_arr['RESPMSG'] . '"', 'error');
+            }
             return 'Error';
         }
     }
