@@ -1013,6 +1013,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     'result' => 'success',
                     'redirect' => $this->get_return_url($order)
                 );
+            } else {
+                return array(
+                    'result' => 'failure',
+                    'redirect' => ''
+                );
             }
         }
         //use try/catch blocks to handle exceptions while processing the payment
