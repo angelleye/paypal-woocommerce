@@ -997,9 +997,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 $token = WC_Payment_Tokens::get($token_id);
                 $payment_tokens_id = $token->get_token();
             }
-            $this->create_reference_transaction($payment_tokens_id, $order);
-            $inq_result = $this->inquiry_transaction($order, $order_id);
-            if ($inq_result == 'Approved') {
+            $result_arr = $this->create_reference_transaction($payment_tokens_id, $order);
+            if ( $result_arr['RESULT'] == 0 && ( substr($result_arr['RESPMSG'],0,9) == 'Approved:' || $result_arr['RESPMSG'] == 'Verified' || $result_arr['RESPMSG'] == 'Approved') ) {
                 $order->payment_complete($payment_tokens_id);
                 $this->save_payment_token($order, $payment_tokens_id);
                 if (!$this->is_subscription($order_id)) {
@@ -1365,7 +1364,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 throw new Exception(__('There was an error processing your order - ' . $arr['RESPMSG'], 'paypal-for-woocommerce'));
             } else {//return the secure token
                 $_POST['PNREF'] = $arr['PNREF'];
-                return $arr['RESPMSG'];
+                return $arr;
             }
         } catch (Exception $e) {
 
