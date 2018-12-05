@@ -526,7 +526,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             update_post_meta( $post_id, '_enable_ec_button', $_enable_ec_button );
         }
         
-        public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true) {
+        public static function angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = null, $gateway = null, $error_email_notify = true, $redirect_url = null) {
             if( isset( $PayPalResult['CURL_ERROR'] ) ){
                 try {
                         if($error_email_notify == true) {
@@ -539,7 +539,11 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         $display_error = 'There was a problem connecting to the payment gateway.';
                         wc_add_notice($display_error, 'error');
                         if (!is_ajax()) {
-                            wp_redirect(get_permalink(wc_get_page_id('cart')));
+                            if($redirect_url == null) {
+                                wp_redirect(get_permalink(wc_get_page_id('cart')));
+                            } else {
+                                wp_redirect($redirect_url);
+                            }
                             exit;
                         } else {
                             wp_send_json_error( array( 'error' => $display_error ) );

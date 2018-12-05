@@ -1620,6 +1620,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'PaymentDetails' => $PaymentDetails
         );
         $result = $this->PayPal->DoDirectPayment(apply_filters('angelleye_woocommerce_do_direct_payment_request_args', $PayPalRequestData));
+        $redirect_url = wc_get_account_endpoint_url('payment-methods');
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($result, $methos_name = 'DoDirectPayment', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify, $redirect_url);
         if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
             $customer_id = get_current_user_id();
             $TRANSACTIONID = $result['TRANSACTIONID'];
