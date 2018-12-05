@@ -613,15 +613,12 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['SHIPTOCOUNTRY'] = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
                 $PayPalRequestData['SHIPTOZIP'] = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
             }
-
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
-
-            if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
-                $PayPalRequestData['discount'] = $PaymentData['discount_amount'];
-            }
-
             $OrderItems = array();
             if ($this->send_items) {
+                if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
+                    $PayPalRequestData['discount'] = $PaymentData['discount_amount'];
+                }
                 $item_loop = 0;
                 foreach ($PaymentData['order_items'] as $_item) {
                     $Item['L_NUMBER' . $item_loop] = $_item['number'];
@@ -639,14 +636,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             /**
              * Shipping/tax/item amount
              */
-            if( $order->get_total() != $PaymentData['shippingamt'] ) {
-                $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
-            } else {
-                $PayPalRequestData['freightamt'] = 0.00;
-            }
-
-            $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
+            
             if ($this->send_items) {
+                if( $order->get_total() != $PaymentData['shippingamt'] ) {
+                    $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
+                } else {
+                    $PayPalRequestData['freightamt'] = 0.00;
+                }
+                $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
                 $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
