@@ -17,7 +17,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     protected static $_instance = null;
 
     /**
-     * Main WC_Emails Instance.
+     * Main Angelleye_PayPal_Express_Checkout_Helper Instance.
      *
      * Ensures only one instance of Angelleye_PayPal_Express_Checkout_Helper is loaded or can be loaded.
      *
@@ -209,9 +209,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     }
                     $button_dynamic_class = 'single_variation_wrap_angelleye_' . $product->get_id();
                     $hide = '';
-                    if ($_product->is_type('variation') || $_product->is_type('variable') || $_product->get_price() == 0 || $_product->get_price() == '') {
-                        //$hide = 'display:none;';
-                    }
                     $ec_html_button .= '<div class="angelleye_button_single single_add_to_cart_button" style="' . $hide . '">';
                     if ($this->enable_in_context_checkout_flow == 'no') {
                         $add_to_cart_action = esc_url(add_query_arg('express_checkout', '1'));
@@ -381,40 +378,39 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 return;
             }
             ?>
-
             <div class="express-provided-address">
                 <a href="#" class="ex-show-address-fields" data-type="<?php echo esc_attr('billing'); ?>"><?php esc_html_e('Edit', 'paypal-for-woocommerce'); ?></a>
                 <address>
-            <?php
-            $address = array(
-                'first_name' => WC()->checkout->get_value($type . '_first_name'),
-                'last_name' => WC()->checkout->get_value($type . '_last_name'),
-                'company' => WC()->checkout->get_value($type . '_company'),
-                'address_1' => WC()->checkout->get_value($type . '_address_1'),
-                'address_2' => WC()->checkout->get_value($type . '_address_2'),
-                'city' => WC()->checkout->get_value($type . '_city'),
-                'state' => WC()->checkout->get_value($type . '_state'),
-                'postcode' => WC()->checkout->get_value($type . '_postcode'),
-                'country' => WC()->checkout->get_value($type . '_country'),
-            );
+                    <?php
+                    $address = array(
+                        'first_name' => WC()->checkout->get_value($type . '_first_name'),
+                        'last_name' => WC()->checkout->get_value($type . '_last_name'),
+                        'company' => WC()->checkout->get_value($type . '_company'),
+                        'address_1' => WC()->checkout->get_value($type . '_address_1'),
+                        'address_2' => WC()->checkout->get_value($type . '_address_2'),
+                        'city' => WC()->checkout->get_value($type . '_city'),
+                        'state' => WC()->checkout->get_value($type . '_state'),
+                        'postcode' => WC()->checkout->get_value($type . '_postcode'),
+                        'country' => WC()->checkout->get_value($type . '_country'),
+                    );
 
-            $shipping_details = $this->ec_get_session_data('shipping_details');
-            $email = WC()->checkout->get_value($type . '_email');
-            if (empty($email)) {
-                $email = !empty($shipping_details['email']) ? $shipping_details['email'] : '';
-            }
-            $phone = WC()->checkout->get_value($type . '_phone');
-            if (empty($phone)) {
-                $phone = !empty($shipping_details['phone']) ? $shipping_details['phone'] : '';
-            }
-            $formatted_address = WC()->countries->get_formatted_address($address);
-            $formatted_address = str_replace('<br/>-<br/>', '<br/>', $formatted_address);
-            echo $formatted_address;
-            if (!empty($shipping_details)) {
-                echo!empty($email) ? '<p class="angelleye-woocommerce-customer-details-email">' . $email . '</p>' : '';
-                echo!empty($phone) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $phone . '</p>' : '';
-            }
-            ?>
+                    $shipping_details = $this->ec_get_session_data('shipping_details');
+                    $email = WC()->checkout->get_value($type . '_email');
+                    if (empty($email)) {
+                        $email = !empty($shipping_details['email']) ? $shipping_details['email'] : '';
+                    }
+                    $phone = WC()->checkout->get_value($type . '_phone');
+                    if (empty($phone)) {
+                        $phone = !empty($shipping_details['phone']) ? $shipping_details['phone'] : '';
+                    }
+                    $formatted_address = WC()->countries->get_formatted_address($address);
+                    $formatted_address = str_replace('<br/>-<br/>', '<br/>', $formatted_address);
+                    echo $formatted_address;
+                    if (!empty($shipping_details)) {
+                        echo!empty($email) ? '<p class="angelleye-woocommerce-customer-details-email">' . $email . '</p>' : '';
+                        echo!empty($phone) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $phone . '</p>' : '';
+                    }
+                    ?>
                 </address>
 
             </div>
@@ -628,7 +624,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $cart_button_html .= apply_filters('angelleye_proceed_to_checkout_button_separator', $angelleye_proceed_to_checkout_button_separator);
             }
             if ($this->enable_in_context_checkout_flow == 'no') {
-
                 switch ($this->checkout_with_pp_button_type) {
                     case 'textbutton':
                         $cart_button_html .= '<a class="paypal_checkout_button button ' . $class_top . ' alt ec_checkout_page_button_type_textbutton" href="' . esc_url(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/')))) . '">' . $this->pp_button_type_text_button . '</a>';
@@ -651,7 +646,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $cart_button_html .= $paypal_credit_button_markup;
                 }
             } else {
-
                 $cart_button_html .= "<div class='$angelleye_smart_button'></div>";
             }
             if ($this->enable_tokenized_payments == 'yes') {
