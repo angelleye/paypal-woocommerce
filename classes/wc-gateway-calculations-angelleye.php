@@ -79,7 +79,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     $name = $values['data']->post->post_title;
                 } else {
                     $product = $values['data'];
-                    $name = $product->get_title();
+                    $name = $product->get_name();
                 }
                 $name = AngellEYE_Gateway_Paypal::clean_product_title($name);
                 if (is_object($product)) {
