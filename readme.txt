@@ -139,6 +139,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue in PayPal Advanced where redirect would not work when using token payments in some cases. ([PFW-322](https://github.com/angelleye/paypal-woocommerce/pull/1249))
 * Fix - Resolves an issue in DoDirectPayment where the "Send Line Item Details to PayPal" option was not being properly followed, and would send itemized details even if it was disabled. ([PFW-322](https://github.com/angelleye/paypal-woocommerce/pull/1251))
 * Fix - Resolves an issue with REST DCC token payments with Maestro cards. ([PFW-324](https://github.com/angelleye/paypal-woocommerce/pull/1252))
+* Fix - Resolves a problem in Braintree gateway where some error messages were not displayed properly during checkout. ([PFW-325](https://github.com/angelleye/paypal-woocommerce/pull/1253))
 
 = 1.5.3 - 11.07.2018 =
 * Fix - Resolves a problem with expiration date validation in credit card gateways. ([PFW-301](https://github.com/angelleye/paypal-woocommerce/pull/1241))
