@@ -105,6 +105,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
                 $this->angelleye_skip_text = !empty($this->setting['angelleye_skip_text']) ? $this->setting['angelleye_skip_text'] : 'Skip the forms and pay faster with PayPal!';
                 $this->skip_final_review = !empty($this->setting['skip_final_review']) ? $this->setting['skip_final_review'] : 'no';
+                $this->disable_term_value = !empty($this->setting['disable_term']) ? $this->setting['disable_term'] : 'no';
+                $this->disable_term = 'yes' === $this->disable_term_value;
                 add_action('woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'), 10);
                 if ($this->save_abandoned_checkout == false) {
                     if (version_compare(WC_VERSION, '3.0', '<')) {
