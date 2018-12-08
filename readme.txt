@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.5.4 - xx.xx.2018 =
 * Feature - Adds PayPal Fee to WooCommerce order meta data for Express Checkout orders. ([PFW-299](https://github.com/angelleye/paypal-woocommerce/pull/1243))
+* Tweak - Adjusts logs with better details for Card Verification and Capture/Sale transactions. ([PFW-317](https://github.com/angelleye/paypal-woocommerce/pull/1245))
 * Fix - Resolves an issue where some item attributes were not getting included in Express Checkout line items. ([PFW-215](https://github.com/angelleye/paypal-woocommerce/pull/1244))
 * Fix - Resolves a PHP Notice related to data availability. ([PFW-304](https://github.com/angelleye/paypal-woocommerce/pull/1242))
 
