@@ -532,6 +532,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             $('.braintree-token').remove();
                             $('.braintree-device-data').remove();
                             $('.is_submit').remove();
+                            $form.unblock();
                         });
                         var button = document.querySelector('#place_order');
                         var $form = $( 'form.checkout, form#order_review, form#add_payment_method' );
@@ -595,6 +596,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     if( typeof dropinInstance !== 'undefined') {
                                         dropinInstance.clearSelectedPaymentMethod();
                                     }
+                                    $form.unblock();
                                 });
                             }
                             if(is_angelleye_braintree_selected()) {
@@ -606,6 +608,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         $('.braintree-token', ccForm).remove();
                                         $('.woocommerce-error').remove();
                                         $('.is_submit').remove();
+                                        $form.unblock();
                                         return false;
                                     }
                                     <?php if($this->threed_secure_enabled === true) { ?>
