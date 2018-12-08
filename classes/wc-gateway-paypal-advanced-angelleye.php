@@ -551,12 +551,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         
         $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         
-        if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
-            $paypal_args['discount'] = $PaymentData['discount_amount'];
-        }
-            
-        $paypal_args['ITEMAMT'] = 0;
         if ($this->send_items && ($length_error == 0 || count($PaymentData['order_items']) < 11 )) {
+            $paypal_args['ITEMAMT'] = 0;
             $item_loop = 0;
             foreach ($PaymentData['order_items'] as $_item) {
                 $paypal_args['L_NUMBER' . $item_loop] = $_item['number'];
@@ -571,13 +567,19 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $paypal_args['ITEMAMT'] = $PaymentData['itemamt'];
         }
 
-        if( $order->get_total() != $PaymentData['shippingamt'] ) {
-            $paypal_args['FREIGHTAMT'] = $PaymentData['shippingamt'];
-        } else {
-            $paypal_args['FREIGHTAMT'] = 0.00;
-        }
+        if ($this->send_items ) {
+            if( $order->get_total() != $PaymentData['shippingamt'] ) {
+                $paypal_args['FREIGHTAMT'] = $PaymentData['shippingamt'];
+            } else {
+                $paypal_args['FREIGHTAMT'] = 0.00;
+            }
 
-        $paypal_args['TAXAMT'] = $PaymentData['taxamt'];
+            if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
+                $paypal_args['discount'] = $PaymentData['discount_amount'];
+            }
+            $paypal_args['TAXAMT'] = $PaymentData['taxamt'];
+        }
+        
         $paypal_param = $paypal_args;
 
         try {
