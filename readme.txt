@@ -137,6 +137,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves jQuery bug with processing spinner in Braintree. ([PFW-320](https://github.com/angelleye/paypal-woocommerce/pull/1248))
 * Fix - Resolves an empty info box popping up sometimes with DoDirectPayment token p ayments. ([PFW-321](https://github.com/angelleye/paypal-woocommerce/pull/1250))
 * Fix - Resolves an issue in PayPal Advanced where redirect would not work when using token payments in some cases. ([PFW-322](https://github.com/angelleye/paypal-woocommerce/pull/1249))
+* Fix - Resolves an issue in DoDirectPayment where the "Send Line Item Details to PayPal" option was not being properly followed, and would send itemized details even if it was disabled. ([PFW-322](https://github.com/angelleye/paypal-woocommerce/pull/1251))
 
 = 1.5.3 - 11.07.2018 =
 * Fix - Resolves a problem with expiration date validation in credit card gateways. ([PFW-301](https://github.com/angelleye/paypal-woocommerce/pull/1241))
