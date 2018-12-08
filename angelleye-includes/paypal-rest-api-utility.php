@@ -151,7 +151,11 @@ class PayPal_Rest_API_Utility {
                             }
                         }
                     } catch (Exception $ex) {
-
+                        $order->add_order_note('ERROR: ' .  $ex->getMessage());
+                        if(function_exists('wc_add_notice')) {
+                            wc_add_notice(__('ERROR: ' .  $ex->getMessage()), 'error');
+                        }
+                        
                     }
                 }
                 $order->payment_complete($transaction_id);
