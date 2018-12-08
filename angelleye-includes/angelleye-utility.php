@@ -950,12 +950,12 @@ class AngellEYE_Utility {
 
     public static function card_type_from_account_number($account_number) {
         $types = array(
-            'visa' => '/^4/',
-            'mastercard' => '/^5[1-5]/',
-            'amex' => '/^3[47]/',
-            'discover' => '/^(6011|65|64[4-9]|622)/',
-            'diners' => '/^(36|38|30[0-5])/',
-            'jcb' => '/^35/',
+            'visa' => '/^4[0-9]{0,15}$/i',
+            'mastercard' => '/^5[1-5][0-9]{5,}|222[1-9][0-9]{3,}|22[3-9][0-9]{4,}|2[3-6][0-9]{5,}|27[01][0-9]{4,}|2720[0-9]{3,}$/i',
+            'amex' => '/^3$|^3[47][0-9]{0,13}$/i',
+            'discover' => '/^6$|^6[05]$|^601[1]?$|^65[0-9][0-9]?$|^6(?:011|5[0-9]{2})[0-9]{0,12}$/i',
+            'diners' => '/^3(?:0[0-5]|[68][0-9])[0-9]{4,}$/i',
+            'jcb' => '/^(?:2131|1800|35[0-9]{3})[0-9]{3,}$/i',
             'maestro' => '/^(5018|5020|5038|6304|6759|676[1-3])/',
             'laser' => '/^(6706|6771|6709)/',
         );
@@ -964,7 +964,7 @@ class AngellEYE_Utility {
                 return $type;
             }
         }
-        return null;
+        return 'Card';
     }
 
     public static function is_express_checkout_credentials_is_set() {
@@ -1699,15 +1699,8 @@ class AngellEYE_Utility {
     }
 
     public static function angelleye_is_save_payment_token($current, $order_id) {
-        if ((!empty($_POST['wc-' . $current->id . '-payment-token']) && $_POST['wc-' . $current->id . '-payment-token'] == 'new') || self::is_subscription($order_id) || self::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
-            if ((!empty($_POST['wc-' . $current->id . '-new-payment-method']) && $_POST['wc-' . $current->id . '-new-payment-method'] == true) || self::is_subscription($order_id) || self::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
-                return true;
-            }
-        } 
-        if (!empty($current->id) && $current->id == 'braintree') {
-            if ((!empty($_POST['wc-' . $current->id . '-new-payment-method']) && $_POST['wc-' . $current->id . '-new-payment-method'] == true) || self::is_subscription($order_id) || self::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
-                return true;
-            }
+        if ((!empty($_POST['wc-' . $current->id . '-new-payment-method']) && $_POST['wc-' . $current->id . '-new-payment-method'] == true) || self::is_subscription($order_id) || self::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
+            return true;
         }
         return false;
     }
