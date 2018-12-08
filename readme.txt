@@ -132,6 +132,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjusts logs with better details for Card Verification and Capture/Sale transactions. ([PFW-317](https://github.com/angelleye/paypal-woocommerce/pull/1245))
 * Fix - Resolves an issue where some item attributes were not getting included in Express Checkout line items. ([PFW-215](https://github.com/angelleye/paypal-woocommerce/pull/1244))
 * Fix - Resolves a PHP Notice related to data availability. ([PFW-304](https://github.com/angelleye/paypal-woocommerce/pull/1242))
+* Fix - Resolves PHP notice related to Express Checkout option for ignoring terms. ([PFW-312](https://github.com/angelleye/paypal-woocommerce/pull/1247))
 * Fix - Resolves a problem that sometimes keeps token payments from saving properly. ([PFW-316](https://github.com/angelleye/paypal-woocommerce/pull/1246))
 
 = 1.5.3 - 11.07.2018 =
