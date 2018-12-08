@@ -134,6 +134,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves a PHP Notice related to data availability. ([PFW-304](https://github.com/angelleye/paypal-woocommerce/pull/1242))
 * Fix - Resolves PHP notice related to Express Checkout option for ignoring terms. ([PFW-312](https://github.com/angelleye/paypal-woocommerce/pull/1247))
 * Fix - Resolves a problem that sometimes keeps token payments from saving properly. ([PFW-316](https://github.com/angelleye/paypal-woocommerce/pull/1246))
+* Fix - Resolves jQuery bug with processing spinner in Braintree. ([PFW-320](https://github.com/angelleye/paypal-woocommerce/pull/1248))
 
 = 1.5.3 - 11.07.2018 =
 * Fix - Resolves a problem with expiration date validation in credit card gateways. ([PFW-301](https://github.com/angelleye/paypal-woocommerce/pull/1241))
