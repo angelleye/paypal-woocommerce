@@ -2227,4 +2227,10 @@ class AngellEYE_Utility {
                 }
             } 
         }
+        
+        public static function angelleye_add_paypal_payment_meta($order_id, $payment_meta) {
+            foreach ($payment_meta as $key => $value) {
+                update_post_meta($order_id, $key, wc_clean($value));
+            }
+        }
 }
