@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
-Tested up to: 4.9.8
-Stable tag: 1.5.3
+Tested up to: 5.0.0
+Stable tag: 1.5.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 1.5.4 - xx.xx.2018 =
+= 1.5.4 - 12.08.2018 =
 * Feature - Adds PayPal Fee to WooCommerce order meta data for Express Checkout orders. ([PFW-299](https://github.com/angelleye/paypal-woocommerce/pull/1243))
 * Tweak - Adjusts logs with better details for Card Verification and Capture/Sale transactions. ([PFW-317](https://github.com/angelleye/paypal-woocommerce/pull/1245))
 * Fix - Resolves an issue where some item attributes were not getting included in Express Checkout line items. ([PFW-215](https://github.com/angelleye/paypal-woocommerce/pull/1244))

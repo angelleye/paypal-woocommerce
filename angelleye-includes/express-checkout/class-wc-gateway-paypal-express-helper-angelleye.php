@@ -162,6 +162,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('wp_enqueue_scripts', array($this, 'angelleye_paypal_marketing_solutions'), 10);
                 add_action('wp_enqueue_scripts', array($this, 'frontend_scripts'), 100);
                 add_filter('body_class', array($this, 'add_body_classes'));
+                add_action( 'woocommerce_review_order_after_submit', array( $this, 'angelleye_display_paypal_button_checkout_page' ) );
                 $this->is_order_completed = true;
             }
             add_filter('woocommerce_locate_template', array($this, 'angelleye_woocommerce_locate_template'), 10, 3);
@@ -213,6 +214,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                             $paypal_credit_button_markup .= '</a>';
                             $ec_html_button .= $paypal_credit_button_markup;
                         }
+                    } else {
+                        wp_enqueue_script('angelleye-in-context-checkout-js');
+                        wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
                     }
                     $ec_html_button .= '</div>';
                     if ($this->enable_tokenized_payments == 'yes') {
@@ -509,8 +513,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $cancel_url = !empty($this->cancel_page) ? get_permalink($this->cancel_page) : wc_get_cart_url();
                 $allowed_funding_methods_json = json_encode(array_values(array_diff($this->allowed_funding_methods, $this->disallowed_funding_methods)));
                 $disallowed_funding_methods_json = json_encode($this->disallowed_funding_methods);
-                wp_enqueue_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.min.js', array('jquery'), null, false);
-                wp_enqueue_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min.js', array('jquery'), time(), false);
+                wp_register_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.min.js', array('jquery'), null, false);
+                wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min.js', array('jquery'), time(), false);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
                     'environment' => ( $this->testmode == true) ? 'sandbox' : 'production',
                     'locale' => ($this->use_wp_locale_code === 'yes' && AngellEYE_Utility::get_button_locale_code() != '') ? AngellEYE_Utility::get_button_locale_code() : '',
@@ -636,7 +640,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $cart_button_html .= $paypal_credit_button_markup;
                 }
             } else {
-                
+                wp_enqueue_script('angelleye-in-context-checkout-js');
+                wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
                 $cart_button_html .= "<div class='$angelleye_smart_button'></div>";
                 
             }
@@ -702,6 +707,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             }
             if ($this->enable_in_context_checkout_flow == 'yes') {
+                wp_enqueue_script('angelleye-in-context-checkout-js');
+                wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
                 $ec_top_checkout_button .= "<div class='angelleye_smart_button_checkout_top'></div>";
             }
             if ($this->enable_tokenized_payments == 'yes') {
@@ -1186,6 +1193,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
         return $template;
     }
-
-
+    
+    public function angelleye_display_paypal_button_checkout_page() {
+        wp_enqueue_script('angelleye-in-context-checkout-js');
+        wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+        ?>
+        <div class="angelleye_smart_button_checkout_bottom"></div>
+        <?php 
+    }
 }
