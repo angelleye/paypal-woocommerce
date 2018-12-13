@@ -93,7 +93,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->liability_shift = 'yes' === $this->get_option('liability_shift', 'no');
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
-        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
+        $this->subtotal_mismatch_behavior = $this->get_option('subtotal_mismatch_behavior', 'add');
         $this->enable_notifyurl = $this->get_option('enable_notifyurl', 'no');
         $this->is_encrypt = $this->get_option('is_encrypt', 'no');
         $this->softdescriptor = $this->get_option('softdescriptor', '');
@@ -1042,7 +1042,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         $OrderItems = array();
-        if ($this->send_items) {
+        if ($this->subtotal_mismatch_behavior) {
             foreach ($PaymentData['order_items'] as $item) {
                 $Item = array(
                     'l_name' => $item['name'], // Item Name.  127 char max.
@@ -1097,7 +1097,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             /**
              * Shipping/tax/item amount
              */
-            if ($this->send_items) {
+            if ($this->subtotal_mismatch_behavior) {
                 $PaymentDetails['taxamt'] = $PaymentData['taxamt'];
                 $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
                 $PaymentDetails['itemamt'] = $PaymentData['itemamt'];
@@ -1802,7 +1802,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         $OrderItems = array();
-        if ($this->send_items) {
+        if ($this->subtotal_mismatch_behavior) {
             foreach ($PaymentData['order_items'] as $item) {
                 $Item = array(
                     'l_name' => $item['name'], // Item Name.  127 char max.

@@ -87,7 +87,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         $this->hostaddr = $this->testmode == true ? $this->testurl : $this->liveurl;
         $this->softdescriptor = $this->get_option('softdescriptor', '');
-        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');       
+        $this->subtotal_mismatch_behavior = $this->get_option('subtotal_mismatch_behavior', 'add');       
 
 
         if ($this->debug == 'yes')
@@ -551,7 +551,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         
         $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         
-        if ($this->send_items && ($length_error == 0 || count($PaymentData['order_items']) < 11 )) {
+        if ($this->subtotal_mismatch_behavior && ($length_error == 0 || count($PaymentData['order_items']) < 11 )) {
             $paypal_args['ITEMAMT'] = 0;
             $item_loop = 0;
             foreach ($PaymentData['order_items'] as $_item) {
@@ -567,7 +567,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $paypal_args['ITEMAMT'] = $PaymentData['itemamt'];
         }
 
-        if ($this->send_items ) {
+        if ($this->subtotal_mismatch_behavior ) {
             if( $order->get_total() != $PaymentData['shippingamt'] ) {
                 $paypal_args['FREIGHTAMT'] = $PaymentData['shippingamt'];
             } else {

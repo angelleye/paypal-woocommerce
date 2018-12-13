@@ -500,7 +500,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if (isset($this->gateway->notifyurl) && !empty($this->gateway->notifyurl)) {
                 $Payment['notifyurl'] = $this->gateway->notifyurl;
             }
-            if ($this->gateway->send_items) {
+            if ($this->gateway->subtotal_mismatch_behavior) {
                 $Payment['order_items'] = $this->order_param['order_items'];
                 $Payment['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt']);
                 $Payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt']);
@@ -803,7 +803,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $Payment['shiptocountrycode'] = $shipping_country;
             }
             if(isset($this->cart_param['is_calculation_mismatch']) && $this->cart_param['is_calculation_mismatch'] == false) {
-                if ($this->gateway->send_items) {
+                if ($this->gateway->subtotal_mismatch_behavior) {
                     $Payment['order_items'] = $this->cart_param['order_items'];
                     $Payment['taxamt'] = $this->cart_param['taxamt'];
                     $Payment['shippingamt'] = $this->cart_param['shippingamt'];
@@ -1342,7 +1342,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
         $this->order_param = $this->gateway_calculation->order_calculation($order_id);
-        if ($this->gateway->send_items) {
+        if ($this->gateway->subtotal_mismatch_behavior) {
             $Payment['order_items'] = $this->order_param['order_items'];
         } else {
             $Payment['order_items'] = array();

@@ -623,7 +623,7 @@ class AngellEYE_Admin_Order_Payment_Process {
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
         $this->order_param = $this->gateway_calculation->order_calculation($order_id);
-        if ($this->gateway_settings['send_items']) {
+        if ($this->gateway_settings['subtotal_mismatch_behavior']) {
             $Payment['order_items'] = $this->order_param['order_items'];
         } else {
             $Payment['order_items'] = array();

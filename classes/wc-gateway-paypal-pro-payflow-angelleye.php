@@ -45,7 +45,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
         $this->error_display_type = $this->get_option('error_display_type', 'no');
-        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
+        $this->subtotal_mismatch_behavior = $this->get_option('subtotal_mismatch_behavior', 'add');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
         $this->payment_action_authorization = $this->get_option('payment_action_authorization', 'Full Authorization');
 
@@ -620,7 +620,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
             $OrderItems = array();
-            if ($this->send_items) {
+            if ($this->subtotal_mismatch_behavior) {
                 if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
                     $PayPalRequestData['discount'] = $PaymentData['discount_amount'];
                 }
@@ -642,7 +642,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
              * Shipping/tax/item amount
              */
             
-            if ($this->send_items) {
+            if ($this->subtotal_mismatch_behavior) {
                 if( $order->get_total() != $PaymentData['shippingamt'] ) {
                     $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
                 } else {
@@ -1320,7 +1320,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
             $OrderItems = array();
-            if ($this->send_items) {
+            if ($this->subtotal_mismatch_behavior) {
                 $item_loop = 0;
                 foreach ($PaymentData['order_items'] as $_item) {
                     $Item['L_NUMBER' . $item_loop] = $_item['number'];
@@ -1340,7 +1340,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
             $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
 
-            if ($this->send_items) {
+            if ($this->subtotal_mismatch_behavior) {
                 $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }

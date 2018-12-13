@@ -107,7 +107,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->disable_term = $this->get_option('disable_term', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
         $this->billing_address = 'yes' === $this->get_option('billing_address', 'no');
-        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
+        $this->subtotal_mismatch_behavior = $this->get_option('subtotal_mismatch_behavior', 'add');
         $this->order_cancellations = $this->get_option('order_cancellations', 'disabled');
         $this->email_notify_order_cancellations = 'yes' === $this->get_option('email_notify_order_cancellations', 'no');
         $this->customer_id = get_current_user_id();
