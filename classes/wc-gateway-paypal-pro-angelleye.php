@@ -1042,7 +1042,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         $OrderItems = array();
-        if ($this->subtotal_mismatch_behavior) {
+        if ($this->subtotal_mismatch_behavior == 'add') {
             foreach ($PaymentData['order_items'] as $item) {
                 $Item = array(
                     'l_name' => $item['name'], // Item Name.  127 char max.
@@ -1097,7 +1097,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             /**
              * Shipping/tax/item amount
              */
-            if ($this->subtotal_mismatch_behavior) {
+            if ($this->subtotal_mismatch_behavior == 'add') {
                 $PaymentDetails['taxamt'] = $PaymentData['taxamt'];
                 $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
                 $PaymentDetails['itemamt'] = $PaymentData['itemamt'];
@@ -1802,7 +1802,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         $OrderItems = array();
-        if ($this->subtotal_mismatch_behavior) {
+        if ($this->subtotal_mismatch_behavior == 'add') {
             foreach ($PaymentData['order_items'] as $item) {
                 $Item = array(
                     'l_name' => $item['name'], // Item Name.  127 char max.

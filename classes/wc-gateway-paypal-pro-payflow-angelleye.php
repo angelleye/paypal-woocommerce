@@ -620,7 +620,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
             $OrderItems = array();
-            if ($this->subtotal_mismatch_behavior) {
+            if ($this->subtotal_mismatch_behavior == 'add') {
                 if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
                     $PayPalRequestData['discount'] = $PaymentData['discount_amount'];
                 }
@@ -642,7 +642,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
              * Shipping/tax/item amount
              */
             
-            if ($this->subtotal_mismatch_behavior) {
+            if ($this->subtotal_mismatch_behavior == 'add') {
                 if( $order->get_total() != $PaymentData['shippingamt'] ) {
                     $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
                 } else {
@@ -1320,7 +1320,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
             $OrderItems = array();
-            if ($this->subtotal_mismatch_behavior) {
+            if ($this->subtotal_mismatch_behavior == 'add') {
                 $item_loop = 0;
                 foreach ($PaymentData['order_items'] as $_item) {
                     $Item['L_NUMBER' . $item_loop] = $_item['number'];
@@ -1340,7 +1340,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
             $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
 
-            if ($this->subtotal_mismatch_behavior) {
+            if ($this->subtotal_mismatch_behavior == 'add') {
                 $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
