@@ -54,7 +54,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
             }
-            $this->gateway_calculation = new WC_Gateway_Calculation_AngellEYE();
+            $this->gateway_calculation = new WC_Gateway_Calculation_AngellEYE(null, $this->gateway->subtotal_mismatch_behavior);
             if (!class_exists('WC_Gateway_PayPal_Express_Response_AngellEYE')) {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-response-angelleye.php' );
             }
@@ -803,14 +803,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $Payment['shiptocountrycode'] = $shipping_country;
             }
             if(isset($this->cart_param['is_calculation_mismatch']) && $this->cart_param['is_calculation_mismatch'] == false) {
-                if ($this->gateway->subtotal_mismatch_behavior == 'add') {
-                    $Payment['order_items'] = $this->cart_param['order_items'];
-                    $Payment['taxamt'] = $this->cart_param['taxamt'];
-                    $Payment['shippingamt'] = $this->cart_param['shippingamt'];
-                    $Payment['itemamt'] = $this->cart_param['itemamt'];
-                } else {
-                    $Payment['order_items'] = array();
-                }
+                $Payment['order_items'] = $this->cart_param['order_items'];
+                $Payment['taxamt'] = $this->cart_param['taxamt'];
+                $Payment['shippingamt'] = $this->cart_param['shippingamt'];
+                $Payment['itemamt'] = $this->cart_param['itemamt'];
             }
             array_push($Payments, $Payment);
             $PayPalRequestData = array(

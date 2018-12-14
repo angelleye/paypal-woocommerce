@@ -22,9 +22,12 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
         public $temp_total;
         public $is_separate_discount;
 
-        public function __construct($payment_method = null) {
+        public function __construct($payment_method = null, $subtotal_mismatch_behavior = 'add') {
             $this->order_items = array();
             $this->is_adjust = false;
+            $this->payment = array();
+            $this->payment['is_calculation_mismatch'] = false;
+            $this->subtotal_mismatch_behavior = $subtotal_mismatch_behavior;
             $this->payment_method = $payment_method;
             if ($this->payment_method == 'paypal_pro_payflow' || $this->payment_method == 'paypal_advanced') {
                 $this->is_separate_discount = true;
@@ -46,7 +49,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             }
             
             WC()->cart->calculate_totals();
-            $this->payment = array();
+            
             $this->itemamt = 0;
             $roundedPayPalTotal = 0;
             $this->discount_amount = round(WC()->cart->get_cart_discount_total(), $this->decimals);
@@ -170,14 +173,11 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->payment['discount_amount'] = AngellEYE_Gateway_Paypal::number_format(round($this->discount_amount, $this->decimals));
             if ($this->taxamt < 0 || $this->shippingamt < 0) {
                 $this->payment['is_calculation_mismatch'] = true;
-            } else {
-                $this->payment['is_calculation_mismatch'] = false;
-            }
+            } 
             return $this->payment;
         }
 
         public function order_calculation($order_id) {
-            $this->payment = array();
             $order = wc_get_order($order_id);
             $this->itemamt = 0;
             $this->discount_amount = 0;
@@ -290,8 +290,6 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->payment['discount_amount'] = AngellEYE_Gateway_Paypal::number_format(round($this->discount_amount, $this->decimals));
             if ($this->taxamt < 0 || $this->shippingamt < 0) {
                 $this->payment['is_calculation_mismatch'] = true;
-            } else {
-                $this->payment['is_calculation_mismatch'] = false;
             }
             return $this->payment;
         }
@@ -310,33 +308,17 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->temp_total = round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
             }
             if (round(WC()->cart->total, $this->decimals) != $this->temp_total) {
-                $cartItemAmountDifference = round(WC()->cart->total, $this->decimals) - $this->temp_total;
-                if ($this->shippingamt > 0) {
-                    $this->shippingamt += round($cartItemAmountDifference, $this->decimals);
-                } elseif ($this->taxamt > 0) {
-                    $this->taxamt += round($cartItemAmountDifference, $this->decimals);
+                if( $this->subtotal_mismatch_behavior == 'add' ) {
+                    $cartItemAmountDifference = round(WC()->cart->total, $this->decimals) - $this->temp_total;
+                    $item = array(
+                            'name' => 'Line Item Amount Offset',
+                            'desc' => 'Adjust cart calculation discrepancy',
+                            'qty' => 1,
+                            'amt' => AngellEYE_Gateway_Paypal::number_format($cartItemAmountDifference)
+                        );
+                        $this->order_items[] = $item;
                 } else {
-                    if (count($this->order_items) == 1 && (!empty($this->order_items[0]['qty']) && $this->order_items[0]['qty'] > 1 )) {
-                        unset($this->order_items);
-                        $this->order_total = WC()->cart->total;
-                        $this->itemamt = WC()->cart->total;
-                    } else {
-                        foreach ($this->order_items as $key => $value) {
-                            if ($value['qty'] == 1 && $this->is_adjust == false) {
-                                if ($this->order_items[$key]['amt'] * 1000 > 0) {
-                                    $this->order_items[$key]['amt'] = $this->order_items[$key]['amt'] + round($cartItemAmountDifference, $this->decimals);
-                                    $this->order_total += round($cartItemAmountDifference, $this->decimals);
-                                    $this->itemamt += round($cartItemAmountDifference, $this->decimals);
-                                    $this->is_adjust = true;
-                                }
-                            }
-                        }
-                        if ($this->is_adjust == false) {
-                            unset($this->order_items);
-                            $this->order_total = WC()->cart->total;
-                            $this->itemamt = WC()->cart->total;
-                        }
-                    }
+                    $this->payment['is_calculation_mismatch'] = true;
                 }
             }
             $this->angelleye_disable_line_item();
@@ -357,33 +339,13 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             }
             if (round($order->get_total(), $this->decimals) != $this->temp_total) {
                 $cartItemAmountDifference = round($order->get_total(), $this->decimals) - $this->temp_total;
-                if ($this->shippingamt > 0) {
-                    $this->shippingamt += round($cartItemAmountDifference, $this->decimals);
-                } elseif ($this->taxamt > 0) {
-                    $this->taxamt += round($cartItemAmountDifference, $this->decimals);
-                } else {
-                    if (count($this->order_items) == 1 && (!empty($this->order_items[0]['qty']) && $this->order_items[0]['qty'] > 1 )) {
-                        unset($this->order_items);
-                        $this->order_total = WC()->cart->total;
-                        $this->itemamt = WC()->cart->total;
-                    } else {
-                        foreach ($this->order_items as $key => $value) {
-                            if ($value['qty'] == 1 && $this->is_adjust == false) {
-                                if ($this->order_items[$key]['amt'] * 1000 > 0) {
-                                    $this->order_items[$key]['amt'] = $this->order_items[$key]['amt'] + round($cartItemAmountDifference, $this->decimals);
-                                    $this->order_total += round($cartItemAmountDifference, $this->decimals);
-                                    $this->itemamt += round($cartItemAmountDifference, $this->decimals);
-                                    $this->is_adjust = true;
-                                }
-                            }
-                        }
-                        if ($this->is_adjust == false) {
-                            unset($this->order_items);
-                            $this->order_total = WC()->cart->total;
-                            $this->itemamt = WC()->cart->total;
-                        }
-                    }
-                }
+                $item = array(
+                        'name' => 'Line Item Amount Offset',
+                        'desc' => 'Adjust cart calculation discrepancy',
+                        'qty' => 1,
+                        'amt' => AngellEYE_Gateway_Paypal::number_format($cartItemAmountDifference)
+                    );
+                    $this->order_items[] = $item;
             }
             $this->angelleye_disable_line_item();
         }
@@ -426,12 +388,14 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 unset($this->order_items);
                 $this->order_total = WC()->cart->total;
                 $this->itemamt = WC()->cart->total;
+                $this->payment['is_calculation_mismatch'] = true;
             }
 
             if ($this->itemamt * 1000 < 0) {
                 unset($this->order_items);
                 $this->order_total = WC()->cart->total;
                 $this->itemamt = WC()->cart->total;
+                $this->payment['is_calculation_mismatch'] = true;
             }
         }
 

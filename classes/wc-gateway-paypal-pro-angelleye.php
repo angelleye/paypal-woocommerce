@@ -1737,7 +1737,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
         }
-        $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
+        $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE(null, $this->subtotal_mismatch_behavior);
         $DPFields = array(
             'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
             'ipaddress' => AngellEYE_Utility::get_user_ip(), // Required.  IP address of the payer's browser.

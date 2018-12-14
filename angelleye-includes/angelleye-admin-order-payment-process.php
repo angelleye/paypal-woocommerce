@@ -639,6 +639,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
         }
-        $this->gateway_calculation = new WC_Gateway_Calculation_AngellEYE();
+        $subtotal_mismatch_behavior =  ( isset($this->gateway_settings['subtotal_mismatch_behavior']) && ( $this->gateway_settings['subtotal_mismatch_behavior'] == 'drop') ) ? 'drop' : 'add';
+        $this->gateway_calculation = new WC_Gateway_Calculation_AngellEYE(null, $subtotal_mismatch_behavior);
     }
 }
