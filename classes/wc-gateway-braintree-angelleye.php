@@ -555,7 +555,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             <?php if($this->enable_google_pay == 'yes') { ?>
                             googlePay: {
                                 <?php if($this->environment == 'production') { ?>
-                                merchantId: '<?php echo $this->merchant_id_google_pay; ?>'
+                                merchantId: '<?php echo $this->merchant_id_google_pay; ?>',
                                 <?php } ?>
                                 transactionInfo: {
                                   totalPriceStatus: 'FINAL',
