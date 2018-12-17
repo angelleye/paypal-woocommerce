@@ -1059,7 +1059,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $PaymentDetails['taxamt'] = $PaymentData['taxamt'];
             $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
-            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($order->get_total());
+            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($PaymentData['itemamt']);
         } 
 
         /**
