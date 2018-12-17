@@ -309,14 +309,19 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             }
             if (round(WC()->cart->total, $this->decimals) != $this->temp_total) {
                 if( $this->subtotal_mismatch_behavior == 'add' ) {
-                    $cartItemAmountDifference = round(WC()->cart->total, $this->decimals) - $this->temp_total;
-                    $item = array(
+                    $cartItemAmountDifference = round(WC()->cart->total - $this->temp_total, $this->decimals);
+                    if ( abs( $cartItemAmountDifference ) > 0.000001 && 0.0 !== (float) $cartItemAmountDifference ) {
+                        $item = array(
                             'name' => 'Line Item Amount Offset',
                             'desc' => 'Adjust cart calculation discrepancy',
                             'qty' => 1,
-                            'amt' => AngellEYE_Gateway_Paypal::number_format($cartItemAmountDifference)
+                            'amt' => round($cartItemAmountDifference, $this->decimals)
                         );
                         $this->order_items[] = $item;
+                        $this->itemamt += round($cartItemAmountDifference, $this->decimals);
+                    } else {
+                        $this->payment['is_calculation_mismatch'] = true;
+                    }
                 } else {
                     $this->payment['is_calculation_mismatch'] = true;
                 }
@@ -338,15 +343,24 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->temp_total = round($this->itemamt + $this->taxamt + $this->shippingamt, $this->decimals);
             }
             if (round($order->get_total(), $this->decimals) != $this->temp_total) {
-                $cartItemAmountDifference = round($order->get_total(), $this->decimals) - $this->temp_total;
-                $item = array(
-                        'name' => 'Line Item Amount Offset',
-                        'desc' => 'Adjust cart calculation discrepancy',
-                        'qty' => 1,
-                        'amt' => AngellEYE_Gateway_Paypal::number_format($cartItemAmountDifference)
-                    );
-                    $this->order_items[] = $item;
-            }
+                if( $this->subtotal_mismatch_behavior == 'add' ) {
+                    $cartItemAmountDifference = round($order->get_total() - $this->temp_total, $this->decimals);
+                    if ( abs( $cartItemAmountDifference ) > 0.000001 && 0.0 !== (float) $cartItemAmountDifference ) {
+                        $item = array(
+                            'name' => 'Line Item Amount Offset',
+                            'desc' => 'Adjust cart calculation discrepancy',
+                            'qty' => 1,
+                            'amt' => AngellEYE_Gateway_Paypal::number_format($cartItemAmountDifference)
+                        );
+                        $this->order_items[] = $item;
+                        $this->itemamt += round($cartItemAmountDifference, $this->decimals);
+                    } else {
+                        $this->payment['is_calculation_mismatch'] = true;
+                    }
+                } else {
+                    $this->payment['is_calculation_mismatch'] = true;
+                }
+            } 
             $this->angelleye_disable_line_item();
         }
 
