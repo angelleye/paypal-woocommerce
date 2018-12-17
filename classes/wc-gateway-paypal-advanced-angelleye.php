@@ -551,7 +551,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         
         $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         
-        if ($this->subtotal_mismatch_behavior == 'add' && ($length_error == 0 || count($PaymentData['order_items']) < 11 )) {
+        if ($PaymentData['is_calculation_mismatch'] == false && ($length_error == 0 || count($PaymentData['order_items']) < 11 )) {
             $paypal_args['ITEMAMT'] = 0;
             $item_loop = 0;
             foreach ($PaymentData['order_items'] as $_item) {
@@ -565,9 +565,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 $item_loop++;
             }
             $paypal_args['ITEMAMT'] = $PaymentData['itemamt'];
-        }
-
-        if ($this->subtotal_mismatch_behavior == 'add') {
             if( $order->get_total() != $PaymentData['shippingamt'] ) {
                 $paypal_args['FREIGHTAMT'] = $PaymentData['shippingamt'];
             } else {

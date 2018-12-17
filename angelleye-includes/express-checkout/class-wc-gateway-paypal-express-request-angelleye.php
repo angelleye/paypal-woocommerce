@@ -500,7 +500,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if (isset($this->gateway->notifyurl) && !empty($this->gateway->notifyurl)) {
                 $Payment['notifyurl'] = $this->gateway->notifyurl;
             }
-            if ($this->gateway->subtotal_mismatch_behavior == 'add') {
+            if( $this->order_param['is_calculation_mismatch'] == false ) {
                 $Payment['order_items'] = $this->order_param['order_items'];
                 $Payment['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt']);
                 $Payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt']);
@@ -1338,14 +1338,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
         $this->order_param = $this->gateway_calculation->order_calculation($order_id);
-        if ($this->gateway->subtotal_mismatch_behavior == 'add') {
+        if( $this->order_param['is_calculation_mismatch'] == false ) {
             $Payment['order_items'] = $this->order_param['order_items'];
+            $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt']);
+            $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt']);
+            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
         } else {
             $Payment['order_items'] = array();
         }
-        $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt']);
-        $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt']);
-        $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
         $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
         $this->paypal_response = $this->paypal->DoReferenceTransaction($PayPalRequestData);
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify);

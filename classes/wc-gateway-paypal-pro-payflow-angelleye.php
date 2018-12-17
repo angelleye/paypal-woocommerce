@@ -620,7 +620,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
             $OrderItems = array();
-            if ($this->subtotal_mismatch_behavior == 'add') {
+            if( $PaymentData['is_calculation_mismatch'] == false ) {
                 if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
                     $PayPalRequestData['discount'] = $PaymentData['discount_amount'];
                 }
@@ -636,13 +636,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $OrderItems = array_merge($OrderItems, $Item);
                     $item_loop++;
                 }
-            }
-
-            /**
-             * Shipping/tax/item amount
-             */
-            
-            if ($this->subtotal_mismatch_behavior == 'add') {
+                
                 if( $order->get_total() != $PaymentData['shippingamt'] ) {
                     $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
                 } else {
@@ -651,8 +645,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
                 $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
+                
             }
-
 
             $log = $PayPalRequestData;
             if (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] != 'new') {
@@ -1320,7 +1314,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
             $OrderItems = array();
-            if ($this->subtotal_mismatch_behavior == 'add') {
+            if( $PaymentData['is_calculation_mismatch'] == false ) {
                 $item_loop = 0;
                 foreach ($PaymentData['order_items'] as $_item) {
                     $Item['L_NUMBER' . $item_loop] = $_item['number'];
@@ -1333,17 +1327,12 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $OrderItems = array_merge($OrderItems, $Item);
                     $item_loop++;
                 }
-            }
-            /**
-             * Shipping/tax/item amount
-             */
-            $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
-            $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
-
-            if ($this->subtotal_mismatch_behavior == 'add') {
+                $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
+                $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
                 $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
+           
             if ($this->is_subscription($order_id)) {
                 $token_id = get_post_meta($order_id, '_payment_tokens_id', true);
                 $PayPalRequestData['origid'] = $token_id;
