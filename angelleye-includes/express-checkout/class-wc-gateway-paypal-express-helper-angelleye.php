@@ -108,13 +108,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->disable_term_value = !empty($this->setting['disable_term']) ? $this->setting['disable_term'] : 'no';
                 $this->disable_term = 'yes' === $this->disable_term_value;
                 add_action('woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'), 10);
-                if ($this->save_abandoned_checkout == false) {
-                    if (version_compare(WC_VERSION, '3.0', '<')) {
-                        add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 1);
-                    } else {
-                        add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 2);
-                    }
-                }
+                
                 add_action('wp_head', array($this, 'angelleye_add_header_meta'), 0);
                 add_action('woocommerce_add_to_cart_redirect', array($this, 'add_to_cart_redirect'), 9999);
                 add_action('woocommerce_checkout_billing', array($this, 'ec_set_checkout_post_data'));
@@ -230,26 +224,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
     }
 
-    public function angelleye_paypal_express_checkout_redirect_to_paypal($data, $errors = null) {
-        $notice_count = 0;
-        if (!empty($errors)) {
-            foreach ($errors->get_error_messages() as $message) {
-                $notice_count = $notice_count + 1;
-            }
-        } else {
-            $notice_count = wc_notice_count('error');
-        }
-        if (empty($_POST['woocommerce_checkout_update_totals']) && 0 === $notice_count) {
-            try {
-                WC()->session->set('post_data', wp_slash($_POST));
-                if (isset($_POST['payment_method']) && 'paypal_express' === $_POST['payment_method'] && $this->function_helper->ec_notice_count('error') == 0) {
-                    $this->function_helper->ec_redirect_after_checkout();
-                }
-            } catch (Exception $ex) {
-                
-            }
-        }
-    }
+    
 
     public function add_to_cart_redirect($url = null) {
         try {
