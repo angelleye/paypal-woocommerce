@@ -200,10 +200,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             }
 
             $card = $this->paypal_rest_api->get_posted_card();
-            
-            if ($card->type == 'maestro') {
-                throw new Exception(__('Your processor is unable to process the Card Type. Please try another card type', 'paypal-for-woocommerce'));
-            }
 
             if (empty($card->exp_month) || empty($card->exp_year)) {
                 throw new Exception(__('Card expiration date is invalid', 'woocommerce-gateway-paypal-pro'));

@@ -77,6 +77,11 @@ class PayPal_Rest_API_Utility {
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
         $card = $this->get_posted_card();
+        if(AngellEYE_Utility::angelleye_is_save_payment_token($this->gateway, $order_id)) {
+            if ($card->type == 'maestro') {
+                throw new Exception(__('Your processor is unable to process the Card Type. Please try another card type', 'paypal-for-woocommerce'));
+            }
+        }
         $token = '';
         try {
             $this->set_trnsaction_obj_value($order, $card_data);
