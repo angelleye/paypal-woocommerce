@@ -914,7 +914,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $form_html .= '<option value=' . $num . '>' . $month_value .'-'. $name . '</option>';
             } else {
                 $month_value = ($num < 10) ? '0' . $num : $num;
-                $form_html .= '<option value=' . $num . '>' . $month_value . '</option>';
+                $form_html .= '<option value=' . $num . '>' . $name . '</option>';
             }
         }
         $form_html .= '</select>';
