@@ -132,6 +132,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjusts the way Maestro cards are handled with regard to regular vs. token payments. ([PFW-329](https://github.com/angelleye/paypal-woocommerce/pull/1255))
 * Fix - Resolves an issue with Braintree Google Pay. ([PFW-330](https://github.com/angelleye/paypal-woocommerce/pull/1256))
 * Fix - Resolves a bug with the PayFlow option to display expiration month using name instead of numbers. ([PFW-333](https://github.com/angelleye/paypal-woocommerce/pull/1260))
+* Fix - Resolves an issue where a PayFlow display notice was appearing two times. ([PFW-332](https://github.com/angelleye/paypal-woocommerce/pull/1259))
 
 = 1.5.4 - 12.08.2018 =
 * Feature - Adds PayPal Fee to WooCommerce order meta data for Express Checkout orders. ([PFW-299](https://github.com/angelleye/paypal-woocommerce/pull/1243))
