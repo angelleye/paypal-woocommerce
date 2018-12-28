@@ -403,6 +403,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function ec_disable_gateways($gateways) {
+        $new_sorted_gateways = array();
         try {
             if ($this->function_helper->ec_is_express_checkout()) {
                 foreach ($gateways as $id => $gateway) {
@@ -410,6 +411,18 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         unset($gateways[$id]);
                     }
                 }
+            } else {
+                foreach ($gateways as $id => $gateway) {
+                    if ($id !== 'paypal_express') {
+                        $new_sorted_gateways[$id] = $gateway;
+                    }
+                }
+                foreach ($gateways as $id => $gateway) {
+                    if ($id == 'paypal_express') {
+                        $new_sorted_gateways[$id] = $gateway;
+                    }
+                }
+                return $new_sorted_gateways;
             }
             return $gateways;
         } catch (Exception $ex) {
