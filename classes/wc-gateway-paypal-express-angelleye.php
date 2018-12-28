@@ -498,6 +498,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function init_form_fields() {
+        $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
+        $this->send_items = 'yes' === $this->send_items_value;
         $rest_url = get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=paypal_express&pms_reset=true';
         $require_ssl = '';
         if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {

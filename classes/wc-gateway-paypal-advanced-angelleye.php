@@ -739,7 +739,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @return void
      */
     public function init_form_fields() {
-
+        $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
+        $this->send_items = 'yes' === $this->send_items_value;
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
