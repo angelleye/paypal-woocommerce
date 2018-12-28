@@ -121,7 +121,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->fraud_error_codes = array('125', '128', '131');
         $this->fraud_warning_codes = array('126', '127');
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
-        add_action('admin_notices', array($this, 'angelleye_paypal_pro_payflow_reference_transaction_notice'));
 
     }
 
@@ -417,6 +416,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     public function admin_options() {
         echo '<h2>' . esc_html( $this->get_method_title() ) . '</h2>';
         echo wp_kses_post( wpautop( $this->get_method_description() ) );
+        echo $this->angelleye_paypal_pro_payflow_reference_transaction_notice();
         ?>
         <table class="form-table">
             <?php
@@ -437,6 +437,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             } else {
                $this->generate_settings_html();
             }
+            
             ?>
         </table>
         <script type="text/javascript">
@@ -914,7 +915,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $form_html .= '<option value=' . $num . '>' . $month_value .'-'. $name . '</option>';
             } else {
                 $month_value = ($num < 10) ? '0' . $num : $num;
-                $form_html .= '<option value=' . $num . '>' . $month_value . '</option>';
+                $form_html .= '<option value=' . $num . '>' . $name . '</option>';
             }
         }
         $form_html .= '</select>';
