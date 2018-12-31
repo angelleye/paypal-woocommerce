@@ -1166,53 +1166,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class' => '',
                 'description' => '<div><div class="display_smart_button_previews_button"></div><div class="display_smart_button_previews"></div></div>',
             ),
-            'mini_cart_button_settings' => array(
-                'title' => __('Mini-cart Button Settings', 'paypal-for-woocommerce'),
-                'type' => 'title'
-            ),
-            'mini_cart_configure_settings' => array(
-                'title' => __('Configure Settings', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __( 'Configure settings specific to mini-cart', 'paypal-for-woocommerce' ),
-                'default'     => 'no',
-                'desc_tip'    => true,
-                'description' => __( 'Optionally override global button settings above and configure buttons for this context.', 'paypal-for-woocommerce' ),
-            ),
-            'mini_cart_button_layout' => array(
-                'title' => __('Button Layout', 'paypal-for-woocommerce'),
-                'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
-                'default' => 'horizontal',
-                'desc_tip' => true,
-                'options' => array(
-                    'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
-                    'vertical' => __('Vertical', 'paypal-for-woocommerce')
-                ),
-            ),
-            'mini_cart_button_size' => array(
-                'title' => __('Button Size', 'paypal-for-woocommerce'),
-                'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
-                'default' => 'small',
-                'desc_tip' => true,
-                'options' => array(
-                    'small' => __('Small', 'paypal-for-woocommerce'),
-                    'medium' => __('Medium', 'paypal-for-woocommerce'),
-                    'large' => __('Large', 'paypal-for-woocommerce'),
-                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
-                ),
-            ),
-            'mini_cart_disallowed_funding_methods' => array(
-                'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
-                'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
-                'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
-                'default' => '',
-                'desc_tip' => true,
-                'options' => $this->disallowed_funding_methods_array,
-            ),
             'single_product_button_settings' => array(
                 'title' => __('Single Product Button Settings', 'paypal-for-woocommerce'),
                 'type' => 'title'
@@ -1252,6 +1205,100 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 ),
             ),
             'single_product_disallowed_funding_methods' => array(
+                'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
+                'type' => 'multiselect',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+                'options' => $this->disallowed_funding_methods_array,
+            ),
+            'cart_button_settings' => array(
+                'title' => __('Cart Button Settings', 'paypal-for-woocommerce'),
+                'type' => 'title'
+            ),
+            'cart_configure_settings' => array(
+                'title' => __('Configure Settings', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __( 'Configure settings specific to Cart', 'paypal-for-woocommerce' ),
+                'default'     => 'no',
+                'desc_tip'    => true,
+                'description' => __( 'Optionally override global button settings above and configure buttons for this context.', 'paypal-for-woocommerce' ),
+            ),
+            'cart_button_layout' => array(
+                'title' => __('Button Layout', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
+                'default' => 'horizontal',
+                'desc_tip' => true,
+                'options' => array(
+                    'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
+                    'vertical' => __('Vertical', 'paypal-for-woocommerce')
+                ),
+            ),
+            'cart_button_size' => array(
+                'title' => __('Button Size', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                'default' => 'small',
+                'desc_tip' => true,
+                'options' => array(
+                    'small' => __('Small', 'paypal-for-woocommerce'),
+                    'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'large' => __('Large', 'paypal-for-woocommerce'),
+                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
+                ),
+            ),
+            'cart_disallowed_funding_methods' => array(
+                'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
+                'type' => 'multiselect',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+                'options' => $this->disallowed_funding_methods_array,
+            ),
+            'mini_cart_button_settings' => array(
+                'title' => __('Mini-cart Button Settings', 'paypal-for-woocommerce'),
+                'type' => 'title'
+            ),
+            'mini_cart_configure_settings' => array(
+                'title' => __('Configure Settings', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __( 'Configure settings specific to mini-cart', 'paypal-for-woocommerce' ),
+                'default'     => 'no',
+                'desc_tip'    => true,
+                'description' => __( 'Optionally override global button settings above and configure buttons for this context.', 'paypal-for-woocommerce' ),
+            ),
+            'mini_cart_button_layout' => array(
+                'title' => __('Button Layout', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
+                'default' => 'horizontal',
+                'desc_tip' => true,
+                'options' => array(
+                    'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
+                    'vertical' => __('Vertical', 'paypal-for-woocommerce')
+                ),
+            ),
+            'mini_cart_button_size' => array(
+                'title' => __('Button Size', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                'default' => 'small',
+                'desc_tip' => true,
+                'options' => array(
+                    'small' => __('Small', 'paypal-for-woocommerce'),
+                    'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'large' => __('Large', 'paypal-for-woocommerce'),
+                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
+                ),
+            ),
+            'mini_cart_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
@@ -1308,7 +1355,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => $this->disallowed_funding_methods_array,
             ),
          );
-        
         
         if( $this->is_us == true ) {
             $this->form_fields['paypal_marketing_solutions'] = array(
