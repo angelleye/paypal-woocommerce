@@ -586,6 +586,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->button_size = $this->checkout_page_button_size;
                 $this->disallowed_funding_methods = $this->checkout_page_disallowed_funding_methods;
             }
+            
+            if($this->mini_cart_configure_settings == false) {
+                $this->mini_cart_button_layout = $this->button_layout;
+                $this->mini_cart_button_size = $this->button_size;
+                $this->mini_cart_disallowed_funding_methods = $this->disallowed_funding_methods;
+            } 
+            $this->mini_cart_allowed_funding_methods = $this->allowed_funding_methods;
             if ($this->button_layout == 'vertical') {
                 $this->button_label = '';
                 $this->button_tagline = '';
@@ -606,6 +613,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $cancel_url = !empty($this->cancel_page) ? get_permalink($this->cancel_page) : wc_get_cart_url();
                 $allowed_funding_methods_json = json_encode(array_values(array_diff($this->allowed_funding_methods, $this->disallowed_funding_methods)));
                 $disallowed_funding_methods_json = json_encode($this->disallowed_funding_methods);
+                $mini_cart_allowed_funding_methods_json = json_encode(array_values(array_diff($this->mini_cart_allowed_funding_methods, $this->mini_cart_disallowed_funding_methods)));
+                $mini_cart_disallowed_funding_methods_json = json_encode($this->mini_cart_disallowed_funding_methods);
                 wp_register_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.min.js', array('jquery'), null, false);
                 wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min.js', array('jquery'), time(), false);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
@@ -623,16 +632,20 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'cart_button_possition' => $this->button_position,
                     'is_display_on_checkout' => ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both' ) ? 'yes' : 'no',
                     'button_size' => $this->button_size,
+                    'mini_cart_button_size' => $this->mini_cart_button_size,
                     'button_color' => $this->button_color,
                     'button_shape' => $this->button_shape,
                     'button_label' => $this->button_label,
                     'button_tagline' => $this->button_tagline,
                     'button_layout' => $this->button_layout,
+                    'mini_cart_button_layout' => $this->mini_cart_button_layout,
                     'button_fundingicons' => $this->button_fundingicons,
                     'cancel_page' => $cancel_url,
                     'is_paypal_credit_enable' => $this->is_paypal_credit_enable ? "yes" : 'no',
                     'allowed_funding_methods' => $allowed_funding_methods_json,
                     'disallowed_funding_methods' => $disallowed_funding_methods_json,
+                    'mini_cart_allowed_funding_methods' => $mini_cart_allowed_funding_methods_json,
+                    'mini_cart_disallowed_funding_methods' => $mini_cart_disallowed_funding_methods_json,
                     'enable_google_analytics_click' => $this->enable_google_analytics_click,
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))),
                     'zcommit' => $this->angelleye_ec_force_to_display_checkout_page_js() == true ? 'false' : 'true'
