@@ -210,8 +210,14 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_filter('woocommerce_thankyou_order_received_text', array($this, 'ec_order_received_text'), 10, 2);
                 add_action('wp_enqueue_scripts', array($this, 'ec_enqueue_scripts_product_page'), 0);
                 add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'));
-                if ($this->show_on_cart == 'yes' && $this->show_on_minicart == 'yes') {
-                    add_action('woocommerce_after_mini_cart', array($this, 'mini_cart_button'));
+                if ($this->enable_in_context_checkout_flow == 'no') {
+                    if ($this->show_on_cart == 'yes' && $this->show_on_minicart == 'yes') {
+                        add_action('woocommerce_after_mini_cart', array($this, 'mini_cart_button'), 20);
+                    }
+                } else {
+                    if ($this->show_on_cart == 'yes' && $this->show_on_minicart == 'yes') {
+                        add_action('woocommerce_widget_shopping_cart_buttons', array($this, 'mini_cart_button'), 20);
+                    }
                 }
                 add_action('woocommerce_cart_contents', array($this, 'woocommerce_before_cart'), 12);
                 add_filter('woocommerce_is_sold_individually', array($this, 'angelleye_woocommerce_is_sold_individually'), 10, 2);
@@ -633,7 +639,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         )
                 );
             }
-
+            wp_enqueue_script('angelleye-in-context-checkout-js');
+             wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
             if (is_checkout()) {
                 $js_value['is_page_name'] = 'checkout_page';
                 wp_enqueue_script('angelleye-express-checkout-js', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-express-checkout.js', array(), $this->version, true);
@@ -663,6 +670,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public function mini_cart_button() {
         if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
             $this->woocommerce_before_cart();
+             wp_enqueue_script('angelleye-in-context-checkout-js');
+             wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
             $mini_cart_button_html = '';
             $mini_cart_button_html .= $this->woocommerce_paypal_express_checkout_button_angelleye($return = true, 'mini');
             $mini_cart_button_html .= "<div class='clear'></div>";
