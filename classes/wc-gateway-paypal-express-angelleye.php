@@ -308,7 +308,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 angelleye_button_tagline.hide();
                 if( is_funding_icon_should_show_php() === false) {
                     angelleye_button_fundingicons.hide();
-                    jQuery("#woocommerce_paypal_express_button_fundingicons").val("false");
+                    //jQuery("#woocommerce_paypal_express_button_fundingicons").val("false");
                 }
             } else {
                 if( jQuery("#woocommerce_paypal_express_button_size option[value='small']").length == 0) {
@@ -335,7 +335,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if ( this.value === 'credit' ) {
                     jQuery('#woocommerce_paypal_express_button_color').closest('tr').hide();
                     jQuery('#woocommerce_paypal_express_button_fundingicons').closest('tr').hide();
-                    jQuery("#woocommerce_paypal_express_button_fundingicons").val("false");
+                    //jQuery("#woocommerce_paypal_express_button_fundingicons").val("false");
                     if( jQuery("#woocommerce_paypal_express_button_layout").val() !== 'vertical' ) {
                         paypal_express_button_tagline.show();
                     }
@@ -421,7 +421,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             if( is_funding_icon_should_show_php() === false) {
                 jQuery("#woocommerce_paypal_express_button_fundingicons").closest('tr').hide();
-                jQuery("#woocommerce_paypal_express_button_fundingicons").val("false");
+                //jQuery("#woocommerce_paypal_express_button_fundingicons").val("false");
                 if( jQuery('#woocommerce_paypal_express_button_label').val() !== 'buynow' ) {
                     if( jQuery("#woocommerce_paypal_express_button_layout").val() !== 'vertical' ) {
                         jQuery('#woocommerce_paypal_express_button_tagline').closest('tr').show();
