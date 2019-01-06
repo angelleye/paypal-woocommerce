@@ -34,6 +34,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->init_settings();
 
         // Get setting values
+        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->enabled = $this->get_option('enabled');
@@ -45,7 +46,11 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
         $this->error_display_type = $this->get_option('error_display_type', 'no');
-        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
+        if($this->send_items === false) {
+            $this->subtotal_mismatch_behavior = 'drop';
+        } else {
+            $this->subtotal_mismatch_behavior = $this->get_option('subtotal_mismatch_behavior', 'add');
+        }
         $this->payment_action = $this->get_option('payment_action', 'Sale');
         $this->payment_action_authorization = $this->get_option('payment_action_authorization', 'Full Authorization');
 
@@ -112,10 +117,10 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 
         $this->customer_id;
         if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
-            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id);
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id, $this->subtotal_mismatch_behavior);
         } else {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
-            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id);
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id, $this->subtotal_mismatch_behavior);
         }
         $this->fraud_codes = array('125', '128', '131', '126', '127');
         $this->fraud_error_codes = array('125', '128', '131');
@@ -147,7 +152,8 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
      * Initialise Gateway Settings Form Fields
      */
     function init_form_fields() {
-
+        $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
+        $this->send_items = 'yes' === $this->send_items_value;
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -267,12 +273,17 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'default' => '',
                 'custom_attributes' => array( 'autocomplete' => 'off'),
             ),
-            'send_items' => array(
-                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
-                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
-                'default' => 'yes'
+            'subtotal_mismatch_behavior' => array(
+		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
+		'type'        => 'select',
+		'class'       => 'wc-enhanced-select',
+		'description' => __( 'Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce' ),
+		'default'     => ($this->send_items) ? 'add' : 'drop',
+		'desc_tip'    => true,
+		'options'     => array(
+			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
+			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
+		),
             ),
             'payment_action' => array(
                 'title' => __('Payment Action', 'paypal-for-woocommerce'),
@@ -616,7 +627,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
             $OrderItems = array();
-            if ($this->send_items) {
+            if( $PaymentData['is_calculation_mismatch'] == false ) {
                 if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
                     $PayPalRequestData['discount'] = $PaymentData['discount_amount'];
                 }
@@ -632,13 +643,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $OrderItems = array_merge($OrderItems, $Item);
                     $item_loop++;
                 }
-            }
-
-            /**
-             * Shipping/tax/item amount
-             */
-            
-            if ($this->send_items) {
+                
                 if( $order->get_total() != $PaymentData['shippingamt'] ) {
                     $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
                 } else {
@@ -647,8 +652,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
                 $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
+                
             }
-
 
             $log = $PayPalRequestData;
             if (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] != 'new') {
@@ -1316,7 +1321,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
             $OrderItems = array();
-            if ($this->send_items) {
+            if( $PaymentData['is_calculation_mismatch'] == false ) {
                 $item_loop = 0;
                 foreach ($PaymentData['order_items'] as $_item) {
                     $Item['L_NUMBER' . $item_loop] = $_item['number'];
@@ -1329,17 +1334,12 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $OrderItems = array_merge($OrderItems, $Item);
                     $item_loop++;
                 }
-            }
-            /**
-             * Shipping/tax/item amount
-             */
-            $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
-            $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
-
-            if ($this->send_items) {
+                $PayPalRequestData['taxamt'] = $PaymentData['taxamt'];
+                $PayPalRequestData['freightamt'] = $PaymentData['shippingamt'];
                 $PayPalRequestData['ITEMAMT'] = $PaymentData['itemamt'];
                 $PayPalRequestData = array_merge($PayPalRequestData, $OrderItems);
             }
+           
             if ($this->is_subscription($order_id)) {
                 $token_id = get_post_meta($order_id, '_payment_tokens_id', true);
                 $PayPalRequestData['origid'] = $token_id;
@@ -1652,6 +1652,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
         }
     }
-
-
+    
+    public function init_settings() {
+        parent::init_settings();
+        $this->enabled  = ! empty( $this->settings['enabled'] ) && 'yes' === $this->settings['enabled'] ? 'yes' : 'no';
+        $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
+        $this->send_items = 'yes' === $this->send_items_value;
+    }
 }
