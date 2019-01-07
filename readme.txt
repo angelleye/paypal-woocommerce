@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.5.5 - xx.xx.2018 =
 * Feature - "Checkout WC" Compatibility with PayPal Express Checkout. ([PFW-305](https://github.com/angelleye/paypal-woocommerce/pull/1254))
+* Feature - Improved method for handling WooCommerce subtotal calculations mis-matches to avoid PayPal checkout errors. ([PFW-318](https://github.com/angelleye/paypal-woocommerce/pull/1257))
 * Tweak - Adjusts the way Maestro cards are handled with regard to regular vs. token payments. ([PFW-329](https://github.com/angelleye/paypal-woocommerce/pull/1255))
 * Fix - Resolves an issue with Braintree Google Pay. ([PFW-330](https://github.com/angelleye/paypal-woocommerce/pull/1256))
 * Fix - Resolves a bug with the PayFlow option to display expiration month using name instead of numbers. ([PFW-333](https://github.com/angelleye/paypal-woocommerce/pull/1260))

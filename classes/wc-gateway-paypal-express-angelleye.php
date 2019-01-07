@@ -76,6 +76,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         );
         $this->init_form_fields();
         $this->init_settings();
+        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes') {
             $this->supports = array_merge($this->supports, array('add_payment_method','tokenization'));
@@ -107,7 +108,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->disable_term = $this->get_option('disable_term', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
         $this->billing_address = 'yes' === $this->get_option('billing_address', 'no');
-        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
+       
+        if($this->send_items === false) {
+            $this->subtotal_mismatch_behavior = 'drop';
+        } else {
+            $this->subtotal_mismatch_behavior = $this->get_option('subtotal_mismatch_behavior', 'add');
+        }
         $this->order_cancellations = $this->get_option('order_cancellations', 'disabled');
         $this->email_notify_order_cancellations = 'yes' === $this->get_option('email_notify_order_cancellations', 'no');
         $this->customer_id = get_current_user_id();
@@ -502,6 +508,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function init_form_fields() {
+        $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
+        $this->send_items = 'yes' === $this->send_items_value;
         $rest_url = get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=paypal_express&pms_reset=true';
         $require_ssl = '';
         if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
@@ -975,13 +983,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => $cancel_page,
                 'desc_tip' => true,
             ),
-            'send_items' => array(
-                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
-                'label' => __('Send line item details to PayPal.', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
-                'default' => 'yes',
-                'desc_tip' => true,
+            'subtotal_mismatch_behavior' => array(
+		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
+		'type'        => 'select',
+		'class'       => 'wc-enhanced-select',
+		'description' => __( 'Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce' ),
+		'default'     => ($this->send_items) ? 'add' : 'drop' ,
+		'desc_tip'    => true,
+		'options'     => array(
+			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
+			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
+		),
             ),
             'enable_notifyurl' => array(
                 'title' => __('Enable PayPal IPN', 'paypal-for-woocommerce'),
@@ -2007,5 +2019,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 
             }
         } 
+    }
+    
+    public function init_settings() {
+        parent::init_settings();
+        $this->enabled  = ! empty( $this->settings['enabled'] ) && 'yes' === $this->settings['enabled'] ? 'yes' : 'no';
+        $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
+        $this->send_items = 'yes' === $this->send_items_value;
     }
 }

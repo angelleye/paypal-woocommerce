@@ -436,7 +436,6 @@ class PayPal_Rest_API_Utility {
 
         $this->card = new CreditCard();
         $this->order_item = array();
-        $this->send_items = true;
     }
 
     /**
