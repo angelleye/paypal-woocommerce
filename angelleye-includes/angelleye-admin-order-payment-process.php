@@ -623,14 +623,14 @@ class AngellEYE_Admin_Order_Payment_Process {
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
         $this->order_param = $this->gateway_calculation->order_calculation($order_id);
-        if ($this->gateway_settings['send_items']) {
+        if( $this->order_param['is_calculation_mismatch'] == false ) {
             $Payment['order_items'] = $this->order_param['order_items'];
+            $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt']);
+            $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt']);
+            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
         } else {
             $Payment['order_items'] = array();
         }
-        $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt']);
-        $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt']);
-        $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
         $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
         return $PayPalRequestData;
     }
@@ -639,6 +639,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
         }
-        $this->gateway_calculation = new WC_Gateway_Calculation_AngellEYE();
+        $subtotal_mismatch_behavior =  ( isset($this->gateway_settings['subtotal_mismatch_behavior']) && ( $this->gateway_settings['subtotal_mismatch_behavior'] == 'drop') ) ? 'drop' : 'add';
+        $this->gateway_calculation = new WC_Gateway_Calculation_AngellEYE(null, $subtotal_mismatch_behavior);
     }
 }
