@@ -34,7 +34,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         // Load the settings.
         $this->init_settings();
-
+        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if ($this->enable_tokenized_payments == 'yes' && !is_add_payment_method_page()) {
             $this->supports = array_merge($this->supports, array('add_payment_method','tokenization'));
@@ -87,8 +87,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         $this->hostaddr = $this->testmode == true ? $this->testurl : $this->liveurl;
         $this->softdescriptor = $this->get_option('softdescriptor', '');
-        $this->send_items = 'yes' === $this->get_option('send_items', 'yes');       
-
+        if($this->send_items === false) {
+            $this->subtotal_mismatch_behavior = 'drop';
+        } else {
+            $this->subtotal_mismatch_behavior = $this->get_option('subtotal_mismatch_behavior', 'add');
+        }
 
         if ($this->debug == 'yes')
             $this->log = new WC_Logger();
@@ -100,10 +103,10 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_advanced_encrypt_gateway_api'), 10, 1);
         $this->customer_id;
         if (class_exists('WC_Gateway_Calculation_AngellEYE')) {
-            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id);
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id, $this->subtotal_mismatch_behavior);
         } else {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
-            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id);
+            $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE($this->id, $this->subtotal_mismatch_behavior);
         }
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
     }
@@ -551,7 +554,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         
         $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
         
-        if ($this->send_items && ($length_error == 0 || count($PaymentData['order_items']) < 11 )) {
+        if ($PaymentData['is_calculation_mismatch'] == false && ($length_error == 0 || count($PaymentData['order_items']) < 11 )) {
             $paypal_args['ITEMAMT'] = 0;
             $item_loop = 0;
             foreach ($PaymentData['order_items'] as $_item) {
@@ -565,9 +568,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 $item_loop++;
             }
             $paypal_args['ITEMAMT'] = $PaymentData['itemamt'];
-        }
-
-        if ($this->send_items ) {
             if( $order->get_total() != $PaymentData['shippingamt'] ) {
                 $paypal_args['FREIGHTAMT'] = $PaymentData['shippingamt'];
             } else {
@@ -739,7 +739,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @return void
      */
     public function init_form_fields() {
-
+        $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
+        $this->send_items = 'yes' === $this->send_items_value;
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -837,12 +838,17 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true,
             ),
-            'send_items' => array(
-                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
-                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
-                'default' => 'yes'
+            'subtotal_mismatch_behavior' => array(
+		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
+		'type'        => 'select',
+		'class'       => 'wc-enhanced-select',
+		'description' => __( 'Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce' ),
+		'default'     => ($this->send_items) ? 'add' : 'drop' ,
+		'desc_tip'    => true,
+		'options'     => array(
+			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
+			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
+		),
             ),
             'transtype' => array(
                 'title' => __('Transaction Type', 'paypal-for-woocommerce'),
@@ -1531,6 +1537,13 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         }
+    }
+    
+    public function init_settings() {
+        parent::init_settings();
+        $this->enabled  = ! empty( $this->settings['enabled'] ) && 'yes' === $this->settings['enabled'] ? 'yes' : 'no';
+        $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
+        $this->send_items = 'yes' === $this->send_items_value;
     }
 
 }
