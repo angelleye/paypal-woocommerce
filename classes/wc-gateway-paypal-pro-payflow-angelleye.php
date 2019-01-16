@@ -787,6 +787,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         wc_maybe_reduce_stock_levels($order_id);
                     }
                 } elseif ($this->payment_action == "Authorization" ) {
+                    if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
+                    } else {
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
+                    }
                     if( $this->pending_authorization_order_status == 'Processing' ) {
                         $order->payment_complete($PayPalResult['PNREF']);
                     } else {
@@ -812,6 +817,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $angelleye_utility = new AngellEYE_Utility(null, null);
                     $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
                 } else {
+                    if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
+                    } else {
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
+                    }
                     if( $this->default_order_status == 'Completed' ) {
                         $order->update_status('completed');
                         if ($old_wc) {
@@ -1409,6 +1419,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         wc_maybe_reduce_stock_levels($order_id);
                     }
                 } elseif ($this->payment_action == "Authorization") {
+                    if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
+                    } else {
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
+                    }
                     if ($old_wc) {
                         update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
                     } else {
@@ -1420,6 +1435,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $angelleye_utility = new AngellEYE_Utility(null, null);
                     $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
                 } else {
+                    if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
+                    } else {
+                        $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
+                    }
                     if( $this->default_order_status == 'Completed' ) {
                         $order->update_status('completed');
                         if ($old_wc) {
