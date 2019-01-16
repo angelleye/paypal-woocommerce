@@ -1180,6 +1180,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'single_product_button_settings' => array(
                 'title' => __('Single Product Button Settings', 'paypal-for-woocommerce'),
+                'description'  => __( 'Single Product Button Settings sample description.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'single_product_configure_settings' => array(
@@ -1227,6 +1228,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'cart_button_settings' => array(
                 'title' => __('Cart Button Settings', 'paypal-for-woocommerce'),
+                'description'  => __( 'Cart Button Settings sample description.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'cart_configure_settings' => array(
@@ -1274,6 +1276,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'mini_cart_button_settings' => array(
                 'title' => __('Mini-cart Button Settings', 'paypal-for-woocommerce'),
+                'description'  => __( 'Mini-cart Button Settings sample description.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'mini_cart_configure_settings' => array(
@@ -1321,6 +1324,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'checkout_page_button_settings' => array(
                 'title' => __('Checkout Page Button Settings', 'paypal-for-woocommerce'),
+                'description'  => __( 'Checkout Page Button Settings sample description.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'checkout_page_configure_settings' => array(
