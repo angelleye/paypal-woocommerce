@@ -584,6 +584,14 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->button_size = 'medium';
                 }
             }
+            if ($this->mini_cart_button_layout == 'vertical') {
+                $this->button_label = '';
+                $this->button_tagline = '';
+                $this->button_fundingicons = '';
+                if ($this->mini_cart_button_size == 'small') {
+                    $this->mini_cart_button_size = 'medium';
+                }
+            }
             if ($this->button_label == 'credit') {
                 $this->button_color = '';
                 $this->button_fundingicons = '';
