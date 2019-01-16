@@ -285,9 +285,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $angelleye_send_opt_in_logging_details = get_option('angelleye_send_opt_in_logging_details', '');
             
             if($opt_in_log == 'yes' && empty($angelleye_send_opt_in_logging_details)){
-                echo '<div class="notice notice-info"><h3>PayPal for WooCommerce</h3><p>'.sprintf(__('Please help us improve the plugin by tracking limited details about the use of this plugin on your site.','paypal-for-woocommerce')).
-                    '<br><br><a href="'.  add_query_arg('angelleye_display_agree_disgree_opt_in_logging','yes').'" class="button button-primary">'.__('Agree','paypal-for-woocommerce').'</a>&nbsp;&nbsp;'
-                    .'<a href="'.  add_query_arg('angelleye_display_agree_disgree_opt_in_logging','no').'" class="button">'.__('Disagree','paypal-for-woocommerce').'</a></p></div>';
+                echo '<div class="error angelleye-notice" style="display:none;">'
+                        . '<div class="angelleye-notice-logo-original"><span></span></div>'
+                        . '<div class="angelleye-notice-message">'
+                            . sprintf(__('We work directly with PayPal to improve your experience as a seller as well as your buyer\'s experience. May we log some basic details about your site (eg. URL) for future improvement purposes? It would be a big help. Thanks!.','paypal-for-woocommerce'))
+                        . '</div>'
+                        . '<div class="angelleye-notice-cta">'
+                            . '<a href="'.  add_query_arg('angelleye_display_agree_disgree_opt_in_logging','yes').'" class="button button-primary">'.__('Sure, I\'ll help','paypal-for-woocommerce').'</a>&nbsp;&nbsp;'
+                            .'<a href="'.  add_query_arg('angelleye_display_agree_disgree_opt_in_logging','no').'" class="button">'.__('No thanks','paypal-for-woocommerce').'</a>'
+                        . '</div>'
+                    . '</div>';
             }
             if(isset($_GET['angelleye_display_agree_disgree_opt_in_logging']) && $_GET['angelleye_display_agree_disgree_opt_in_logging'] == 'yes'){
                 update_option('angelleye_send_opt_in_logging_details', 'yes');

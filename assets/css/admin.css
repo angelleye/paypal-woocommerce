@@ -247,7 +247,7 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     display: none;
 }
 .angelleye-notice {
- padding: 0;
+    padding: 0 !important;
     margin: 5px 0 10px;
     border: 1px solid #E5E5E5;
     background: #FFF;
@@ -267,7 +267,7 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     font-size: 13px;
     font-weight: normal;
     line-height: 20px;
-    padding: 3px 20px;
+    padding: 3px 10px;
     -webkit-font-smoothing: antialiased;
     width: 100%;
 }
@@ -329,6 +329,18 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     margin-left: 31px;
     margin-bottom: 4px;
 }
+.angelleye-notice-logo-original {
+    background-image: url(data:image/png;base64,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);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+.angelleye-notice-logo-original span {
+    display: block;
+    width: 60px;
+    height: 60px;
+}
+
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
         display: block;
@@ -369,6 +381,13 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
         font-size: 13px;
     }
     .angelleye-notice > .angelleye-notice-logo {
+        float: left;
+        display: inline-block;
+        height: 80px;
+        margin: 10px;
+        border-radius: 4px;
+    }
+    .angelleye-notice > .angelleye-notice-logo-original {
         float: left;
         display: inline-block;
         height: 80px;
