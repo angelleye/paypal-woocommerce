@@ -593,7 +593,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             }
             if ($this->button_label == 'credit') {
-                $this->button_color = '';
+                $this->button_color = 'darkblue';
                 $this->button_fundingicons = '';
             }
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));

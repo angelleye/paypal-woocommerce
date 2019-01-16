@@ -389,7 +389,7 @@ jQuery(document).ready(function ($) {
             }
         }
         if (angelleye_label === 'credit') {
-            angelleye_color = '';
+            angelleye_color = 'darkblue';
             angelleye_fundingicons = '';
         }
 
