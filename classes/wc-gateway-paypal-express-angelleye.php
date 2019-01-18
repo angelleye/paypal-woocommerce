@@ -1180,15 +1180,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'single_product_button_settings' => array(
                 'title' => __('Single Product Button Settings', 'paypal-for-woocommerce'),
+                'description'  => __( 'Enable the Product specific button settings, and the options set will be applied to the PayPal buttons on your Product pages.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'single_product_configure_settings' => array(
-                'title' => __('Configure Settings', 'paypal-for-woocommerce'),
+                'title' => __('Enable', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __( 'Configure settings specific to Single Product', 'paypal-for-woocommerce' ),
+                'label' => __( 'Configure settings specific to Single Product pages.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
                 'desc_tip'    => true,
-                'description' => __( 'Optionally override global button settings above and configure buttons for this context.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Optionally override global button settings above and configure buttons specific to Product pages.', 'paypal-for-woocommerce' ),
             ),
             'single_product_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
@@ -1227,15 +1228,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'cart_button_settings' => array(
                 'title' => __('Cart Button Settings', 'paypal-for-woocommerce'),
+                'description'  => __( 'Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your shopping cart page.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'cart_configure_settings' => array(
-                'title' => __('Configure Settings', 'paypal-for-woocommerce'),
+                'title' => __('Enable', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __( 'Configure settings specific to Cart', 'paypal-for-woocommerce' ),
+                'label' => __( 'Configure settings specific to the Cart page.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
                 'desc_tip'    => true,
-                'description' => __( 'Optionally override global button settings above and configure buttons for this context.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Optionally override global button settings above and configure buttons specific to the shopping cart page.', 'paypal-for-woocommerce' ),
             ),
             'cart_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
@@ -1274,15 +1276,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'mini_cart_button_settings' => array(
                 'title' => __('Mini-cart Button Settings', 'paypal-for-woocommerce'),
+                'description'  => __( 'Enable the Mini-Cart specific button settings, and the options set will be applied to the PayPal buttons on your mini-cart.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'mini_cart_configure_settings' => array(
-                'title' => __('Configure Settings', 'paypal-for-woocommerce'),
+                'title' => __('Enable', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __( 'Configure settings specific to mini-cart', 'paypal-for-woocommerce' ),
+                'label' => __( 'Configure settings specific to the mini-cart display.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
                 'desc_tip'    => true,
-                'description' => __( 'Optionally override global button settings above and configure buttons for this context.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Optionally override global button settings above and configure buttons specific to the mini-cart.', 'paypal-for-woocommerce' ),
             ),
             'mini_cart_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
@@ -1321,15 +1324,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'checkout_page_button_settings' => array(
                 'title' => __('Checkout Page Button Settings', 'paypal-for-woocommerce'),
+                'description'  => __( 'Enable the Checkout Page specific button settings, and the options set will be applied to the PayPal buttons on your Checkout page.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'checkout_page_configure_settings' => array(
-                'title' => __('Configure Settings', 'paypal-for-woocommerce'),
+                'title' => __('Enable', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __( 'Configure settings specific to Checkout Page', 'paypal-for-woocommerce' ),
+                'label' => __( 'Configure settings specific to the Checkout page.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
                 'desc_tip'    => true,
-                'description' => __( 'Optionally override global button settings above and configure buttons for this context.', 'paypal-for-woocommerce' ),
+                'description' => __( 'Optionally override global button settings above and configure buttons specific to the Checkout page.', 'paypal-for-woocommerce' ),
             ),
             'checkout_page_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
