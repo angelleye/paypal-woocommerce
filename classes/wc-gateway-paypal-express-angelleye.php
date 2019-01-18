@@ -1061,7 +1061,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'in_context_checkout_part',
-                'description' => '<div class="in_context_checkout_part angelleye_button_settings_selector">Customize your PayPal button with colors, sizes, shapes, layout and funding sources.  Values entered here will be default values used in all locations where PayPal buttons are displayed.  You may use the additional options below to override these options for specific button locations.</div>',
+                'description' => '<div class="in_context_checkout_part angelleye_button_settings_selector">Customize your PayPal button with colors, sizes, shapes, layout and funding sources.</div><div class="in_context_checkout_part angelleye_button_settings_selector">Values entered here will be default values used in all locations where PayPal buttons are displayed.  You may use the additional options below to override these options for specific button locations.</div>',
             ),
             'disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
@@ -1328,7 +1328,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'title'
             ),
             'checkout_page_configure_settings' => array(
-                'title' => __('Configure Settings', 'paypal-for-woocommerce'),
+                'title' => __('Enable', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to the Checkout page.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
