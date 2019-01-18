@@ -285,11 +285,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $angelleye_send_opt_in_logging_details = get_option('angelleye_send_opt_in_logging_details', '');
             
             if($opt_in_log == 'yes' && empty($angelleye_send_opt_in_logging_details)){
-                echo '<div class="error angelleye-notice" style="display:none;">'
+                echo '<div class="notice notice-success angelleye-notice" style="display:none;">'
                         . '<div class="angelleye-notice-logo-original"><span></span></div>'
                         . '<div class="angelleye-notice-message">'
-                            . sprintf(__('We work directly with PayPal to improve your experience as a seller as well as your buyer\'s experience. May we log some basic details about your site (eg. URL) for future improvement purposes? It would be a big help, thanks!.','paypal-for-woocommerce'))
-                        . '</div>'
+                            . '<h3>PayPal for WooCoomerce</h3>'
+                            . '<div class="angelleye-notice-message-inner">'.sprintf(__('We work directly with PayPal to improve your experience as a seller as well as your buyer\'s experience. May we log some basic details about your site (eg. URL) for future improvement purposes? It would be a big help, thanks!.','paypal-for-woocommerce'))
+                        . '</div></div>'
                         . '<div class="angelleye-notice-cta">'
                             . '<a href="'.  add_query_arg('angelleye_display_agree_disgree_opt_in_logging','yes').'" class="button button-primary">'.__('Sure, I\'ll help!','paypal-for-woocommerce').'</a>&nbsp;&nbsp;'
                             .'<a href="'.  add_query_arg('angelleye_display_agree_disgree_opt_in_logging','no').'" class="button">'.__('No thanks.','paypal-for-woocommerce').'</a>'
