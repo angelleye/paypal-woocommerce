@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.5.6 - 01.19.2019 =
+* Fix - Resolves a problem with Express Checkout button display on some themes. ([PFW-354](https://github.com/angelleye/paypal-woocommerce/pull/1273))
+
 = 1.5.5 - 01.17.2019 =
 * Feature - "Checkout WC" Compatibility with PayPal Express Checkout. ([PFW-305](https://github.com/angelleye/paypal-woocommerce/pull/1254))
 * Feature - Adds Express Checkout Smart Button functionality to Woo checkout page. ([PFW-303](https://github.com/angelleye/paypal-woocommerce/pull/1258))
