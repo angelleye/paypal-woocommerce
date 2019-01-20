@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 1.5.7 - 01.20.2019 =
+* Fix - Adjustments to coincide with recent Woo changes and resolve PayPal button performance issues. ([PFW-356](https://github.com/angelleye/paypal-woocommerce/pull/1274))
+
 = 1.5.6 - 01.19.2019 =
 * Fix - Resolves a problem with Express Checkout button display on some themes. ([PFW-354](https://github.com/angelleye/paypal-woocommerce/pull/1273))
 
