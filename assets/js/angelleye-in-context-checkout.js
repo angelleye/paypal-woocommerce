@@ -408,7 +408,7 @@ jQuery(function ($) {
         };
     }
     
-    $(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout updated_wc_div', function (event) {
+    $(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout updated_wc_div updated_cart_totals wc_fragments_loaded', function (event) {
         display_smart_button_on_cart_checkout();
     });
     $(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout', function (event) {
