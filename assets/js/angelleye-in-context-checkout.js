@@ -408,10 +408,8 @@ jQuery(function ($) {
         };
     }
     
-    $(document.body).on('updated_shipping_method wc_fragments_refreshed', function (event) {
-        display_smart_button_on_cart_checkout();
-    });
     $(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout', function (event) {
+        display_smart_button_on_cart_checkout();
         display_smart_button_checkout_bottom();
     });
     $( document.body ).on( 'wc_fragments_loaded wc_fragments_refreshed', function() {
