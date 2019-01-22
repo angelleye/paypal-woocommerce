@@ -468,43 +468,38 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @return string
      */
     public function get_icon() {
-        if ($this->enable_in_context_checkout_flow == 'no') {
+        $image_path = plugins_url('/assets/images/paypal.png', plugin_basename(dirname(__FILE__)));
+        if( $this->paypal_account_optional == 'no' && $this->show_paypal_credit == 'no' ) {
             $image_path = plugins_url('/assets/images/paypal.png', plugin_basename(dirname(__FILE__)));
-            if( $this->paypal_account_optional == 'no' && $this->show_paypal_credit == 'no' ) {
-                $image_path = plugins_url('/assets/images/paypal.png', plugin_basename(dirname(__FILE__)));
-            }
-            if ($this->paypal_account_optional == 'yes' && $this->show_paypal_credit == 'no' ) {
-                $image_path = plugins_url('/assets/images/paypal-credit-card-logos.png', plugin_basename(dirname(__FILE__)));
-            }
-            if ($this->paypal_account_optional == 'yes' && $this->show_paypal_credit == 'yes' ) {
-                $image_path = plugins_url('/assets/images/paypal-paypal-credit-card-logos.png', plugin_basename(dirname(__FILE__)));
-            }
-            if ($this->checkout_with_pp_button_type == 'customimage') {
-                $image_path = $this->pp_button_type_my_custom;
-            }
+        }
+        if ($this->paypal_account_optional == 'yes' && $this->show_paypal_credit == 'no' ) {
+            $image_path = plugins_url('/assets/images/paypal-credit-card-logos.png', plugin_basename(dirname(__FILE__)));
+        }
+        if ($this->paypal_account_optional == 'yes' && $this->show_paypal_credit == 'yes' ) {
+            $image_path = plugins_url('/assets/images/paypal-paypal-credit-card-logos.png', plugin_basename(dirname(__FILE__)));
+        }
+        if ($this->checkout_with_pp_button_type == 'customimage') {
+            $image_path = $this->pp_button_type_my_custom;
+        }
+        if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
+            $image_path = str_replace( 'http:', 'https:', $image_path );
+        }
+        if ($this->paypal_account_optional == 'no' && $this->show_paypal_credit == 'yes' && $this->checkout_with_pp_button_type == 'paypalimage') {
+            $image_path = plugins_url('/assets/images/paypal.png', plugin_basename(dirname(__FILE__)));
             if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
                 $image_path = str_replace( 'http:', 'https:', $image_path );
             }
-            if ($this->paypal_account_optional == 'no' && $this->show_paypal_credit == 'yes' && $this->checkout_with_pp_button_type == 'paypalimage') {
-                $image_path = plugins_url('/assets/images/paypal.png', plugin_basename(dirname(__FILE__)));
-                if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
-                    $image_path = str_replace( 'http:', 'https:', $image_path );
-                }
-                $image_path_two = plugins_url('/assets/images/PP_credit_logo.png', plugin_basename(dirname(__FILE__)));
-                if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
-                    $image_path_two = str_replace( 'http:', 'https:', $image_path_two );
-                }
-                $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
-                $icon_two = "<img src=\"$image_path_two\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
-                return apply_filters('angelleye_ec_checkout_icon', $icon.$icon_two, $this->id);
-            } else {
-                $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
-                return apply_filters('angelleye_ec_checkout_icon', $icon, $this->id);
+            $image_path_two = plugins_url('/assets/images/PP_credit_logo.png', plugin_basename(dirname(__FILE__)));
+            if ( is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) ) {
+                $image_path_two = str_replace( 'http:', 'https:', $image_path_two );
             }
+            $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+            $icon_two = "<img src=\"$image_path_two\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+            return apply_filters('angelleye_ec_checkout_icon', $icon.$icon_two, $this->id);
         } else {
-            return apply_filters('angelleye_ec_checkout_icon', '', $this->id);
+            $icon = "<img src=\"$image_path\" alt='" . __('Pay with PayPal', 'paypal-for-woocommerce') . "'/>";
+            return apply_filters('angelleye_ec_checkout_icon', $icon, $this->id);
         }
-        
     }
 
     public function init_form_fields() {
