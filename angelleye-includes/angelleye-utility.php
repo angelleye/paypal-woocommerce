@@ -2230,7 +2230,9 @@ class AngellEYE_Utility {
             $args = array(
                 'plugin_name' => 'paypal-for-woocommerce',
             );
-            $request = wp_remote_post('http://localhost/woo/?Wordpress_Plugin_Notification_Sender&action=angelleye_get_plugin_notification', array(
+            $api_url = PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL . '?Wordpress_Plugin_Notification_Sender';
+            $api_url .= '&action=angelleye_get_plugin_notification';
+            $request = wp_remote_post($api_url, array(
                 'method' => 'POST',
                 'timeout' => 45,
                 'redirection' => 5,

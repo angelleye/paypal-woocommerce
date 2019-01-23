@@ -50,6 +50,10 @@ if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_BASENAME' ) ) {
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH')) {
     define('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ));
 }
+if (!defined('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL')) {
+    define('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL', 'https://www.angelleye.com/');
+}
+
 
 /**
  * Set global parameters

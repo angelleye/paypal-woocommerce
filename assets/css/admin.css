@@ -366,9 +366,6 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 
 .angelleye-notice-logo-push span {
     display: block;
-    width: 80px;
-    height: 80px;
-    margin: 0px 10px 0px 10px;
 }
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
