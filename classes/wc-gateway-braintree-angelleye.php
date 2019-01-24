@@ -1032,6 +1032,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     return false;
                 }
                 $request_data['paymentMethodNonce'] = $payment_method_nonce;
+                $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
             }
             if (is_user_logged_in()) {
                 $customer_id = get_current_user_id();
@@ -1055,7 +1056,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $request_data['orderId'] = $order->get_order_number();
             $request_data['options'] = $this->get_braintree_options();
-            $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
             $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
             if (!empty($this->softdescriptor)) {
                 $request_data['descriptor'] = array('name' => $this->softdescriptor);
@@ -1715,6 +1715,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
                     $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
                 }
+                if (is_user_logged_in()) {
+                    $customer_id = get_current_user_id();
+                    $customer = new WC_Customer( $customer_id );
+                    $payment_method_request['creditCard']['cardholderName'] = $customer->get_first_name() . ' ' . $customer->get_last_name();
+                }
             } else {
                 $this->add_log("Error: The payment_method_nonce was unexpectedly empty");
                 wc_add_notice(__('Error: PayPal Powered by Braintree did not supply a payment nonce. Please try again later or use another means of payment.', 'paypal-for-woocommerce'), 'error');
@@ -2025,7 +2030,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $request_data['orderId'] = $order->get_order_number();
         $request_data['options'] = $this->get_braintree_options();
-        $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
         $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
         if ($this->debug) {
             $this->add_log('Begin Braintree_Transaction::sale request');
@@ -2462,10 +2466,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce);
             $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
             $payment_method_request['options']['verifyCard'] = true;
-            $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
             if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
                 $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
             }
+            $payment_method_request['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
         } else {
             $this->add_log("Error: The payment_method_nonce was unexpectedly empty");
             wc_add_notice(__('Error: PayPal Powered by Braintree did not supply a payment nonce. Please try again later or use another means of payment.', 'paypal-for-woocommerce'), 'error');
