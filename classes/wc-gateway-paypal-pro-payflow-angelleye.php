@@ -1056,6 +1056,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         }
 
         do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_exp_month, $card_exp_year);
+        
+        // Check card number
+
+        if (empty($card_number) || !ctype_digit((string) $card_number)) {
+            wc_add_notice(__('Card number is invalid', 'paypal-for-woocommerce'), "error");
+            return false;
+        }
 
         // Check card security code
 
@@ -1075,13 +1082,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $card_exp_year > date('y') + 20
         ) {
             wc_add_notice(__('Card expiration date is invalid', 'paypal-for-woocommerce'), "error");
-            return false;
-        }
-
-        // Check card number
-
-        if (empty($card_number) || !ctype_digit((string) $card_number)) {
-            wc_add_notice(__('Card number is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         }
 

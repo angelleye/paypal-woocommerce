@@ -201,6 +201,10 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
 
             $card = $this->paypal_rest_api->get_posted_card();
 
+            if (empty($card->number) || !ctype_digit((string) $card->number)) {
+                throw new Exception(__('Card number is invalid', 'woocommerce-gateway-paypal-pro'));
+            }
+            
             if (empty($card->exp_month) || empty($card->exp_year)) {
                 throw new Exception(__('Card expiration date is invalid', 'woocommerce-gateway-paypal-pro'));
             }
@@ -218,11 +222,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             ) {
                 throw new Exception(__('Card expiration date is invalid', 'woocommerce-gateway-paypal-pro'));
             }
-
-            if (empty($card->number) || !ctype_digit((string) $card->number)) {
-                throw new Exception(__('Card number is invalid', 'woocommerce-gateway-paypal-pro'));
-            }
-
             return true;
         } catch (Exception $e) {
             wc_add_notice($e->getMessage(), 'error');
