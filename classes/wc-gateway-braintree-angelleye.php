@@ -1055,7 +1055,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $request_data['orderId'] = $order->get_order_number();
             $request_data['options'] = $this->get_braintree_options();
-            $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
+            if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
+                $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
+            }
             $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
             if (!empty($this->softdescriptor)) {
                 $request_data['descriptor'] = array('name' => $this->softdescriptor);
@@ -2025,7 +2027,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $request_data['orderId'] = $order->get_order_number();
         $request_data['options'] = $this->get_braintree_options();
-        $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
+        if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
+            $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
+        }
         $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
         if ($this->debug) {
             $this->add_log('Begin Braintree_Transaction::sale request');
@@ -2462,7 +2466,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce);
             $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
             $payment_method_request['options']['verifyCard'] = true;
-            $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
+            if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
+                $payment_method_request['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
+            }
             if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
                 $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
             }
