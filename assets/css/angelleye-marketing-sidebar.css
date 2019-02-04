@@ -1,0 +1,186 @@
+#angelleye-sidebar-container {
+    width: 280px;
+    padding: 0 0 0 19px;
+}
+.angelleye_content_cell {
+    display: table-cell;
+    height: 500px;
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+}
+.angelleye-sidebar__title {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #63ab40;
+    color: #63ab40;
+    line-height: 19px;
+    text-align: left;
+}
+.angelleye-sidebar__section {
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd;
+}
+.angelleye-sidebar__section h2 {
+    margin-top: 0;
+    width: 258px;
+}
+.angelleye-sidebar__section ul {
+    position: relative;
+}
+.angelleye-sidebar__section li {
+    margin-left: 20px;
+    list-style: none;
+}
+.angelleye-sidebar__section li::before {
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+    content: "+";
+}
+.angelleye-sidebar__section li {
+    list-style: none;
+}
+.angelleye_content_wrapper li, .angelleye_content_wrapper p {
+    max-width: 600px;
+}
+.angelleye-button-upsell#angelleye-premium-button {
+    color: #000;
+}
+.screen-reader-text {
+    overflow: hidden;
+    clip: rect(1px,1px,1px,1px);
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    word-wrap: normal !important;
+    -webkit-clip-path: inset(50%);
+    clip-path: inset(50%);
+}
+.angelleye-button-upsell {
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    box-sizing: border-box;
+    min-height: 48px;
+    padding: 8px 1em;
+    border-radius: 4px;
+    color: #000;
+    background-color: #fec228;
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,.2);
+    font-family: Arial,sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    text-decoration: none;
+    align-items: center;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .2));
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+.angelleye-sidebar__section {
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd;
+}
+.angelleye-sidebar__section div {
+    position: relative;
+    
+}
+.angelleye-sidebar__section div p {
+    width: 200px;
+    margin: 0;
+    padding-left: 50px;
+}
+.angelleye-sidebar__section div a {
+    color: #0085ba;
+}
+.angelleye-button-upsell:active, .angelleye-button-upsell:focus, .angelleye-button-upsell:hover {
+    color: #000;
+    background-color: #f2ae01;
+}
+.angelleye-button-upsell__caret {
+    width: 8px;
+    height: 16px;
+    margin: 0 -2px 0 6px;
+    background: url("data:image/svg+xml;charset=utf8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%20192%20512%22%20xmlns%3D%22http%3A%2F%2Fwww%2Ew3%2Eorg%2F2000%2Fsvg%22%20role%3D%22img%22%20aria%2Dhidden%3D%22true%22%20focusable%3D%22false%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M%200%20384%2E662%20V%20127%2E338%20c%200%20%2D17%2E818%2021%2E543%20%2D26%2E741%2034%2E142%20%2D14%2E142%20l%20128%2E662%20128%2E662%20c%207%2E81%207%2E81%207%2E81%2020%2E474%200%2028%2E284%20L%2034%2E142%20398%2E804%20C%2021%2E543%20411%2E404%200%20402%2E48%200%20384%2E662%20Z%22%2F%3E%3C%2Fsvg%3E") center no-repeat;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+}
+.angelleye-sidebar__section a, .angelleye-sidebar__section h2 {
+
+    color: #63ab40;
+
+}
+.angelleye-sidebar__section h2 {
+
+    margin-top: 0;
+
+}
+.angelleye-sidebar__section div p {
+    width: 200px;
+    margin: 0;
+    padding-left: 50px;
+}
+.angelleye-sidebar__section div img, .angelleye-sidebar__section div p {
+    float: left;
+}
+.wpseo_content_wrapper li, .wpseo_content_wrapper p {
+    max-width: 600px;
+}
+.angelleye-sidebar__section div a {
+    color: #0085ba;
+
+}
+.angelleye-sidebar__section div img {
+    width: 40px;
+    height: 40px;
+    margin: 0 10px 0 -50px;
+}
+.angelleye-sidebar__section div img, .angelleye-sidebar__section div p {
+    float: left;
+}
+.woocommerce table.form-table {
+    display: table-cell;
+    height: 500px;
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+    border-right: 2px solid #dfdfdf;
+}
+.angelleye-wizard-text-input-label {
+    display: block;
+    margin: .5em 0 0;
+    font-size: 14px;
+    cursor: pointer;
+}
+.angelleye-wizard-text-input-label {
+    font-weight: 700;
+}
+.angelleye-wizard input[type="text"] {
+    min-width: 250px;
+
+}
+.angelleye-wizard--columns .angelleye-wizard-text-input-field {
+    max-width: 100%;
+}
+.angelleye-wizard-text-input [type="text"] {
+ margin: .5em 0;
+    padding: 5px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 450px;
+
+}
+.angelleye-wizard input{
+    margin: .5em 0;
+    padding: 5px;
+    font-size: 14px;
+    line-height: 140%;
+}
+.m10 {
+    margin: 10px 0;
+}
+

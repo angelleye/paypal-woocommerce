@@ -2225,4 +2225,9 @@ class AngellEYE_Utility {
                 update_post_meta($order_id, $key, wc_clean($value));
             }
         }
+        
+        public static function angelleye_display_marketing_sidebar() {
+            wp_enqueue_style('angelleye_marketing_css');
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/sidebar.php' );
+        }
 }
