@@ -618,6 +618,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function angelleye_woocommerce_admin_enqueue_scripts() {
             wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/admin.css' , __FILE__ ), array(), VERSION_PFW );
+            wp_enqueue_style( 'angelleye_marketing_css', plugins_url( 'assets/css/angelleye-marketing-sidebar.css' , __FILE__ ), array(), VERSION_PFW );
         }
         
         public function angelleye_woocommerce_pfw_ed_shipping_bulk_tool() {
