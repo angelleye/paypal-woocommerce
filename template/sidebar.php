@@ -11,20 +11,35 @@
                 echo __('Join Our Newsletter', 'paypal-for-woocommerce');
                 ?>
             </h2>
-            <form action="https://facebook.us20.list-manage.com/subscribe/post-json?u=4a114f67f01027e3493064c37&amp;id=2ecba2d5e8" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-                <div class="angelleye-wizard-text-input">
-                    <label for="mce-EMAIL" class="angelleye-wizard-text-input-label">Email</label>
-                    <input type="email" value="" name="EMAIL" class="email angelleye-wizard-text-input-field" placeholder="email address" required>
-                    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_4a114f67f01027e3493064c37_2ecba2d5e8" tabindex="-1" value=""></div>
-
-                    <div style="color: rgba(0, 0, 0, 0.87); background-color: rgb(255, 255, 255); transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; box-sizing: border-box; font-family: Roboto, sans-serif; box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; border-radius: 2px; display: inline-block; min-width: 88px;">
-
-                        <button style="border: 10px none; box-sizing: border-box; display: inline-block; font-family: Roboto, sans-serif; cursor: pointer; text-decoration: none; margin: 0px; padding: 0px; outline: currentcolor none medium; font-size: inherit; font-weight: inherit; position: relative; height: 36px; line-height: 36px; width: 100%; border-radius: 2px; transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; background-color: green; text-align: center;" tabindex="0" type="button" id="angelleye_mailchimp"><div><div style="height: 36px; border-radius: 2px; transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; top: 0px;"><svg style="display: inline-block; color: rgba(0, 0, 0, 0.87); fill: rgb(255, 255, 255); height: 24px; width: 24px; transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; vertical-align: middle; margin-left: 12px; margin-right: 0px;" viewBox="0 0 28 28"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"></path></svg><span style="position: relative; opacity: 1; font-size: 14px; letter-spacing: 0px; text-transform: uppercase; font-weight: 500; margin: 0px; padding-left: 8px; padding-right: 16px; color: rgb(255, 255, 255);">Sign Up!</span></div></div></button>
-                    </div><br>
-                </div>
-            </form>
+            <div class="angelleye-wizard-text-input">
+                <label for="mce-EMAIL" class="angelleye-wizard-text-input-label">Email</label>
+                <input type="email" value="" id="angelleye_mailchimp_email" name="angelleye_mailchimp_email" class="email angelleye-wizard-text-input-field" placeholder="email address" required>
+                <div style="color: rgba(0, 0, 0, 0.87); background-color: rgb(255, 255, 255); transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; box-sizing: border-box; font-family: Roboto, sans-serif; box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; border-radius: 2px; display: inline-block; min-width: 88px;">
+                    <button style="border: 10px none; box-sizing: border-box; display: inline-block; font-family: Roboto, sans-serif; cursor: pointer; text-decoration: none; margin: 0px; padding: 0px; outline: currentcolor none medium; font-size: inherit; font-weight: inherit; position: relative; height: 36px; line-height: 36px; width: 100%; border-radius: 2px; transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; background-color: green; text-align: center;" tabindex="0" type="button" id="angelleye_mailchimp"><div><div style="height: 36px; border-radius: 2px; transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; top: 0px;"><svg style="display: inline-block; color: rgba(0, 0, 0, 0.87); fill: rgb(255, 255, 255); height: 24px; width: 24px; transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; vertical-align: middle; margin-left: 12px; margin-right: 0px;" viewBox="0 0 28 28"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"></path></svg><span style="position: relative; opacity: 1; font-size: 14px; letter-spacing: 0px; text-transform: uppercase; font-weight: 500; margin: 0px; padding-left: 8px; padding-right: 16px; color: rgb(255, 255, 255);">Sign Up!</span></div></div></button>
+                </div><br>
+            </div>
+            <div id="angelleye_mailchimp_msg">
+            </div>
         </div>
+        <script type="text/javascript">
+            $("#angelleye_mailchimp").click(function () {
+                var data = {
+                    'action': 'angelleye_marketing_mailchimp_subscription',
+                    'email': $('#angelleye_mailchimp_email').val()
+                };
+                $.post(ajaxurl, data, function () {
+                })
+                        .done(function (response) {
+                            response_parsed = JSON.parse(response);
+                            $('.angelleye-wizard-text-input').hide();
+                            $('#angelleye_mailchimp_msg').html(response_parsed.msg);
+                            console.log(response_parsed.msg);
+                        })
+                        .fail(function (response) {
+                            alert("fail");
+                        });
+            });
+        </script>
         <div class="angelleye-sidebar__section m10">
             <h2><?php esc_html_e('Extend PayPal for WooCommerce', 'paypal-for-woocommerce'); ?></h2>
             <div class="wp-clearfix m10">
@@ -81,3 +96,4 @@
         </div>
     </div>
 </div>
+

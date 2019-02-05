@@ -87,7 +87,6 @@
 }
 .angelleye-sidebar__section div {
     position: relative;
-    
 }
 .angelleye-sidebar__section div p {
     width: 200px;
@@ -110,14 +109,10 @@
     flex-shrink: 0;
 }
 .angelleye-sidebar__section a, .angelleye-sidebar__section h2 {
-
     color: #63ab40;
-
 }
 .angelleye-sidebar__section h2 {
-
     margin-top: 0;
-
 }
 .angelleye-sidebar__section div p {
     width: 200px;
@@ -132,7 +127,6 @@
 }
 .angelleye-sidebar__section div a {
     color: #0085ba;
-
 }
 .angelleye-sidebar__section div img {
     width: 40px;
@@ -161,7 +155,6 @@
 }
 .angelleye-wizard input[type="email"] {
     min-width: 250px;
-
 }
 .angelleye-wizard--columns .angelleye-wizard-text-input-field {
     max-width: 100%;
@@ -172,7 +165,6 @@
     box-sizing: border-box;
     width: 100%;
     max-width: 450px;
-
 }
 .angelleye-wizard input{
     margin: .5em 0;
@@ -183,4 +175,3 @@
 .m10 {
     margin: 10px 0;
 }
-
