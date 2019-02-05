@@ -691,7 +691,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         ?>
         <h3><?php _e('PayPal Advanced', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e('PayPal Payments Advanced uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process.', 'paypal-for-woocommerce'); ?></p>
-        <table class="form-table">
+        <table class="form-table" id="angelleye_paypal_marketing_table">
             <?php
             if(version_compare(WC_VERSION,'2.6','<')) {
                 AngellEYE_Utility::woo_compatibility_notice();    

@@ -142,7 +142,7 @@
 .angelleye-sidebar__section div img, .angelleye-sidebar__section div p {
     float: left;
 }
-.woocommerce table.form-table {
+#angelleye_paypal_marketing_table {
     display: table-cell;
     height: 500px;
     margin: 0;
@@ -159,14 +159,14 @@
 .angelleye-wizard-text-input-label {
     font-weight: 700;
 }
-.angelleye-wizard input[type="text"] {
+.angelleye-wizard input[type="email"] {
     min-width: 250px;
 
 }
 .angelleye-wizard--columns .angelleye-wizard-text-input-field {
     max-width: 100%;
 }
-.angelleye-wizard-text-input [type="text"] {
+.angelleye-wizard-text-input [type="email"] {
  margin: .5em 0;
     padding: 5px;
     box-sizing: border-box;
