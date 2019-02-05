@@ -5,6 +5,7 @@
             printf(esc_html__('%1$s recommendations for you', 'paypal-for-woocommerce'), 'Angell EYE');
             ?>
         </div>
+        <?php if(!get_user_meta(get_current_user_id(), 'enable_mailchimp_subscription')) { ?>
         <div class="angelleye-sidebar__section m10">
             <h2>
                 <?php
@@ -40,6 +41,7 @@
                         });
             });
         </script>
+        <?php } ?>
         <div class="angelleye-sidebar__section m10">
             <h2><?php esc_html_e('Extend PayPal for WooCommerce', 'paypal-for-woocommerce'); ?></h2>
             <div class="wp-clearfix m10">
@@ -79,7 +81,7 @@
                 <p>
                     <a href="https://www.angelleye.com/support" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/iconfinder_headphone_53883.png'; ?>" alt="">
-                        <strong><?php __('AngellEYE Help Desk', ''); ?></strong>
+                        <strong><?php echo __('AngellEYE Help Desk', ''); ?></strong>
                     </a><br>
                     <?php esc_html_e('Welcome! You can open an AngellEYE Help Desk ticket from the options provided.', 'paypal-for-woocommerce'); ?>
                 </p>

@@ -92,6 +92,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <h3><?php _e('Braintree', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
+        <div id="angelleye_paypal_marketing_table">
         <table class="form-table">
             <?php
             if (version_compare(WC_VERSION, '2.6', '<')) {
@@ -156,7 +157,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 });
 
             </script>
-        </table> <?php
+        </table> </div><?php
+        AngellEYE_Utility::angelleye_display_marketing_sidebar(); 
     }
 
     /**

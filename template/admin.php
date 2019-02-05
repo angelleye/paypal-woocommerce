@@ -71,9 +71,12 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                             </p>
                         </a>
                     </li>
+                   
                 </ul>
+                <?php AngellEYE_Utility::angelleye_display_marketing_sidebar(); ?>
             </div>
             <?php
+            
         } elseif ($gateway == 'paypal_woocommerce_premium_extension') {
             if (false === ( $addons = get_transient('angelleye_addons_data_paypal_woocommerce_premium_extension') )) {
                 $addons_json = wp_remote_get('https://www.angelleye.com/web-services/woocommerce/api/getinfo.php?tag=paypal_woocommerce_premium_extension', array( 'timeout' => 120 ));

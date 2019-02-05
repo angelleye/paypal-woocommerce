@@ -435,6 +435,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         echo '<h2>' . esc_html( $this->get_method_title() ) . '</h2>';
         echo wp_kses_post( wpautop( $this->get_method_description() ) );
         ?>
+        <div id="angelleye_paypal_marketing_table">
         <table class="form-table">
             <?php
             if(version_compare(WC_VERSION,'2.6','<')) {
@@ -444,6 +445,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
             ?>
         </table>
+        </div>
+        <?php AngellEYE_Utility::angelleye_display_marketing_sidebar(); ?>
         <script type="text/javascript">
             jQuery('#woocommerce_paypal_pro_payment_action').change(function () {
                 if ( this.value === 'Authorization' ) {
