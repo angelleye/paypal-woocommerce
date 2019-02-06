@@ -715,7 +715,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             ?>
         </table><!--/.form-table-->
         </div>
-        <?php AngellEYE_Utility::angelleye_display_marketing_sidebar(); ?>
+        <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); ?>
         <script type="text/javascript">
             jQuery(document).ready(function ($) {
                 jQuery('.paypal_for_woocommerce_color_field').wpColorPicker();

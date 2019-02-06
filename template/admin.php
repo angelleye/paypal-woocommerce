@@ -73,7 +73,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                     </li>
                    
                 </ul>
-                <?php AngellEYE_Utility::angelleye_display_marketing_sidebar(); ?>
+                <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting'); ?>
             </div>
             <?php
             

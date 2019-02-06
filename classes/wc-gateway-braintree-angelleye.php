@@ -158,7 +158,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
             </script>
         </table> </div><?php
-        AngellEYE_Utility::angelleye_display_marketing_sidebar(); 
+        AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); 
     }
 
     /**

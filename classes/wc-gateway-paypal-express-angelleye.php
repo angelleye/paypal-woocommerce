@@ -198,7 +198,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         
         </div>
         <?php
-        AngellEYE_Utility::angelleye_display_marketing_sidebar();
+        AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id);
         add_thickbox();
         $guest_checkout = get_option('woocommerce_enable_guest_checkout', 'yes');
         if( 'yes' === get_option( 'woocommerce_registration_generate_username' ) && 'yes' === get_option( 'woocommerce_registration_generate_password' ) ) {

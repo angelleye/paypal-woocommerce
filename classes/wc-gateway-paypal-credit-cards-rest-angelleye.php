@@ -97,7 +97,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             ?>
             </table>
             </div>
-            <?php AngellEYE_Utility::angelleye_display_marketing_sidebar(); ?>
+            <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); ?>
             <script type="text/javascript">
                 jQuery('#woocommerce_paypal_credit_card_rest_testmode').change(function () {
                     var sandbox = jQuery('#woocommerce_paypal_credit_card_rest_rest_client_id_sandbox, #woocommerce_paypal_credit_card_rest_rest_secret_id_sandbox').closest('tr'),

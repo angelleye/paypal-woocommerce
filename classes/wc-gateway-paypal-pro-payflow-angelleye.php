@@ -453,7 +453,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             ?>
         </table>
         </div>
-        <?php AngellEYE_Utility::angelleye_display_marketing_sidebar(); ?>
+        <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); ?>
         <script type="text/javascript">
             jQuery('#woocommerce_paypal_pro_payflow_payment_action').change(function () {
                 if ( this.value === 'Authorization' ) {
