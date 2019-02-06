@@ -195,6 +195,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             ?>
         </table> 
+        
         </div>
         <?php
         AngellEYE_Utility::angelleye_display_marketing_sidebar();
@@ -1403,11 +1404,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                             <div><p>' . __('<b>Get insights</b> about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
 					</div>
                                         <div class="wrap pms-center-moreinfo">
-                                        <div>
-                                            <div><a href="#TB_inline?&width=889&height=558&inlineId=more-info-popup" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
+                                            <div>
+                                                <div><a href="#TB_inline?&width=889&height=558&inlineId=more-info-popup" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
+                                            </div>
                                         </div>
-				</div>
-			</div>
+                                </div>
+                         </div>
                 ', 'paypal-for-woocommerce' ),
             );
             $this->form_fields['paypal_marketing_solutions_enabled'] = array(
@@ -1417,7 +1419,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                   'default'     => 'no',
                  'class' => 'checkbox',
                   'desc_tip'    => true,
-                  'description' => __( 'This enables PayPal Marketing Solutions for valuable customer insights.' ),
+                  'description' => __( 'This enables PayPal Marketing Solutions for valuable customer insights.', '' ),
             );
             $this->form_fields['paypal_marketing_solutions_cid_production'] = array(
                 'type'        => 'hidden',
@@ -1427,7 +1429,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->form_fields['paypal_marketing_solutions_details_note'] = array(
                 'type'        => 'title',
                 'default'     => '',
-                'description' => '<p class="font11">' . __("* As reported in Nielsen’s PayPal Credit Average Order Value Study for activity occurring from April 2015 to March 2016 (small merchants) and October 2015 to March 2016 (midsize merchants), which compared PayPal Credit transactions to credit and debit card transactions on websites that offer PayPal Credit as a payment option or within the PayPal Wallet. Nielsen measured 284890 transactions across 27 mid and small merchants. Copyright Nielsen 2016.", 'paypal-for-woocommerce') . '<hr>',
+                'description' => '<p class="font11">' . __("* As reported in Nielsen’s PayPal Credit Average Order Value Study for activity occurring from April 2015 to March 2016 (small merchants) and October 2015 to March 2016 (midsize merchants), which compared PayPal Credit transactions to credit and debit card transactions on websites that offer PayPal Credit as a payment option or within the PayPal Wallet. Nielsen measured 284890 transactions across 27 mid and small merchants. Copyright Nielsen 2016.", 'paypal-for-woocommerce') . '</p><hr>',
             );
         }
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
