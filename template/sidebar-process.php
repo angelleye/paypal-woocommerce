@@ -3,7 +3,7 @@
 add_action('wp_ajax_angelleye_marketing_mailchimp_subscription', 'own_angelleye_marketing_mailchimp_subscription');
 
 function own_angelleye_marketing_mailchimp_subscription() {
-    $url = 'https://facebook.us20.list-manage.com/subscribe/post-json?u=4a114f67f01027e3493064c37&amp;id=2ecba2d5e8';
+    $url = 'https://angelleye.us7.list-manage.com/subscribe/post-json?u=4c6d56be138a966cd573c928f&id=84c27e6cd1';
     $url = add_query_arg(array('EMAIL' => $_POST['email']), $url);
     $response = wp_remote_post($url, array(
         'method' => 'POST',
