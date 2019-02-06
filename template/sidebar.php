@@ -60,7 +60,7 @@
                 <p>
                     <a href="https://wordpress.org/plugins/paypal-ipn/" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/paypal-ipn-for-wordpress.jpg'; ?>" alt="">
-                        <strong><?php echo __('PayPal IPN for WordPress', ''); ?></strong>
+                        <strong><?php echo __('PayPal IPN for WordPress', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
                     <?php esc_html_e('A PayPal Instant Payment Notification (IPN) toolkit that helps you automate tasks in real-time when transactions hit your PayPal account.', 'paypal-for-woocommerce'); ?>
                 </p>
@@ -69,7 +69,7 @@
                 <p>
                     <a href="https://wordpress.org/plugins/paypal-wp-button-manager/" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/wordpress-paypal-button-manager.png'; ?>" alt="">
-                        <strong><?php echo __('PayPal WP Button Manager', ''); ?></strong>
+                        <strong><?php echo __('PayPal WP Button Manager', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
                     <?php esc_html_e('Create and manage secure PayPal payment buttons from within the WordPress admin panel.', 'paypal-for-woocommerce'); ?>
                 </p>
@@ -81,7 +81,7 @@
                 <p>
                     <a href="https://www.angelleye.com/support" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/iconfinder_headphone_53883.png'; ?>" alt="">
-                        <strong><?php echo __('AngellEYE Help Desk', ''); ?></strong>
+                        <strong><?php echo __('AngellEYE Help Desk', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
                     <?php esc_html_e('Welcome! You can open an AngellEYE Help Desk ticket from the options provided.', 'paypal-for-woocommerce'); ?>
                 </p>
@@ -90,9 +90,21 @@
                 <p>
                     <a href="https://www.angelleye.com/product-category/premium-support/" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/angelleye-paypal-premium-support.png'; ?>" alt="">
-                        <strong><?php echo __('Premium Support', ''); ?></strong>
+                        <strong><?php echo __('Premium Support', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
                     <?php esc_html_e('Get the PayPal help you are looking for from Drew Angell, owner of Angell EYE, and Certified PayPal Developer and Partner.', 'paypal-for-woocommerce'); ?>
+                </p>
+            </div>
+        </div>
+        <div class="angelleye-sidebar__section m10">
+            <h2><?php esc_html_e('Partnerships', 'paypal-for-woocommerce'); ?></h2>
+            <div class="wp-clearfix m10">
+                <p>
+                    <a href="https://www.checkoutwc.com/?ref=15" target="_blank">
+                        <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/CheckoutWC.png'; ?>" alt="">
+                        <strong><?php echo __('Checkout for WooCommerce', 'paypal-for-woocommerce'); ?></strong>
+                    </a><br>
+                    <?php esc_html_e('Checkout for WooCommerce replaces your checkout page with a beautiful, responsive, and conversion optimized design. Works with every theme.', 'paypal-for-woocommerce'); ?>
                 </p>
             </div>
         </div>
