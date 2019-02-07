@@ -616,8 +616,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
         
-        public function angelleye_woocommerce_admin_enqueue_scripts() {
+        public function angelleye_woocommerce_admin_enqueue_scripts($hook) {
+            
             wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/admin.css' , __FILE__ ), array(), VERSION_PFW );
+            if ( 'plugins.php' === $hook ) {
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/deactivation-form.php');
+                    wp_enqueue_style( 'deactivation-modal', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/deactivation-modal.css', null, VERSION_PFW );
+                    wp_enqueue_script( 'deactivation-modal', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/deactivation-form-modal.js', null, VERSION_PFW, true );
+                    wp_localize_script( 'deactivation-modal', 'angelleye_ajax_data', array( 'nonce' => wp_create_nonce( 'angelleye-ajax' ) ) );
+            }
         }
         
         public function angelleye_woocommerce_pfw_ed_shipping_bulk_tool() {
