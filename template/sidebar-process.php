@@ -23,6 +23,6 @@ function own_angelleye_marketing_mailchimp_subscription() {
         if( isset($response_array['result']) && $response_array['result'] != 'error' ) {
             update_user_meta(get_current_user_id(), 'enable_mailchimp_subscription', 'yes');
         }
-        wp_send_json(json_decode(wp_remote_retrieve_body($response)));
+        wp_send_json(wp_remote_retrieve_body($response));
     }
 }
