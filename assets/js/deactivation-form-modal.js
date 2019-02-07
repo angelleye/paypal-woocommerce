@@ -69,12 +69,7 @@ ModalWpr.prototype.change = function(aElem) {
       case 'reason-broke':
       break;
       case 'reason-complicated':
-          var $panel = $('#' + id + '-panel');
-          refThis.question.removeClass('deactivation-isOpen');
-          refThis.return.addClass('deactivation-isOpen');
-          $panel.addClass('deactivation-isOpen');
-          var titleText = $panel.find('h3').text();
-          this.title.text(titleText);
+          break;
       break;
       case 'reason-other':
           var field = aElem.siblings('.deactivation-Modal-fieldHidden');

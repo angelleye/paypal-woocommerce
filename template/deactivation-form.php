@@ -37,14 +37,6 @@ $deactivation_url = wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . 
 			<input id="deactivation-reason" type="hidden" value="">
 			<input id="deactivation-details" type="hidden" value="">
 		</div>
-		
-		<div id="reason-complicated-panel" class="deactivation-Modal-hidden">
-			<h3><?php _e( 'The plugin is too complicated to configure', 'paypal-for-woocommerce' ); ?></h3>
-			<p><?php _e( 'We are sorry to hear you are finding it difficult to use PayPal for WooCommerce.', 'paypal-for-woocommerce' ); ?></p>
-			<p><?php _e( 'PayPal for WooCommerce is the only caching plugin that provides 80% of best practices in speed optimization, by default. That means you do not have to do anything besides activate PayPal for WooCommerce and your site will already be faster!', 'paypal-for-woocommerce' ); ?></p>
-			<p><?php _e( 'The additional options are not required for a fast site, they are for fine-tuning.', 'paypal-for-woocommerce' ); ?></p>
-			<p><?php _e( 'To see the benefit PayPal for WooCommerce is already providing, measure the speed of your site using a tool like Pingdom:<br><a href="https://wp-angelleye.me/blog/correctly-measure-websites-page-load-time/?utm_source=wp_plugin&utm_medium=wp_angelleye" target="_blank">https://wp-angelleye.me/blog/correctly-measure-websites-page-load-time/</a>', 'paypal-for-woocommerce' ); ?></p>
-		</div>
 	</div>
 	<div class="deactivation-Modal-footer">
 		<div>
