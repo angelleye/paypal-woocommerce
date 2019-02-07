@@ -32,12 +32,15 @@
                 })
                         .done(function (response) {
                             response_parsed = JSON.parse(response);
-                            $('.angelleye-wizard-text-input').hide();
-                            $('#angelleye_mailchimp_msg').html(response_parsed.msg);
-                            console.log(response_parsed.msg);
+                            if( response_parsed.result === "success" ) {
+                                $('.angelleye-wizard-text-input').hide();
+                                $('#angelleye_mailchimp_msg').html(response_parsed.msg);
+                            } else {
+                                $('#angelleye_mailchimp_msg').html(response_parsed.msg);
+                            }
                         })
                         .fail(function (response) {
-                            alert("fail");
+                            alert(response);
                         });
             });
         </script>
