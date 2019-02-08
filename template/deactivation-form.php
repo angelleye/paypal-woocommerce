@@ -3,6 +3,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin&#8217; uh?' );
 $deactivation_url = wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . rawurlencode( 'paypal-for-woocommerce/paypal-for-woocommerce.php' ), 'deactivate-plugin_paypal-for-woocommerce/paypal-for-woocommerce.php' );
 ?>
 <div class="deactivation-Modal">
+    
 	<div class="deactivation-Modal-header">
 		<div>
 			<button class="deactivation-Modal-return deactivation-icon-chevron-left"><?php _e( 'Return', 'paypal-for-woocommerce' ); ?></button>
