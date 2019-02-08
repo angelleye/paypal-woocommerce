@@ -4,6 +4,7 @@ $deactivation_url = wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . 
 ?>
 <div class="deactivation-Modal">
     
+    
 	<div class="deactivation-Modal-header">
 		<div>
 			<button class="deactivation-Modal-return deactivation-icon-chevron-left"><?php _e( 'Return', 'paypal-for-woocommerce' ); ?></button>
