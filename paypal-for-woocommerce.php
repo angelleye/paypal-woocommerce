@@ -134,7 +134,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('woocommerce_product_data_panels', array( $this, 'angelleye_paypal_for_woo_product_date_panels' ));
             add_action('woocommerce_process_product_meta', array( $this, 'angelleye_paypal_for_woo_product_process_product_meta' ));
             add_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_payflow', array( $this, 'angelleye_paypal_for_woo_product_level_payment_action' ), 10, 3);
-            add_action( 'wp_head', array( $this, 'paypal_for_woo_head_mark' ), 1 );            
+            add_action( 'wp_head', array( $this, 'paypal_for_woo_head_mark' ), 1 );     
+            add_action( 'admin_footer', array($this, 'angelleye_add_deactivation_form'));
+            add_action( 'wp_ajax_angelleye_send_deactivation', array($this, 'angelleye_handle_plugin_deactivation_request'));
             $this->customer_id;
         }
 
@@ -617,10 +619,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_woocommerce_admin_enqueue_scripts($hook) {
-            
             wp_enqueue_style( 'ppe_cart', plugins_url( 'assets/css/admin.css' , __FILE__ ), array(), VERSION_PFW );
             if ( 'plugins.php' === $hook ) {
-                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/deactivation-form.php');
                     wp_enqueue_style( 'deactivation-modal', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/deactivation-modal.css', null, VERSION_PFW );
                     wp_enqueue_script( 'deactivation-modal', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/deactivation-form-modal.js', null, VERSION_PFW, true );
                     wp_localize_script( 'deactivation-modal', 'angelleye_ajax_data', array( 'nonce' => wp_create_nonce( 'angelleye-ajax' ) ) );
@@ -1207,6 +1207,33 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         $gateway_setting->payment_action = 'Sale';
                     }
                 }
+            }
+        }
+        
+        public function angelleye_add_deactivation_form() {
+            $current_screen = get_current_screen();
+            if ( 'plugins' !== $current_screen->id && 'plugins-network' !== $current_screen->id ) {
+                    return;
+            }
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/deactivation-form.php');
+        }
+        
+        public function angelleye_handle_plugin_deactivation_request() {
+            $log_url = $_SERVER['HTTP_HOST'];
+            $log_plugin_id = 1;
+            $web_services_url = 'http://www.angelleye.com/web-services/wordpress/update-plugin-status.php';
+            $request_url = add_query_arg( array(
+                'url' => $log_url,
+                'plugin_id' => $log_plugin_id,
+                'activation_status' => 0,
+                'reason' => $_POST['reason'],
+                'reason_details' => $_POST['reason_details'],
+            ), $web_services_url );
+            $response = wp_remote_request($request_url);
+             if (is_wp_error($response)) {
+                wp_send_json(wp_remote_retrieve_body($response));
+            } else {
+                wp_send_json(wp_remote_retrieve_body($response));
             }
         }
     } 
