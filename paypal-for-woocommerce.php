@@ -50,6 +50,9 @@ if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_BASENAME' ) ) {
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH')) {
     define('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ));
 }
+if (!defined('PAYPAL_FOR_WOOCOMMERCE_ISU_URL')) {
+    define('PAYPAL_FOR_WOOCOMMERCE_ISU_URL', 'https://www.angelleye.com/web-services/ifthengive/paypal-isu/');
+}
 
 /**
  * Set global parameters
@@ -939,6 +942,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                    }
                 }
             }
+            
+            
         }
         
         
