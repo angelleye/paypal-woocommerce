@@ -2225,4 +2225,48 @@ class AngellEYE_Utility {
                 update_post_meta($order_id, $key, wc_clean($value));
             }
         }
+        
+        public static function angelleye_get_push_notifications() {
+            $args = array(
+                'plugin_name' => 'paypal-for-woocommerce',
+            );
+            $api_url = PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL . '?Wordpress_Plugin_Notification_Sender';
+            $api_url .= '&action=angelleye_get_plugin_notification';
+            $request = wp_remote_post($api_url, array(
+                'method' => 'POST',
+                'timeout' => 45,
+                'redirection' => 5,
+                'httpversion' => '1.0',
+                'blocking' => true,
+                'headers' => array('user-agent' => 'AngellEYE'),
+                'body' => $args,
+                'cookies' => array(),
+                'sslverify' => false
+            ));
+            if (is_wp_error($request) or wp_remote_retrieve_response_code($request) != 200) {
+                return false;
+            }
+            if ($request != '') {
+                $response = json_decode(wp_remote_retrieve_body($request));
+            } else {
+                $response = false;
+            }
+            return $response;
+        }
+        
+        public static function angelleye_display_push_notification($response_data) {
+            echo '<div class="notice notice-success angelleye-notice" style="display:none;">'
+                    . '<div class="angelleye-notice-logo-push"><span> <img src="'.$response_data->ans_company_logo.'"> </span></div>'
+                    . '<div class="angelleye-notice-message">' 
+                        . '<h3>' . $response_data->ans_message_title .'</h3>'
+                        . '<div class="angelleye-notice-message-inner">' 
+                            . $response_data->ans_message_description
+                        . '</div>' 
+                    . '</div>'
+                    . '<div class="angelleye-notice-cta">'
+                    . '<a href="'.$response_data->ans_button_url.'" class="button button-primary">'.$response_data->ans_button_label.'</a>'
+                    . '<button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="'.$response_data->id.'">Dismiss</button>'
+                    . '</div>'
+                . '</div>';
+        }
 }
