@@ -1788,7 +1788,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
-    public function braintree_save_payment_method($customer_id, $result) {
+    public function braintree_save_payment_method($customer_id, $result, $zero_amount_payment) {
         if (!empty($result->paymentMethod)) {
             $braintree_method = $result->paymentMethod;
         } elseif ($result->creditCard) {
@@ -2669,7 +2669,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->save_payment_token($order, $payment_tokens_id);
                 return array(
                     'result' => 'success',
-                    'redirect' => $this->get_return_url($order)
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
                 );
             }
         } else {
@@ -2678,9 +2678,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 update_post_meta($order_id, 'is_sandbox', $this->sandbox);
                 $payment_tokens_id = (!empty($result['_payment_tokens_id'])) ? $result['_payment_tokens_id'] : '';
                 $this->save_payment_token($order, $payment_tokens_id);
-                $result = array(
+                 return array(
                     'result' => 'success',
-                    'redirect' => $this->get_return_url($order)
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
                 );
                 
             } else {
