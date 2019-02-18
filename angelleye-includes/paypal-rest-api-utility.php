@@ -900,5 +900,80 @@ class PayPal_Rest_API_Utility {
             $this->item_list->setShippingAddress($shipping_address_array);
         }
     }
-
+    
+    public function create_payment_for_subscription_change_payment($order, $card_data) {
+        global $woocommerce;
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        try {
+            $this->set_trnsaction_obj_value($order, $card_data);
+            try {
+                if (!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
+                    $creditcard_id = $this->CreditCardToken->getCreditCardId();
+                    $this->save_payment_token($order, $creditcard_id);
+                    $token_id = wc_clean($_POST['wc-paypal_credit_card_rest-payment-token']);
+                    $token = WC_Payment_Tokens::get($token_id);
+                    $order->add_payment_token($token);
+                } else {
+                    $this->card->create($this->getAuth());
+                    if ( 0 != $order->get_user_id() ) {
+                        $customer_id = $order->get_user_id();
+                    } else {
+                        $customer_id = get_current_user_id();
+                    }
+                    $creditcard_id = $this->card->getId();
+                    $this->save_payment_token($order, $creditcard_id);
+                    $token = new WC_Payment_Token_CC();
+                    $token->set_token($creditcard_id);
+                    $token->set_gateway_id($this->payment_method);
+                    $token->set_card_type($this->card->type);
+                    $token->set_last4(substr($this->card->number, -4));
+                    $token->set_expiry_month(date('m'));
+                    $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
+                    $token->set_user_id($customer_id);
+                    if( $token->validate() ) {
+                        $save_result = $token->save();
+                        if ($save_result) {
+                            $order->add_payment_token($token);
+                        }
+                    } else {
+                        $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
+                    }
+                }
+            } catch (Exception $ex) {
+                
+            }
+            $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
+            update_post_meta($order_id, 'is_sandbox', $is_sandbox);
+            if ($this->is_renewal($order_id)) {
+                return true;
+            }
+            return array(
+                'result' => 'success',
+                'redirect' => wc_get_account_endpoint_url('payment-methods')
+            );
+            
+        } catch (PayPal\Exception\PayPalConnectionException $ex) {
+            $this->send_failed_order_email($order_id);
+            $this->add_log($ex->getData());
+            if ($this->is_renewal($order_id)) {
+                return true;
+            }
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            return array(
+                'result' => 'fail',
+                'redirect' => ''
+            );
+        } catch (Exception $ex) {
+            $this->send_failed_order_email($order_id);
+            $this->add_log($ex->getMessage());
+            if ($this->is_renewal($order_id)) {
+                return true;
+            }
+            wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+            return array(
+                'result' => 'fail',
+                'redirect' => ''
+            );
+        }
+    }
 }

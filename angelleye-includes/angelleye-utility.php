@@ -2225,4 +2225,8 @@ class AngellEYE_Utility {
                 update_post_meta($order_id, $key, wc_clean($value));
             }
         }
+        
+        public static function is_subs_change_payment() {
+		return ( isset( $_GET['pay_for_order'] ) && isset( $_GET['change_payment_method'] ) );
+	}
 }

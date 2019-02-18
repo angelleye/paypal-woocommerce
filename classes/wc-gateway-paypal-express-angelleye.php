@@ -1456,7 +1456,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if ($this->supports('tokenization') && is_checkout()) {
                 $this->tokenization_script();
                 $this->saved_payment_methods();
-                 if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                 if( AngellEYE_Utility::is_cart_contains_subscription() == false && AngellEYE_Utility::is_subs_change_payment() == false) {
                     $this->save_payment_method_checkbox();
                  }
                 do_action('payment_fields_saved_payment_methods', $this);

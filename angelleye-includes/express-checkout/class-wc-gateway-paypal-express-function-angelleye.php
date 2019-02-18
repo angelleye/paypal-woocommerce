@@ -86,7 +86,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
 
     public function angelleye_ec_save_payment_method_checkbox() {
-        if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+        if( AngellEYE_Utility::is_cart_contains_subscription() == false && AngellEYE_Utility::is_subs_change_payment() == false ) {
             return sprintf(
                     '<div class="angelleye_ec_save_to_accoount_box">
                         <p class="form-row woocommerce-SavedPaymentMethods-saveNew">

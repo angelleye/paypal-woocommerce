@@ -831,7 +831,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
                     $_paypal_billing_agreement = get_post_meta($product_id, '_paypal_billing_agreement', true);
                     $ec_save_to_account = WC()->session->get('ec_save_to_account');
-                    if ($_paypal_billing_agreement == 'yes' || ( isset($ec_save_to_account) && $ec_save_to_account == 'on') || AngellEYE_Utility::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() || AngellEYE_Utility::is_cart_contains_subscription() == true) {
+                    if ($_paypal_billing_agreement == 'yes' || ( isset($ec_save_to_account) && $ec_save_to_account == 'on') || AngellEYE_Utility::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() || AngellEYE_Utility::is_cart_contains_subscription() == true || AngellEYE_Utility::is_subs_change_payment() == true) {
                         $BillingAgreements = array();
                         $Item = array(
                             'l_billingtype' => '',
@@ -1543,7 +1543,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     
     public function is_angelleye_baid_required() {
         $ec_save_to_account = WC()->session->get('ec_save_to_account');
-        if ( ( isset($ec_save_to_account) && $ec_save_to_account == 'on') || AngellEYE_Utility::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() || AngellEYE_Utility::is_cart_contains_subscription() == true  ) {
+        if ( ( isset($ec_save_to_account) && $ec_save_to_account == 'on') || AngellEYE_Utility::angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() || AngellEYE_Utility::is_cart_contains_subscription() == true  || AngellEYE_Utility::is_subs_change_payment() == true) {
             return true;
         }
         return false;
