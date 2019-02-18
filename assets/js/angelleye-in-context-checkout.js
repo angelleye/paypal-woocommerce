@@ -411,7 +411,7 @@ jQuery(function ($) {
     $(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout updated_wc_div updated_cart_totals wc_fragments_loaded', function (event) {
         display_smart_button_on_cart_checkout();
     });
-    if(angelleye_in_content_param.checkout_page_enable_smart_button === "yes") {
+    if(angelleye_in_content_param.checkout_page_disable_smart_button === "no") {
         $(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout', function (event) {
             display_smart_button_checkout_bottom();
         });
@@ -428,7 +428,7 @@ jQuery(function ($) {
                     display_smart_button_on_product_page();
             }
     } );
-    if(angelleye_in_content_param.checkout_page_enable_smart_button === "yes") {
+    if(angelleye_in_content_param.checkout_page_disable_smart_button === "no") {
         $( 'form.checkout' ).on( 'click', 'input[name="payment_method"]', function() {
                 var isPPEC = $( this ).is( '#payment_method_paypal_express' );
                 $( '#place_order' ).toggle( ! isPPEC );

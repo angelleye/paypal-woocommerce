@@ -1330,11 +1330,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip'    => true,
                 'description' => __( 'Optionally override global button settings above and configure buttons specific to the Checkout page.', 'paypal-for-woocommerce' ),
             ),
-            'checkout_page_enable_smart_button' => array(
+            'checkout_page_disable_smart_button' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __( 'Disable smart buttons in the regular list of payment gateways.', 'paypal-for-woocommerce' ),
-                'default'     => 'yes',
+                'default'     => 'no',
                 'desc_tip'    => true,
                 'description' => __( '', 'paypal-for-woocommerce' ),
             ),
