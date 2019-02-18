@@ -457,15 +457,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                 }
         }).change();
-        jQuery('#woocommerce_paypal_express_checkout_page_enable_smart_button').change(function () {
-            checkout_smart_button_options = jQuery('#woocommerce_paypal_express_checkout_page_configure_settings, #woocommerce_paypal_express_checkout_page_button_layout, #woocommerce_paypal_express_checkout_page_button_size, #woocommerce_paypal_express_checkout_page_disallowed_funding_methods').closest('tr');
-            if (jQuery(this).is(':checked')) {
-                checkout_smart_button_options.show();
-            } else {
-                checkout_smart_button_options.hide();
-            }
-        }).change();
-        
         </script>
          <?php
     }
@@ -1331,14 +1322,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description'  => __( 'Enable the Checkout Page specific button settings, and the options set will be applied to the PayPal buttons on your Checkout page.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
-            'checkout_page_enable_smart_button' => array(
-                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __( 'Enable Smart Buttons to the Checkout page.', 'paypal-for-woocommerce' ),
-                'default'     => 'yes',
-                'desc_tip'    => true,
-                'description' => __( '', 'paypal-for-woocommerce' ),
-            ),
             'checkout_page_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -1346,6 +1329,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default'     => 'no',
                 'desc_tip'    => true,
                 'description' => __( 'Optionally override global button settings above and configure buttons specific to the Checkout page.', 'paypal-for-woocommerce' ),
+            ),
+            'checkout_page_enable_smart_button' => array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __( 'Disable smart buttons in the regular list of payment gateways.', 'paypal-for-woocommerce' ),
+                'default'     => 'yes',
+                'desc_tip'    => true,
+                'description' => __( '', 'paypal-for-woocommerce' ),
             ),
             'checkout_page_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
