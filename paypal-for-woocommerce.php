@@ -50,6 +50,10 @@ if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_BASENAME' ) ) {
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH')) {
     define('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ));
 }
+if (!defined('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL')) {
+    define('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL', 'https://www.angelleye.com/');
+}
+
 
 /**
  * Set global parameters
@@ -314,6 +318,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 update_option('angelleye_send_opt_in_logging_details', 'no');
                 $set_ignore_tag_url =  remove_query_arg( 'angelleye_display_agree_disgree_opt_in_logging' );
                 wp_redirect($set_ignore_tag_url);
+            }
+            
+            $response = AngellEYE_Utility::angelleye_get_push_notifications();
+            if(is_object($response)) {
+                foreach ($response->data as $key => $response_data) {
+                    if(!get_user_meta($user_id, $response_data->id)) {
+                        AngellEYE_Utility::angelleye_display_push_notification($response_data);
+                    }
+                }
             }
             
         }
@@ -1088,13 +1101,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $user_id = $current_user->ID;
             if( !empty($_POST['action']) && $_POST['action'] == 'angelleye_dismiss_notice' ) {
                 $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'ignore_paypal_pro_payflow_reference_transaction_notice', 'is_disable_pw_premium_extension_notice');
-
                 foreach ($notices as $notice) {
                     if ( !empty($_POST['data']) && $_POST['data'] == $notice) {
                         add_user_meta($user_id, $notice, 'true', true);
                         wp_send_json_success();
                     }
                 }
+                add_user_meta($user_id, wc_clean($_POST['data']), 'true', true);
+                wp_send_json_success();
             }
         }
         

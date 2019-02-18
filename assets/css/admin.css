@@ -359,8 +359,14 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 .angelleye-notice-message-inner {
     margin-bottom: 10px;
 }
+.angelleye-notice-logo-push {
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
 
-
+.angelleye-notice-logo-push span {
+    display: block;
+}
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
         display: block;
