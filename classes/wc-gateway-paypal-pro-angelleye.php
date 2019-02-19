@@ -1564,7 +1564,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
-    public function add_payment_method() {
+    public function add_payment_method($order = null) {
         $this->validate_fields();
         $card = $this->get_posted_card();
         $this->angelleye_load_paypal_pro_class($this->gateway, $this, null);
@@ -2093,5 +2093,71 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->enabled  = ! empty( $this->settings['enabled'] ) && 'yes' === $this->settings['enabled'] ? 'yes' : 'no';
         $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
         $this->send_items = 'yes' === $this->send_items_value;
+    }
+    
+    public function subscription_change_payment($order_id) {
+        $order = wc_get_order($order_id);
+        if ( (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new')) {
+            $token_id = wc_clean($_POST['wc-paypal_pro-payment-token']);
+            $token = WC_Payment_Tokens::get($token_id);
+            $this->save_payment_token($order, $token->get_token());
+            return array(
+                'result' => 'success',
+                'redirect' => $this->get_return_url($order)
+            );
+        } else {
+            $this->validate_fields();
+            $card = $this->get_posted_card();
+            $this->angelleye_load_paypal_pro_class($this->gateway, $this, null);
+            $DPFields = array(
+                'paymentaction' => 'Authorization',
+                'ipaddress' => AngellEYE_Utility::get_user_ip(),
+                'returnfmfdetails' => '1',
+                'softdescriptor' => $this->softdescriptor
+            );
+            $CCDetails = array(
+                'creditcardtype' => $card->type,
+                'acct' => $card->number,
+                'expdate' => $card->exp_month . $card->exp_year,
+                'cvv2' => $card->cvc
+            );
+            $PaymentDetails = array(
+                'amt' => 0,
+                'currencycode' => get_woocommerce_currency(),
+            );
+            $PayPalRequestData = array(
+                'DPFields' => $DPFields,
+                'CCDetails' => $CCDetails,
+                'PaymentDetails' => $PaymentDetails
+            );
+            $result = $this->PayPal->DoDirectPayment(apply_filters('angelleye_woocommerce_do_direct_payment_request_args', $PayPalRequestData));
+            $redirect_url = wc_get_account_endpoint_url('payment-methods');
+            AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($result, $methos_name = 'DoDirectPayment', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify, $redirect_url);
+            if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
+                $customer_id = get_current_user_id();
+                $TRANSACTIONID = $result['TRANSACTIONID'];
+                $token = new WC_Payment_Token_CC();
+                $token->set_token( $TRANSACTIONID );
+                $this->save_payment_token($order, $TRANSACTIONID);
+                $token->set_gateway_id( $this->id );
+                $token->set_card_type( AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
+                $token->set_last4( substr( $PayPalRequestData['CCDetails']['acct'], -4 ) );
+                $token->set_expiry_month( substr( $PayPalRequestData['CCDetails']['expdate'], 0,2 ) );
+                $token->set_expiry_year( substr( $PayPalRequestData['CCDetails']['expdate'], 2,5 ) );
+                $token->set_user_id( $customer_id );
+                if( $token->validate() ) {
+                    $save_result = $token->save();
+                    return array(
+                        'result' => 'success',
+                        'redirect' => $this->get_return_url($order)
+                    );
+                } else {
+                    throw new Exception( __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ) );
+                }
+            } else {
+                $redirect_url = wc_get_account_endpoint_url('payment-methods');
+                $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
+            }
+        }
     }
 }
