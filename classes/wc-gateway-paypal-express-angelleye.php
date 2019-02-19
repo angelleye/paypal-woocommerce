@@ -2231,7 +2231,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $paypal_express_request->save_payment_token($order, $payment_tokens_id);
                 return array(
                     'result' => 'success',
-                    'redirect' => wc_get_account_endpoint_url('payment-methods')
+                    'redirect' => $this->get_return_url($order)
                 );
             }
         } else {
@@ -2292,7 +2292,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 } else {
                                     return array(
                                         'result' => 'success',
-                                        'redirect' => wc_get_account_endpoint_url('payment-methods')
+                                        'redirect' => $this->get_return_url($order)
                                     );
                                 }
                             } else {
