@@ -938,6 +938,20 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                            break;
                    }
                 }
+                
+            }
+            if( !empty($_GET['do_action']) && $_GET['do_action'] == 'change_payment_method') {
+                if( !empty($_GET['method_name']) && $_GET['method_name'] == 'paypal_express') {
+                    switch ($_GET['action_name']) {
+                       case 'SetExpressCheckout':
+                            $woocommerce_token_api = new WC_Gateway_PayPal_Express_AngellEYE();
+                            $woocommerce_token_api->paypal_express_checkout_change_payment_method();
+                           break;
+                       default:
+                           break;
+                   }
+                }
+                
             }
         }
         
