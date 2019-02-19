@@ -951,12 +951,12 @@ class AngellEYE_Utility {
     public static function card_type_from_account_number($account_number) {
         $types = array(
             'visa' => '/^4[0-9]{0,15}$/i',
-            'mastercard' => '/^(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}$/i',
-            'amex' => '/^3[47][0-9]{13}$/i',
-            'discover' => '/^6$|^6[05]$|^601[1]?$|^65[0-9][0-9]?$|^6(?:011|5[0-9]{2})[0-9]{0,12}$/i',
+            'mastercard' => '/^(5[0-5]|(222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720))/',
+            'amex' => '/^3[47]/',
+            'discover' => '/^6([045]|22)/',
             'diners' => '/^3(?:0[0-5]|[68][0-9])[0-9]{4,}$/i',
-            'jcb' => '/^(?:2131|1800|35[0-9]{3})[0-9]{3,}$/i',
-            'maestro' => '/^(5018|5020|5038|6304|6759|676[1-3])/',
+            'jcb' => '/^35/',
+            'maestro' => '/^(5(018|0[23]|[68])|6(39|7))/',
             'laser' => '/^(6706|6771|6709)/',
         );
         foreach ($types as $type => $pattern) {
@@ -2226,7 +2226,53 @@ class AngellEYE_Utility {
             }
         }
         
+
         public static function is_subs_change_payment() {
 		return ( isset( $_GET['pay_for_order'] ) && isset( $_GET['change_payment_method'] ) );
 	}
+
+        public static function angelleye_get_push_notifications() {
+            $args = array(
+                'plugin_name' => 'paypal-for-woocommerce',
+            );
+            $api_url = PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL . '?Wordpress_Plugin_Notification_Sender';
+            $api_url .= '&action=angelleye_get_plugin_notification';
+            $request = wp_remote_post($api_url, array(
+                'method' => 'POST',
+                'timeout' => 45,
+                'redirection' => 5,
+                'httpversion' => '1.0',
+                'blocking' => true,
+                'headers' => array('user-agent' => 'AngellEYE'),
+                'body' => $args,
+                'cookies' => array(),
+                'sslverify' => false
+            ));
+            if (is_wp_error($request) or wp_remote_retrieve_response_code($request) != 200) {
+                return false;
+            }
+            if ($request != '') {
+                $response = json_decode(wp_remote_retrieve_body($request));
+            } else {
+                $response = false;
+            }
+            return $response;
+        }
+        
+        public static function angelleye_display_push_notification($response_data) {
+            echo '<div class="notice notice-success angelleye-notice" style="display:none;">'
+                    . '<div class="angelleye-notice-logo-push"><span> <img src="'.$response_data->ans_company_logo.'"> </span></div>'
+                    . '<div class="angelleye-notice-message">' 
+                        . '<h3>' . $response_data->ans_message_title .'</h3>'
+                        . '<div class="angelleye-notice-message-inner">' 
+                            . $response_data->ans_message_description
+                        . '</div>' 
+                    . '</div>'
+                    . '<div class="angelleye-notice-cta">'
+                    . '<a href="'.$response_data->ans_button_url.'" class="button button-primary">'.$response_data->ans_button_label.'</a>'
+                    . '<button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="'.$response_data->id.'">Dismiss</button>'
+                    . '</div>'
+                . '</div>';
+        }
+
 }
