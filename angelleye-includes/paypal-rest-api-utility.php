@@ -949,7 +949,7 @@ class PayPal_Rest_API_Utility {
             }
             return array(
                 'result' => 'success',
-                'redirect' => $order->get_checkout_order_received_url()
+                'redirect' => wc_get_account_endpoint_url('payment-methods')
             );
             
         } catch (PayPal\Exception\PayPalConnectionException $ex) {
