@@ -30,7 +30,7 @@ class WC_Gateway_PayPal_Express_Subscriptions_AngellEYE extends WC_Gateway_PayPa
             } elseif ($this->free_signup_with_token_payment_tokenization($order_id) == true) {
                 return parent::free_signup_order_payment($order_id);
             } else {
-                return parent::process_payment($order_id);
+                return parent::process_subscription_payment($order_id);
             }
         } else {
             return parent::process_payment($order_id);
