@@ -1679,4 +1679,99 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
         $this->send_items = 'yes' === $this->send_items_value;
     }
+    
+    public function subscription_change_payment($order_id) {
+        $order = wc_get_order($order_id);
+        if ( (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] != 'new')) {
+            $token_id = wc_clean($_POST['wc-paypal_pro_payflow-payment-token']);
+            $token = WC_Payment_Tokens::get($token_id);
+            $this->save_payment_token($order, $token->get_token());
+            return array(
+                'result' => 'success',
+                'redirect' => $this->get_return_url($order)
+            );
+        } else {
+            $customer_id = get_current_user_id();
+            $this->angelleye_load_paypal_payflow_class($this->gateway, $this, null);
+            $this->validate_fields();
+            $card = $this->get_posted_card();
+            $billtofirstname = (get_user_meta($customer_id, 'billing_first_name', true)) ? get_user_meta($customer_id, 'billing_first_name', true) : get_user_meta($customer_id, 'shipping_first_name', true);
+            $billtolastname = (get_user_meta($customer_id, 'billing_last_name', true)) ? get_user_meta($customer_id, 'billing_last_name', true) : get_user_meta($customer_id, 'shipping_last_name', true);
+            $billtostate = (get_user_meta($customer_id, 'billing_state', true)) ? get_user_meta($customer_id, 'billing_state', true) : get_user_meta($customer_id, 'shipping_state', true);
+            $billtocountry = (get_user_meta($customer_id, 'billing_country', true)) ? get_user_meta($customer_id, 'billing_country', true) : get_user_meta($customer_id, 'shipping_country', true);
+            $billtozip = (get_user_meta($customer_id, 'billing_postcode', true)) ? get_user_meta($customer_id, 'billing_postcode', true) : get_user_meta($customer_id, 'shipping_postcode', true);
+            $PayPalRequestData = array(
+                'tender' => 'C',
+                'trxtype' => 'A',
+                'acct' => $card->number,
+                'expdate' => $card->exp_month . $card->exp_year,
+                'amt' => '0.00',
+                'currency' => get_woocommerce_currency(),
+                'cvv2' => $card->cvc,
+                'orderid' => '',
+                'orderdesc' => '',
+                'billtoemail' => '',
+                'billtophonenum' => '',
+                'billtofirstname' => $billtofirstname,
+                'billtomiddlename' => '',
+                'billtolastname' => $billtolastname,
+                'billtostreet' => '',
+                'billtocity' => '',
+                'billtostate' => $billtostate,
+                'billtozip' => $billtozip,
+                'billtocountry' => $billtocountry,
+                'origid' => '',
+                'custref' => '',
+                'custcode' => '',
+                'custip' => AngellEYE_Utility::get_user_ip(),
+                'invnum' => '',
+                'ponum' => '',
+                'starttime' => '',
+                'endtime' => '',
+                'securetoken' => '',
+                'partialauth' => '',
+                'authcode' => ''
+            );
+            $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_payflow_request_args', $PayPalRequestData));
+            if (isset($PayPalResult['RESULT']) && ($PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_codes))) {
+                if (in_array($PayPalResult['RESULT'], $this->fraud_codes)) {
+                    wc_add_notice(__('The payment was flagged by a fraud filter, please check your PayPal Manager account to review and accept or deny the payment.', 'paypal-for-woocommerce'), 'error');
+                    wp_redirect(wc_get_account_endpoint_url('payment-methods'));
+                    exit();
+                } else {
+                    $customer_id = get_current_user_id();
+                    $TRANSACTIONID = $PayPalResult['PNREF'];
+                    $this->are_reference_transactions_enabled($TRANSACTIONID);
+                    $token = new WC_Payment_Token_CC();
+                    $token->set_token($TRANSACTIONID);
+                    $token->set_gateway_id($this->id);
+                    $token->set_card_type(AngellEYE_Utility::card_type_from_account_number($PayPalRequestData['acct']));
+                    $token->set_last4(substr($PayPalRequestData['acct'], -4));
+                    $token->set_expiry_month(substr($PayPalRequestData['expdate'], 0, 2));
+                    $expiry_year = substr($PayPalRequestData['expdate'], 2, 3);
+                    if (strlen($expiry_year) == 2) {
+                        $expiry_year = $expiry_year + 2000;
+                    }
+                    $token->set_expiry_year($expiry_year);
+                    $token->set_user_id($customer_id);
+                    if( $token->validate() ) {
+                        $this->save_payment_token($order, $TRANSACTIONID);
+                        $save_result = $token->save();
+                        if ($save_result) {
+                           return array(
+                                'result' => 'success',
+                                'redirect' => $this->get_return_url($order)
+                            );
+                        }
+                    } else {
+                        throw new Exception( __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ) );
+                    }
+                }
+            } else {
+                wc_add_notice(__($PayPalResult['RESPMSG'], 'paypal-for-woocommerce'), 'error');
+                wp_redirect(wc_get_account_endpoint_url('payment-methods'));
+                exit();
+            }
+        }
+    }
 }
