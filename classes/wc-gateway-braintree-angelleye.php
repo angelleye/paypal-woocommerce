@@ -1032,6 +1032,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     return false;
                 }
                 $request_data['paymentMethodNonce'] = $payment_method_nonce;
+                if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
+                    $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
+                }
             }
             if (is_user_logged_in()) {
                 $customer_id = get_current_user_id();
@@ -1311,7 +1314,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 } catch (Braintree_Exception_NotFound $e) {
                     $this->add_log("Braintree_Transaction::void Braintree_Exception_NotFound: " . $e->getMessage());
                     return new WP_Error(404, $e->getMessage());
-                } catch (Exception $ex) {
+                } catch (Exception $e) {
                     $this->add_log("Braintree_Transaction::void Exception: " . $e->getMessage());
                     return new WP_Error(404, $e->getMessage());
                 }
@@ -1336,7 +1339,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             } catch (Braintree_Exception_NotFound $e) {
                 $this->add_log("Braintree_Transaction::refund Braintree_Exception_NotFound: " . $e->getMessage());
                 return new WP_Error(404, $e->getMessage());
-            } catch (Exception $ex) {
+            } catch (Exception $e) {
                 $this->add_log("Braintree_Transaction::refund Exception: " . $e->getMessage());
                 return new WP_Error(404, $e->getMessage());
             }
@@ -1875,6 +1878,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'fax' => '',
             'website' => ''
         );
+        if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
+            $create_customer_request['creditCard']['cardholderName'] = $firstName . $lastName;
+        }
         $result = Braintree_Customer::create(apply_filters('angelleye_woocommerce_braintree_create_customer_request_args', $create_customer_request));
         if ($result->success == true) {
             if (!empty($result->customer->id)) {
@@ -2026,6 +2032,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $request_data['orderId'] = $order->get_order_number();
         $request_data['options'] = $this->get_braintree_options();
+        if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
+            $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
+        }
         $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
         if ($this->debug) {
             $this->add_log('Begin Braintree_Transaction::sale request');
@@ -2426,6 +2435,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'fax' => '',
             'website' => ''
         );
+        if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
+            $create_customer_request['creditCard']['cardholderName'] = $firstName . $lastName;
+        }
         $result = Braintree_Customer::create(apply_filters('angelleye_woocommerce_braintree_create_customer_request_args', $create_customer_request));
         if ($result->success == true) {
             if (!empty($result->customer->id)) {
