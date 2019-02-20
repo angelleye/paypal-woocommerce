@@ -32,7 +32,6 @@
                         .done(function (response) {
                             response_parsed = JSON.parse(response);
                             if( response_parsed.result === "success" ) {
-                                $('.angelleye-wizard-text-input').hide();
                                 $('#angelleye_mailchimp_msg').html(response_parsed.msg);
                             } else {
                                 $('#angelleye_mailchimp_msg').html(response_parsed.msg);
