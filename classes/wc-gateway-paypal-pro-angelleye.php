@@ -640,6 +640,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $card = $this->get_posted_card();
             do_action('before_angelleye_pro_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
+            
+            if (empty($card->number) || !ctype_digit((string) $card->number)) {
+                throw new Exception(__('Card number is invalid', 'paypal-for-woocommerce'));
+            }
             if (empty($card->exp_month) || empty($card->exp_year)) {
                 throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
             }
@@ -657,10 +661,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     $card->exp_year < date('y')
             ) {
                 throw new Exception(__('Card expiration date is invalid', 'paypal-for-woocommerce'));
-            }
-
-            if (empty($card->number) || !ctype_digit((string) $card->number)) {
-                throw new Exception(__('Card number is invalid', 'paypal-for-woocommerce'));
             }
 
             $card_type = AngellEYE_Utility::card_type_from_account_number($card->number);
