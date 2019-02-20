@@ -129,7 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 1.5.8 - xx.xx.2019 =
 * Feature - Adds push notification system. ([PFW-343](https://github.com/angelleye/paypal-woocommerce/pull/1279))
-* Fix - Resolves an issue with Braintree token payments. ([PFW-357](https://github.com/angelleye/paypal-woocommerce/pull/1280))
+* Fix - Resolves an issue with Braintree token payments. ([PFW-357](https://github.com/angelleye/paypal-woocommerce/pull/1280)) ([PFW-372](https://github.com/angelleye/paypal-woocommerce/pull/1284))
 * Fix - Adjusts credit card number validation logic to resolve rare occurrences of false-negatives. ([PFW-369](https://github.com/angelleye/paypal-woocommerce/pull/1283))
 
 = 1.5.7 - 01.20.2019 =
