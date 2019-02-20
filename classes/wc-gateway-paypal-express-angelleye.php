@@ -404,12 +404,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (jQuery(this).is(':checked')) {
                     sandbox.show();
                     jQuery('#woocommerce_paypal_express_sandbox_api_details').show();
+                    jQuery('#woocommerce_paypal_express_sandbox_api_details').next('p').show();
                     jQuery('#woocommerce_paypal_express_api_details').hide();
+                    jQuery('#woocommerce_paypal_express_api_details').next('p').hide();
                     production.hide();
                 } else {
                     sandbox.hide();
                     jQuery('#woocommerce_paypal_express_sandbox_api_details').hide();
+                    jQuery('#woocommerce_paypal_express_sandbox_api_details').next('p').hide();
                     jQuery('#woocommerce_paypal_express_api_details').show();
+                    jQuery('#woocommerce_paypal_express_api_details').next('p').show();
                     production.show();
                 }
             }).change();
@@ -461,7 +465,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                 }
         }).change();
+         (function(d, s, id) {
+            var js, ref = d.getElementsByTagName(s)[0];
+            if (!d.getElementById(id)) {
+              js = d.createElement(s);
+              js.id = id;
+              js.async = true;
+              js.src = "https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/signup.js";
+              ref.parentNode.insertBefore(js, ref);
+            }
+          }(document, "script", "paypal-js"));
         </script>
+        
          <?php
     }
 
@@ -616,7 +631,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'api_details'           => array(
                 'title'       => __( 'API Credentials', 'paypal-for-woocommerce' ),
                 'type'        => 'title',
-                'description' => '',
+                'description' => $this->angelleye_get_isu_paypal_url($sandbox = 'false'),
             ),
             'api_username' => array(
                 'title' => __('Live API User Name', 'paypal-for-woocommerce'),
@@ -1614,7 +1629,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function handle_wc_api() {
         try {
-            
             if(isset($_GET['pp_action']) && $_GET['pp_action'] == 'angelleye_get_account_detail') {
                 if(isset($_GET['sandbox']) && $_GET['sandbox'] == 'false'){
                     $sandbox = 'false';
@@ -1640,35 +1654,36 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $html .= "Something went wrong: $error_message";
                     } else {
                         $ConnectPayPalArray = json_decode( wp_remote_retrieve_body( $response ), true );
-                    
-                    $url = ITG_ISU_URL;
-                    $postData = "sandbox={$sandbox}&api=account_detail&merchantIdInPayPal={$_GET['merchantIdInPayPal']}";
-                    $AccountDetail = AngellEYE_IfThenGive_PayPal_Connect_Setting::curl_request($url,$postData);
-                    $AccountDetailArray = json_decode($AccountDetail,true);
-                                        
-                    if($sandbox=='true'){
-                        update_option('itg_permission_sb_connected_person_merchant_id',$AccountDetailArray['DATA']['merchant_id']);
-                        update_option('itg_sb_api_credentials_username',$AccountDetailArray['DATA']['api_credentials']['signature']['api_user_name']);
-                        update_option('itg_sb_api_credentials_password',$AccountDetailArray['DATA']['api_credentials']['signature']['api_password']);
-                        update_option('itg_sb_api_credentials_signature',$AccountDetailArray['DATA']['api_credentials']['signature']['signature']);
-                        update_option('itg_sb_connected_to_paypal', 'Yes');
+                        update_option( 'itg_permission_connect_to_paypal_failed_notice', 'Callback from PayPal : Something went wrong. Please try again.');                       
+                    }
+                    $postData = array( 'sandbox' => $sandbox, 'api' => 'account_detail', 'merchantIdInPayPal' => $_GET['merchantIdInPayPal']); 
+                    $AccountDetail = wp_remote_post( PAYPAL_FOR_WOOCOMMERCE_ISU_URL, array(
+                            'method' => 'POST',
+                            'timeout' => 45,
+                            'redirection' => 5,
+                            'httpversion' => '1.0',
+                            'blocking' => true,
+                            'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+                            'body' => $postData,
+                            'cookies' => array()
+                        )
+                    );
+                    $AccountDetailArray = $ConnectPayPalArray = json_decode( wp_remote_retrieve_body( $AccountDetail ), true );
+                    if($sandbox == 'true'){
+                        $this->settings['sandbox_api_username'] = $AccountDetailArray['DATA']['api_credentials']['signature']['api_user_name'];
+                        $this->settings['sandbox_api_password'] = $AccountDetailArray['DATA']['api_credentials']['signature']['api_password'];
+                        $this->settings['sandbox_api_signature'] = $AccountDetailArray['DATA']['api_credentials']['signature']['signature'];
                     }
                     else{
-                        update_option('itg_permission_lv_connected_person_merchant_id',$AccountDetailArray['DATA']['merchant_id']);
-                        update_option('itg_lv_api_credentials_username',$AccountDetailArray['DATA']['api_credentials']['signature']['api_user_name']);
-                        update_option('itg_lv_api_credentials_password',$AccountDetailArray['DATA']['api_credentials']['signature']['api_password']);
-                        update_option('itg_lv_api_credentials_signature',$AccountDetailArray['DATA']['api_credentials']['signature']['signature']);
-                        update_option('itg_live_connected_to_paypal', 'Yes');
-                    }                    
-                    update_option( 'itg_permission_connect_to_paypal_success_notice', 'You are successfully connected with PayPal.');
+                        $this->settings['api_username'] = $AccountDetailArray['DATA']['api_credentials']['signature']['api_user_name'];
+                        $this->settings['api_password'] = $AccountDetailArray['DATA']['api_credentials']['signature']['api_password'];
+                        $this->settings['api_signature'] = $AccountDetailArray['DATA']['api_credentials']['signature']['signature'];
+                    }
+                    update_option( 'woocommerce_paypal_express_settings', apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ), 'yes' );
                 }
-                else{
-                    update_option( 'itg_permission_connect_to_paypal_failed_notice', 'Callback from PayPal : Something went wrong. Please try again.');                       
-                }
-                wp_redirect(admin_url('admin.php?page=ifthengive_option&tab=connect_to_paypal'));
+                wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'));
                 die();
             }
-            
             $this->angelleye_check_cart_items();
             if ( isset( $_POST['from_checkout'] ) && 'yes' === $_POST['from_checkout'] ) {
                 WC()->checkout->process_checkout();
