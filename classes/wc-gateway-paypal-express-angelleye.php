@@ -457,6 +457,31 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                 }
         }).change();
+        jQuery('#woocommerce_paypal_express_show_on_checkout').change(function () {
+            var paypal_express_show_on_checkout = jQuery(this).find('option:selected').val();
+            if( paypal_express_show_on_checkout === 'no') {
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').hide();
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').next('p').hide();
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').next('p').next('table').hide();
+            } else if( paypal_express_show_on_checkout === 'top' ) {
+                jQuery('#woocommerce_paypal_express_checkout_page_disable_smart_button').closest('tr').hide();
+            } else if( paypal_express_show_on_checkout === 'regular' ) {
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').show();
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').next('p').show();
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').next('p').next('table').show();
+                jQuery('#woocommerce_paypal_express_checkout_page_disable_smart_button').closest('tr').show();
+            } else if( paypal_express_show_on_checkout === 'both' ) {
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').show();
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').next('p').show();
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').next('p').next('table').show();
+                jQuery('#woocommerce_paypal_express_checkout_page_disable_smart_button').closest('tr').show();
+            } else {
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').show();
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').next('p').show();
+                jQuery('#woocommerce_paypal_express_checkout_page_button_settings').next('p').next('table').show();
+                jQuery('#woocommerce_paypal_express_checkout_page_disable_smart_button').closest('tr').show();
+            }
+        }).change();
         </script>
          <?php
     }
