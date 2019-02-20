@@ -112,7 +112,7 @@
             <h2><?php esc_html_e('Become an Affiliate', 'paypal-for-woocommerce'); ?></h2>
             <div class="wp-clearfix m10">
                 <p>
-                    <a href="https://www.checkoutwc.com/?ref=15" target="_blank">
+                    <a href="https://www.angelleye.com/affiliate-area/" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/angelleye_affiliate.png'; ?>" alt="">
                         <strong><?php echo __('Affiliate Sign Up', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
