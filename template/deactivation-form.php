@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH') || die('Cheatin&#8217; uh?');
-$deactivation_url = wp_nonce_url('plugins.php?action=deactivate&amp;plugin=' . rawurlencode('paypal-for-woocommerce/paypal-for-woocommerce.php'), 'deactivate-plugin_paypal-for-woocommerce/paypal-for-woocommerce.php');
+$deactivation_url = wp_nonce_url('plugins.php?action=deactivate&amp;plugin=' . rawurlencode(PAYPAL_FOR_WOOCOMMERCE_BASENAME), 'deactivate-plugin_' . PAYPAL_FOR_WOOCOMMERCE_BASENAME);
 ?>
 <div class="deactivation-Modal">
     <div class="deactivation-Modal-header">
