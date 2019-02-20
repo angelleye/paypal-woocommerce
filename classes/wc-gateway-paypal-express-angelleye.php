@@ -420,11 +420,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             
         jQuery('#woocommerce_paypal_express_disallowed_funding_methods').change(function () {
             if( jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val()) ) {
-                
                 if( jQuery("#woocommerce_paypal_express_button_label option[value='credit']").length === 0) {
                     jQuery('#woocommerce_paypal_express_button_label').append(jQuery("<option></option>").attr("value","credit").text("Credit"));
                 }
-                
             } else {
                  jQuery('#woocommerce_paypal_express_button_label option[value="credit"]').remove();
             }
@@ -471,13 +469,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
               js = d.createElement(s);
               js.id = id;
               js.async = true;
-              js.src = "https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/signup.js";
+              js.src = "<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/lib/lightbox/partner.js'; ?>";
               ref.parentNode.insertBefore(js, ref);
             }
           }(document, "script", "paypal-js"));
+
         </script>
         
          <?php
+         wp_enqueue_script('angelleye-in-context-checkout-js-admin');
     }
 
     /**
@@ -607,7 +607,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'sandbox_api_details'           => array(
                 'title'       => __( 'Sandbox API Credentials', 'paypal-for-woocommerce' ),
                 'type'        => 'title',
-                'description' => $this->angelleye_get_isu_paypal_url($sandbox = 'true'),
+                'description' => $this->angelleye_get_isu_paypal_url($sandbox = true),
             ),
             'sandbox_api_username' => array(
                 'title' => __('Sandbox API User Name', 'paypal-for-woocommerce'),
@@ -631,7 +631,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'api_details'           => array(
                 'title'       => __( 'API Credentials', 'paypal-for-woocommerce' ),
                 'type'        => 'title',
-                'description' => $this->angelleye_get_isu_paypal_url($sandbox = 'false'),
+                'description' => $this->angelleye_get_isu_paypal_url($sandbox = false),
             ),
             'api_username' => array(
                 'title' => __('Live API User Name', 'paypal-for-woocommerce'),
@@ -1682,7 +1682,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     update_option( 'woocommerce_paypal_express_settings', apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ), 'yes' );
                 }
                 wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'));
-                die();
+                exit();
             }
             $this->angelleye_check_cart_items();
             if ( isset( $_POST['from_checkout'] ) && 'yes' === $_POST['from_checkout'] ) {
@@ -2291,13 +2291,40 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->send_items = 'yes' === $this->send_items_value;
     }
     
-    public function angelleye_get_isu_paypal_url($sandbox = 'false') {
+    public function angelleye_get_isu_paypal_url($sandbox = null) {
+            $is_display = false;
             $html = '';
             try {
                 if( $this->angelleye_ips_supported() == false ) {
                     return false;
                 }
-                $postData = array( 'sandbox' => $sandbox, 'api' => 'connect_to_paypal', 'return_url' => add_query_arg( array( 'pp_action' => 'angelleye_get_account_detail', 'sandbox' => $sandbox), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE') ));                                        
+                if($sandbox == true) {
+                    if( ( !isset($this->settings['sandbox_api_username']) || isset($this->settings['sandbox_api_username']) && empty($this->settings['sandbox_api_username']) )
+                    || 
+                    ( !isset($this->settings['sandbox_api_password']) || isset($this->settings['sandbox_api_password']) && empty($this->settings['sandbox_api_password']) )
+                    ||
+                    ( !isset($this->settings['sandbox_api_signature']) || isset($this->settings['sandbox_api_signature']) && empty($this->settings['sandbox_api_signature']) )
+                    ) {
+                        $is_display = true;
+                    } else {
+                        $is_display = false;
+                    }
+                } else {
+                    if( ( !isset($this->settings['api_username']) || isset($this->settings['api_username']) && empty($this->settings['api_username']) )
+                    || 
+                    ( !isset($this->settings['api_password']) || isset($this->settings['api_password']) && empty($this->settings['api_password']) )
+                    ||
+                    ( !isset($this->settings['api_signature']) || isset($this->settings['api_signature']) && empty($this->settings['api_signature']) )
+                    ) {
+                        $is_display = true;
+                    } else {
+                        $is_display = false;
+                    }
+                }
+                if($is_display == false) {
+                    return false;
+                }
+                $postData = array( 'sandbox' => ($sandbox) ? 'true' : 'false', 'api' => 'connect_to_paypal', 'return_url' => add_query_arg( array( 'pp_action' => 'angelleye_get_account_detail', 'sandbox' => ($sandbox) ? 'true' : 'false'), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE') ));                                        
                 $this->log('Connect With PayPal RequestData : ' . print_r($postData, true));
                 $response = wp_remote_post( PAYPAL_FOR_WOOCOMMERCE_ISU_URL, array(
                         'method' => 'POST',
@@ -2318,7 +2345,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                     $this->log('Connect With PayPal ResponseData : ' . print_r($ConnectPayPalArray, true));
                     if ($ConnectPayPalArray['ACK'] == 'success') {
-                            $html .= '<a id="itg_connect_with_paypal_live" data-toggle="tooltip" data-original-title="Connect with PayPal" data-paypal-button="true" href="'. $ConnectPayPalArray['action_url'] .'&displayMode=minibrowser" target="PPFrame" class="btn btn-primary"><img src="https://www.paypalobjects.com/webstatic/en_US/developer/docs/lipp/loginwithpaypalbutton.png" alt="Login with PayPal" style="cursor: pointer"></a>';
+                            $html .= '<a id="itg_connect_with_paypal_live" data-toggle="tooltip" data-original-title="Connect with PayPal" href="'. $ConnectPayPalArray['action_url'] .'&displayMode=minibrowser" target="PPFrame" class="btn btn-primary"><img src="https://www.paypalobjects.com/webstatic/en_US/developer/docs/lipp/loginwithpaypalbutton.png" alt="Login with PayPal" style="cursor: pointer"></a>';
                     } else {                   
                         if(is_string($ConnectPayPalArray['DATA'])){
                             $error = json_decode($ConnectPayPalArray['DATA'], true);
