@@ -1233,15 +1233,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_handle_plugin_deactivation_request() {
-            $log_url = $_SERVER['HTTP_HOST'];
+            $log_url = wc_clean($_SERVER['HTTP_HOST']);
             $log_plugin_id = 1;
             $web_services_url = 'http://www.angelleye.com/web-services/wordpress/update-plugin-status.php';
             $request_url = add_query_arg( array(
                 'url' => $log_url,
                 'plugin_id' => $log_plugin_id,
                 'activation_status' => 0,
-                'reason' => $_POST['reason'],
-                'reason_details' => $_POST['reason_details'],
+                'reason' => wc_clean($_POST['reason']),
+                'reason_details' => wc_clean($_POST['reason_details']),
             ), $web_services_url );
             $response = wp_remote_request($request_url);
              if (is_wp_error($response)) {
