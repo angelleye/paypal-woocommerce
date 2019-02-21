@@ -143,6 +143,7 @@
     padding: 0;
     vertical-align: top;
     border-right: 2px solid #dfdfdf;
+    width: 80%;
 }
 .angelleye-wizard-text-input-label {
     display: block;
