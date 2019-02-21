@@ -399,6 +399,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if(!in_array( 'woocommerce/woocommerce.php',apply_filters('active_plugins',get_option('active_plugins'))) && !is_plugin_active_for_network( 'woocommerce/woocommerce.php' )) {
                 deactivate_plugins(plugin_basename(__FILE__));
             }
+            delete_option('angelleye_paypal_woocommerce_submited_feedback');
             $opt_in_log = get_option('angelleye_send_opt_in_logging_details', 'no');
             if($opt_in_log == 'yes') {
                 $log_url = $_SERVER['HTTP_HOST'];
@@ -414,11 +415,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         function deactivate_paypal_for_woocommerce() {
             // Log activation in Angell EYE database via web service.
             $opt_in_log = get_option('angelleye_send_opt_in_logging_details', 'no');
+            $is_submited_feedback = get_option('angelleye_paypal_woocommerce_submited_feedback', 'no');
             if($opt_in_log == 'yes') {
-                $log_url = $_SERVER['HTTP_HOST'];
-                $log_plugin_id = 1;
-                $log_activation_status = 0;
-                wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
+                if($is_submited_feedback == 'no') {
+                    $log_url = $_SERVER['HTTP_HOST'];
+                    $log_plugin_id = 1;
+                    $log_activation_status = 0;
+                    wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
+                }
             } 
         }
 
@@ -1244,7 +1248,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 'reason_details' => wc_clean($_POST['reason_details']),
             ), $web_services_url );
             $response = wp_remote_request($request_url);
-             if (is_wp_error($response)) {
+            update_option('angelleye_paypal_woocommerce_submited_feedback', 'yes');
+            if (is_wp_error($response)) {
                 wp_send_json(wp_remote_retrieve_body($response));
             } else {
                 wp_send_json(wp_remote_retrieve_body($response));
