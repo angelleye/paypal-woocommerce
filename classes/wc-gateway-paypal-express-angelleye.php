@@ -469,7 +469,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
               js = d.createElement(s);
               js.id = id;
               js.async = true;
-              js.src = "<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/lib/lightbox/partner.js'; ?>";
+              js.src = "https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js";
               ref.parentNode.insertBefore(js, ref);
             }
           }(document, "script", "paypal-js"));
