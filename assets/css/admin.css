@@ -367,6 +367,27 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 .angelleye-notice-logo-push span {
     display: block;
 }
+.angelleye_paypal_woo_setting_sepraer {
+    margin-left: 10px;
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 15px;
+    vertical-align: middle;
+}
+#pfw_connect_with_paypal img {
+    vertical-align: middle;
+}
+.angelleye_paypal_woo_connect_toggle {
+    text-decoration: none;
+    font-size: 15px;
+    vertical-align: middle;
+}
+#woocommerce_paypal_express_sandbox_api_details {
+    margin-bottom: 25px;
+}
+#woocommerce_paypal_express_sandbox_api_details p{
+    margin-bottom: 25px;
+}
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
         display: block;

@@ -402,7 +402,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 sandbox = jQuery('#woocommerce_paypal_express_sandbox_api_username, #woocommerce_paypal_express_sandbox_api_password, #woocommerce_paypal_express_sandbox_api_signature').closest('tr'),
                 production = jQuery('#woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature').closest('tr');
                 if (jQuery(this).is(':checked')) {
-                    sandbox.show();
+                    if (jQuery('#woocommerce_paypal_express_sandbox_api_username').val().length === 0 && jQuery('#woocommerce_paypal_express_sandbox_api_password').val().length === 0 && jQuery('#woocommerce_paypal_express_sandbox_api_signature').val().length === 0) {
+                        sandbox.hide();
+                    } else {
+                        sandbox.show();
+                    }
                     jQuery('#woocommerce_paypal_express_sandbox_api_details').show();
                     jQuery('#woocommerce_paypal_express_sandbox_api_details').next('p').show();
                     jQuery('#woocommerce_paypal_express_api_details').hide();
@@ -414,9 +418,35 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     jQuery('#woocommerce_paypal_express_sandbox_api_details').next('p').hide();
                     jQuery('#woocommerce_paypal_express_api_details').show();
                     jQuery('#woocommerce_paypal_express_api_details').next('p').show();
-                    production.show();
+                    if (jQuery('#woocommerce_paypal_express_api_username').val().length === 0 && jQuery('#woocommerce_paypal_express_api_password').val().length === 0 && jQuery('#woocommerce_paypal_express_api_signature').val().length === 0) {
+                        production.hide();
+                    } else {
+                        production.show();
+                    }
                 }
             }).change();
+            
+            
+            jQuery('.angelleye_paypal_woo_connect_toggle').click(function (evt) {
+                evt.preventDefault();
+                sandbox = jQuery('#woocommerce_paypal_express_sandbox_api_username, #woocommerce_paypal_express_sandbox_api_password, #woocommerce_paypal_express_sandbox_api_signature').closest('tr'),
+                production = jQuery('#woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature').closest('tr');
+                if (jQuery('#woocommerce_paypal_express_testmode').is(':checked')) {
+                    sandbox.toggle();
+                    jQuery('#woocommerce_paypal_express_sandbox_api_details').show();
+                    jQuery('#woocommerce_paypal_express_sandbox_api_details').next('p').show();
+                    jQuery('#woocommerce_paypal_express_api_details').hide();
+                    jQuery('#woocommerce_paypal_express_api_details').next('p').hide();
+                    production.hide();
+                } else {
+                    sandbox.hide();
+                    jQuery('#woocommerce_paypal_express_sandbox_api_details').hide();
+                    jQuery('#woocommerce_paypal_express_sandbox_api_details').next('p').hide();
+                    jQuery('#woocommerce_paypal_express_api_details').show();
+                    jQuery('#woocommerce_paypal_express_api_details').next('p').show();
+                    production.toggle();
+                }
+            });
             
         jQuery('#woocommerce_paypal_express_disallowed_funding_methods').change(function () {
             if( jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val()) ) {
@@ -2345,7 +2375,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                     $this->log('Connect With PayPal ResponseData : ' . print_r($ConnectPayPalArray, true));
                     if ($ConnectPayPalArray['ACK'] == 'success') {
-                            $html .= '<a id="itg_connect_with_paypal_live" data-toggle="tooltip" data-original-title="Connect with PayPal" href="'. $ConnectPayPalArray['action_url'] .'&displayMode=minibrowser" target="PPFrame" class="btn btn-primary"><img src="https://www.paypalobjects.com/webstatic/en_US/developer/docs/lipp/loginwithpaypalbutton.png" alt="Login with PayPal" style="cursor: pointer"></a>';
+                            $html .= '<a id="pfw_connect_with_paypal" data-paypal-button="true" href="'. $ConnectPayPalArray['action_url'] .'&displayMode=minibrowser" target="PPFrame" class="btn btn-primary"><img src="https://www.paypalobjects.com/webstatic/en_US/developer/docs/lipp/loginwithpaypalbutton.png" alt="Login with PayPal" style="cursor: pointer"></a>';
+                            $html .= '<span class="angelleye_paypal_woo_setting_sepraer">OR</span><a href="#" class="angelleye_paypal_woo_connect_toggle">Add my own app credentials</a>';
                     } else {                   
                         if(is_string($ConnectPayPalArray['DATA'])){
                             $error = json_decode($ConnectPayPalArray['DATA'], true);
