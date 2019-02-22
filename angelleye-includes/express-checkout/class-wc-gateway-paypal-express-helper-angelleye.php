@@ -644,7 +644,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'enable_google_analytics_click' => $this->enable_google_analytics_click,
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))),
                     'zcommit' => $this->angelleye_ec_force_to_display_checkout_page_js() == true ? 'false' : 'true',
-                    'checkout_page_disable_smart_button' => $this->checkout_page_disable_smart_button ? "no" : "yes"
+                    'checkout_page_disable_smart_button' => $this->checkout_page_disable_smart_button ? "yes" : "no"
                         )
                 );
             }
