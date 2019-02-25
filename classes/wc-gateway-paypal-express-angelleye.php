@@ -1678,12 +1678,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $this->settings['api_password'] = $AccountDetailArray['DATA']['api_credentials']['signature']['api_password'];
                         $this->settings['api_signature'] = $AccountDetailArray['DATA']['api_credentials']['signature']['signature'];
                     }
-                    update_option( 'itg_permission_connect_to_paypal_success_notice', 'You are successfully connected with PayPal.');
+                    update_option( 'angelleye_paypal_for_woo_express_connect_success_notice', 'You are successfully connected with PayPal.');
                     update_option( 'woocommerce_paypal_express_settings', apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ), 'yes' );
                     wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'));
                     exit();
                 } else {
-                    update_option( 'itg_permission_connect_to_paypal_failed_notice', 'Callback from PayPal : Something went wrong. Please try again.');
+                    update_option( 'angelleye_paypal_for_woo_express_connect_failed_notice', 'Callback from PayPal : Something went wrong. Please try again.');
                 }
                 
             }
@@ -2345,7 +2345,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $html .= "Something went wrong: $error_message";
                 } else {
                     $ConnectPayPalArray = json_decode( wp_remote_retrieve_body( $response ), true );
-                    
                     $this->log('Connect With PayPal ResponseData : ' . print_r($ConnectPayPalArray, true));
                     if ($ConnectPayPalArray['ACK'] == 'success') {
                             $html .= '<a id="pfw_connect_with_paypal" href="'. $ConnectPayPalArray['action_url'] .'" class="btn btn-primary"><img src="https://www.paypalobjects.com/webstatic/en_US/developer/docs/lipp/loginwithpaypalbutton.png" alt="Login with PayPal" style="cursor: pointer"></a>';
@@ -2359,16 +2358,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }                                                    
                         if(isset($error['error']) || isset($error['error_description'])) {                                                                                                            
                             $html .= '<div class="alert alert-warning" id="connect_with_paypal_error">'
-                                    . '<p>' . __("PayPal Error","ifthengive") . '</p>'
-                                    . '<p id="connect_with_paypal_error_p">' . __('Error :','ifthengive') . isset($error['error']) ? $error['error'] : '' . '</p>'
-                                    . '<p id="connect_with_paypal_error_desc">' . __('Error :','ifthengive') . isset($error['error_description']) ? $error['error_description'] : '' . '</p>'
+                                    . '<p>' . __("PayPal Error","paypal-for-woocommerce") . '</p>'
+                                    . '<p id="connect_with_paypal_error_p">' . __('Error :','paypal-for-woocommerce') . isset($error['error']) ? $error['error'] : '' . '</p>'
+                                    . '<p id="connect_with_paypal_error_desc">' . __('Error :','paypal-for-woocommerce') . isset($error['error_description']) ? $error['error_description'] : '' . '</p>'
                                     . '</div>';
 
                             if(isset($ConnectPayPalArray['DATA']['RAWRESPONSE']['name']) || isset($ConnectPayPalArray['DATA']['RAWRESPONSE']['message'])){
                                 $html .= '<div class="alert alert-warning" id="connect_with_paypal_error">'
-                                    . '<p>' . __('PayPal Error','ifthengive') . '</p>'
-                                    . '<p id="connect_with_paypal_error_p">' . __('Error :','ifthengive') . $ConnectPayPalArray['DATA']['RAWRESPONSE']['name'] . '</p>'
-                                    . '<p id="connect_with_paypal_error_desc">' . __('Error :','ifthengive') . $ConnectPayPalArray['DATA']['RAWRESPONSE']['message'] . '</p>'
+                                    . '<p>' . __('PayPal Error','paypal-for-woocommerce') . '</p>'
+                                    . '<p id="connect_with_paypal_error_p">' . __('Error :','paypal-for-woocommerce') . $ConnectPayPalArray['DATA']['RAWRESPONSE']['name'] . '</p>'
+                                    . '<p id="connect_with_paypal_error_desc">' . __('Error :','paypal-for-woocommerce') . $ConnectPayPalArray['DATA']['RAWRESPONSE']['message'] . '</p>'
                                  . '</div>';
 
                             }

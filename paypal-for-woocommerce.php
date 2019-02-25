@@ -264,6 +264,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) && !get_user_meta($user_id, 'ignore_pp_woo') && !is_plugin_active_for_network( 'woocommerce/woocommerce.php' )) {
                 echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf( __("WooCommerce PayPal Payments requires WooCommerce plugin to work normally. Please activate it or install it from <a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>here</a>.", 'paypal-for-woocommerce') ) . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_pp_woo">Dismiss</button></div></div>';
             }
+            $express_connect_success_notice = get_option('angelleye_paypal_for_woo_express_connect_success_notice', 'no');
+            if($express_connect_success_notice != 'no' && !empty($express_connect_success_notice)){
+                echo '<div class="notice notice-success angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . $express_connect_success_notice . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome">Dismiss</button></div></div>';
+                delete_option('angelleye_paypal_for_woo_express_connect_success_notice');
+            }
+            $express_connect_failed_notice = get_option('angelleye_paypal_for_woo_express_connect_failed_notice', 'no');
+            if($express_connect_failed_notice != 'no' && !empty($express_connect_failed_notice)){
+                echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . $express_connect_success_notice . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome">Dismiss</button></div></div>';
+                delete_option('angelleye_paypal_for_woo_express_connect_failed_notice');
+            }
             
             $screen = get_current_screen();
             
