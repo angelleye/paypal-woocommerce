@@ -455,7 +455,7 @@ jQuery(document).ready(function ($) {
                 onCancel: function (data, actions) {
                     actions.redirect();
                 },
-                onError: function (err) {
+                onError: function (err, actions) {
                     actions.redirect();
                 }
             }, '.display_smart_button_previews');

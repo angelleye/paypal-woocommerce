@@ -493,17 +493,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                 }
         }).change();
-         (function(d, s, id) {
-            var js, ref = d.getElementsByTagName(s)[0];
-            if (!d.getElementById(id)) {
-              js = d.createElement(s);
-              js.id = id;
-              js.async = true;
-              js.src = "https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js";
-              ref.parentNode.insertBefore(js, ref);
-            }
-          }(document, "script", "paypal-js"));
-
         </script>
         
          <?php
@@ -2359,7 +2348,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                     $this->log('Connect With PayPal ResponseData : ' . print_r($ConnectPayPalArray, true));
                     if ($ConnectPayPalArray['ACK'] == 'success') {
-                            $html .= '<a id="pfw_connect_with_paypal" data-paypal-button="true" href="'. $ConnectPayPalArray['action_url'] .'&displayMode=minibrowser" target="PPFrame" class="btn btn-primary"><img src="https://www.paypalobjects.com/webstatic/en_US/developer/docs/lipp/loginwithpaypalbutton.png" alt="Login with PayPal" style="cursor: pointer"></a>';
+                            $html .= '<a id="pfw_connect_with_paypal" href="'. $ConnectPayPalArray['action_url'] .'" class="btn btn-primary"><img src="https://www.paypalobjects.com/webstatic/en_US/developer/docs/lipp/loginwithpaypalbutton.png" alt="Login with PayPal" style="cursor: pointer"></a>';
                             $html .= '<span class="angelleye_paypal_woo_setting_sepraer">OR</span><a href="#" class="angelleye_paypal_woo_connect_toggle">Add my own app credentials</a>';
                     } else {                   
                         if(is_string($ConnectPayPalArray['DATA'])){
