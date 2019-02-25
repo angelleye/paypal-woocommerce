@@ -1666,26 +1666,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $sandbox = 'true';
                 }
                 if(isset($_GET['merchantIdInPayPal'])){
-                    $postData = array( 'sandbox' => $sandbox, 'api' => 'connect_to_paypal', 'return_url' => add_query_arg( array( 'pp_action' => 'angelleye_get_account_detail', 'sandbox' => $sandbox), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE') ));                                        
-                    $this->log('Connect With PayPal RequestData : ' . print_r($postData, true));
-                    $response = wp_remote_post( PAYPAL_FOR_WOOCOMMERCE_ISU_URL, array(
-                            'method' => 'POST',
-                            'timeout' => 45,
-                            'redirection' => 5,
-                            'httpversion' => '1.0',
-                            'blocking' => true,
-                            'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
-                            'body' => $postData,
-                            'cookies' => array()
-                        )
-                    );
-                    if ( is_wp_error( $response ) ) {
-                        $error_message = $response->get_error_message();
-                        $html .= "Something went wrong: $error_message";
-                    } else {
-                        $ConnectPayPalArray = json_decode( wp_remote_retrieve_body( $response ), true );
-                        update_option( 'itg_permission_connect_to_paypal_failed_notice', 'Callback from PayPal : Something went wrong. Please try again.');                       
-                    }
                     $postData = array( 'sandbox' => $sandbox, 'api' => 'account_detail', 'merchantIdInPayPal' => $_GET['merchantIdInPayPal']); 
                     $AccountDetail = wp_remote_post( PAYPAL_FOR_WOOCOMMERCE_ISU_URL, array(
                             'method' => 'POST',
@@ -1709,10 +1689,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $this->settings['api_password'] = $AccountDetailArray['DATA']['api_credentials']['signature']['api_password'];
                         $this->settings['api_signature'] = $AccountDetailArray['DATA']['api_credentials']['signature']['signature'];
                     }
+                    update_option( 'itg_permission_connect_to_paypal_success_notice', 'You are successfully connected with PayPal.');
                     update_option( 'woocommerce_paypal_express_settings', apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ), 'yes' );
+                    wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'));
+                    exit();
+                } else {
+                    update_option( 'itg_permission_connect_to_paypal_failed_notice', 'Callback from PayPal : Something went wrong. Please try again.');
                 }
-                wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'));
-                exit();
+                
             }
             $this->angelleye_check_cart_items();
             if ( isset( $_POST['from_checkout'] ) && 'yes' === $_POST['from_checkout'] ) {
