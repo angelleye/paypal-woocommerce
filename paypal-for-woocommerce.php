@@ -67,7 +67,7 @@ if (!function_exists('angelleye_queue_update')) {
 /**
  * Plugin updates
  */
-angelleye_queue_update(plugin_basename(__FILE__), '101', 'paypal-for-woocommerce');
+//angelleye_queue_update(plugin_basename(__FILE__), '101', 'paypal-for-woocommerce');
 
 /**
  * Set global parameters
