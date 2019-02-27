@@ -61,7 +61,7 @@ if (!defined('AEU_ZIP_URL')) {
  * Required functions
  */
 if (!function_exists('angelleye_queue_update')) {
-    require_once( 'includes/angelleye-functions.php' );
+    require_once( 'angelleye-includes/angelleye-functions.php' );
 }
 
 /**
