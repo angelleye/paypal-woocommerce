@@ -4,7 +4,7 @@
     float: left;
     margin: 10px 0;
     padding: 0 20px 10px;
-    width: 97%;
+    width: 824px;
 }
 
 .angelleye-paypal-for-woocommerce-shipping-tools-wrap .angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section {
@@ -53,7 +53,7 @@ table.angelleye_order_action_table td {
     margin-bottom: 10px;
 }
 
-.angelleye_addons_wrap .products {
+.angelleye_addons_wrap ul.products {
     overflow: hidden;
 }
 .angelleye_addons_wrap .products li {
@@ -230,9 +230,8 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     float: left;
 }
 #woocommerce_paypal_express_angelleye_smart_button_preview_title, .display_smart_button_previews, .display_smart_button_previews_button {
-    
-    float: right;
-    margin-left: 100px;
+    margin: auto;
+    width: 50%;
 }
 
 #woocommerce_paypal_express_paypal_marketing_solutions {
