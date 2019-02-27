@@ -53,7 +53,21 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH')) {
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL', 'https://www.angelleye.com/');
 }
+if (!defined('AEU_ZIP_URL')) {
+    define('AEU_ZIP_URL', 'http://downloads.angelleye.com/ae-updater/angelleye-updater/angelleye-updater.zip');
+}
 
+/**
+ * Required functions
+ */
+if (!function_exists('angelleye_queue_update')) {
+    require_once( 'includes/angelleye-functions.php' );
+}
+
+/**
+ * Plugin updates
+ */
+angelleye_queue_update(plugin_basename(__FILE__), '101', 'paypal-for-woocommerce');
 
 /**
  * Set global parameters
