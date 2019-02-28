@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           1.5.7
+ * Version:           1.5.6
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -152,7 +152,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('woocommerce_product_data_panels', array( $this, 'angelleye_paypal_for_woo_product_date_panels' ));
             add_action('woocommerce_process_product_meta', array( $this, 'angelleye_paypal_for_woo_product_process_product_meta' ));
             add_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_payflow', array( $this, 'angelleye_paypal_for_woo_product_level_payment_action' ), 10, 3);
-            add_action( 'wp_head', array( $this, 'paypal_for_woo_head_mark' ), 1 );            
+            add_action( 'wp_head', array( $this, 'paypal_for_woo_head_mark' ), 1 );     
+            add_filter('angelleye_updater_free_plugin', array($this, 'angelleye_add_plugin_updater_plugin'), 10, 1);
             $this->customer_id;
         }
 
@@ -1229,6 +1230,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     }
                 }
             }
+        }
+        
+        public function angelleye_add_plugin_updater_plugin($response) {
+            if(!empty($response)) {
+                $response[PAYPAL_FOR_WOOCOMMERCE_BASENAME] = array('file_id' => '999', 'product_id' => 'paypal-woocommerce');
+            } else {
+                $response = array();
+                $response[PAYPAL_FOR_WOOCOMMERCE_BASENAME] = array('file_id' => '999', 'product_id' => 'paypal-woocommerce');
+            }
+            return $response;
         }
     } 
 }
