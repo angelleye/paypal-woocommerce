@@ -198,13 +198,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             global $current_user;
             $plugin = plugin_basename( __FILE__ );
             $plugin_data = get_plugin_data( __FILE__, false );
-
+            
             if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) && !is_plugin_active_for_network( 'woocommerce/woocommerce.php' ) ) {
                 if(!empty($_GET['action']) && !in_array($_GET['action'], array('activate-plugin', 'upgrade-plugin','activate','do-plugin-upgrade')) && is_plugin_active($plugin) ) {
                     deactivate_plugins( $plugin );
                     wp_die( "<strong>".$plugin_data['Name']."</strong> requires <strong>WooCommerce</strong> plugin to work normally. Please activate it or install it from <a href=\"http://wordpress.org/plugins/woocommerce/\" target=\"_blank\">here</a>.<br /><br />Back to the WordPress <a href='".get_admin_url(null, 'plugins.php')."'>Plugins page</a>." );
                 }
             }
+            
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/sidebar-process.php' );
             
             $user_id = $current_user->ID;
             
@@ -642,6 +644,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     wp_enqueue_script( 'deactivation-modal', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/deactivation-form-modal.js', null, VERSION_PFW, true );
                     wp_localize_script( 'deactivation-modal', 'angelleye_ajax_data', array( 'nonce' => wp_create_nonce( 'angelleye-ajax' ) ) );
             }
+            wp_enqueue_style( 'angelleye_marketing_css', plugins_url( 'assets/css/angelleye-marketing-sidebar.css' , __FILE__ ), array(), VERSION_PFW );
         }
         
         public function angelleye_woocommerce_pfw_ed_shipping_bulk_tool() {
