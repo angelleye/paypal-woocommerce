@@ -429,6 +429,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         echo wp_kses_post( wpautop( $this->get_method_description() ) );
         echo $this->angelleye_paypal_pro_payflow_reference_transaction_notice();
         ?>
+        <div id="angelleye_paypal_marketing_table">
         <table class="form-table">
             <?php
              if(!get_user_meta(get_current_user_id(), 'payflow_sb_autopopulate_credentials')){
@@ -451,6 +452,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             
             ?>
         </table>
+        </div>
+        <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); ?>
         <script type="text/javascript">
             jQuery('#woocommerce_paypal_pro_payflow_payment_action').change(function () {
                 if ( this.value === 'Authorization' ) {
