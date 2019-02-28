@@ -2226,10 +2226,15 @@ class AngellEYE_Utility {
             }
         }
         
+        public static function is_subs_change_payment() {
+		return ( isset( $_GET['pay_for_order'] ) && isset( $_GET['change_payment_method'] ) );
+	}
+
         public static function angelleye_display_marketing_sidebar($id = null) {
             wp_enqueue_style('angelleye_marketing_css');
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/sidebar.php' );
         }
+
         public static function angelleye_get_push_notifications() {
             $args = array(
                 'plugin_name' => 'paypal-for-woocommerce',
@@ -2273,4 +2278,5 @@ class AngellEYE_Utility {
                     . '</div>'
                 . '</div>';
         }
+
 }
