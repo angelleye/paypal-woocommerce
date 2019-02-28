@@ -691,6 +691,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         ?>
         <h3><?php _e('PayPal Advanced', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e('PayPal Payments Advanced uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process.', 'paypal-for-woocommerce'); ?></p>
+        <div id="angelleye_paypal_marketing_table">
+            
+        
         <table class="form-table">
             <?php
             if(version_compare(WC_VERSION,'2.6','<')) {
@@ -711,6 +714,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             wp_enqueue_style('wp-color-picker');
             ?>
         </table><!--/.form-table-->
+        </div>
+        <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); ?>
         <script type="text/javascript">
             jQuery(document).ready(function ($) {
                 jQuery('.paypal_for_woocommerce_color_field').wpColorPicker();
