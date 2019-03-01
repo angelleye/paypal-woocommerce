@@ -649,7 +649,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 </script>
                 <?php
                 if ( $this->supports( 'tokenization' ) && is_checkout() ) {
-                    if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+                    if( AngellEYE_Utility::is_cart_contains_subscription() == false && AngellEYE_Utility::is_subs_change_payment() == false ) {
                         $this->save_payment_method_checkbox();
                     }
                 }
@@ -1794,7 +1794,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
-    public function braintree_save_payment_method($customer_id, $result) {
+    public function braintree_save_payment_method($customer_id, $result, $zero_amount_payment) {
         if (!empty($result->paymentMethod)) {
             $braintree_method = $result->paymentMethod;
         } elseif ($result->creditCard) {
@@ -2665,5 +2665,44 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         
         return $this->response;
         
+    }
+    
+    public function subscription_change_payment($order_id) {
+        $this->angelleye_braintree_lib();
+        $order = new WC_Order($order_id);
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        if (isset($_POST['wc-braintree-payment-token']) && 'new' !== $_POST['wc-braintree-payment-token']) {
+            $token_id = wc_clean($_POST['wc-braintree-payment-token']);
+            $token = WC_Payment_Tokens::get($token_id);
+            if ($token->get_user_id() !== get_current_user_id()) {
+                throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
+            } else {
+                update_post_meta($order_id, 'is_sandbox', $this->sandbox);
+                $payment_tokens_id = $token->get_token();
+                $this->save_payment_token($order, $payment_tokens_id);
+                return array(
+                    'result' => 'success',
+                    'redirect' => $this->get_return_url($order)
+                );
+            }
+        } else {
+            $result = $this->add_payment_method($zero_amount_payment = true);
+            if ($result['result'] == 'success') {
+                update_post_meta($order_id, 'is_sandbox', $this->sandbox);
+                $payment_tokens_id = (!empty($result['_payment_tokens_id'])) ? $result['_payment_tokens_id'] : '';
+                $this->save_payment_token($order, $payment_tokens_id);
+                 return array(
+                    'result' => 'success',
+                    'redirect' => $this->get_return_url($order)
+                );
+                
+            } else {
+                WC()->session->set('reload_checkout', true);
+                return array(
+                    'result' => 'fail',
+                    'redirect' => ''
+                );
+            }
+        }
     }
 }
