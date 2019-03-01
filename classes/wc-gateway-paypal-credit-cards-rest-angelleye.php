@@ -84,6 +84,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             ?>
             <h3><?php echo (!empty($this->method_title) ) ? $this->method_title : __('Settings', 'paypal-for-woocommerce'); ?></h3>
             <?php echo (!empty($this->method_description) ) ? wpautop($this->method_description) : ''; ?>
+            <div id="angelleye_paypal_marketing_table">
             <table class="form-table">
             <?php
                 if(version_compare(WC_VERSION,'2.6','<')) {
@@ -95,6 +96,8 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
                 }
             ?>
             </table>
+            </div>
+            <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); ?>
             <script type="text/javascript">
                 jQuery('#woocommerce_paypal_credit_card_rest_testmode').change(function () {
                     var sandbox = jQuery('#woocommerce_paypal_credit_card_rest_rest_client_id_sandbox, #woocommerce_paypal_credit_card_rest_rest_secret_id_sandbox').closest('tr'),
@@ -153,7 +156,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
             $this->tokenization_script();
             $this->saved_payment_methods();
             $this->form();
-            if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+            if( AngellEYE_Utility::is_cart_contains_subscription() == false && AngellEYE_Utility::is_subs_change_payment() == false) {
                 $this->save_payment_method_checkbox();
             }
         } else {
@@ -385,5 +388,12 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
                 }
             }
         }
+    }
+    
+    public function subscription_change_payment($order) {
+        $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
+        $this->add_rest_api_utility();
+        $card = $this->paypal_rest_api->get_posted_card();
+        return $this->paypal_rest_api->create_payment_for_subscription_change_payment($order, $card);
     }
 }

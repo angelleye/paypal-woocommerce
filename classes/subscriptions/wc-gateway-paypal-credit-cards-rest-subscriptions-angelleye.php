@@ -25,7 +25,9 @@ class WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE extends WC_Gate
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
         if ($this->is_subscription($order_id)) {
-            if ($order->get_total() > 0) {
+            if(AngellEYE_Utility::is_subs_change_payment()) {
+                return parent::subscription_change_payment($order);
+            } elseif ($order->get_total() > 0) {
                 return parent::process_payment($order_id);
             } else {
                 return parent::process_subscription_payment($order);

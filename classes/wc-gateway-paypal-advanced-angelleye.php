@@ -23,7 +23,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'subscription_suspension',
             'subscription_amount_changes',
             'subscription_payment_method_change', // Subs 1.n compatibility.
-            'subscription_payment_method_change_customer',
             'subscription_payment_method_change_admin',
             'subscription_date_changes',
             'multiple_subscriptions',
@@ -691,6 +690,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         ?>
         <h3><?php _e('PayPal Advanced', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e('PayPal Payments Advanced uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process.', 'paypal-for-woocommerce'); ?></p>
+        <div id="angelleye_paypal_marketing_table">
+            
+        
         <table class="form-table">
             <?php
             if(version_compare(WC_VERSION,'2.6','<')) {
@@ -711,6 +713,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             wp_enqueue_style('wp-color-picker');
             ?>
         </table><!--/.form-table-->
+        </div>
+        <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); ?>
         <script type="text/javascript">
             jQuery(document).ready(function ($) {
                 jQuery('.paypal_for_woocommerce_color_field').wpColorPicker();
@@ -961,7 +965,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if ($this->supports('tokenization') && is_checkout()) {
             $this->tokenization_script();
             $this->saved_payment_methods();
-            if( AngellEYE_Utility::is_cart_contains_subscription() == false ) {
+            if( AngellEYE_Utility::is_cart_contains_subscription() == false && AngellEYE_Utility::is_subs_change_payment() == false) {
                 $this->save_payment_method_checkbox();
             }
         }

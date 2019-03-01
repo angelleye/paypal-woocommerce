@@ -24,6 +24,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
         if ($gateway == 'paypal_payment_gateway_products') {
             ?>
             <div class="wrap angelleye_addons_wrap">
+                <div id="angelleye_paypal_marketing_table">
                 <ul class="products">
                     <li class="product">
                         <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'); ?>">
@@ -71,9 +72,13 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                             </p>
                         </a>
                     </li>
+                   
                 </ul>
+                </div>
+                <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting'); ?>
             </div>
             <?php
+            
         } elseif ($gateway == 'paypal_woocommerce_premium_extension') {
             if (false === ( $addons = get_transient('angelleye_addons_data_paypal_woocommerce_premium_extension') )) {
                 $addons_json = wp_remote_get('https://www.angelleye.com/web-services/woocommerce/api/getinfo.php?tag=paypal_woocommerce_premium_extension', array( 'timeout' => 120 ));
@@ -87,6 +92,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
             if (isset($addons) && !empty($addons)) {
                 ?>
                 <div class="wrap angelleye_addons_wrap paypal_woocommerce_premium_extension">
+                    <div id="angelleye_paypal_marketing_table">
                     <ul class="products">
                         <?php
                         foreach ($addons as $addon) {
@@ -111,6 +117,8 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                         }
                         ?>
                     </ul>
+                    </div>
+                    <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting'); ?>
                 </div>
                 <?php
             } else {
@@ -127,6 +135,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                 }
                 $Force_tls_one_point_two = get_option('Force_tls_one_point_two');
                 ?>
+                <div id="angelleye_paypal_marketing_table">
                 <form method="post">
                     <table class="form-table">
                         <tbody>
@@ -174,6 +183,8 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                     </table>
                     <?php submit_button(); ?>
                 </form>
+                </div>
+                <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting'); ?>
             </div>
             <?php
             
@@ -184,6 +195,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
     <?php } elseif($_GET['tab'] == 'tools') {
         ?>
         <div class="wrap">
+            <div id="angelleye_paypal_marketing_table">
             <div class="angelleye-paypal-for-woocommerce-shipping-tools-wrap">
                 <form id="woocommerce_paypal-for-woocommerce_options_form_bulk_tool_shipping" autocomplete="off" action="<?php echo admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=tools'); ?>" method="post">
                     <a name="pfw-t1"></a>
@@ -305,6 +317,8 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                     <div class="angelleye-offers-clearfix"></div>
                 </form>
             </div>
+            </div>
+            <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting'); ?>
         </div>
     <?php } ?>
 </div>
