@@ -1403,7 +1403,64 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => $this->disallowed_funding_methods_array,
             ),
          );
-        
+        if (defined('XOO_WSC_PATH')) {
+            $this->form_fields['wsc_cart_button_settings'] = array(
+                'title' => __('Woo Side Cart Button Settings', 'paypal-for-woocommerce'),
+                'description'  => __( 'Enable the Woo Side Cart specific button settings, and the options set will be applied to the PayPal buttons on your Woo Side Cart.', 'paypal-for-woocommerce' ),
+                'type' => 'title'
+            );
+            $this->form_fields['wsc_cart_configure_settings'] = array(
+                'title' => __('Enable', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __( 'Configure settings specific to the Woo Side Cart display.', 'paypal-for-woocommerce' ),
+                'default'     => 'no',
+                'desc_tip'    => true,
+                'description' => __( 'Optionally override global button settings above and configure buttons specific to the Woo Side Cart.', 'paypal-for-woocommerce' ),
+            );
+            $this->form_fields['wsc_cart_disable_smart_button'] = array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __( 'Disable the buttons in the Woo Side Cart', 'paypal-for-woocommerce' ),
+                'default'     => 'no',
+                'desc_tip'    => true,
+                'description' => __( '', 'paypal-for-woocommerce' ),
+            );
+            $this->form_fields['wsc_cart_button_layout'] = array(
+                'title' => __('Button Layout', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
+                'default' => 'horizontal',
+                'desc_tip' => true,
+                'options' => array(
+                    'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
+                    'vertical' => __('Vertical', 'paypal-for-woocommerce')
+                ),
+            );
+            $this->form_fields['wsc_cart_button_size'] = array(
+                'title' => __('Button Size', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                'default' => 'small',
+                'desc_tip' => true,
+                'options' => array(
+                    'small' => __('Small', 'paypal-for-woocommerce'),
+                    'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'large' => __('Large', 'paypal-for-woocommerce'),
+                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
+                ),
+            );
+            $this->form_fields['wsc_cart_disallowed_funding_methods'] = array(
+                'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
+                'type' => 'multiselect',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+                'options' => $this->disallowed_funding_methods_array,
+            );     
+        }
         if( $this->is_us == true ) {
             $this->form_fields['paypal_marketing_solutions'] = array(
                 'title'       => __( '<hr></hr>PayPal Marketing Solutions', 'paypal-for-woocommerce' ),
@@ -1465,6 +1522,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => '<p class="font11">' . __("* As reported in Nielsen’s PayPal Credit Average Order Value Study for activity occurring from April 2015 to March 2016 (small merchants) and October 2015 to March 2016 (midsize merchants), which compared PayPal Credit transactions to credit and debit card transactions on websites that offer PayPal Credit as a payment option or within the PayPal Wallet. Nielsen measured 284890 transactions across 27 mid and small merchants. Copyright Nielsen 2016.", 'paypal-for-woocommerce') . '</p><hr>',
             );
         }
+        
+        
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
     }
 
