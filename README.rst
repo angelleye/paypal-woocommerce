@@ -1,4 +1,14 @@
 ###################
+Update About WordPress Directory
+###################
+
+Going forward, our plugins will be self-hosted, and updates will be provided through our Updater plugin:  https://www.angelleye.com/product/angelleye-helper-wordpress-updater/
+
+Please install the Updater, and you will continue to receive notices and automated updates as usual.  
+
+If you have any questions or concerns, please contact us at www.angelleye.com/support
+
+###################
 Introduction
 ###################
 
