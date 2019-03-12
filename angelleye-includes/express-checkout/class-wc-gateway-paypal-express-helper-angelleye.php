@@ -254,11 +254,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     add_action( 'woocommerce_review_order_after_submit', array( $this, 'angelleye_display_paypal_button_checkout_page' ) );
                 }
                 $this->is_order_completed = true;
+                add_filter('woocommerce_locate_template', array($this, 'angelleye_woocommerce_locate_template'), 10, 3);
+                if($this->wsc_cart_disable_smart_button == 'no') {
+                    add_action('xoo_wsc_after_footer_btns',  array($this, 'angelleye_xoo_cu_wsc_paypal_express'), 10);
+                }
             }
-            add_filter('woocommerce_locate_template', array($this, 'angelleye_woocommerce_locate_template'), 10, 3);
-            if($this->wsc_cart_disable_smart_button == 'no') {
-                add_action('xoo_wsc_after_footer_btns',  array($this, 'angelleye_xoo_cu_wsc_paypal_express'), 10);
-            }
+            
         } catch (Exception $ex) {
             
         }
