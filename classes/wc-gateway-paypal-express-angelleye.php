@@ -2413,7 +2413,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $error = array();
                         }                                                    
                         if(isset($error['error']) || isset($error['error_description'])) {                                                                                                            
-                            $error_message = '<div class="alert alert-warning" id="connect_with_paypal_error">'
+                            $error_message = '<div class="notice notice-error connect_with_paypal_error">'
                                     . '<p>' . __("PayPal Error","paypal-for-woocommerce") . '</p>'
                                     . '<p id="connect_with_paypal_error_p">' . __('Error :','paypal-for-woocommerce') . isset($error['error']) ? $error['error'] : '' . '</p>'
                                     . '<p id="connect_with_paypal_error_desc">' . __('Error :','paypal-for-woocommerce') . isset($error['error_description']) ? $error['error_description'] : '' . '</p>'
@@ -2421,7 +2421,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             update_option('pfw_connect_with_paypal_error', $error_message);
                          }
                         if(isset($ConnectPayPalArray['DATA']['RAWRESPONSE']['name']) || isset($ConnectPayPalArray['DATA']['RAWRESPONSE']['message'])){
-                            $error_message = '<div class="alert alert-warning" id="connect_with_paypal_error">'
+                            $error_message = '<div class="notice notice-error connect_with_paypal_error">'
                                     . '<p>' . __('PayPal Error','paypal-for-woocommerce') . '</p>'
                                     . '<p id="connect_with_paypal_error_p">' . __('Error :','paypal-for-woocommerce') . $ConnectPayPalArray['DATA']['RAWRESPONSE']['name'] . '</p>'
                                     . '<p id="connect_with_paypal_error_desc">' . __('Error :','paypal-for-woocommerce') . $ConnectPayPalArray['DATA']['RAWRESPONSE']['message'] . '</p>'
