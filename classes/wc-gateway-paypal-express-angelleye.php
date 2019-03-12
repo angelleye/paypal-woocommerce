@@ -10,6 +10,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public static $log = false;
     public $checkout_fields;
     public $posted;
+    public $force_show_api_field = false;
 
     public function __construct() {
         $this->id = 'paypal_express';
@@ -182,6 +183,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function admin_options() {
+        $pfw_connect_with_paypal_error = get_option('pfw_connect_with_paypal_error', '');
+        if( !empty($pfw_connect_with_paypal_error) ) {
+            echo $pfw_connect_with_paypal_error;
+            delete_option('pfw_connect_with_paypal_error');
+        }
         ?>
         <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
@@ -407,7 +413,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 production = jQuery('#woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature').closest('tr');
                 if (jQuery(this).is(':checked')) {
                     if (jQuery('#woocommerce_paypal_express_sandbox_api_username').val().length === 0 && jQuery('#woocommerce_paypal_express_sandbox_api_password').val().length === 0 && jQuery('#woocommerce_paypal_express_sandbox_api_signature').val().length === 0) {
-                        sandbox.hide();
+                        <?php if($this->force_show_api_field == false) { ?>
+                         sandbox.hide();
+                        <?php } else { ?>
+                            sandbox.show();
+                        <?php } ?>
                     } else {
                         sandbox.show();
                     }
@@ -423,7 +433,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     jQuery('#woocommerce_paypal_express_api_details').show();
                     jQuery('#woocommerce_paypal_express_api_details').next('p').show();
                     if (jQuery('#woocommerce_paypal_express_api_username').val().length === 0 && jQuery('#woocommerce_paypal_express_api_password').val().length === 0 && jQuery('#woocommerce_paypal_express_api_signature').val().length === 0) {
+                        <?php if($this->force_show_api_field == false) { ?>
                         production.hide();
+                        <?php } { ?>
+                            production.show();
+                        <?php } ?>
                     } else {
                         production.show();
                     }
@@ -2385,6 +2399,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $error_message = $response->get_error_message();
                     $html .= "Something went wrong: $error_message";
                 } else {
+                    $this->force_show_api_field = true;
                     $ConnectPayPalArray = json_decode( wp_remote_retrieve_body( $response ), true );
                     $this->log('Connect With PayPal ResponseData : ' . print_r($ConnectPayPalArray, true));
                     if ($ConnectPayPalArray['ACK'] == 'success') {
@@ -2398,20 +2413,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $error = array();
                         }                                                    
                         if(isset($error['error']) || isset($error['error_description'])) {                                                                                                            
-                            $html .= '<div class="alert alert-warning" id="connect_with_paypal_error">'
+                            $error_message = '<div class="alert alert-warning" id="connect_with_paypal_error">'
                                     . '<p>' . __("PayPal Error","paypal-for-woocommerce") . '</p>'
                                     . '<p id="connect_with_paypal_error_p">' . __('Error :','paypal-for-woocommerce') . isset($error['error']) ? $error['error'] : '' . '</p>'
                                     . '<p id="connect_with_paypal_error_desc">' . __('Error :','paypal-for-woocommerce') . isset($error['error_description']) ? $error['error_description'] : '' . '</p>'
                                     . '</div>';
-
-                            if(isset($ConnectPayPalArray['DATA']['RAWRESPONSE']['name']) || isset($ConnectPayPalArray['DATA']['RAWRESPONSE']['message'])){
-                                $html .= '<div class="alert alert-warning" id="connect_with_paypal_error">'
+                            update_option('pfw_connect_with_paypal_error', $error_message);
+                         }
+                        if(isset($ConnectPayPalArray['DATA']['RAWRESPONSE']['name']) || isset($ConnectPayPalArray['DATA']['RAWRESPONSE']['message'])){
+                            $error_message = '<div class="alert alert-warning" id="connect_with_paypal_error">'
                                     . '<p>' . __('PayPal Error','paypal-for-woocommerce') . '</p>'
                                     . '<p id="connect_with_paypal_error_p">' . __('Error :','paypal-for-woocommerce') . $ConnectPayPalArray['DATA']['RAWRESPONSE']['name'] . '</p>'
                                     . '<p id="connect_with_paypal_error_desc">' . __('Error :','paypal-for-woocommerce') . $ConnectPayPalArray['DATA']['RAWRESPONSE']['message'] . '</p>'
                                  . '</div>';
-
-                            }
+                            update_option('pfw_connect_with_paypal_error', $error_message);
                         }
                     }
                 }
