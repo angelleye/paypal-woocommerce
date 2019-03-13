@@ -58,7 +58,7 @@
             <h2><?php esc_html_e('More Free Tools', 'paypal-for-woocommerce'); ?></h2>
             <div class="wp-clearfix m10">
                 <p>
-                    <a href="https://wordpress.org/plugins/paypal-ipn/" target="_blank">
+                    <a href="https://www.angelleye.com/product/paypal-ipn-wordpress/" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/paypal-ipn-for-wordpress.jpg'; ?>" alt="">
                         <strong><?php echo __('PayPal IPN for WordPress', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
@@ -67,11 +67,20 @@
             </div>
             <div class="wp-clearfix m10">
                 <p>
-                    <a href="https://wordpress.org/plugins/paypal-wp-button-manager/" target="_blank">
+                    <a href="https://www.angelleye.com/product/wordpress-paypal-button-manager/" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/wordpress-paypal-button-manager.png'; ?>" alt="">
                         <strong><?php echo __('PayPal WP Button Manager', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
                     <?php esc_html_e('Create and manage secure PayPal payment buttons from within the WordPress admin panel.', 'paypal-for-woocommerce'); ?>
+                </p>
+            </div>
+            <div class="wp-clearfix m10">
+                <p>
+                    <a href="https://www.angelleye.com/product/paypal-here-woocommerce-pos/" target="_blank">
+                        <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/paypal-here-woocommerce-pos.png'; ?>" alt="">
+                        <strong><?php echo __('PayPal Here for WooCommerce', 'paypal-for-woocommerce'); ?></strong>
+                    </a><br>
+                    <?php esc_html_e('PayPal Here WooCommerce POS plugin brings the PayPal Here app and your WooCommerce web store together.', 'paypal-for-woocommerce'); ?>
                 </p>
             </div>
         </div>
