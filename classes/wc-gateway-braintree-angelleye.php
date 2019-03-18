@@ -813,24 +813,16 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 <?php } ?>
                                 braintree.hostedFields.create({
                                     client: client,
-                                    style: {
+                                    styles: {
                                         'input': {
-                                            'font-size': '1.5em',
-                                            'padding': '8px',
-                                            'background-repeat': 'no-repeat',
-                                            'background-position': 'right .618em center',
-                                            'background-size': '32px 20px',
-                                            'position': 'inherit',
-                                            'background-color': '#FFF',
-                                            'height': 'auto',
-                                            'width': 'auto'
+                                            'font-size': '1.3em'
                                         }
                                     },
                                     fields: {
                                       number: {
                                         selector: '#braintree-card-number',
                                         placeholder: '•••• •••• •••• ••••',
-                                        class:'wc-credit-card-form-card-number'
+                                        class:'input-text wc-credit-card-form-card-number'
                                       },
                                       cvv: {
                                         selector: '#braintree-card-cvc',
@@ -1593,7 +1585,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             return;
         }
         if ($this->enable_braintree_drop_in) {
-            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.10.0/js/dropin.min.js', array('jquery'), null, false);
+            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.16.0/js/dropin.min.js', array('jquery'), null, false);
         } else {
             wp_enqueue_style('braintree_checkout', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/braintree-checkout.css', array(), VERSION_PFW);
             wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.35.0/js/client.min.js', array('jquery'), null, true);
