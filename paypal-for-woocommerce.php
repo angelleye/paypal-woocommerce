@@ -103,7 +103,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $admin_order_payment = new AngellEYE_Admin_Order_Payment_Process();
             }
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, VERSION_PFW);
-            add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
             add_action( 'plugins_loaded', array($this, 'init'));
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
@@ -474,16 +473,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE';
             }
             return $methods;
-        }
-
-        /**
-         * Add additional parameters to the PayPal Standard checkout built into WooCommerce.
-         *
-         */
-        public function ae_paypal_standard_additional_parameters($paypal_args)
-        {
-            $paypal_args['bn'] = 'AngellEYE_SP_WooCommerce';
-            return $paypal_args;
         }
 
         /**
