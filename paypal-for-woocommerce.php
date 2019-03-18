@@ -56,6 +56,19 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ISU_URL')) {
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL', 'https://www.angelleye.com/');
 }
+if (!defined('AEU_ZIP_URL')) {
+    define('AEU_ZIP_URL', 'http://downloads.angelleye.com/ae-updater/angelleye-updater/angelleye-updater.zip');
+}
+
+
+
+/**
+ * Required functions
+ */
+if (!function_exists('angelleye_queue_update')) {
+    require_once( 'angelleye-includes/angelleye-functions.php' );
+}
+
 
 /**
  * Set global parameters
@@ -96,7 +109,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $admin_order_payment = new AngellEYE_Admin_Order_Payment_Process();
             }
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, VERSION_PFW);
-            add_filter( 'woocommerce_paypal_args', array($this,'ae_paypal_standard_additional_parameters'));
             add_action( 'plugins_loaded', array($this, 'init'));
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
@@ -183,8 +195,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $custom_actions = array(
                 //'configure' => sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wc-settings&tab=checkout' ), __( 'Configure', 'paypal-for-woocommerce' ) ),
                 'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://www.angelleye.com/category/docs/paypal-for-woocommerce/?utm_source=paypal_for_woocommerce&utm_medium=docs_link&utm_campaign=paypal_for_woocommerce', __( 'Docs', 'paypal-for-woocommerce' ) ),
-                'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/plugin/paypal-for-woocommerce/', __( 'Support', 'paypal-for-woocommerce' ) ),
-                'review'    => sprintf( '<a href="%s" target="_blank">%s</a>', 'http://wordpress.org/support/view/plugin-reviews/paypal-for-woocommerce', __( 'Write a Review', 'paypal-for-woocommerce' ) ),
+                'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/support', __( 'Support', 'paypal-for-woocommerce' ) ),
+                'review'    => sprintf( '<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/product/woocommerce-paypal-plugin/#tab-reviews', __( 'Write a Review', 'paypal-for-woocommerce' ) ),
             );
 
             // add the links to the front of the actions list
@@ -477,16 +489,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE';
             }
             return $methods;
-        }
-
-        /**
-         * Add additional parameters to the PayPal Standard checkout built into WooCommerce.
-         *
-         */
-        public function ae_paypal_standard_additional_parameters($paypal_args)
-        {
-            $paypal_args['bn'] = 'AngellEYE_SP_WooCommerce';
-            return $paypal_args;
         }
 
         /**
