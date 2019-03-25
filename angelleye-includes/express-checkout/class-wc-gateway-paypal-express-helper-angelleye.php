@@ -503,6 +503,11 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     return $new_sorted_gateways;
                 }
             }
+            if ( is_cart() || ( is_checkout() && ! is_checkout_pay_page() ) ) {
+                if ( isset( $gateways['paypal_express'] ) && ( 0 >= WC()->cart->total ) ) {
+                        unset( $gateways['paypal_express'] );
+                }
+            }
             return $gateways;
         } catch (Exception $ex) {
             
@@ -1330,6 +1335,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         return $template;
     }
     public function angelleye_display_paypal_button_checkout_page() {
+        if( 0 >= WC()->cart->total ) {
+            return;
+        }
+        if( $this->show_on_checkout != 'regular' && $this->show_on_checkout != 'both') {
+            return;
+        }
         wp_enqueue_script('angelleye-in-context-checkout-js');
         wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
         ?>
