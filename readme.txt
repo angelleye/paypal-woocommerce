@@ -135,6 +135,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjusts the way order properties are accessed. ([PFWA-164](https://github.com/angelleye/paypal-woocommerce/pull/1300))
 * Tweak - Adds feedback request when deactivating the plugin. ([PFWA-2](https://github.com/angelleye/paypal-woocommerce/pull/1291))
 * Tweak - Updates plugin action links. ([PFWA-161](https://github.com/angelleye/paypal-woocommerce/pull/1295)) ([PFWA-18](https://github.com/angelleye/paypal-woocommerce/pull/1296))
+* Tweak - Updates links in settings sidebar and plugin action links. ([PFWA-34](https://github.com/angelleye/paypal-woocommerce/pull/1302))
 * Fix - Resolves an issue with Braintree token payments. ([PFW-357](https://github.com/angelleye/paypal-woocommerce/pull/1280)) ([PFW-372](https://github.com/angelleye/paypal-woocommerce/pull/1284)) ([PFWA-24](https://github.com/angelleye/paypal-woocommerce/pull/1298))
 * Fix - Adjusts credit card number validation logic to resolve rare occurrences of false-negatives. ([PFW-369](https://github.com/angelleye/paypal-woocommerce/pull/1283))
 * Fix - Resolves a compatibility issue with Woo Subscriptions where payments were triggered when payment method was updated by user. ([PFWA-15](https://github.com/angelleye/paypal-woocommerce/pull/1287))
