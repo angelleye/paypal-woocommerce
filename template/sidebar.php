@@ -2,7 +2,7 @@
     <div id="sidebar" class="angelleye-sidebar">
         <div class="angelleye_content_cell_title angelleye-sidebar__title">
             <?php
-            printf(esc_html__('%1$s recommendations for you', 'paypal-for-woocommerce'), 'Angell EYE');
+            printf(esc_html__('%1$s Recommendations', 'paypal-for-woocommerce'), 'Angell EYE');
             ?>
         </div>
         <div class="angelleye-sidebar__section m10">
