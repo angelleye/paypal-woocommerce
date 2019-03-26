@@ -55,6 +55,18 @@
             </div>
         </div>
         <div class="angelleye-sidebar__section m10">
+            <h2><?php esc_html_e('Become an Affiliate', 'paypal-for-woocommerce'); ?></h2>
+            <div class="wp-clearfix m10">
+                <p>
+                    <a href="https://www.angelleye.com/affiliate-area/?utm_source=paypal_for_woocommerce&utm_medium=sidebar" target="_blank">
+                        <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/angelleye_affiliate.png'; ?>" alt="">
+                        <strong><?php echo __('Affiliate Sign Up', 'paypal-for-woocommerce'); ?></strong>
+                    </a><br>
+                    <?php esc_html_e('Use your voice to inspire entrepreneurship with the Angell EYE Affiliate Program, Our affiliates include entrepreneurs, educators, influencers, and content creators.', 'paypal-for-woocommerce'); ?>
+                </p>
+            </div>
+        </div>
+        <div class="angelleye-sidebar__section m10">
             <h2><?php esc_html_e('More Free Tools', 'paypal-for-woocommerce'); ?></h2>
             <div class="wp-clearfix m10">
                 <p>
@@ -114,18 +126,6 @@
                         <strong><?php echo __('Checkout for WooCommerce', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
                     <?php esc_html_e('Checkout for WooCommerce replaces your checkout page with a beautiful, responsive, and conversion optimized design. Works with every theme.', 'paypal-for-woocommerce'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="angelleye-sidebar__section m10">
-            <h2><?php esc_html_e('Become an Affiliate', 'paypal-for-woocommerce'); ?></h2>
-            <div class="wp-clearfix m10">
-                <p>
-                    <a href="https://www.angelleye.com/affiliate-area/?utm_source=paypal_for_woocommerce&utm_medium=sidebar" target="_blank">
-                        <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/angelleye_affiliate.png'; ?>" alt="">
-                        <strong><?php echo __('Affiliate Sign Up', 'paypal-for-woocommerce'); ?></strong>
-                    </a><br>
-                    <?php esc_html_e('Use your voice to inspire entrepreneurship with the Angell EYE Affiliate Program, Our affiliates include entrepreneurs, educators, influencers, and content creators.', 'paypal-for-woocommerce'); ?>
                 </p>
             </div>
         </div>
