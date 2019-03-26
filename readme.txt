@@ -138,6 +138,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue with Braintree token payments. ([PFW-357](https://github.com/angelleye/paypal-woocommerce/pull/1280)) ([PFW-372](https://github.com/angelleye/paypal-woocommerce/pull/1284)) ([PFWA-24](https://github.com/angelleye/paypal-woocommerce/pull/1298))
 * Fix - Adjusts credit card number validation logic to resolve rare occurrences of false-negatives. ([PFW-369](https://github.com/angelleye/paypal-woocommerce/pull/1283))
 * Fix - Resolves a compatibility issue with Woo Subscriptions where payments were triggered when payment method was updated by user. ([PFWA-15](https://github.com/angelleye/paypal-woocommerce/pull/1287))
+* Fix - Resolves an issue where the PayPal Smart Buttons would show up on the Woo checkout page during $0.00 free orders. ([PFWA-165](https://github.com/angelleye/paypal-woocommerce/pull/1301))
 
 = 1.5.7 - 01.20.2019 =
 * Fix - Adjustments to coincide with recent Woo changes and resolve PayPal button performance issues. ([PFW-356](https://github.com/angelleye/paypal-woocommerce/pull/1274))
