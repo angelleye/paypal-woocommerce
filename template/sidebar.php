@@ -62,7 +62,7 @@
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/angelleye_affiliate.png'; ?>" alt="">
                         <strong><?php echo __('Affiliate Sign Up', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
-                    <?php esc_html_e('Use your voice to inspire entrepreneurship with the Angell EYE Affiliate Program, Our affiliates include entrepreneurs, educators, influencers, and content creators.', 'paypal-for-woocommerce'); ?>
+                    <?php esc_html_e('Use your voice to inspire entrepreneurship with the Angell EYE Affiliate Program. Our affiliates include entrepreneurs, educators, influencers, and content creators.', 'paypal-for-woocommerce'); ?>
                 </p>
             </div>
         </div>
