@@ -739,7 +739,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->centinel_client->add("ProcessorId", $this->centinel_pid);
             $this->centinel_client->add("MerchantId", $this->centinel_mid);
             $this->centinel_client->add("TransactionPwd", $this->centinel_pwd);
-            $this->centinel_client->add("TransactionType", 'C');
+            $this->centinel_client->add("TransactionType", 'CC');
             $this->centinel_client->add('OrderNumber', $order_id);
             $this->centinel_client->add('Amount', $order->get_total() * 100);
             $this->centinel_client->add('CurrencyCode', $this->iso4217[version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()]);
@@ -942,11 +942,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $centinel->cavv = $this->get_centinel_value("Cavv");
                 $centinel->eciflag = $this->get_centinel_value("EciFlag");
                 $centinel->enrolled = WC()->session->get('Centinel_Enrolled');
-
                 $this->do_payment($order, $card->number, $card->type, $card->exp_month, $card->exp_year, $card->cvc, $centinel->paresstatus, "Y", $centinel->cavv, $centinel->eciflag, $centinel->xid, $card->start_month, $card->start_year);
                 $this->clear_centinel_session();
-                wp_redirect($redirect_url);
-                exit;
+                wp_safe_redirect($redirect_url);
+                exit();
 
             } else {
                 $order->update_status('failed', sprintf(apply_filters('angelleye_pc_3d_secure_authentication', __('3D Secure error: %s', 'woocommerce-gateway-paypal-pro')), $this->get_centinel_value("ErrorDesc")));
