@@ -2269,11 +2269,11 @@ class AngellEYE_Utility {
                     . '<div class="angelleye-notice-message">' 
                         . '<h3>' . $response_data->ans_message_title .'</h3>'
                         . '<div class="angelleye-notice-message-inner">' 
-                            . $response_data->ans_message_description
+                            . '<p>' . $response_data->ans_message_description . '</p>'
+                            . '<div class="angelleye-notice-action"><a target="_blank" href="'.$response_data->ans_button_url.'" class="button button-primary">'.$response_data->ans_button_label.'</a></div>'
                         . '</div>' 
                     . '</div>'
                     . '<div class="angelleye-notice-cta">'
-                    . '<a href="'.$response_data->ans_button_url.'" class="button button-primary">'.$response_data->ans_button_label.'</a>'
                     . '<button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="'.$response_data->id.'">Dismiss</button>'
                     . '</div>'
                 . '</div>';
