@@ -51,7 +51,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH')) {
     define('PAYPAL_FOR_WOOCOMMERCE_DIR_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ));
 }
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL')) {
-    define('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL', 'https://www.angelleye.com/');
+    define('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL', 'http://localhost/activation/');
 }
 if (!defined('AEU_ZIP_URL')) {
     define('AEU_ZIP_URL', 'https://updates.angelleye.com/ae-updater/angelleye-updater/angelleye-updater.zip');
