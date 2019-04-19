@@ -54,7 +54,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL', 'https://www.angelleye.com/');
 }
 if (!defined('AEU_ZIP_URL')) {
-    define('AEU_ZIP_URL', 'http://downloads.angelleye.com/ae-updater/angelleye-updater/angelleye-updater.zip');
+    define('AEU_ZIP_URL', 'https://updates.angelleye.com/ae-updater/angelleye-updater/angelleye-updater.zip');
 }
 
 /**
@@ -410,13 +410,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 deactivate_plugins(plugin_basename(__FILE__));
             }
             delete_option('angelleye_paypal_woocommerce_submited_feedback');
-            $opt_in_log = get_option('angelleye_send_opt_in_logging_details', 'no');
-            if($opt_in_log == 'yes') {
-                $log_url = $_SERVER['HTTP_HOST'];
-                $log_plugin_id = 1;
-                $log_activation_status = 1;
-                wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);               
-            } 
+            $log_url = $_SERVER['HTTP_HOST'];
+            $log_plugin_id = 1;
+            $log_activation_status = 1;
+            wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);               
         }
 
         /**
@@ -424,16 +421,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         function deactivate_paypal_for_woocommerce() {
             // Log activation in Angell EYE database via web service.
-            $opt_in_log = get_option('angelleye_send_opt_in_logging_details', 'no');
+            
             $is_submited_feedback = get_option('angelleye_paypal_woocommerce_submited_feedback', 'no');
-            if($opt_in_log == 'yes') {
-                if($is_submited_feedback == 'no') {
-                    $log_url = $_SERVER['HTTP_HOST'];
-                    $log_plugin_id = 1;
-                    $log_activation_status = 0;
-                    wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
-                }
-            } 
+            
+            if($is_submited_feedback == 'no') {
+                $log_url = $_SERVER['HTTP_HOST'];
+                $log_plugin_id = 1;
+                $log_activation_status = 0;
+                wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
+            }
+            
         }
 
         /**
