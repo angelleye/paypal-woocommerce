@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
-Tested up to: 5.1
-Stable tag: 1.5.8
+Tested up to: 5.1.1
+Stable tag: 2.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 2.0.0 - 04.06.2019 =
+= 2.0.0 - 04.23.2019 =
 * Feature - Adds compatibility for our Updater plugin to get future notices and automated updates. ([PFWA-31](https://github.com/angelleye/paypal-woocommerce/pull/1292)) ([PFW-396](https://github.com/angelleye/paypal-woocommerce/pull/1305))
 * Feature - Adds push notification system and settings sidebar. ([PFW-343](https://github.com/angelleye/paypal-woocommerce/pull/1279)) ([PFWA-3](https://github.com/angelleye/paypal-woocommerce/pull/1285)) ([PFW-399](https://github.com/angelleye/paypal-woocommerce/pull/1307))
 * Feature - Adds ability to disable PayPal Smart Buttons in the Woo Checkout page gateway list. ([PFW-359](https://github.com/angelleye/paypal-woocommerce/pull/1277))
