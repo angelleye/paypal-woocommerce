@@ -2,11 +2,13 @@
 Update About WordPress Directory
 ###################
 
-Going forward, our plugins will be self-hosted, and updates will be provided through our Updater plugin:  https://www.angelleye.com/product/angelleye-helper-wordpress-updater/
+Can't find us on WordPress?  Don't worry, we're still here!
 
-Please install the Updater, and you will continue to receive notices and automated updates as usual.  
+All of our plugins are now hosted on our own servers, giving us more freedom and flexibility to bring you the features you are asking for.
 
-If you have any questions or concerns, please contact us at www.angelleye.com/support
+Please install the `Angell EYE Updater <https://www.angelleye.com/product/angelleye-updater-wordpress/>`_ in order to receive notices and automated updates going forward.
+
+If you have any questions or concerns, please `create a ticket <www.angelleye.com/support>`_ and we'll be happy to get you taken care of.
 
 ###################
 Introduction
@@ -14,9 +16,9 @@ Introduction
 
 This is a PayPal extension for the WooCommerce shopping cart system on WordPress.
 
-*******************
-Requirements
-*******************
+**********************
+Minimum Requirements
+**********************
 
 -  PHP version 5.6+.
 -  WordPress 3.8+
@@ -26,19 +28,12 @@ Requirements
 Installation
 ************
 
-Automatic Installation
-----------------------
-Automatic installation is the easiest option as WordPress handles the file transfers itself and you don't need to leave your web browser. To do an automatic install of PayPal for WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
-
-In the search field type PayPal for WooCommerce and click Search Plugins. Once you've found our plugin you can view details about it such as the the point release, rating and description. Most importantly of course, you can install it by simply clicking Install Now.
-
-Manual Installation
--------------------
- 1. Unzip the files and upload the folder into your plugins folder (wp-content/plugins/) overwriting old versions if they exist
- 2. Activate the plugin in your WordPress admin area.
- 3. Open the settings page for WooCommerce and click the "Checkout" tab
- 4. Click on the sub-item for PayPal Express Checkout or Payments Pro.
- 5. Configure your settings accordingly.
+ 1. Download the plugin from GitHub or `through our website <https://www.angelleye.com/product/woocommerce-paypal-plugin/>`_.
+ 2. Unzip the files and upload the folder into your plugins folder (wp-content/plugins/) overwriting old versions if they exist.
+ 3. Activate the plugin in your WordPress admin panel.
+ 4. Open the settings page for WooCommerce and click the "Payments" tab
+ 5. Click to manage the Payment Gateway you would like to setup.
+ 6. Configure your settings accordingly, and Save!
 
 *********
 Setup
@@ -59,8 +54,17 @@ You'll see the following Checkout Options have been added.
 For each one that you would like to activate, simply click into that section, enter your API credentials, and setup the options however you like.
 
 *********
+Updates
+*********
+
+To receive notices and automated updates for the plugin, make sure to install our `Updater plugin <https://www.angelleye.com/how-to-get-updates-angelleye-wordpress-plugins/>`_.
+
+This will allow you to maintain the plugin with automated updates the same way you do any other plugin in WordPress.
+
+*********
 Resources
 *********
 
+-  `How to Update Angell EYE Plugins <https://www.angelleye.com/how-to-get-updates-angelleye-wordpress-plugins/>`_
 -  `Obtain Sandbox API Credentials <https://www.sandbox.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run>`_
 -  `Obtain Live API Credentials <https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run>`_
