@@ -23,26 +23,9 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->method_title = __('PayPal Payments Pro 2.0 (PayFlow)', 'paypal-for-woocommerce');
         $this->method_description = __('PayPal Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce');
         $this->has_fields = true;
-        $this->liveurl_3ds = 'https://paypal.cardinalcommerce.com/maps/txns.asp';
-        $this->testurl_3ds = 'https://centineltest.cardinalcommerce.com/maps/txns.asp';
+
         $this->allowed_currencies = apply_filters('woocommerce_paypal_pro_allowed_currencies', array('USD', 'EUR', 'GBP', 'CAD', 'JPY', 'AUD', 'NZD'));
-        $this->iso4217 = apply_filters('woocommerce_paypal_pro_iso_currencies', array(
-            'AUD' => '036',
-            'CAD' => '124',
-            'CZK' => '203',
-            'DKK' => '208',
-            'EUR' => '978',
-            'HUF' => '348',
-            'JPY' => '392',
-            'NOK' => '578',
-            'NZD' => '554',
-            'PLN' => '985',
-            'GBP' => '826',
-            'SGD' => '702',
-            'SEK' => '752',
-            'CHF' => '756',
-            'USD' => '840'
-        ));
+
 
         // Load the form fields
         $this->init_form_fields();
@@ -118,18 +101,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
         $this->default_order_status = $this->get_option('default_order_status', 'Processing');
-        $this->enable_3dsecure = 'yes' === $this->get_option('enable_3dsecure', 'no');
-        $this->liability_shift = 'yes' === $this->get_option('liability_shift', 'no');
-        
-        if ($this->enable_3dsecure) {
-            $this->centinel_pid = $this->get_option('centinel_pid');
-            $this->centinel_mid = $this->get_option('centinel_mid');
-            $this->centinel_pwd = $this->get_option('centinel_pwd');
-            if (empty($this->centinel_pid) || empty($this->centinel_mid) || empty($this->centinel_pwd)) {
-                $this->enable_3dsecure = false;
-            }
-            $this->centinel_url = $this->testmode == false ? $this->liveurl_3ds : $this->testurl_3ds;
-        }
 
         /* 2.0.0 */
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
@@ -154,7 +125,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->fraud_codes = array('125', '128', '131', '126', '127');
         $this->fraud_error_codes = array('125', '128', '131');
         $this->fraud_warning_codes = array('126', '127');
-        add_action('woocommerce_api_wc_gateway_paypal_pro_payflow_angelleye', array($this, 'handle_3dsecure'));
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
 
     }
@@ -162,18 +132,18 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
     public function add_log($message, $level = 'info') {
         if ($this->debug) {
             if (version_compare(WC_VERSION, '3.0', '<')) {
-                if (empty($this->add_log)) {
-                    $this->add_log = new WC_Logger();
+                if (empty($this->log)) {
+                    $this->log = new WC_Logger();
                 }
-                $this->add_log->add('paypal_pro_payflow', $message);
+                $this->log->add('paypal_pro_payflow', $message);
             } else {
-                if (empty($this->add_log)) {
-                    $this->add_log = wc_get_logger();
+                if (empty($this->log)) {
+                    $this->log = wc_get_logger();
                 }
-                $this->add_log->log($level,sprintf(__('PayPal for WooCommerce Version: %s', 'paypal-for-woocommerce'), VERSION_PFW),array('source' => 'paypal_pro_payflow'));
-                $this->add_log->log($level,sprintf(__('WooCommerce Version: %s', 'paypal-for-woocommerce'), WC_VERSION),array('source' => 'paypal_pro_payflow'));
-                $this->add_log->log($level,'Test Mode: ' . $this->testmode,array('source' => 'paypal_pro_payflow'));
-                $this->add_log->log($level, $message, array('source' => 'paypal_pro_payflow'));
+                $this->log->log($level,sprintf(__('PayPal for WooCommerce Version: %s', 'paypal-for-woocommerce'), VERSION_PFW),array('source' => 'paypal_pro_payflow'));
+                $this->log->log($level,sprintf(__('WooCommerce Version: %s', 'paypal-for-woocommerce'), WC_VERSION),array('source' => 'paypal_pro_payflow'));
+                $this->log->log($level,'Test Mode: ' . $this->testmode,array('source' => 'paypal_pro_payflow'));
+                $this->log->log($level, $message, array('source' => 'paypal_pro_payflow'));
             }
         }
     }
@@ -302,38 +272,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'custom_attributes' => array( 'autocomplete' => 'off'),
-            ),
-            'enable_3dsecure' => array(
-                'title' => __('3DSecure', 'paypal-for-woocommerce'),
-                'label' => __('Enable 3DSecure', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)', 'paypal-for-woocommerce'),
-                'default' => 'no'
-            ),
-            'centinel_pid' => array(
-                'title' => __('Centinel PID', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Processor ID.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'centinel_mid' => array(
-                'title' => __('Centinel MID', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Merchant ID.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'centinel_pwd' => array(
-                'title' => __('Transaction Password', 'paypal-for-woocommerce'),
-                'type' => 'password',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Transaction Password.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'liability_shift' => array(
-                'title' => __('Liability Shift', 'paypal-for-woocommerce'),
-                'label' => __('Require liability shift', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce'),
-                'default' => 'no'
             ),
             'subtotal_mismatch_behavior' => array(
 		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
@@ -575,119 +513,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
      */
     function process_payment($order_id) {
         $order = new WC_Order($order_id);
-        $this->add_log('Processing order #' . $order_id);
         $card = $this->get_posted_card();
-        
-        if (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') {
-            $this->enable_3dsecure = false;
-        }
-        
-        if ($this->enable_3dsecure) {
-            if (!class_exists('CentinelClient')) include_once('lib/CentinelClient.php');
-            $this->clear_centinel_session();
-            $this->centinel_client = new CentinelClient;
-            $this->centinel_client->add("MsgType", "cmpi_lookup");
-            $this->centinel_client->add("Version", "1.7");
-            $this->centinel_client->add("ProcessorId", $this->centinel_pid);
-            $this->centinel_client->add("MerchantId", $this->centinel_mid);
-            $this->centinel_client->add("TransactionPwd", $this->centinel_pwd);
-            $this->centinel_client->add("TransactionType", 'C');
-            $this->centinel_client->add('OrderNumber', $order_id);
-            $this->centinel_client->add('Amount', $order->get_total() * 100);
-            $this->centinel_client->add('CurrencyCode', $this->iso4217[version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()]);
-            $this->centinel_client->add('TransactionMode', 'S');
-            $this->centinel_client->add('ProductCode', 'PHY');
-            $this->centinel_client->add('CardNumber', $card->number);
-            WC()->session->set('CardNumber', $card->number);
-            $this->centinel_client->add('CardExpMonth', $card->exp_month);
-            WC()->session->set('CardExpMonth', $card->exp_month);
-            $this->centinel_client->add('CardExpYear', $card->exp_year);
-            WC()->session->set('CardExpYear', $card->exp_year);
-            $this->centinel_client->add('CardCode', $card->cvc);
-            WC()->session->set('CardCode', $card->cvc);
-
-            $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
-            $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
-            $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
-            $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
-            $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
-            $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
-            $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
-            $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
-            $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
-
-            $this->centinel_client->add('BillingFirstName', $billing_first_name);
-            $this->centinel_client->add('BillingLastName', $billing_last_name);
-            $this->centinel_client->add('BillingAddress1', $billing_address_1);
-            $this->centinel_client->add('BillingAddress2', $billing_address_2);
-            $this->centinel_client->add('BillingCity', $billing_city);
-            $this->centinel_client->add('BillingState', $billing_state);
-            $this->centinel_client->add('BillingPostalCode', $billing_postcode);
-            $this->centinel_client->add('BillingCountryCode', $billing_country);
-            $this->centinel_client->add('BillingPhone', $billing_phone);
-            $this->centinel_client->add('ShippingFirstName', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name());
-            $this->centinel_client->add('ShippingLastName', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name());
-            $this->centinel_client->add('ShippingAddress1', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1());
-            $this->centinel_client->add('ShippingAddress2', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2());
-            $this->centinel_client->add('ShippingCity', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city());
-            $this->centinel_client->add('ShippingState', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state());
-            $this->centinel_client->add('ShippingPostalCode', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode());
-            $this->centinel_client->add('ShippingCountryCode', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country());
-
-            // Items
-            $item_loop = 0;
-            if (sizeof($order->get_items()) > 0) {
-                foreach ($order->get_items() as $item) {
-                    $item_loop++;
-                    $this->centinel_client->add('Item_Name_' . $item_loop, $item['name']);
-                    $this->centinel_client->add('Item_Price_' . $item_loop, number_format($order->get_item_total($item, true, true) * 100), 2, '.', '');
-                    $this->centinel_client->add('Item_Quantity_' . $item_loop, $item['qty']);
-                    $this->centinel_client->add('Item_Desc_' . $item_loop, $item['name']);
-                }
-            }
-
-            // Send request
-            $this->centinel_client->sendHttp($this->centinel_url, "5000", "15000");
-
-            $this->add_log('Centinal client request: ' . print_r($this->centinel_client->request, true));
-            $this->add_log('Centinal client response: ' . print_r($this->centinel_client->response, true));
-
-
-            // Save response in session
-            WC()->session->set('Centinel_ErrorNo', $this->get_centinel_value("ErrorNo"));
-            WC()->session->set('Centinel_ErrorDesc', $this->get_centinel_value("ErrorDesc"));
-            WC()->session->set('Centinel_TransactionId', $this->get_centinel_value("TransactionId"));
-            WC()->session->set('Centinel_OrderId', $this->get_centinel_value("OrderId"));
-            WC()->session->set('Centinel_Enrolled', $this->get_centinel_value("Enrolled"));
-            WC()->session->set('Centinel_ACSUrl', $this->get_centinel_value("ACSUrl"));
-            WC()->session->set('Centinel_Payload', $this->get_centinel_value("Payload"));
-            WC()->session->set('Centinel_EciFlag', $this->get_centinel_value("EciFlag"));
-            WC()->session->set('Centinel_card_start_month', $card->start_month);
-            WC()->session->set('Centinel_card_start_year', $card->start_year);
-
-
-            if ($this->get_centinel_value("ErrorNo")) {
-                wc_add_notice(apply_filters('angelleye_pc_process_payment_authentication', __('Error in 3D secure authentication: ', 'woocommerce-gateway-paypal-pro') . $this->get_centinel_value("ErrorDesc")), 'error');
-                return;
-            }
-
-            if ('Y' === $this->get_centinel_value("Enrolled")) {
-                $this->add_log('Doing 3dsecure payment authorization');
-                $this->add_log('ASCUrl: ' . $this->get_centinel_value("ACSUrl"));
-                $this->add_log('PaReq: ' . $this->get_centinel_value("Payload"));
-
-                return array(
-                    'result' => 'success',
-                    'redirect' => add_query_arg(array('acs' => $order_id), WC()->api_request_url('WC_Gateway_PayPal_Pro_PayFlow_AngellEYE', is_ssl()))
-                );
-            } elseif ($this->liability_shift && 'N' !== $this->get_centinel_value("Enrolled")) {
-                wc_add_notice(apply_filters('angelleye_pc_process_payment_authentication_unavailable', __('Authentication unavailable. Please try a different payment method or card.', 'woocommerce-gateway-paypal-pro')), 'error');
-                return;
-            }
-
-        }
-        
-        
         // Do payment with paypal
         return $this->do_payment($order, $card->number, $card->exp_month . $card->exp_year, $card->cvc);
     }
@@ -1952,135 +1778,4 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
         }
     }
-    
-    /**
-     * Auth 3dsecure
-     */
-    public function handle_3dsecure() {
-        if (!empty($_GET['acs'])) {
-            $order_id = wc_clean($_GET['acs']);
-            $acsurl = WC()->session->get('Centinel_ACSUrl');
-            $payload = WC()->session->get('Centinel_Payload');
-            ?>
-            <html>
-                <head>
-                    <title>3DSecure Payment Authorisation</title>
-                </head>
-                <body>
-                    <form name="frmLaunchACS" id="3ds_submit_form" method="POST" action="<?php echo esc_url($acsurl); ?>">
-                        <input type="hidden" name="PaReq" value="<?php echo esc_attr($payload); ?>">
-                        <input type="hidden" name="TermUrl"
-                               value="<?php echo esc_attr(WC()->api_request_url('WC_Gateway_PayPal_Pro_PayFlow_AngellEYE', is_ssl())); ?>">
-                        <input type="hidden" name="MD" value="<?php echo absint($order_id); ?>">
-                        <noscript>
-                        <input type="submit" class="button" id="3ds_submit" value="Submit"/>
-                        </noscript>
-                    </form>
-                    <script>
-                        document.frmLaunchACS.submit();
-                    </script>
-                </body>
-            </html>
-            <?php
-            exit;
-        } else {
-            $this->authorise_3dsecure();
-        }
-    }
-    
-    public function authorise_3dsecure() {
-
-        if (!class_exists('CentinelClient')) {
-            include_once('lib/CentinelClient.php');
-        }
-
-        $pares = !empty($_POST['PaRes']) ? $_POST['PaRes'] : '';
-        $order_id = absint(!empty($_POST['MD']) ? $_POST['MD'] : 0);
-        $order = wc_get_order($order_id);
-        $redirect_url = $this->get_return_url($order);
-
-        $this->add_log('authorise_3dsecure() for order ' . absint($order_id));
-        $this->add_log('authorise_3dsecure() PARes ' . print_r($pares, true));
-
-        /*         * *************************************************************************** */
-        /*                                                                            */
-        /*    If the PaRes is Not Empty then process the cmpi_authenticate message    */
-        /*                                                                            */
-        /*         * *************************************************************************** */
-        try {
-            // If the PaRes is Not Empty then process the cmpi_authenticate message
-            if (!empty($pares)) {
-
-                $this->centinel_client = new CentinelClient;
-                $this->centinel_client->add('MsgType', 'cmpi_authenticate');
-                $this->centinel_client->add("Version", "1.7");
-                $this->centinel_client->add("ProcessorId", $this->centinel_pid);
-                $this->centinel_client->add("MerchantId", $this->centinel_mid);
-                $this->centinel_client->add("TransactionPwd", $this->centinel_pwd);
-                $this->centinel_client->add("TransactionType", 'C');
-                $this->centinel_client->add('TransactionId', WC()->session->get('Centinel_TransactionId'));
-                $this->centinel_client->add('PAResPayload', $pares);
-                $this->centinel_client->sendHttp($this->centinel_url, "5000", "15000");
-
-                $response_to_log = $this->centinel_client->response;
-                $response_to_log['CardNumber'] = 'XXX';
-                $response_to_log['CardCode'] = 'XXX';
-                $this->add_log('Centinal transaction ID ' . WC()->session->get('Centinel_TransactionId'));
-                $this->add_log('Centinal client request : ' . print_r($this->centinel_client->request, true));
-                $this->add_log('Centinal client response: ' . print_r($response_to_log, true));
-                $this->add_log('3dsecure pa_res_status: ' . $this->get_centinel_value("PAResStatus"));
-
-            }
-
-            if ($this->liability_shift && ($this->get_centinel_value("EciFlag") == '07' || $this->get_centinel_value("EciFlag") == '01')) {
-                $order->update_status('failed', __('3D Secure error: No liability shift', 'woocommerce-gateway-paypal-pro'));
-                throw new Exception(apply_filters('angelleye_pc_3d_authentication_unavailable', __('Authentication unavailable.  Please try a different payment method or card.', 'woocommerce-gateway-paypal-pro')));
-            }
-
-            if (!$this->get_centinel_value("ErrorNo") && in_array($this->get_centinel_value("PAResStatus"), array('Y', 'A', 'U')) && "Y" === $this->get_centinel_value("SignatureVerification")) {
-
-                // If we are here we can process the card
-
-                $card = new stdClass();
-                $card->number = $this->get_centinel_value("CardNumber");
-                $card->type = '';
-                $card->cvc = $this->get_centinel_value("CardCode");
-                $card->exp_month = $this->get_centinel_value("CardExpMonth");
-                $card->exp_year = $this->get_centinel_value("CardExpYear");
-                $card->start_month = WC()->session->get('Centinel_card_start_month');
-                $card->start_year = WC()->session->get('Centinel_card_start_year');
-
-                $centinel = new stdClass();
-                $centinel->paresstatus = $this->get_centinel_value("PAResStatus");
-                $centinel->xid = $this->get_centinel_value("Xid");
-                $centinel->cavv = $this->get_centinel_value("Cavv");
-                $centinel->eciflag = $this->get_centinel_value("EciFlag");
-                $centinel->enrolled = WC()->session->get('Centinel_Enrolled');
-
-                $this->do_payment($order, $card->number, $card->type, $card->exp_month, $card->exp_year, $card->cvc, $centinel->paresstatus, "Y", $centinel->cavv, $centinel->eciflag, $centinel->xid, $card->start_month, $card->start_year);
-                $this->clear_centinel_session();
-                wp_redirect($redirect_url);
-                exit;
-
-            } else {
-                $order->update_status('failed', sprintf(apply_filters('angelleye_pc_3d_secure_authentication', __('3D Secure error: %s', 'woocommerce-gateway-paypal-pro')), $this->get_centinel_value("ErrorDesc")));
-                throw new Exception(__('Payer Authentication failed. Please try a different payment method.', 'woocommerce-gateway-paypal-pro'));
-            }
-        } catch (Exception $e) {
-            wc_add_notice($e->getMessage(), 'error');
-            wp_redirect($order->get_checkout_payment_url(true));
-            exit;
-        }
-    }
-    
-    public function get_centinel_value($key) {
-        $value = $this->centinel_client->getValue($key);
-        if (empty($value)) {
-            $value = WC()->session->get($key);
-        }
-        $value = wc_clean($value);
-        return $value;
-    }
-    
-    
 }
