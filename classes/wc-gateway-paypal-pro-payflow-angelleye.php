@@ -1285,7 +1285,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'tender' => 'C', // Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
                 'trxtype' => ($this->payment_action == 'Authorization' || $order->get_total() == 0 ) ? 'A' : 'S', // Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
                 'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()), // Required.  Amount of the transaction.  Must have 2 decimal places.
-                'currency' => get_woocommerce_currency(), //
+                'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), //
                 'comment1' => apply_filters('ae_pppf_custom_parameter', $customer_note, $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'comment2' => apply_filters('ae_pppf_comment2_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'recurring' => '', // Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring.
@@ -1710,7 +1710,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'acct' => $card->number,
                 'expdate' => $card->exp_month . $card->exp_year,
                 'amt' => '0.00',
-                'currency' => get_woocommerce_currency(),
+                'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 'cvv2' => $card->cvc,
                 'orderid' => '',
                 'orderdesc' => '',

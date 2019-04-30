@@ -1760,7 +1760,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()), // Required.  Total amount of order, including shipping, handling, and tax.
-            'currencycode' => get_woocommerce_currency(), // Required.  Three-letter currency code.  Default is USD.
+            'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // Required.  Three-letter currency code.  Default is USD.
             'insuranceamt' => '', // Total shipping insurance costs for this order.
             'shipdiscamt' => '0.00', // Shipping discount for the order, specified as a negative number.
             'handlingamt' => '0.00', // Total handling costs for the order.  If you specify handlingamt, you must also specify itemamt.
@@ -2130,7 +2130,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             );
             $PaymentDetails = array(
                 'amt' => 0,
-                'currencycode' => get_woocommerce_currency(),
+                'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
             );
             $PayPalRequestData = array(
                 'DPFields' => $DPFields,
