@@ -132,6 +132,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds push notification system and settings sidebar. ([PFW-343](https://github.com/angelleye/paypal-woocommerce/pull/1279)) ([PFWA-3](https://github.com/angelleye/paypal-woocommerce/pull/1285)) ([PFW-399](https://github.com/angelleye/paypal-woocommerce/pull/1307))
 * Feature - Adds ability to disable PayPal Smart Buttons in the Woo Checkout page gateway list. ([PFW-359](https://github.com/angelleye/paypal-woocommerce/pull/1277))
 * Feature - Woo Side Cart compatibility. ([PFWA-160](https://github.com/angelleye/paypal-woocommerce/pull/1293))
+* Feature - Adds 3DSecure to Website Payments Pro 3.0 (DoDirectPayment). ([PFW-16](https://github.com/angelleye/paypal-woocommerce/pull/1308))
 * Tweak - Adjusts the way order properties are accessed. ([PFWA-164](https://github.com/angelleye/paypal-woocommerce/pull/1300))
 * Tweak - Adds feedback request when deactivating the plugin. ([PFWA-2](https://github.com/angelleye/paypal-woocommerce/pull/1291))
 * Tweak - Updates plugin action links. ([PFWA-161](https://github.com/angelleye/paypal-woocommerce/pull/1295)) ([PFWA-18](https://github.com/angelleye/paypal-woocommerce/pull/1296))
