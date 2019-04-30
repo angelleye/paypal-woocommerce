@@ -89,8 +89,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
         $this->error_email_notify = $this->get_option('error_email_notify');
         $this->error_display_type = $this->get_option('error_display_type');
-        //$this->enable_3dsecure = 'yes' === $this->get_option('enable_3dsecure', 'no');
-        $this->enable_3dsecure = false;
+        $this->enable_3dsecure = 'yes' === $this->get_option('enable_3dsecure', 'no');
         $this->liability_shift = 'yes' === $this->get_option('liability_shift', 'no');
         $this->debug = 'yes' === $this->get_option('debug', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
@@ -276,6 +275,38 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'password',
                 'default' => '',
                 'custom_attributes' => array( 'autocomplete' => 'off'),
+            ),
+            'enable_3dsecure' => array(
+                'title' => __('3DSecure', 'paypal-for-woocommerce'),
+                'label' => __('Enable 3DSecure', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Allows UK merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
+            'centinel_pid' => array(
+                'title' => __('Centinel PID', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Processor ID.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'centinel_mid' => array(
+                'title' => __('Centinel MID', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Merchant ID.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'centinel_pwd' => array(
+                'title' => __('Transaction Password', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Transaction Password.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'liability_shift' => array(
+                'title' => __('Liability Shift', 'paypal-for-woocommerce'),
+                'label' => __('Require liability shift', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce'),
+                'default' => 'no'
             ),
             'error_display_type' => array(
                 'title' => __('Error Display Type', 'paypal-for-woocommerce'),
@@ -696,6 +727,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         /**
          * 3D Secure Handling
          */
+        if (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') {
+            $this->enable_3dsecure = false;
+        }
         if ($this->enable_3dsecure) {
             if (!class_exists('CentinelClient')) include_once('lib/CentinelClient.php');
             $this->clear_centinel_session();
@@ -705,7 +739,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->centinel_client->add("ProcessorId", $this->centinel_pid);
             $this->centinel_client->add("MerchantId", $this->centinel_mid);
             $this->centinel_client->add("TransactionPwd", $this->centinel_pwd);
-            $this->centinel_client->add("TransactionType", 'C');
+            $this->centinel_client->add("TransactionType", 'CC');
             $this->centinel_client->add('OrderNumber', $order_id);
             $this->centinel_client->add('Amount', $order->get_total() * 100);
             $this->centinel_client->add('CurrencyCode', $this->iso4217[version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()]);
@@ -908,11 +942,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $centinel->cavv = $this->get_centinel_value("Cavv");
                 $centinel->eciflag = $this->get_centinel_value("EciFlag");
                 $centinel->enrolled = WC()->session->get('Centinel_Enrolled');
-
                 $this->do_payment($order, $card->number, $card->type, $card->exp_month, $card->exp_year, $card->cvc, $centinel->paresstatus, "Y", $centinel->cavv, $centinel->eciflag, $centinel->xid, $card->start_month, $card->start_year);
                 $this->clear_centinel_session();
-                wp_redirect($redirect_url);
-                exit;
+                wp_safe_redirect($redirect_url);
+                exit();
 
             } else {
                 $order->update_status('failed', sprintf(apply_filters('angelleye_pc_3d_secure_authentication', __('3D Secure error: %s', 'woocommerce-gateway-paypal-pro')), $this->get_centinel_value("ErrorDesc")));
