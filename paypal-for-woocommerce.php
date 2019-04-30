@@ -15,7 +15,7 @@
  * Requires at least: 3.8
  * Tested up to: 5.1.1
  * WC requires at least: 3.0.0
- * WC tested up to: 3.6.1
+ * WC tested up to: 3.6.2
  *
  *************
  * Attribution
