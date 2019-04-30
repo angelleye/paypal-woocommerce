@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 2.0.0 - 04.23.2019 =
+= 2.0.0 - 04.30.2019 =
 * Feature - Adds compatibility for our Updater plugin to get future notices and automated updates. ([PFWA-31](https://github.com/angelleye/paypal-woocommerce/pull/1292)) ([PFW-396](https://github.com/angelleye/paypal-woocommerce/pull/1305))
 * Feature - Adds push notification system and settings sidebar. ([PFW-343](https://github.com/angelleye/paypal-woocommerce/pull/1279)) ([PFWA-3](https://github.com/angelleye/paypal-woocommerce/pull/1285)) ([PFW-399](https://github.com/angelleye/paypal-woocommerce/pull/1307))
 * Feature - Adds ability to disable PayPal Smart Buttons in the Woo Checkout page gateway list. ([PFW-359](https://github.com/angelleye/paypal-woocommerce/pull/1277))
@@ -140,6 +140,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Adjusts credit card number validation logic to resolve rare occurrences of false-negatives. ([PFW-369](https://github.com/angelleye/paypal-woocommerce/pull/1283))
 * Fix - Resolves a compatibility issue with Woo Subscriptions where payments were triggered when payment method was updated by user. ([PFWA-15](https://github.com/angelleye/paypal-woocommerce/pull/1287))
 * Fix - Resolves an issue where the PayPal Smart Buttons would show up on the Woo checkout page during $0.00 free orders. ([PFWA-165](https://github.com/angelleye/paypal-woocommerce/pull/1301))
+* Fix - Resolves a conflict with multi-currency sites and Woo Subscriptions payments. ([PFW-397](https://github.com/angelleye/paypal-woocommerce/pull/1310))
 
 = 1.5.7 - 01.20.2019 =
 * Fix - Adjustments to coincide with recent Woo changes and resolve PayPal button performance issues. ([PFW-356](https://github.com/angelleye/paypal-woocommerce/pull/1274))
