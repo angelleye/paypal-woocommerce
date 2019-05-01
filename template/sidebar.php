@@ -2,7 +2,7 @@
     <div id="sidebar" class="angelleye-sidebar">
         <div class="angelleye_content_cell_title angelleye-sidebar__title">
             <?php
-            printf(esc_html__('%1$s recommendations for you', 'paypal-for-woocommerce'), 'Angell EYE');
+            printf(esc_html__('%1$s Recommendations', 'paypal-for-woocommerce'), 'Angell EYE');
             ?>
         </div>
         <div class="angelleye-sidebar__section m10">
@@ -46,7 +46,7 @@
             <h2><?php esc_html_e('Extend PayPal for WooCommerce', 'paypal-for-woocommerce'); ?></h2>
             <div class="wp-clearfix m10">
                 <p>
-                    <a href="https://www.angelleye.com/product/paypal-woocommerce-multi-account-management/" target="_blank">
+                    <a href="https://www.angelleye.com/product/paypal-woocommerce-multi-account-management/?utm_source=paypal_for_woocommerce&utm_medium=sidebar" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/paypal-for-woocommerce-multi-account-management.png'; ?>" alt="">
                         <strong><?php esc_html_e('Multi-Account Manager', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
@@ -55,10 +55,22 @@
             </div>
         </div>
         <div class="angelleye-sidebar__section m10">
+            <h2><?php esc_html_e('Become an Affiliate', 'paypal-for-woocommerce'); ?></h2>
+            <div class="wp-clearfix m10">
+                <p>
+                    <a href="https://www.angelleye.com/affiliate-area/?utm_source=paypal_for_woocommerce&utm_medium=sidebar" target="_blank">
+                        <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/angelleye_affiliate.png'; ?>" alt="">
+                        <strong><?php echo __('Affiliate Sign Up', 'paypal-for-woocommerce'); ?></strong>
+                    </a><br>
+                    <?php esc_html_e('Use your voice to inspire entrepreneurship with the Angell EYE Affiliate Program. Our affiliates include entrepreneurs, educators, influencers, and content creators.', 'paypal-for-woocommerce'); ?>
+                </p>
+            </div>
+        </div>
+        <div class="angelleye-sidebar__section m10">
             <h2><?php esc_html_e('More Free Tools', 'paypal-for-woocommerce'); ?></h2>
             <div class="wp-clearfix m10">
                 <p>
-                    <a href="https://www.angelleye.com/product/paypal-ipn-wordpress/" target="_blank">
+                    <a href="https://www.angelleye.com/product/paypal-ipn-wordpress/?utm_source=paypal_for_woocommerce&utm_medium=sidebar" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/paypal-ipn-for-wordpress.jpg'; ?>" alt="">
                         <strong><?php echo __('PayPal IPN for WordPress', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
@@ -67,7 +79,7 @@
             </div>
             <div class="wp-clearfix m10">
                 <p>
-                    <a href="https://www.angelleye.com/product/wordpress-paypal-button-manager/" target="_blank">
+                    <a href="https://www.angelleye.com/product/wordpress-paypal-button-manager/?utm_source=paypal_for_woocommerce&utm_medium=sidebar" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/wordpress-paypal-button-manager.png'; ?>" alt="">
                         <strong><?php echo __('PayPal WP Button Manager', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
@@ -76,7 +88,7 @@
             </div>
             <div class="wp-clearfix m10">
                 <p>
-                    <a href="https://www.angelleye.com/product/paypal-here-woocommerce-pos/" target="_blank">
+                    <a href="https://www.angelleye.com/product/paypal-here-woocommerce-pos/?utm_source=paypal_for_woocommerce&utm_medium=sidebar" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/paypal-here-woocommerce-pos.png'; ?>" alt="">
                         <strong><?php echo __('PayPal Here for WooCommerce', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
@@ -97,7 +109,7 @@
             </div>
             <div class="wp-clearfix m10">
                 <p>
-                    <a href="https://www.angelleye.com/product-category/premium-support/" target="_blank">
+                    <a href="https://www.angelleye.com/product-category/premium-support/?utm_source=paypal_for_woocommerce&utm_medium=sidebar" target="_blank">
                         <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/angelleye-paypal-premium-support.png'; ?>" alt="">
                         <strong><?php echo __('Premium Support', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
@@ -114,18 +126,6 @@
                         <strong><?php echo __('Checkout for WooCommerce', 'paypal-for-woocommerce'); ?></strong>
                     </a><br>
                     <?php esc_html_e('Checkout for WooCommerce replaces your checkout page with a beautiful, responsive, and conversion optimized design. Works with every theme.', 'paypal-for-woocommerce'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="angelleye-sidebar__section m10">
-            <h2><?php esc_html_e('Become an Affiliate', 'paypal-for-woocommerce'); ?></h2>
-            <div class="wp-clearfix m10">
-                <p>
-                    <a href="https://www.angelleye.com/affiliate-area/" target="_blank">
-                        <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/angelleye_affiliate.png'; ?>" alt="">
-                        <strong><?php echo __('Affiliate Sign Up', 'paypal-for-woocommerce'); ?></strong>
-                    </a><br>
-                    <?php esc_html_e('Use your voice to inspire entrepreneurship with the Angell EYE Affiliate Program, Our affiliates include entrepreneurs, educators, influencers, and content creators.', 'paypal-for-woocommerce'); ?>
                 </p>
             </div>
         </div>

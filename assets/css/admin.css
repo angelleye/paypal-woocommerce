@@ -365,6 +365,10 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 
 .angelleye-notice-logo-push span {
     display: block;
+    margin: 0px 10px 0px 10px;
+}
+.angelleye-notice-action {
+    padding-top: 5px;
 }
 .angelleye_paypal_woo_setting_sepraer {
     margin-left: 10px;

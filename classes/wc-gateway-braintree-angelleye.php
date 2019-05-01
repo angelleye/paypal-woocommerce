@@ -420,8 +420,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ( $this->supports( 'tokenization' ) ) {
             $this->tokenization_script();
         }
-        ?>
-        <?php
+        
         $this->angelleye_braintree_lib();
         $this->add_log('Begin Braintree_ClientToken::generate Request');
         try {
@@ -490,6 +489,24 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             wp_redirect(wc_get_cart_url());
             exit;
         }
+        $js_variable = array(
+                'card_number_missing'            => esc_html__( 'Card number is missing', 'paypal-for-woocommerce' ),
+                'card_number_invalid'            => esc_html__( 'Card number is invalid', 'paypal-for-woocommerce' ),
+                'card_number_digits_invalid'     => esc_html__( 'Card number is invalid (only digits allowed)', 'paypal-for-woocommerce' ),
+                'card_number_length_invalid'     => esc_html__( 'Card number is invalid (wrong length)', 'paypal-for-woocommerce' ),
+                'cvv_missing'                    => esc_html__( 'Card security code is missing', 'paypal-for-woocommerce' ),
+                'cvv_digits_invalid'             => esc_html__( 'Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce' ),
+                'cvv_length_invalid'             => esc_html__( 'Card security code is invalid (must be 3 or 4 digits)', 'paypal-for-woocommerce' ),
+                'card_exp_date_invalid'          => esc_html__( 'Card expiration date is invalid', 'paypal-for-woocommerce' ),
+                'check_number_digits_invalid'    => esc_html__( 'Check Number is invalid (only digits are allowed)', 'paypal-for-woocommerce' ),
+                'check_number_missing'           => esc_html__( 'Check Number is missing', 'paypal-for-woocommerce' )
+
+        );
+        ?>
+        <script type="text/javascript">
+            var js_variable = <?php echo json_encode($js_variable); ?>;
+        </script>
+         <?php 
         if ($this->enable_braintree_drop_in) {
             ?>
             <div id="braintree-cc-form" class="wc-payment-form">
@@ -666,6 +683,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 </div>
                 <?php 
             if (is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) {
+                
                 ?>
                 <script type="text/javascript">
                     var angelleye_dropinInstance;
@@ -813,24 +831,16 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 <?php } ?>
                                 braintree.hostedFields.create({
                                     client: client,
-                                    style: {
+                                    styles: {
                                         'input': {
-                                            'font-size': '1.5em',
-                                            'padding': '8px',
-                                            'background-repeat': 'no-repeat',
-                                            'background-position': 'right .618em center',
-                                            'background-size': '32px 20px',
-                                            'position': 'inherit',
-                                            'background-color': '#FFF',
-                                            'height': 'auto',
-                                            'width': 'auto'
+                                            'font-size': '1.3em'
                                         }
                                     },
                                     fields: {
                                       number: {
                                         selector: '#braintree-card-number',
                                         placeholder: '•••• •••• •••• ••••',
-                                        class:'wc-credit-card-form-card-number'
+                                        class:'input-text wc-credit-card-form-card-number'
                                       },
                                       cvv: {
                                         selector: '#braintree-card-cvc',
@@ -870,18 +880,36 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 components.hostedFields.tokenize(function (err, payload) {
                                     if (err) {
                                         $('.woocommerce-error').remove();
-                                        unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err + '</li></ul>');
+                                        var t, n, r, i;
+                                        r = [];
+                                        switch (err.code) {
+                                            case "HOSTED_FIELDS_FIELDS_EMPTY":
+                                                r.push(js_variable.cvv_missing), r.push(js_variable.card_number_missing), r.push(js_variable.card_exp_date_invalid);
+                                                break;
+                                            case "HOSTED_FIELDS_FIELDS_INVALID":
+                                                if (null != err.details)
+                                                    for (t = 0, n = (i = err.details.invalidFieldKeys).length; t < n; t++) switch (i[t]) {
+                                                        case "number":
+                                                            r.push(js_variable.card_number_invalid);
+                                                            break;
+                                                        case "cvv":
+                                                            r.push(js_variable.cvv_length_invalid);
+                                                            break;
+                                                        case "expirationDate":
+                                                            r.push(js_variable.card_exp_date_invalid)
+                                                    }
+                                        }
+                                        var woocommerce_error = r.length ? r.join("<br/>") : '';
+                                        unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + woocommerce_error + '</li></ul>');
                                         move_to_error();
                                         return;
                                     } else {
-                                        
-                                        
-                                        <?php if($this->threed_secure_enabled === false) { ?>
-                                                    $('.is_submit').remove();
-                                                    ccForm.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
+                                    <?php if($this->threed_secure_enabled === false) { ?>
+                                        $('.is_submit').remove();
+                                        ccForm.append('<input type="hidden" class="is_submit" name="is_submit" value="yes"/>');
                                         ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
                                         $form.submit();
-                                        <?php } ?>
+                                    <?php } ?>
                                     }
                                     <?php if($this->threed_secure_enabled === true) { ?>
                                         components.threeDSecure.verifyCard({
@@ -1593,7 +1621,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             return;
         }
         if ($this->enable_braintree_drop_in) {
-            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.10.0/js/dropin.min.js', array('jquery'), null, false);
+            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.16.0/js/dropin.min.js', array('jquery'), null, false);
         } else {
             wp_enqueue_style('braintree_checkout', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/braintree-checkout.css', array(), VERSION_PFW);
             wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.35.0/js/client.min.js', array('jquery'), null, true);
