@@ -6,6 +6,7 @@ jQuery(function () {
         jQuery('#angelleye_paypal_marketing_table').css("width", angelleye_paypal_marketing_table_width + "px");
     });
     var el_notice = jQuery(".angelleye-notice");
+    jQuery('[id^=angelleye_notification]').slice(1).remove();
     el_notice.fadeIn(750);
     jQuery(".angelleye-notice-dismiss").click(function(e){
         e.preventDefault();
