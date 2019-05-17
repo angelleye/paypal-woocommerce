@@ -122,6 +122,9 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     );
                     $this->order_items[] = $item;
                     $roundedPayPalTotal += round($amount * $values['quantity'], $this->decimals);
+                    if($values['quantity'] < 1) {
+                        $this->payment['is_calculation_mismatch'] = true;
+                    }
                 }
             }
 
@@ -240,6 +243,9 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     );
                     $this->order_items[] = $item;
                     $roundedPayPalTotal += round($amount * $values['qty'], $this->decimals);
+                    if($values['qty'] < 1) {
+                        $this->payment['is_calculation_mismatch'] = true;
+                    }
                 }
             }
             foreach ($order->get_fees() as $cart_item_key => $fee_values) {
