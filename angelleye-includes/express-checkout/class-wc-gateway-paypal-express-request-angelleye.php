@@ -327,6 +327,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $this->angelleye_redirect();
                 }
                 $this->paypal_response = $this->paypal->CreateBillingAgreement($paypal_express_checkout['token']);
+                $PayPalRequest = isset($this->paypal_response['RAWREQUEST']) ? $this->paypal_response['RAWREQUEST'] : '';
+                $PayPalResponse = isset($this->paypal_response['RAWRESPONSE']) ? $this->paypal_response['RAWRESPONSE'] : '';
+                WC_Gateway_PayPal_Express_AngellEYE::log('CreateBillingAgreement Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
+                WC_Gateway_PayPal_Express_AngellEYE::log('CreateBillingAgreement Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
             }
             $this->angelleye_add_order_note($order);
             $this->angelleye_add_extra_order_meta($order);
@@ -340,7 +344,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
-                $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
+                if ($order->get_total() > 0) {
+                    $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
+                }
                 $this->angelleye_ec_save_billing_agreement($order_id);
                 update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 if (empty($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'])) {
@@ -395,7 +401,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
-                $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
+                if ($order->get_total() > 0) {
+                    $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
+                }
                 $this->angelleye_ec_save_billing_agreement($order_id);
                 if ($old_wc) {
                     update_post_meta($order_id, 'is_sandbox', $this->testmode);
