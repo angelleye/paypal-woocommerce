@@ -122,7 +122,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     );
                     $this->order_items[] = $item;
                     $roundedPayPalTotal += round($amount * $values['quantity'], $this->decimals);
-                    if($values['quantity'] < 1) {
+                    if($this->angelleye_isinteger($values['quantity']) == false) {
                         $this->payment['is_calculation_mismatch'] = true;
                     }
                 }
@@ -243,7 +243,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     );
                     $this->order_items[] = $item;
                     $roundedPayPalTotal += round($amount * $values['qty'], $this->decimals);
-                    if($values['qty'] < 1) {
+                    if($this->angelleye_isinteger($values['qty']) == false) {
                         $this->payment['is_calculation_mismatch'] = true;
                     }
                 }
@@ -417,6 +417,10 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->itemamt = WC()->cart->total;
                 $this->payment['is_calculation_mismatch'] = true;
             }
+        }
+        
+        public function angelleye_isinteger($input){
+            return(ctype_digit(strval($input)));
         }
 
     }
