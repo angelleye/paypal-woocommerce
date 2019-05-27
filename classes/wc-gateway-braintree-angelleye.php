@@ -268,7 +268,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
-                'custom_attributes' => array('autocomplete' => 'off'),
+                'custom_attributes' => array('autocomplete' => 'new-password'),
             ),
             'sandbox_private_key' => array(
                 'title' => __('Sandbox Private Key', 'paypal-for-woocommerce'),
@@ -276,7 +276,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
-                'custom_attributes' => array('autocomplete' => 'off'),
+                'custom_attributes' => array('autocomplete' => 'new-password'),
             ),
             'sandbox_merchant_id' => array(
                 'title' => __('Sandbox Merchant ID', 'paypal-for-woocommerce'),
@@ -284,7 +284,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
-                'custom_attributes' => array('autocomplete' => 'off'),
+                'custom_attributes' => array('autocomplete' => 'new-password'),
             ),
             'public_key' => array(
                 'title' => __('Live Public Key', 'paypal-for-woocommerce'),
@@ -292,7 +292,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
-                'custom_attributes' => array('autocomplete' => 'off'),
+                'custom_attributes' => array('autocomplete' => 'new-password'),
             ),
             'private_key' => array(
                 'title' => __('Live Private Key', 'paypal-for-woocommerce'),
@@ -300,7 +300,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Get your API keys from your Braintree account.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
-                'custom_attributes' => array('autocomplete' => 'off'),
+                'custom_attributes' => array('autocomplete' => 'new-password'),
             ),
             'merchant_id' => array(
                 'title' => __('Live Merchant ID', 'paypal-for-woocommerce'),

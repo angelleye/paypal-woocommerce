@@ -242,19 +242,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Create sandbox accounts and obtain API credentials from within your
 									<a href="http://developer.paypal.com">PayPal developer account</a>.', 'paypal-for-woocommerce'),
                 'default' => '',
-                'custom_attributes' => array( 'autocomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
             'sandbox_api_password' => array(
                 'title' => __('Sandbox API Password', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'default' => '',
-                'custom_attributes' => array( 'autocomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
             'sandbox_api_signature' => array(
                 'title' => __('Sandbox API Signature', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'default' => '',
-                'custom_attributes' => array( 'autocomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
             'api_username' => array(
                 'title' => __('Live API Username', 'paypal-for-woocommerce'),
@@ -262,19 +262,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Get your live account API credentials from your PayPal account profile <br />or by using
 									<a target="_blank" href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run">this tool</a>.', 'paypal-for-woocommerce'),
                 'default' => '',
-                'custom_attributes' => array( 'autocomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
             'api_password' => array(
                 'title' => __('Live API Password', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'default' => '',
-                'custom_attributes' => array( 'autocomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
             'api_signature' => array(
                 'title' => __('Live API Signature', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'default' => '',
-                'custom_attributes' => array( 'autocomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
             'enable_3dsecure' => array(
                 'title' => __('3DSecure', 'paypal-for-woocommerce'),
