@@ -2264,7 +2264,7 @@ class AngellEYE_Utility {
         }
         
         public static function angelleye_display_push_notification($response_data) {
-            echo '<div class="notice notice-success angelleye-notice" style="display:none;">'
+            echo '<div class="notice notice-success angelleye-notice" style="display:none;" id="'.$response_data->id.'">'
                     . '<div class="angelleye-notice-logo-push"><span> <img src="'.$response_data->ans_company_logo.'"> </span></div>'
                     . '<div class="angelleye-notice-message">' 
                         . '<h3>' . $response_data->ans_message_title .'</h3>'
