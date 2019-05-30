@@ -1372,8 +1372,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if ( 'woocommerce_widget_cart' === $widget_id ) {
             if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
                 if ($this->enable_in_context_checkout_flow === 'yes' && $this->enabled == 'yes' && $this->show_on_minicart == 'yes') {
-                    wp_enqueue_script('angelleye-in-context-checkout-js');
-                    wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+                    wp_print_scripts('angelleye-in-context-checkout-js');
+                    wp_print_scripts('angelleye-in-context-checkout-js-frontend');
                 }
             }
         }
