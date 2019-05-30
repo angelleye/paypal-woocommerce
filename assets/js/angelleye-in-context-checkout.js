@@ -529,4 +529,9 @@ jQuery(function ($) {
                 $( '.angelleye_smart_button_checkout_bottom' ).toggle( isPPEC );
         } );
     }
+    var $button = $( '.angelleye_smart_button_mini' );
+    if ( $button.length ) {
+            $button.empty();
+            display_smart_button_on_min_cart();
+    }
 });
