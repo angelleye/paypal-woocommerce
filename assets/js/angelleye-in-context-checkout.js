@@ -3,9 +3,9 @@ jQuery(function ($) {
         return false;
     }
     display_smart_button_on_cart_checkout();
+    display_smart_button_on_min_cart();
     display_smart_button_on_product_page();
     display_smart_button_on_wsc_cart();
-    display_smart_button_on_min_cart();
     function is_funding_icon_should_show_in_content() {
         var disallowed_funding_methods = angelleye_in_content_param.disallowed_funding_methods;
         if (disallowed_funding_methods === null) {
@@ -505,7 +505,7 @@ jQuery(function ($) {
             display_smart_button_checkout_bottom();
         });
     }
-    $( document.body ).on( 'wc_fragments_loaded wc_fragments_refreshed updated_wc_div wc_fragments_ajax_error', function() {
+    $( document.body ).on( 'wc_fragments_loaded wc_fragments_refreshed', function() {
             var $button = $( '.angelleye_smart_button_mini' );
             if ( $button.length ) {
                     $button.empty();
@@ -528,10 +528,5 @@ jQuery(function ($) {
                 $( '#place_order' ).toggle( ! isPPEC );
                 $( '.angelleye_smart_button_checkout_bottom' ).toggle( isPPEC );
         } );
-    }
-    var $button = $( '.angelleye_smart_button_mini' );
-    if ( $button.length ) {
-            $button.empty();
-            display_smart_button_on_min_cart();
     }
 });
