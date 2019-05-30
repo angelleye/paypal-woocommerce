@@ -258,6 +258,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 if($this->wsc_cart_disable_smart_button == 'no') {
                     add_action('xoo_wsc_after_footer_btns',  array($this, 'angelleye_xoo_cu_wsc_paypal_express'), 10);
                 }
+                add_action( 'widget_title', array( $this, 'angelleye_maybe_enqueue_checkout_js' ), 10, 3 );
             }
             
         } catch (Exception $ex) {
@@ -1368,5 +1369,16 @@ class Angelleye_PayPal_Express_Checkout_Helper {
          echo '<div class="widget_shopping_cart">';
 	 echo $this->wsc_cart_button();
 	 echo '</div>';
+    }
+    
+    public function angelleye_maybe_enqueue_checkout_js($widget_title, $widget_instance = array(), $widget_id = null) {
+        if ( 'woocommerce_widget_cart' === $widget_id ) {
+            if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
+                if ($this->enable_in_context_checkout_flow === 'yes' && $this->enabled == 'yes' && $this->show_on_minicart == 'yes') {
+                    wp_print_scripts('angelleye-in-context-checkout-js');
+                    wp_print_scripts('angelleye-in-context-checkout-js-frontend');
+                }
+            }
+        }
     }
 }
