@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
-Tested up to: 5.1.1
-Stable tag: 2.0.0
+Tested up to: 5.2.1
+Stable tag: 2.0.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 2.0.1 - 05.31.2019 =
+* Feature - Adds autocomplete=new-password to all API credential fields in settings so that password managers will not interfere.  ([PFW-403](https://github.com/angelleye/paypal-woocommerce/pull/1314))
+* Tweak - Adjustments to admin notice display. ([PFW-410](https://github.com/angelleye/paypal-woocommerce/pull/1312))
+* Tweak - Adjustments to handle orders with decimal value quantities. ([PFW-414](https://github.com/angelleye/paypal-woocommerce/pull/1315))
+* Fix - Resolves an issue with saving Express Checkout as a token payment method. ([PFW-426](https://github.com/angelleye/paypal-woocommerce/pull/1318))
 
 = 2.0.0 - 04.30.2019 =
 * Feature - Adds compatibility for our Updater plugin to get future notices and automated updates. ([PFWA-31](https://github.com/angelleye/paypal-woocommerce/pull/1292)) ([PFW-396](https://github.com/angelleye/paypal-woocommerce/pull/1305))
