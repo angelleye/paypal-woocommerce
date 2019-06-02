@@ -133,7 +133,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjustments to handle orders with decimal value quantities. ([PFW-414](https://github.com/angelleye/paypal-woocommerce/pull/1315))
 * Tweak - Check for token match on return to site, and resolve fatal error. ([PFW-424](https://github.com/angelleye/paypal-woocommerce/pull/1317))
 * Fix - Resolves an issue with saving Express Checkout as a token payment method. ([PFW-426](https://github.com/angelleye/paypal-woocommerce/pull/1318))
-
+* Fix - Resolves an unexpected token error that happens on rare occasions. ([PFW-428](https://github.com/angelleye/paypal-woocommerce/pull/1319))
 
 = 2.0.0 - 04.30.2019 =
 * Feature - Adds compatibility for our Updater plugin to get future notices and automated updates. ([PFWA-31](https://github.com/angelleye/paypal-woocommerce/pull/1292)) ([PFW-396](https://github.com/angelleye/paypal-woocommerce/pull/1305))
