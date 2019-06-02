@@ -127,11 +127,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 2.0.1 - 05.31.2019 =
+= 2.0.1 - xx.xx.2019 =
 * Feature - Adds autocomplete=new-password to all API credential fields in settings so that password managers will not interfere.  ([PFW-403](https://github.com/angelleye/paypal-woocommerce/pull/1314))
 * Tweak - Adjustments to admin notice display. ([PFW-410](https://github.com/angelleye/paypal-woocommerce/pull/1312))
 * Tweak - Adjustments to handle orders with decimal value quantities. ([PFW-414](https://github.com/angelleye/paypal-woocommerce/pull/1315))
+* Tweak - Check for token match on return to site, and resolve fatal error. ([PFW-424](https://github.com/angelleye/paypal-woocommerce/pull/1317))
 * Fix - Resolves an issue with saving Express Checkout as a token payment method. ([PFW-426](https://github.com/angelleye/paypal-woocommerce/pull/1318))
+
 
 = 2.0.0 - 04.30.2019 =
 * Feature - Adds compatibility for our Updater plugin to get future notices and automated updates. ([PFWA-31](https://github.com/angelleye/paypal-woocommerce/pull/1292)) ([PFW-396](https://github.com/angelleye/paypal-woocommerce/pull/1305))
