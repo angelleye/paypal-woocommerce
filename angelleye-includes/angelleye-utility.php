@@ -1543,9 +1543,14 @@ class AngellEYE_Utility {
         return true;
     }
 
-    public static function round($price, $order) {
+    public static function round($price, $order = null) {
+        if (is_object($order)) {
+            $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+        } else {
+            $woocommerce_currency = get_woocommerce_currency();
+        }
         $precision = 2;
-        if (!self::currency_has_decimals(get_woocommerce_currency())) {
+        if (!self::currency_has_decimals($woocommerce_currency)) {
             $precision = 0;
         }
         return round($price, $precision);
@@ -1559,9 +1564,14 @@ class AngellEYE_Utility {
      * @return type
      */
     public static function number_format($price, $order = null) {
+        if (is_object($order)) {
+            $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+        } else {
+            $woocommerce_currency = get_woocommerce_currency();
+        }
         $price = str_replace(',', '.', $price);
         $decimals = 2;
-        if (!self::currency_has_decimals(get_woocommerce_currency())) {
+        if (!self::currency_has_decimals($woocommerce_currency)) {
             $decimals = 0;
         }
         return number_format($price, $decimals, '.', '');
