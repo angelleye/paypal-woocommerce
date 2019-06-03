@@ -199,6 +199,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_set_express_checkout() {
         try {
             $this->angelleye_set_express_checkout_request();
+            // @note set token in session so return can be matched - Skylar
+            if (!empty($this->paypal_response['TOKEN'])) {
+                if (null === ($paypalSession = WC()->session->get('paypal_express_checkout')) || empty($paypalSession['token']) || $paypalSession['token'] != $this->paypal_response['TOKEN']) { // only set if not present or mismatched
+                    WC()->session->set('paypal_express_checkout', ['token' => $this->paypal_response['TOKEN']]);
+                }
+            }
             if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
                 $this->angelleye_redirect_action($this->paypal_response['REDIRECTURL']);
                 exit;
@@ -221,8 +227,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
     public function angelleye_get_express_checkout_details() {
         try {
-            if (!isset($_GET['token'])) {
-                $this->angelleye_redirect();
+            // @note make sure token matches set express checkout response token - Skylar L
+            if (!isset($_GET['token']) || null === ($paypalSession = WC()->session->get('paypal_express_checkout')) || empty($paypalSession['token']) || $paypalSession['token'] != $_GET['token']) {
+                $this->function_helper->ec_clear_session_data();
+                wc_clear_notices();
+                wc_add_notice(__('Your PayPal session has expired', 'paypal-for-woocommerce'), 'error');
+                wp_redirect(wc_get_checkout_url(), 303);
+                exit;
             }
             $token = esc_attr($_GET['token']);
             $this->angelleye_load_paypal_class($this->gateway, $this, null);

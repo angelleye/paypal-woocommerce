@@ -1609,6 +1609,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 } else {
                     $redirect_url = get_permalink(wc_get_page_id('cart'));
                     $this->paypal_express_checkout_error_handler($request_name = 'DoReferenceTransaction', $redirect_url, $result);
+                    if (!is_ajax()) {
+                        wp_redirect($redirect_url);
+                        exit;
+                    } else {
+                        return array(
+                            'result' => 'fail',
+                            'redirect' => $redirect_url
+                        );
+                    }
                 }
             }
             if ($this->function_helper->ec_is_express_checkout()) {
