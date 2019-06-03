@@ -892,9 +892,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * @param type $price
          * @return type
          */
-	public static function round( $price ) {
+	public static function round( $price, $order = null ) {
 		$precision = 2;
-
+                if (is_object($order)) {
+                    $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+                } else {
+                    $woocommerce_currency = get_woocommerce_currency();
+                }
 		if ( !self::currency_has_decimals( get_woocommerce_currency() ) ) {
 			$precision = 0;
 		}
@@ -909,13 +913,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * @param type $price
          * @return type
          */
-	public static function number_format( $price ) {
+	public static function number_format( $price, $order = null ) {
 		$decimals = 2;
-
-		if ( !self::currency_has_decimals( get_woocommerce_currency() ) ) {
+                if (is_object($order)) {
+                    $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+                } else {
+                    $woocommerce_currency = get_woocommerce_currency();
+                }
+		if ( !self::currency_has_decimals( $woocommerce_currency ) ) {
 			$decimals = 0;
 		}
-
 		return number_format( $price, $decimals, '.', '' );
 	}
         
