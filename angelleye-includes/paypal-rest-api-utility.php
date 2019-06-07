@@ -234,6 +234,7 @@ class PayPal_Rest_API_Utility {
      */
     public function set_trnsaction_obj_value($order, $card_data) {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->payment_data = $this->calculation_angelleye->order_calculation($order_id);
         if (!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
             $token_id = wc_clean($_POST['wc-paypal_credit_card_rest-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
@@ -258,10 +259,16 @@ class PayPal_Rest_API_Utility {
         $this->payer->setPaymentMethod("credit_card");
         $this->payer->setFundingInstruments(array($this->fundingInstrument));
         if ($order->get_total() > 0) {
-            $this->set_item($order);
-            $this->set_item_list();
+            if( $this->payment_data['is_calculation_mismatch'] == false ) {
+                $this->set_item($order);
+                $this->set_item_list();
+                $this->set_detail_values();
+            } else {
+                $this->item = new Item();
+                $this->item_list = new ItemList();
+                $this->details = new Details();
+            }
             $this->angelleye_set_shipping_address($order);
-            $this->set_detail_values();
             $this->set_amount_values($order);
             $this->set_transaction($order);
             $this->set_payment();
@@ -824,6 +831,7 @@ class PayPal_Rest_API_Utility {
         try {
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $this->payment_data = $this->calculation_angelleye->order_calculation($order_id);
             $this->CreditCardToken = new CreditCardToken();
             $this->CreditCardToken->setCreditCardId($token_id);
             $this->fundingInstrument = new FundingInstrument();
@@ -831,9 +839,15 @@ class PayPal_Rest_API_Utility {
             $this->payer = new Payer();
             $this->payer->setPaymentMethod("credit_card");
             $this->payer->setFundingInstruments(array($this->fundingInstrument));
-            $this->set_item($order);
-            $this->set_item_list();
-            $this->set_detail_values();
+            if( $this->payment_data['is_calculation_mismatch'] == false ) {
+                $this->set_item($order);
+                $this->set_item_list();
+                $this->set_detail_values();
+            } else {
+                $this->item = new Item();
+                $this->item_list = new ItemList();
+                $this->details = new Details();
+            }
             $this->set_amount_values($order);
             $this->set_transaction($order);
             $this->set_payment();

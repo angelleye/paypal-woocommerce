@@ -867,28 +867,28 @@ class AngellEYE_Utility {
                 'type' => 'password',
                 'description' => 'Enter your Sandbox PayPal Rest API Client ID',
                 'default' => '',
-                'custom_attributes' => array( 'autocomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
             'rest_secret_id_sandbox' => array(
                 'title' => __('Sandbox Secret ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('Enter your Sandbox PayPal Rest API Secret ID.', 'paypal-for-woocommerce'),
                 'default' => '',
-                'custom_attributes' => array( 'autocomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
             'rest_client_id' => array(
                 'title' => __('Live Client ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => 'Enter your PayPal Rest API Client ID',
                 'default' => '',
-                'custom_attributes' => array( 'autocomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
             'rest_secret_id' => array(
                 'title' => __('Live Secret ID', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('Enter your PayPal Rest API Secret ID.', 'paypal-for-woocommerce'),
                 'default' => '',
-                'custom_attributes' => array( 'autocomplete' => 'off'),
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
             'payment_action' => array(
                 'title' => __('Payment Action', 'paypal-for-woocommerce'),
@@ -2264,7 +2264,7 @@ class AngellEYE_Utility {
         }
         
         public static function angelleye_display_push_notification($response_data) {
-            echo '<div class="notice notice-success angelleye-notice" style="display:none;">'
+            echo '<div class="notice notice-success angelleye-notice" style="display:none;" id="'.$response_data->id.'">'
                     . '<div class="angelleye-notice-logo-push"><span> <img src="'.$response_data->ans_company_logo.'"> </span></div>'
                     . '<div class="angelleye-notice-message">' 
                         . '<h3>' . $response_data->ans_message_title .'</h3>'

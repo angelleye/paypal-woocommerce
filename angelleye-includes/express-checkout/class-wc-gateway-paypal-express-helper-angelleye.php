@@ -576,6 +576,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function ec_enqueue_scripts_product_page($is_mini_cart = false) {
+        // @note WC()->session will not be set in admin and trigger a fatal error (not a catchable exception) - Skylar L
+        if (is_admin()) { 
+            return;
+        }
         try {
             $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
             if (is_order_received_page()) {
