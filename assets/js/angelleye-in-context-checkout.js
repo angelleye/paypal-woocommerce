@@ -543,27 +543,21 @@ jQuery(function ($) {
         $( 'form.checkout' ).on( 'click', 'input[name="payment_method"]', function() {
                 var isPPEC = $( this ).is( '#payment_method_paypal_express' );
                 if (isPPEC && $('input[name="wc-paypal_express-payment-token"]').length && $('input[name="wc-paypal_express-payment-token"]:checked').val() === 'new') {
-                    console.log('546');
                     $( '#place_order' ).hide();
                     $( '.angelleye_smart_button_checkout_bottom' ).show();
                 } else if(isPPEC && $('input[name="wc-paypal_express-payment-token"]').length && $('input[name="wc-paypal_express-payment-token"]:checked').val() !== 'new') {
-                    console.log('550');
                     $( '#place_order' ).show();
                     $( '.angelleye_smart_button_checkout_bottom' ).hide();
                 } else {
-                    console.log('554');
                     $( '.angelleye_smart_button_checkout_bottom' ).hide();
                     $( '#place_order' ).show();
                 }
         } );
         $( 'form.checkout' ).on( 'click', 'input[name="wc-paypal_express-payment-token"]', function() {
-                console.log($(this).val());
                 if ($(this).val() === 'new') {
-                    console.log('561');
                     $( '#place_order' ).hide();
                     $( '.angelleye_smart_button_checkout_bottom' ).show();
                 } else if($(this).val() !== 'new') {
-                     console.log('565');
                     $( '#place_order' ).show();
                     $( '.angelleye_smart_button_checkout_bottom' ).hide();
                 } 

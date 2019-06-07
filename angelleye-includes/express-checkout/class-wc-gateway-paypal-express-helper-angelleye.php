@@ -1167,7 +1167,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             }
             if (is_checkout()) {
-                if ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both') {
+                if ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both' || ( $this->show_on_checkout == 'regular' && $this->checkout_page_disable_smart_button == false)) {
                     return true;
                 }
             }
