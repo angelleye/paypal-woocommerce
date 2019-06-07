@@ -112,7 +112,9 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
         }
         if ($this->avs_cvv2_result_admin_email) {
-            add_action('woocommerce_email_before_order_table', array($this, 'angelleye_paypal_pro_payflow_email_instructions'), 10, 3);
+            if ( ! has_filter( 'woocommerce_email_before_order_table', array( $this, 'angelleye_paypal_pro_payflow_email_instructions' ) ) ) {
+                add_action('woocommerce_email_before_order_table', array($this, 'angelleye_paypal_pro_payflow_email_instructions'), 10, 3);
+            }
         }
 
         $this->customer_id;
