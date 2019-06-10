@@ -1232,6 +1232,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                       $token_id = wc_clean( $_POST['wc-paypal_pro-payment-token'] );
                       $token = WC_Payment_Tokens::get( $token_id );
                       $order->add_payment_token($token);
+                      if( $this->is_subscription($order_id) ) {
+                        $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
+                        $this->save_payment_token($order, $TRANSACTIONID);
+                      }
                 } else {
                     $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
                     $token = new WC_Payment_Token_CC();
