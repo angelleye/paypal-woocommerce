@@ -1577,7 +1577,7 @@ class AngellEYE_Utility {
         $_payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
         $_payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
         if (isset($_payment_method) && !empty($_payment_method) && isset($_payment_action) && !empty($_payment_action)) {
-            if (($_payment_method == 'paypal_pro' || $_payment_method == 'paypal_express' || $_payment_method == 'paypal_pro_payflow' || $_payment_method == 'braintree') && $_payment_method != "Sale") {
+            if ( (($_payment_method == 'paypal_pro' || $_payment_method == 'paypal_express' || $_payment_method == 'paypal_pro_payflow' || $_payment_method == 'braintree')) && ($_payment_method != "Sale" && $order->get_total() > 0)) {
                 return true;
             } else {
                 return false;
