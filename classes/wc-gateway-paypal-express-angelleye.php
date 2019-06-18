@@ -1584,6 +1584,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $result = $paypal_express_request->DoReferenceTransaction($order_id);
             if (!empty($result['ACK']) && $result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                 $paypal_express_request->update_payment_status_by_paypal_responce($order_id, $result);
+                if ( isset( WC()->cart ) || '' != WC()->cart ) {
+                    if ( ! WC()->cart->is_empty() ) {
+                        WC()->cart->empty_cart();
+                        return array(
+                            'result' => 'success',
+                            'redirect' => add_query_arg( 'utm_nooverride', '1', $this->get_return_url($order) )
+                        );
+                    }
+                }
             } else {
                 $ErrorCode = urldecode(!empty($result["L_ERRORCODE0"]) ? $result["L_ERRORCODE0"] : '');
                 $ErrorLongMsg = urldecode(!empty($result["L_LONGMESSAGE0"]) ? $result["L_LONGMESSAGE0"] : '');
@@ -2140,6 +2149,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $token_id = wc_clean($_POST['wc-paypal_express-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
             $order->payment_complete($token->get_token());
+            $payment_tokens_id = $token->get_token();
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
+            $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
+            $paypal_express_request->save_payment_token($order, $payment_tokens_id);
             update_post_meta($order_id, '_first_transaction_id', $token->get_token());
             $order->add_order_note('Payment Action: ' . $this->payment_action);
             WC()->cart->empty_cart();
