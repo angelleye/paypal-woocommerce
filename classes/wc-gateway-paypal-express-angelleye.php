@@ -749,7 +749,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => array(
                     'no' => __("Do not display on checkout page.", 'paypal-for-woocommerce'),
                     'top' => __('Display at the top of the checkout page.', 'paypal-for-woocommerce'),
-                    'regular' => __('Display in general list of enabled gatways on checkout page.', 'paypal-for-woocommerce'),
+                    'regular' => __('Display in general list of enabled gateways on checkout page.', 'paypal-for-woocommerce'),
                     'both' => __('Display both at the top and in the general list of gateways on the checkout page.')),
                 'default' => 'top',
                 'class'    => 'wc-enhanced-select',
