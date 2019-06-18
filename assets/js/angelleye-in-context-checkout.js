@@ -178,7 +178,7 @@ jQuery(function ($) {
                         payment: function () {
                             $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var data_param = {
-                                'request_from': 'JSv4',
+                                request_from: 'JSv4',
                                 'wc-paypal_express-new-payment-method': $("#wc-paypal_express-new-payment-method").is(':checked')
                             };
                             return paypal.request.post(angelleye_in_content_param.set_express_checkout, data_param).then(function (data) {
