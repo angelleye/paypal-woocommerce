@@ -540,34 +540,46 @@ jQuery(function ($) {
     } );
     
     if(angelleye_in_content_param.checkout_page_disable_smart_button === "no") {
-        $( 'form.checkout' ).on( 'click', 'input[name="payment_method"]', function() {
-                var isPPEC = $( this ).is( '#payment_method_paypal_express' );
-                if (isPPEC && $('input[name="wc-paypal_express-payment-token"]').length && $('input[name="wc-paypal_express-payment-token"]:checked').val() === 'new') {
-                    console.log('546');
+        $(document.body).on('updated_checkout wc-credit-card-form-init update_checkout', function (event) {
+            angelleye_manage_smart_button();
+        });
+        function angelleye_manage_smart_button() {
+            var is_checked = $('#payment_method_paypal_express').is(':checked'); 
+            if($('input[name="wc-paypal_express-payment-token"]:checked').length > 0) {
+                if (is_checked && $('input[name="wc-paypal_express-payment-token"]').length && $('input[name="wc-paypal_express-payment-token"]:checked').val() === 'new') {
                     $( '#place_order' ).hide();
                     $( '.angelleye_smart_button_checkout_bottom' ).show();
-                } else if(isPPEC && $('input[name="wc-paypal_express-payment-token"]').length && $('input[name="wc-paypal_express-payment-token"]:checked').val() !== 'new') {
-                    console.log('550');
+                } else if(is_checked && $('input[name="wc-paypal_express-payment-token"]').length && $('input[name="wc-paypal_express-payment-token"]:checked').val() !== 'new') {
                     $( '#place_order' ).show();
                     $( '.angelleye_smart_button_checkout_bottom' ).hide();
+                } else if(is_checked) {
+                    $( '.angelleye_smart_button_checkout_bottom' ).show();
+                    $( '#place_order' ).hide();
                 } else {
-                    console.log('554');
                     $( '.angelleye_smart_button_checkout_bottom' ).hide();
                     $( '#place_order' ).show();
                 }
+            } else {
+                if(is_checked) {
+                    $( '.angelleye_smart_button_checkout_bottom' ).show();
+                    $( '#place_order' ).hide();
+                } else {
+                    $( '.angelleye_smart_button_checkout_bottom' ).hide();
+                    $( '#place_order' ).show();
+                }
+            }
+        }
+        $( 'form.checkout' ).on( 'click', 'input[name="payment_method"]', function() {
+                angelleye_manage_smart_button();
         } );
         $( 'form.checkout' ).on( 'click', 'input[name="wc-paypal_express-payment-token"]', function() {
-                console.log($(this).val());
                 if ($(this).val() === 'new') {
-                    console.log('561');
                     $( '#place_order' ).hide();
                     $( '.angelleye_smart_button_checkout_bottom' ).show();
                 } else if($(this).val() !== 'new') {
-                     console.log('565');
                     $( '#place_order' ).show();
                     $( '.angelleye_smart_button_checkout_bottom' ).hide();
                 } 
         });
-
     }    
 });
