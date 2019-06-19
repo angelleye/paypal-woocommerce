@@ -582,7 +582,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             return;
         }
         try {
-            $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
             if (is_order_received_page()) {
                 return false;
             }
@@ -683,7 +682,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'wsc_cart_button_layout' => $this->wsc_cart_button_layout,
                     'wsc_cart_button_size' => $this->wsc_cart_button_size,
                     'button_fundingicons' => $this->button_fundingicons,
-                    'cancel_page' => $cancel_url,
+                    'cancel_page' => add_query_arg('pp_action', 'cancel_order', WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')),
                     'is_paypal_credit_enable' => $this->is_paypal_credit_enable ? "yes" : 'no',
                     'allowed_funding_methods' => $allowed_funding_methods_json,
                     'disallowed_funding_methods' => $disallowed_funding_methods_json,
@@ -1286,8 +1285,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function angelleye_display_custom_message_review_page() {
         if (!empty($this->order_review_page_custom_message)) {
-            $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
-            if (!is_admin() && is_main_query() && in_the_loop() && is_page() && is_checkout() && !empty($paypal_express_checkout)) {
+            if (!is_admin() && is_main_query() && in_the_loop() && is_page() && is_checkout() && $this->function_helper->ec_is_express_checkout()) {
                 echo '<div class="woocommerce-info angelleye-order-review-page-message" role="alert">' . $this->order_review_page_custom_message . '</div>';
             }
         }
