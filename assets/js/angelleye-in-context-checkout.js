@@ -102,7 +102,7 @@ jQuery(function ($) {
                     },
                     onCancel: function (data, actions) {
                         $('.cart').unblock();
-                        return actions.redirect();
+                        window.location.href = angelleye_in_content_param.cancel_page;
                     },
                     onClick: function () {
                         if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
@@ -199,7 +199,7 @@ jQuery(function ($) {
                         },
                         onCancel: function (data, actions) {
                             $('.woocommerce').unblock();
-                            return actions.redirect();
+                            window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
@@ -288,7 +288,7 @@ jQuery(function ($) {
                         },
                         onCancel: function (data, actions) {
                             $('.woocommerce').unblock();
-                            return actions.redirect();
+                            window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
@@ -374,7 +374,7 @@ jQuery(function ($) {
                         },
                         onCancel: function (data, actions) {
                             $('.woocommerce').unblock();
-                            return actions.redirect();
+                            window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
@@ -471,7 +471,7 @@ jQuery(function ($) {
                         },
                         onCancel: function (data, actions) {
                             $('.woocommerce').unblock();
-                            return actions.redirect();
+                            window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
