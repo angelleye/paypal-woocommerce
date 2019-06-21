@@ -1104,7 +1104,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
             $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($PaymentData['itemamt']);
         } 
-
+        if( $order->get_total() != $PaymentData['shippingamt'] ) {
+            $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
+        } else {
+            $PaymentDetails['shippingamt'] = 0.00;
+        }
         /**
          * 3D Secure Params
          */
@@ -1830,6 +1834,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $PaymentDetails['taxamt'] = $PaymentData['taxamt'];
             $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
             $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($PaymentData['itemamt']);
+        }
+        if( $order->get_total() != $PaymentData['shippingamt'] ) {
+            $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
+        } else {
+            $PaymentDetails['shippingamt'] = 0.00;
         }
         $PayPalRequestData = array(
             'DPFields' => $DPFields,
