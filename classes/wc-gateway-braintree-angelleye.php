@@ -2261,6 +2261,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $product = $order->get_product_from_item($values);
                     $product_id = $product->get_id();
                     if (!empty($product_id)) {
+                        $product_type = get_post_type($product_id);
+                        if($product_type == 'product_variation') {
+                            $product_id = wp_get_post_parent_id($product_id);
+                        }
                         $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
                         if ($_enable_sandbox_mode == 'yes') {
                             $this->sandbox = true;
