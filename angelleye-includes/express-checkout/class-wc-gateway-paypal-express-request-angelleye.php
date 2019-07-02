@@ -519,6 +519,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } else {
                 $Payment['order_items'] = array();
             }
+            if( $order->get_total() != $Payment['shippingamt'] ) {
+                $Payment['shippingamt'] = $Payment['shippingamt'];
+            } else {
+                $Payment['shippingamt'] = 0.00;
+            }
             $REVIEW_RESULT = !empty($paypal_express_checkout['ExpresscheckoutDetails']) ? $paypal_express_checkout['ExpresscheckoutDetails'] : array();
             $PaymentRedeemedOffers = array();
             if ((isset($REVIEW_RESULT) && !empty($REVIEW_RESULT)) && isset($REVIEW_RESULT['WALLETTYPE0'])) {
@@ -1358,6 +1363,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
         } else {
             $Payment['order_items'] = array();
+        }
+        if( $order->get_total() != $PaymentDetails['shippingamt'] ) {
+            $PaymentDetails['shippingamt'] = $PaymentDetails['shippingamt'];
+        } else {
+            $PaymentDetails['shippingamt'] = 0.00;
         }
         $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
         $this->paypal_response = $this->paypal->DoReferenceTransaction($PayPalRequestData);
