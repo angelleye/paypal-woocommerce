@@ -1364,7 +1364,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $token = WC_Payment_Tokens::get($token_id);
                 $wc_existing_token = $this->get_token_by_token($token_id);
                 if ($wc_existing_token != null) {
-                    do_action('angelleye_set_multi_account', $wc_existing_token->id);
+                    do_action('angelleye_set_multi_account', $wc_existing_token);
                 }
             }
             if (!empty($payment_token)) {
@@ -1803,17 +1803,10 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 return null;
             }
         }
-        $token_class = 'WC_Payment_Token_' . $token_result->type;
-        if (class_exists($token_class)) {
-            $meta = get_metadata('payment_token', $token_result->token_id);
-            $passed_meta = array();
-            if (!empty($meta)) {
-                foreach ($meta as $meta_key => $meta_value) {
-                    $passed_meta[$meta_key] = $meta_value[0];
-                }
-            }
-            return new $token_class($token_result->token_id, (array) $token_result, $passed_meta);
+        if(isset($token_result->token_id) && !empty($token_result->token_id)) {
+            return $token_result->token_id;
+        } else {
+            return null;
         }
-        return null;
     }
 }
