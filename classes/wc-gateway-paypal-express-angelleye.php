@@ -2422,20 +2422,5 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
     }
     
-    public function get_token_by_token($token_id, $token_result = null) {
-        global $wpdb;
-        if (is_null($token_result)) {
-            $token_result = $wpdb->get_row($wpdb->prepare(
-                            "SELECT * FROM {$wpdb->prefix}woocommerce_payment_tokens WHERE token = %s", $token_id
-            ));
-            if (empty($token_result)) {
-                return null;
-            }
-        }
-        if(isset($token_result->token_id) && !empty($token_result->token_id)) {
-            return $token_result->token_id;
-        } else {
-            return null;
-        }
-    }
+    
 }
