@@ -664,7 +664,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             if (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] != 'new') {
                 $token_id = wc_clean($_POST['wc-paypal_pro_payflow-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
-                do_action('angelleye_set_multi_account', $token_id);
+                do_action('angelleye_set_multi_account', $token_id, $order_id);
                 $PayPalRequestData['origid'] = $token->get_token();
                 $PayPalRequestData['expdate'] = '';
                 $log['origid'] = $token->get_token();
@@ -1368,7 +1368,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $token = WC_Payment_Tokens::get($token_id);
                 $wc_existing_token = $this->get_token_by_token($token_id);
                 if ($wc_existing_token != null) {
-                    do_action('angelleye_set_multi_account', $wc_existing_token);
+                    do_action('angelleye_set_multi_account', $wc_existing_token, $order_id);
                 }
             }
             if (!empty($payment_token)) {
