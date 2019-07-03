@@ -1335,6 +1335,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $token = WC_Payment_Tokens::get($token_id);
             $referenceid = $token->get_token();
             do_action('angelleye_set_multi_account', $token_id);
+        } else {
+            $wc_existing_token = $this->get_token_by_token($referenceid);
+            if ($wc_existing_token != null) {
+                do_action('angelleye_set_multi_account', $wc_existing_token);
+            }
         }
         $this->angelleye_load_paypal_class($this->gateway, $this, $order_id);
         $order = wc_get_order($order_id);
@@ -1601,6 +1606,23 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             return true;
         }
         return false;
+    }
+    
+    public function get_token_by_token($token_id, $token_result = null) {
+        global $wpdb;
+        if (is_null($token_result)) {
+            $token_result = $wpdb->get_row($wpdb->prepare(
+                            "SELECT * FROM {$wpdb->prefix}woocommerce_payment_tokens WHERE token = %s", $token_id
+            ));
+            if (empty($token_result)) {
+                return null;
+            }
+        }
+        if(isset($token_result->token_id) && !empty($token_result->token_id)) {
+            return $token_result->token_id;
+        } else {
+            return null;
+        }
     }
 
 }
