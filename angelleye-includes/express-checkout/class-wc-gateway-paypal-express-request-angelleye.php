@@ -1210,6 +1210,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if ($token->validate()) {
                 $save_result = $token->save();
                 if ($save_result) {
+                    $_multi_account_api_username = get_post_meta($order_id, '_multi_account_api_username', true);
+                    if( !empty($_multi_account_api_username) ) {
+                        add_metadata('payment_token', $save_result, '_multi_account_api_username', $_multi_account_api_username);
+                    }
                     $order->add_payment_token($token);
                 }
             } else {
@@ -1293,15 +1297,15 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function DoReferenceTransaction($order_id) {
-        $this->angelleye_load_paypal_class($this->gateway, $this, $order_id);
         $PayPalRequestData = array();
         $referenceid = get_post_meta($order_id, '_payment_tokens_id', true);
         if (!empty($_POST['wc-paypal_express-payment-token'])) {
             $token_id = wc_clean($_POST['wc-paypal_express-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
             $referenceid = $token->get_token();
+            do_action('angelleye_set_multi_account', $token_id);
         }
-
+        $this->angelleye_load_paypal_class($this->gateway, $this, $order_id);
         $order = wc_get_order($order_id);
         $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
         $customer_notes = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';

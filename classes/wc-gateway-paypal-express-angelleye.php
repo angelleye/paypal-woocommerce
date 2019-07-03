@@ -2325,12 +2325,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
     public function subscription_change_payment($order_id) {
         if (isset($_POST['wc-paypal_express-payment-token']) && 'new' !== $_POST['wc-paypal_express-payment-token']) {
-            $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
             $order = new WC_Order($order_id);
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $token_id = wc_clean($_POST['wc-paypal_express-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
+            do_action('angelleye_set_multi_account', $token_id);
+            $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
             if ($token->get_user_id() !== get_current_user_id()) {
                 throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
             } else {
@@ -2394,6 +2395,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $paypal_express_request->save_payment_token($order, $billing_agreement_id);
                             if( $token->validate() ) {
                                 $save_result = $token->save();
+                                $_multi_account_api_username = get_post_meta($order_id, '_multi_account_api_username', true);
+                                if( !empty($_multi_account_api_username) ) {
+                                    add_metadata('payment_token', $save_result, '_multi_account_api_username', $_multi_account_api_username);
+                                }
                                 wc_add_notice( __( 'Payment method updated.', 'woocommerce-subscriptions' ), 'success' );
                                 if (!is_ajax()) {
                                     wp_redirect(wc_get_account_endpoint_url('payment-methods'));
