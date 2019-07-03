@@ -1304,6 +1304,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $token = WC_Payment_Tokens::get($token_id);
             $referenceid = $token->get_token();
             do_action('angelleye_set_multi_account', $token_id);
+        } else {
+            $wc_existing_token = $this->get_token_by_token($referenceid);
+            if ($wc_existing_token != null) {
+                do_action('angelleye_set_multi_account', $wc_existing_token);
+            }
         }
         $this->angelleye_load_paypal_class($this->gateway, $this, $order_id);
         $order = wc_get_order($order_id);
