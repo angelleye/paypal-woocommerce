@@ -2330,7 +2330,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $token_id = wc_clean($_POST['wc-paypal_express-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
-            do_action('angelleye_set_multi_account', $token_id);
+            do_action('angelleye_set_multi_account', $token_id, $order_id);
             $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
             if ($token->get_user_id() !== get_current_user_id()) {
                 throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
