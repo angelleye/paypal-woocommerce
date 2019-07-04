@@ -141,6 +141,7 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal_WC
                     }
                 }
                 curl_close($curl);
+                
 		return $Response;
 	}
 	
@@ -191,6 +192,9 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal_WC
                     return $NVPResponse;
                 }
 		$NVPResponse = strstr($NVPResponse,"RESULT");
+                
+                $NVPResponse = apply_filters('angelleye_paypal_response_data', $NVPResponse, $NVPRequest, '1', $this->Sandbox, true, 'paypal_payflow');
+                
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 
 		$NVPResponseArray['RAWREQUEST'] = $NVPRequestmask;

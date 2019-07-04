@@ -191,13 +191,14 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if (is_wp_error($response)) {
             throw new Exception(__('There was a problem connecting to the payment gateway.', 'paypal-for-woocommerce'));
         }
+        
         if (empty($response['body'])) {
             throw new Exception(__('Empty response.', 'paypal-for-woocommerce'));
         }
 
         $inquiry_result_arr = array(); //stores the response in array format
         parse_str($response['body'], $inquiry_result_arr);
-
+        $inquiry_result_arr = apply_filters('angelleye_paypal_response_data', $inquiry_result_arr, $postData, '1', $this->testmode, false, 'paypal_advanced');
         if ($inquiry_result_arr['RESULT'] == 0 && ( $inquiry_result_arr['RESPMSG'] == 'Approved' || $inquiry_result_arr['RESPMSG'] == 'Verified')) {
             $order->add_order_note(sprintf(__('Received result of Inquiry Transaction for the  (Order: %s) and is successful', 'paypal-for-woocommerce'), $order->get_order_number()));
             return 'Approved';

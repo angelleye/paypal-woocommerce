@@ -626,7 +626,7 @@ class Angelleye_PayPal_WC
                 } 
                 
 		curl_close($curl);
-                
+                $Response = apply_filters('angelleye_paypal_response_data', $Response, $Request, '1' , $this->Sandbox, true, 'express_checkout');
 		return $Response;	
 	}
 	
