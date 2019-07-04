@@ -17,7 +17,7 @@ class AngellEYE_PFW_Payment_Logger {
     public function __construct() {
         $this->api_url = 'https://gtctgyk7fh.execute-api.us-east-2.amazonaws.com/default/PayPalPaymentsTracker';
         $this->api_key = 'srGiuJFpDO4W7YCDXF56g2c9nT1JhlURVGqYD7oa';
-        $this->allow_method = array('DoExpressCheckoutPayment', 'DoDirectPayment', 'DoCapture', 'ProcessTransaction', 'Braintree');
+        $this->allow_method = array('DoExpressCheckoutPayment', 'DoDirectPayment', 'DoCapture', 'ProcessTransaction', 'Braintree', 'PayPal Credit Card (REST)');
         add_filter('angelleye_paypal_response_data', array($this, 'own_angelleye_paypal_response_data'), 10, 6);
     }
 
@@ -35,6 +35,9 @@ class AngellEYE_PFW_Payment_Logger {
             }
             if ($payment_method == 'braintree') {
                 $request['METHOD'] = 'Braintree';
+            }
+            if ($payment_method == 'paypal_credit_card_rest') {
+                $request['METHOD'] = 'PayPal Credit Card (REST)';
             }
             if (is_array($result) && isset($result['PNREF']) && !empty($result['PNREF']) && ( isset($request['TRXTYPE[1]']) && $request['TRXTYPE[1]'] != 'I')) {
                 $request['METHOD'] = 'ProcessTransaction';
@@ -123,6 +126,17 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = '';
                     $request_param['transaction_id'] = isset($result->transaction->id) ? $result->transaction->id : '';
                     $request_param['amount'] = isset($result->transaction->amount) ? $result->transaction->amount : '0.00';
+                    error_log(print_r($request_param, true));
+                    $this->angelleye_tpv_request($request_param);
+                } elseif ($request['METHOD'] == 'PayPal Credit Card (REST)') {
+                    if (isset($result->id)) {
+                        $request_param['status'] = 'Success';
+                        $request_param['transaction_id'] = isset($result->id) ? $result->id : '';
+                    } else {
+                        $request_param['status'] = 'Failure';
+                    }
+                    $request_param['correlation_id'] = '';
+                    $request_param['amount'] = isset($result->amount->total) ? $result->amount->total : '0.00';
                     error_log(print_r($request_param, true));
                     $this->angelleye_tpv_request($request_param);
                 }
