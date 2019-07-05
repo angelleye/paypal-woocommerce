@@ -33,6 +33,10 @@ class AngellEYE_PFW_Payment_Logger {
                 $result = $result_data;
                 $request = $request_data;
             }
+            if($payment_method == 'paypal_advanced') {
+                $request = $this->angelleye_nvp_to_array($request_data);
+                $request['METHOD'] = 'ProcessTransaction';
+            }
             if ($payment_method == 'braintree') {
                 $request['METHOD'] = 'Braintree';
             }
@@ -99,13 +103,6 @@ class AngellEYE_PFW_Payment_Logger {
                         $request_param['status'] = 'Success';
                     } else {
                         $request_param['status'] = 'Failure';
-                    }
-                    if ($opt_in == 'yes') {
-                        if (isset($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID']) && !empty($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'])) {
-                            $request_param['merchant_id'] = $result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'];
-                        } elseif (isset($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID']) && !empty($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'])) {
-                            $request_param['merchant_id'] = $result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'];
-                        }
                     }
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['PNREF']) ? $result['PNREF'] : '';
