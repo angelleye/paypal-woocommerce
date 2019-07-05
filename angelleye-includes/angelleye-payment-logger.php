@@ -18,7 +18,7 @@ class AngellEYE_PFW_Payment_Logger {
         $this->api_url = 'https://gtctgyk7fh.execute-api.us-east-2.amazonaws.com/default/PayPalPaymentsTracker';
         $this->api_key = 'srGiuJFpDO4W7YCDXF56g2c9nT1JhlURVGqYD7oa';
         $this->allow_method = array('DoExpressCheckoutPayment', 'DoDirectPayment', 'DoCapture', 'ProcessTransaction', 'Braintree', 'PayPal Credit Card (REST)');
-        add_filter('angelleye_paypal_response_data', array($this, 'own_angelleye_paypal_response_data'), 10, 6);
+        add_action('angelleye_paypal_response_data', array($this, 'own_angelleye_paypal_response_data'), 10, 6);
     }
 
     public function own_angelleye_paypal_response_data($result_data, $request_data, $product_id = 1, $sandbox = false, $is_nvp = true, $payment_method = 'express_checkout') {
