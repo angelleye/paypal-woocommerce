@@ -70,7 +70,7 @@ class Angelleye_PayPal_WC
 			
 		$this->APIVersion = isset($DataArray['APIVersion']) ? $DataArray['APIVersion'] : '124.0';
 		$this->APIMode = isset($DataArray['APIMode']) ? $DataArray['APIMode'] : 'Signature';
-		$this->APIButtonSource = 'AngellEYE_SP_WooCommerce';
+		$this->APIButtonSource = '';
 		$this->PathToCertKeyPEM = '/path/to/cert/pem.txt';
 		$this->SSL = $_SERVER['SERVER_PORT'] == '443' ? true : false;
 		$this->APISubject = isset($DataArray['APISubject']) ? $DataArray['APISubject'] : '';
@@ -97,7 +97,7 @@ class Angelleye_PayPal_WC
 		}
 				
 		// Create the NVP credentials string which is required in all calls.
-		$this->NVPCredentials = 'USER=' . $this->APIUsername . '&PWD=' . $this->APIPassword . '&VERSION=' . $this->APIVersion . '&BUTTONSOURCE=' . $this->APIButtonSource;
+		$this->NVPCredentials = 'USER=' . $this->APIUsername . '&PWD=' . $this->APIPassword . '&VERSION=' . $this->APIVersion ;
 		$this->NVPCredentials .= $this->APISubject != '' ? '&SUBJECT=' . $this->APISubject : '';
 		$this->NVPCredentials .= $this->APIMode == 'Signature' ? '&SIGNATURE=' . $this->APISignature : '';
 		

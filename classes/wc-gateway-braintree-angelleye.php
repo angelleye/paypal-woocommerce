@@ -1090,7 +1090,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $request_data['orderId'] = $order->get_order_number();
             $request_data['options'] = $this->get_braintree_options();
-            $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
             if (!empty($this->softdescriptor)) {
                 $request_data['descriptor'] = array('name' => $this->softdescriptor);
             }
@@ -2067,7 +2066,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
             $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
         }
-        $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
         if ($this->debug) {
             $this->add_log('Begin Braintree_Transaction::sale request');
             $this->add_log('Order: ' . print_r($order->get_order_number(), true));

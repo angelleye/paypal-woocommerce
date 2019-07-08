@@ -362,7 +362,7 @@ class PayPal_Rest_API_Utility {
     public function getAuth() {
         $this->mode = $this->testmode == true ? 'SANDBOX' : 'LIVE';
         $auth = new ApiContext(new OAuthTokenCredential($this->rest_client_id, $this->rest_secret_id));
-        $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce', 'log.LogEnabled' => $this->debug , 'log.LogLevel' => ($this->mode == 'SANDBOX') ? 'DEBUG' : 'INFO', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
+        $auth->setConfig(array('mode' => $this->mode, 'log.LogEnabled' => $this->debug , 'log.LogLevel' => ($this->mode == 'SANDBOX') ? 'DEBUG' : 'INFO', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
         return $auth;
     }
 
