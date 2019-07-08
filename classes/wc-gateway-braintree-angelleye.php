@@ -1090,7 +1090,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $request_data['orderId'] = $order->get_order_number();
             $request_data['options'] = $this->get_braintree_options();
-            $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
             if (!empty($this->softdescriptor)) {
                 $request_data['descriptor'] = array('name' => $this->softdescriptor);
             }
@@ -1113,6 +1112,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
             try {
                 $this->response = Braintree_Transaction::sale(apply_filters('angelleye_woocommerce_braintree_sale_request_args', $request_data));
+                do_action('angelleye_paypal_response_data', $this->response, $request_data, '1', $this->sandbox, false, 'braintree');
             } catch (Braintree_Exception_Authentication $e) {
                 $error = $this->get_braintree_exception_message($e);
                 wc_add_notice($error, 'error');
@@ -1176,7 +1176,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'settlement_pending',
                 'submitted_for_settlement',
             );
-
+            
             if (in_array($this->response->transaction->status, $maybe_settled_later)) {
                 if ($old_wc) {
                     update_post_meta($order_id, 'is_sandbox', $this->sandbox);
@@ -1329,6 +1329,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 try {
                     $result = Braintree_Transaction::void($order->get_transaction_id());
                     if ($result->success) {
+                        do_action('angelleye_paypal_response_data', $result, $request_data = array(), '1', $this->sandbox, false, 'braintree');
                         $braintree_refunded_id = array();
                         $braintree_refunded_id[$result->transaction->id] = $result->transaction->id;
                         $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
@@ -2075,13 +2076,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
             $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
         }
-        $request_data['channel'] = 'AngellEYEPayPalforWoo_BT';
         if ($this->debug) {
             $this->add_log('Begin Braintree_Transaction::sale request');
             $this->add_log('Order: ' . print_r($order->get_order_number(), true));
         }
         try {
             $this->response = Braintree_Transaction::sale($request_data);
+            do_action('angelleye_paypal_response_data', $this->response, $request_data, '1', $this->sandbox, false, 'braintree');
         } catch (Braintree_Exception_Authentication $e) {
             $this->add_log("Braintree_Transaction::sale Braintree_Exception_Authentication: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
             return $success = false;
@@ -2680,6 +2681,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         try {
             $this->response = Braintree_Transaction::sale($request_data);
+            do_action('angelleye_paypal_response_data', $this->response, $request_data, '1', $this->sandbox, false, 'braintree');
         } catch (Braintree_Exception_Authentication $e) {
             $order->add_order_note($e->getMessage());
             $this->add_log("Braintree_Transaction::sale Braintree_Exception_Authentication: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
