@@ -70,7 +70,6 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['PAYMENTINFO_0_TRANSACTIONID']) ? $result['PAYMENTINFO_0_TRANSACTIONID'] : '';
                     $request_param['amount'] = isset($result['PAYMENTINFO_0_AMT']) ? $result['PAYMENTINFO_0_AMT'] : '0.00';
-                    error_log(print_r($request_param, true));
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'DoDirectPayment') {
                     if ($opt_in == 'yes') {
@@ -83,7 +82,6 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['TRANSACTIONID']) ? $result['TRANSACTIONID'] : '';
                     $request_param['amount'] = isset($result['AMT']) ? $result['AMT'] : '0.00';
-                    error_log(print_r($request_param, true));
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'DoCapture') {
                     if ($opt_in == 'yes') {
@@ -96,7 +94,6 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['TRANSACTIONID']) ? $result['TRANSACTIONID'] : '';
                     $request_param['amount'] = isset($result['AMT']) ? $result['AMT'] : '0.00';
-                    error_log(print_r($request_param, true));
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'ProcessTransaction') {
                     if (isset($result['RESULT']) && ( $result['RESULT'] == 0 )) {
@@ -107,7 +104,6 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['PNREF']) ? $result['PNREF'] : '';
                     $request_param['amount'] = isset($result['AMT']) ? $result['AMT'] : '0.00';
-                    error_log(print_r($request_param, true));
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'Braintree') {
                     if ($result->success) {
@@ -123,7 +119,6 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = '';
                     $request_param['transaction_id'] = isset($result->transaction->id) ? $result->transaction->id : '';
                     $request_param['amount'] = isset($result->transaction->amount) ? $result->transaction->amount : '0.00';
-                    error_log(print_r($request_param, true));
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'PayPal Credit Card (REST)') {
                     if (isset($result->id)) {
@@ -134,7 +129,6 @@ class AngellEYE_PFW_Payment_Logger {
                     }
                     $request_param['correlation_id'] = '';
                     $request_param['amount'] = isset($result->amount->total) ? $result->amount->total : '0.00';
-                    error_log(print_r($request_param, true));
                     $this->angelleye_tpv_request($request_param);
                 }
             }
