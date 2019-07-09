@@ -303,7 +303,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $angelleye_send_opt_in_logging_details = get_option('angelleye_send_opt_in_logging_details', '');
             
             if($opt_in_log == 'yes' && empty($angelleye_send_opt_in_logging_details)){
-                echo '<div class="notice notice-success angelleye-notice" style="display:none;">'
+                echo '<div class="notice notice-success angelleye-notice" style="display:none;" id="angelleye_send_opt_in_logging_details">'
                         . '<div class="angelleye-notice-logo-original"><span></span></div>'
                         . '<div class="angelleye-notice-message">'
                             . '<h3>PayPal for WooCoomerce</h3>'

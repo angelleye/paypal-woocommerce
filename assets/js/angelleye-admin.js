@@ -24,6 +24,11 @@ jQuery(function () {
         };
         jQuery.post(ajaxurl, param);
     }
+    var opt_in_logging = jQuery("#angelleye_send_opt_in_logging_details");
+    jQuery('#angelleye_send_opt_in_logging_details').each(function (i) {
+        jQuery('[id="' + this.id + '"]').slice(1).remove();
+    });
+    opt_in_logging.fadeIn(750);
 });
 jQuery(document).ready(function ($) {
     jQuery('#woocommerce_paypal_express_disallowed_funding_methods').closest('table').addClass('angelleye_smart_button_setting_left');
