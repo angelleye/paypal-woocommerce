@@ -631,6 +631,11 @@ class AngellEYE_Admin_Order_Payment_Process {
         } else {
             $Payment['order_items'] = array();
         }
+        if( $order->get_total() != $PaymentDetails['shippingamt'] ) {
+            $PaymentDetails['shippingamt'] = $PaymentDetails['shippingamt'];
+        } else {
+            $PaymentDetails['shippingamt'] = 0.00;
+        }
         $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
         return $PayPalRequestData;
     }
