@@ -1532,6 +1532,10 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 foreach ($order->get_items() as $cart_item_key => $values) {
                     $product = $order->get_product_from_item($values);
                     $product_id = $product->get_id();
+                    $product_type = get_post_type($product_id);
+                    if($product_type == 'product_variation') {
+                        $product_id = wp_get_post_parent_id($product_id);
+                    }
                     if( !empty($product_id) ) {
                         $product_type = get_post_type($product_id);
                         if($product_type == 'product_variation') {

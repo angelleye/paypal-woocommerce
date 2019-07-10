@@ -425,11 +425,11 @@ class AngellEYE_Utility {
         $this->add_ec_angelleye_paypal_php_library();
         $this->ec_add_log('DoCapture API call');
         if( !empty($_POST['_regular_price'])) {
-            $AMT = self::number_format(wc_clean( wp_unslash( $_POST['_regular_price'] ) ) );
+            $AMT = self::number_format(wc_clean( wp_unslash( $_POST['_regular_price'] ) ), $order );
         } elseif ($capture_total == null) {
-            $AMT = self::number_format($order->get_total());
+            $AMT = self::number_format($order->get_total(), $order);
         } else {
-            $AMT = $capture_total;
+            $AMT = self::number_format($capture_total, $order);
         }
         $DataArray = array(
             'AUTHORIZATIONID' => $transaction_id,
@@ -613,7 +613,7 @@ class AngellEYE_Utility {
         if (isset($transaction_id) && !empty($transaction_id)) {
             $DRFields = array(
                 'authorizationid' => $transaction_id, // Required. The value of a previously authorized transaction ID returned by PayPal.
-                'amt' => self::number_format($AMT), // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
+                'amt' => self::number_format($AMT, $order), // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
                 'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // Three-character currency code.
                 'msgsubid' => ''      // A message ID used for idempotence to uniquely identify a message.
             );
@@ -704,7 +704,7 @@ class AngellEYE_Utility {
         if (isset($transaction_id) && !empty($transaction_id)) {
             $DRFields = array(
                 'TRANSACTIONID' => $transaction_id, // Required. The value of a previously authorized transaction ID returned by PayPal.
-                'AMT' => self::number_format(wc_clean( wp_unslash( $_POST['_regular_price']))), // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
+                'AMT' => self::number_format(wc_clean( wp_unslash( $_POST['_regular_price'])), $order), // Required. Must have two decimal places.  Decimal separator must be a period (.) and optional thousands separator must be a comma (,)
                 'CURRENCYCODE' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()
             );
             $PayPalRequestData = array('DAFields' => $DRFields);
@@ -1106,7 +1106,7 @@ class AngellEYE_Utility {
                         $this->total_DoVoid = self::get_total('DoVoid', '', $order_id);
                         $this->total_DoCapture = self::get_total('DoCapture', 'Completed', $order_id);
                         $remain_capture = $order->get_total() - ( $this->total_DoVoid + $this->total_DoCapture );
-                        $remain_capture = self::number_format($remain_capture);
+                        $remain_capture = self::number_format($remain_capture, $order);
                     }
                     
                     
@@ -1521,14 +1521,14 @@ class AngellEYE_Utility {
             $order = wc_get_order($order_id);
         }
         $percentage = 115;
-        $new_percentage_amount = self::number_format(($percentage / 100) * $order->get_total());
-        $diff_percentage_amount = self::round($new_percentage_amount - $order->get_total());
+        $new_percentage_amount = self::number_format(($percentage / 100) * $order->get_total(), $order);
+        $diff_percentage_amount = self::round($new_percentage_amount - $order->get_total(), $order);
         if ($diff_percentage_amount > 75) {
-            $max_authorize_amount = self::round($order->get_total() + 75);
+            $max_authorize_amount = self::round($order->get_total() + 75, $order);
         } else {
-            $max_authorize_amount = self::round($new_percentage_amount - 0.01);;
+            $max_authorize_amount = self::round($new_percentage_amount - 0.01, $order);
         }
-        $this->max_authorize_amount = self::round($max_authorize_amount);
+        $this->max_authorize_amount = self::round($max_authorize_amount, $order);
         
     }
 
@@ -1543,9 +1543,14 @@ class AngellEYE_Utility {
         return true;
     }
 
-    public static function round($price) {
+    public static function round($price, $order = null) {
+        if (is_object($order)) {
+            $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+        } else {
+            $woocommerce_currency = get_woocommerce_currency();
+        }
         $precision = 2;
-        if (!self::currency_has_decimals(get_woocommerce_currency())) {
+        if (!self::currency_has_decimals($woocommerce_currency)) {
             $precision = 0;
         }
         return round($price, $precision);
@@ -1558,10 +1563,15 @@ class AngellEYE_Utility {
      * @param type $price
      * @return type
      */
-    public static function number_format($price) {
+    public static function number_format($price, $order = null) {
+        if (is_object($order)) {
+            $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+        } else {
+            $woocommerce_currency = get_woocommerce_currency();
+        }
         $price = str_replace(',', '.', $price);
         $decimals = 2;
-        if (!self::currency_has_decimals(get_woocommerce_currency())) {
+        if (!self::currency_has_decimals($woocommerce_currency)) {
             $decimals = 0;
         }
         return number_format($price, $decimals, '.', '');
@@ -1577,7 +1587,7 @@ class AngellEYE_Utility {
         $_payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
         $_payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
         if (isset($_payment_method) && !empty($_payment_method) && isset($_payment_action) && !empty($_payment_action)) {
-            if (($_payment_method == 'paypal_pro' || $_payment_method == 'paypal_express' || $_payment_method == 'paypal_pro_payflow' || $_payment_method == 'braintree') && $_payment_method != "Sale") {
+            if ( (($_payment_method == 'paypal_pro' || $_payment_method == 'paypal_express' || $_payment_method == 'paypal_pro_payflow' || $_payment_method == 'braintree')) && ($_payment_method != "Sale" && $order->get_total() > 0)) {
                 return true;
             } else {
                 return false;
@@ -1780,13 +1790,13 @@ class AngellEYE_Utility {
         $this->order_id = $order_id;
         $this->add_ec_angelleye_paypal_php_library();
         if( !empty($_POST['_regular_price'])) {
-            $AMT = self::number_format(wc_clean( wp_unslash( $_POST['_regular_price'])));
+            $AMT = self::number_format(wc_clean( wp_unslash( $_POST['_regular_price'])),$order);
         } elseif ($capture_total == null) {
             $AMT = $this->get_amount_by_transaction_id($transaction_id);
         } else {
             $AMT = $capture_total;
         }
-        $AMT = self::round($AMT - $order->get_total_refunded());
+        $AMT = self::round($AMT - $order->get_total_refunded(), $order);
         $payment_action_authorization = get_post_meta($order_id, 'payment_action_authorization', true);
 
         if (isset($transaction_id) && !empty($transaction_id)) {
@@ -1916,7 +1926,7 @@ class AngellEYE_Utility {
         $AMT = $order->get_total();
         $this->total_DoVoid = self::get_total('DoVoid', '', $order_id);
         $this->total_DoCapture = self::get_total('DoCapture', 'Completed', $order_id);
-        $AMT = self::round($AMT - ($this->total_DoCapture + $this->total_DoVoid));
+        $AMT = self::round($AMT - ($this->total_DoCapture + $this->total_DoVoid), $order);
         
         if (isset($transaction_id) && !empty($transaction_id)) {
             $PayPalRequestData = array(
@@ -2189,9 +2199,9 @@ class AngellEYE_Utility {
                 $transaction_id = $old_wc ? get_post_meta($order_id, '_first_transaction_id', true) : get_post_meta($order->get_id(), '_first_transaction_id', true);
             }
             if( !empty($_POST['_regular_price'])) {
-                $AMT = self::number_format(wc_clean( wp_unslash( $_POST['_regular_price'] ) ) );
+                $AMT = self::number_format(wc_clean( wp_unslash( $_POST['_regular_price'] ) ) , $order);
             } else {
-                $AMT = $order->get_total();
+                $AMT = self::number_format($order->get_total(), $order);
             }
             remove_action('woocommerce_order_action_wc_braintree_docapture', array($this, 'angelleye_wc_braintree_docapture'));
             remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);

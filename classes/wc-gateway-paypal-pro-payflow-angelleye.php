@@ -112,7 +112,9 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
         }
         if ($this->avs_cvv2_result_admin_email) {
-            add_action('woocommerce_email_before_order_table', array($this, 'angelleye_paypal_pro_payflow_email_instructions'), 10, 3);
+            if ( ! has_filter( 'woocommerce_email_before_order_table', array( $this, 'angelleye_paypal_pro_payflow_email_instructions' ) ) ) {
+                add_action('woocommerce_email_before_order_table', array($this, 'angelleye_paypal_pro_payflow_email_instructions'), 10, 3);
+            }
         }
 
         $this->customer_id;
@@ -564,7 +566,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
 
-            $order_amt = AngellEYE_Gateway_Paypal::number_format($order->get_total());
+            $order_amt = AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order);
             if( $this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification' ) {
                 $order_amt = '0.00';
             }
@@ -1286,7 +1288,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $PayPalRequestData = array(
                 'tender' => 'C', // Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
                 'trxtype' => ($this->payment_action == 'Authorization' || $order->get_total() == 0 ) ? 'A' : 'S', // Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
-                'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()), // Required.  Amount of the transaction.  Must have 2 decimal places.
+                'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order), // Required.  Amount of the transaction.  Must have 2 decimal places.
                 'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), //
                 'comment1' => apply_filters('ae_pppf_custom_parameter', $customer_note, $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'comment2' => apply_filters('ae_pppf_comment2_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
