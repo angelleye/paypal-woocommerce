@@ -329,8 +329,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $set_ignore_tag_url =  remove_query_arg( 'angelleye_display_agree_disgree_opt_in_logging' );
                 wp_redirect($set_ignore_tag_url);
             }
-            
-            $response = AngellEYE_Utility::angelleye_get_push_notifications();
+            if (false === ( $response = get_transient('angelleye_push_notification_result') )) {
+                $response = AngellEYE_Utility::angelleye_get_push_notifications();
+                if(is_object($response)) {
+                    set_transient('angelleye_push_notification_result', $response, 12 * HOUR_IN_SECONDS);
+                }
+            } 
             if(is_object($response)) {
                 foreach ($response->data as $key => $response_data) {
                     if(!get_user_meta($user_id, $response_data->id)) {
