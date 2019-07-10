@@ -541,7 +541,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $card = $this->get_posted_card();
-        $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
+        
 
         try {
 
@@ -664,6 +664,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             if (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] != 'new') {
                 $token_id = wc_clean($_POST['wc-paypal_pro_payflow-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
+                do_action('angelleye_set_multi_account', $token_id, $order_id);
                 $PayPalRequestData['origid'] = $token->get_token();
                 $PayPalRequestData['expdate'] = '';
                 $log['origid'] = $token->get_token();
@@ -676,7 +677,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $log['cvv2'] = '****';
                 }
             }
-
+            $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
             $this->add_log('PayFlow Request: ' . print_r($log, true));
             $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
             /**
@@ -775,6 +776,10 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         if( $token->validate() ) {
                             $save_result = $token->save();
                             if ($save_result) {
+                                $_multi_account_api_username = get_post_meta($order_id, '_multi_account_api_username', true);
+                                if( !empty($_multi_account_api_username) ) {
+                                    add_metadata('payment_token', $save_result, '_multi_account_api_username', $_multi_account_api_username);
+                                }
                                 $order->add_payment_token($token);
                             }
                         } else {
@@ -1261,7 +1266,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $card = $this->get_posted_card();
-        $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
+        
         try {
 
             if (!empty($_POST['paypal_pro_payflow-card-cardholder-first'])) {
@@ -1361,11 +1366,16 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $token_id = get_post_meta($order_id, '_payment_tokens_id', true);
                 $PayPalRequestData['origid'] = $token_id;
                 $token = WC_Payment_Tokens::get($token_id);
+                $wc_existing_token = $this->get_token_by_token($token_id);
+                if ($wc_existing_token != null) {
+                    do_action('angelleye_set_multi_account', $wc_existing_token, $order_id);
+                }
             }
             if (!empty($payment_token)) {
                 $PayPalRequestData['origid'] = $payment_token;
                 $token = WC_Payment_Tokens::get($payment_token);
             }
+            $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
             $PayPalResult = $this->PayPal->ProcessTransaction($PayPalRequestData);
 
             $this->add_log('PayFlow Endpoint: ' . $this->PayPal->APIEndPoint);
@@ -1775,6 +1785,10 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $this->save_payment_token($order, $TRANSACTIONID);
                         $save_result = $token->save();
                         if ($save_result) {
+                            $_multi_account_api_username = get_post_meta($order_id, '_multi_account_api_username', true);
+                            if( !empty($_multi_account_api_username) ) {
+                                add_metadata('payment_token', $save_result, '_multi_account_api_username', $_multi_account_api_username);
+                            }
                            return array(
                                 'result' => 'success',
                                 'redirect' => $this->get_return_url($order)
@@ -1789,6 +1803,23 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                 exit();
             }
+        }
+    }
+    
+    public function get_token_by_token($token_id, $token_result = null) {
+        global $wpdb;
+        if (is_null($token_result)) {
+            $token_result = $wpdb->get_row($wpdb->prepare(
+                            "SELECT * FROM {$wpdb->prefix}woocommerce_payment_tokens WHERE token = %s", $token_id
+            ));
+            if (empty($token_result)) {
+                return null;
+            }
+        }
+        if(isset($token_result->token_id) && !empty($token_result->token_id)) {
+            return $token_result->token_id;
+        } else {
+            return null;
         }
     }
 }
