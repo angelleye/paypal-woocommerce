@@ -593,7 +593,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
         $customer_notes = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
         $PaymentDetails = array(
-            'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()),
+            'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order),
             'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
             'custom' => apply_filters('ae_ppec_custom_parameter', json_encode(array('order_id' => $order_id, 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key()))),
             'invnum' => $this->gateway_settings['invoice_id_prefix'] . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#", "", $order->get_order_number())),
@@ -625,9 +625,9 @@ class AngellEYE_Admin_Order_Payment_Process {
         $this->order_param = $this->gateway_calculation->order_calculation($order_id);
         if( $this->order_param['is_calculation_mismatch'] == false ) {
             $Payment['order_items'] = $this->order_param['order_items'];
-            $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt']);
-            $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt']);
-            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
+            $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt'], $order);
+            $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt'], $order);
+            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt'], $order);
         } else {
             $Payment['order_items'] = array();
         }

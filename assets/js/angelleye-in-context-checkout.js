@@ -582,5 +582,4 @@ jQuery(function ($) {
                 } 
         });
     }   
-    
 });
