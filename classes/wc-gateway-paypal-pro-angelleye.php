@@ -1232,6 +1232,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                       $token_id = wc_clean( $_POST['wc-paypal_pro-payment-token'] );
                       $token = WC_Payment_Tokens::get( $token_id );
                       $order->add_payment_token($token);
+                      if( $this->is_subscription($order_id) ) {
+                        $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
+                        $this->save_payment_token($order, $TRANSACTIONID);
+                      }
                 } else {
                     $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
                     $token = new WC_Payment_Token_CC();
@@ -1983,6 +1987,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     $product = $order->get_product_from_item($values);
                     $product_id = $product->get_id();
                     if( !empty($product_id) ) {
+                        $product_type = get_post_type($product_id);
+                        if($product_type == 'product_variation') {
+                            $product_id = wp_get_post_parent_id($product_id);
+                        }
                         $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
                         if ($_enable_sandbox_mode == 'yes') {
                             $this->testmode = true;
