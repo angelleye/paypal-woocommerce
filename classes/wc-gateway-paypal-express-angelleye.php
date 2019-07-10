@@ -749,7 +749,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => array(
                     'no' => __("Do not display on checkout page.", 'paypal-for-woocommerce'),
                     'top' => __('Display at the top of the checkout page.', 'paypal-for-woocommerce'),
-                    'regular' => __('Display in general list of enabled gatways on checkout page.', 'paypal-for-woocommerce'),
+                    'regular' => __('Display in general list of enabled gateways on checkout page.', 'paypal-for-woocommerce'),
                     'both' => __('Display both at the top and in the general list of gateways on the checkout page.')),
                 'default' => 'top',
                 'class'    => 'wc-enhanced-select',
@@ -768,7 +768,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Show the Express Checkout button on product detail pages.', 'paypal-for-woocommerce'),
                 'default' => 'no',
-                'description' => sprintf(__('Allows customers to checkout using PayPal directly from a product page. Do not forget to enable Express Checkout on product details page.  You can use the <a href="%s" target="_blank">Bulk Update Tool</a> to Enable Express Checkout on multiple products at once.', 'paypal-for-woocommerce'), admin_url( 'options-general.php?page=paypal-for-woocommerce&tab=tabs' )),
+                'description' => sprintf(__('Allows customers to checkout using PayPal directly from a product page. Do not forget to enable Express Checkout on product details page.  You can use the <a href="%s" target="_blank">Bulk Update Tool</a> to Enable Express Checkout on multiple products at once.', 'paypal-for-woocommerce'), admin_url( 'options-general.php?page=paypal-for-woocommerce&tab=tools' )),
                 'desc_tip' => false,
                 
             ),
@@ -1584,6 +1584,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $result = $paypal_express_request->DoReferenceTransaction($order_id);
             if (!empty($result['ACK']) && $result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
                 $paypal_express_request->update_payment_status_by_paypal_responce($order_id, $result);
+                if ( isset( WC()->cart ) || '' != WC()->cart ) {
+                    if ( ! WC()->cart->is_empty() ) {
+                        WC()->cart->empty_cart();
+                        return array(
+                            'result' => 'success',
+                            'redirect' => add_query_arg( 'utm_nooverride', '1', $this->get_return_url($order) )
+                        );
+                    }
+                }
             } else {
                 $ErrorCode = urldecode(!empty($result["L_ERRORCODE0"]) ? $result["L_ERRORCODE0"] : '');
                 $ErrorLongMsg = urldecode(!empty($result["L_LONGMESSAGE0"]) ? $result["L_LONGMESSAGE0"] : '');
@@ -1599,8 +1608,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
                 $result = $this->angelleye_ex_doreference_transaction($order_id);
                 if (!empty($result['ACK']) && $result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
-                    $order->payment_complete($result['TRANSACTIONID']);
-                    $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
+                    // @note Skylar L check for duplicate order
+                    if ($result['ACK'] == 'SuccessWithWarning' && !empty($result['L_ERRORCODE0']) && '11607' == $result['L_ERRORCODE0']) {
+                        $order->update_status('on-hold', empty($result['L_LONGMESSAGE0']) ? $result['L_SHORTMESSAGE0'] : $result['L_LONGMESSAGE0']);
+                    }
+                    else {
+                        $order->payment_complete($result['TRANSACTIONID']);
+                        $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
+                    }
                     WC()->cart->empty_cart();
                     return array(
                         'result' => 'success',
@@ -2140,6 +2155,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $token_id = wc_clean($_POST['wc-paypal_express-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
             $order->payment_complete($token->get_token());
+            $payment_tokens_id = $token->get_token();
+            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
+            $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
+            $paypal_express_request->save_payment_token($order, $payment_tokens_id);
             update_post_meta($order_id, '_first_transaction_id', $token->get_token());
             $order->add_order_note('Payment Action: ' . $this->payment_action);
             WC()->cart->empty_cart();
@@ -2197,6 +2216,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $product = $order->get_product_from_item($values);
                     $product_id = $product->get_id();
                     if( !empty($product_id) ) {
+                        $product_type = get_post_type($product_id);
+                        if($product_type == 'product_variation') {
+                            $product_id = wp_get_post_parent_id($product_id);
+                        }
                         $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
                         if ($_enable_sandbox_mode == 'yes') {
                             $this->testmode = true;

@@ -41,7 +41,11 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
             return false;
         }
         $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
-        return isset($paypal_express_checkout);
+        if( isset($paypal_express_checkout['token']) && !empty($paypal_express_checkout['token']) && isset($paypal_express_checkout['payer_id']) && !empty($paypal_express_checkout['payer_id']) ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function ec_notice_count($notice_type = '') {
