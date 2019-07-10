@@ -134,6 +134,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Multi-Currency Suite compatibility. ([PFW-148](https://github.com/angelleye/paypal-woocommerce/pull/1322))
 * Fix - Resolves an issue with Express Checkout PayPal Smart button hide in Woo Checkout page. ([PFW-430](https://github.com/angelleye/paypal-woocommerce/pull/1324))
 * Fix - Resolves typos in Express Checkout Page Display setting. ([PFW-421](https://github.com/angelleye/paypal-woocommerce/issues/1325))
+* Fix - Resolves an issue with PayPal Payflow where AVS & Card Security Code display Multiple time on Mail. ([PFW-431](https://github.com/angelleye/paypal-woocommerce/issues/1326))
 
 
 = 2.0.1 - xx.xx.2019 =
