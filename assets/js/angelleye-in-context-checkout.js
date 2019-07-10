@@ -569,5 +569,4 @@ jQuery(function ($) {
                 } 
         });
     }    
-    
 });
