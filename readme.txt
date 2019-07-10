@@ -131,6 +131,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue with Express Checkout as a Missing Parameter. ([PFW-418](https://github.com/angelleye/paypal-woocommerce/pull/1316))
 * Tweak - Performance adjustments for PayPal Smart Buttons. ([PFW-406](https://github.com/angelleye/paypal-woocommerce/issues/1320))
 * Fix - Resolves an issue with Express Checkout Billing Agreement Bug. ([PFW-429](https://github.com/angelleye/paypal-woocommerce/pull/1321))
+* Feature - Multi-Currency Suite compatibility. ([PFW-148](https://github.com/angelleye/paypal-woocommerce/pull/1322))
 
 = 2.0.1 - xx.xx.2019 =
 * Feature - Adds autocomplete=new-password to all API credential fields in settings so that password managers will not interfere.  ([PFW-403](https://github.com/angelleye/paypal-woocommerce/pull/1314))
