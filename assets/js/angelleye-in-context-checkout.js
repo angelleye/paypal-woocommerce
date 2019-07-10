@@ -564,5 +564,4 @@ jQuery(function ($) {
                 } 
         });
     }    
-    
 });
