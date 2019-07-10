@@ -139,6 +139,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjustments to prevent duplicate order with Express Checkout. (https://github.com/angelleye/paypal-woocommerce/issues/1329)
 * Fix - Updates push notification system sync time interval. ([PFW-435](https://github.com/angelleye/paypal-woocommerce/issues/1327))
 * Fix - Resolves an issue with PayPal sandbox / test mode at the product level. ([PFW-409](https://github.com/angelleye/paypal-woocommerce/issues/1331))
+* Fix - Resolves an issue with Express Checkout as a Missing PayerID. ([PFW-418](https://github.com/angelleye/paypal-woocommerce/pull/1316))
 
 = 2.0.1 - xx.xx.2019 =
 * Feature - Adds autocomplete=new-password to all API credential fields in settings so that password managers will not interfere.  ([PFW-403](https://github.com/angelleye/paypal-woocommerce/pull/1314))
