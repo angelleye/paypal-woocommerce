@@ -137,6 +137,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue with PayPal Payflow where AVS & Card Security Code display Multiple time on Mail. ([PFW-431](https://github.com/angelleye/paypal-woocommerce/issues/1326))
 * Fix - Resolves a Compatibility issue with Woo Subscriptions. ([PFW-433](https://github.com/angelleye/paypal-woocommerce/issues/1327))
 * Tweak - Adjustments to prevent duplicate order with Express Checkout. (https://github.com/angelleye/paypal-woocommerce/issues/1329)
+* Fix - Updates push notification system sync time interval. ([PFW-435](https://github.com/angelleye/paypal-woocommerce/issues/1327))
 
 = 2.0.1 - xx.xx.2019 =
 * Feature - Adds autocomplete=new-password to all API credential fields in settings so that password managers will not interfere.  ([PFW-403](https://github.com/angelleye/paypal-woocommerce/pull/1314))
