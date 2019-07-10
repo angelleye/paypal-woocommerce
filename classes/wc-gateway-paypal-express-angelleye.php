@@ -1608,8 +1608,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
                 $result = $this->angelleye_ex_doreference_transaction($order_id);
                 if (!empty($result['ACK']) && $result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
-                    $order->payment_complete($result['TRANSACTIONID']);
-                    $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
+                    // @note Skylar L check for duplicate order
+                    if ($result['ACK'] == 'SuccessWithWarning' && !empty($result['L_ERRORCODE0']) && '11607' == $result['L_ERRORCODE0']) {
+                        $order->update_status('on-hold', empty($result['L_LONGMESSAGE0']) ? $result['L_SHORTMESSAGE0'] : $result['L_LONGMESSAGE0']);
+                    }
+                    else {
+                        $order->payment_complete($result['TRANSACTIONID']);
+                        $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $result['TRANSACTIONID']));
+                    }
                     WC()->cart->empty_cart();
                     return array(
                         'result' => 'success',
