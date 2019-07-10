@@ -738,8 +738,10 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 if ($old_wc) {
                     update_post_meta($order_id, '_CVV2MATCH', $cvv2_response_code);
+                    update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 } else {
                     update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
+                    update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
                 }
                 $order->add_order_note($cvv2_response_order_note);
                 do_action('ae_add_custom_order_note', $order, $card, $token, $PayPalResult);
@@ -1657,6 +1659,15 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
 
     public function angelleye_load_paypal_payflow_class($gateway, $current, $order_id = null) {
+        if ($this->testmode == false) {
+            $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id);
+        }
+        if ($this->testmode == true) {
+            $this->paypal_vendor = $this->get_option('sandbox_paypal_vendor');
+            $this->paypal_partner = $this->get_option('sandbox_paypal_partner', 'PayPal');
+            $this->paypal_password = $this->get_option('sandbox_paypal_password');
+            $this->paypal_user = $this->get_option('sandbox_paypal_user', $this->paypal_vendor);
+        }
         do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_payflow', $gateway, $current, $order_id);
         $this->credentials = array(
             'Sandbox' => $this->testmode,

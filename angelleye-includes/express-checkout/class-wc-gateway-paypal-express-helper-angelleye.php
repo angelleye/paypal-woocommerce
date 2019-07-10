@@ -644,6 +644,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->button_color = 'darkblue';
                 $this->button_fundingicons = '';
             }
+            if ($this->testmode == false) {
+                $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+            }
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
             if ($this->angelleye_is_in_context_enable() == true) {
                 $cancel_url = !empty($this->cancel_page) ? get_permalink($this->cancel_page) : wc_get_cart_url();

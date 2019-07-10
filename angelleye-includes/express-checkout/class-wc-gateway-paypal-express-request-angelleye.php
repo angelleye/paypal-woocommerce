@@ -584,6 +584,22 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function angelleye_load_paypal_class($gateway, $current, $order_id = null) {
+        if ($this->testmode == false) {
+            $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id);
+        }
+        if ($this->testmode == true) {
+            $this->API_Endpoint = "https://api-3t.sandbox.paypal.com/nvp";
+            $this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
+            $this->api_username = $this->gateway->get_option('sandbox_api_username');
+            $this->api_password = $this->gateway->get_option('sandbox_api_password');
+            $this->api_signature = $this->gateway->get_option('sandbox_api_signature');
+        } else {
+            $this->API_Endpoint = "https://api-3t.paypal.com/nvp";
+            $this->PAYPAL_URL = "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=";
+            $this->api_username = $this->gateway->get_option('api_username');
+            $this->api_password = $this->gateway->get_option('api_password');
+            $this->api_signature = $this->gateway->get_option('api_signature');
+        }
         do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_express', $gateway, $current, $order_id);
         $this->credentials = array(
             'Sandbox' => $this->testmode,

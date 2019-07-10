@@ -70,7 +70,7 @@ class AngellEYE_Utility {
                 return false;
             }
             if ($this->testmode == false) {
-                $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
+                $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($this->order_id);
             }
             if ($this->testmode == true) {
                 $this->api_username = $gateway_obj->get_option('sandbox_api_username');
@@ -1666,23 +1666,37 @@ class AngellEYE_Utility {
         <p> <?php echo $billing_agreement_id; ?></p> <?php
     }
 
-    public static function angelleye_paypal_for_woocommerce_is_set_sandbox_product() {
+    public static function angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id = null) {
+        global $product, $wp_query, $post;
         $is_sandbox_set = false;
-        if (did_action('wp_loaded')) {
-            if (isset(WC()->cart) && sizeof(WC()->cart->get_cart()) > 0) {
-                foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
-                    $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
-                    $product_type = get_post_type($product_id);
-                    if($product_type == 'product_variation') {
-                        $product_id = wp_get_post_parent_id($product_id);
-                    }
-                    $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
-                    if ($_enable_sandbox_mode == 'yes') {
-                        $is_sandbox_set = true;
-                        return $is_sandbox_set;
-                    }
+        if (isset(WC()->cart) && sizeof(WC()->cart->get_cart()) > 0) {
+            foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+                $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
+                $product_type = get_post_type($product_id);
+                if($product_type == 'product_variation') {
+                    $product_id = wp_get_post_parent_id($product_id);
+                }
+                $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
+                if ($_enable_sandbox_mode == 'yes') {
+                    $is_sandbox_set = true;
+                    return $is_sandbox_set;
                 }
             }
+        } elseif(isset( $wp_query ) && is_product() ) {
+            $product = wc_get_product( $post->ID );
+            $product_id = $product->get_id();
+            $product_type = get_post_type($product_id);
+            if($product_type == 'product_variation') {
+                $product_id = wp_get_post_parent_id($product_id);
+            }
+            $_enable_sandbox_mode = get_post_meta($product->get_id(), '_enable_sandbox_mode', true);
+            if ($_enable_sandbox_mode == 'yes') {
+                $is_sandbox_set = true;
+                return $is_sandbox_set;
+            }
+        } elseif (isset ($order_id) && !empty ($order_id)) {
+            $is_sandbox = get_post_meta($order_id, 'is_sandbox', true);
+            return $is_sandbox;
         }
         return $is_sandbox_set;
     }

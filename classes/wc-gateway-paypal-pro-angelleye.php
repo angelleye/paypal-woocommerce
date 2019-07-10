@@ -2122,6 +2122,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function angelleye_load_paypal_pro_class($gateway, $current, $order_id = null) {
+        if ($this->testmode == false) {
+            $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id);
+        }
+        if ($this->testmode == true) {
+            $this->api_username = $this->get_option('sandbox_api_username');
+            $this->api_password = $this->get_option('sandbox_api_password');
+            $this->api_signature = $this->get_option('sandbox_api_signature');
+        }
         do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_pro', $gateway, $current, $order_id);
         if (!class_exists('Angelleye_PayPal_WC')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
@@ -2156,7 +2164,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $this->validate_fields();
             $card = $this->get_posted_card();
-            $this->angelleye_load_paypal_pro_class($this->gateway, $this, null);
+            $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
             $DPFields = array(
                 'paymentaction' => 'Authorization',
                 'ipaddress' => AngellEYE_Utility::get_user_ip(),
