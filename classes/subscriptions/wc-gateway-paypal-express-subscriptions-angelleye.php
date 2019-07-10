@@ -24,7 +24,7 @@ class WC_Gateway_PayPal_Express_Subscriptions_AngellEYE extends WC_Gateway_PayPa
 
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
-        if ($this->is_subscription($order_id)) {
+        if ($this->is_subscription($order_id) && $this->function_helper->ec_is_express_checkout() == false) {
             if(AngellEYE_Utility::is_subs_change_payment()) {
                 return parent::subscription_change_payment($order_id);
             } elseif ($this->free_signup_with_token_payment_tokenization($order_id) == true) {
