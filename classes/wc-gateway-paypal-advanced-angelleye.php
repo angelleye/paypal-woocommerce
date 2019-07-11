@@ -168,8 +168,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'PWD[' . strlen($this->password) . ']' => $this->password,
             'ORIGID' => wc_clean($_POST['PNREF']),
             'TENDER' => 'C',
-            'TRXTYPE' => 'I',
-            'BUTTONSOURCE' => 'AngellEYE_SP_WooCommerce'
+            'TRXTYPE' => 'I'
         );
 
         $postData = ''; //stores the post data string
@@ -191,13 +190,16 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if (is_wp_error($response)) {
             throw new Exception(__('There was a problem connecting to the payment gateway.', 'paypal-for-woocommerce'));
         }
+        
         if (empty($response['body'])) {
             throw new Exception(__('Empty response.', 'paypal-for-woocommerce'));
         }
 
         $inquiry_result_arr = array(); //stores the response in array format
         parse_str($response['body'], $inquiry_result_arr);
-
+        $result_data = $inquiry_result_arr;
+        $result_data['AMT'] = number_format($order->get_total(), 2, '.', '');
+        do_action('angelleye_paypal_response_data', $result_data, $postData, '1', $this->testmode, false, 'paypal_advanced');
         if ($inquiry_result_arr['RESULT'] == 0 && ( $inquiry_result_arr['RESPMSG'] == 'Approved' || $inquiry_result_arr['RESPMSG'] == 'Verified')) {
             $order->add_order_note(sprintf(__('Received result of Inquiry Transaction for the  (Order: %s) and is successful', 'paypal-for-woocommerce'), $order->get_order_number()));
             return 'Approved';
@@ -242,7 +244,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $order->add_order_note(sprintf(__('PayPal Advanced payment completed (Order: %s). Transaction number/ID: %s.', 'paypal-for-woocommerce'), $order->get_order_number(), $_POST['PNREF']));
 
         $inq_result = $this->inquiry_transaction($order, $order_id);
-
+        
         // Handle response
         if ($inq_result == 'Approved') {//if approved
             // Payment complete
@@ -520,7 +522,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'SHIPTOCITY[' . strlen($shipping_city) . ']' => $shipping_city,
             'SHIPTOZIP' => $shipping_postcode,
             'SHIPTOCOUNTRY[' . strlen($shipping_country) . ']' => $shipping_country,
-            'BUTTONSOURCE' => 'AngellEYE_SP_WooCommerce',
             'RETURNURL[' . strlen($this->relay_response_url) . ']' => $this->relay_response_url,
             'URLMETHOD' => 'POST',
             'TEMPLATE' => $template,
@@ -629,6 +630,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             /* Parse and assign to array */
 
             parse_str($response['body'], $arr);
+            
 
             // Handle response
             if ($arr['RESULT'] > 0) {
@@ -1129,7 +1131,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         // Parse and assign to array 
         $refund_result_arr = array(); //stores the response in array format
         parse_str($response['body'], $refund_result_arr);
-
+        $result_data = $refund_result_arr;
+        $result_data['AMT'] = number_format($order->get_total(), 2, '.', '');
+        do_action('angelleye_paypal_response_data', $result_data, $postData, '1', $this->testmode, false, 'paypal_advanced');
         //Log
         if ($this->debug == 'yes') {
             $this->log->add('paypal_advanced', sprintf(__('Response of the refund transaction: %s', 'paypal-for-woocommerce'), print_r($refund_result_arr, true)));
@@ -1280,7 +1284,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'SHIPTOCITY[' . strlen($shipping_city) . ']' => $shipping_city,
             'SHIPTOZIP' => $shipping_postcode,
             'SHIPTOCOUNTRY[' . strlen($shipping_country) . ']' => $shipping_country,
-            'BUTTONSOURCE' => 'AngellEYE_SP_WooCommerce',
             'MERCHDESCR' => $this->softdescriptor
         );
         if ($this->is_subscription($order_id)) {
@@ -1372,6 +1375,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 throw new Exception(__('Empty response.', 'paypal-for-woocommerce'));
             }
             parse_str($response['body'], $arr);
+            do_action('angelleye_paypal_response_data', $arr, $postData, '1', $this->testmode, false, 'paypal_advanced');
             if ($arr['RESULT'] > 0) {
                 throw new Exception(__('There was an error processing your order - ' . $arr['RESPMSG'], 'paypal-for-woocommerce'));
             } else {//return the secure token

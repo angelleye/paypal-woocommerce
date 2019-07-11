@@ -97,6 +97,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public function __construct()
         {
             add_action('init', array($this, 'load_plugin_textdomain'));
+            include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-payment-logger.php';
+            AngellEYE_PFW_Payment_Logger::instance();
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
             if( is_admin() ) {
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-admin-order-payment-process.php';

@@ -117,10 +117,13 @@ class PayPal_Rest_API_Utility {
                 if( $this->payment_action == 'sale' ) {
                     $Sale = $relatedResources[0]->getSale();
                     $transaction_id = $Sale->getId();
+                    do_action('angelleye_paypal_response_data', $Sale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
                 } else {
                     $Authorization = $relatedResources[0]->getAuthorization();
                     $transaction_id = $Authorization->getId();
+                    do_action('angelleye_paypal_response_data', $Authorization, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
                 }
+                
                 do_action('before_save_payment_token', $order_id);
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
                 if(AngellEYE_Utility::angelleye_is_save_payment_token($this->gateway, $order_id)) {
@@ -359,7 +362,7 @@ class PayPal_Rest_API_Utility {
     public function getAuth() {
         $this->mode = $this->testmode == true ? 'SANDBOX' : 'LIVE';
         $auth = new ApiContext(new OAuthTokenCredential($this->rest_client_id, $this->rest_secret_id));
-        $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => 'AngellEYE_SP_WooCommerce', 'log.LogEnabled' => $this->debug , 'log.LogLevel' => ($this->mode == 'SANDBOX') ? 'DEBUG' : 'INFO', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
+        $auth->setConfig(array('mode' => $this->mode, 'log.LogEnabled' => $this->debug , 'log.LogLevel' => ($this->mode == 'SANDBOX') ? 'DEBUG' : 'INFO', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
         return $auth;
     }
 
@@ -572,6 +575,7 @@ class PayPal_Rest_API_Utility {
             if( $this->payment_action == 'sale' ) {
                 $refundedSale = $Transaction->refund($refund, $this->getAuth());
                 if ($refundedSale->state == 'completed') {
+                    do_action('angelleye_paypal_response_data', $refundedSale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
                     $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
                     update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
                     if (isset($reason) && !empty($reason)) {
@@ -582,6 +586,7 @@ class PayPal_Rest_API_Utility {
             } else {
                 $refundedSale = $Transaction->void($this->getAuth());
                 if ($refundedSale->state == 'voided') {
+                    do_action('angelleye_paypal_response_data', $refundedSale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
                     $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
                     update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
                     if (isset($reason) && !empty($reason)) {
@@ -873,9 +878,11 @@ class PayPal_Rest_API_Utility {
             if( $this->payment_action == 'sale' ) {
                 $Sale = $relatedResources[0]->getSale();
                 $transaction_id = $Sale->getId();
+                do_action('angelleye_paypal_response_data', $Sale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
             } else {
                 $Authorization = $relatedResources[0]->getAuthorization();
                 $transaction_id = $Authorization->getId();
+                do_action('angelleye_paypal_response_data', $Authorization, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
             }
             do_action('before_save_payment_token', $order_id);
             $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
