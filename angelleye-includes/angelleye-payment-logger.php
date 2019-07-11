@@ -96,6 +96,11 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['amount'] = isset($result['AMT']) ? $result['AMT'] : '0.00';
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'ProcessTransaction') {
+                    if($payment_method == 'paypal_advanced') {
+                        $request['METHOD'] = 'PayFlow-Advanced';
+                    } else {
+                        $request['METHOD'] = 'PayFlow-Pro';
+                    }
                     if (isset($result['RESULT']) && ( $result['RESULT'] == 0 )) {
                         $request_param['status'] = 'Success';
                     } else {
