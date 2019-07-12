@@ -10,7 +10,7 @@ if (version_compare(PHP_VERSION, '5.4.0', '<')) {
     throw new Braintree_Exception('PHP version >= 5.4.0 required');
 }
 
-class Braintree {
+class Angelleye_Braintree {
     public static function requireDependencies() {
         $requiredExtensions = ['xmlwriter', 'openssl', 'dom', 'hash', 'curl'];
         foreach ($requiredExtensions AS $ext) {
@@ -21,4 +21,4 @@ class Braintree {
     }
 }
 
-Braintree::requireDependencies();
+Angelleye_Braintree::requireDependencies();
