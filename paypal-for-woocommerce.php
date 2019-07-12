@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           2.0.1
+ * Version:           2.1.0
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,9 +13,9 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 3.8
- * Tested up to: 5.2.1
+ * Tested up to: 5.2.2
  * WC requires at least: 3.0.0
- * WC tested up to: 3.6.4
+ * WC tested up to: 3.6.5
  *
  *************
  * Attribution
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '2.0.1');
+    define('VERSION_PFW', '2.1.0');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -898,9 +898,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * @param type $price
          * @return type
          */
-	public static function round( $price ) {
+	public static function round( $price, $order = null ) {
 		$precision = 2;
-
+                if (is_object($order)) {
+                    $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+                } else {
+                    $woocommerce_currency = get_woocommerce_currency();
+                }
 		if ( !self::currency_has_decimals( get_woocommerce_currency() ) ) {
 			$precision = 0;
 		}
@@ -915,13 +919,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * @param type $price
          * @return type
          */
-	public static function number_format( $price ) {
+	public static function number_format( $price, $order = null ) {
 		$decimals = 2;
-
-		if ( !self::currency_has_decimals( get_woocommerce_currency() ) ) {
+                if (is_object($order)) {
+                    $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+                } else {
+                    $woocommerce_currency = get_woocommerce_currency();
+                }
+		if ( !self::currency_has_decimals( $woocommerce_currency ) ) {
 			$decimals = 0;
 		}
-
 		return number_format( $price, $decimals, '.', '' );
 	}
         

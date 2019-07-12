@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
-Tested up to: 5.2.1
-Stable tag: 2.0.1
+Tested up to: 5.2.2
+Stable tag: 2.1.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,26 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 2.1.0 - xx.xx.2019 =
+* Fix - Resolves an issue with Express Checkout as a Missing Parameter. ([PFW-418](https://github.com/angelleye/paypal-woocommerce/pull/1316))
+* Tweak - Performance adjustments for PayPal Smart Buttons. ([PFW-406](https://github.com/angelleye/paypal-woocommerce/pull/1320))
+* Fix - Resolves an issue with Express Checkout Billing Agreement Bug. ([PFW-429](https://github.com/angelleye/paypal-woocommerce/pull/1321))
+* Feature - Multi-Currency Suite compatibility. ([PFW-148](https://github.com/angelleye/paypal-woocommerce/pull/1322))
+* Fix - Resolves an issue with Express Checkout PayPal Smart button hide in Woo Checkout page. ([PFW-430](https://github.com/angelleye/paypal-woocommerce/pull/1324))
+* Fix - Resolves typos in Express Checkout Page Display setting. ([PFW-421](https://github.com/angelleye/paypal-woocommerce/pull/1325))
+* Fix - Resolves an issue with PayPal Payflow where AVS & Card Security Code display Multiple time on Mail. ([PFW-431](https://github.com/angelleye/paypal-woocommerce/pull/1326))
+* Fix - Resolves a Compatibility issue with Woo Subscriptions. ([PFW-433](https://github.com/angelleye/paypal-woocommerce/pull/1327))
+* Tweak - Adjustments to prevent duplicate order with Express Checkout. (https://github.com/angelleye/paypal-woocommerce/pull/1329)
+* Fix - Updates push notification system sync time interval. ([PFW-435](https://github.com/angelleye/paypal-woocommerce/pull/1327))
+* Fix - Resolves an issue with PayPal sandbox / test mode at the product level. ([PFW-409](https://github.com/angelleye/paypal-woocommerce/pull/1331))
+* Fix - Resolves an issue with Express Checkout as a Missing PayerID. ([PFW-418](https://github.com/angelleye/paypal-woocommerce/pull/1316))
+* Fix - Resolves a problem with PayPal Pro when the subtotal is zero and all you are paying for is shipping. ([PFW-425](https://github.com/angelleye/paypal-woocommerce/pull/1333))
+* Tweak - Adjustments to Express Checkout Tokenization checkbox html. ([PFW-442](https://github.com/angelleye/paypal-woocommerce/pull/1334))
+* Fix - Resolves a problem with PayPal Pro when the subtotal is zero and all you are paying for is shipping. ([PFW-447](https://github.com/angelleye/paypal-woocommerce/pull/1335))
+* Fix - Resolves a problem with Tokenization and Multi-Account plugin ([PFW-449](https://github.com/angelleye/paypal-woocommerce/pull/1336))
+* Feature - Adds Volume tracking system. ([PFW-450](https://github.com/angelleye/paypal-woocommerce/pull/1337))
+* Fix - Resolves a problem with duplicate opt-in activation logging notice. ([PFW-451](https://github.com/angelleye/paypal-woocommerce/pull/1338))
 
 = 2.0.1 - xx.xx.2019 =
 * Feature - Adds autocomplete=new-password to all API credential fields in settings so that password managers will not interfere.  ([PFW-403](https://github.com/angelleye/paypal-woocommerce/pull/1314))

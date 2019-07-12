@@ -500,7 +500,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             $Payments = array();
             $Payment = array(
-                'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()),
+                'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order),
                 'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 'shippingdiscamt' => '',
                 'insuranceoptionoffered' => '',
@@ -523,9 +523,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             if( $this->order_param['is_calculation_mismatch'] == false ) {
                 $Payment['order_items'] = $this->order_param['order_items'];
-                $Payment['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt']);
-                $Payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt']);
-                $Payment['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
+                $Payment['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt'], $order);
+                $Payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt'], $order);
+                $Payment['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt'], $order);
             } else {
                 $Payment['order_items'] = array();
             }
@@ -626,6 +626,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_set_express_checkout_request() {
         try {
             $Payments = array();
+            $order = null;
             $cancel_url = !empty($this->gateway->cancel_page_id) ? get_permalink($this->gateway->cancel_page_id) : wc_get_cart_url();
             if ($cancel_url == false) {
                 $cancel_url = wc_get_cart_url();
@@ -723,7 +724,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             $SECFields = $this->function_helper->angelleye_paypal_for_woocommerce_needs_shipping($SECFields);
             $Payment = array(
-                'amt' => AngellEYE_Gateway_Paypal::number_format($order_total),
+                'amt' => AngellEYE_Gateway_Paypal::number_format($order_total, $order),
                 'currencycode' => get_woocommerce_currency(),
                 'custom' => apply_filters('ae_ppec_custom_parameter', ''),
                 'notetext' => '',
@@ -1353,7 +1354,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         );
         $PayPalRequestData['DRTFields'] = $DRTFields;
         $PaymentDetails = array(
-            'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total()), // Required. Total amount of the order, including shipping, handling, and tax.
+            'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order), // Required. Total amount of the order, including shipping, handling, and tax.
             'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // A three-character currency code.  Default is USD.
             'itemamt' => '', // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
             'shippingamt' => '', // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
@@ -1393,9 +1394,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $this->order_param = $this->gateway_calculation->order_calculation($order_id);
         if( $this->order_param['is_calculation_mismatch'] == false ) {
             $Payment['order_items'] = $this->order_param['order_items'];
-            $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt']);
-            $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt']);
-            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt']);
+            $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt'], $order);
+            $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt'], $order);
+            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt'], $order);
         } else {
             $Payment['order_items'] = array();
         }
@@ -1494,7 +1495,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $RTFields = array(
             'transactionid' => $order->get_transaction_id(),
             'refundtype' => $order->get_total() == $amount ? 'Full' : 'Partial',
-            'amt' => AngellEYE_Gateway_Paypal::number_format($amount),
+            'amt' => AngellEYE_Gateway_Paypal::number_format($amount, $order),
             'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
             'note' => $reason,
         );

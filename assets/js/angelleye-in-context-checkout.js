@@ -581,5 +581,5 @@ jQuery(function ($) {
                     $( '.angelleye_smart_button_checkout_bottom' ).hide();
                 } 
         });
-    }    
+    }   
 });
