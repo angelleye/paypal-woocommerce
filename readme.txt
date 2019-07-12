@@ -146,6 +146,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves a problem with Tokenization and Multi-Account plugin ([PFW-449](https://github.com/angelleye/paypal-woocommerce/pull/1336))
 * Feature - Adds Volume tracking system. ([PFW-450](https://github.com/angelleye/paypal-woocommerce/pull/1337))
 * Fix - Resolves a problem with duplicate opt-in activation logging notice. ([PFW-451](https://github.com/angelleye/paypal-woocommerce/pull/1338))
+* Tweak - Rename Braintree class for Prevent PHP error. ([PFW-453](https://github.com/angelleye/paypal-woocommerce/pull/1340))
 
 = 2.0.1 - xx.xx.2019 =
 * Feature - Adds autocomplete=new-password to all API credential fields in settings so that password managers will not interfere.  ([PFW-403](https://github.com/angelleye/paypal-woocommerce/pull/1314))
