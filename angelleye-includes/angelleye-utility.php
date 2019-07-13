@@ -434,7 +434,7 @@ class AngellEYE_Utility {
 
         $payment_gateway = wc_get_payment_gateway_by_order( $order );
         if ( $payment_gateway && isset( $payment_gateway->invoice_id_prefix ) ) {
-            $invnum = $payment_gateway->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#", "", $order->get_order_number()));
+            $invnum = $payment_gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number());
             $DataArray['INVNUM'] = $invnum;
         }
 
