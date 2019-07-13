@@ -588,7 +588,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'cvv2' => $card_csc, // A code printed on the back of the card (or front for Amex)
                 'recurring' => '', // Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring.
                 'swipe' => '', // Required for card-present transactions.  Used to pass either Track 1 or Track 2, but not both.
-                'orderid' => $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number()), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
+                'orderid' => $this->invoice_id_prefix . str_replace("#","",$order->get_order_number()), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
                 'orderdesc' => 'Order ' . $order->get_order_number() . ' on ' . get_bloginfo('name'), //
                 'billtoemail' => $billing_email, // Account holder's email address.
                 'billtophonenum' => '', // Account holder's phone number.
@@ -604,7 +604,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'custref' => '', //
                 'custcode' => '', //
                 'custip' => AngellEYE_Utility::get_user_ip(), //
-                'invnum' => $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#", "", $order->get_order_number())), //
+                'invnum' => $this->invoice_id_prefix . str_replace("#","",$order->get_order_number()), //
                 'ponum' => '', //
                 'starttime' => '', // For inquiry transaction when using CUSTREF to specify the transaction.
                 'endtime' => '', // For inquiry transaction when using CUSTREF to specify the transaction.
@@ -1299,7 +1299,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'comment2' => apply_filters('ae_pppf_comment2_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'recurring' => '', // Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring.
                 'swipe' => '', // Required for card-present transactions.  Used to pass either Track 1 or Track 2, but not both.
-                'orderid' => $this->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", $order->get_order_number()), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
+                'orderid' => $this->invoice_id_prefix . $order->get_order_number(), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
                 'orderdesc' => 'Order ' . $order->get_order_number() . ' on ' . get_bloginfo('name'), //
                 'billtoemail' => $billing_email, // Account holder's email address.
                 'billtophonenum' => '', // Account holder's phone number.

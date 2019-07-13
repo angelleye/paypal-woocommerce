@@ -507,7 +507,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'handlingamt' => '',
                 'desc' => '',
                 'custom' => apply_filters('ae_ppec_custom_parameter', json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key()))),
-                'invnum' => $this->gateway->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#", "", $order->get_order_number())),
+                'invnum' => $this->gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number()),
                 'notetext' => !empty($customer_notes) ? $customer_notes : '',
                 'allowedpaymentmethod' => '',
                 'paymentaction' => ($this->gateway->payment_action == 'Authorization' || $order->get_total() == 0 ) ? 'Authorization' : $this->gateway->payment_action,
@@ -1365,7 +1365,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays Yes and shows the amount.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => apply_filters('ae_ppec_custom_parameter', json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key()))), // Free-form field for your own use.  256 char max.
-            'invnum' => $this->gateway->invoice_id_prefix . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#", "", $order->get_order_number())), // Your own invoice or tracking number.  127 char max.
+            'invnum' => $this->gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number()), // Your own invoice or tracking number.  127 char max.
             'buttonsource' => ''     // URL for receiving Instant Payment Notifications
         );
         if (isset($this->gateway->notifyurl) && !empty($this->gateway->notifyurl)) {
