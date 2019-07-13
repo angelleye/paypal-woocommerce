@@ -596,7 +596,7 @@ class AngellEYE_Admin_Order_Payment_Process {
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order),
             'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
             'custom' => apply_filters('ae_ppec_custom_parameter', json_encode(array('order_id' => $order_id, 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key()))),
-            'invnum' => $this->gateway_settings['invoice_id_prefix'] . preg_replace("/[^a-zA-Z0-9]/", "", str_replace("#", "", $order->get_order_number())),
+            'invnum' => $this->gateway_settings['invoice_id_prefix'] . str_replace("#", "", $order->get_order_number()),
             'notetext' => $customer_notes
         );
         if (isset($this->gateway_settings['notifyurl']) && !empty($this->gateway_settings['notifyurl'])) {
