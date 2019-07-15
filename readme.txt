@@ -142,9 +142,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves a problem with Tokenization and Multi-Account plugin ([PFW-449](https://github.com/angelleye/paypal-woocommerce/pull/1336))
 * Fix - Resolves a problem with duplicate opt-in activation logging notice. ([PFW-451](https://github.com/angelleye/paypal-woocommerce/pull/1338))
 * Fix - Resolves conflict with Braintree for GravityForms plugin. ([PFW-453](https://github.com/angelleye/paypal-woocommerce/pull/1340))
-* Tweak - Remove regex for invoice. ([PFW-434](https://github.com/angelleye/paypal-woocommerce/pull/1341))
-* Tweak - Performance adjustments for PayPal Smart Buttons. ([PFW-406](https://github.com/angelleye/paypal-woocommerce/pull/1320))
-* Tweak - Adjustments to prevent duplicate order with Express Checkout. (https://github.com/angelleye/paypal-woocommerce/pull/1329)
+* Tweak - Stops stripping special characters from Invoice ID value passed to PayPal. ([PFW-434](https://github.com/angelleye/paypal-woocommerce/pull/1341))
+* Tweak - Performance improvements. ([PFW-406](https://github.com/angelleye/paypal-woocommerce/pull/1320))
+* Tweak - Adjustments to prevent duplicate order with Express Checkout. ([#1329](https://github.com/angelleye/paypal-woocommerce/pull/1329))
 * Tweak - Adjustments to Express Checkout Tokenization checkbox html. ([PFW-442](https://github.com/angelleye/paypal-woocommerce/pull/1334))
 
 = 2.0.1 - 05.31.2019 =
