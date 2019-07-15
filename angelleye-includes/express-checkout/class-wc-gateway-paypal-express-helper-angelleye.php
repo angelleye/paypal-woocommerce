@@ -327,7 +327,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         try {
             if (isset($_REQUEST['express_checkout']) || isset($_REQUEST['express_checkout_x'])) {
                 wc_clear_notices();
-                if (isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') {
+                if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == 'true') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
                     WC()->session->set('ec_save_to_account', 'on');
                 } else {
                     unset(WC()->session->ec_save_to_account);
@@ -992,7 +992,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
         WC()->shipping->reset_shipping();
         WC()->cart->calculate_totals();
-        if (!empty($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == true) {
+        if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == 'true') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
             WC()->session->set('ec_save_to_account', 'on');
         } else {
             unset(WC()->session->ec_save_to_account);
@@ -1009,10 +1009,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         WC()->shipping->reset_shipping();
         $product_id = absint(wp_unslash($_POST['product_id']));
         $url = esc_url_raw(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
-        if (!empty($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == 'true') {
+        if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == 'true') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
             $url = add_query_arg('ec_save_to_account', 'true', $url);
         }
-        if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
+        if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == 'true') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
             WC()->session->set( 'ec_save_to_account', 'on' );
             $url = add_query_arg('ec_save_to_account', 'true', $url);
         } else {
