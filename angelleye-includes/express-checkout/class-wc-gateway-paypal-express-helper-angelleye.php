@@ -329,6 +329,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 wc_clear_notices();
                 if (isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') {
                     WC()->session->set('ec_save_to_account', 'on');
+                } else {
+                    unset(WC()->session->ec_save_to_account);
                 }
                 $url = esc_url_raw(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
             }
@@ -803,7 +805,11 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $cart_button_html .= "<div class='$angelleye_smart_button'></div>";
             }
             if ($this->enable_tokenized_payments == 'yes') {
-                $cart_button_html .= $this->function_helper->angelleye_ec_save_payment_method_checkbox();
+                if($class_top == 'paypal_checkout_button_bottom') {
+                    $cart_button_html .= $this->function_helper->angelleye_ec_save_payment_method_checkbox(true);
+                } else {
+                    $cart_button_html .= $this->function_helper->angelleye_ec_save_payment_method_checkbox();
+                }
             }
             if ($return == true) {
                 return $cart_button_html;
@@ -958,13 +964,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if (!is_ajax()) {
             if ($this->function_helper->ec_is_express_checkout() || $this->ec_get_session_data('shipping_details')) {
                 $destination = $this->ec_get_session_data('shipping_details');
-                if (!empty($destination)) {
-                    $packages[0]['destination']['country'] = $destination['country'];
-                    $packages[0]['destination']['state'] = $destination['state'];
-                    $packages[0]['destination']['postcode'] = $destination['postcode'];
-                    $packages[0]['destination']['city'] = $destination['city'];
-                    $packages[0]['destination']['address'] = $destination['address_1'];
-                    $packages[0]['destination']['address_2'] = $destination['address_2'];
+                if (!empty($destination['country'])) {
+                    $packages[0]['destination']['country'] = isset($destination['country']) ? $destination['country'] : '';
+                    $packages[0]['destination']['state'] = isset($destination['state']) ? $destination['state'] : '';
+                    $packages[0]['destination']['postcode'] = isset($destination['postcode']) ? $destination['postcode'] : '';
+                    $packages[0]['destination']['city'] = isset($destination['city']) ? $destination['city'] : '';
+                    $packages[0]['destination']['address'] = isset($destination['address_1']) ? $destination['address_1'] : '';
+                    $packages[0]['destination']['address_2'] = isset($destination['address_2']) ? $destination['address_2'] : '';
                 }
             }
         }
@@ -988,6 +994,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         WC()->cart->calculate_totals();
         if (!empty($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == true) {
             WC()->session->set('ec_save_to_account', 'on');
+        } else {
+            unset(WC()->session->ec_save_to_account);
         }
         wp_send_json(new stdClass());
     }
@@ -1003,6 +1011,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         $url = esc_url_raw(add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))));
         if (!empty($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == 'true') {
             $url = add_query_arg('ec_save_to_account', 'true', $url);
+        }
+        if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
+            WC()->session->set( 'ec_save_to_account', 'on' );
+            $url = add_query_arg('ec_save_to_account', 'true', $url);
+        } else {
+            unset(WC()->session->ec_save_to_account);
         }
         if (!empty($_POST['is_cc']) && $_POST['is_cc'] == 'true') {
             $url = add_query_arg('use_paypal_credit', 'true', $url);

@@ -67,7 +67,6 @@ jQuery(function ($) {
                         disallowed: disallowed_funding_methods_single_array
                     },
                     payment: function (data, actions) {
-                        $('.cart').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                         var data_param = {
                             'nonce': angelleye_in_content_param.generate_cart_nonce,
                             'qty': $('.quantity .qty').val(),
@@ -105,7 +104,6 @@ jQuery(function ($) {
                         });
                     },
                     onCancel: function (data, actions) {
-                        $('.cart').unblock();
                         window.location.href = angelleye_in_content_param.cancel_page;
                     },
                     onClick: function () {
@@ -120,7 +118,7 @@ jQuery(function ($) {
                         }
                     },
                     onError: function (err, actions) {
-                        $('.cart').unblock();
+                        console.log("err");
                         if ($('.angelleye_button_single').length) {
                             window.location.href = angelleye_in_content_param.cancel_page;
                         }
@@ -180,7 +178,6 @@ jQuery(function ($) {
                             disallowed: disallowed_funding_methods_var
                         },
                         payment: function () {
-                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var data_param = {
                                 'request_from': 'JSv4'
                             };
@@ -188,7 +185,10 @@ jQuery(function ($) {
                             angelleye_action = angelleye_in_content_param.set_express_checkout;
                             if ($("#wc-paypal_express-new-payment-method").is(':checked')) {
                                 angelleye_action = angelleye_action + '&ec_save_to_account=true';
+                            } else if ($("#wc-paypal_express-new-payment-method_bottom").is(':checked')) {
+                                angelleye_action = angelleye_action + '&ec_save_to_account=true';
                             }
+
                             return paypal.request.post(angelleye_action, data_param).then(function (data) {
                                 return data.token;
                             });
@@ -206,7 +206,6 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
-                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
@@ -221,7 +220,6 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
-                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);
@@ -273,7 +271,6 @@ jQuery(function ($) {
                             disallowed: disallowed_funding_methods_var
                         },
                         payment: function () {
-                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var data_param = {
                                 request_from: 'JSv4'
                             };
@@ -299,7 +296,6 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
-                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
@@ -314,7 +310,6 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
-                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);
@@ -363,7 +358,6 @@ jQuery(function ($) {
                             disallowed: disallowed_funding_methods_var
                         },
                         payment: function () {
-                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var data_param = {
                                 request_from: 'JSv4'
                             };
@@ -389,7 +383,6 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
-                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
@@ -404,7 +397,6 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
-                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);
@@ -452,9 +444,6 @@ jQuery(function ($) {
                             disallowed: disallowed_funding_methods_var
                         },
                         payment: function () {
-                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
-                            
-                            
                             var data = $( selector ).closest( 'form' )
 						.add( $( '<input type="hidden" name="request_from" /> ' )
 							.attr( 'value', 'JSv4' )
@@ -486,7 +475,6 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
-                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
@@ -501,7 +489,6 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
-                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);

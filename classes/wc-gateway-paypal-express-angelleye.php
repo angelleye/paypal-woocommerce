@@ -1673,6 +1673,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             } else {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
                 $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
+                if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
+                    WC()->session->set( 'ec_save_to_account', 'on' );
+                } else {
+                    unset(WC()->session->ec_save_to_account);
+                }
                 if( !empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true) {
                     $paypal_express_request->angelleye_set_express_checkout();
                 }
@@ -1772,6 +1777,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case 'set_express_checkout':
                     if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
                         WC()->session->set( 'ec_save_to_account', 'on' );
+                    } else {
+                        unset(WC()->session->ec_save_to_account);
                     }
                     $paypal_express_request->angelleye_set_express_checkout();
                     break;
@@ -2329,6 +2336,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             try {
                 WC()->session->set('post_data', wp_slash($_POST));
                 if ( isset( $_POST['from_checkout'] ) && 'yes' === $_POST['from_checkout'] ) {
+                    if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] = 'on') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
+                        WC()->session->set( 'ec_save_to_account', 'on' );
+                    } else {
+                        unset(WC()->session->ec_save_to_account);
+                    }
                     unset($_POST['from_checkout']);
                     $paypal_express_request->angelleye_set_express_checkout();
                 }
