@@ -31,11 +31,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'subscription_date_changes',
             'multiple_subscriptions',
         );
-        if (substr(get_option("woocommerce_default_country"), 0, 2) == 'US' || substr(get_option("woocommerce_default_country"), 0, 2) == 'GB') {
-            $this->is_paypal_credit_enable = true;
-        } else {
-            $this->is_paypal_credit_enable = false;
-        }
+        $this->is_paypal_credit_enable = true;
         if(substr(get_option("woocommerce_default_country"), 0, 2) == 'US') {
             $this->is_us = true;
         } else {
