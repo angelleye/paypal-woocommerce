@@ -146,6 +146,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Performance improvements. ([PFW-406](https://github.com/angelleye/paypal-woocommerce/pull/1320))
 * Tweak - Adjustments to prevent duplicate order with Express Checkout. ([#1329](https://github.com/angelleye/paypal-woocommerce/pull/1329))
 * Tweak - Adjustments to Express Checkout Tokenization checkbox html. ([PFW-442](https://github.com/angelleye/paypal-woocommerce/pull/1334))
+* Tweak - Adjustments to Express Checkout PayPal Credit to Enable for all the Country. ([PFW-456](https://github.com/angelleye/paypal-woocommerce/pull/1342))
 
 = 2.0.1 - 05.31.2019 =
 * Feature - Adds autocomplete=new-password to all API credential fields in settings so that password managers will not interfere.  ([PFW-403](https://github.com/angelleye/paypal-woocommerce/pull/1314))
