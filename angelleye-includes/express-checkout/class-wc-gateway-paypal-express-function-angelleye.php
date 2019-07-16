@@ -89,15 +89,25 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
         return defined('WC_VERSION') && WC_VERSION ? WC_VERSION : null;
     }
 
-    public function angelleye_ec_save_payment_method_checkbox() {
+    public function angelleye_ec_save_payment_method_checkbox($is_bottom = false) {
         if( AngellEYE_Utility::is_cart_contains_subscription() == false && AngellEYE_Utility::is_subs_change_payment() == false ) {
-            return sprintf(
-                    '<div class="angelleye_ec_save_to_accoount_box">
-                        <p class="form-row woocommerce-SavedPaymentMethods-saveNew">
-                            <label for="wc-%1$s-new-payment-method"><input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" />%2$s</label>
-                        </p>
-                    </div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'paypal-for-woocommerce')
-            );
+            if($is_bottom) {
+                return sprintf(
+                        '<div class="angelleye_ec_save_to_accoount_box">
+                            <p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+                                <label for="wc-%1$s-new-payment-method"><input id="wc-%1$s-new-payment-method_bottom" name="wc-%1$s-new-payment-method" type="checkbox" />%2$s</label>
+                            </p>
+                        </div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'paypal-for-woocommerce')
+                );
+            } else {
+                return sprintf(
+                        '<div class="angelleye_ec_save_to_accoount_box">
+                            <p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+                                <label for="wc-%1$s-new-payment-method"><input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" />%2$s</label>
+                            </p>
+                        </div>', esc_attr('paypal_express'), esc_html__('Save PayPal account for future use', 'paypal-for-woocommerce')
+                );
+            }
         } else {
             return '';
         }
