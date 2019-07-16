@@ -131,7 +131,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Multi-Currency Suite compatibility. ([PFW-148](https://github.com/angelleye/paypal-woocommerce/pull/1322))
 * Fix - Resolves an issue with Express Checkout as a Missing Parameter on subscription purchases. ([PFW-418](https://github.com/angelleye/paypal-woocommerce/pull/1316))
 * Fix - Resolves an issue with Express Checkout as a Missing PayerID. ([PFW-437](https://github.com/angelleye/paypal-woocommerce/pull/1332))
-* Fix - Resolves an issue with Express Checkout Billing Agreement Bug. ([PFW-429](https://github.com/angelleye/paypal-woocommerce/pull/1321))
+* Fix - Resolves an issue with Express Checkout Billing Agreement Bug. ([PFW-429](https://github.com/angelleye/paypal-woocommerce/pull/1321)) ([PFW-457](https://github.com/angelleye/paypal-woocommerce/pull/1343))
 * Fix - Resolves an issue where disabling PayPal buttons in mini-cart would sometimes disable them from Woo checkout page as well. ([PFW-430](https://github.com/angelleye/paypal-woocommerce/pull/1324))
 * Fix - Resolves typos in Express Checkout Page Display setting. ([PFW-421](https://github.com/angelleye/paypal-woocommerce/pull/1325))
 * Fix - Resolves an issue with PayPal Payflow where AVS & Card Security Code display Multiple time on Mail. ([PFW-431](https://github.com/angelleye/paypal-woocommerce/pull/1326))
