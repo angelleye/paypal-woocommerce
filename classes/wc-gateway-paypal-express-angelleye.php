@@ -1552,7 +1552,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             echo wpautop(wptexturize($description));
         }
         if($this->function_helper->ec_is_express_checkout() == false) {
-            $this->new_method_label = __('Create a new billing agreement', 'paypal-for-woocommerce');
             if ($this->supports('tokenization') && is_checkout()) {
                 $this->tokenization_script();
                 $this->saved_payment_methods();
