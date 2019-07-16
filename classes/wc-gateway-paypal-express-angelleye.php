@@ -2207,7 +2207,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }            
         if( wc_notice_count( 'error' ) > 0 ) {
            self::log(print_r(wc_get_notices(), true));
-            wc_clear_notices();
             $redirect_url = get_permalink(wc_get_page_id('cart'));
             wp_redirect($redirect_url);
             exit();
