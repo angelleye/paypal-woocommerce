@@ -752,7 +752,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         } else {
                             $Payment['shiptoname'] = wc_clean(stripslashes($shiptoname));
                         }
-
+                        $SECFields['email'] = !empty($post_data['billing_email']) ? $post_data['billing_email'] : '';
                         $Payment['shiptostreet'] = !empty($post_data['shipping_address_1']) ? $post_data['shipping_address_1'] : '';
                         $Payment['shiptostreet2'] = !empty($post_data['shipping_address_2']) ? $post_data['shipping_address_2'] : '';
                         $Payment['shiptocity'] = !empty($post_data['shipping_city']) ? wc_clean(stripslashes($post_data['shipping_city'])) : '';
@@ -776,7 +776,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         } else {
                             $Payment['shiptoname'] = wc_clean(stripslashes($shiptoname));
                         }
-
+                        $SECFields['email'] = !empty($post_data['billing_email']) ? $post_data['billing_email'] : '';
                         $Payment['shiptostreet'] = !empty($post_data['billing_address_1']) ? wc_clean($post_data['billing_address_1']) : '';
                         $Payment['shiptostreet2'] = !empty($post_data['billing_address_2']) ? wc_clean($post_data['billing_address_2']) : '';
                         $Payment['shiptocity'] = !empty($post_data['billing_city']) ? wc_clean(stripslashes($post_data['billing_city'])) : '';
@@ -818,7 +818,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $billing_state = WC()->customer->get_billing_state();
                         $billing_postcode = WC()->customer->get_billing_postcode();
                         $billing_phone = WC()->customer->get_billing_phone();
+                        $billing_email = WC()->customer->get_billing_email();
+                        
                     }
+                    $SECFields['email'] = !empty($billing_email) ? $billing_email : '';
                     $Payment['shiptoname'] = wc_clean(stripslashes($firstname . ' ' . $lastname));
                     $Payment['shiptostreet'] = !empty($shiptostreet) ? wc_clean(stripslashes($shiptostreet)) : wc_clean(stripslashes($billing_shiptostreet));
                     $Payment['shiptostreet2'] = !empty($shiptostreet_two) ? wc_clean(stripslashes($shiptostreet_two)) : wc_clean(stripslashes($billing_shiptostreet_two));
@@ -838,12 +841,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
                 $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
                 $Payment['shiptoname'] = wc_clean(stripslashes($shipping_first_name . ' ' . $shipping_last_name));
+                $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_email : $order->get_billing_email();
                 $Payment['shiptostreet'] = $shipping_address_1;
                 $Payment['shiptostreet2'] = $shipping_address_2;
                 $Payment['shiptocity'] = wc_clean(stripslashes($shipping_city));
                 $Payment['shiptostate'] = $shipping_state;
                 $Payment['shiptozip'] = $shipping_postcode;
                 $Payment['shiptocountrycode'] = $shipping_country;
+                $SECFields['email'] = !empty($billing_email) ? $billing_email : '';
             }
             if(isset($this->cart_param['is_calculation_mismatch']) && $this->cart_param['is_calculation_mismatch'] == false) {
                 $Payment['order_items'] = $this->cart_param['order_items'];
