@@ -605,7 +605,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->api_password = $this->gateway->get_option('api_password');
             $this->api_signature = $this->gateway->get_option('api_signature');
         }
-        do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_express', $gateway, $current, $order_id);
+        //do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_express', $gateway, $current, $order_id);
         $this->credentials = array(
             'Sandbox' => $this->testmode,
             'APIUsername' => $this->api_username,
@@ -625,6 +625,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
     public function angelleye_set_express_checkout_request() {
         try {
+            $order_id = '';
             $Payments = array();
             $order = null;
             $cancel_url = !empty($this->gateway->cancel_page_id) ? get_permalink($this->gateway->cancel_page_id) : wc_get_cart_url();
@@ -858,9 +859,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             $this->paypal_request = $this->angelleye_add_billing_agreement_param($PayPalRequestData, $this->gateway->supports('tokenization'));
             $this->paypal_request = AngellEYE_Utility::angelleye_express_checkout_validate_shipping_address($this->paypal_request);
+            do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_express', $this->gateway, $this, $order_id, $this->paypal_request);
             $this->paypal_response = $this->paypal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'SetExpressCheckout');
-
             return $this->paypal_response;
         } catch (Exception $ex) {
             
