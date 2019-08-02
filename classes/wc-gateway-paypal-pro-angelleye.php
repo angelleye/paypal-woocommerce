@@ -1285,12 +1285,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                         wc_maybe_reduce_stock_levels( $order_id );
                     }
                 } elseif ($PayPalResult['L_ERRORCODE0'] == '10574') {
-                    $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
-                    $order->add_order_note('ERROR MESSAGE: ' . $error);
+                    $long_message = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : '';
+                    $short_message = !empty($PayPalResult['L_SHORTMESSAGE0']) ? $PayPalResult['L_SHORTMESSAGE0'] : '';
+                    $order->add_order_note($short_message . $long_message);
                     $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
                 } elseif (!empty($PayPalResult['L_ERRORCODE0'])) {
-                    $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
-                    $order->add_order_note('ERROR MESSAGE: ' . $error);
+                    $long_message = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : '';
+                    $short_message = !empty($PayPalResult['L_SHORTMESSAGE0']) ? $PayPalResult['L_SHORTMESSAGE0'] : '';
+                    $order->add_order_note($short_message . $long_message);
                     $order->update_status('on-hold', $error);
                     $old_wc = version_compare(WC_VERSION, '3.0', '<');
                     if ( $old_wc ) {
