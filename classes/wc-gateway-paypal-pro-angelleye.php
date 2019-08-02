@@ -1287,12 +1287,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 } elseif ($PayPalResult['L_ERRORCODE0'] == '10574') {
                     $long_message = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : '';
                     $short_message = !empty($PayPalResult['L_SHORTMESSAGE0']) ? $PayPalResult['L_SHORTMESSAGE0'] : '';
-                    $order->add_order_note($short_message . $long_message);
+                    $order->add_order_note($short_message .' '. $long_message);
                     $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
                 } elseif (!empty($PayPalResult['L_ERRORCODE0'])) {
                     $long_message = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : '';
                     $short_message = !empty($PayPalResult['L_SHORTMESSAGE0']) ? $PayPalResult['L_SHORTMESSAGE0'] : '';
-                    $order->add_order_note($short_message . $long_message);
+                    $order->add_order_note($short_message .' '. $long_message);
                     $order->update_status('on-hold', $error);
                     $old_wc = version_compare(WC_VERSION, '3.0', '<');
                     if ( $old_wc ) {
@@ -2051,11 +2051,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
             switch (strtolower($payment_status)) :
                 case 'completed' :
-                    $order_status = version_compare(WC_VERSION, '3.0', '<') ? $order->status : $this->order->get_status();
+                    $order_status = version_compare(WC_VERSION, '3.0', '<') ? $order->status : $order->get_status();
                     if ($order_status == 'completed') {
                         break;
                     }
-                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'webaccept'))) {
                         break;
                     }
                     $order->add_order_note(__('Payment Completed via PayPal Pro', 'paypal-for-woocommerce'));
