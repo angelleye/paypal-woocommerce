@@ -1381,10 +1381,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function angelleye_braintree_lib($order_id = null) {
-        if ($this->testmode == false) {
-            $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id);
+        if ($this->sandbox == false) {
+            $this->sandbox = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id);
         }
-        if ($this->testmode == true) {
+        if ($this->sandbox == true) {
             $this->sandbox = true;
             $this->environment = $this->sandbox == false ? 'production' : 'sandbox';
             $this->merchant_id = $this->sandbox == false ? $this->get_option('merchant_id') : $this->get_option('sandbox_merchant_id');
