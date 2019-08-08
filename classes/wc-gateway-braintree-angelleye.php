@@ -1730,6 +1730,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $return = $this->braintree_save_payment_method($customer_id, $result, $zero_amount_payment);
                 return $return;
             } else {
+                $this->response = $result;
                 return array(
                     'result' => 'failure',
                     'redirect' => ''
@@ -1977,7 +1978,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     exit;
                 }
             } else {
-                WC()->session->set('reload_checkout', true);
+                $error = $this->get_status_message();
+                if(!empty($error)) {
+                    wc_add_notice($error, 'error');
+                }
                 return array(
                     'result' => 'fail',
                     'redirect' => ''
