@@ -1757,6 +1757,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $payment_method_nonce = self::get_posted_variable('braintree_token');
             if (!empty($payment_method_nonce)) {
                 $payment_method_request = array('customerId' => $braintree_customer_id, 'paymentMethodNonce' => $payment_method_nonce, 'options' => array('failOnDuplicatePaymentMethod' => true));
+                if($zero_amount_payment == true) {
+                    $payment_method_request['options']['failOnDuplicatePaymentMethod'] = false;
+                }
                 $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
                 if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
                     $payment_method_request['options']['verificationMerchantAccountId'] = $this->merchant_account_id;
