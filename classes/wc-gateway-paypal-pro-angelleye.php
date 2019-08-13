@@ -2202,7 +2202,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
             AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($result, $methos_name = 'DoDirectPayment', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify, $redirect_url);
             if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
-                $customer_id = get_current_user_id();
+                if ( 0 != $order->get_user_id() ) {
+                    $customer_id = $order->get_user_id();
+                } else {
+                    $customer_id = get_current_user_id();
+                }
                 $TRANSACTIONID = $result['TRANSACTIONID'];
                 $token = new WC_Payment_Token_CC();
                 $token->set_token( $TRANSACTIONID );

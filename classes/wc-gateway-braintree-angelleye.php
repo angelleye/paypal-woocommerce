@@ -1048,7 +1048,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             );
             
             if (is_user_logged_in() && (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] != 'new')) {
-                    $customer_id = get_current_user_id();
+                    if ( 0 != $order->get_user_id() ) {
+                        $customer_id = $order->get_user_id();
+                    } else {
+                        $customer_id = get_current_user_id();
+                    }
                     $token_id = wc_clean($_POST['wc-braintree-payment-token']);
                     $token = WC_Payment_Tokens::get($token_id);
                     $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
@@ -1067,7 +1071,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             }
             if (is_user_logged_in()) {
-                $customer_id = get_current_user_id();
+                if ( 0 != $order->get_user_id() ) {
+                    $customer_id = $order->get_user_id();
+                } else {
+                    $customer_id = get_current_user_id();
+                }
                 $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
                 if (!empty($braintree_customer_id) && AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
                     $request_data['customerId'] = $braintree_customer_id;
@@ -1236,7 +1244,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 } else {
                                     if (!empty($paymentMethod->billingAgreementId)) {
                                         $token = new WC_Payment_Token_CC();
-                                        $customer_id = get_current_user_id();
+                                        if ( 0 != $order->get_user_id() ) {
+                                            $customer_id = $order->get_user_id();
+                                        } else {
+                                            $customer_id = get_current_user_id();
+                                        }
                                         $token->set_token($paymentMethod->billingAgreementId);
                                         $token->set_gateway_id($this->id);
                                         $token->set_card_type('PayPal Billing Agreement');
@@ -2059,7 +2071,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $request_data['paymentMethodToken'] = $payment_token;
         }
         if (is_user_logged_in()) {
-            $customer_id = get_current_user_id();
+            if ( 0 != $order->get_user_id() ) {
+                $customer_id = $order->get_user_id();
+            } else {
+                $customer_id = get_current_user_id();
+            }
             $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
             if (!empty($braintree_customer_id)) {
                 $request_data['customerId'] = $braintree_customer_id;
@@ -2442,7 +2458,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $success = true;
         $this->validate_fields();
         $this->angelleye_braintree_lib($order_id);
-        $customer_id = get_current_user_id();
+        if ( 0 != $order->get_user_id() ) {
+            $customer_id = $order->get_user_id();
+        } else {
+            $customer_id = get_current_user_id();
+        }
         $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
         if (!empty($braintree_customer_id)) {
             $result = $this->braintree_create_payment_method_auth($braintree_customer_id, $order);
@@ -2502,7 +2522,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     
     public function braintree_create_payment_method_auth($braintree_customer_id, $order) {
         if (is_user_logged_in() && (!empty($_POST['wc-braintree-payment-token']) && $_POST['wc-braintree-payment-token'] != 'new')) {
-            $customer_id = get_current_user_id();
+            if ( 0 != $order->get_user_id() ) {
+                $customer_id = $order->get_user_id();
+            } else {
+                $customer_id = get_current_user_id();
+            }
             $token_id = wc_clean($_POST['wc-braintree-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
             $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
@@ -2624,7 +2648,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     } else {
                         if (!empty($braintree_method->billingAgreementId)) {
                             $token = new WC_Payment_Token_CC();
-                            $customer_id = get_current_user_id();
+                            if ( 0 != $order->get_user_id() ) {
+                                $customer_id = $order->get_user_id();
+                            } else {
+                                $customer_id = get_current_user_id();
+                            }
                             $token->set_token($braintree_method->billingAgreementId);
                             $token->set_gateway_id($this->id);
                             $token->set_card_type('PayPal Billing Agreement');

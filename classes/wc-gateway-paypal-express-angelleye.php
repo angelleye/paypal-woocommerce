@@ -2413,7 +2413,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         if (!empty($billing_result['BILLINGAGREEMENTID'])) {
                             $billing_agreement_id = $billing_result['BILLINGAGREEMENTID'];
                             $token = new WC_Payment_Token_CC();
-                            $customer_id = get_current_user_id();
+                            if ( 0 != $order->get_user_id() ) {
+                                $customer_id = $order->get_user_id();
+                            } else {
+                                $customer_id = get_current_user_id();
+                            }
                             $token->set_token($billing_agreement_id);
                             $token->set_gateway_id($this->id);
                             $token->set_card_type('PayPal Billing Agreement');

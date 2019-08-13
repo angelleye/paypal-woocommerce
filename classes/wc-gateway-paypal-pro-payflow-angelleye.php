@@ -1718,7 +1718,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'redirect' => $this->get_return_url($order)
             );
         } else {
-            $customer_id = get_current_user_id();
+            if ( 0 != $order->get_user_id() ) {
+                $customer_id = $order->get_user_id();
+            } else {
+                $customer_id = get_current_user_id();
+            }
             $this->angelleye_load_paypal_payflow_class($this->gateway, $this, null);
             $this->validate_fields();
             $card = $this->get_posted_card();
@@ -1766,7 +1770,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                     exit();
                 } else {
-                    $customer_id = get_current_user_id();
+                    if ( 0 != $order->get_user_id() ) {
+                        $customer_id = $order->get_user_id();
+                    } else {
+                        $customer_id = get_current_user_id();
+                    }
                     $TRANSACTIONID = $PayPalResult['PNREF'];
                     $this->are_reference_transactions_enabled($TRANSACTIONID);
                     $token = new WC_Payment_Token_CC();
