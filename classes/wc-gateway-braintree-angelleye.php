@@ -422,20 +422,24 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         
         $this->angelleye_braintree_lib();
-        $this->add_log('Begin Braintree_ClientToken::generate Request');
+        
         try {
             if (is_user_logged_in() && $this->enable_tokenized_payments == 'yes') {
                 $customer_id = get_current_user_id();
                 $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
                 $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id();
                 if (!empty($braintree_customer_id) && !empty($this->merchant_account_id)) {
+                    $this->add_log('Begin Braintree_ClientToken::generate Request ' . print_r(array('customerId' => $braintree_customer_id, 'merchantAccountId' => $this->merchant_account_id), true));
                     $clientToken = Braintree_ClientToken::generate(array('customerId' => $braintree_customer_id, 'merchantAccountId' => $this->merchant_account_id));
                 } else if (!empty($braintree_customer_id)) {
+                    $this->add_log('Begin Braintree_ClientToken::generate Request ' . print_r(array('customerId' => $braintree_customer_id), true));
                     $clientToken = Braintree_ClientToken::generate(array('customerId' => $braintree_customer_id));
                 } else {
+                    $this->add_log('Begin Braintree_ClientToken::generate Request ');
                     $clientToken = Braintree_ClientToken::generate();
                 }
             } else {
+                $this->add_log('Begin Braintree_ClientToken::generate Request ');
                 $clientToken = Braintree_ClientToken::generate();
             }
         } catch (Braintree_Exception_Authentication $e) {
