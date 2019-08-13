@@ -439,6 +439,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $clientToken = Braintree_ClientToken::generate();
                 }
             } else {
+                $this->add_log('Begin Braintree_ClientToken::generate Request ');
                 $clientToken = Braintree_ClientToken::generate();
             }
         } catch (Braintree_Exception_Authentication $e) {
