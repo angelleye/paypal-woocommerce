@@ -32,15 +32,16 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             if ($this->payment_method == 'paypal_pro_payflow' || $this->payment_method == 'paypal_advanced') {
                 $this->is_separate_discount = true;
             }
+            
+        }
+
+        public function cart_calculation() {
             $is_zdp_currency = in_array(get_woocommerce_currency(), $this->zdp_currencies);
             if ($is_zdp_currency) {
                 $this->decimals = 0;
             } else {
                 $this->decimals = 2;
             }
-        }
-
-        public function cart_calculation() {
             if (!defined('WOOCOMMERCE_CHECKOUT')) {
                 define('WOOCOMMERCE_CHECKOUT', true);
             }
@@ -182,6 +183,17 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
 
         public function order_calculation($order_id) {
             $order = wc_get_order($order_id);
+            if (is_object($order)) {
+                $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+            } else {
+                $woocommerce_currency = get_woocommerce_currency();
+            }
+            $is_zdp_currency = in_array($woocommerce_currency, $this->zdp_currencies);
+            if ($is_zdp_currency) {
+                $this->decimals = 0;
+            } else {
+                $this->decimals = 2;
+            }
             $this->itemamt = 0;
             $this->discount_amount = 0;
             $this->order_items = array();
