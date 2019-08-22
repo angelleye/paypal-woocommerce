@@ -905,7 +905,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 } else {
                     $woocommerce_currency = get_woocommerce_currency();
                 }
-		if ( !self::currency_has_decimals( get_woocommerce_currency() ) ) {
+		if ( !self::currency_has_decimals( $woocommerce_currency ) ) {
 			$precision = 0;
 		}
 
