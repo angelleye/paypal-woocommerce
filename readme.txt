@@ -133,6 +133,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue with Express Checkout email and phone number not pass in request. ([PFW-459](https://github.com/angelleye/paypal-woocommerce/pull/1347))
 * Fix - Resolves an issue with WP Widget Title. ([PFW-462](https://github.com/angelleye/paypal-woocommerce/pull/1348))
 * Tweak - Adjustments to PayPal SuccessWithWarning Handling. ([PFW-454](https://github.com/angelleye/paypal-woocommerce/pull/1349))
+* Feature - Adds hook for Differentiate between Woo checkout and PayPal review page. ([PFW-452](https://github.com/angelleye/paypal-woocommerce/pull/1350))
 
 = 2.1.0 - 07.14.2019 =
 * Feature - Multi-Currency Suite compatibility. ([PFW-148](https://github.com/angelleye/paypal-woocommerce/pull/1322))
