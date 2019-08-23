@@ -104,7 +104,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->disable_term = $this->get_option('disable_term', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
         $this->billing_address = 'yes' === $this->get_option('billing_address', 'no');
-       
         if($this->send_items === false) {
             $this->subtotal_mismatch_behavior = 'drop';
         } else {
@@ -1017,6 +1016,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
 			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
 		),
+            ),
+            'do_not_send_line_item_details' => array(
+                'title' => __('Do not send line item details to PayPal', 'paypal-for-woocommerce'),
+                'label' => __('Do not send line item details to PayPal.', 'paypal-for-woocommerce'),
+                'description' => __('This will Allows you to skip line item details to PayPal.'),
+                'type' => 'checkbox',
+                'default' => 'no',
+                'desc_tip' => true,
             ),
             'enable_notifyurl' => array(
                 'title' => __('Enable PayPal IPN', 'paypal-for-woocommerce'),
