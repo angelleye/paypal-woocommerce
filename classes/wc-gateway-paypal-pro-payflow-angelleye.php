@@ -127,6 +127,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->fraud_codes = array('125', '128', '131', '126', '127');
         $this->fraud_error_codes = array('125', '128', '131');
         $this->fraud_warning_codes = array('126', '127');
+        $this->do_not_send_line_item_details = get_option('do_not_send_line_item_details', 'no');
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
 
     }
@@ -286,6 +287,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
 			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
 		),
+            ),
+            'do_not_send_line_item_details' => array(
+                'title' => __('Do not send line item details to PayPal', 'paypal-for-woocommerce'),
+                'label' => __('Do not send line item details to PayPal.', 'paypal-for-woocommerce'),
+                'description' => __('This will Allows you to skip line item details to PayPal.'),
+                'type' => 'checkbox',
+                'default' => 'no',
+                'desc_tip' => true,
             ),
             'payment_action' => array(
                 'title' => __('Payment Action', 'paypal-for-woocommerce'),
@@ -630,7 +639,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['SHIPTOCOUNTRY'] = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
                 $PayPalRequestData['SHIPTOZIP'] = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
             }
-            $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+            if( $this->do_not_send_line_item_details ) {
+                $PaymentData = array('is_calculation_mismatch' => true);
+            } else {
+                $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+            }
             $OrderItems = array();
             if( $PaymentData['is_calculation_mismatch'] == false ) {
                 if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
@@ -1341,7 +1354,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['SHIPTOCOUNTRY'] = $shipping_country;
                 $PayPalRequestData['SHIPTOZIP'] = $shipping_postcode;
             }
-            $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+            if( $this->do_not_send_line_item_details ) {
+                $PaymentData = array('is_calculation_mismatch' => true);
+            } else {
+                $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+            }
             $OrderItems = array();
             if( $PaymentData['is_calculation_mismatch'] == false ) {
                 $item_loop = 0;

@@ -155,6 +155,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->api_password = $this->get_option('sandbox_api_password');
             $this->api_signature = $this->get_option('sandbox_api_signature');
         }
+        $this->do_not_send_line_item_details = get_option('do_not_send_line_item_details', 'no');
         // Maestro
         if (!$this->enable_3dsecure) {
             unset($this->available_card_types['GB']['Maestro']);
@@ -358,6 +359,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
 			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
 		),
+            ),
+            'do_not_send_line_item_details' => array(
+                'title' => __('Do not send line item details to PayPal', 'paypal-for-woocommerce'),
+                'label' => __('Do not send line item details to PayPal.', 'paypal-for-woocommerce'),
+                'description' => __('This will Allows you to skip line item details to PayPal.'),
+                'type' => 'checkbox',
+                'default' => 'no',
+                'desc_tip' => true,
             ),
             'enable_notifyurl' => array(
                 'title' => __('Enable PayPal IPN', 'paypal-for-woocommerce'),
@@ -1083,7 +1092,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if (isset($this->notifyurl) && !empty($this->notifyurl)) {
             $PaymentDetails['notifyurl'] = $this->notifyurl;
         }
-        $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+        if( $this->do_not_send_line_item_details ) {
+            $PaymentData = array('is_calculation_mismatch' => true);
+        } else {
+            $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+        }
         $OrderItems = array();
         if( $PaymentData['is_calculation_mismatch'] == false ) {
             foreach ($PaymentData['order_items'] as $item) {
@@ -1816,7 +1829,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if (isset($this->notifyurl) && !empty($this->notifyurl)) {
             $PaymentDetails['notifyurl'] = $this->notifyurl;
         }
-        $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+        if( $this->do_not_send_line_item_details ) {
+            $PaymentData = array('is_calculation_mismatch' => true);
+        } else {
+            $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+        }
         $OrderItems = array();
         if( $PaymentData['is_calculation_mismatch'] == false ) {
             foreach ($PaymentData['order_items'] as $item) {
