@@ -91,7 +91,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->subtotal_mismatch_behavior = $this->get_option('subtotal_mismatch_behavior', 'add');
         }
-
+        $this->do_not_send_line_item_details = get_option('do_not_send_line_item_details', 'no');
         if ($this->debug == 'yes')
             $this->log = new WC_Logger();
 
@@ -551,9 +551,11 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         $silentposturl = add_query_arg('wc-api', 'WC_Gateway_PayPal_Advanced_AngellEYE', add_query_arg('silent', 'true', $this->home_url));
         $paypal_args['SILENTPOSTURL[' . strlen($silentposturl) . ']'] = $silentposturl;
-        
-        $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
-        
+        if( $this->do_not_send_line_item_details ) {
+            $PaymentData = array('is_calculation_mismatch' => true);
+        } else {
+            $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+        }
         if ($PaymentData['is_calculation_mismatch'] == false && ($length_error == 0 || count($PaymentData['order_items']) < 11 )) {
             $paypal_args['ITEMAMT'] = 0;
             $item_loop = 0;
@@ -855,6 +857,14 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
 			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
 		),
+            ),
+            'do_not_send_line_item_details' => array(
+                'title' => __('Do not send line item details to PayPal', 'paypal-for-woocommerce'),
+                'label' => __('Do not send line item details to PayPal.', 'paypal-for-woocommerce'),
+                'description' => __('This will Allows you to skip line item details to PayPal.'),
+                'type' => 'checkbox',
+                'default' => 'no',
+                'desc_tip' => true,
             ),
             'transtype' => array(
                 'title' => __('Transaction Type', 'paypal-for-woocommerce'),
