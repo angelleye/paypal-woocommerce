@@ -500,7 +500,7 @@ jQuery(function ($) {
         };
     }
     
-    $(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout updated_wc_div updated_cart_totals wc_fragments_loaded', function (event) {
+    $(document.body).on('cart_totals_refreshed updated_shipping_method wc_fragments_refreshed updated_checkout updated_wc_div updated_cart_totals wc_fragments_loaded', function (event) {
         display_smart_button_on_cart_checkout();
     });
     if(angelleye_in_content_param.checkout_page_disable_smart_button === "no") {
