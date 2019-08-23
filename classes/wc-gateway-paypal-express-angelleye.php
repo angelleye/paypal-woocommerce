@@ -155,6 +155,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->page_style = $this->get_option('page_style', '');
         $this->review_button_label = $this->get_option('review_button_label', __('Place Order', 'paypal-for-woocommerce'));
         $this->checkout_button_label = $this->get_option('checkout_button_label', __('Proceed to PayPal', 'paypal-for-woocommerce'));
+        $this->do_not_send_line_item_details = get_option('do_not_send_line_item_details', 'no');
         add_action('woocommerce_update_options_payment_gateways_paypal_express', array($this, 'angelleye_update_marketing_solution'), 10);
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'), 999);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);

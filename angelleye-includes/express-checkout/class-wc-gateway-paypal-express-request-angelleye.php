@@ -18,6 +18,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public $confirm_order_id;
     public $order_param;
     public $user_email_address;
+    public $do_not_send_line_item_details;
 
     public function __construct($gateway) {
         try {
@@ -32,6 +33,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->email_notify_order_cancellations = $this->gateway->get_option('email_notify_order_cancellations', 'no');
             $this->pending_authorization_order_status = $this->gateway->get_option('pending_authorization_order_status', 'On Hold');
             $this->enable_in_context_checkout_flow = $this->gateway->get_option('enable_in_context_checkout_flow', 'yes');
+            $this->do_not_send_line_item_details = 'yes' === $this->gateway->get_option('do_not_send_line_item_details', 'no');
             $this->id = 'paypal_express';
             if ($this->testmode == false) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
@@ -485,7 +487,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } else {
                 
             }
-            $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
+            if( $this->do_not_send_line_item_details ) {
+                $this->cart_param = array('is_calculation_mismatch' => true);
+            } else {
+                $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
+            }
             $this->angelleye_load_paypal_class($this->gateway, $this, $this->confirm_order_id);
             $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
             if (empty($paypal_express_checkout['token'])) {
@@ -646,7 +652,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 } else {
                     $order_id = wc_get_order_id_by_order_key($_GET['key']);
                 }
-                $this->cart_param = $this->gateway_calculation->order_calculation($order_id);
+                if( $this->do_not_send_line_item_details ) {
+                    $this->cart_param = array('is_calculation_mismatch' => true);
+                } else {
+                    $this->cart_param = $this->gateway_calculation->order_calculation($order_id);
+                }
                 $order = wc_get_order($order_id);
                 $order_total = $order->get_total();
                 if( !empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4' ) {
@@ -669,7 +679,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 }
                 WC()->session->set('order_awaiting_payment', absint( wp_unslash( $order_id) ) );
             } else {
-                $this->cart_param = $this->gateway_calculation->cart_calculation();
+                if( $this->do_not_send_line_item_details ) {
+                    $this->cart_param = array('is_calculation_mismatch' => true);
+                } else {
+                    $this->cart_param = $this->gateway_calculation->cart_calculation();
+                }
                 $order_total = WC()->cart->total;
             }
             $SECFields = array(
@@ -1392,7 +1406,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
-        $this->order_param = $this->gateway_calculation->order_calculation($order_id);
+        if( $this->do_not_send_line_item_details ) {
+            $this->cart_param = array('is_calculation_mismatch' => true);
+        } else {
+            $this->order_param = $this->gateway_calculation->order_calculation($order_id);
+        }
         if( $this->order_param['is_calculation_mismatch'] == false ) {
             $Payment['order_items'] = $this->order_param['order_items'];
             $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt'], $order);
