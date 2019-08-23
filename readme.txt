@@ -127,6 +127,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.1.1 - 08.23.2019 =
+* Tweak - Adjustments to Marketing Sidebar - Newsletter Signup Adjustment use sendy. ([PFW-460](https://github.com/angelleye/paypal-woocommerce/pull/1344))
+* Fix - Resolves an issue with Express Checkout PayPal buttons hide when used upsell product. ([PFW-460](https://github.com/angelleye/paypal-woocommerce/pull/1344))
+
 = 2.1.0 - 07.14.2019 =
 * Feature - Multi-Currency Suite compatibility. ([PFW-148](https://github.com/angelleye/paypal-woocommerce/pull/1322))
 * Fix - Resolves an issue with Express Checkout as a Missing Parameter on subscription purchases. ([PFW-418](https://github.com/angelleye/paypal-woocommerce/pull/1316))
