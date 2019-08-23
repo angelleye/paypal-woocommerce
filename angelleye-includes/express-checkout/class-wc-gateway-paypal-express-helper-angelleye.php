@@ -1395,5 +1395,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             }
         }
+        return $widget_title;
     }
 }
