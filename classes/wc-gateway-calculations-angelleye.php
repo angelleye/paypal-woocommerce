@@ -177,7 +177,10 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->payment['discount_amount'] = AngellEYE_Gateway_Paypal::number_format(round($this->discount_amount, $this->decimals));
             if ($this->taxamt < 0 || $this->shippingamt < 0) {
                 $this->payment['is_calculation_mismatch'] = true;
-            } 
+            }
+            if($this->payment['itemamt'] <= 0) {
+                $this->payment['is_calculation_mismatch'] = true;
+            }
             return $this->payment;
         }
 
@@ -307,6 +310,9 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->payment['order_items'] = $this->order_items;
             $this->payment['discount_amount'] = AngellEYE_Gateway_Paypal::number_format(round($this->discount_amount, $this->decimals));
             if ($this->taxamt < 0 || $this->shippingamt < 0) {
+                $this->payment['is_calculation_mismatch'] = true;
+            }
+            if($this->payment['itemamt'] <= 0) {
                 $this->payment['is_calculation_mismatch'] = true;
             }
             return $this->payment;
