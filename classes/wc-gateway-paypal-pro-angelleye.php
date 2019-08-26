@@ -155,7 +155,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->api_password = $this->get_option('sandbox_api_password');
             $this->api_signature = $this->get_option('sandbox_api_signature');
         }
-        $this->do_not_send_line_item_details = get_option('do_not_send_line_item_details', 'no');
+        $this->do_not_send_line_item_details = 'yes' === get_option('do_not_send_line_item_details', 'no');
         // Maestro
         if (!$this->enable_3dsecure) {
             unset($this->available_card_types['GB']['Maestro']);
