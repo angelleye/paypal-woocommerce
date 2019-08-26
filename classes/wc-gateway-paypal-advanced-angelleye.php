@@ -91,7 +91,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->subtotal_mismatch_behavior = $this->get_option('subtotal_mismatch_behavior', 'add');
         }
-        $this->do_not_send_line_item_details = get_option('do_not_send_line_item_details', 'no');
+        $this->do_not_send_line_item_details = 'yes' === get_option('do_not_send_line_item_details', 'no');
         if ($this->debug == 'yes')
             $this->log = new WC_Logger();
 

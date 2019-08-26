@@ -127,7 +127,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->fraud_codes = array('125', '128', '131', '126', '127');
         $this->fraud_error_codes = array('125', '128', '131');
         $this->fraud_warning_codes = array('126', '127');
-        $this->do_not_send_line_item_details = get_option('do_not_send_line_item_details', 'no');
+        $this->do_not_send_line_item_details = 'yes' === get_option('do_not_send_line_item_details', 'no');
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
 
     }
