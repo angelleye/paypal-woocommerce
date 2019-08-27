@@ -508,7 +508,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $Payment = array(
                 'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order),
                 'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
-                'shippingdiscamt' => '',
                 'insuranceoptionoffered' => '',
                 'desc' => '',
                 'custom' => apply_filters('ae_ppec_custom_parameter', json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key()))),
