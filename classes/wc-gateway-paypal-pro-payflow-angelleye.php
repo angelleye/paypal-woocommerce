@@ -593,10 +593,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'expdate' => $card_exp, // Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
                 'amt' => $order_amt, // Required.  Amount of the transaction.  Must have 2 decimal places.
                 'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), //
-                'dutyamt' => '', //
-                'freightamt' => '', //
-                'taxamt' => '', //
-                'taxexempt' => '', //
                 'custom' => apply_filters('ae_pppf_custom_parameter', json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key())), $order), // Free-form field for your own use.
                 'comment1' => apply_filters('ae_pppf_comment1_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'comment2' => apply_filters('ae_pppf_comment2_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max

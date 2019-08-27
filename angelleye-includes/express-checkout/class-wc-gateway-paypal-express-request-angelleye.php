@@ -510,7 +510,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 'shippingdiscamt' => '',
                 'insuranceoptionoffered' => '',
-                'handlingamt' => '',
                 'desc' => '',
                 'custom' => apply_filters('ae_ppec_custom_parameter', json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key()))),
                 'invnum' => $this->gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number()),
@@ -1371,17 +1370,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order), // Required. Total amount of the order, including shipping, handling, and tax.
             'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // A three-character currency code.  Default is USD.
-            'itemamt' => '', // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
-            'shippingamt' => '', // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
-            'insuranceamt' => '',
-            'shippingdiscount' => '',
-            'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
-            'taxamt' => '', // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays Yes and shows the amount.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => apply_filters('ae_ppec_custom_parameter', json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key()))), // Free-form field for your own use.  256 char max.
             'invnum' => $this->gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number()), // Your own invoice or tracking number.  127 char max.
-            'buttonsource' => ''     // URL for receiving Instant Payment Notifications
         );
         if (isset($this->gateway->notifyurl) && !empty($this->gateway->notifyurl)) {
             $PaymentDetails['notifyurl'] = $this->gateway->notifyurl;
