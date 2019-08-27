@@ -91,7 +91,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->subtotal_mismatch_behavior = $this->get_option('subtotal_mismatch_behavior', 'add');
         }
-        $this->do_not_send_line_item_details = 'yes' === get_option('do_not_send_line_item_details', 'no');
         if ($this->debug == 'yes')
             $this->log = new WC_Logger();
 
@@ -503,7 +502,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'USER1' => $order_id,
             'INVNUM' => $this->invoice_id_prefix . str_replace("#", "", $order->get_order_number()),
             'AMT' => number_format($order->get_total(), 2, '.', ''),
-            'FREIGHTAMT' => '',
             'COMPANYNAME[' . strlen($billing_company) . ']' => $billing_company,
             'CURRENCY' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
             'EMAIL' => $billing_email,
@@ -551,10 +549,10 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         $silentposturl = add_query_arg('wc-api', 'WC_Gateway_PayPal_Advanced_AngellEYE', add_query_arg('silent', 'true', $this->home_url));
         $paypal_args['SILENTPOSTURL[' . strlen($silentposturl) . ']'] = $silentposturl;
-        if( $this->do_not_send_line_item_details ) {
-            $PaymentData = array('is_calculation_mismatch' => true);
-        } else {
+        if( $this->send_items ) {
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+        } else {
+            $PaymentData = array('is_calculation_mismatch' => true);
         }
         if ($PaymentData['is_calculation_mismatch'] == false && ($length_error == 0 || count($PaymentData['order_items']) < 11 )) {
             $paypal_args['ITEMAMT'] = 0;
@@ -734,6 +732,14 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                     production.show();
                 }
             }).change();
+            jQuery('#woocommerce_paypal_advanced_send_items').change(function () {
+                var advanced_subtotal_mismatch_behavior = jQuery('#woocommerce_paypal_advanced_subtotal_mismatch_behavior').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    advanced_subtotal_mismatch_behavior.show();
+                } else {
+                    advanced_subtotal_mismatch_behavior.hide();
+                }
+            }).change();
         </script>
         <?php
     }
@@ -846,6 +852,13 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true,
             ),
+            'send_items' => array(
+                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
+                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
+                'default' => 'yes'
+            ),
             'subtotal_mismatch_behavior' => array(
 		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
 		'type'        => 'select',
@@ -857,14 +870,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
 			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
 		),
-            ),
-            'do_not_send_line_item_details' => array(
-                'title' => __('Do not send line item details to PayPal', 'paypal-for-woocommerce'),
-                'label' => __('Do not send line item details to PayPal.', 'paypal-for-woocommerce'),
-                'description' => __('This will Allows you to skip line item details to PayPal.'),
-                'type' => 'checkbox',
-                'default' => 'no',
-                'desc_tip' => true,
             ),
             'transtype' => array(
                 'title' => __('Transaction Type', 'paypal-for-woocommerce'),
@@ -1275,7 +1280,6 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'USER1' => $order_id,
             'INVNUM' => $this->invoice_id_prefix . str_replace("#", "", $order->get_order_number()),
             'AMT' => number_format($order->get_total(), 2, '.', ''),
-            'FREIGHTAMT' => '',
             'COMPANYNAME[' . strlen($billing_company) . ']' => $billing_company,
             'CURRENCY' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
             'EMAIL' => $billing_email,
