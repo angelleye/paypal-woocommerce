@@ -622,7 +622,12 @@ class AngellEYE_Admin_Order_Payment_Process {
             );
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
-        $this->order_param = $this->gateway_calculation->order_calculation($order_id);
+        $this->do_not_send_line_item_details = 'yes' === $this->gateway->get_option('do_not_send_line_item_details', 'no');
+        if( $this->do_not_send_line_item_details ) {
+            $this->order_param = array('is_calculation_mismatch' => true);
+        } else {
+            $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
+        }
         if( $this->order_param['is_calculation_mismatch'] == false ) {
             $Payment['order_items'] = $this->order_param['order_items'];
             $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt'], $order);

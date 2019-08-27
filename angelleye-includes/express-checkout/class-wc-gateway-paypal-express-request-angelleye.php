@@ -488,7 +488,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 
             }
             if( $this->do_not_send_line_item_details ) {
-                $this->cart_param = array('is_calculation_mismatch' => true);
+                $this->order_param = array('is_calculation_mismatch' => true);
             } else {
                 $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
             }
@@ -1407,7 +1407,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
         if( $this->do_not_send_line_item_details ) {
-            $this->cart_param = array('is_calculation_mismatch' => true);
+            $this->order_param = array('is_calculation_mismatch' => true);
         } else {
             $this->order_param = $this->gateway_calculation->order_calculation($order_id);
         }
