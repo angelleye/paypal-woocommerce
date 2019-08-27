@@ -622,11 +622,11 @@ class AngellEYE_Admin_Order_Payment_Process {
             );
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
-        $this->do_not_send_line_item_details = 'yes' === $this->gateway->get_option('do_not_send_line_item_details', 'no');
-        if( $this->do_not_send_line_item_details ) {
-            $this->order_param = array('is_calculation_mismatch' => true);
-        } else {
+        $this->send_items = 'yes' === $this->gateway->get_option('send_items', 'yes');
+        if( $this->send_items ) {
             $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
+        } else {
+            $this->order_param = array('is_calculation_mismatch' => true);
         }
         if( $this->order_param['is_calculation_mismatch'] == false ) {
             $Payment['order_items'] = $this->order_param['order_items'];
