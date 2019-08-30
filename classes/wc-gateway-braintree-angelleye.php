@@ -1095,7 +1095,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 $request_data['creditCard']['cardholderName'] = $order->get_formatted_billing_full_name();
             }
-            $request_data['amount'] = number_format($order->get_total(), 2, '.', '');
+            $request_data['amount'] = AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order);
             $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id($order_id);
             if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
                 $request_data['merchantAccountId'] = $this->merchant_account_id;
@@ -2093,7 +2093,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 );
             }
         }
-        $request_data['amount'] = number_format($order->get_total(), 2, '.', '');
+        $request_data['amount'] = AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order);
         $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id($order_id);
         if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {
             $request_data['merchantAccountId'] = $this->merchant_account_id;
