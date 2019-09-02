@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 5.2.2
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,18 +127,18 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 2.1.1 - 08.23.2019 =
+= 2.1.1 - 09.02.2019 =
+* Feature - Adds CartFlows compatibility. ([PFW-461](https://github.com/angelleye/paypal-woocommerce/pull/1355))
+* Feature - Adds hook for Differentiate between Woo checkout and PayPal review page. ([PFW-452](https://github.com/angelleye/paypal-woocommerce/pull/1350))
 * Tweak - Adjustments to Marketing Sidebar - Newsletter Signup Adjustment use sendy. ([PFW-460](https://github.com/angelleye/paypal-woocommerce/pull/1344))
+* Tweak - Adjustments to PayPal SuccessWithWarning Handling. ([PFW-454](https://github.com/angelleye/paypal-woocommerce/pull/1349))
+* Tweak - Adjustments to Line Item Details - Subtotal Mismatch Behavior Option. ([PFW-458](https://github.com/angelleye/paypal-woocommerce/pull/1354))
 * Fix - Resolves an issue with Express Checkout PayPal buttons hide when used upsell product. ([PFW-427](https://github.com/angelleye/paypal-woocommerce/pull/1345))
 * Fix - Resolves an issue with Express Checkout email and phone number not pass in request. ([PFW-459](https://github.com/angelleye/paypal-woocommerce/pull/1347))
 * Fix - Resolves an issue with WP Widget Title. ([PFW-462](https://github.com/angelleye/paypal-woocommerce/pull/1348))
-* Tweak - Adjustments to PayPal SuccessWithWarning Handling. ([PFW-454](https://github.com/angelleye/paypal-woocommerce/pull/1349))
-* Feature - Adds hook for Differentiate between Woo checkout and PayPal review page. ([PFW-452](https://github.com/angelleye/paypal-woocommerce/pull/1350))
 * Fix - Resolves PHP notice related to Braintree option. ([PFW-467](https://github.com/angelleye/paypal-woocommerce/pull/1351))
 * Fix - Resolves a Tokenization problem with Braintree. ([PFW-469](https://github.com/angelleye/paypal-woocommerce/pull/1352))
 * Fix - Resolves an issue with Aelia Multi-Currency plugin were Tax Decimal Values getting Ignored. ([PFW-412](https://github.com/angelleye/paypal-woocommerce/pull/1353))
-* Tweak - Adjustments to Line Item Details - Subtotal Mismatch Behavior Option. ([PFW-458](https://github.com/angelleye/paypal-woocommerce/pull/1354))
-* Feature - Adds CartFlows compatibility. ([PFW-461](https://github.com/angelleye/paypal-woocommerce/pull/1355))
 
 = 2.1.0 - 07.14.2019 =
 * Feature - Multi-Currency Suite compatibility. ([PFW-148](https://github.com/angelleye/paypal-woocommerce/pull/1322))
