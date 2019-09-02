@@ -130,6 +130,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 2.1.1 - 09.02.2019 =
 * Feature - Adds CartFlows compatibility. ([PFW-461](https://github.com/angelleye/paypal-woocommerce/pull/1355))
 * Feature - Adds hook for Differentiate between Woo checkout and PayPal review page. ([PFW-452](https://github.com/angelleye/paypal-woocommerce/pull/1350))
+* Feature - Adds WooCommerce 3.7 Compatibility. ([PFW-463](https://github.com/angelleye/paypal-woocommerce/pull/1356))
 * Tweak - Adjustments to Marketing Sidebar - Newsletter Signup Adjustment use sendy. ([PFW-460](https://github.com/angelleye/paypal-woocommerce/pull/1344))
 * Tweak - Adjustments to PayPal SuccessWithWarning Handling. ([PFW-454](https://github.com/angelleye/paypal-woocommerce/pull/1349))
 * Tweak - Adjustments to Line Item Details - Subtotal Mismatch Behavior Option. ([PFW-458](https://github.com/angelleye/paypal-woocommerce/pull/1354))
