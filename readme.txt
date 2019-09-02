@@ -129,7 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 2.1.1 - 08.23.2019 =
 * Tweak - Adjustments to Marketing Sidebar - Newsletter Signup Adjustment use sendy. ([PFW-460](https://github.com/angelleye/paypal-woocommerce/pull/1344))
-* Fix - Resolves an issue with Express Checkout PayPal buttons hide when used upsell product. ([PFW-460](https://github.com/angelleye/paypal-woocommerce/pull/1344))
+* Fix - Resolves an issue with Express Checkout PayPal buttons hide when used upsell product. ([PFW-427](https://github.com/angelleye/paypal-woocommerce/pull/1345))
 * Fix - Resolves an issue with Express Checkout email and phone number not pass in request. ([PFW-459](https://github.com/angelleye/paypal-woocommerce/pull/1347))
 * Fix - Resolves an issue with WP Widget Title. ([PFW-462](https://github.com/angelleye/paypal-woocommerce/pull/1348))
 * Tweak - Adjustments to PayPal SuccessWithWarning Handling. ([PFW-454](https://github.com/angelleye/paypal-woocommerce/pull/1349))
