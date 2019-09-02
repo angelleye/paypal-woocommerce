@@ -978,6 +978,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
      * Process the payment
      */
     public function process_payment($order_id) {
+        if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
+            $this->storeInVaultOnSuccess = true;
+        }
+        $this->storeInVaultOnSuccess = apply_filters('angelleye_braintree_store_in_vault_on_success', $this->storeInVaultOnSuccess);
         $order = new WC_Order($order_id);
         if( $this->payment_action == 'Sale' ) {
             $success = $this->angelleye_do_payment($order);
@@ -1003,12 +1007,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         try {
-            if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
-                $this->storeInVaultOnSuccess = true;
-            }
             $request_data = array();
             $this->angelleye_braintree_lib($order_id);
-
             $billing_company = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_company : $order->get_billing_company();
             $billing_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
             $billing_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
