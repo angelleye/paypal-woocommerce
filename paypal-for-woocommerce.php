@@ -63,7 +63,7 @@ if (!defined('AEU_ZIP_URL')) {
 if (!function_exists('angelleye_queue_update')) {
     require_once( 'angelleye-includes/angelleye-functions.php' );
 }
-
+require_once( 'angelleye-includes/angelleye-conditional-functions.php' );
 /**
  * Set global parameters
  */
@@ -905,7 +905,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 } else {
                     $woocommerce_currency = get_woocommerce_currency();
                 }
-		if ( !self::currency_has_decimals( get_woocommerce_currency() ) ) {
+		if ( !self::currency_has_decimals( $woocommerce_currency ) ) {
 			$precision = 0;
 		}
 

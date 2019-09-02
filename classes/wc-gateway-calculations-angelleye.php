@@ -253,7 +253,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                         'name' => html_entity_decode(wc_trim_string($name ? $name : __('Item', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
                         'desc' => html_entity_decode(wc_trim_string($desc, 127), ENT_NOQUOTES, 'UTF-8'),
                         'qty' => $values['qty'],
-                        'amt' => AngellEYE_Gateway_Paypal::number_format($amount),
+                        'amt' => AngellEYE_Gateway_Paypal::number_format($amount, $order),
                         'number' => $product_sku,
                     );
                     $this->order_items[] = $item;
@@ -270,7 +270,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     'name' => html_entity_decode(wc_trim_string($fee_item_name ? $fee_item_name : __('Fee', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
                     'desc' => '',
                     'qty' => 1,
-                    'amt' => AngellEYE_Gateway_Paypal::number_format($amount),
+                    'amt' => AngellEYE_Gateway_Paypal::number_format($amount, $order),
                     'number' => ''
                 );
                 $this->order_items[] = $fee_item;
@@ -292,7 +292,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                             'desc' => 'Discount Amount',
                             'number' => '',
                             'qty' => 1,
-                            'amt' => '-' . AngellEYE_Gateway_Paypal::number_format($this->discount_amount)
+                            'amt' => '-' . AngellEYE_Gateway_Paypal::number_format($this->discount_amount, $order)
                         );
                         $this->order_items[] = $discLineItem;
                         $this->itemamt -= $this->discount_amount;
@@ -304,11 +304,11 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 $this->shippingamt = 0;
             }
             $this->order_re_calculate($order);
-            $this->payment['itemamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->itemamt, $this->decimals));
-            $this->payment['taxamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->taxamt, $this->decimals));
-            $this->payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->shippingamt, $this->decimals));
+            $this->payment['itemamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->itemamt, $this->decimals), $order);
+            $this->payment['taxamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->taxamt, $this->decimals), $order);
+            $this->payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format(round($this->shippingamt, $this->decimals), $order);
             $this->payment['order_items'] = $this->order_items;
-            $this->payment['discount_amount'] = AngellEYE_Gateway_Paypal::number_format(round($this->discount_amount, $this->decimals));
+            $this->payment['discount_amount'] = AngellEYE_Gateway_Paypal::number_format(round($this->discount_amount, $this->decimals), $order);
             if ($this->taxamt < 0 || $this->shippingamt < 0) {
                 $this->payment['is_calculation_mismatch'] = true;
             }
@@ -374,7 +374,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                             'name' => 'Line Item Amount Offset',
                             'desc' => 'Adjust cart calculation discrepancy',
                             'qty' => 1,
-                            'amt' => AngellEYE_Gateway_Paypal::number_format($cartItemAmountDifference)
+                            'amt' => AngellEYE_Gateway_Paypal::number_format($cartItemAmountDifference, $order)
                         );
                         $this->order_items[] = $item;
                         $this->itemamt += round($cartItemAmountDifference, $this->decimals);
