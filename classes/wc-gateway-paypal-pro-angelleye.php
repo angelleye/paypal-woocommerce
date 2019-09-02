@@ -1853,7 +1853,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 array_push($OrderItems, $Item);
             }
             $PaymentDetails['taxamt'] = $PaymentData['taxamt'];
-            $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
             $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($PaymentData['itemamt'], $order);
             if( $order->get_total() != $PaymentData['shippingamt'] ) {
                 $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
