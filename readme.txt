@@ -136,6 +136,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds hook for Differentiate between Woo checkout and PayPal review page. ([PFW-452](https://github.com/angelleye/paypal-woocommerce/pull/1350))
 * Fix - Resolves PHP notice related to Braintree option. ([PFW-467](https://github.com/angelleye/paypal-woocommerce/pull/1351))
 * Fix - Resolves a Tokenization problem with Braintree. ([PFW-469](https://github.com/angelleye/paypal-woocommerce/pull/1352))
+* Fix - Resolves an issue with Aelia Multi-Currency plugin were Tax Decimal Values getting Ignored. ([PFW-412](https://github.com/angelleye/paypal-woocommerce/pull/1353))
 
 = 2.1.0 - 07.14.2019 =
 * Feature - Multi-Currency Suite compatibility. ([PFW-148](https://github.com/angelleye/paypal-woocommerce/pull/1322))
