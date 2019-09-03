@@ -104,7 +104,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->disable_term = $this->get_option('disable_term', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
         $this->billing_address = 'yes' === $this->get_option('billing_address', 'no');
-       
         if($this->send_items === false) {
             $this->subtotal_mismatch_behavior = 'drop';
         } else {
@@ -410,6 +409,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 } else {
                     sandbox.hide();
                     production.show();
+                }
+            }).change();
+            jQuery('#woocommerce_paypal_express_send_items').change(function () {
+                var subtotal_mismatch_behavior = jQuery('#woocommerce_paypal_express_subtotal_mismatch_behavior').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    subtotal_mismatch_behavior.show();
+                } else {
+                    subtotal_mismatch_behavior.hide();
                 }
             }).change();
             
@@ -1005,6 +1012,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class'    => 'wc-enhanced-select',
                 'options' => $cancel_page,
                 'desc_tip' => true,
+            ),
+            'send_items' => array(
+                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
+                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
+                'default' => 'yes'
             ),
             'subtotal_mismatch_behavior' => array(
 		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
@@ -2413,7 +2427,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         if (!empty($billing_result['BILLINGAGREEMENTID'])) {
                             $billing_agreement_id = $billing_result['BILLINGAGREEMENTID'];
                             $token = new WC_Payment_Token_CC();
-                            $customer_id = get_current_user_id();
+                            if ( 0 != $order->get_user_id() ) {
+                                $customer_id = $order->get_user_id();
+                            } else {
+                                $customer_id = get_current_user_id();
+                            }
                             $token->set_token($billing_agreement_id);
                             $token->set_gateway_id($this->id);
                             $token->set_card_type('PayPal Billing Agreement');

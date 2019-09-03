@@ -275,6 +275,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'default' => '',
                 'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
+            'send_items' => array(
+                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
+                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
+                'default' => 'yes'
+            ),
             'subtotal_mismatch_behavior' => array(
 		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
 		'type'        => 'select',
@@ -479,6 +486,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     production.show();
                 }
             }).change();
+            jQuery('#woocommerce_paypal_pro_payflow_send_items').change(function () {
+                var payflow_subtotal_mismatch_behavior = jQuery('#woocommerce_paypal_pro_payflow_subtotal_mismatch_behavior').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    payflow_subtotal_mismatch_behavior.show();
+                } else {
+                    payflow_subtotal_mismatch_behavior.hide();
+                }
+            }).change();
         </script>
         <?php
     }
@@ -578,10 +593,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'expdate' => $card_exp, // Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
                 'amt' => $order_amt, // Required.  Amount of the transaction.  Must have 2 decimal places.
                 'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), //
-                'dutyamt' => '', //
-                'freightamt' => '', //
-                'taxamt' => '', //
-                'taxexempt' => '', //
                 'custom' => apply_filters('ae_pppf_custom_parameter', json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key())), $order), // Free-form field for your own use.
                 'comment1' => apply_filters('ae_pppf_comment1_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'comment2' => apply_filters('ae_pppf_comment2_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
@@ -630,7 +641,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['SHIPTOCOUNTRY'] = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
                 $PayPalRequestData['SHIPTOZIP'] = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
             }
-            $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+            if( $this->send_items ) {
+                $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+            } else {
+                $PaymentData = array('is_calculation_mismatch' => true);
+            }
             $OrderItems = array();
             if( $PaymentData['is_calculation_mismatch'] == false ) {
                 if( !empty($PaymentData['discount_amount']) && $PaymentData['discount_amount'] > 0 ) {
@@ -1341,7 +1356,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $PayPalRequestData['SHIPTOCOUNTRY'] = $shipping_country;
                 $PayPalRequestData['SHIPTOZIP'] = $shipping_postcode;
             }
-            $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+            if( $this->send_items ) {
+                $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+            } else {
+                $PaymentData = array('is_calculation_mismatch' => true);
+            }
             $OrderItems = array();
             if( $PaymentData['is_calculation_mismatch'] == false ) {
                 $item_loop = 0;
@@ -1718,7 +1737,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'redirect' => $this->get_return_url($order)
             );
         } else {
-            $customer_id = get_current_user_id();
+            if ( 0 != $order->get_user_id() ) {
+                $customer_id = $order->get_user_id();
+            } else {
+                $customer_id = get_current_user_id();
+            }
             $this->angelleye_load_paypal_payflow_class($this->gateway, $this, null);
             $this->validate_fields();
             $card = $this->get_posted_card();
@@ -1766,7 +1789,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                     exit();
                 } else {
-                    $customer_id = get_current_user_id();
+                    if ( 0 != $order->get_user_id() ) {
+                        $customer_id = $order->get_user_id();
+                    } else {
+                        $customer_id = get_current_user_id();
+                    }
                     $TRANSACTIONID = $PayPalResult['PNREF'];
                     $this->are_reference_transactions_enabled($TRANSACTIONID);
                     $token = new WC_Payment_Token_CC();

@@ -18,6 +18,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public $confirm_order_id;
     public $order_param;
     public $user_email_address;
+    public $send_items;
 
     public function __construct($gateway) {
         try {
@@ -32,6 +33,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->email_notify_order_cancellations = $this->gateway->get_option('email_notify_order_cancellations', 'no');
             $this->pending_authorization_order_status = $this->gateway->get_option('pending_authorization_order_status', 'On Hold');
             $this->enable_in_context_checkout_flow = $this->gateway->get_option('enable_in_context_checkout_flow', 'yes');
+            $this->send_items = 'yes' === $this->gateway->get_option('send_items', 'yes');
             $this->id = 'paypal_express';
             if ($this->testmode == false) {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
@@ -485,7 +487,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } else {
                 
             }
-            $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
+            if( $this->send_items ) {
+                $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
+            } else {
+                $this->order_param = array('is_calculation_mismatch' => true);
+            }
             $this->angelleye_load_paypal_class($this->gateway, $this, $this->confirm_order_id);
             $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
             if (empty($paypal_express_checkout['token'])) {
@@ -502,9 +508,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $Payment = array(
                 'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order),
                 'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
-                'shippingdiscamt' => '',
                 'insuranceoptionoffered' => '',
-                'handlingamt' => '',
                 'desc' => '',
                 'custom' => apply_filters('ae_ppec_custom_parameter', json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key()))),
                 'invnum' => $this->gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number()),
@@ -526,14 +530,15 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $Payment['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt'], $order);
                 $Payment['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt'], $order);
                 $Payment['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt'], $order);
+                if( $order->get_total() != $Payment['shippingamt'] ) {
+                    $Payment['shippingamt'] = $Payment['shippingamt'];
+                } else {
+                    $Payment['shippingamt'] = 0.00;
+                }
             } else {
                 $Payment['order_items'] = array();
             }
-            if( $order->get_total() != $Payment['shippingamt'] ) {
-                $Payment['shippingamt'] = $Payment['shippingamt'];
-            } else {
-                $Payment['shippingamt'] = 0.00;
-            }
+            
             $REVIEW_RESULT = !empty($paypal_express_checkout['ExpresscheckoutDetails']) ? $paypal_express_checkout['ExpresscheckoutDetails'] : array();
             $PaymentRedeemedOffers = array();
             if ((isset($REVIEW_RESULT) && !empty($REVIEW_RESULT)) && isset($REVIEW_RESULT['WALLETTYPE0'])) {
@@ -646,7 +651,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 } else {
                     $order_id = wc_get_order_id_by_order_key($_GET['key']);
                 }
-                $this->cart_param = $this->gateway_calculation->order_calculation($order_id);
+                if( $this->send_items ) {
+                    $this->cart_param = $this->gateway_calculation->order_calculation($order_id);
+                } else {
+                    $this->cart_param = array('is_calculation_mismatch' => true);
+                }
                 $order = wc_get_order($order_id);
                 $order_total = $order->get_total();
                 if( !empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4' ) {
@@ -669,7 +678,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 }
                 WC()->session->set('order_awaiting_payment', absint( wp_unslash( $order_id) ) );
             } else {
-                $this->cart_param = $this->gateway_calculation->cart_calculation();
+                if( $this->send_items ) {
+                    $this->cart_param = $this->gateway_calculation->cart_calculation();
+                } else {
+                    $this->cart_param = array('is_calculation_mismatch' => true);
+                }
                 $order_total = WC()->cart->total;
             }
             $SECFields = array(
@@ -753,7 +766,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         } else {
                             $Payment['shiptoname'] = wc_clean(stripslashes($shiptoname));
                         }
-
+                        $SECFields['email'] = !empty($post_data['billing_email']) ? $post_data['billing_email'] : '';
                         $Payment['shiptostreet'] = !empty($post_data['shipping_address_1']) ? $post_data['shipping_address_1'] : '';
                         $Payment['shiptostreet2'] = !empty($post_data['shipping_address_2']) ? $post_data['shipping_address_2'] : '';
                         $Payment['shiptocity'] = !empty($post_data['shipping_city']) ? wc_clean(stripslashes($post_data['shipping_city'])) : '';
@@ -777,7 +790,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         } else {
                             $Payment['shiptoname'] = wc_clean(stripslashes($shiptoname));
                         }
-
+                        $SECFields['email'] = !empty($post_data['billing_email']) ? $post_data['billing_email'] : '';
                         $Payment['shiptostreet'] = !empty($post_data['billing_address_1']) ? wc_clean($post_data['billing_address_1']) : '';
                         $Payment['shiptostreet2'] = !empty($post_data['billing_address_2']) ? wc_clean($post_data['billing_address_2']) : '';
                         $Payment['shiptocity'] = !empty($post_data['billing_city']) ? wc_clean(stripslashes($post_data['billing_city'])) : '';
@@ -819,7 +832,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $billing_state = WC()->customer->get_billing_state();
                         $billing_postcode = WC()->customer->get_billing_postcode();
                         $billing_phone = WC()->customer->get_billing_phone();
+                        $billing_email = WC()->customer->get_billing_email();
+                        
                     }
+                    $SECFields['email'] = !empty($billing_email) ? $billing_email : '';
                     $Payment['shiptoname'] = wc_clean(stripslashes($firstname . ' ' . $lastname));
                     $Payment['shiptostreet'] = !empty($shiptostreet) ? wc_clean(stripslashes($shiptostreet)) : wc_clean(stripslashes($billing_shiptostreet));
                     $Payment['shiptostreet2'] = !empty($shiptostreet_two) ? wc_clean(stripslashes($shiptostreet_two)) : wc_clean(stripslashes($billing_shiptostreet_two));
@@ -839,12 +855,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
                 $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
                 $Payment['shiptoname'] = wc_clean(stripslashes($shipping_first_name . ' ' . $shipping_last_name));
+                $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_email : $order->get_billing_email();
                 $Payment['shiptostreet'] = $shipping_address_1;
                 $Payment['shiptostreet2'] = $shipping_address_2;
                 $Payment['shiptocity'] = wc_clean(stripslashes($shipping_city));
                 $Payment['shiptostate'] = $shipping_state;
                 $Payment['shiptozip'] = $shipping_postcode;
                 $Payment['shiptocountrycode'] = $shipping_country;
+                $SECFields['email'] = !empty($billing_email) ? $billing_email : '';
             }
             if(isset($this->cart_param['is_calculation_mismatch']) && $this->cart_param['is_calculation_mismatch'] == false) {
                 $Payment['order_items'] = $this->cart_param['order_items'];
@@ -1357,17 +1375,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order), // Required. Total amount of the order, including shipping, handling, and tax.
             'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // A three-character currency code.  Default is USD.
-            'itemamt' => '', // Required if you specify itemized L_AMT fields. Sum of cost of all items in this order.
-            'shippingamt' => '', // Total shipping costs for this order.  If you specify SHIPPINGAMT you mut also specify a value for ITEMAMT.
-            'insuranceamt' => '',
-            'shippingdiscount' => '',
-            'handlingamt' => '', // Total handling costs for this order.  If you specify HANDLINGAMT you mut also specify a value for ITEMAMT.
-            'taxamt' => '', // Required if you specify itemized L_TAXAMT fields.  Sum of all tax items in this order.
             'insuranceoptionoffered' => '', // If true, the insurance drop-down on the PayPal review page displays Yes and shows the amount.
             'desc' => '', // Description of items on the order.  127 char max.
             'custom' => apply_filters('ae_ppec_custom_parameter', json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key()))), // Free-form field for your own use.  256 char max.
             'invnum' => $this->gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number()), // Your own invoice or tracking number.  127 char max.
-            'buttonsource' => ''     // URL for receiving Instant Payment Notifications
         );
         if (isset($this->gateway->notifyurl) && !empty($this->gateway->notifyurl)) {
             $PaymentDetails['notifyurl'] = $this->gateway->notifyurl;
@@ -1392,19 +1403,23 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
-        $this->order_param = $this->gateway_calculation->order_calculation($order_id);
+        if( $this->send_items ) {
+            $this->order_param = $this->gateway_calculation->order_calculation($order_id);
+        } else {
+            $this->order_param = array('is_calculation_mismatch' => true);
+        }
         if( $this->order_param['is_calculation_mismatch'] == false ) {
             $Payment['order_items'] = $this->order_param['order_items'];
             $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt'], $order);
             $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt'], $order);
             $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt'], $order);
+            if( $order->get_total() != $PaymentDetails['shippingamt'] ) {
+                $PaymentDetails['shippingamt'] = $PaymentDetails['shippingamt'];
+            } else {
+                $PaymentDetails['shippingamt'] = 0.00;
+            }
         } else {
             $Payment['order_items'] = array();
-        }
-        if( $order->get_total() != $PaymentDetails['shippingamt'] ) {
-            $PaymentDetails['shippingamt'] = $PaymentDetails['shippingamt'];
-        } else {
-            $PaymentDetails['shippingamt'] = 0.00;
         }
         $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
         $this->paypal_response = $this->paypal->DoReferenceTransaction($PayPalRequestData);

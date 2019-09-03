@@ -347,6 +347,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => 'On Hold',
                 'desc_tip' => true,
             ),
+            'send_items' => array(
+                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
+                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
+                'default' => 'yes'
+            ),
             'subtotal_mismatch_behavior' => array(
 		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
 		'type'        => 'select',
@@ -495,6 +502,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     sandbox.hide();
                     production.show();
+                }
+            }).change();
+            jQuery('#woocommerce_paypal_pro_send_items').change(function () {
+                var paypal_pro_subtotal_mismatch_behavior = jQuery('#woocommerce_paypal_pro_subtotal_mismatch_behavior').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                   paypal_pro_subtotal_mismatch_behavior.show();
+                } else {
+                   paypal_pro_subtotal_mismatch_behavior.hide();
                 }
             }).change();
         </script>
@@ -1073,7 +1088,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order),                            // Required.  Total amount of order, including shipping, handling, and tax.
             'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),                    // Required.  Three-letter currency code.  Default is USD.
-            'insuranceamt' => '',                    // Total shipping insurance costs for this order.
             'desc' => '',                            // Description of the order the customer is purchasing.  127 char max.
             'custom' => apply_filters( 'ae_ppddp_custom_parameter', json_encode( array( 'order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->order_key : $order->get_order_key() ) ) , $order ),                        // Free-form field for your own use.  256 char max.
             'invnum' => $this->invoice_id_prefix . str_replace("#","",$order->get_order_number()), // Your own invoice or tracking number
@@ -1083,7 +1097,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if (isset($this->notifyurl) && !empty($this->notifyurl)) {
             $PaymentDetails['notifyurl'] = $this->notifyurl;
         }
-        $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+        if( $this->send_items ) {
+            $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+        } else {
+            $PaymentData = array('is_calculation_mismatch' => true);
+        }
         $OrderItems = array();
         if( $PaymentData['is_calculation_mismatch'] == false ) {
             foreach ($PaymentData['order_items'] as $item) {
@@ -1103,12 +1121,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $PaymentDetails['taxamt'] = $PaymentData['taxamt'];
             $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
             $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($PaymentData['itemamt'], $order);
+            if( $order->get_total() != $PaymentData['shippingamt'] ) {
+                $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
+            } else {
+                $PaymentDetails['shippingamt'] = 0.00;
+            }
         } 
-        if( $order->get_total() != $PaymentData['shippingamt'] ) {
-            $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
-        } else {
-            $PaymentDetails['shippingamt'] = 0.00;
-        }
+        
         /**
          * 3D Secure Params
          */
@@ -1285,12 +1304,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                         wc_maybe_reduce_stock_levels( $order_id );
                     }
                 } elseif ($PayPalResult['L_ERRORCODE0'] == '10574') {
-                    $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
-                    $order->add_order_note('ERROR MESSAGE: ' . $error);
+                    $long_message = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : '';
+                    $short_message = !empty($PayPalResult['L_SHORTMESSAGE0']) ? $PayPalResult['L_SHORTMESSAGE0'] : '';
+                    $order->add_order_note($short_message .' '. $long_message);
                     $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
                 } elseif (!empty($PayPalResult['L_ERRORCODE0'])) {
-                    $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
-                    $order->add_order_note('ERROR MESSAGE: ' . $error);
+                    $long_message = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : '';
+                    $short_message = !empty($PayPalResult['L_SHORTMESSAGE0']) ? $PayPalResult['L_SHORTMESSAGE0'] : '';
+                    $order->add_order_note($short_message .' '. $long_message);
                     $order->update_status('on-hold', $error);
                     $old_wc = version_compare(WC_VERSION, '3.0', '<');
                     if ( $old_wc ) {
@@ -1802,9 +1823,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order), // Required.  Total amount of order, including shipping, handling, and tax.
             'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // Required.  Three-letter currency code.  Default is USD.
-            'insuranceamt' => '', // Total shipping insurance costs for this order.
-            'shipdiscamt' => '0.00', // Shipping discount for the order, specified as a negative number.
-            'handlingamt' => '0.00', // Total handling costs for the order.  If you specify handlingamt, you must also specify itemamt.
             'desc' => '', // Description of the order the customer is purchasing.  127 char max.
             'custom' => apply_filters('ae_ppddp_custom_parameter', $customer_note, $order), // Free-form field for your own use.  256 char max.
             'invnum' => $this->invoice_id_prefix . str_replace("#","",$order->get_order_number()), // Your own invoice or tracking number
@@ -1813,7 +1831,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if (isset($this->notifyurl) && !empty($this->notifyurl)) {
             $PaymentDetails['notifyurl'] = $this->notifyurl;
         }
-        $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+        if( $this->send_items ) {
+            $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
+        } else {
+            $PaymentData = array('is_calculation_mismatch' => true);
+        }
         $OrderItems = array();
         if( $PaymentData['is_calculation_mismatch'] == false ) {
             foreach ($PaymentData['order_items'] as $item) {
@@ -1831,14 +1853,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 array_push($OrderItems, $Item);
             }
             $PaymentDetails['taxamt'] = $PaymentData['taxamt'];
-            $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
-            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($PaymentData['itemamt']);
+            $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($PaymentData['itemamt'], $order);
+            if( $order->get_total() != $PaymentData['shippingamt'] ) {
+                $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
+            } else {
+                $PaymentDetails['shippingamt'] = 0.00;
+            }
         } 
-        if( $order->get_total() != $PaymentData['shippingamt'] ) {
-            $PaymentDetails['shippingamt'] = $PaymentData['shippingamt'];
-        } else {
-            $PaymentDetails['shippingamt'] = 0.00;
-        }
+        
         $PayPalRequestData = array(
             'DPFields' => $DPFields,
             'PayerInfo' => $PayerInfo,
@@ -2049,11 +2071,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
             switch (strtolower($payment_status)) :
                 case 'completed' :
-                    $order_status = version_compare(WC_VERSION, '3.0', '<') ? $order->status : $this->order->get_status();
+                    $order_status = version_compare(WC_VERSION, '3.0', '<') ? $order->status : $order->get_status();
                     if ($order_status == 'completed') {
                         break;
                     }
-                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'webaccept'))) {
                         break;
                     }
                     $order->add_order_note(__('Payment Completed via PayPal Pro', 'paypal-for-woocommerce'));
@@ -2202,7 +2224,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
             AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($result, $methos_name = 'DoDirectPayment', $gateway = 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify, $redirect_url);
             if ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning') {
-                $customer_id = get_current_user_id();
+                if ( 0 != $order->get_user_id() ) {
+                    $customer_id = $order->get_user_id();
+                } else {
+                    $customer_id = get_current_user_id();
+                }
                 $TRANSACTIONID = $result['TRANSACTIONID'];
                 $token = new WC_Payment_Token_CC();
                 $token->set_token( $TRANSACTIONID );

@@ -444,6 +444,7 @@ jQuery(function ($) {
                             disallowed: disallowed_funding_methods_var
                         },
                         payment: function () {
+                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var data = $( selector ).closest( 'form' )
 						.add( $( '<input type="hidden" name="request_from" /> ' )
 							.attr( 'value', 'JSv4' )
@@ -475,6 +476,7 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
+                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
@@ -489,6 +491,7 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
+                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);
@@ -500,7 +503,7 @@ jQuery(function ($) {
         };
     }
     
-    $(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout updated_wc_div updated_cart_totals wc_fragments_loaded', function (event) {
+    $(document.body).on('cart_totals_refreshed updated_shipping_method wc_fragments_refreshed updated_checkout updated_wc_div updated_cart_totals wc_fragments_loaded', function (event) {
         display_smart_button_on_cart_checkout();
     });
     if(angelleye_in_content_param.checkout_page_disable_smart_button === "no") {
