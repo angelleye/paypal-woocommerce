@@ -49,8 +49,6 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 define('WOOCOMMERCE_CART', true);
             }
             
-            WC()->cart->calculate_totals();
-            
             $this->itemamt = 0;
             $roundedPayPalTotal = 0;
             $this->discount_amount = round(WC()->cart->get_cart_discount_total(), $this->decimals);

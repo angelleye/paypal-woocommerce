@@ -746,7 +746,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if (!defined('WOOCOMMERCE_CART')) {
             define('WOOCOMMERCE_CART', true);
         }
-        WC()->cart->calculate_totals();
         if (!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
             return false;
         }
@@ -821,7 +820,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if (!defined('WOOCOMMERCE_CART')) {
             define('WOOCOMMERCE_CART', true);
         }
-        WC()->cart->calculate_totals();
         if (AngellEYE_Utility::is_express_checkout_credentials_is_set() == false) {
             return false;
         }
@@ -912,7 +910,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if (!defined('WOOCOMMERCE_CART')) {
             define('WOOCOMMERCE_CART', true);
         }
-        WC()->cart->calculate_totals();
         $payment_gateways_count = 0;
         echo "<style>table.cart td.actions .input-text, table.cart td.actions .button, table.cart td.actions .checkout-button {margin-bottom: 0.53em !important;}</style>";
         if ($this->enabled == 'yes' && WC()->cart->needs_payment()) {
