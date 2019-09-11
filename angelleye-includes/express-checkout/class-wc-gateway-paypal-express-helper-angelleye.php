@@ -589,23 +589,28 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     return false;
                 }
             }
+            $smart_cancel_page = '';
             if(is_product() && $this->single_product_configure_settings) {
                 $this->button_layout = $this->single_product_button_layout;
                 $this->button_size = $this->single_product_button_size;
                 $this->disallowed_funding_methods = $this->single_product_disallowed_funding_methods;
+                $smart_cancel_page = wc_get_cart_url();
             } elseif(is_cart() && $this->cart_configure_settings) {
                 $this->button_layout = $this->cart_button_layout;
                 $this->button_size = $this->cart_button_size;
                 $this->disallowed_funding_methods = $this->cart_disallowed_funding_methods;
+                $smart_cancel_page = wc_get_cart_url();
             } elseif (is_checkout() && $this->checkout_page_configure_settings) {
                 $this->button_layout = $this->checkout_page_button_layout;
                 $this->button_size = $this->checkout_page_button_size;
                 $this->disallowed_funding_methods = $this->checkout_page_disallowed_funding_methods;
+                $smart_cancel_page = wc_get_cart_url();
             }
             if($this->mini_cart_configure_settings == false) {
                 $this->mini_cart_button_layout = $this->button_layout;
                 $this->mini_cart_button_size = $this->button_size;
                 $this->mini_cart_disallowed_funding_methods = $this->disallowed_funding_methods;
+                $smart_cancel_page = wc_get_checkout_url();
             } 
             $this->mini_cart_allowed_funding_methods = $this->allowed_funding_methods;
             if($this->wsc_cart_configure_settings == false) {
@@ -682,6 +687,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'wsc_cart_button_size' => $this->wsc_cart_button_size,
                     'button_fundingicons' => $this->button_fundingicons,
                     'cancel_page' => add_query_arg('pp_action', 'cancel_order', WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')),
+                    'smart_cancel_page' => $smart_cancel_page,
                     'is_paypal_credit_enable' => $this->is_paypal_credit_enable ? "yes" : 'no',
                     'allowed_funding_methods' => $allowed_funding_methods_json,
                     'disallowed_funding_methods' => $disallowed_funding_methods_json,
