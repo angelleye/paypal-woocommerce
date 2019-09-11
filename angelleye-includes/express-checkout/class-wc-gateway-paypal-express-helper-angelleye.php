@@ -604,13 +604,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->button_layout = $this->checkout_page_button_layout;
                 $this->button_size = $this->checkout_page_button_size;
                 $this->disallowed_funding_methods = $this->checkout_page_disallowed_funding_methods;
-                $smart_cancel_page = wc_get_cart_url();
+                $smart_cancel_page = wc_get_checkout_url();
             }
             if($this->mini_cart_configure_settings == false) {
                 $this->mini_cart_button_layout = $this->button_layout;
                 $this->mini_cart_button_size = $this->button_size;
                 $this->mini_cart_disallowed_funding_methods = $this->disallowed_funding_methods;
-                $smart_cancel_page = wc_get_checkout_url();
+                $smart_cancel_page = wc_get_cart_url();
             } 
             $this->mini_cart_allowed_funding_methods = $this->allowed_funding_methods;
             if($this->wsc_cart_configure_settings == false) {
