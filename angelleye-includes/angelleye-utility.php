@@ -2039,13 +2039,6 @@ class AngellEYE_Utility {
         } else {
             $ip_address = !empty($_SERVER['HTTP_X_FORWARD_FOR']) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
         }
-        $ipv4_pattern = '/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/';
-        if ( ! preg_match( $ipv4_pattern, $ip_address ) && filter_var($ip_address, FILTER_VALIDATE_IP,FILTER_FLAG_IPV6) ) {
-            $ip_address = '';
-        } 
-        if(strlen($ip_address) > 16) {
-            $ip_address = '';
-        }
         return $ip_address;
     }
     
