@@ -474,7 +474,6 @@ jQuery(function ($) {
                                 if( angelleye_in_content_param.is_cartflow === "no" ) {
                                     data.returnUrl = res.url;
                                     actions.redirect(); //data.returnUrl = res.url;
-                                    actions.redirect();
                                 } else {
                                    $('.woocommerce').unblock();
                                     $('form.checkout').triggerHandler("checkout_place_order");
