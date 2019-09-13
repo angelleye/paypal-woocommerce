@@ -104,7 +104,7 @@ jQuery(function ($) {
                         });
                     },
                     onCancel: function (data, actions) {
-                        window.location.href = angelleye_in_content_param.smart_cancel_page;
+                        window.location.href = angelleye_in_content_param.cancel_page;
                     },
                     onClick: function () {
                         if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
@@ -206,7 +206,7 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
-                            window.location.href = angelleye_in_content_param.smart_cancel_page;
+                            window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
@@ -296,7 +296,7 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
-                            window.location.href = angelleye_in_content_param.smart_cancel_page;
+                            window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
@@ -383,7 +383,7 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
-                            window.location.href = angelleye_in_content_param.smart_cancel_page;
+                            window.location.href = angelleye_in_content_param.cancel_page;
                         },
                         onClick: function () {
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
@@ -474,7 +474,6 @@ jQuery(function ($) {
                                 if( angelleye_in_content_param.is_cartflow === "no" ) {
                                     data.returnUrl = res.url;
                                     actions.redirect(); //data.returnUrl = res.url;
-                                    actions.redirect();
                                 } else {
                                    $('.woocommerce').unblock();
                                     $('form.checkout').triggerHandler("checkout_place_order");
@@ -483,8 +482,13 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
+                            console.log("on cancel");
                             $('.woocommerce').unblock();
-                            window.location.href = angelleye_in_content_param.smart_cancel_page;
+                            if( angelleye_in_content_param.is_cartflow === "no" ) {
+                                window.location.href = angelleye_in_content_param.cancel_page;
+                            } else {
+                                window.location.reload();
+                            }
                         },
                         onClick: function () {
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
@@ -498,8 +502,13 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
+                            console.log("on error");
                             $('.woocommerce').unblock();
-                            window.location.href = angelleye_in_content_param.smart_cancel_page;
+                            if( angelleye_in_content_param.is_cartflow === "no" ) {
+                                window.location.href = angelleye_in_content_param.smart_cancel_page;
+                            } else {
+                                window.location.reload();
+                            }
                         }
                     }, selector);
                 }

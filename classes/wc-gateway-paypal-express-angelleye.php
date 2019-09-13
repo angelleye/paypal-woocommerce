@@ -1007,7 +1007,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'cancel_page' => array(
                 'title' => __('Cancel Page', 'paypal-for-woocommerce'),
-                'description' => __('Sets the page users will be returned to if they click the Cancel link on the PayPal checkout pages.'),
+                'description' => __('Sets the page users will be returned to if they click the Cancel link on the PayPal checkout pages. As such, this option will be ignored when CartFlows checkout is used'),
                 'type' => 'select',
                 'class'    => 'wc-enhanced-select',
                 'options' => $cancel_page,
