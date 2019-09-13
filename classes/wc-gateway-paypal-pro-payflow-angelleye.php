@@ -849,15 +849,15 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     } else {
                         $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
                     }
-                    if( $this->default_order_status == 'Completed' ) {
+                    if( $this->default_order_status == 'Completed' && apply_filters('angelleye_paypal_payflow_allow_default_order_status', true)) {
                         $order->update_status('completed');
-                        if ($old_wc) {
-                           update_post_meta($order_id, '_transaction_id', $PayPalResult['PNREF']);
-                        } else {
-                           update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['PNREF']);
-                        }
                     } else {
                         $order->payment_complete($PayPalResult['PNREF']);
+                    }
+                    if ($old_wc) {
+                        update_post_meta($order_id, '_transaction_id', $PayPalResult['PNREF']);
+                    } else {
+                        update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['PNREF']);
                     }
                 }
                 WC()->cart->empty_cart();

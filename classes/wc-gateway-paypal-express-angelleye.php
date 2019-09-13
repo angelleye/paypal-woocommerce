@@ -1759,8 +1759,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (!defined('WOOCOMMERCE_CART')) {
                 define('WOOCOMMERCE_CART', true);
             }
-            WC()->cart->calculate_totals();
-            WC()->cart->calculate_shipping();
             if (version_compare(WC_VERSION, '3.0', '<')) {
                 WC()->customer->calculated_shipping(true);
             } else {

@@ -273,8 +273,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if (!defined('WOOCOMMERCE_CART')) {
                     define('WOOCOMMERCE_CART', true);
                 }
-                WC()->cart->calculate_totals();
-                WC()->cart->calculate_shipping();
                 if (version_compare(WC_VERSION, '3.0', '<')) {
                     WC()->customer->calculated_shipping(true);
                 } else {
@@ -1579,7 +1577,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             wc_set_customer_auth_cookie($customer_id);
             WC()->session->set('reload_checkout', true);
-            WC()->cart->calculate_totals();
             if ($first_name && apply_filters('woocommerce_checkout_update_customer_data', true, WC()->customer)) {
                 $userdata = array(
                     'ID' => $customer_id,
