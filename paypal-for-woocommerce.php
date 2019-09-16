@@ -590,7 +590,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         wc_add_notice($display_error, 'error');
                         if (!is_ajax()) {
                             if($redirect_url == null) {
-                                wp_redirect(get_permalink(wc_get_page_id('cart')));
+                                wp_redirect(wc_get_cart_url());
                             } else {
                                 wp_redirect($redirect_url);
                             }

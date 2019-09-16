@@ -103,11 +103,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if (wc_notice_count('error') > 0) {
                     if($this->save_abandoned_checkout == true) {
                         wp_send_json(array(
-                            'url' => get_permalink(wc_get_page_id('cart'))
+                            'url' => wc_get_cart_url()
                         ));
                     } else {
                         return array(
-                            'url' => get_permalink(wc_get_page_id('cart'))
+                            'url' => wc_get_cart_url()
                         );
                     }
                     exit();
@@ -125,7 +125,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 }
                 
             } else {
-                wp_redirect(get_permalink(wc_get_page_id('cart')));
+                wp_redirect(wc_get_cart_url());
                 exit;
             }
         } else {
@@ -145,7 +145,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } else {
                 $args = array(
                     'result' => 'failure',
-                    'redirect' => get_permalink(wc_get_page_id('cart')),
+                    'redirect' => wc_get_cart_url(),
                 );
                 if ($this->function_helper->ec_is_version_gte_2_4()) {
                     if (ob_get_length()) {
@@ -632,7 +632,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $order = null;
             $cancel_url = !empty($this->gateway->cancel_page_id) ? get_permalink($this->gateway->cancel_page_id) : wc_get_cart_url();
             if ($cancel_url == false) {
-                $cancel_url = wc_get_cart_url();
+                $cancel_url = wc_get_checkout_url();
             }
             $cancel_url = add_query_arg('utm_nooverride', '1', $cancel_url);
             $order_total = '';
