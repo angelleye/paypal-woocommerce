@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.1.2 - 09.16.2019 =
+* Fix - Resolves an issue with Cartflow plugin were Discount Values getting Ignored. ([PFW-481](https://github.com/angelleye/paypal-woocommerce/pull/1357))
+
 = 2.1.1 - 09.02.2019 =
 * Feature - Adds CartFlows compatibility. ([PFW-461](https://github.com/angelleye/paypal-woocommerce/pull/1355))
 * Feature - Adds hook for Differentiate between Woo checkout and PayPal review page. ([PFW-452](https://github.com/angelleye/paypal-woocommerce/pull/1350))
