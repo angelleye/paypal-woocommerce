@@ -653,8 +653,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
-            if ( 'checkout' === get_post_meta( $post->ID, 'wcf-step-type', true ) ) {
-                 $is_cartflow = "yes";
+            $order_bump         = get_post_meta( $post->ID, 'wcf-order-bump', true );
+            if ( 'yes' == $order_bump ) {
+                $is_cartflow = "yes";
             } else {
                 $is_cartflow = "no";
             }
