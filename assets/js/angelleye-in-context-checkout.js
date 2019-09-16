@@ -471,8 +471,14 @@ jQuery(function ($) {
                                 request_from: 'JSv4'
                             };
                             paypal.request.post(data.returnUrl, params).then(function (res) {
-                                data.returnUrl = res.url;
-                                actions.redirect();
+                                if( angelleye_in_content_param.is_cartflow === "no" ) {
+                                    data.returnUrl = res.url;
+                                    actions.redirect(); //data.returnUrl = res.url;
+                                } else {
+                                   $('.woocommerce').unblock();
+                                    $('form.checkout').triggerHandler("checkout_place_order");
+                                }
+                                
                             });
                         },
                         onCancel: function (data, actions) {
