@@ -130,6 +130,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 2.1.2 - 09.16.2019 =
 * Fix - Resolves an issue with Cartflow plugin were Discount Values getting Ignored. ([PFW-481](https://github.com/angelleye/paypal-woocommerce/pull/1357))
 * Tweak - Adjustment to ensure the PayPal Express Checkout button on checkout pages validation display on checkout page. ([PFW-479](https://github.com/angelleye/paypal-woocommerce/pull/1358))
+* Tweak - Adjustments to CartFlows compatibility with bump order. ([PFW-482](https://github.com/angelleye/paypal-woocommerce/pull/1359))
 
 = 2.1.1 - 09.02.2019 =
 * Feature - Adds CartFlows compatibility. ([PFW-461](https://github.com/angelleye/paypal-woocommerce/pull/1355))
