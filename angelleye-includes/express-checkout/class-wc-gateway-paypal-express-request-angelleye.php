@@ -103,11 +103,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if (wc_notice_count('error') > 0) {
                     if($this->save_abandoned_checkout == true) {
                         wp_send_json(array(
-                            'url' => get_permalink(wc_get_page_id('cart'))
+                            'url' => wc_get_cart_url()
                         ));
                     } else {
                         return array(
-                            'url' => get_permalink(wc_get_page_id('cart'))
+                            'url' => wc_get_cart_url()
                         );
                     }
                     exit();
@@ -125,7 +125,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 }
                 
             } else {
-                wp_redirect(get_permalink(wc_get_page_id('cart')));
+                wp_redirect(wc_get_cart_url());
                 exit;
             }
         } else {
@@ -145,7 +145,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } else {
                 $args = array(
                     'result' => 'failure',
-                    'redirect' => get_permalink(wc_get_page_id('cart')),
+                    'redirect' => wc_get_cart_url(),
                 );
                 if ($this->function_helper->ec_is_version_gte_2_4()) {
                     if (ob_get_length()) {
@@ -273,8 +273,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if (!defined('WOOCOMMERCE_CART')) {
                     define('WOOCOMMERCE_CART', true);
                 }
-                WC()->cart->calculate_totals();
-                WC()->cart->calculate_shipping();
                 if (version_compare(WC_VERSION, '3.0', '<')) {
                     WC()->customer->calculated_shipping(true);
                 } else {
@@ -586,7 +584,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'DECPFields' => $DECPFields,
                 'Payments' => $Payments
             );
-            $this->paypal_response = $this->paypal->DoExpressCheckoutPayment(apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request));
+            $this->paypal_response = $this->paypal->DoExpressCheckoutPayment(apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request, $this->gateway, $this, $this->confirm_order_id));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'DoExpressCheckoutPayment');
         } catch (Exception $ex) {
             
@@ -635,7 +633,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $order = null;
             $cancel_url = !empty($this->gateway->cancel_page_id) ? get_permalink($this->gateway->cancel_page_id) : wc_get_cart_url();
             if ($cancel_url == false) {
-                $cancel_url = wc_get_cart_url();
+                $cancel_url = wc_get_checkout_url();
             }
             $cancel_url = add_query_arg('utm_nooverride', '1', $cancel_url);
             $order_total = '';
@@ -878,7 +876,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->paypal_request = $this->angelleye_add_billing_agreement_param($PayPalRequestData, $this->gateway->supports('tokenization'));
             $this->paypal_request = AngellEYE_Utility::angelleye_express_checkout_validate_shipping_address($this->paypal_request);
             do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_express', $this->gateway, $this, $order_id, $this->paypal_request);
-            $this->paypal_response = $this->paypal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request));
+            $this->paypal_response = $this->paypal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request, $this->gateway, $this, $order_id));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'SetExpressCheckout');
             return $this->paypal_response;
         } catch (Exception $ex) {
@@ -1580,7 +1578,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             wc_set_customer_auth_cookie($customer_id);
             WC()->session->set('reload_checkout', true);
-            WC()->cart->calculate_totals();
             if ($first_name && apply_filters('woocommerce_checkout_update_customer_data', true, WC()->customer)) {
                 $userdata = array(
                     'ID' => $customer_id,

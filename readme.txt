@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 5.2.2
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 2.1.2 - 09.17.2019 =
+* Tweak - Adjustment to ensure the PayPal Express Checkout button on checkout pages validation display on checkout page. ([PFW-479](https://github.com/angelleye/paypal-woocommerce/pull/1358))
+* Tweak - Adjustments to CartFlows compatibility with bump order. ([PFW-482](https://github.com/angelleye/paypal-woocommerce/pull/1359))
+* Tweak - Adjustments to Braintree gateway always send merchant_account_id when it available. ([#1361](https://github.com/angelleye/paypal-woocommerce/pull/1361))
+* Tweak - Adjustments to CartFlows compatibility with pre checkout offer. ([PFW-488](https://github.com/angelleye/paypal-woocommerce/pull/1363))
+* Fix - Resolves an issue with Cartflow plugin were Discount Values getting Ignored. ([PFW-481](https://github.com/angelleye/paypal-woocommerce/pull/1357))
 
 = 2.1.1 - 09.02.2019 =
 * Feature - Adds CartFlows compatibility. ([PFW-461](https://github.com/angelleye/paypal-woocommerce/pull/1355))

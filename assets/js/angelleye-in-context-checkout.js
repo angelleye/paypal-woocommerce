@@ -120,7 +120,7 @@ jQuery(function ($) {
                     onError: function (err, actions) {
                         console.log("err");
                         if ($('.angelleye_button_single').length) {
-                            window.location.href = angelleye_in_content_param.cancel_page;
+                            window.location.href = angelleye_in_content_param.smart_cancel_page;
                         }
                     }
                 }, '.angelleye_button_single');
@@ -220,7 +220,7 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
-                            window.location.href = angelleye_in_content_param.cancel_page;
+                            window.location.href = angelleye_in_content_param.smart_cancel_page;
                         }
                     }, selector);
                 }
@@ -310,7 +310,7 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
-                            window.location.href = angelleye_in_content_param.cancel_page;
+                            window.location.href = angelleye_in_content_param.smart_cancel_page;
                         }
                     }, selector);
                 }
@@ -397,7 +397,7 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
-                            window.location.href = angelleye_in_content_param.cancel_page;
+                            window.location.href = angelleye_in_content_param.smart_cancel_page;
                         }
                     }, selector);
                 }
@@ -471,13 +471,23 @@ jQuery(function ($) {
                                 request_from: 'JSv4'
                             };
                             paypal.request.post(data.returnUrl, params).then(function (res) {
-                                data.returnUrl = res.url;
-                                actions.redirect();
+                                if( angelleye_in_content_param.is_pre_checkout_offer === "no" ) {
+                                    data.returnUrl = res.url;
+                                    actions.redirect(); //data.returnUrl = res.url;
+                                } else {
+                                   $('.woocommerce').unblock();
+                                    $('form.checkout').triggerHandler("checkout_place_order");
+                                }
+                                
                             });
                         },
                         onCancel: function (data, actions) {
                             $('.woocommerce').unblock();
-                            window.location.href = angelleye_in_content_param.cancel_page;
+                            if( angelleye_in_content_param.is_cartflow === "no" ) {
+                                window.location.href = angelleye_in_content_param.cancel_page;
+                            } else {
+                                window.location.reload();
+                            }
                         },
                         onClick: function () {
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
@@ -492,7 +502,11 @@ jQuery(function ($) {
                         },
                         onError: function (err, actions) {
                             $('.woocommerce').unblock();
-                            window.location.href = angelleye_in_content_param.cancel_page;
+                            if( angelleye_in_content_param.is_cartflow === "no" ) {
+                                window.location.href = angelleye_in_content_param.smart_cancel_page;
+                            } else {
+                                window.location.reload();
+                            }
                         }
                     }, selector);
                 }
