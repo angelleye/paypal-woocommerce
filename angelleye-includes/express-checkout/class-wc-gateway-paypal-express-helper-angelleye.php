@@ -653,11 +653,16 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
-            $order_bump = get_post_meta( $post->ID, 'wcf-pre-checkout-offer', true );
-            if ( 'yes' == $order_bump ) {
-                $is_cartflow = "yes";
+            if ( 'checkout' === get_post_meta( $post->ID, 'wcf-step-type', true ) ) {
+                 $is_cartflow = "yes";
             } else {
                 $is_cartflow = "no";
+            }
+            $pre_checkout_offer = get_post_meta( $post->ID, 'wcf-pre-checkout-offer', true );
+            if ( 'yes' == $pre_checkout_offer ) {
+                $pre_checkout_offer = "yes";
+            } else {
+                $pre_checkout_offer = "no";
             }
             if ($this->angelleye_is_in_context_enable() == true) {
                 $cancel_url = !empty($this->cancel_page) ? get_permalink($this->cancel_page) : wc_get_cart_url();
@@ -707,7 +712,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'set_express_checkout' => add_query_arg('pp_action', 'set_express_checkout', add_query_arg('wc-api', 'WC_Gateway_PayPal_Express_AngellEYE', home_url('/'))),
                     'zcommit' => $this->angelleye_ec_force_to_display_checkout_page_js() == true ? 'false' : 'true',
                     'checkout_page_disable_smart_button' => $this->checkout_page_disable_smart_button ? "yes" : "no",
-                    'is_cartflow' => $is_cartflow
+                    'is_cartflow' => $is_cartflow,
+                    'is_pre_checkout_offer' => $pre_checkout_offer
                         )
                 );
             }

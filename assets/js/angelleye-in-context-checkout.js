@@ -471,7 +471,7 @@ jQuery(function ($) {
                                 request_from: 'JSv4'
                             };
                             paypal.request.post(data.returnUrl, params).then(function (res) {
-                                if( angelleye_in_content_param.is_cartflow === "no" ) {
+                                if( angelleye_in_content_param.is_pre_checkout_offer === "no" ) {
                                     data.returnUrl = res.url;
                                     actions.redirect(); //data.returnUrl = res.url;
                                 } else {
