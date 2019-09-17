@@ -127,11 +127,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 2.1.2 - 09.16.2019 =
-* Fix - Resolves an issue with Cartflow plugin were Discount Values getting Ignored. ([PFW-481](https://github.com/angelleye/paypal-woocommerce/pull/1357))
+= 2.1.2 - 09.17.2019 =
 * Tweak - Adjustment to ensure the PayPal Express Checkout button on checkout pages validation display on checkout page. ([PFW-479](https://github.com/angelleye/paypal-woocommerce/pull/1358))
 * Tweak - Adjustments to CartFlows compatibility with bump order. ([PFW-482](https://github.com/angelleye/paypal-woocommerce/pull/1359))
 * Tweak - Adjustments to Braintree gateway always send merchant_account_id when it available. ([#1361](https://github.com/angelleye/paypal-woocommerce/pull/1361))
+* Tweak - Adjustments to CartFlows compatibility with pre checkout offer. ([PFW-488](https://github.com/angelleye/paypal-woocommerce/pull/1363))
+* Fix - Resolves an issue with Cartflow plugin were Discount Values getting Ignored. ([PFW-481](https://github.com/angelleye/paypal-woocommerce/pull/1357))
 
 = 2.1.1 - 09.02.2019 =
 * Feature - Adds CartFlows compatibility. ([PFW-461](https://github.com/angelleye/paypal-woocommerce/pull/1355))
