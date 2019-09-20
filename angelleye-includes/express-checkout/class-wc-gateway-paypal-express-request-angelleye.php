@@ -354,6 +354,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 do_action('ae_add_custom_order_note', $order, $card = null, $token = null, $this->paypal_response);
                 apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);
+                do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 if ($order->get_total() > 0) {
                     $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
@@ -411,6 +412,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 wc_clear_notices();
                 $this->angelleye_wp_safe_redirect(add_query_arg('utm_nooverride', '1', $this->gateway->get_return_url($order)), 'do_express_checkout_payment');
             } elseif ($this->response_helper->ec_is_response_successwithwarning($this->paypal_response)) {
+                do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
                 apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
