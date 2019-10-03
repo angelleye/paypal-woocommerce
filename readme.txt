@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 2.1.3 - 10.03.2019 =
 * Tweak - Adds required hooks for our PayPal for WooCommerce Multi-Account extension. ([PFW-464](https://github.com/angelleye/paypal-woocommerce/pull/1364))
+* Feature - Adds CartFlows compatibility. ([PFW-493](https://github.com/angelleye/paypal-woocommerce/pull/1365))
 
 = 2.1.2 - 09.17.2019 =
 * Tweak - Adjustment to ensure the PayPal Express Checkout button on checkout pages validation display on checkout page. ([PFW-479](https://github.com/angelleye/paypal-woocommerce/pull/1358))
