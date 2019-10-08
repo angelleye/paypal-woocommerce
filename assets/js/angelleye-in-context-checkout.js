@@ -486,7 +486,7 @@ jQuery(function ($) {
                             if( angelleye_in_content_param.is_cartflow === "no" ) {
                                 window.location.href = angelleye_in_content_param.cancel_page;
                             } else {
-                                window.location.reload();
+                                window.location.href = window.location.href;
                             }
                         },
                         onClick: function () {
@@ -505,7 +505,7 @@ jQuery(function ($) {
                             if( angelleye_in_content_param.is_cartflow === "no" ) {
                                 window.location.href = angelleye_in_content_param.smart_cancel_page;
                             } else {
-                                window.location.reload();
+                                window.location.href = window.location.href;
                             }
                         }
                     }, selector);
