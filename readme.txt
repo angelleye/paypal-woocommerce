@@ -128,6 +128,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 2.1.3 - 10.03.2019 =
+* Fix - Resolves an issue with checkout page validation focus. ([PFW-487](https://github.com/angelleye/paypal-woocommerce/pull/1366))
+
+= 2.1.3 - 10.03.2019 =
 * Tweak - Adds required hooks for our PayPal for WooCommerce Multi-Account extension. ([PFW-464](https://github.com/angelleye/paypal-woocommerce/pull/1364))
 * Feature - Adds CartFlows compatibility. ([PFW-493](https://github.com/angelleye/paypal-woocommerce/pull/1365))
 
