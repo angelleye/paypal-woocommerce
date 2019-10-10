@@ -568,7 +568,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
                 $order_amt = '0.00';
             }
-
+            $redirect_url = $this->get_return_url($order);
             WC()->session->set('acct', $card->number);
             WC()->session->set('exp_month', $card->exp_month);
             WC()->session->set('exp_year', $card->exp_year);
@@ -652,7 +652,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                             $centinel[$value] = str_replace(' ', '+', $PayPalResult[$value]);
                         }
                     }
-                    return $this->do_payment($order, $card->number, $card->exp_month . $card->exp_year, $card->cvc, $centinel);
+                    $this->do_payment($order, $card->number, $card->exp_month . $card->exp_year, $card->cvc, $centinel);
+                    wp_safe_redirect($redirect_url);
+                    exit();
                 } else {
                     wc_add_notice(apply_filters('angelleye_pc_process_payment_authentication_unavailable', __('Authentication unavailable. Please try a different payment method or card.', 'paypal-for-woocommerce')), 'error');
                     return;
@@ -780,7 +782,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $exp_month = WC()->session->get('exp_month');
                         $exp_year = WC()->session->get('exp_year');
                         $cvv2 = WC()->session->get('cvv2');
-                        return $this->do_payment($order, $acct, $exp_month . $exp_year, $cvv2, $centinel);
+                        $this->do_payment($order, $acct, $exp_month . $exp_year, $cvv2, $centinel);
+                        wp_safe_redirect($redirect_url);
+                        exit();
                     } else {
                         $order->update_status('failed', sprintf(apply_filters('angelleye_pc_3d_secure_authentication', __('3D Secure error: %s', 'paypal-for-woocommerce')), $this->get_centinel_value("ErrorDesc")));
                         throw new Exception(__('Payer Authentication failed. Please try a different payment method.', 'paypal-for-woocommerce'));
