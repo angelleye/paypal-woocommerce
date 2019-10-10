@@ -830,7 +830,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
 
             if ($this->get_centinel_value("ErrorNo")) {
-                wc_add_notice(apply_filters('angelleye_pc_process_payment_authentication', __('Error in 3D secure authentication: ', 'woocommerce-gateway-paypal-pro') . $this->get_centinel_value("ErrorDesc")), 'error');
+                wc_add_notice(apply_filters('angelleye_pc_process_payment_authentication', __('Error in 3D secure authentication: ', 'paypal-for-woocommerce') . $this->get_centinel_value("ErrorDesc")), 'error');
                 return;
             }
 
@@ -844,7 +844,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     'redirect' => add_query_arg(array('acs' => $order_id), WC()->api_request_url('WC_Gateway_PayPal_Pro_AngellEYE', is_ssl()))
                 );
             } elseif ($this->liability_shift && 'N' !== $this->get_centinel_value("Enrolled")) {
-                wc_add_notice(apply_filters('angelleye_pc_process_payment_authentication_unavailable', __('Authentication unavailable. Please try a different payment method or card.', 'woocommerce-gateway-paypal-pro')), 'error');
+                wc_add_notice(apply_filters('angelleye_pc_process_payment_authentication_unavailable', __('Authentication unavailable. Please try a different payment method or card.', 'paypal-for-woocommerce')), 'error');
                 return;
             }
 
@@ -934,8 +934,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
 
             if ($this->liability_shift && ($this->get_centinel_value("EciFlag") == '07' || $this->get_centinel_value("EciFlag") == '01')) {
-                $order->update_status('failed', __('3D Secure error: No liability shift', 'woocommerce-gateway-paypal-pro'));
-                throw new Exception(apply_filters('angelleye_pc_3d_authentication_unavailable', __('Authentication unavailable.  Please try a different payment method or card.', 'woocommerce-gateway-paypal-pro')));
+                $order->update_status('failed', __('3D Secure error: No liability shift', 'paypal-for-woocommerce'));
+                throw new Exception(apply_filters('angelleye_pc_3d_authentication_unavailable', __('Authentication unavailable.  Please try a different payment method or card.', 'paypal-for-woocommerce')));
             }
 
             if (!$this->get_centinel_value("ErrorNo") && in_array($this->get_centinel_value("PAResStatus"), array('Y', 'A', 'U')) && "Y" === $this->get_centinel_value("SignatureVerification")) {
@@ -963,8 +963,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 exit();
 
             } else {
-                $order->update_status('failed', sprintf(apply_filters('angelleye_pc_3d_secure_authentication', __('3D Secure error: %s', 'woocommerce-gateway-paypal-pro')), $this->get_centinel_value("ErrorDesc")));
-                throw new Exception(__('Payer Authentication failed. Please try a different payment method.', 'woocommerce-gateway-paypal-pro'));
+                $order->update_status('failed', sprintf(apply_filters('angelleye_pc_3d_secure_authentication', __('3D Secure error: %s', 'paypal-for-woocommerce')), $this->get_centinel_value("ErrorDesc")));
+                throw new Exception(__('Payer Authentication failed. Please try a different payment method.', 'paypal-for-woocommerce'));
             }
         } catch (Exception $e) {
             wc_add_notice($e->getMessage(), 'error');
