@@ -449,7 +449,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                
                <strong>Username:</strong> paypalwoocommerce<br/>
                
-                <strong>Password:</strong> dwG7!Yp*PLY3<br/> 
+                <strong>Password:</strong> @x92hlhIP8lp<br/> 
                 <br /><a href=%s>%s</a>", 'paypal-for-woocommerce'),
                 esc_url(add_query_arg("payflow_sb_autopopulate_credentials", 0)), __("Hide this notice.", 'paypal-for-woocommerce')) . '</p></div>';
             }
