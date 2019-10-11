@@ -948,11 +948,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $order->update_status('failed', __('3D Secure error: No liability shift', 'paypal-for-woocommerce'));
                     throw new Exception(apply_filters('angelleye_pc_3d_authentication_unavailable', __('Authentication unavailable.  Please try a different payment method or card.', 'paypal-for-woocommerce')));
                 }
-
                 if (!$this->get_centinel_value("ErrorNo") && in_array($this->get_centinel_value("PAResStatus"), array('Y', 'A', 'U')) && "Y" === $this->get_centinel_value("SignatureVerification")) {
-
-                    // If we are here we can process the card
-
                     $card = new stdClass();
                     $card->number = $this->get_centinel_value("CardNumber");
                     $card->type = '';
@@ -961,14 +957,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $card->exp_year = $this->get_centinel_value("CardExpYear");
                     $card->start_month = WC()->session->get('Centinel_card_start_month');
                     $card->start_year = WC()->session->get('Centinel_card_start_year');
-
-                    $centinel = new stdClass();
-                    $centinel->paresstatus = $this->get_centinel_value("PAResStatus");
-                    $centinel->xid = $this->get_centinel_value("Xid");
-                    $centinel->cavv = $this->get_centinel_value("Cavv");
-                    $centinel->eciflag = $this->get_centinel_value("EciFlag");
-                    $centinel->enrolled = WC()->session->get('Centinel_Enrolled');
-                    $this->do_payment($order, $card->number, $card->type, $card->exp_month, $card->exp_year, $card->cvc, $centinel->paresstatus, "Y", $centinel->cavv, $centinel->eciflag, $centinel->xid, $card->start_month, $card->start_year);
+                    $centinel_data = array();
+                    $centinel_data['AUTHSTATUS3DS'] = $this->get_centinel_value("PAResStatus");
+                    $centinel_data['XID'] = $this->get_centinel_value("Xid");
+                    $centinel_data['CAVV'] = $this->get_centinel_value("Cavv");
+                    $centinel_data['ECI'] = $this->get_centinel_value("EciFlag");
+                    $centinel_data['MPIVENDOR3DS'] = WC()->session->get('Centinel_Enrolled');
+                    $this->do_payment($order, $card->number, $card->exp_month . $card->exp_year, $card->cvc, $centinel_data);
                     $this->clear_centinel_session();
                     wp_safe_redirect($redirect_url);
                     exit();
