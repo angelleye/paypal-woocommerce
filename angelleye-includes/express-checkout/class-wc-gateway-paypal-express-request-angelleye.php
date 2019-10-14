@@ -101,15 +101,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 }
                 ob_start();
                 if (wc_notice_count('error') > 0) {
-                    if($this->save_abandoned_checkout == true) {
-                        wp_send_json(array(
-                            'url' => wc_get_cart_url()
-                        ));
-                    } else {
-                        return array(
+                    return array(
                             'url' => wc_get_cart_url()
                         );
-                    }
                     exit();
                 } else {
                     if($this->save_abandoned_checkout == true) {
