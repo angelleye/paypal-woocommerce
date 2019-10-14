@@ -579,7 +579,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             jQuery('#woocommerce_paypal_pro_payflow_threedsecure_type').change(function () {
                 var centinel = jQuery('#woocommerce_paypal_pro_payflow_centinel_pid, #woocommerce_paypal_pro_payflow_centinel_mid, #woocommerce_paypal_pro_payflow_centinel_pwd').closest('tr');
                 if (this.value === 'cardinalcommerce') {
-                    centinel.show();
+                    if( jQuery('#woocommerce_paypal_pro_payflow_enable_3dsecure').is(':checked')) {
+                        centinel.show();
+                    }
                 } else {
                     centinel.hide();
                 }
