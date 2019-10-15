@@ -1440,7 +1440,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 echo '<p>';
                 _e('NOTICE: SANDBOX (TEST) MODE ENABLED.', 'paypal-for-woocommerce');
                 echo '<br />';
-                _e('For testing purposes you can use the card number 4111111111111111 with any CVC and a valid expiration date.', 'paypal-for-woocommerce');
+                if($this->enable_3dsecure) {
+                    echo sprintf( __( 'For testing purposes you can use the card number 4000000000000002 with any CVC and a valid expiration date or check the <a href="%s" target="_blank">Testing Cardinal Centinel documentation</a> for more card numbers.', 'paypal-for-woocommerce' ), 'https://cardinaldocs.atlassian.net/wiki/spaces/CCen/pages/400654355/3DS+1.0+Test+Cases' );
+                } else {
+                    _e('For testing purposes you can use the card number 4111111111111111 with any CVC and a valid expiration date.', 'paypal-for-woocommerce');
+                }
                 echo '</p>';
             }
         }
