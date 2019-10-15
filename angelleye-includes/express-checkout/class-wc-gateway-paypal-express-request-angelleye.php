@@ -73,8 +73,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_redirect() {
         $post_data = WC()->session->get('post_data');
         if( !empty($post_data) ) {
-            if( !empty($post_data['_wcf_flow_id'])) {
-                $return_url = get_permalink($post_data['_wcf_flow_id']);
+            if( !empty($post_data['_wcf_checkout_id'])) {
+                $return_url = get_permalink($post_data['_wcf_checkout_id']);
             }
         }
         if(empty($return_url)) {
