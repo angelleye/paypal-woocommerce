@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 2.1.5 - 10.15.2019 =
 * Fix - Resolves an issue where the shipping address was not displaying on thank you page. ([PFW-498](https://github.com/angelleye/paypal-woocommerce/pull/1368))
+* Fix - Resolves an issue where No spinner when clicking Continue / Pay Now from the PayPal pop. ([PFW-497](https://github.com/angelleye/paypal-woocommerce/pull/1369))
 
 = 2.1.4 - 10.08.2019 =
 * Fix - Resolves an issue with checkout page validation focus. ([PFW-487](https://github.com/angelleye/paypal-woocommerce/pull/1366))
