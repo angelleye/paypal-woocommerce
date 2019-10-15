@@ -92,6 +92,7 @@ jQuery(function ($) {
                         });
                     },
                     onAuthorize: function (data, actions) {
+                        $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                         var params = {
                             paymentToken: data.paymentToken,
                             payerID: data.payerID,
@@ -118,7 +119,7 @@ jQuery(function ($) {
                         }
                     },
                     onError: function (err, actions) {
-                        console.log("err");
+                        $('.woocommerce').unblock();
                         if ($('.angelleye_button_single').length) {
                             window.location.href = angelleye_in_content_param.smart_cancel_page;
                         }
@@ -194,6 +195,7 @@ jQuery(function ($) {
                             });
                         },
                         onAuthorize: function (data, actions) {
+                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var params = {
                                 paymentToken: data.paymentToken,
                                 payerID: data.payerID,
@@ -220,6 +222,7 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
+                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.smart_cancel_page;
                         }
                     }, selector);
@@ -284,6 +287,7 @@ jQuery(function ($) {
                             });
                         },
                         onAuthorize: function (data, actions) {
+                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var params = {
                                 paymentToken: data.paymentToken,
                                 payerID: data.payerID,
@@ -310,6 +314,7 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
+                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.smart_cancel_page;
                         }
                     }, selector);
@@ -371,6 +376,7 @@ jQuery(function ($) {
                             });
                         },
                         onAuthorize: function (data, actions) {
+                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var params = {
                                 paymentToken: data.paymentToken,
                                 payerID: data.payerID,
@@ -397,6 +403,7 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
+                            $('.woocommerce').unblock();
                             window.location.href = angelleye_in_content_param.smart_cancel_page;
                         }
                     }, selector);
@@ -464,6 +471,7 @@ jQuery(function ($) {
                           
                         },
                         onAuthorize: function (data, actions) {
+                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var params = {
                                 paymentToken: data.paymentToken,
                                 payerID: data.payerID,

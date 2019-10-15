@@ -271,8 +271,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'title' => __('Password', 'paypal-for-woocommerce'),
                 'type' => 'password',
                 'description' => __('The password that you defined while registering for the account.', 'paypal-for-woocommerce'),
-                'custom_attributes' => array('autocomplete' => 'new-password'),
-                'default' => 'dwG7!Yp*PLY3'
+                'custom_attributes' => array( 'autocomplete' => 'new-password'),
+                'default' => '@x92hlhIP8lp'
             ),
             'paypal_partner' => array(
                 'title' => __('Partner', 'paypal-for-woocommerce'),
@@ -510,26 +510,25 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         echo $this->angelleye_paypal_pro_payflow_reference_transaction_notice();
         ?>
         <div id="angelleye_paypal_marketing_table">
-            <table class="form-table">
-                <?php
-                if (!get_user_meta(get_current_user_id(), 'payflow_sb_autopopulate_credentials')) {
-                    echo '<div class="notice notice-info"><p>' . sprintf(__("<h3>Default PayFlow Sandbox Credentials</h3>
+        <table class="form-table">
+            <?php
+             if(!get_user_meta(get_current_user_id(), 'payflow_sb_autopopulate_new_credentials')){
+               echo '<div class="notice notice-info"><p>'.sprintf(__("<h3>Default PayFlow Sandbox Credentials</h3>
                 <p>These values have been auto-filled into the sandbox credential fields so that you can quickly run test orders. If you have your own PayPal Manager test account you can update the values accordingly.</p>
                 <strong>Partner:</strong> PayPal<br/>
                 <strong>Merchant Login:</strong> angelleye<br/>
-
-               <strong>Username:</strong> paypalwoocommerce<br/>
-
-                <strong>Password:</strong> dwG7!Yp*PLY3<br/>
-                <br /><a href=%s>%s</a>", 'paypal-for-woocommerce'), esc_url(add_query_arg("payflow_sb_autopopulate_credentials", 0)), __("Hide this notice.", 'paypal-for-woocommerce')) . '</p></div>';
-                }
-                if (version_compare(WC_VERSION, '2.6', '<')) {
-                    AngellEYE_Utility::woo_compatibility_notice();
-                } else {
-                    $this->generate_settings_html();
-                }
-                ?>
-            </table>
+                <strong>Username:</strong> paypalwoocommerce<br/>
+                <strong>Password:</strong> @x92hlhIP8lp<br/> 
+                <br /><a href=%s>%s</a>", 'paypal-for-woocommerce'),
+                esc_url(add_query_arg("payflow_sb_autopopulate_new_credentials", 0)), __("Hide this notice.", 'paypal-for-woocommerce')) . '</p></div>';
+            }
+            if(version_compare(WC_VERSION,'2.6','<')) {
+                AngellEYE_Utility::woo_compatibility_notice();
+            } else {
+               $this->generate_settings_html();
+            }
+            ?>
+        </table>
         </div>
         <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); ?>
         <script type="text/javascript">
@@ -1450,7 +1449,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         }
         if ($this->supports('tokenization') && is_checkout()) {
             $this->tokenization_script();
-            $this->saved_payment_methods();
+            if( count( $this->get_tokens() ) > 0 ) {
+                $this->saved_payment_methods();
+            }
             $this->form();
             if (AngellEYE_Utility::is_cart_contains_subscription() == false && AngellEYE_Utility::is_subs_change_payment() == false) {
                 $this->save_payment_method_checkbox();
