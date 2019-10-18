@@ -15,3 +15,5 @@ temp/
 /classes/lib/angelleye/paypal-php-library/includes/_notes/
 /classes/lib/angelleye/paypal-php-library/templates/_notes/
 .idea
+
+/vendor/
