@@ -71,7 +71,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
             $description = sprintf(__('%1$s - Order %2$s - One Time offer', 'cartflows-pro'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES), $order->get_order_number());
             $DPFields = array(
                 'paymentaction' => 'Sale',
-                'ipaddress' => AngellEYE_Utility::get_user_ip(),
+                'ipaddress' => WC_Geolocation::get_ip_address(),
                 'returnfmfdetails' => '1',
                 'softdescriptor' => $gateway->softdescriptor
             );
@@ -166,7 +166,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
                     $message = __("DoDirectPayment API call failed.", "paypal-for-woocommerce") . "\n\n";
                     $message .= __('Error Code: ', 'paypal-for-woocommerce') . $error_code . "\n";
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $long_message . "\n";
-                    $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
+                    $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                     $message .= __('Order ID: ') . $order_id . "\n";
                     $message .= __('Customer Name: ') . $billing_first_name . ' ' . $billing_last_name . "\n";
                     $message .= __('Customer Email: ') . $billing_email . "\n";

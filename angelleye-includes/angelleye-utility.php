@@ -2032,23 +2032,6 @@ class AngellEYE_Utility {
         }
     }
     
-    public static function get_user_ip() {
-        $ip_address = '';
-        if(class_exists('WC_Geolocation')) {
-            $ip_address =  WC_Geolocation::get_ip_address();
-        } else {
-            $ip_address = !empty($_SERVER['HTTP_X_FORWARD_FOR']) ? $_SERVER['HTTP_X_FORWARD_FOR'] : $_SERVER['REMOTE_ADDR'];
-        }
-        $ipv4_pattern = '/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/';
-        if ( ! preg_match( $ipv4_pattern, $ip_address ) && filter_var($ip_address, FILTER_VALIDATE_IP,FILTER_FLAG_IPV6) ) {
-            $ip_address = '';
-        } 
-        if(strlen($ip_address) > 16) {
-            $ip_address = '';
-        }
-        return $ip_address;
-    }
-    
     public static function woo_compatibility_notice() {
         echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . __('PayPal for WooCommerce requires WooCommerce version 2.6 or higher.  Please backup your site files and database, update WooCommerce, and try again.','paypal-for-woocommerce') . '</div></div>';
     }

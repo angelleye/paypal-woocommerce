@@ -846,7 +846,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $message .= __('Error Code: ', 'paypal-for-woocommerce') . $PayPalResult['RESULT'] . "\n";
                         $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
                         $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
-                        $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
+                        $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                         $message .= __('Order ID: ') . $order_id . "\n";
                         $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
                         $message .= __('Customer Email: ') . $billing_email . "\n";
@@ -1134,7 +1134,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'origid' => '', // Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.
                 'custref' => '', //
                 'custcode' => '', //
-                'custip' => AngellEYE_Utility::get_user_ip(), //
+                'custip' => WC_Geolocation::get_ip_address(), //
                 'invnum' => $this->invoice_id_prefix . str_replace("#", "", $order->get_order_number()), //
                 'ponum' => '', //
                 'starttime' => '', // For inquiry transaction when using CUSTREF to specify the transaction.
@@ -1249,6 +1249,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $order->update_status('failed', __('Payment failed due to a duplicate order ID.', 'paypal-for-woocommerce'));
                     throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                 }
+                $order->add_order_note(sprintf(__('Response message: %s', 'paypal-for-woocommerce'), $PayPalResult['RESPMSG']));
                 $avs_address_response_code = isset($PayPalResult['AVSADDR']) ? $PayPalResult['AVSADDR'] : '';
                 $avs_zip_response_code = isset($PayPalResult['AVSZIP']) ? $PayPalResult['AVSZIP'] : '';
                 $proc_avs_response_code = isset($PayPalResult['PROCAVS']) ? $PayPalResult['PROCAVS'] : '';
@@ -1275,6 +1276,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
                 $cvv2_response_order_note .= "\n";
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
+                
                 if ($old_wc) {
                     update_post_meta($order_id, '_CVV2MATCH', $cvv2_response_code);
                     update_post_meta($order_id, 'is_sandbox', $this->testmode);
@@ -1411,7 +1413,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $message .= __('Error Code: ', 'paypal-for-woocommerce') . $PayPalResult['RESULT'] . "\n";
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
                     $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
-                    $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
+                    $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                     $message .= __('Order ID: ') . $order_id . "\n";
                     $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
                     $message .= __('Customer Email: ') . $billing_email . "\n";
@@ -1744,7 +1746,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'origid' => '',
             'custref' => '',
             'custcode' => '',
-            'custip' => AngellEYE_Utility::get_user_ip(),
+            'custip' => WC_Geolocation::get_ip_address(),
             'invnum' => '',
             'ponum' => '',
             'starttime' => '',
@@ -1843,7 +1845,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'origid' => '', // Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.
                 'custref' => '', //
                 'custcode' => '', //
-                'custip' => AngellEYE_Utility::get_user_ip(), //
+                'custip' => WC_Geolocation::get_ip_address(), //
                 'invnum' => $this->invoice_id_prefix . str_replace("#", "", $order->get_order_number()), //
                 'ponum' => '', //
                 'starttime' => '', // For inquiry transaction when using CUSTREF to specify the transaction.
@@ -2017,7 +2019,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $message .= __('Error Code: ', 'paypal-for-woocommerce') . $PayPalResult['RESULT'] . "\n";
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
                     $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
-                    $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
+                    $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                     $message .= __('Order ID: ') . $order_id . "\n";
                     $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
                     $message .= __('Customer Email: ') . $billing_email . "\n";
@@ -2071,7 +2073,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'origid' => $token_id,
                     'custref' => '',
                     'custcode' => '',
-                    'custip' => AngellEYE_Utility::get_user_ip(),
+                    'custip' => WC_Geolocation::get_ip_address(),
                     'invnum' => '',
                     'ponum' => '',
                     'starttime' => '',
@@ -2088,7 +2090,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $message .= __('Error Code: ', 'paypal-for-woocommerce') . $PayPalResult['RESULT'] . "\n";
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
                     $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
-                    $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
+                    $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                     $message = apply_filters('ae_pppf_error_email_message', $message);
                     $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Payments Pro (PayFlow) Error Notification");
                     wp_mail($admin_email, $subject, $message);
@@ -2289,7 +2291,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'origid' => '',
                 'custref' => '',
                 'custcode' => '',
-                'custip' => AngellEYE_Utility::get_user_ip(),
+                'custip' => WC_Geolocation::get_ip_address(),
                 'invnum' => '',
                 'ponum' => '',
                 'starttime' => '',

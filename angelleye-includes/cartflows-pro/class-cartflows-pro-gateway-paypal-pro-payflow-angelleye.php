@@ -102,7 +102,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                 'origid' => '',
                 'custref' => '',
                 'custcode' => '',
-                'custip' => AngellEYE_Utility::get_user_ip(),
+                'custip' => WC_Geolocation::get_ip_address(),
                 'invnum' => $gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number()) . '-' . $product['step_id'],
                 'ponum' => '',
                 'starttime' => '',
@@ -223,7 +223,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                     $message .= __('Error Code: ', 'paypal-for-woocommerce') . $PayPalResult['RESULT'] . "\n";
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $PayPalResult['RESPMSG'];
                     $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
-                    $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
+                    $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                     $message .= __('Order ID: ') . $order_id . "\n";
                     $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
                     $message .= __('Customer Email: ') . $billing_email . "\n";
