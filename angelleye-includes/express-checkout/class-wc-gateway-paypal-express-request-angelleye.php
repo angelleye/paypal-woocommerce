@@ -339,6 +339,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $order = new WC_Order($this->confirm_order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            if ($old_wc) {
+                update_post_meta($order_id, '_payment_method', $this->gateway->id);
+                update_post_meta($order_id, '_payment_method_title', $this->gateway->title);
+            } else {
+                $order->set_payment_method($this->gateway);
+            }
             $this->angelleye_load_paypal_class($this->gateway, $this, $order_id);
             if ($order->get_total() > 0) {
                 $this->angelleye_do_express_checkout_payment_request();
