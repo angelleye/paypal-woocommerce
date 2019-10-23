@@ -509,6 +509,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <script type="text/javascript">
             var js_variable = <?php echo json_encode($js_variable); ?>;
+            var is_registration_required = "<?php echo WC()->checkout()->is_registration_required(); ?>";
+	    var is_logged_in = "<?php echo is_user_logged_in(); ?>";
         </script>
          <?php 
         if ($this->enable_braintree_drop_in) {
@@ -521,7 +523,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             <?php if (is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) { ?>
                 <script type="text/javascript">
                     var angelleye_dropinInstance;
+                    
                     (function ($) {
+                        var hasCreateAccountCheckbox = 0 < $( 'input#createaccount' ).length,
+			createAccount            = hasCreateAccountCheckbox && $( 'input#createaccount' ).is( ':checked' );
+                        if ( createAccount || is_logged_in || is_registration_required ) {
+                            $( '.payment_method_braintree .woocommerce-SavedPaymentMethods-saveNew' ).show();
+                        } else {
+                            $( '.payment_method_braintree .woocommerce-SavedPaymentMethods-saveNew' ).hide();
+                        }
                         $('form.checkout').on('checkout_place_order_braintree', function () {
                             return braintreeFormHandler();
                         });
@@ -552,10 +562,12 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                         }
                         $(document.body).on('checkout_error', function () {
-                            $('.braintree-token').remove();
-                            $('.braintree-device-data').remove();
-                            $('.is_submit').remove();
-                            $form.unblock();
+                            if(is_angelleye_braintree_selected()) {
+                                $('.braintree-token').remove();
+                                $('.braintree-device-data').remove();
+                                $('.is_submit').remove();
+                                $form.unblock();
+                            }
                         });
                         var button = document.querySelector('#place_order');
                         var $form = $( 'form.checkout, form#order_review, form#add_payment_method' );
@@ -622,8 +634,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     $form.unblock();
                                 });
                             }
+                            checkout_form.addEventListener('submit', function (event) {
                             if(is_angelleye_braintree_selected()) {
-                                checkout_form.addEventListener('submit', function (event) {
                                 dropinInstance.requestPaymentMethod(function (err, payload) {
                                     if(err) {
                                         $('.woocommerce-error').remove();
@@ -661,10 +673,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         ccForm.append('<input type="hidden" class="braintree-token" name="braintree_token" value="' + payload.nonce + '"/>');
                                         ccForm.append("<input type='hidden' class='braintree-device-data' id='device_data' name='device_data' value=" + payload.deviceData + ">");
                                         $form.submit();
+                                        $('form.checkout').triggerHandler("checkout_place_order");
                                     } 
                                 });
-                               });
                             }
+                            });
                         });
                     }(jQuery));
                 </script>
@@ -1648,7 +1661,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             return;
         }
         if ($this->enable_braintree_drop_in) {
-            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.16.0/js/dropin.min.js', array('jquery'), null, false);
+            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.20.4/js/dropin.min.js', array('jquery'), null, false);
         } else {
             wp_enqueue_style('braintree_checkout', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/braintree-checkout.css', array(), VERSION_PFW);
             wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.35.0/js/client.min.js', array('jquery'), null, true);
