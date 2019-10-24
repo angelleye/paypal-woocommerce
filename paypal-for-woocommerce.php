@@ -152,6 +152,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'wp_head', array( $this, 'paypal_for_woo_head_mark' ), 1 );     
             add_action( 'admin_footer', array($this, 'angelleye_add_deactivation_form'));
             add_action( 'wp_ajax_angelleye_send_deactivation', array($this, 'angelleye_handle_plugin_deactivation_request'));
+            add_action( 'wp', array( __CLASS__, 'angelleye_delete_payment_method_action' ), 10 );
             $this->customer_id;
         }
 
@@ -1285,6 +1286,40 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public function load_cartflow_pro_plugin() {
             if (defined('CARTFLOWS_PRO_FILE')) {
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/cartflows-pro/class-angelleye-cartflow-pro-helper.php';
+            }
+        }
+        
+        /**
+        * Process the delete payment method form.
+        */
+        public static function angelleye_delete_payment_method_action() {
+            global $wp, $woocommerce;
+            if ( isset( $wp->query_vars['delete-payment-method'] ) ) {
+                wc_nocache_headers();
+                $token_id = absint( $wp->query_vars['delete-payment-method'] );
+                $token    = WC_Payment_Tokens::get( $token_id );
+                if ( !is_null( $token ) && $token->get_gateway_id() === 'braintree' && get_current_user_id() == $token->get_user_id() && isset( $_REQUEST['_wpnonce'] ) || true === wp_verify_nonce( wp_unslash( $_REQUEST['_wpnonce'] ), 'delete-payment-method-' . $token_id ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                    try {
+                        $gateways = $woocommerce->payment_gateways->payment_gateways();
+                        $gateways['braintree']->angelleye_braintree_lib();
+                        $token_value = $token->get_token();
+                        Braintree_PaymentMethod::delete($token_value);
+                    } catch (Braintree_Exception_NotFound $e) {
+                        $this->add_log("Braintree_PaymentMethod::delete Braintree_Exception_NotFound: " . $e->getMessage());
+                    } catch (Braintree_Exception_Authentication $e) {
+                        $this->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+                    } catch (Braintree_Exception_Authorization $e) {
+                        $this->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+                    } catch (Braintree_Exception_DownForMaintenance $e) {
+                        $this->add_log("Braintree_Exception_DownForMaintenance: Request times out.");
+                    } catch (Braintree_Exception_ServerError $e) {
+                        $this->add_log("Braintree_Exception_ServerError" . $e->getMessage());
+                    } catch (Braintree_Exception_SSLCertificate $e) {
+                        $this->add_log("Braintree_Exception_SSLCertificate" . $e->getMessage());
+                    } catch (Exception $ex) {
+                        $this->add_log("Exception" . $ex->getMessage());
+                    }
+                } 
             }
         }
     } 
