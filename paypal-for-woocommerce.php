@@ -1305,19 +1305,19 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         $token_value = $token->get_token();
                         Braintree_PaymentMethod::delete($token_value);
                     } catch (Braintree_Exception_NotFound $e) {
-                        $this->add_log("Braintree_PaymentMethod::delete Braintree_Exception_NotFound: " . $e->getMessage());
+                        $gateways['braintree']->add_log("Braintree_PaymentMethod::delete Braintree_Exception_NotFound: " . $e->getMessage());
                     } catch (Braintree_Exception_Authentication $e) {
-                        $this->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+                        $gateways['braintree']->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
                     } catch (Braintree_Exception_Authorization $e) {
-                        $this->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+                        $gateways['braintree']->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
                     } catch (Braintree_Exception_DownForMaintenance $e) {
-                        $this->add_log("Braintree_Exception_DownForMaintenance: Request times out.");
+                        $gateways['braintree']->add_log("Braintree_Exception_DownForMaintenance: Request times out.");
                     } catch (Braintree_Exception_ServerError $e) {
-                        $this->add_log("Braintree_Exception_ServerError" . $e->getMessage());
+                        $gateways['braintree']->add_log("Braintree_Exception_ServerError" . $e->getMessage());
                     } catch (Braintree_Exception_SSLCertificate $e) {
-                        $this->add_log("Braintree_Exception_SSLCertificate" . $e->getMessage());
+                        $gateways['braintree']->add_log("Braintree_Exception_SSLCertificate" . $e->getMessage());
                     } catch (Exception $ex) {
-                        $this->add_log("Exception" . $ex->getMessage());
+                        $gateways['braintree']->add_log("Exception" . $ex->getMessage());
                     }
                 } 
             }
