@@ -1266,7 +1266,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         } else {
                                             $customer_id = get_current_user_id();
                                         }
-                                        $token->set_token($paymentMethod->billingAgreementId);
+                                        $token->set_token($payment_method_token);
                                         $token->set_gateway_id($this->id);
                                         $token->set_card_type('PayPal Billing Agreement');
                                         $token->set_last4(substr($paymentMethod->billingAgreementId, -4));
@@ -1890,7 +1890,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $token->set_user_id($customer_id);
             } elseif (!empty($braintree_method->billingAgreementId)) {    
                $customer_id = get_current_user_id();
-                $token->set_token($braintree_method->billingAgreementId);
+                $token->set_token($payment_method_token);
                 $token->set_gateway_id($this->id);
                 $token->set_card_type('PayPal Billing Agreement');
                 $token->set_last4(substr($braintree_method->billingAgreementId, -4));
@@ -2670,7 +2670,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             } else {
                                 $customer_id = get_current_user_id();
                             }
-                            $token->set_token($braintree_method->billingAgreementId);
+                            $token->set_token($payment_method_token);
                             $token->set_gateway_id($this->id);
                             $token->set_card_type('PayPal Billing Agreement');
                             $token->set_last4(substr($braintree_method->billingAgreementId, -4));

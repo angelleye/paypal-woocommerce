@@ -153,6 +153,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'admin_footer', array($this, 'angelleye_add_deactivation_form'));
             add_action( 'wp_ajax_angelleye_send_deactivation', array($this, 'angelleye_handle_plugin_deactivation_request'));
             add_action( 'wp', array( __CLASS__, 'angelleye_delete_payment_method_action' ), 10 );
+            add_filter( 'woocommerce_saved_payment_methods_list', array($this, 'angelleye_synce_braintree_save_payment_methods'), 5, 2 );
             $this->customer_id;
         }
 
@@ -1321,6 +1322,44 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     }
                 } 
             }
+        }
+        
+        public function angelleye_synce_braintree_save_payment_methods($list, $customer_id) {
+            global $wp, $woocommerce;
+            try {
+                $gateways = $woocommerce->payment_gateways->payment_gateways();
+                $gateways['braintree']->angelleye_braintree_lib();
+                if( !empty($gateways['braintree'])) {
+                    if ($gateways['braintree']->enable_tokenized_payments == 'yes') {
+                        $payment_tokens = WC_Payment_Tokens::get_customer_tokens( $customer_id, 'braintree' );
+                        foreach ( $payment_tokens as $payment_token ) {
+                             $token_value = $payment_token->get_token();
+                             try {
+                                 Braintree_PaymentMethod::find($token_value);
+                             } catch (Braintree_Exception_NotFound $e) {
+                                $gateways['braintree']->add_log("Braintree_PaymentMethod::delete Braintree_Exception_NotFound: " . $e->getMessage());
+                                WC_Payment_Tokens::delete( $payment_token->get_id() );
+                            } catch (Braintree_Exception_Authentication $e) {
+                                $gateways['braintree']->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+                            } catch (Braintree_Exception_Authorization $e) {
+                                $gateways['braintree']->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+                            } catch (Braintree_Exception_DownForMaintenance $e) {
+                                $gateways['braintree']->add_log("Braintree_Exception_DownForMaintenance: Request times out.");
+                            } catch (Braintree_Exception_ServerError $e) {
+                                $gateways['braintree']->add_log("Braintree_Exception_ServerError" . $e->getMessage());
+                            } catch (Braintree_Exception_SSLCertificate $e) {
+                                $gateways['braintree']->add_log("Braintree_Exception_SSLCertificate" . $e->getMessage());
+                            } catch (Exception $ex) {
+                                $gateways['braintree']->add_log("Exception" . $ex->getMessage());
+                            }
+                        }
+                    }
+                    
+                }
+            } catch (Exception $ex) {
+
+            }
+            return $list;
         }
     } 
 }
