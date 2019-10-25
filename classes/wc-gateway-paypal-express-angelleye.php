@@ -10,6 +10,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public static $log = false;
     public $checkout_fields;
     public $posted;
+    public $is_multi_account_active;
 
     public function __construct() {
         $this->id = 'paypal_express';
@@ -74,6 +75,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->init_settings();
         $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if(class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+            $this->enable_tokenized_payments = 'no';
+            $this->is_multi_account_active = 'yes';
+        } else {
+            $this->is_multi_account_active = 'no';
+        }
         if ($this->enable_tokenized_payments == 'yes') {
             $this->supports = array_merge($this->supports, array('add_payment_method','tokenization'));
         }
@@ -559,6 +566,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $skip_final_review_option_not_allowed_terms = ' (You currently have a Terms &amp; Conditions page set, which requires the review page, and will override this option.)';
         }
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if(class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+            $this->enable_tokenized_payments = 'no';
+            $this->is_multi_account_active = 'yes';
+        } else {
+            $this->is_multi_account_active = 'no';
+        }
         if ($this->enable_tokenized_payments == 'yes') {
             $skip_final_review_option_not_allowed_tokenized_payments = ' (Payments tokens are enabled, which require the review page, and that will override this option.)';
         }

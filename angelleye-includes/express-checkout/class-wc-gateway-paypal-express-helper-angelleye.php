@@ -47,6 +47,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->paypal_flow_enabled = !empty($this->paypal_flow_setting['enabled']) ? $this->paypal_flow_setting['enabled'] : 'no';
                 $this->paypal_pro_enabled = !empty($this->paypal_pro_setting['enabled']) ? $this->paypal_pro_setting['enabled'] : 'no';
                 $this->enable_tokenized_payments = !empty($this->setting['enable_tokenized_payments']) ? $this->setting['enable_tokenized_payments'] : 'no';
+                if(class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+                    $this->enable_tokenized_payments = 'no';
+                }
                 $this->save_abandoned_checkout_value = !empty($this->setting['save_abandoned_checkout']) ? $this->setting['save_abandoned_checkout'] : 'no';
                 $this->save_abandoned_checkout = 'yes' === $this->save_abandoned_checkout_value;
                 $this->checkout_with_pp_button_type = !empty($this->setting['checkout_with_pp_button_type']) ? $this->setting['checkout_with_pp_button_type'] : 'paypalimage';
