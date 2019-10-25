@@ -1033,7 +1033,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
          */
         $DPFields = array(
             'paymentaction' => ($order->get_total() > 0) ? $this->payment_action : 'Authorization', // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
-            'ipaddress' => AngellEYE_Utility::get_user_ip(),                            // Required.  IP address of the payer's browser.
+            'ipaddress' => WC_Geolocation::get_ip_address(),                            // Required.  IP address of the payer's browser.
             'returnfmfdetails' => '1',                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
             'softdescriptor' => $this->softdescriptor
         );
@@ -1368,7 +1368,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $message = __("DoDirectPayment API call failed.", "paypal-for-woocommerce") . "\n\n";
                 $message .= __('Error Code: ', 'paypal-for-woocommerce') . $error_code . "\n";
                 $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $long_message . "\n";
-                $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
+                $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                 $message .= __('Order ID: ') . $order_id . "\n";
                 $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
                 $message .= __('Customer Email: ') . $billing_email . "\n";
@@ -1610,7 +1610,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $message .= __('Error Severity Code: ', 'paypal-for-woocommerce') . $ErrorSeverityCode . "\n";
             $message .= __('Short Error Message: ', 'paypal-for-woocommerce') . $ErrorShortMsg . "\n";
             $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $ErrorLongMsg . "\n";
-            $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
+            $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
             $error_email_notify_mes = apply_filters('ae_ppec_error_email_message', $message, $ErrorCode, $ErrorSeverityCode, $ErrorShortMsg, $ErrorLongMsg);
             $subject = "PayPal Pro Error Notification";
             $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', $subject);
@@ -1641,7 +1641,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->angelleye_load_paypal_pro_class($this->gateway, $this, null);
         $DPFields = array(
             'paymentaction' => 'Authorization',
-            'ipaddress' => AngellEYE_Utility::get_user_ip(),
+            'ipaddress' => WC_Geolocation::get_ip_address(),
             'returnfmfdetails' => '1',
             'softdescriptor' => $this->softdescriptor
         );
@@ -1780,7 +1780,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE(null, $this->subtotal_mismatch_behavior);
         $DPFields = array(
             'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale', // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
-            'ipaddress' => AngellEYE_Utility::get_user_ip(), // Required.  IP address of the payer's browser.
+            'ipaddress' => WC_Geolocation::get_ip_address(), // Required.  IP address of the payer's browser.
             'returnfmfdetails' => '1',                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
             'softdescriptor' => $this->softdescriptor
         );
@@ -1942,7 +1942,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $message = __("DoDirectPayment API call failed.", "paypal-for-woocommerce") . "\n\n";
                 $message .= __('Error Code: ', 'paypal-for-woocommerce') . $error_code . "\n";
                 $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $long_message . "\n";
-                $message .= __('User IP: ', 'paypal-for-woocommerce') . AngellEYE_Utility::get_user_ip() . "\n";
+                $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                 $message .= __('Order ID: ') . $order_id . "\n";
                 $message .= __('Customer Name: ') . $billing_first_name . ' ' . $billing_last_name . "\n";
                 $message .= __('Customer Email: ') . $billing_email . "\n";
@@ -2203,7 +2203,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
             $DPFields = array(
                 'paymentaction' => 'Authorization',
-                'ipaddress' => AngellEYE_Utility::get_user_ip(),
+                'ipaddress' => WC_Geolocation::get_ip_address(),
                 'returnfmfdetails' => '1',
                 'softdescriptor' => $this->softdescriptor
             );
