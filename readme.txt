@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
-Tested up to: 5.2.2
-Stable tag: 2.1.5
+Tested up to: 5.2.4
+Stable tag: 2.1.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 2.1.5 - 10.15.2019 =
+= 2.1.6 - 10.25.2019 =
 * Fix - Resolves an issue where the wrong payment method displaying on order detail page. ([PFW-505](https://github.com/angelleye/paypal-woocommerce/pull/1380))
 * Fix - Resolves an issue with Braintree where place order not working. ([PFW-506](https://github.com/angelleye/paypal-woocommerce/pull/1382))
 * Fix - Resolves an issue with Braintree where saved cards not displaying on Payment Methods Page. ([PFW-507](https://github.com/angelleye/paypal-woocommerce/pull/1383))
