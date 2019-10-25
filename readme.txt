@@ -131,6 +131,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue where the wrong payment method displaying on order detail page. ([PFW-505](https://github.com/angelleye/paypal-woocommerce/pull/1380))
 * Fix - Resolves an issue with Braintree where place order not working. ([PFW-506](https://github.com/angelleye/paypal-woocommerce/pull/1382))
 * Fix - Resolves an issue with Braintree where saved cards not displaying on Payment Methods Page. ([PFW-507](https://github.com/angelleye/paypal-woocommerce/pull/1383))
+* Fix - Resolves an issue with customer IP address in API requests. ([PFW-484](https://github.com/angelleye/paypal-woocommerce/pull/1381))
 
 = 2.1.5 - 10.15.2019 =
 * Feature - Adds 3DSecure to PayPal Payments Pro 2.0 (PayFlow). ([PFW-408](https://github.com/angelleye/paypal-woocommerce/pull/1373))
