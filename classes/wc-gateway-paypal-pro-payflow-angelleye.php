@@ -120,6 +120,12 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         );
 
         $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if(class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+            $this->enable_tokenized_payments = 'no';
+            $this->is_multi_account_active = 'yes';
+        } else {
+            $this->is_multi_account_active = 'no';
+        }
         if ($this->enable_tokenized_payments == 'yes') {
             $this->supports = array_merge($this->supports, array('add_payment_method', 'tokenization'));
         }
@@ -186,6 +192,20 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
      * Initialise Gateway Settings Form Fields
      */
     function init_form_fields() {
+        $this->enable_tokenized_payments = $was_enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if(class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+            $this->enable_tokenized_payments = 'no';
+            $this->is_multi_account_active = 'yes';
+        } else {
+            $this->is_multi_account_active = 'no';
+        }
+        if($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
+            $enable_tokenized_payments_text = __('Payment tokenization is not available when using the PayPal Multi-Account add-on, and it has been disabled.', 'paypal-for-woocommerce');
+        } elseif($was_enable_tokenized_payments == 'no' && $this->is_multi_account_active == 'yes') {
+            $enable_tokenized_payments_text = __('Token payments are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+        } else {
+            $enable_tokenized_payments_text = __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce');
+        }
         $this->send_items_value = !empty($this->settings['send_items']) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
         $this->send_items = 'yes' === $this->send_items_value;
         $this->form_fields = array(
@@ -475,7 +495,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
+                'description' => $enable_tokenized_payments_text,
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
@@ -505,6 +525,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
 
     public function admin_options() {
+        global $current_user;
+        $user_id = $current_user->ID;
         echo '<h2>' . esc_html($this->get_method_title()) . '</h2>';
         echo wp_kses_post(wpautop($this->get_method_description()));
         echo $this->angelleye_paypal_pro_payflow_reference_transaction_notice();
@@ -512,6 +534,22 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         <div id="angelleye_paypal_marketing_table">
         <table class="form-table">
             <?php
+            $this->enable_tokenized_payments = $was_enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+            if(class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+                $this->enable_tokenized_payments = 'no';
+                $this->is_multi_account_active = 'yes';
+            } else {
+                $this->is_multi_account_active = 'no';
+            }
+            $enable_tokenized_payments_text = '';
+            if($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
+                $enable_tokenized_payments_text = __('Payment tokenization is not available when using the PayPal Multi-Account add-on, and it has been disabled.', 'paypal-for-woocommerce');
+            } elseif($was_enable_tokenized_payments == 'no' && $this->is_multi_account_active == 'yes') {
+                $enable_tokenized_payments_text = __('Token payments are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+            }
+            if (!empty($enable_tokenized_payments_text) && !get_user_meta($user_id, 'ignore_token_multi_account_payflow')) {
+                echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . $enable_tokenized_payments_text . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_token_multi_account_payflow">Dismiss</button></div></div>';
+            }
              if(!get_user_meta(get_current_user_id(), 'payflow_sb_autopopulate_new_credentials')){
                echo '<div class="notice notice-info"><p>'.sprintf(__("<h3>Default PayFlow Sandbox Credentials</h3>
                 <p>These values have been auto-filled into the sandbox credential fields so that you can quickly run test orders. If you have your own PayPal Manager test account you can update the values accordingly.</p>
@@ -530,8 +568,15 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             ?>
         </table>
         </div>
-        <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); ?>
+        <?php 
+        AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id); ?>
         <script type="text/javascript">
+            <?php
+            if (!empty($this->is_multi_account_active == 'yes')) {
+            ?> jQuery('#woocommerce_paypal_pro_payflow_enable_tokenized_payments').prop("disabled", true);
+               jQuery('#woocommerce_paypal_pro_payflow_enable_tokenized_payments').prop('checked', false); 
+            <?php
+            } ?>
             jQuery('#woocommerce_paypal_pro_payflow_payment_action').change(function () {
                 if (this.value === 'Authorization') {
                     jQuery('#woocommerce_paypal_pro_payflow_payment_action_authorization').closest('tr').show();
