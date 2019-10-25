@@ -187,6 +187,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function admin_options() {
+        global $current_user;
+        $user_id = $current_user->ID;
         ?>
         <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
@@ -203,6 +205,23 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         
         </div>
         <?php
+        
+        $this->enable_tokenized_payments = $was_enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        if(class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+            $this->enable_tokenized_payments = 'no';
+            $this->is_multi_account_active = 'yes';
+        } else {
+            $this->is_multi_account_active = 'no';
+        }
+        $enable_tokenized_payments_text = '';
+        if($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
+            $enable_tokenized_payments_text = __('Payment tokenization is not available when using the PayPal Multi-Account add-on, and it has been disabled.', 'paypal-for-woocommerce');
+        } elseif($was_enable_tokenized_payments == 'no' && $this->is_multi_account_active == 'yes') {
+            $enable_tokenized_payments_text = __('Token payments are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+        }
+        if (!empty($enable_tokenized_payments_text) && !get_user_meta($user_id, 'ignore_token_multi_account_ec')) {
+            echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . $enable_tokenized_payments_text . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_token_multi_account_ec">Dismiss</button></div></div>';
+        }
         AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id);
         add_thickbox();
         $guest_checkout = get_option('woocommerce_enable_guest_checkout', 'yes');
@@ -252,6 +271,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('tr').find('th').hide(); 
         
         <?php
+        
+        
+        
+        
         if (!empty($this->paypal_marketing_solutions_cid_production)) {
             ?> jQuery('#pms-paypalInsightsLink').show();
                 jQuery('.display_when_deactivated').hide();
@@ -499,6 +522,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 jQuery('#woocommerce_paypal_express_checkout_page_disable_smart_button').closest('tr').show();
             }
         }).change();
+        <?php 
+        if (!empty($this->is_multi_account_active == 'yes')) {
+            ?> jQuery('#woocommerce_paypal_express_enable_tokenized_payments').prop("disabled", true);
+               jQuery('#woocommerce_paypal_express_enable_tokenized_payments').prop('checked', false); 
+            <?php
+        } ?>
         </script>
          <?php
     }
@@ -565,12 +594,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (wc_get_page_id('terms') > 0 && apply_filters('woocommerce_checkout_show_terms', true)) {
             $skip_final_review_option_not_allowed_terms = ' (You currently have a Terms &amp; Conditions page set, which requires the review page, and will override this option.)';
         }
-        $this->enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
+        $this->enable_tokenized_payments = $was_enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
         if(class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
             $this->enable_tokenized_payments = 'no';
             $this->is_multi_account_active = 'yes';
         } else {
             $this->is_multi_account_active = 'no';
+        }
+        if($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
+            $enable_tokenized_payments_text = __('Payment tokenization is not available when using the PayPal Multi-Account add-on, and it has been disabled.', 'paypal-for-woocommerce');
+        } elseif($was_enable_tokenized_payments == 'no' && $this->is_multi_account_active == 'yes') {
+            $enable_tokenized_payments_text = __('Token payments are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+        } else {
+            $enable_tokenized_payments_text = __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future. (Currently considered BETA for Express Checkout.)', 'paypal-for-woocommerce');
         }
         if ($this->enable_tokenized_payments == 'yes') {
             $skip_final_review_option_not_allowed_tokenized_payments = ' (Payments tokens are enabled, which require the review page, and that will override this option.)';
@@ -889,7 +925,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future. (Currently considered BETA for Express Checkout.)', 'paypal-for-woocommerce'),
+                'description' => $enable_tokenized_payments_text,
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),

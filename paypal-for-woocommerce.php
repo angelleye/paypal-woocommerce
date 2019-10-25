@@ -1136,7 +1136,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             global $current_user;
             $user_id = $current_user->ID;
             if( !empty($_POST['action']) && $_POST['action'] == 'angelleye_dismiss_notice' ) {
-                $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'ignore_paypal_pro_payflow_reference_transaction_notice', 'is_disable_pw_premium_extension_notice');
+                $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'ignore_paypal_pro_payflow_reference_transaction_notice', 'is_disable_pw_premium_extension_notice', 'ignore_token_multi_account');
                 foreach ($notices as $notice) {
                     if ( !empty($_POST['data']) && $_POST['data'] == $notice) {
                         add_user_meta($user_id, $notice, 'true', true);
