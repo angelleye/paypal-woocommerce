@@ -464,7 +464,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
         $description = html_entity_decode($description, ENT_NOQUOTES, 'UTF-8');
 
-        if (true === wcf_pro()->utils->is_reference_transaction() && $data && isset($data['SECFields']['returnurl']) && strpos($data['SECFields']['returnurl'], 'get_express_checkout_details') == true && !isset($data['BillingAgreements'])) {
+        if (true === wcf_pro()->utils->is_reference_transaction() && $data && isset($data['SECFields']['returnurl']) && strpos($data['SECFields']['returnurl'], 'get_express_checkout_details') == true && !isset($data['BillingAgreements']) && isset($_POST['_wcf_checkout_id'])) {
             $data['returnurl'] = add_query_arg(array('create-billing-agreement' => true), $data['SECFields']['returnurl']);
 
             $BillingAgreements = array();
