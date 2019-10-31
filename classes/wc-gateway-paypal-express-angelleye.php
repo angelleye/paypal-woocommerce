@@ -126,7 +126,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
         $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
-        $this->show_on_minicart = $this->get_option('show_on_minicart', 'yes');
+        $this->show_on_minicart = $this->get_option('show_on_minicart', 'no');
         $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
         $this->enable_in_context_checkout_flow = $this->get_option('enable_in_context_checkout_flow', 'yes');
         if ($this->enable_notifyurl == 'yes') {
@@ -778,7 +778,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Minicart', 'paypal-for-woocommerce'),
                 'label' => __('Show Express Checkout button in the WooCommerce Minicart.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'default' => 'yes'
+                'default' => 'no'
             ),
             'button_position' => array(
                 'title' => __('Cart Button Position', 'paypal-for-woocommerce'),
