@@ -625,7 +625,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             } 
             $this->wsc_cart_allowed_funding_methods = $this->allowed_funding_methods;
             if ($this->button_layout == 'vertical') {
-                $this->button_label = '';
                 $this->button_tagline = '';
                 $this->button_fundingicons = '';
                 if ($this->button_size == 'small') {
@@ -633,7 +632,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             }
             if ($this->mini_cart_button_layout == 'vertical') {
-                $this->button_label = '';
                 $this->button_tagline = '';
                 $this->button_fundingicons = '';
                 if ($this->mini_cart_button_size == 'small') {
@@ -641,7 +639,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             }
             if ($this->wsc_cart_button_layout == 'vertical') {
-                $this->button_label = '';
                 $this->button_tagline = '';
                 $this->button_fundingicons = '';
                 if ($this->mini_cart_button_size == 'small') {
