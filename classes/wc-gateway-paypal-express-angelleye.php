@@ -778,7 +778,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Minicart', 'paypal-for-woocommerce'),
                 'label' => __('Show Express Checkout button in the WooCommerce Minicart.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'default' => 'no'
+                'default' => 'no',
+                'description' => __('Enabling this option will cause the PayPal button JS to load on every page, which could negatively affect page load times on your site.'),
             ),
             'button_position' => array(
                 'title' => __('Cart Button Position', 'paypal-for-woocommerce'),
