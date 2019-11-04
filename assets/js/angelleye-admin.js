@@ -449,9 +449,6 @@ jQuery(document).ready(function ($) {
                 angelleye_woocommerce_paypal_express_disallowed_funding_methods.push(value);
             });
         }
-        console.log(style_object);
-        console.log(angelleye_woocommerce_paypal_express_allowed_funding_methods);
-        console.log(angelleye_woocommerce_paypal_express_disallowed_funding_methods);
         window.paypalCheckoutReady = function () {
             paypal.Button.render({
                 env: 'sandbox',
