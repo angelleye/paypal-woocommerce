@@ -56,6 +56,9 @@ jQuery(function ($) {
                 if (angelleye_in_content_param.button_layout === 'horizontal' && is_funding_icon_should_show_in_content() === true && angelleye_in_content_param.button_label !== 'credit' && angelleye_in_content_param.button_fundingicons === "true") {
                     angelleye_cart_style_object['fundingicons'] = (angelleye_in_content_param.button_fundingicons === "true") ? true : false;
                 }
+                if( typeof angelleye_in_content_param.button_height  !== "undefined" && angelleye_in_content_param.button_height !== '' ) {
+                    angelleye_cart_style_object['height'] = parseInt(angelleye_in_content_param.button_height);
+                }
                 $('.angelleye_button_single').empty();
                 paypal.Button.render({
                     env: angelleye_in_content_param.environment,
@@ -158,6 +161,9 @@ jQuery(function ($) {
                 layout: angelleye_in_content_param.button_layout,
                 tagline: (angelleye_in_content_param.button_tagline === "true") ? true : false
             };
+            if( typeof angelleye_in_content_param.button_height  !== "undefined" && angelleye_in_content_param.button_height !== '' ) {
+                angelleye_cart_style_object['height'] = parseInt(angelleye_in_content_param.button_height);
+            }
             angelleye_button_selector.forEach(function (selector) {
                 $(selector).html("");
                 disallowed_funding_methods_var = $.grep(disallowed_funding_methods_var, function (value) {
@@ -252,6 +258,9 @@ jQuery(function ($) {
                 layout: angelleye_in_content_param.mini_cart_button_layout,
                 tagline: (angelleye_in_content_param.button_tagline === "true") ? true : false
             };
+            if( typeof angelleye_in_content_param.mini_cart_button_height  !== "undefined" && angelleye_in_content_param.mini_cart_button_height !== '' ) {
+                angelleye_cart_style_object['height'] = parseInt(angelleye_in_content_param.mini_cart_button_height);
+            }
             angelleye_button_selector.forEach(function (selector) {
                 $(selector).html("");
                 disallowed_funding_methods_var = $.grep(disallowed_funding_methods_var, function (value) {
@@ -341,6 +350,9 @@ jQuery(function ($) {
                 layout: angelleye_in_content_param.wsc_cart_button_layout,
                 tagline: (angelleye_in_content_param.button_tagline === "true") ? true : false
             };
+            if( typeof angelleye_in_content_param.wsc_cart_button_height  !== "undefined" && angelleye_in_content_param.wsc_cart_button_height !== '' ) {
+                angelleye_cart_style_object['height'] = parseInt(angelleye_in_content_param.wsc_cart_button_height);
+            }
             angelleye_button_selector.forEach(function (selector) {
                 $(selector).html("");
                 disallowed_funding_methods_var = $.grep(disallowed_funding_methods_var, function (value) {
@@ -430,6 +442,9 @@ jQuery(function ($) {
                 layout: angelleye_in_content_param.button_layout,
                 tagline: (angelleye_in_content_param.button_tagline === "true") ? true : false
             };
+            if( typeof angelleye_in_content_param.button_height  !== "undefined" && angelleye_in_content_param.button_height !== '' ) {
+                angelleye_cart_style_object['height'] = parseInt(angelleye_in_content_param.button_height);
+            }
             angelleye_button_selector.forEach(function (selector) {
                 $(selector).html("");
                 disallowed_funding_methods_var = $.grep(disallowed_funding_methods_var, function (value) {
