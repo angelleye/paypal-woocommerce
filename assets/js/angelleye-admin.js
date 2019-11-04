@@ -406,6 +406,9 @@ jQuery(document).ready(function ($) {
             if (angelleye_size === 'small') {
                 angelleye_size = 'medium';
             }
+            if (angelleye_label === 'credit') {
+                angelleye_label = 'checkout';
+            }
         }
         if (angelleye_label === 'credit') {
             angelleye_color = 'darkblue';

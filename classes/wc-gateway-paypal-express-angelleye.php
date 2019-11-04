@@ -345,7 +345,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     angelleye_button_fundingicons.hide();
                     //jQuery("#woocommerce_paypal_express_button_fundingicons").val("false");
                 }
+                jQuery("#woocommerce_paypal_express_button_label option[value='credit']").prop('disabled', true);
             } else {
+                jQuery("#woocommerce_paypal_express_button_label option[value='credit']").prop('disabled', false);
                 if( jQuery("#woocommerce_paypal_express_button_size option[value='small']").length == 0) {
                     jQuery('#woocommerce_paypal_express_button_size').append(jQuery("<option></option>").attr("value","small").text("Small")); 
                 }
