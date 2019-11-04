@@ -41,7 +41,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if( $this->is_paypal_credit_enable ) {
             $this->disallowed_funding_methods_array = array(
                 'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
-                'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
+                'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                 'elv' => __('ELV', 'paypal-for-woocommerce')
             );
             $this->button_label_array = array(
@@ -53,7 +53,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
         } else {
             $this->disallowed_funding_methods_array = array(
-                'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
+                'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                 'elv' => __('ELV', 'paypal-for-woocommerce')
             );
             $this->button_label_array = array(

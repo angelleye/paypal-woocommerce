@@ -1841,7 +1841,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:47
 #: classes/wc-gateway-paypal-express-angelleye.php:59
-msgid "Credit or Debit card"
+msgid "Credit or Debit Card"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye.php:48
