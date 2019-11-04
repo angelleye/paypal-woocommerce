@@ -39,6 +39,9 @@ jQuery(document).ready(function ($) {
     }
     jQuery("#woocommerce_paypal_express_enable_in_context_checkout_flow").change(function () {
         if (jQuery(this).is(':checked')) {
+            jQuery('.in_context_checkout_part_other').show();
+            jQuery('.in_context_checkout_part_other').next('p').show();
+            jQuery('.in_context_checkout_part_other').parents('table').show();
             jQuery('.display_smart_button_previews').show();
             jQuery('.angelleye_button_settings_selector').show();
             jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').hide();
@@ -52,7 +55,9 @@ jQuery(document).ready(function ($) {
             jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').show();
             jQuery('.angelleye_smart_button_setting_left').hide();
             jQuery('woocommerce_paypal_express_enable_google_analytics_click').closest('tr').show();
-
+            jQuery('.in_context_checkout_part_other').parents('table').hide();
+            jQuery('.in_context_checkout_part_other').hide();
+            jQuery('.in_context_checkout_part_other').next('p').hide();
         }
     }).change();
     $("#woocommerce_paypal_express_customer_service_number").attr("maxlength", "16");

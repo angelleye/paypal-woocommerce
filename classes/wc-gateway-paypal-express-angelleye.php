@@ -1509,7 +1509,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'single_product_button_settings' => array(
                 'title' => __('Single Product Button Settings', 'paypal-for-woocommerce'),
                 'description'  => __( 'Enable the Product specific button settings, and the options set will be applied to the PayPal buttons on your Product pages.', 'paypal-for-woocommerce' ),
-                'type' => 'title'
+                'type' => 'title',
+                'class' => 'in_context_checkout_part_other',
             ),
             'single_product_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
@@ -1522,7 +1523,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'single_product_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1534,7 +1535,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'single_product_button_size' => array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1548,7 +1549,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'single_product_button_height' => array(
                 'title' => __('Button Height', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'in_context_checkout_part',
+                'class' => 'in_context_checkout_part_other',
                 'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1557,7 +1558,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'single_product_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -1566,7 +1567,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'cart_button_settings' => array(
                 'title' => __('Cart Button Settings', 'paypal-for-woocommerce'),
                 'description'  => __( 'Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your shopping cart page.', 'paypal-for-woocommerce' ),
-                'type' => 'title'
+                'type' => 'title',
+                'class' => 'in_context_checkout_part_other',
             ),
             'cart_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
@@ -1579,7 +1581,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'cart_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1591,7 +1593,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'cart_button_size' => array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1605,7 +1607,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'cart_button_height' => array(
                 'title' => __('Button Height', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'in_context_checkout_part',
+                'class' => 'in_context_checkout_part_other',
                 'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1614,7 +1616,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'cart_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -1623,7 +1625,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'mini_cart_button_settings' => array(
                 'title' => __('Mini-cart Button Settings', 'paypal-for-woocommerce'),
                 'description'  => __( 'Enable the Mini-Cart specific button settings, and the options set will be applied to the PayPal buttons on your mini-cart.', 'paypal-for-woocommerce' ),
-                'type' => 'title'
+                'type' => 'title',
+                'class' => 'in_context_checkout_part_other',
             ),
             'mini_cart_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
@@ -1636,7 +1639,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'mini_cart_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1648,7 +1651,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'mini_cart_button_size' => array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1662,7 +1665,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'mini_cart_button_height' => array(
                 'title' => __('Button Height', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'in_context_checkout_part',
+                'class' => 'in_context_checkout_part_other',
                 'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1671,7 +1674,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'mini_cart_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -1680,7 +1683,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'checkout_page_button_settings' => array(
                 'title' => __('Checkout Page Button Settings', 'paypal-for-woocommerce'),
                 'description'  => __( 'Enable the Checkout Page specific button settings, and the options set will be applied to the PayPal buttons on your Checkout page.', 'paypal-for-woocommerce' ),
-                'type' => 'title'
+                'type' => 'title',
+                'class' => 'in_context_checkout_part_other',
             ),
             'checkout_page_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
@@ -1701,7 +1705,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'checkout_page_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1713,7 +1717,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'checkout_page_button_size' => array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1727,7 +1731,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'checkout_page_button_height' => array(
                 'title' => __('Button Height', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'in_context_checkout_part',
+                'class' => 'in_context_checkout_part_other',
                 'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1736,7 +1740,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'checkout_page_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -1747,7 +1751,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->form_fields['wsc_cart_button_settings'] = array(
                 'title' => __('Woo Side Cart Button Settings', 'paypal-for-woocommerce'),
                 'description'  => __( 'Enable the Woo Side Cart specific button settings, and the options set will be applied to the PayPal buttons on your Woo Side Cart.', 'paypal-for-woocommerce' ),
-                'type' => 'title'
+                'type' => 'title',
+                'class' => 'in_context_checkout_part_other',
             );
             $this->form_fields['wsc_cart_configure_settings'] = array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
@@ -1762,13 +1767,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Disable the buttons in the Woo Side Cart', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
+                'class' => 'in_context_checkout_part_other',
                 'desc_tip'    => true,
                 'description' => __( '', 'paypal-for-woocommerce' ),
             );
             $this->form_fields['wsc_cart_button_layout'] = array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1780,7 +1786,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->form_fields['wsc_cart_button_size'] = array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1794,7 +1800,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->form_fields['wsc_cart_button_height'] = array(
                 'title' => __('Button Height', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'in_context_checkout_part',
+                'class' => 'in_context_checkout_part_other',
                 'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1803,7 +1809,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->form_fields['wsc_cart_disallowed_funding_methods'] = array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
