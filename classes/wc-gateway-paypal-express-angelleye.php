@@ -1477,7 +1477,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
                 'description' => __('Enable this to display credit card icons below the PayPal buttons.', 'paypal-for-woocommerce'),
-                'default' => 'false',
+                'default' => 'true',
                 'desc_tip' => true,
                 'options' => array(
                     'false' => __('Disable', 'paypal-for-woocommerce'),

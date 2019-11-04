@@ -78,7 +78,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->button_label = !empty($this->setting['button_label']) ? $this->setting['button_label'] : 'checkout';
                 $this->button_tagline = !empty($this->setting['button_tagline']) ? $this->setting['button_tagline'] : 'false'; 
                 $this->button_layout = !empty($this->setting['button_layout']) ? $this->setting['button_layout'] : 'horizontal';
-                $this->button_fundingicons = !empty($this->setting['button_fundingicons']) ? $this->setting['button_fundingicons'] : 'false';
+                $this->button_fundingicons = !empty($this->setting['button_fundingicons']) ? $this->setting['button_fundingicons'] : 'true';
                 // Product Page
                 $this->single_product_configure_settings_value = !empty($this->setting['single_product_configure_settings']) ? $this->setting['single_product_configure_settings'] : 'no';               
                 $this->single_product_configure_settings = 'yes' === $this->single_product_configure_settings_value;
