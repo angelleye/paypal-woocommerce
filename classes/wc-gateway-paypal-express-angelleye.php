@@ -496,39 +496,49 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
         }).change();
         jQuery('#woocommerce_paypal_express_wsc_cart_button_size').change(function () {
-                //jQuery("#woocommerce_paypal_express_wsc_cart_button_height option:selected").prop("selected", false);
-                //jQuery('#woocommerce_paypal_express_wsc_cart_button_height option[value=""]').prop("selected", "selected");
-                if (this.value === 'responsive') {
-                    jQuery("#woocommerce_paypal_express_wsc_cart_button_height").closest('tr').hide();
-                } else {
-                    jQuery("#woocommerce_paypal_express_wsc_cart_button_height").closest('tr').show();
-                    if(this.value === 'small') {
-                        var i;
-                        jQuery('#woocommerce_paypal_express_wsc_cart_button_height').find('option:not(:first)').remove();
-                        for (i = 25; i <= 55; i++) {
-                            jQuery('#woocommerce_paypal_express_wsc_cart_button_height').append($('<option>', { value: i, text : "Option "+i }));
-                            jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").prop('disabled', false);
-                        }
-                    } else if(this.value === 'medium') {
-                        var i;
-                        for (i = 25; i <= 55; i++) {
-                          if(i < 35) {
-                              jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").prop('disabled', true);
-                          } else {
-                              jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").prop('disabled', false);
-                          }
-                        } 
-                    } else if(this.value === 'large') {
-                        var i;
-                        for (i = 25; i <= 55; i++) {
-                          if(i < 30) {
-                              jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").prop('disabled', true);
-                          } else {
-                              jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").prop('disabled', false);
-                          }
-                        } 
+            var refresh_height_wsc_cart = false;
+            var height_wsc_cart = jQuery( "#woocommerce_paypal_express_wsc_cart_button_height option:selected" ).val();
+            height_wsc_cart = parseInt(height_wsc_cart);
+            if (this.value === 'responsive') {
+                jQuery("#woocommerce_paypal_express_wsc_cart_button_height").closest('tr').hide();
+            } else {
+                jQuery("#woocommerce_paypal_express_wsc_cart_button_height").closest('tr').show();
+                if(this.value === 'small') {
+                    var i;
+                    jQuery('#woocommerce_paypal_express_wsc_cart_button_height').find('option:not(:first)').remove();
+                    for (i = 25; i <= 55; i++) {
+                        jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").show();
                     }
+                } else if(this.value === 'medium') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 35) {
+                          if(height_wsc_cart === i) {
+                             refresh_height_wsc_cart = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                } else if(this.value === 'large') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 30) {
+                          if(height_wsc_cart === i) {
+                             refresh_height_wsc_cart = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").show();
+                      }
+                    } 
                 }
+                if(refresh_height_wsc_cart) {
+                    jQuery("#woocommerce_paypal_express_wsc_cart_button_height option:selected").prop("selected", false);
+                    jQuery('#woocommerce_paypal_express_wsc_cart_button_height option[value=""]').prop("selected", "selected");
+                }
+            }
         }).change();
         jQuery('#woocommerce_paypal_express_checkout_page_button_size').change(function () {
             var refresh_height_checkout_page = false;
@@ -541,7 +551,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if(this.value === 'small') {
                     var i;
                     for (i = 25; i <= 55; i++) {
-                        jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").prop('disabled', false);
+                        jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").show();
                     }
                 } else if(this.value === 'medium') {
                     var i;
@@ -550,9 +560,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                           if(height_checkout_page === i) {
                              refresh_height_checkout_page = true;
                           }
-                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").prop('disabled', true);
+                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").hide();
                       } else {
-                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").prop('disabled', false);
+                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").show();
                       }
                     } 
                 } else if(this.value === 'large') {
@@ -562,9 +572,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                           if(height_checkout_page === i) {
                              refresh_height_checkout_page = true;
                           }
-                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").prop('disabled', true);
+                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").hide();
                       } else {
-                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").prop('disabled', false);
+                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").show();
                       }
                     } 
                 }
@@ -585,7 +595,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if(this.value === 'small') {
                     var i;
                     for (i = 25; i <= 55; i++) {
-                        jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").prop('disabled', false);
+                        jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").show();
                     }
                 } else if(this.value === 'medium') {
                     var i;
@@ -594,9 +604,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                           if(height_mini_cart === i) {
                              refresh_height_mini_cart = true;
                           }
-                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").prop('disabled', true);
+                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").hide();
                       } else {
-                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").prop('disabled', false);
+                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").show();
                       }
                     } 
                 } else if(this.value === 'large') {
@@ -606,9 +616,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                           if(height_mini_cart === i) {
                              refresh_height_mini_cart = true;
                           }
-                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").prop('disabled', true);
+                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").hide();
                       } else {
-                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").prop('disabled', false);
+                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").show();
                       }
                     } 
                 }
@@ -629,7 +639,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if(this.value === 'small') {
                     var i;
                     for (i = 25; i <= 55; i++) {
-                        jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").prop('disabled', false);
+                        jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").show();
                     }
                 } else if(this.value === 'medium') {
                     var i;
@@ -638,9 +648,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                           if(height_cart === i) {
                              refresh_height_cart = true;
                           }
-                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").prop('disabled', true);
+                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").hide();
                       } else {
-                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").prop('disabled', false);
+                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").show();
                       }
                     } 
                 } else if(this.value === 'large') {
@@ -650,9 +660,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                           if(height_cart === i) {
                              refresh_height_cart = true;
                           }
-                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").prop('disabled', true);
+                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").hide();
                       } else {
-                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").prop('disabled', false);
+                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").show();
                       }
                     } 
                 }
@@ -673,7 +683,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if(this.value === 'small') {
                     var i;
                     for (i = 25; i <= 55; i++) {
-                        jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").prop('disabled', false);
+                        jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").show();
                     }
                 } else if(this.value === 'medium') {
                     var i;
@@ -682,9 +692,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                           if(height_single === i) {
                              refresh_height_single = true;
                           }
-                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").prop('disabled', true);
+                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").hide();
                       } else {
-                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").prop('disabled', false);
+                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").show();
                       }
                     } 
                 } else if(this.value === 'large') {
@@ -694,9 +704,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                           if(height_single === i) {
                              refresh_height_single = true;
                           }
-                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").prop('disabled', true);
+                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").hide();
                       } else {
-                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").prop('disabled', false);
+                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").show();
                       }
                     } 
                 }
@@ -717,7 +727,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                  if(this.value === 'small') {
                      var i;
                      for (i = 25; i <= 55; i++) {
-                         jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").prop('disabled', false);
+                         jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").show();
                      }
                  } else if(this.value === 'medium') {
                      var i;
@@ -726,9 +736,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                           if(height === i) {
                              refresh_height = true;
                           }
-                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").prop('disabled', true);
+                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").hide();
                        } else {
-                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").prop('disabled', false);
+                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").show();
                        }
                      } 
                  } else if(this.value === 'large') {
@@ -738,14 +748,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                           if(height === i) {
                              refresh_height = true;
                           }
-                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").prop('disabled', true);
+                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").hide();
                        } else {
-                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").prop('disabled', false);
+                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").show();
                        }
                      } 
                  }
                  if(refresh_height) {
-                     jQuery("#woocommerce_paypal_express_button_height option:selected").prop("selected", false);
+                     jQuery("#woocommerce_paypal_express_button_height option:selected").show();
                      jQuery('#woocommerce_paypal_express_button_height option[value=""]').prop("selected", "selected");
                  }
              }
