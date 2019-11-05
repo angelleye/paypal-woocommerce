@@ -48,6 +48,9 @@ jQuery(document).ready(function ($) {
             jQuery('woocommerce_paypal_express_enable_google_analytics_click').closest('tr').hide();
             jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').hide();
             jQuery('.angelleye_smart_button_setting_left').show();
+            jQuery('.in_context_checkout_part').show();
+            jQuery('.in_context_checkout_part').next('p').show();
+            jQuery('.in_context_checkout_part').parents('table').show();
         } else {
             jQuery('.display_smart_button_previews').hide();
             jQuery('.angelleye_button_settings_selector').hide();

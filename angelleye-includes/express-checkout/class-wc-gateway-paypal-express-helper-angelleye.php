@@ -60,7 +60,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->show_on_checkout = !empty($this->setting['show_on_checkout']) ? $this->setting['show_on_checkout'] : 'top';
                 $this->button_position = !empty($this->setting['button_position']) ? $this->setting['button_position'] : 'bottom';
                 $this->show_on_cart = !empty($this->setting['show_on_cart']) ? $this->setting['show_on_cart'] : 'yes';
-                $this->show_on_minicart = !empty($this->setting['show_on_minicart']) ? $this->setting['show_on_minicart'] : 'yes';
+                $this->show_on_minicart = !empty($this->setting['show_on_minicart']) ? $this->setting['show_on_minicart'] : 'no';
                 $this->prevent_to_add_additional_item_value = !empty($this->setting['prevent_to_add_additional_item']) ? $this->setting['prevent_to_add_additional_item'] : 'no';
                 $this->prevent_to_add_additional_item = 'yes' === $this->prevent_to_add_additional_item_value;
                 $this->testmode_value = !empty($this->setting['testmode']) ? $this->setting['testmode'] : 'yes';

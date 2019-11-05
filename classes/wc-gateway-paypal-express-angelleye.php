@@ -126,7 +126,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
         $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
-        $this->show_on_minicart = $this->get_option('show_on_minicart', 'yes');
+        $this->show_on_minicart = $this->get_option('show_on_minicart', 'no');
         $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
         $this->enable_in_context_checkout_flow = $this->get_option('enable_in_context_checkout_flow', 'yes');
         if ($this->enable_notifyurl == 'yes') {
@@ -1080,7 +1080,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Minicart', 'paypal-for-woocommerce'),
                 'label' => __('Show Express Checkout button in the WooCommerce Minicart.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'default' => 'yes'
+                'default' => 'no',
+                'description' => __('Enabling this option will cause the PayPal button JS to load on every page, which could negatively affect page load times on your site.'),
             ),
             'button_position' => array(
                 'title' => __('Cart Button Position', 'paypal-for-woocommerce'),
@@ -1565,6 +1566,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'enable_google_analytics_click' => array(
                 'title' => __('Google Analytics', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __('Enable Google Analytics Click Tracking.'),
                 'default' => 'no'
@@ -1577,12 +1579,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'single_product_button_settings' => array(
                 'title' => __('Single Product Button Settings', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Product specific button settings, and the options set will be applied to the PayPal buttons on your Product pages.', 'paypal-for-woocommerce' ),
                 'type' => 'title',
                 'class' => 'in_context_checkout_part_other',
             ),
             'single_product_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to Single Product pages.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1635,12 +1639,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'cart_button_settings' => array(
                 'title' => __('Cart Button Settings', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your shopping cart page.', 'paypal-for-woocommerce' ),
                 'type' => 'title',
                 'class' => 'in_context_checkout_part_other',
             ),
             'cart_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to the Cart page.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1693,12 +1699,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'mini_cart_button_settings' => array(
                 'title' => __('Mini-cart Button Settings', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Mini-Cart specific button settings, and the options set will be applied to the PayPal buttons on your mini-cart.', 'paypal-for-woocommerce' ),
                 'type' => 'title',
                 'class' => 'in_context_checkout_part_other',
             ),
             'mini_cart_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to the mini-cart display.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1751,12 +1759,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'checkout_page_button_settings' => array(
                 'title' => __('Checkout Page Button Settings', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Checkout Page specific button settings, and the options set will be applied to the PayPal buttons on your Checkout page.', 'paypal-for-woocommerce' ),
                 'type' => 'title',
                 'class' => 'in_context_checkout_part_other',
             ),
             'checkout_page_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to the Checkout page.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1765,6 +1775,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'checkout_page_disable_smart_button' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Disable smart buttons in the regular list of payment gateways.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1819,12 +1830,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (defined('XOO_WSC_PATH')) {
             $this->form_fields['wsc_cart_button_settings'] = array(
                 'title' => __('Woo Side Cart Button Settings', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Woo Side Cart specific button settings, and the options set will be applied to the PayPal buttons on your Woo Side Cart.', 'paypal-for-woocommerce' ),
                 'type' => 'title',
                 'class' => 'in_context_checkout_part_other',
             );
             $this->form_fields['wsc_cart_configure_settings'] = array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to the Woo Side Cart display.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1833,6 +1846,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             $this->form_fields['wsc_cart_disable_smart_button'] = array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Disable the buttons in the Woo Side Cart', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
