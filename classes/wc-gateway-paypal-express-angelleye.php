@@ -865,7 +865,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $skip_final_review_option_not_allowed_tokenized_payments = ' (Payments tokens are enabled, which require the review page, and that will override this option.)';
         }
         $button_height = array(
-            '' => __('default height', 'paypal-for-woocommerce'),
+            '' => __('Default Height', 'paypal-for-woocommerce'),
             25 => __('25 px', 'paypal-for-woocommerce'),
             26 => __('26 px', 'paypal-for-woocommerce'),
             27 => __('27 px', 'paypal-for-woocommerce'),
