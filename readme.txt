@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.1.7 - 11.05.2019 =
+* Tweak - Adjustment to Express Checkout Minicart by default disable. ([PFW-516](https://github.com/angelleye/paypal-woocommerce/pull/1386))
+
 = 2.1.6 - 10.25.2019 =
 * Tweak - Disable Token Payments when Multi-Account plugin enable. ([PFW-509](https://github.com/angelleye/paypal-woocommerce/pull/1385))
 * Fix - Resolves an issue where the wrong payment method displaying on order detail page. ([PFW-505](https://github.com/angelleye/paypal-woocommerce/pull/1380))
