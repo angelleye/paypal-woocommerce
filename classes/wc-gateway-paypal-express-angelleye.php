@@ -1254,6 +1254,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'enable_google_analytics_click' => array(
                 'title' => __('Google Analytics', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __('Enable Google Analytics Click Tracking.'),
                 'default' => 'no'
@@ -1266,11 +1267,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'single_product_button_settings' => array(
                 'title' => __('Single Product Button Settings', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Product specific button settings, and the options set will be applied to the PayPal buttons on your Product pages.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'single_product_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to Single Product pages.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1314,11 +1317,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'cart_button_settings' => array(
                 'title' => __('Cart Button Settings', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your shopping cart page.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'cart_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to the Cart page.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1362,11 +1367,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'mini_cart_button_settings' => array(
                 'title' => __('Mini-cart Button Settings', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Mini-Cart specific button settings, and the options set will be applied to the PayPal buttons on your mini-cart.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'mini_cart_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to the mini-cart display.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1410,11 +1417,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'checkout_page_button_settings' => array(
                 'title' => __('Checkout Page Button Settings', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Checkout Page specific button settings, and the options set will be applied to the PayPal buttons on your Checkout page.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             ),
             'checkout_page_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to the Checkout page.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1423,6 +1432,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'checkout_page_disable_smart_button' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Disable smart buttons in the regular list of payment gateways.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1468,11 +1478,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (defined('XOO_WSC_PATH')) {
             $this->form_fields['wsc_cart_button_settings'] = array(
                 'title' => __('Woo Side Cart Button Settings', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Woo Side Cart specific button settings, and the options set will be applied to the PayPal buttons on your Woo Side Cart.', 'paypal-for-woocommerce' ),
                 'type' => 'title'
             );
             $this->form_fields['wsc_cart_configure_settings'] = array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Configure settings specific to the Woo Side Cart display.', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
@@ -1481,6 +1493,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             $this->form_fields['wsc_cart_disable_smart_button'] = array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'class' => 'in_context_checkout_part',
                 'type' => 'checkbox',
                 'label' => __( 'Disable the buttons in the Woo Side Cart', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
