@@ -128,6 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 2.1.7 - 11.05.2019 =
+* Tweak - Adjustment to Express Checkout - Smart Button Options. ([PFW-477](https://github.com/angelleye/paypal-woocommerce/pull/1388))
 * Tweak - Adjustment to Express Checkout Minicart by default disable. ([PFW-516](https://github.com/angelleye/paypal-woocommerce/pull/1386))
 * Tweak - Adjustment to Express Checkout Hide all smart button option when Enable Smart Buttons is disable. ([PFW-517](https://github.com/angelleye/paypal-woocommerce/pull/1387))
 
