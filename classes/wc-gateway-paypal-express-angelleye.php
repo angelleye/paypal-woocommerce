@@ -41,7 +41,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if( $this->is_paypal_credit_enable ) {
             $this->disallowed_funding_methods_array = array(
                 'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
-                'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
+                'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                 'elv' => __('ELV', 'paypal-for-woocommerce')
             );
             $this->button_label_array = array(
@@ -53,7 +53,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
         } else {
             $this->disallowed_funding_methods_array = array(
-                'card' => __('Credit or Debit card', 'paypal-for-woocommerce'),
+                'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                 'elv' => __('ELV', 'paypal-for-woocommerce')
             );
             $this->button_label_array = array(
@@ -336,22 +336,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         
         
          jQuery("#woocommerce_paypal_express_button_layout").change(function () {
-           var angelleye_button_label =  jQuery("#woocommerce_paypal_express_button_label").closest('tr');
            var angelleye_button_tagline =  jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
            var angelleye_button_fundingicons =  jQuery("#woocommerce_paypal_express_button_fundingicons").closest('tr');
             if ( this.value === 'vertical' ) {
                 jQuery('#woocommerce_paypal_express_button_size option[value="small"]').remove();
-                angelleye_button_label.hide();
                 angelleye_button_tagline.hide();
                 if( is_funding_icon_should_show_php() === false) {
                     angelleye_button_fundingicons.hide();
                     //jQuery("#woocommerce_paypal_express_button_fundingicons").val("false");
                 }
+                jQuery("#woocommerce_paypal_express_button_label option[value='credit']").prop('disabled', true);
             } else {
+                jQuery("#woocommerce_paypal_express_button_label option[value='credit']").prop('disabled', false);
                 if( jQuery("#woocommerce_paypal_express_button_size option[value='small']").length == 0) {
                     jQuery('#woocommerce_paypal_express_button_size').append(jQuery("<option></option>").attr("value","small").text("Small")); 
                 }
-                angelleye_button_label.show();
                 if( is_funding_icon_should_show_php() === true) {
                     angelleye_button_fundingicons.show();
                 }
@@ -496,6 +495,271 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     
                 }
         }).change();
+        jQuery('#woocommerce_paypal_express_wsc_cart_button_size').change(function () {
+            var refresh_height_wsc_cart = false;
+            var height_wsc_cart = jQuery( "#woocommerce_paypal_express_wsc_cart_button_height option:selected" ).val();
+            height_wsc_cart = parseInt(height_wsc_cart);
+            if (this.value === 'responsive') {
+                jQuery("#woocommerce_paypal_express_wsc_cart_button_height").closest('tr').hide();
+            } else {
+                jQuery("#woocommerce_paypal_express_wsc_cart_button_height").closest('tr').show();
+                if(this.value === 'small') {
+                    var i;
+                    jQuery('#woocommerce_paypal_express_wsc_cart_button_height').find('option:not(:first)').remove();
+                    for (i = 25; i <= 55; i++) {
+                        jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").show();
+                    }
+                } else if(this.value === 'medium') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 35) {
+                          if(height_wsc_cart === i) {
+                             refresh_height_wsc_cart = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                } else if(this.value === 'large') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 30) {
+                          if(height_wsc_cart === i) {
+                             refresh_height_wsc_cart = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_wsc_cart_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                }
+                if(refresh_height_wsc_cart) {
+                    jQuery("#woocommerce_paypal_express_wsc_cart_button_height option:selected").prop("selected", false);
+                    jQuery('#woocommerce_paypal_express_wsc_cart_button_height option[value=""]').prop("selected", "selected");
+                }
+            }
+        }).change();
+        jQuery('#woocommerce_paypal_express_checkout_page_button_size').change(function () {
+            var refresh_height_checkout_page = false;
+            var height_checkout_page = jQuery( "#woocommerce_paypal_express_checkout_page_button_height option:selected" ).val();
+            height_checkout_page = parseInt(height_checkout_page);
+            if (this.value === 'responsive') {
+                jQuery("#woocommerce_paypal_express_checkout_page_button_height").closest('tr').hide();
+            } else {
+                jQuery("#woocommerce_paypal_express_checkout_page_button_height").closest('tr').show();
+                if(this.value === 'small') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                        jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").show();
+                    }
+                } else if(this.value === 'medium') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 35) {
+                          if(height_checkout_page === i) {
+                             refresh_height_checkout_page = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                } else if(this.value === 'large') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 30) {
+                          if(height_checkout_page === i) {
+                             refresh_height_checkout_page = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_checkout_page_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                }
+                if(refresh_height_checkout_page) {
+                    jQuery("#woocommerce_paypal_express_checkout_page_button_height option:selected").prop("selected", false);
+                    jQuery('#woocommerce_paypal_express_checkout_page_button_height option[value=""]').prop("selected", "selected");
+                }
+            }
+        }).change();
+        jQuery('#woocommerce_paypal_express_mini_cart_button_size').change(function () {
+            var refresh_height_mini_cart = false;
+            var height_mini_cart = jQuery( "#woocommerce_paypal_express_mini_cart_button_height option:selected" ).val();
+            height_mini_cart = parseInt(height_mini_cart);
+            if (this.value === 'responsive') {
+                jQuery("#woocommerce_paypal_express_mini_cart_button_height").closest('tr').hide();
+            } else {
+                jQuery("#woocommerce_paypal_express_mini_cart_button_height").closest('tr').show();
+                if(this.value === 'small') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                        jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").show();
+                    }
+                } else if(this.value === 'medium') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 35) {
+                          if(height_mini_cart === i) {
+                             refresh_height_mini_cart = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                } else if(this.value === 'large') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 30) {
+                          if(height_mini_cart === i) {
+                             refresh_height_mini_cart = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_mini_cart_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                }
+                if(refresh_height_mini_cart) {
+                    jQuery("#woocommerce_paypal_express_mini_cart_button_height option:selected").prop("selected", false);
+                    jQuery('#woocommerce_paypal_express_mini_cart_button_height option[value=""]').prop("selected", "selected");
+                }
+            }
+        }).change();
+        jQuery('#woocommerce_paypal_express_cart_button_size').change(function () {
+            var refresh_height_cart = false;
+            var height_cart = jQuery( "#woocommerce_paypal_express_cart_button_height option:selected" ).val();
+            height_cart = parseInt(height_cart);
+            if (this.value === 'responsive') {
+                jQuery("#woocommerce_paypal_express_cart_button_height").closest('tr').hide();
+            } else {
+                jQuery("#woocommerce_paypal_express_cart_button_height").closest('tr').show();
+                if(this.value === 'small') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                        jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").show();
+                    }
+                } else if(this.value === 'medium') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 35) {
+                          if(height_cart === i) {
+                             refresh_height_cart = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                } else if(this.value === 'large') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 30) {
+                          if(height_cart === i) {
+                             refresh_height_cart = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_cart_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                }
+                if(refresh_height_cart) {
+                    jQuery("#woocommerce_paypal_express_cart_button_height option:selected").prop("selected", false);
+                    jQuery('#woocommerce_paypal_express_cart_button_height option[value=""]').prop("selected", "selected");
+                }
+            }
+        }).change();
+        jQuery('#woocommerce_paypal_express_single_product_button_size').change(function () {
+            var refresh_height_single = false;
+            var height_single = jQuery( "#woocommerce_paypal_express_single_product_button_height option:selected" ).val();
+            height_single = parseInt(height_single);
+            if (this.value === 'responsive') {
+                jQuery("#woocommerce_paypal_express_single_product_button_height").closest('tr').hide();
+            } else {
+                jQuery("#woocommerce_paypal_express_single_product_button_height").closest('tr').show();
+                if(this.value === 'small') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                        jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").show();
+                    }
+                } else if(this.value === 'medium') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 35) {
+                          if(height_single === i) {
+                             refresh_height_single = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                } else if(this.value === 'large') {
+                    var i;
+                    for (i = 25; i <= 55; i++) {
+                      if(i < 30) {
+                          if(height_single === i) {
+                             refresh_height_single = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").hide();
+                      } else {
+                          jQuery("#woocommerce_paypal_express_single_product_button_height option[value="+i+"]").show();
+                      }
+                    } 
+                }
+                if(refresh_height_single) {
+                    jQuery("#woocommerce_paypal_express_single_product_button_height option:selected").prop("selected", false);
+                    jQuery('#woocommerce_paypal_express_single_product_button_height option[value=""]').prop("selected", "selected");
+                }
+            }
+        }).change();
+        jQuery('#woocommerce_paypal_express_button_size').change(function () {
+            var refresh_height = false;
+            var height = jQuery( "#woocommerce_paypal_express_button_height option:selected" ).val();
+            height = parseInt(height);
+            if (this.value === 'responsive') {
+                 jQuery("#woocommerce_paypal_express_button_height").closest('tr').hide();
+             } else {
+                 jQuery("#woocommerce_paypal_express_button_height").closest('tr').show();
+                 if(this.value === 'small') {
+                     var i;
+                     for (i = 25; i <= 55; i++) {
+                         jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").show();
+                     }
+                 } else if(this.value === 'medium') {
+                     var i;
+                     for (i = 25; i <= 55; i++) {
+                       if(i < 35) {
+                          if(height === i) {
+                             refresh_height = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").hide();
+                       } else {
+                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").show();
+                       }
+                     } 
+                 } else if(this.value === 'large') {
+                     var i;
+                     for (i = 25; i <= 55; i++) {
+                       if(i < 30) {
+                          if(height === i) {
+                             refresh_height = true;
+                          }
+                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").hide();
+                       } else {
+                          jQuery("#woocommerce_paypal_express_button_height option[value="+i+"]").show();
+                       }
+                     } 
+                 }
+                 if(refresh_height) {
+                     jQuery("#woocommerce_paypal_express_button_height option:selected").show();
+                     jQuery('#woocommerce_paypal_express_button_height option[value=""]').prop("selected", "selected");
+                 }
+             }
+        }).change();
         jQuery('#woocommerce_paypal_express_show_on_checkout').change(function () {
             var paypal_express_show_on_checkout = jQuery(this).find('option:selected').val();
             if( paypal_express_show_on_checkout === 'no') {
@@ -610,6 +874,44 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if ($this->enable_tokenized_payments == 'yes') {
             $skip_final_review_option_not_allowed_tokenized_payments = ' (Payments tokens are enabled, which require the review page, and that will override this option.)';
         }
+        $button_height = array(
+            '' => __('Default Height', 'paypal-for-woocommerce'),
+            25 => __('25 px', 'paypal-for-woocommerce'),
+            26 => __('26 px', 'paypal-for-woocommerce'),
+            27 => __('27 px', 'paypal-for-woocommerce'),
+            28 => __('28 px', 'paypal-for-woocommerce'),
+            29 => __('29 px', 'paypal-for-woocommerce'),
+            30 => __('30 px', 'paypal-for-woocommerce'),
+            31 => __('31 px', 'paypal-for-woocommerce'),
+            32 => __('32 px', 'paypal-for-woocommerce'),
+            33 => __('33 px', 'paypal-for-woocommerce'),
+            34 => __('34 px', 'paypal-for-woocommerce'),
+            35 => __('35 px', 'paypal-for-woocommerce'),
+            36 => __('36 px', 'paypal-for-woocommerce'),
+            37 => __('37 px', 'paypal-for-woocommerce'),
+            38 => __('38 px', 'paypal-for-woocommerce'),
+            39 => __('39 px', 'paypal-for-woocommerce'),
+            40 => __('40 px', 'paypal-for-woocommerce'),
+            41 => __('41 px', 'paypal-for-woocommerce'),
+            42 => __('42 px', 'paypal-for-woocommerce'),
+            43 => __('43 px', 'paypal-for-woocommerce'),
+            44 => __('44 px', 'paypal-for-woocommerce'),
+            45 => __('45 px', 'paypal-for-woocommerce'),
+            46 => __('46 px', 'paypal-for-woocommerce'),
+            47 => __('47 px', 'paypal-for-woocommerce'),
+            48 => __('48 px', 'paypal-for-woocommerce'),
+            49 => __('49 px', 'paypal-for-woocommerce'),
+            50 => __('50 px', 'paypal-for-woocommerce'),
+            51 => __('51 px', 'paypal-for-woocommerce'),
+            52 => __('52 px', 'paypal-for-woocommerce'),
+            53 => __('53 px', 'paypal-for-woocommerce'),
+            54 => __('51 px', 'paypal-for-woocommerce'),
+            55 => __('55 px', 'paypal-for-woocommerce')
+            
+            
+            
+            
+        );
         $args = array(
             'sort_order' => 'ASC',
             'sort_column' => 'post_title',
@@ -1193,6 +1495,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'responsive' => __('Responsive', 'paypal-for-woocommerce'),
                 ),
             ),
+            'button_height' => array(
+                'title' => __('Button Height', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'in_context_checkout_part',
+                'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+                'options' => $button_height,
+            ),
             'button_label' => array(
                 'title' => __('Button Label', 'paypal-for-woocommerce'),
                 'type' => 'select',
@@ -1213,6 +1524,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'gold' => __('Gold', 'paypal-for-woocommerce'),
                     'blue' => __('Blue', 'paypal-for-woocommerce'),
                     'silver' => __('Silver', 'paypal-for-woocommerce'),
+                    'white' => __('White', 'paypal-for-woocommerce'),
                     'black' => __('Black', 'paypal-for-woocommerce')
                 ),
             ),
@@ -1225,7 +1537,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'options' => array(
                     'pill' => __('Pill', 'paypal-for-woocommerce'),
-                    'rect' => __('Rect', 'paypal-for-woocommerce')
+                    'rect' => __('Rectangle', 'paypal-for-woocommerce')
                 ),
             ),
             'button_fundingicons' => array(
@@ -1233,7 +1545,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'select',
                 'class' => 'wc-enhanced-select in_context_checkout_part',
                 'description' => __('Enable this to display credit card icons below the PayPal buttons.', 'paypal-for-woocommerce'),
-                'default' => 'false',
+                'default' => 'true',
                 'desc_tip' => true,
                 'options' => array(
                     'false' => __('Disable', 'paypal-for-woocommerce'),
@@ -1269,7 +1581,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Single Product Button Settings', 'paypal-for-woocommerce'),
                 'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Product specific button settings, and the options set will be applied to the PayPal buttons on your Product pages.', 'paypal-for-woocommerce' ),
-                'type' => 'title'
+                'type' => 'title',
+                'class' => 'in_context_checkout_part_other',
             ),
             'single_product_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
@@ -1283,7 +1596,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'single_product_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1295,7 +1608,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'single_product_button_size' => array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1306,10 +1619,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'responsive' => __('Responsive', 'paypal-for-woocommerce'),
                 ),
             ),
+            'single_product_button_height' => array(
+                'title' => __('Button Height', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'in_context_checkout_part_other',
+                'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+                'options' => $button_height,
+            ),
             'single_product_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -1319,7 +1641,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Cart Button Settings', 'paypal-for-woocommerce'),
                 'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your shopping cart page.', 'paypal-for-woocommerce' ),
-                'type' => 'title'
+                'type' => 'title',
+                'class' => 'in_context_checkout_part_other',
             ),
             'cart_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
@@ -1333,7 +1656,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'cart_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1345,7 +1668,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'cart_button_size' => array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1356,10 +1679,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'responsive' => __('Responsive', 'paypal-for-woocommerce'),
                 ),
             ),
+            'cart_button_height' => array(
+                'title' => __('Button Height', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'in_context_checkout_part_other',
+                'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+                'options' => $button_height,
+            ),
             'cart_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -1369,7 +1701,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Mini-cart Button Settings', 'paypal-for-woocommerce'),
                 'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Mini-Cart specific button settings, and the options set will be applied to the PayPal buttons on your mini-cart.', 'paypal-for-woocommerce' ),
-                'type' => 'title'
+                'type' => 'title',
+                'class' => 'in_context_checkout_part_other',
             ),
             'mini_cart_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
@@ -1383,7 +1716,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'mini_cart_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1395,7 +1728,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'mini_cart_button_size' => array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1406,10 +1739,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'responsive' => __('Responsive', 'paypal-for-woocommerce'),
                 ),
             ),
+            'mini_cart_button_height' => array(
+                'title' => __('Button Height', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'in_context_checkout_part_other',
+                'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+                'options' => $button_height,
+            ),
             'mini_cart_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -1419,7 +1761,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Checkout Page Button Settings', 'paypal-for-woocommerce'),
                 'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Checkout Page specific button settings, and the options set will be applied to the PayPal buttons on your Checkout page.', 'paypal-for-woocommerce' ),
-                'type' => 'title'
+                'type' => 'title',
+                'class' => 'in_context_checkout_part_other',
             ),
             'checkout_page_configure_settings' => array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
@@ -1442,7 +1785,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'checkout_page_button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1454,7 +1797,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'checkout_page_button_size' => array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1465,10 +1808,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'responsive' => __('Responsive', 'paypal-for-woocommerce'),
                 ),
             ),
+            'checkout_page_button_height' => array(
+                'title' => __('Button Height', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'in_context_checkout_part_other',
+                'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+                'options' => $button_height,
+            ),
             'checkout_page_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -1480,7 +1832,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Woo Side Cart Button Settings', 'paypal-for-woocommerce'),
                 'class' => 'in_context_checkout_part',
                 'description'  => __( 'Enable the Woo Side Cart specific button settings, and the options set will be applied to the PayPal buttons on your Woo Side Cart.', 'paypal-for-woocommerce' ),
-                'type' => 'title'
+                'type' => 'title',
+                'class' => 'in_context_checkout_part_other',
             );
             $this->form_fields['wsc_cart_configure_settings'] = array(
                 'title' => __('Enable', 'paypal-for-woocommerce'),
@@ -1497,13 +1850,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __( 'Disable the buttons in the Woo Side Cart', 'paypal-for-woocommerce' ),
                 'default'     => 'no',
+                'class' => 'in_context_checkout_part_other',
                 'desc_tip'    => true,
                 'description' => __( '', 'paypal-for-woocommerce' ),
             );
             $this->form_fields['wsc_cart_button_layout'] = array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1515,7 +1869,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->form_fields['wsc_cart_button_size'] = array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1526,10 +1880,19 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'responsive' => __('Responsive', 'paypal-for-woocommerce'),
                 ),
             );
+            $this->form_fields['wsc_cart_button_height'] = array(
+                'title' => __('Button Height', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'in_context_checkout_part_other',
+                'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true,
+                'options' => $button_height,
+            );
             $this->form_fields['wsc_cart_disallowed_funding_methods'] = array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
