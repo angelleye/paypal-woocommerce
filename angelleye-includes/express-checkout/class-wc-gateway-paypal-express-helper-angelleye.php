@@ -616,7 +616,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             } elseif (is_checkout() && $this->checkout_page_configure_settings) {
                 $this->button_layout = $this->checkout_page_button_layout;
                 $this->button_size = $this->checkout_page_button_size;
-                $this->button_height = $this->checkout_button_height;
+                $this->button_height = $this->checkout_page_button_height;
                 $this->disallowed_funding_methods = $this->checkout_page_disallowed_funding_methods;
                 $smart_cancel_page = wc_get_checkout_url();
             }
