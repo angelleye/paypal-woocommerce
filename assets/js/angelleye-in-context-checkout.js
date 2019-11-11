@@ -124,7 +124,7 @@ jQuery(function ($) {
                     },
                     onError: function (err, actions) {
                         $('.woocommerce').unblock();
-                        window.location.href = window.location.href;
+                        window.location.href = angelleye_in_content_param.cancel_page;
                     }
                 }, '.angelleye_button_single');
             };
@@ -229,7 +229,7 @@ jQuery(function ($) {
                         },
                         onError: function (err, actions) {
                             $('.woocommerce').unblock();
-                            window.location.href = window.location.href;
+                            window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);
                 }
@@ -325,7 +325,7 @@ jQuery(function ($) {
                         },
                         onError: function (err, actions) {
                             $('.woocommerce').unblock();
-                            window.location.href = window.location.href;
+                            window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);
                 }
@@ -418,7 +418,7 @@ jQuery(function ($) {
                         },
                         onError: function (err, actions) {
                             $('.woocommerce').unblock();
-                            window.location.href = window.location.href;
+                            window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);
                 }
