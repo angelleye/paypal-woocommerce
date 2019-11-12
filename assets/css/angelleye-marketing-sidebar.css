@@ -176,7 +176,7 @@
 .m10 {
     margin: 10px 0;
 }
-@media only screen and (min-device-width: 320px) and (max-device-width: 1024px) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 1120px) {
     #angelleye_paypal_marketing_table {
         width: 100% !important;
         border-right: none !important;
@@ -186,7 +186,7 @@
     }
 }
 
-@media screen and (device-width: 320px) and (device-height: 1024px)  {
+@media screen and (device-width: 320px) and (device-height: 1120px)  {
     #angelleye_paypal_marketing_table {
         width: 100% !important;
         border-right: none !important;
@@ -196,7 +196,7 @@
     }
 }    
 
-@media screen and (min-width: 320px) and (max-width: 1024px) {
+@media screen and (min-width: 320px) and (max-width: 1120px) {
     #angelleye_paypal_marketing_table {
         width: 100% !important;
         border-right: none !important;
