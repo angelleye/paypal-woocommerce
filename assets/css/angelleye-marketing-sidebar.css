@@ -176,7 +176,7 @@
 .m10 {
     margin: 10px 0;
 }
-@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 1024px) {
         #angelleye_paypal_marketing_table {
             width: 100%;
             border-right: none;
