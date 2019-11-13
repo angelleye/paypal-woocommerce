@@ -288,7 +288,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             ?> 
             display_notice_and_disable_marketing_solution();
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').css({'width': '50%', 'top': '-65px'}); jQuery('#pms-paypalInsightsLink').hide(); jQuery('#angelleye_wp_marketing_solutions_button_production').hide(); 
+            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').addClass('marketing_solutions_full_width'); jQuery('#pms-paypalInsightsLink').hide(); jQuery('#angelleye_wp_marketing_solutions_button_production').hide(); 
             <?php
         }
         ?>
