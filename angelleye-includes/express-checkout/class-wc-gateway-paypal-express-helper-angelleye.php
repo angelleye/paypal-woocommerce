@@ -601,6 +601,21 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             }
             $smart_cancel_page = '';
+            if($this->mini_cart_configure_settings == false) {
+                $this->mini_cart_button_layout = $this->button_layout;
+                $this->mini_cart_button_size = $this->button_size;
+                $this->mini_cart_button_height = $this->button_height;
+                $this->mini_cart_disallowed_funding_methods = $this->disallowed_funding_methods;
+                $smart_cancel_page = wc_get_cart_url();
+            } 
+            $this->mini_cart_allowed_funding_methods = $this->allowed_funding_methods;
+            if($this->wsc_cart_configure_settings == false) {
+                $this->wsc_cart_button_layout = $this->button_layout;
+                $this->wsc_cart_button_size = $this->button_size;
+                $this->wsc_cart_button_height = $this->button_height;
+                $this->wsc_cart_disallowed_funding_methods = $this->disallowed_funding_methods;
+            }
+            $this->wsc_cart_allowed_funding_methods = $this->allowed_funding_methods;
             if(is_product() && $this->single_product_configure_settings) {
                 $this->button_layout = $this->single_product_button_layout;
                 $this->button_size = $this->single_product_button_size;
@@ -620,21 +635,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->disallowed_funding_methods = $this->checkout_page_disallowed_funding_methods;
                 $smart_cancel_page = wc_get_checkout_url();
             }
-            if($this->mini_cart_configure_settings == false) {
-                $this->mini_cart_button_layout = $this->button_layout;
-                $this->mini_cart_button_size = $this->button_size;
-                $this->mini_cart_button_height = $this->button_height;
-                $this->mini_cart_disallowed_funding_methods = $this->disallowed_funding_methods;
-                $smart_cancel_page = wc_get_cart_url();
-            } 
-            $this->mini_cart_allowed_funding_methods = $this->allowed_funding_methods;
-            if($this->wsc_cart_configure_settings == false) {
-                $this->wsc_cart_button_layout = $this->button_layout;
-                $this->wsc_cart_button_size = $this->button_size;
-                $this->wsc_cart_button_height = $this->button_height;
-                $this->wsc_cart_disallowed_funding_methods = $this->disallowed_funding_methods;
-            } 
-            $this->wsc_cart_allowed_funding_methods = $this->allowed_funding_methods;
             if ($this->button_layout == 'vertical') {
                 $this->button_tagline = '';
                 $this->button_fundingicons = '';
