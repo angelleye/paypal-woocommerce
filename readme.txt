@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 2.1.9 - 11.20.2019 =
 * Fix - Resolves some PHP notices. ([PFW-512](https://github.com/angelleye/paypal-woocommerce/pull/1390))
+* Fix - Resolves an issue where Express Checkout - Smart Buttons Product Page option conflict with Minicart. ([PFW-520](https://github.com/angelleye/paypal-woocommerce/pull/1391))
 
 = 2.1.8 - 11.05.2019 =
 * Feature - Adds WooCommerce 3.8.0 Compatibility. ([PFW-522](https://github.com/angelleye/paypal-woocommerce/pull/1389))
