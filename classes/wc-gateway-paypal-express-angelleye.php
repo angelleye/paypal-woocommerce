@@ -96,7 +96,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->save_abandoned_checkout = 'yes' === $this->get_option('save_abandoned_checkout', 'no');
         self::$log_enabled = $this->debug;
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
-        $this->show_on_checkout = $this->get_option('show_on_checkout', 'top');
+        $this->show_on_checkout = $this->get_option('show_on_checkout', 'both');
         $this->paypal_account_optional = $this->get_option('paypal_account_optional', 'no');
         $this->error_display_type = $this->get_option('error_display_type', 'detailed');
         $this->landing_page = $this->get_option('landing_page', 'login');
