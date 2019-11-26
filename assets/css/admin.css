@@ -370,6 +370,10 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 .angelleye-notice-action {
     padding-top: 5px;
 }
+.marketing_solutions_full_width {
+    width: 50%;
+    top: -65px;
+}
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
         display: block;
@@ -453,3 +457,26 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
            min-width: 150px;
         }
     }
+    
+@media screen and (min-width: 320px) and (max-width: 1120px) {
+    .angelleye_smart_button_setting_left {
+        width: 100%;
+    }
+    #woocommerce_paypal_express_angelleye_smart_button_preview_title, .display_smart_button_previews, .display_smart_button_previews_button {
+        width: 100%;
+    }
+    .pms-muse-left-container {
+        width: 100%;
+    }
+    .pms-muse-right-container {
+        width: 100%;
+        margin-left: 0px;
+    }
+    .marketing_solutions_full_width {
+        width: 100%;
+        top: 0px;
+    }
+    .pms-muse-description {
+        margin-right: 0px;
+    }
+}

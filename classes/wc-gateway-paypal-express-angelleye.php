@@ -189,6 +189,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public function admin_options() {
         global $current_user;
         $user_id = $current_user->ID;
+        $GLOBALS['hide_save_button'] = true;
         ?>
         <h3><?php _e('PayPal Express Checkout', 'paypal-for-woocommerce'); ?></h3>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
@@ -218,7 +219,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             ?>
         </table> 
-        
+        <p class="submit">
+            <button name="save" class="button-primary woocommerce-save-button" type="submit" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>"><?php esc_html_e( 'Save changes', 'woocommerce' ); ?></button>
+            <?php wp_nonce_field( 'woocommerce-settings' ); ?>
+        </p>
         </div>
         <?php
         AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id);
@@ -284,7 +288,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             ?> 
             display_notice_and_disable_marketing_solution();
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').css({'width': '50%', 'top': '-65px'}); jQuery('#pms-paypalInsightsLink').hide(); jQuery('#angelleye_wp_marketing_solutions_button_production').hide(); 
+            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').addClass('marketing_solutions_full_width'); jQuery('#pms-paypalInsightsLink').hide(); jQuery('#angelleye_wp_marketing_solutions_button_production').hide(); 
             <?php
         }
         ?>
