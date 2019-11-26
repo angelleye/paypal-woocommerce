@@ -621,19 +621,16 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->button_size = $this->single_product_button_size;
                 $this->button_height = $this->single_product_button_height;
                 $this->disallowed_funding_methods = $this->single_product_disallowed_funding_methods;
-                $smart_cancel_page = wc_get_cart_url();
             } elseif(is_cart() && $this->cart_configure_settings) {
                 $this->button_layout = $this->cart_button_layout;
                 $this->button_size = $this->cart_button_size;
                 $this->button_height = $this->cart_button_height;
                 $this->disallowed_funding_methods = $this->cart_disallowed_funding_methods;
-                $smart_cancel_page = wc_get_cart_url();
             } elseif (is_checkout() && $this->checkout_page_configure_settings) {
                 $this->button_layout = $this->checkout_page_button_layout;
                 $this->button_size = $this->checkout_page_button_size;
                 $this->button_height = $this->checkout_page_button_height;
                 $this->disallowed_funding_methods = $this->checkout_page_disallowed_funding_methods;
-                $smart_cancel_page = wc_get_checkout_url();
             }
             if ($this->button_layout == 'vertical') {
                 $this->button_tagline = '';
@@ -717,7 +714,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'wsc_cart_button_height' => $this->wsc_cart_button_height,
                     'button_fundingicons' => $this->button_fundingicons,
                     'cancel_page' => add_query_arg('pp_action', 'cancel_order', WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')),
-                    'smart_cancel_page' => $smart_cancel_page,
                     'is_paypal_credit_enable' => $this->is_paypal_credit_enable ? "yes" : 'no',
                     'allowed_funding_methods' => $allowed_funding_methods_json,
                     'disallowed_funding_methods' => $disallowed_funding_methods_json,
