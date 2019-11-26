@@ -57,7 +57,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->pp_button_type_my_custom = !empty($this->setting['pp_button_type_my_custom']) ? $this->setting['pp_button_type_my_custom'] : WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage();
                 $this->show_on_product_page = !empty($this->setting['show_on_product_page']) ? $this->setting['show_on_product_page'] : 'no';
                 $this->review_title_page = !empty($this->setting['review_title_page']) ? $this->setting['review_title_page'] : 'Review Order';
-                $this->show_on_checkout = !empty($this->setting['show_on_checkout']) ? $this->setting['show_on_checkout'] : 'top';
+                $this->show_on_checkout = !empty($this->setting['show_on_checkout']) ? $this->setting['show_on_checkout'] : 'both';
                 $this->button_position = !empty($this->setting['button_position']) ? $this->setting['button_position'] : 'bottom';
                 $this->show_on_cart = !empty($this->setting['show_on_cart']) ? $this->setting['show_on_cart'] : 'yes';
                 $this->show_on_minicart = !empty($this->setting['show_on_minicart']) ? $this->setting['show_on_minicart'] : 'no';
