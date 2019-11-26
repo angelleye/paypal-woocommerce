@@ -664,13 +664,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
-            if ( 'checkout' === get_post_meta( $post->ID, 'wcf-step-type', true ) ) {
+            if ( isset($post->ID) && 'checkout' === get_post_meta( $post->ID, 'wcf-step-type', true ) ) {
                  $is_cartflow = "yes";
             } else {
                 $is_cartflow = "no";
             }
-            $pre_checkout_offer = get_post_meta( $post->ID, 'wcf-pre-checkout-offer', true );
-            if ( 'yes' == $pre_checkout_offer ) {
+            if( isset($post->ID) && 'yes' == get_post_meta( $post->ID, 'wcf-pre-checkout-offer', true ) ) {
                 $pre_checkout_offer = "yes";
             } else {
                 $pre_checkout_offer = "no";
