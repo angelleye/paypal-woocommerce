@@ -130,6 +130,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 2.X.X - XX.XX.2019 =
 * Tweak - CSS tweaks to resolve viewed on a small/mobile device payment gateway setting issues. ([PFW-518](https://github.com/angelleye/paypal-woocommerce/pull/1392))
 * Tweak - Adjustment to Express Checkout - Product Page Cancel. ([PFW-519](https://github.com/angelleye/paypal-woocommerce/pull/1393))
+* Tweak - Adjustment to Express Checkout - Checkout Page Display. ([PFW-532](https://github.com/angelleye/paypal-woocommerce/pull/1395))
 
 = 2.1.9 - 11.20.2019 =
 * Fix - Resolves some PHP notices. ([PFW-512](https://github.com/angelleye/paypal-woocommerce/pull/1390))
