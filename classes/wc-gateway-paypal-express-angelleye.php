@@ -1632,6 +1632,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'options' => $button_height,
             ),
+            'single_product_button_label' => array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => $this->button_label_array,
+            ),
             'single_product_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
@@ -1692,6 +1701,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'options' => $button_height,
             ),
+            'cart_button_label' => array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => $this->button_label_array,
+            ),
             'cart_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
@@ -1751,6 +1769,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true,
                 'options' => $button_height,
+            ),
+            'mini_cart_button_label' => array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => $this->button_label_array,
             ),
             'mini_cart_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
@@ -1820,6 +1847,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true,
                 'options' => $button_height,
+            ),
+            'checkout_page_button_label' => array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => $this->button_label_array,
             ),
             'checkout_page_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
@@ -1892,6 +1928,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true,
                 'options' => $button_height,
+            );
+            $this->form_fields['wsc_cart_button_label'] = array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => $this->button_label_array,
             );
             $this->form_fields['wsc_cart_disallowed_funding_methods'] = array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
