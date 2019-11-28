@@ -1,10 +1,21 @@
 jQuery(function () {
-    //var angelleye_paypal_marketing_table_width = jQuery('#angelleye_paypal_marketing_table').parents('div').width();
-    //jQuery('#angelleye_paypal_marketing_table').css("width", angelleye_paypal_marketing_table_width + "px");
-    //jQuery('body').bind('mousewheel DOMMouseScroll', function(e){
-      //  var angelleye_paypal_marketing_table_width = jQuery('#angelleye_paypal_marketing_table').parents('div').width();
-       // jQuery('#angelleye_paypal_marketing_table').css("width", angelleye_paypal_marketing_table_width + "px");
-    //});
+    jQuery(document).on('click', '#angelleye-updater-notice .notice-dismiss', function( event ) {
+        var r = confirm("If you do not install the Updater plugin you will not receive automated updates for Angell EYE products going forward!");
+        if (r == true) {
+            data = {
+                action : 'angelleye_updater_dismissible_admin_notice'
+            };
+            jQuery.post(ajaxurl, data, function (response) {
+                var $el = jQuery( '#angelleye-updater-notice' );
+                event.preventDefault();
+                $el.fadeTo( 100, 0, function() {
+                        $el.slideUp( 100, function() {
+                                $el.remove();
+                        });
+                });
+            });
+        } 
+    });
     var el_notice = jQuery(".angelleye-notice");
     jQuery('[id^=angelleye_notification]').each(function (i) {
         jQuery('[id="' + this.id + '"]').slice(1).remove();

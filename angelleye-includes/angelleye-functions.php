@@ -78,8 +78,14 @@ if (!class_exists('AngellEYE_Updater') && !function_exists('angell_updater_notic
                 $message = '<a href="' . esc_url(admin_url($activate_url)) . '"> Activate the Angell EYE Updater plugin</a> to get updates for your Angell EYE plugins.';
             }
         }
-        echo '<div class="updated fade"><p>' . $message . '</p></div>' . "\n";
+        echo '<div id="angelleye-updater-notice" class="updated notice updater-dismissible"><p>' . $message . '</p><button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>' . "\n";
     }
-
-    add_action('admin_notices', 'angell_updater_notice');
+    
+    function angelleye_updater_dismissible_admin_notice() {
+        set_transient( 'angelleye_updater_notice_hide', 'yes', MONTH_IN_SECONDS );
+    }
+    if ( false === ( $angelleye_updater_notice_hide = get_transient( 'angelleye_updater_notice_hide' ) ) ) {
+        add_action('admin_notices', 'angell_updater_notice');
+    }
+    add_action( 'wp_ajax_angelleye_updater_dismissible_admin_notice', 'angelleye_updater_dismissible_admin_notice' );
 }
