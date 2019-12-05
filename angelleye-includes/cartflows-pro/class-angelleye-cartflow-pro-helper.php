@@ -89,7 +89,7 @@ class Angelleye_Cartflows_Pro_Helper {
     }
 
     function generate_angelleye_express_checkout_token() {
-        $this->load_gateway('paypal_express')->generate_express_checkout_token();
+        Cartflows_Pro_Gateways::load_gateway('paypal_express')->generate_express_checkout_token();
     }
 
 }
