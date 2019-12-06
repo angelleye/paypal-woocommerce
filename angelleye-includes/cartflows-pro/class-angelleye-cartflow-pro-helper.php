@@ -69,8 +69,8 @@ class Angelleye_Cartflows_Pro_Helper {
      * Handles angelleye paypal_express API call
      */
     function maybe_handle_paypal_express_api_call() {
-        Cartflows_Pro_Gateways::load_gateway('paypal_express')->create_billing_agreement();
-        Cartflows_Pro_Gateways::load_gateway('paypal_express')->process_api_calls();
+        wcf_pro()->gateways->load_gateway('paypal_express')->create_billing_agreement();
+        wcf_pro()->gateways->load_gateway('paypal_express')->process_api_calls();
     }
 
     function angelleye_express_checkout_cartflow($bool) {
@@ -89,7 +89,7 @@ class Angelleye_Cartflows_Pro_Helper {
     }
 
     function generate_angelleye_express_checkout_token() {
-        Cartflows_Pro_Gateways::load_gateway('paypal_express')->generate_express_checkout_token();
+        wcf_pro()->gateways->load_gateway('paypal_express')->generate_express_checkout_token();
     }
 
 }
