@@ -184,7 +184,7 @@ class Cartflows_Pro_Gateway_Braintree_AngellEYE {
                 $request_data['merchantAccountId'] = $gateway->merchant_account_id;
             }
             
-            $request_data['orderId'] = $order->get_order_number();
+            $request_data['orderId'] = $order->get_order_number() . '-' . $product['step_id'];
             
             $request_data['options'] = $gateway->get_braintree_options();
             

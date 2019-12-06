@@ -122,7 +122,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
                 'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 'desc' => $description,
                 'custom' => apply_filters('ae_ppddp_custom_parameter', $customer_note, $order),
-                'invnum' => $gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number()) . 'offer',
+                'invnum' => $gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number()) . '-' . $product['step_id'],
                 'recurring' => ''
             );
             if (isset($gateway->notifyurl) && !empty($gateway->notifyurl)) {
