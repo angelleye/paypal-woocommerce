@@ -374,6 +374,10 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     width: 50%;
     top: -65px;
 }
+.updater-dismissible {
+    padding-right: 38px;
+    position: relative;
+}
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
         display: block;
