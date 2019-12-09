@@ -254,7 +254,7 @@ jQuery(function ($) {
             angelleye_cart_style_object = {size: angelleye_in_content_param.mini_cart_button_size,
                 color: angelleye_in_content_param.button_color,
                 shape: angelleye_in_content_param.button_shape,
-                label: angelleye_in_content_param.button_label,
+                label: angelleye_in_content_param.mini_cart_button_label,
                 layout: angelleye_in_content_param.mini_cart_button_layout,
                 tagline: (angelleye_in_content_param.button_tagline === "true") ? true : false
             };
@@ -347,7 +347,7 @@ jQuery(function ($) {
             angelleye_cart_style_object = {size: angelleye_in_content_param.wsc_cart_button_size,
                 color: angelleye_in_content_param.button_color,
                 shape: angelleye_in_content_param.button_shape,
-                label: angelleye_in_content_param.button_label,
+                label: angelleye_in_content_param.wsc_cart_button_label,
                 layout: angelleye_in_content_param.wsc_cart_button_layout,
                 tagline: (angelleye_in_content_param.button_tagline === "true") ? true : false
             };

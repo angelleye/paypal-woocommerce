@@ -452,38 +452,71 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
             }).change();
             
-        jQuery('#woocommerce_paypal_express_disallowed_funding_methods').change(function () {
-            if( jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val()) ) {
-                
-                if( jQuery("#woocommerce_paypal_express_button_label option[value='credit']").length === 0) {
-                    jQuery('#woocommerce_paypal_express_button_label').append(jQuery("<option></option>").attr("value","credit").text("Credit"));
+            jQuery('#woocommerce_paypal_express_disallowed_funding_methods').change(function () {
+                if( jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val()) ) {
+                    if( jQuery("#woocommerce_paypal_express_button_label option[value='credit']").length === 0) {
+                        jQuery('#woocommerce_paypal_express_button_label').append(jQuery("<option></option>").attr("value","credit").text("Credit"));
+                    }
+                } else {
+                     jQuery('#woocommerce_paypal_express_button_label option[value="credit"]').remove();
                 }
-                
-            } else {
-                 jQuery('#woocommerce_paypal_express_button_label option[value="credit"]').remove();
-            }
-            if( jQuery.inArray('card', jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val()) ) {
-                jQuery("#woocommerce_paypal_express_disallowed_card_types").closest('tr').show();
-            } else {
-                jQuery("#woocommerce_paypal_express_disallowed_card_types").closest('tr').hide();
-            }
-            if( is_funding_icon_should_show_php() === false) {
-                jQuery("#woocommerce_paypal_express_button_fundingicons").closest('tr').hide();
-                //jQuery("#woocommerce_paypal_express_button_fundingicons").val("false");
-                if( jQuery('#woocommerce_paypal_express_button_label').val() !== 'buynow' ) {
-                    if( jQuery("#woocommerce_paypal_express_button_layout").val() !== 'vertical' ) {
-                        jQuery('#woocommerce_paypal_express_button_tagline').closest('tr').show();
+                if( jQuery.inArray('card', jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val()) ) {
+                    jQuery("#woocommerce_paypal_express_disallowed_card_types").closest('tr').show();
+                } else {
+                    jQuery("#woocommerce_paypal_express_disallowed_card_types").closest('tr').hide();
+                }
+                if( is_funding_icon_should_show_php() === false) {
+                    jQuery("#woocommerce_paypal_express_button_fundingicons").closest('tr').hide();
+                    if( jQuery('#woocommerce_paypal_express_button_label').val() !== 'buynow' ) {
+                        if( jQuery("#woocommerce_paypal_express_button_layout").val() !== 'vertical' ) {
+                            jQuery('#woocommerce_paypal_express_button_tagline').closest('tr').show();
+                        }
+                    }
+                } else {
+                     jQuery("#woocommerce_paypal_express_button_fundingicons").closest('tr').show();
+                     if(jQuery('#woocommerce_paypal_express_button_fundingicons').val() !== 'true') {
+                         var angelleye_button_tagline =  jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
+                        angelleye_button_tagline.show();
+                    } else {
+                        jQuery('#woocommerce_paypal_express_button_tagline').closest('tr').hide();
                     }
                 }
-            } else {
-                 jQuery("#woocommerce_paypal_express_button_fundingicons").closest('tr').show();
-                 if(jQuery('#woocommerce_paypal_express_button_fundingicons').val() !== 'true') {
-                     var angelleye_button_tagline =  jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
-                    angelleye_button_tagline.show();
+        }).change();
+        jQuery('#woocommerce_paypal_express_single_product_disallowed_funding_methods').change(function () {
+                if( jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_single_product_disallowed_funding_methods').val()) ) {
+                    if( jQuery("#woocommerce_paypal_express_single_product_button_label option[value='credit']").length === 0) {
+                        jQuery('#woocommerce_paypal_express_single_product_button_label').append(jQuery("<option></option>").attr("value","credit").text("Credit"));
+                    }
                 } else {
-                    jQuery('#woocommerce_paypal_express_button_tagline').closest('tr').hide();
+                     jQuery('#woocommerce_paypal_express_single_product_button_label option[value="credit"]').remove();
                 }
-            }
+        }).change();
+        jQuery('#woocommerce_paypal_express_cart_disallowed_funding_methods').change(function () {
+                if( jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_cart_disallowed_funding_methods').val()) ) {
+                    if( jQuery("#woocommerce_paypal_express_cart_button_label option[value='credit']").length === 0) {
+                        jQuery('#woocommerce_paypal_express_cart_button_label').append(jQuery("<option></option>").attr("value","credit").text("Credit"));
+                    }
+                } else {
+                     jQuery('#woocommerce_paypal_express_cart_button_label option[value="credit"]').remove();
+                }
+        }).change();
+        jQuery('#woocommerce_paypal_express_mini_cart_disallowed_funding_methods').change(function () {
+                if( jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_mini_cart_disallowed_funding_methods').val()) ) {
+                    if( jQuery("#woocommerce_paypal_express_mini_cart_button_label option[value='credit']").length === 0) {
+                        jQuery('#woocommerce_paypal_express_mini_cart_button_label').append(jQuery("<option></option>").attr("value","credit").text("Credit"));
+                    }
+                } else {
+                     jQuery('#woocommerce_paypal_express_mini_cart_button_label option[value="credit"]').remove();
+                }
+        }).change();
+        jQuery('#woocommerce_paypal_express_checkout_page_disallowed_funding_methods').change(function () {
+                if( jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_checkout_page_disallowed_funding_methods').val()) ) {
+                    if( jQuery("#woocommerce_paypal_express_checkout_page_button_label option[value='credit']").length === 0) {
+                        jQuery('#woocommerce_paypal_express_checkout_page_button_label').append(jQuery("<option></option>").attr("value","credit").text("Credit"));
+                    }
+                } else {
+                     jQuery('#woocommerce_paypal_express_checkout_page_button_label option[value="credit"]').remove();
+                }
         }).change();
         jQuery('#woocommerce_paypal_express_button_fundingicons').change(function () {
                 var paypal_express_button_tagline = jQuery('#woocommerce_paypal_express_button_tagline').closest('tr').hide();
@@ -1632,6 +1665,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'options' => $button_height,
             ),
+            'single_product_button_label' => array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => $this->button_label_array,
+            ),
             'single_product_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
@@ -1692,6 +1734,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'options' => $button_height,
             ),
+            'cart_button_label' => array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => $this->button_label_array,
+            ),
             'cart_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
@@ -1751,6 +1802,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true,
                 'options' => $button_height,
+            ),
+            'mini_cart_button_label' => array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => $this->button_label_array,
             ),
             'mini_cart_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
@@ -1820,6 +1880,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true,
                 'options' => $button_height,
+            ),
+            'checkout_page_button_label' => array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => $this->button_label_array,
             ),
             'checkout_page_disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
@@ -1892,6 +1961,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => '',
                 'desc_tip' => true,
                 'options' => $button_height,
+            );
+            $this->form_fields['wsc_cart_button_label'] = array(
+                'title' => __('Button Label', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
+                'default' => 'checkout',
+                'desc_tip' => true,
+                'options' => $this->button_label_array,
             );
             $this->form_fields['wsc_cart_disallowed_funding_methods'] = array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
