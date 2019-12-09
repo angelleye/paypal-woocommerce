@@ -45,14 +45,6 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
     box-shadow: none;
     border: none;
 }
-.woocommerce-select{
-    border-color: #C8BFC6 #D4CDD2 #D4CDD2;
-    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.4);
-    border: 1px solid #CCCCCC;
-    border-radius: 3px;
-    font-family: inherit;
-    padding: 0.428571rem;
-}
 .checkoutStatus {
     width: 90%;
     word-wrap: break-word;
@@ -60,18 +52,6 @@ body.woocommerce-checkout .woocommerce #checkout_paypal_message #paypal_box_butt
 }
 .woocommerce_paypal_ec_checkout_message {
     clear: both;
-}
-.woocommerce #payment .form-row select , .woocommerce-page #payment .form-row select {
-    border-color: #bbb3b9 #c7c1c6 #c7c1c6;
-    color: #888;
-    font-size: inherit;
-    outline: 0 none;
-    line-height: 1;
-    min-width: 103px;
-   
-}
-.woocommerce-select.woocommerce-cc-month.mr5 {
-    margin-right: 5px;
 }
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form-cardholder, 
 #add_payment_method #payment div.payment_box .wc-credit-card-form-cardholder {
@@ -94,9 +74,6 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 .angelleyeOverlay {
     display:none;z-index: 1000; border: none; margin: 0px; padding: 0px; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 0.6; cursor: default; position: absolute;
 }
-.woocommerce .payment_methods li .payment_method_paypal_pro_payflow select, .woocommerce .payment_methods li .payment_method_paypal_pro select {
-    display: inline-block !important;
-}
 .woocommerce-checkout #payment ul.payment_methods li input[type=checkbox] {
     margin: 0 7px 0 0;
     vertical-align: middle;
@@ -104,21 +81,3 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 p.woocommerce-SavedPaymentMethods-saveNew label {
     vertical-align: middle;
 }
-
-
-
-
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 480px) {
-      .woocommerce #payment .form-row select, .woocommerce-page #payment .form-row select {
-           width: 100% !important;
-      }
-      .woocommerce-select.woocommerce-cc-month.mr5 {
-          margin-right: 0px;
-      }
-      .woocommerce-select.woocommerce-cc-year.ml5 {
-            margin-left: 0px;
-            margin-top: 12px;
-      }
-  }

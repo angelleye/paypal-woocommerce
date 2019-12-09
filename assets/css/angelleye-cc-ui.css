@@ -1,0 +1,12 @@
+.woocommerce #payment .form-row select, .woocommerce-page #payment .form-row selec {
+    padding: 7px;
+    width: 100px;
+    margin: 0 1em 0 0;
+    border-color: #c7c1c6;
+    border-top-color: rgb(199, 193, 198);
+    border-top-color: #bbb3b9;
+    background-repeat: no-repeat;
+    background-size: 32px 20px;
+    border-radius: 3px;
+    font-size: 1.5em;
+}

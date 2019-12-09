@@ -115,6 +115,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
             add_action( 'woocommerce_sections_checkout', array( $this, 'donate_message' ), 11 );
            
+            add_action('wp_enqueue_scripts', array($this, 'angelleye_cc_ui_style'), 100);
+            
             add_action( 'parse_request', array($this, 'wc_gateway_payment_token_api_parser') , 99);
             add_action('wp_ajax_angelleye_dismiss_notice', array($this, 'angelleye_dismiss_notice'), 10);
 
@@ -1360,6 +1362,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
             }
             return $list;
+        }
+        
+        public function angelleye_cc_ui_style() {
+            wp_enqueue_style('angelleye-cc-ui', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/angelleye-cc-ui.css', array(), VERSION_PFW);
         }
     } 
 }
