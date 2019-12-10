@@ -134,6 +134,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adjustment to Updater plugin notice dismissible. ([PFW-536](https://github.com/angelleye/paypal-woocommerce/pull/1396))
 * Tweak - Improves CSS styles on Credit Card forms. ([PFW-530](https://github.com/angelleye/paypal-woocommerce/pull/1398))
 * Tweak - Adjustment to Express Checkout - Smart Button Options. ([PFW-523](https://github.com/angelleye/paypal-woocommerce/pull/1401))
+* Fix - Resolves an issue with CartFlow Reference Transactions. ([PFW-537](https://github.com/angelleye/paypal-woocommerce/pull/1399))
 
 = 2.1.9 - 11.20.2019 =
 * Fix - Resolves some PHP notices. ([PFW-512](https://github.com/angelleye/paypal-woocommerce/pull/1390))
