@@ -237,12 +237,11 @@ class Cartflows_Pro_Gateway_Braintree_AngellEYE {
             
             if (in_array($gateway->response->transaction->status, $maybe_settled_later)) {
                 update_post_meta($order_id, 'is_sandbox', $gateway->sandbox);
-                $order->payment_complete($gateway->response->transaction->id);
                 $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $gateway->title, $gateway->response->transaction->id));
                 return true;
             } else {
                 $gateway->add_log(sprintf('Info: unhandled transaction id = %s, status = %s', $gateway->response->transaction->id, $gateway->response->transaction->status));
-                $order->update_status('on-hold', sprintf(__('Transaction was submitted to PayPal Braintree but not handled by WooCommerce order, transaction_id: %s, status: %s. Order was put in-hold.', 'paypal-for-woocommerce'), $gateway->response->transaction->id, $gateway->response->transaction->status));
+                $order->add_order_note(sprintf(__('Transaction was submitted to PayPal Braintree but not handled by WooCommerce order, transaction_id: %s, status: %s. Order was put in-hold.', 'paypal-for-woocommerce'), $gateway->response->transaction->id, $gateway->response->transaction->status));
                 $old_wc = version_compare(WC_VERSION, '3.0', '<');
                 $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
                 if ($old_wc) {

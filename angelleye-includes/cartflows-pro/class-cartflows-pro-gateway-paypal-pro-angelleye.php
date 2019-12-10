@@ -155,7 +155,6 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
             }
             if ($gateway->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
                 $gateway->save_payment_token($order, $PayPalResult['TRANSACTIONID']);
-                $order->payment_complete($PayPalResult['TRANSACTIONID']);
                 return true;
             } else {
                 $error_code = isset($PayPalResult['ERRORS'][0]['L_ERRORCODE']) ? $PayPalResult['ERRORS'][0]['L_ERRORCODE'] : '';
