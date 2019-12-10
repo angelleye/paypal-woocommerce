@@ -146,7 +146,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
 
             if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $gateway->fraud_warning_codes))) {
                 if (isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
-                    $order->update_status('failed', __('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
+                    $order->add_order_note(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                     throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                 }
 
@@ -187,7 +187,6 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                 $order->add_order_note($cvv2_response_order_note);
 
                 if ($gateway->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $gateway->fraud_warning_codes)) {
-                    $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                     $old_wc = version_compare(WC_VERSION, '3.0', '<');
                     $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
                     if ($old_wc) {
@@ -203,20 +202,10 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                     } else {
                         $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
                     }
-                    if ($gateway->default_order_status == 'Completed') {
-                        $order->update_status('completed');
-                    } else {
-                        $order->payment_complete($PayPalResult['PNREF']);
-                    }
-                    if ($old_wc) {
-                        update_post_meta($order_id, '_transaction_id', $PayPalResult['PNREF']);
-                    } else {
-                        update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['PNREF']);
-                    }
                 }
                 return true;
             } else {
-                $order->update_status('failed', __('PayPal Pro Payflow payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce') . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"');
+                $order->add_order_note(__('PayPal Pro Payflow payment failed. Payment was rejected due to an error: ', 'paypal-for-woocommerce') . '(' . $PayPalResult['RESULT'] . ') ' . '"' . $PayPalResult['RESPMSG'] . '"');
                 if ($gateway->error_email_notify) {
                     $admin_email = get_option("admin_email");
                     $message = __("PayFlow API call failed.", "paypal-for-woocommerce") . "\n\n";

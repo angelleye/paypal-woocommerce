@@ -898,6 +898,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
             // translators: exception message.
             $order_note = sprintf(__('PayPal Exp Transaction Failed (%s)', 'cartflows-pro'), $e->getMessage());
+            $order->add_order_note($order_note);
         }
 
         return $is_successful;
