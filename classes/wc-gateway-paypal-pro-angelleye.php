@@ -1342,7 +1342,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     $this->angelleye_successwithwarning_payment_response_handler($order, $PayPalResult);
                 }
             } else {
-                $this->angelleye_successwithwarning_payment_response_handler($order, $PayPalResult);
+                $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
             }
 
             if ($this->payment_action == "Authorization") {
