@@ -150,6 +150,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->credit_card_month_field = $this->get_option('credit_card_month_field', 'names');
         $this->credit_card_year_field = $this->get_option('credit_card_year_field', 'four_digit');
         $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
+        $this->successwithwarning_payment_response = $this->get_option('successwithwarning_payment_response', 'ignore_warnings_and_proceed_as_usual');
         if ($this->testmode == true) {
             $this->api_username = $this->get_option('sandbox_api_username');
             $this->api_password = $this->get_option('sandbox_api_password');
@@ -345,6 +346,19 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     'Processing' => 'Processing'
                 ),
                 'default' => 'On Hold',
+                'desc_tip' => true,
+            ),
+            'successwithwarning_payment_response' => array(
+                'title' => __('SuccessWithWarning Payment Response', 'paypal-for-woocommerce'),
+                'label' => '',
+                'description' => __('Choose how you would like to handle orders when Payment Response is SuccessWithWarning.', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'ignore_warnings_and_proceed_as_usual' => __('Ignore warnings and proceed as usual.', 'paypal-for-woocommerce'),
+                    'place_order_on_hold_for_further_review' => __('Place order On Hold for further review.', 'paypal-for-woocommerce'),
+                ),
+                'default' => 'ignore_warnings_and_proceed_as_usual',
                 'desc_tip' => true,
             ),
             'send_items' => array(
@@ -1323,20 +1337,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     $long_message = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : '';
                     $short_message = !empty($PayPalResult['L_SHORTMESSAGE0']) ? $PayPalResult['L_SHORTMESSAGE0'] : '';
                     $order->add_order_note($short_message .' '. $long_message);
-                    $order->update_status('on-hold', $error);
-                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                    if ( $old_wc ) {
-                        if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
-                            $order->reduce_order_stock();
-                        }
-                    } else {
-                        wc_maybe_reduce_stock_levels( $order_id );
-                    }
+                    $this->angelleye_successwithwarning_payment_response_handler($order, $PayPalResult);
                 } else {
-                    $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
+                    $this->angelleye_successwithwarning_payment_response_handler($order, $PayPalResult);
                 }
             } else {
-                $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
+                $this->angelleye_successwithwarning_payment_response_handler($order, $PayPalResult);
             }
 
             if ($this->payment_action == "Authorization") {
@@ -2262,6 +2268,22 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 $redirect_url = wc_get_account_endpoint_url('payment-methods');
                 $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
+            }
+        }
+    }
+    
+    public function angelleye_successwithwarning_payment_response_handler($order, $PayPalResult) {
+        if($this->successwithwarning_payment_response == 'ignore_warnings_and_proceed_as_usual') {
+            $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
+        } else {
+            $order->update_status('on-hold');
+            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+            if ( $old_wc ) {
+                if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
+                    $order->reduce_order_stock();
+                }
+            } else {
+                wc_maybe_reduce_stock_levels( $order_id );
             }
         }
     }
