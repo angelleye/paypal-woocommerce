@@ -127,7 +127,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 2.1.11 - 23.12.2019 =
+= 2.1.12 - 12.XX.2019 =
+* Tweak - Adjustment to Express Checkout PayPal error 10486 and returns the user to PayPal so they can choose another payment method per PayPal's documentation. ([PFW-466](https://github.com/angelleye/paypal-woocommerce/pull/1406))
+
+= 2.1.11 - 12.23.2019 =
 * Tweak - Adjustments to PayPal SuccessWithWarning Handling. ([PFW-529](https://github.com/angelleye/paypal-woocommerce/pull/1402))
 * Tweak - Adjustments to Sandbox details Notice don't show when description is empty. ([PFW-541](https://github.com/angelleye/paypal-woocommerce/pull/1403))
 * Tweak - Adjustment to Updater plugin notice dismissible. ([PFW-536](https://github.com/angelleye/paypal-woocommerce/pull/1404))
