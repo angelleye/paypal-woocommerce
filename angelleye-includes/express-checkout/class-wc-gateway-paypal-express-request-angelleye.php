@@ -84,7 +84,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $payPalURL = $this->PAYPAL_URL . $paypal_express_checkout['token'];
         if (!empty($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '10486') {
             if (!empty($paypal_express_checkout['token'])) {
-                $this->function_helper->ec_clear_session_data();
                 WC()->session->set('is_smart_button_popup_closed', 'yes');
                 wc_clear_notices();
                 if (!empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
