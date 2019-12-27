@@ -1342,7 +1342,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     $this->angelleye_successwithwarning_payment_response_handler($order, $PayPalResult);
                 }
             } else {
-                $this->angelleye_successwithwarning_payment_response_handler($order, $PayPalResult);
+                $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
             }
 
             if ($this->payment_action == "Authorization") {
@@ -2278,6 +2278,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $order->update_status('on-hold');
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            if ($old_wc) {
+                update_post_meta($order_id, '_transaction_id', $PayPalResult['TRANSACTIONID']);
+            } else {
+                update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['TRANSACTIONID']);
+            }
             if ( $old_wc ) {
                 if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
                     $order->reduce_order_stock();
