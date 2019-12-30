@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 5.3.2
-Stable tag: 2.1.11
+Stable tag: 2.1.12
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 2.1.12 - 12.XX.2019 =
+= 2.1.12 - 12.30.2019 =
 * Tweak - Adjustment to Express Checkout PayPal error 10486 and returns the user to PayPal so they can choose another payment method per PayPal's documentation. ([PFW-466](https://github.com/angelleye/paypal-woocommerce/pull/1406))
 * Tweak - Adjustments to PayPal SuccessWithWarning Handling. ([PFW-529](https://github.com/angelleye/paypal-woocommerce/pull/1407))
 
