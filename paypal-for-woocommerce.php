@@ -254,9 +254,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $pp_settings['enabled'] = !empty($pp_settings['enabled']) ? $pp_settings['enabled'] : '';
             $pp_standard['enabled'] = !empty($pp_standard['enabled']) ? $pp_standard['enabled'] : '';
             $pp_settings['paypal_marketing_solutions_cid_production'] = !empty($pp_settings['paypal_marketing_solutions_cid_production']) ? $pp_settings['paypal_marketing_solutions_cid_production'] : '';
-            if( !get_user_meta($user_id, 'is_disable_pw_premium_extension_notice') ) {
-                echo '<div class="notice notice-info angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf( __( 'Don\'t miss out on our <a href="%1$s">premium support and extensions</a>! Get the help you need from a PayPal Partner and Certified Developer.', 'paypal-for-woocommerce' ), admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_woocommerce_premium_extension#paypal_woocommerce_premium_extension')) . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="is_disable_pw_premium_extension_notice">Dismiss</button></div></div>';
-            }
             if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || ( !empty($pp_payflow['enabled']) && $pp_payflow['enabled']=='yes' )) {
                 // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
                 if ( !is_ssl() && !get_user_meta($user_id, 'ignore_pp_ssl') )
@@ -1138,7 +1135,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             global $current_user;
             $user_id = $current_user->ID;
             if( !empty($_POST['action']) && $_POST['action'] == 'angelleye_dismiss_notice' ) {
-                $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'ignore_paypal_pro_payflow_reference_transaction_notice', 'is_disable_pw_premium_extension_notice', 'ignore_token_multi_account', 'ignore_token_multi_account_payflow');
+                $notices = array('ignore_pp_ssl', 'ignore_pp_sandbox', 'ignore_pp_woo', 'ignore_pp_check', 'ignore_pp_donate', 'ignore_paypal_plus_move_notice', 'ignore_billing_agreement_notice', 'ignore_paypal_pro_payflow_reference_transaction_notice', 'ignore_token_multi_account', 'ignore_token_multi_account_payflow');
                 foreach ($notices as $notice) {
                     if ( !empty($_POST['data']) && $_POST['data'] == $notice) {
                         add_user_meta($user_id, $notice, 'true', true);
