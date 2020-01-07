@@ -113,7 +113,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'admin_notices', array($this, 'admin_notices') );
             add_action( 'admin_init', array($this, 'set_ignore_tag'));
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
-            add_action( 'woocommerce_sections_checkout', array( $this, 'donate_message' ), 11 );
            
             add_action('wp_enqueue_scripts', array($this, 'angelleye_cc_ui_style'), 100);
             
@@ -482,23 +481,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             return $methods;
         }
 
-        /**
-       
-         * Donate function
-         */
-        function donate_message() {
-            if (!empty($_GET['page']) && !empty($_GET['tab']) && !empty($_GET['section']) && $_GET['page'] == 'wc-settings' && $_GET['tab'] == 'checkout' && in_array( $_GET['section'], array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'braintree', 'paypal_advanced', 'paypal_credit_card_rest')) && !get_user_meta(get_current_user_id(), 'ignore_pp_donate') ) {
-                ?>
-                <div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">
-                    <h3>PayPal for WooCommerce</h3>
-                    <p class="donation_text">We are learning why it is difficult to provide, support, and maintain free software. Every little bit helps and is greatly appreciated.</p>
-                    <p>Developers, join us on <a href="https://github.com/angelleye/paypal-woocommerce" target="_blank">GitHub</a>. Pull Requests are welcomed!</p>
-                    <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA"><img style="float:left;margin-right:10px;" src="https://www.angelleye.com/images/paypal-for-woocommerce/donate-button.png" border="0" alt="PayPal - The safer, easier way to pay online!"></a>
-                 </div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_pp_donate">Dismiss</button></div></div>
-            <?php
-            }
-        }
-       
         public function angelleye_admin_menu_own(){
         	$this->plugin_screen_hook_suffix = add_submenu_page(
 			'options-general.php', 
