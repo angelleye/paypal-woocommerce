@@ -944,7 +944,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } elseif (!empty($result['TRANSACTIONTYPE'])) {
                 $transaction_type = $result['TRANSACTIONTYPE'];
             }
-            if (!empty($result['PAYMENTINFO_0_TRANSACTIONID'])) {
+            if(!empty($result['TRANSACTIONID'])) {
+                $transaction_id = $result['TRANSACTIONID'];
+            } elseif (!empty($result['PAYMENTINFO_0_TRANSACTIONID'])) {
                 $transaction_id = $result['PAYMENTINFO_0_TRANSACTIONID'];
             } elseif (!empty($result['BILLINGAGREEMENTID'])) {
                 $transaction_id = $result['BILLINGAGREEMENTID'];
