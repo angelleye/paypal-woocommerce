@@ -1056,7 +1056,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public function angelleye_ajax_generate_cart() {
         global $wpdb, $post, $product;
         $product_id = '';
-        if (!wp_verify_nonce($_POST['nonce'], '_angelleye_generate_cart_nonce')) {
+        if ( isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], '_angelleye_generate_cart_nonce')) {
             wp_die(__('Cheatin&#8217; huh?', 'paypal-for-woocommerce'));
         }
         WC()->shipping->reset_shipping();
