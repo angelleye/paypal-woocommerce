@@ -526,7 +526,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     <div id="braintree-payment-form"></div>
                 </fieldset>
             </div>
-            <?php if (is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) { ?>
+            <?php if (is_checkout() || is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) { ?>
                 <script type="text/javascript">
                     var angelleye_dropinInstance;
                     
@@ -705,7 +705,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     </div>
                 </div>
                 <?php 
-            if (is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) {
+            if (is_checkout() || is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) {
                 
                 ?>
                 <script type="text/javascript">
