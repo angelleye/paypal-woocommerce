@@ -127,6 +127,16 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.1.13 - 01.29.2020 =
+* Feature - Adds WooCommerce 3.8.0 Compatibility. ([PFW-554](https://github.com/angelleye/paypal-woocommerce/pull/1416))
+* Tweak – Adjustments “Thank you” page message to comply with PayPal Guidelines. ([PFW-552](https://github.com/angelleye/paypal-woocommerce/pull/1414))
+* Tweak - Adjustments to admin notice display. ([PFW-531](https://github.com/angelleye/paypal-woocommerce/pull/1417))
+* Fix - Resolves some PHP notices. ([PFW-66](https://github.com/angelleye/paypal-woocommerce/pull/1409)) ([PFW-163](https://github.com/angelleye/paypal-woocommerce/pull/1410))
+* Fix - Resolves an issue with Woo Subscriptions - Refund. ([PFW-550](https://github.com/angelleye/paypal-woocommerce/pull/1411))
+* Fix - Resolves an issue with Braintree - Soft Descriptor. ([PFW-69](https://github.com/angelleye/paypal-woocommerce/pull/1412))
+* Fix - Resolves an issue with PayPal Express Checkout - Authorization. ([PFW-514](https://github.com/angelleye/paypal-woocommerce/pull/1413))
+* Fix - Resolves an issue were Smart button not displaying with Shortcode. ([PFW-94](https://github.com/angelleye/paypal-woocommerce/pull/1415))
+
 = 2.1.12 - 12.30.2019 =
 * Tweak - Adjustment to Express Checkout PayPal error 10486 and returns the user to PayPal so they can choose another payment method per PayPal's documentation. ([PFW-466](https://github.com/angelleye/paypal-woocommerce/pull/1406))
 * Tweak - Adjustments to PayPal SuccessWithWarning Handling. ([PFW-529](https://github.com/angelleye/paypal-woocommerce/pull/1407))

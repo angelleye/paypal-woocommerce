@@ -526,7 +526,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     <div id="braintree-payment-form"></div>
                 </fieldset>
             </div>
-            <?php if (is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) { ?>
+            <?php if (is_checkout() || is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) { ?>
                 <script type="text/javascript">
                     var angelleye_dropinInstance;
                     
@@ -705,7 +705,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     </div>
                 </div>
                 <?php 
-            if (is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) {
+            if (is_checkout() || is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) {
                 
                 ?>
                 <script type="text/javascript">
@@ -2241,7 +2241,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public function get_softdescriptor() {
         if (!empty($this->softdescriptor_value)) {
             $softdescriptor_array = explode('*', $this->softdescriptor_value);
-            if (!empty($softdescriptor_array[0]) && !empty($softdescriptor_array[1])) {
+            if (!empty($softdescriptor_array[0])) {
                 $company_name_len = strlen($softdescriptor_array[0]);
                 $company_name = $softdescriptor_array[0];
                 if ($company_name_len == 3 || $company_name_len == 7 || $company_name_len == 12) {

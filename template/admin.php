@@ -103,9 +103,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                             }
                             $images = ( !empty($addon->images[0]->src) ) ? $addon->images[0]->src : '';
                             if( !empty($images)) {
-                              $images = str_replace('.png', '', $images);
-                              $images .= '-300x300.png';
-                              echo "<img src='$images'>";
+                                echo "<img src='$images'>";
                             }
                             $description = ( !empty($addon->short_description )) ? $addon->short_description : $addon->description;
                             if( isset($description) && !empty($description) ) {

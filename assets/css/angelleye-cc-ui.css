@@ -13,3 +13,6 @@
 .et_pb_module #wcf-embed-checkout-form .woocommerce #order_review .payment_method_braintree .input-text {
     font-size: 21px;
 }
+.theme-Divi p.woocommerce-notice.woocommerce-notice--success.woocommerce-thankyou-order-received {
+    margin-bottom: 1.625em;
+}

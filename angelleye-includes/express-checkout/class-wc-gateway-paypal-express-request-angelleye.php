@@ -944,7 +944,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } elseif (!empty($result['TRANSACTIONTYPE'])) {
                 $transaction_type = $result['TRANSACTIONTYPE'];
             }
-            if (!empty($result['PAYMENTINFO_0_TRANSACTIONID'])) {
+            if(!empty($result['TRANSACTIONID'])) {
+                $transaction_id = $result['TRANSACTIONID'];
+            } elseif (!empty($result['PAYMENTINFO_0_TRANSACTIONID'])) {
                 $transaction_id = $result['PAYMENTINFO_0_TRANSACTIONID'];
             } elseif (!empty($result['BILLINGAGREEMENTID'])) {
                 $transaction_id = $result['BILLINGAGREEMENTID'];
@@ -1039,8 +1041,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_add_extra_order_meta($order) {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (!empty($this->gateway->payment_action) && $this->gateway->payment_action != 'Sale') {
-            $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
-            $payment_order_meta = array('_transaction_id' => $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->gateway->payment_action, '_express_checkout_token' => $paypal_express_checkout['token'], '_first_transaction_id' => $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']);
+            if ( ! class_exists( 'WooCommerce' ) || WC()->session == null ) {
+                $payment_order_meta = array('_transaction_id' => $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->gateway->payment_action, '_first_transaction_id' => isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : $this->paypal_response['TRANSACTIONID']);
+            } else {
+                $paypal_express_checkout = WC()->session->get('paypal_express_checkout');
+                $payment_order_meta = array('_transaction_id' => $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'], '_payment_action' => $this->gateway->payment_action, '_express_checkout_token' => $paypal_express_checkout['token'], '_first_transaction_id' => isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : $this->paypal_response['TRANSACTIONID']);
+            }
             AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
         }
     }
@@ -1446,6 +1452,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         $PayPalResponse = isset($this->paypal_response['RAWRESPONSE']) ? $this->paypal_response['RAWRESPONSE'] : '';
         WC_Gateway_PayPal_Express_AngellEYE::log('Request: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalRequest)), true));
         WC_Gateway_PayPal_Express_AngellEYE::log('Response: ' . print_r($this->paypal->NVPToArray($this->paypal->MaskAPIResult($PayPalResponse)), true));
+        $this->angelleye_add_extra_order_meta($order);
+        if ($this->gateway->payment_action != 'Sale') {
+            AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($this->paypal_response, $order, $this->gateway->payment_action);
+        }
+        $payment_meta = array('Payment type' => !empty($this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE']) ? $this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE'] : '', 'PayPal Transaction Fee' => !empty($this->paypal_response['PAYMENTINFO_0_FEEAMT']) ? $this->paypal_response['PAYMENTINFO_0_FEEAMT'] : '');
+        AngellEYE_Utility::angelleye_add_paypal_payment_meta($order_id, $payment_meta);
         return $this->paypal_response;
     }
 
