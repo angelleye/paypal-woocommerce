@@ -156,6 +156,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'wp_ajax_angelleye_send_deactivation', array($this, 'angelleye_handle_plugin_deactivation_request'));
             add_action( 'wp', array( __CLASS__, 'angelleye_delete_payment_method_action' ), 10 );
             add_filter( 'woocommerce_saved_payment_methods_list', array($this, 'angelleye_synce_braintree_save_payment_methods'), 5, 2 );
+            add_filter( 'woocommerce_thankyou_order_received_text', array($this, 'order_received_text'), 10, 2);
             $this->customer_id;
         }
 
@@ -1366,6 +1367,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function angelleye_cc_ui_style() {
             wp_enqueue_style('angelleye-cc-ui', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/angelleye-cc-ui.css', array(), VERSION_PFW);
+        }
+        
+        public function order_received_text($text, $order) {
+            if ($order && ( $order->has_status('completed') || $order->has_status('processing')) && in_array( $order->get_payment_method(),  array('paypal_advanced', 'paypal_credit_card_rest', 'paypal_express', 'paypal_pro', 'paypal_pro_payflow')) ) {
+                return esc_html__( 'Thank you for your payment. Your transaction has been completed, and a receipt for your purchase has been emailed to you. Log into your PayPal account to view transaction details.', 'paypal-for-woocommerce' );
+            }
+            return $text;
         }
     } 
 }
