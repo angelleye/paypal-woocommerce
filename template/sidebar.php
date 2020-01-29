@@ -119,6 +119,16 @@
                     <?php esc_html_e('Get the PayPal help you are looking for from Drew Angell, owner of Angell EYE, and Certified PayPal Developer and Partner.', 'paypal-for-woocommerce'); ?>
                 </p>
             </div>
+            <div class="wp-clearfix m10">
+                <p>
+                    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA" target="_blank">
+                        <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/marketing/angelleye_affiliate.png'; ?>" alt="">
+                        <strong><?php echo __('Donate', 'paypal-for-woocommerce'); ?></strong>
+                    </a><br/>
+                    <?php echo __('We are learning why it is difficult to provide, support, and maintain free software. Every little bit helps and is greatly appreciated.', 'paypal-for-woocommerce'); ?>
+                    <?php echo __('Developers, join us on', 'paypal-for-woocommerce'); ?> <a href="https://github.com/angelleye/paypal-woocommerce" target="_blank">GitHub</a>. <?php __('Pull Requests are welcomed!', 'paypal-for-woocommerce'); ?>
+                </p>
+            </div>
         </div>
         <div class="angelleye-sidebar__section m10">
             <h2><?php esc_html_e('Partnerships', 'paypal-for-woocommerce'); ?></h2>
