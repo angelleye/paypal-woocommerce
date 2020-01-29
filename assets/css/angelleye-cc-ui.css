@@ -10,3 +10,6 @@
     border-radius: 3px;
     font-size: 1.5em;
 }
+.theme-Divi p.woocommerce-notice.woocommerce-notice--success.woocommerce-thankyou-order-received {
+    margin-bottom: 1.625em;
+}
