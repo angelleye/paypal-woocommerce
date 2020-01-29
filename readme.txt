@@ -132,6 +132,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves an issue with Woo Subscriptions - Refund. ([PFW-550](https://github.com/angelleye/paypal-woocommerce/pull/1411))
 * Fix - Resolves an issue with Braintree - Soft Descriptor. ([PFW-69](https://github.com/angelleye/paypal-woocommerce/pull/1412))
 * Fix - Resolves an issue with PayPal Express Checkout - Authorization. ([PFW-514](https://github.com/angelleye/paypal-woocommerce/pull/1413))
+* Tweak – Adjustments “Thank you” page message to comply with PayPal Guidelines. ([PFW-552](https://github.com/angelleye/paypal-woocommerce/pull/1414))
 
 = 2.1.12 - 12.30.2019 =
 * Tweak - Adjustment to Express Checkout PayPal error 10486 and returns the user to PayPal so they can choose another payment method per PayPal's documentation. ([PFW-466](https://github.com/angelleye/paypal-woocommerce/pull/1406))
