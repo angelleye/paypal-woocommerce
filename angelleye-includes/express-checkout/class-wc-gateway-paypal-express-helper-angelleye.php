@@ -67,9 +67,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->testmode = 'yes' === $this->testmode_value;
                 $this->billing_address_value = !empty($this->setting['billing_address']) ? $this->setting['billing_address'] : 'no';
                 // Globale setting
-                $this->disallowed_funding_methods = !empty($this->setting['disallowed_funding_methods']) ? $this->setting['disallowed_funding_methods'] : array();
+                $this->disallowed_funding_methods = !empty($this->setting['disallowed_funding_methods']) ? (array) $this->setting['disallowed_funding_methods'] : array();
                 if (!in_array('card', $this->disallowed_funding_methods)) {
-                    $this->disallowed_card_types = !empty($this->setting['disallowed_card_types']) ? $this->setting['disallowed_card_types'] : array();
+                    $this->disallowed_card_types = !empty($this->setting['disallowed_card_types']) ? (array) $this->setting['disallowed_card_types'] : array();
                     $this->disallowed_funding_methods = array_merge($this->disallowed_card_types, $this->disallowed_funding_methods);
                 }
                 $this->button_size = !empty($this->setting['button_size']) ? $this->setting['button_size'] : 'small';
