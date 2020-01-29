@@ -10,3 +10,6 @@
     border-radius: 3px;
     font-size: 1.5em;
 }
+.et_pb_module #wcf-embed-checkout-form .woocommerce #order_review .payment_method_braintree .input-text {
+    font-size: 21px;
+}
