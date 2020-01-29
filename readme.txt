@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.1.13 - 01.29.2020 =
+* Fix - Resolves some PHP notices. ([PFW-66](https://github.com/angelleye/paypal-woocommerce/pull/1409))
+
 = 2.1.12 - 12.30.2019 =
 * Tweak - Adjustment to Express Checkout PayPal error 10486 and returns the user to PayPal so they can choose another payment method per PayPal's documentation. ([PFW-466](https://github.com/angelleye/paypal-woocommerce/pull/1406))
 * Tweak - Adjustments to PayPal SuccessWithWarning Handling. ([PFW-529](https://github.com/angelleye/paypal-woocommerce/pull/1407))
