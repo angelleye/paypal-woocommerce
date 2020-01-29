@@ -128,7 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 2.1.13 - 01.29.2020 =
-* Feature - Adds WooCommerce 3.8.0 Compatibility. ([PFW-554](https://github.com/angelleye/paypal-woocommerce/pull/1416))
+* Feature - Adds WooCommerce 3.8.0 Compatibility. ([PFW-554](https://github.com/angelleye/paypal-woocommerce/pull/1416)) ([PFW-553](https://github.com/angelleye/paypal-woocommerce/pull/1418))
 * Tweak – Adjustments “Thank you” page message to comply with PayPal Guidelines. ([PFW-552](https://github.com/angelleye/paypal-woocommerce/pull/1414))
 * Tweak - Adjustments to admin notice display. ([PFW-531](https://github.com/angelleye/paypal-woocommerce/pull/1417))
 * Fix - Resolves some PHP notices. ([PFW-66](https://github.com/angelleye/paypal-woocommerce/pull/1409)) ([PFW-163](https://github.com/angelleye/paypal-woocommerce/pull/1410))
