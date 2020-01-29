@@ -2244,7 +2244,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public function get_softdescriptor() {
         if (!empty($this->softdescriptor_value)) {
             $softdescriptor_array = explode('*', $this->softdescriptor_value);
-            if (!empty($softdescriptor_array[0]) && !empty($softdescriptor_array[1])) {
+            if (!empty($softdescriptor_array[0])) {
                 $company_name_len = strlen($softdescriptor_array[0]);
                 $company_name = $softdescriptor_array[0];
                 if ($company_name_len == 3 || $company_name_len == 7 || $company_name_len == 12) {
