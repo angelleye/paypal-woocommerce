@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 3.8
 Tested up to: 5.3.2
-Stable tag: 2.1.12
+Stable tag: 2.1.13
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
