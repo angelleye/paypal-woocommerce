@@ -130,6 +130,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 2.1.13 - 01.29.2020 =
 * Feature - Adds WooCommerce 3.8.0 Compatibility. ([PFW-554](https://github.com/angelleye/paypal-woocommerce/pull/1416))
 * Tweak – Adjustments “Thank you” page message to comply with PayPal Guidelines. ([PFW-552](https://github.com/angelleye/paypal-woocommerce/pull/1414))
+* Tweak - Adjustments to admin notice display. ([PFW-531](https://github.com/angelleye/paypal-woocommerce/pull/1417))
 * Fix - Resolves some PHP notices. ([PFW-66](https://github.com/angelleye/paypal-woocommerce/pull/1409)) ([PFW-163](https://github.com/angelleye/paypal-woocommerce/pull/1410))
 * Fix - Resolves an issue with Woo Subscriptions - Refund. ([PFW-550](https://github.com/angelleye/paypal-woocommerce/pull/1411))
 * Fix - Resolves an issue with Braintree - Soft Descriptor. ([PFW-69](https://github.com/angelleye/paypal-woocommerce/pull/1412))
