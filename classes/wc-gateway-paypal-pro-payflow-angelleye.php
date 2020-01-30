@@ -464,7 +464,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'label' => __('Allow American Express cards to be processed with USD currency', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'description' => __('How to Process American Express in USD with a Canadian PayPal Account. <a target="_blank" href="https://www.angelleye.com/how-to-process-american-express-in-usd-with-a-canadian-paypal-account/">Read more</a>'),
+                    'description' => __('<a target="_blank" href="https://www.angelleye.com/how-to-process-american-express-in-usd-with-a-canadian-paypal-account/">Learn more</a> about processing Amex in USD with a Canadian account. ', 'paypal-for-woocommerce'),
                     'default' => 'no',
                     'class' => ''
                 );
