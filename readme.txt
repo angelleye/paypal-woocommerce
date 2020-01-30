@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.1.14 - 01.30.2020 =
+* Feature - Adds options for American Express cards to be processed with USD currency on CA based account. ([PFW-555](https://github.com/angelleye/paypal-woocommerce/pull/1419))
+
 = 2.1.13 - 01.29.2020 =
 * Feature - Adds WooCommerce 3.8.0 Compatibility. ([PFW-554](https://github.com/angelleye/paypal-woocommerce/pull/1416)) ([PFW-553](https://github.com/angelleye/paypal-woocommerce/pull/1418))
 * Tweak – Adjustments “Thank you” page message to comply with PayPal Guidelines. ([PFW-552](https://github.com/angelleye/paypal-woocommerce/pull/1414))
