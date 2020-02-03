@@ -92,10 +92,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
             $this->paypal_password = $this->get_option('sandbox_paypal_password');
             $this->paypal_user = $this->get_option('sandbox_paypal_user', $this->paypal_vendor);
         }
-        $this->enable_amex_usd_ca = $this->get_option('enable_amex_usd_ca', 'no');
-        if( WC()->countries->get_base_country() != 'CA' ) {
-            $this->enable_amex_usd_ca = 'no';
-        }
+
         // 3DS
 
         if ($this->enable_3dsecure && $this->threedsecure_type == 'cardinalcommerce') {
@@ -458,26 +455,16 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 ),
                 'default' => 'place_order_on_hold_for_further_review',
                 'desc_tip' => true,
-            ));
-            if(WC()->countries->get_base_country() == 'CA') {
-                $this->form_fields['enable_amex_usd_ca'] = array(
-                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
-                    'label' => __('Allow American Express cards to be processed with USD currency', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'description' => __('<a target="_blank" href="https://www.angelleye.com/how-to-process-american-express-in-usd-with-a-canadian-paypal-account/">Learn more</a> about processing Amex in USD with a Canadian account. ', 'paypal-for-woocommerce'),
-                    'default' => 'no',
-                    'class' => ''
-                );
-            }
-            $this->form_fields['avs_cvv2_result_admin_email'] = array(
+            ),
+            'avs_cvv2_result_admin_email' => array(
                 'title' => __('AVS / CVV2 Results in Admin Order Email', 'paypal-for-woocommerce'),
                 'label' => __('Adds the AVS / CVV2 results to the admin order email notification', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => __('Display Address Verification Result (AVS) and Card Security Code Result (CVV2) Results in Admin Order Email.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'desc_tip' => true,
-            );
-            $this->form_fields['credit_card_month_field'] = array(
+            ),
+            'credit_card_month_field' => array(
                 'title' => __('Choose Credit Card Month Field', 'paypal-for-woocommerce'),
                 'label' => __('Choose Credit Card Month Field Format.', 'paypal-for-woocommerce'),
                 'description' => __('Choose whether you wish to display Name format or Number format of Month field in the credit card form.'),
@@ -490,11 +477,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'number_name' => 'Numbers and Names'
                 ),
                 'default' => 'names'
-            );
-            $this->form_fields['credit_card_year_field'] = array(
+            ),
+            'credit_card_year_field' => array(
                 'title' => __('Choose Credit Card Year Field', 'paypal-for-woocommerce'),
                 'label' => __('Choose Credit Card Year Field Format.', 'paypal-for-woocommerce'),
-                'description' => __('Choose whether you wish to display Show Two digit format or Four digit of Year field in the credit card form.', 'paypal-for-woocommerce'),
+                'description' => __('Choose whether you wish to display Show Two digit format or Four digit of Year field in the credit card form.'),
                 'type' => 'select',
                 'css' => 'max-width:200px;',
                 'class' => 'wc-enhanced-select',
@@ -503,36 +490,37 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'four_digit' => 'Show Four Digit Years',
                 ),
                 'default' => 'four_digit'
-            );
-            $this->form_fields['enable_tokenized_payments'] = array(
+            ),
+            'enable_tokenized_payments' => array(
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => $enable_tokenized_payments_text,
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
-            );
-            $this->form_fields['enable_cardholder_first_last_name'] = array(
+            ),
+            'enable_cardholder_first_last_name' => array(
                 'title' => __('Enable Cardholder Name', 'paypal-for-woocommerce'),
                 'label' => __('Adds fields for "card holder name" to checkout in addition to the "billing name" fields.', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => __('Display card holder first and last name in credit card form.', 'paypal-for-woocommerce'),
                 'default' => 'no'
-            );
-            $this->form_fields['debug'] = array(
+            ),
+            'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'description' => sprintf(__('Log PayPal events inside <code>%s</code>', 'paypal-for-woocommerce'), wc_get_log_file_path('paypal_pro_payflow')),
-            );
-            $this->form_fields['is_encrypt'] = array(
+            ),
+            'is_encrypt' => array(
                 'title' => __('', 'paypal-for-woocommerce'),
                 'label' => __('', 'paypal-for-woocommerce'),
                 'type' => 'hidden',
                 'default' => 'yes',
                 'class' => ''
-            );
+            )
+        );
         $this->form_fields = apply_filters('angelleye_fc_form_fields', $this->form_fields);
     }
 
@@ -1747,10 +1735,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $card_number = str_replace(array(' ', '-'), '', $card_number);
         $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
         if ($card_type == 'amex') {
-            if($this->enable_amex_usd_ca == 'no') {
-                if (WC()->countries->get_base_country() == 'CA' && get_woocommerce_currency() == 'USD' && apply_filters('angelleye_paypal_pro_payflow_amex_ca_usd', true, $this)) {
-                    throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
-                }
+            if (WC()->countries->get_base_country() == 'CA' && get_woocommerce_currency() == 'USD' && apply_filters('angelleye_paypal_pro_payflow_amex_ca_usd', true, $this)) {
+                throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
             }
             if (get_woocommerce_currency() != 'USD' && get_woocommerce_currency() != 'AUD' && get_woocommerce_currency() != 'CAD') {
                 throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
