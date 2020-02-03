@@ -254,7 +254,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $pp_settings['enabled'] = !empty($pp_settings['enabled']) ? $pp_settings['enabled'] : '';
             $pp_standard['enabled'] = !empty($pp_standard['enabled']) ? $pp_standard['enabled'] : '';
             $pp_settings['paypal_marketing_solutions_cid_production'] = !empty($pp_settings['paypal_marketing_solutions_cid_production']) ? $pp_settings['paypal_marketing_solutions_cid_production'] : '';
-            if(isset($_GET['page']) && $_GET['page'] = 'wc-settings' ) {
+            if(isset($_GET['page']) && $_GET['page'] == 'wc-settings' ) {
                 if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || ( !empty($pp_payflow['enabled']) && $pp_payflow['enabled']=='yes' )) {
                     // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
                     if ( !is_ssl() && !get_user_meta($user_id, 'ignore_pp_ssl'))
