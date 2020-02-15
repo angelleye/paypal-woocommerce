@@ -2,7 +2,7 @@
 Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
-Requires at least: 3.8
+Requires at least: 5.0
 Tested up to: 5.3.2
 Stable tag: 2.1.14
 License: GPLv3
@@ -127,8 +127,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 2.1.14 - 01.30.2020 =
-* Feature - Adds options for American Express cards to be processed with USD currency on CA based account. ([PFW-555](https://github.com/angelleye/paypal-woocommerce/pull/1419))
+= 2.1.14 - 02.03.2020 =
+* Fix - Resolves an issue with W3 Total Cache. ([PFW-561](https://github.com/angelleye/paypal-woocommerce/pull/1422))
 
 = 2.1.13 - 01.29.2020 =
 * Feature - Adds WooCommerce 3.8.0 Compatibility. ([PFW-554](https://github.com/angelleye/paypal-woocommerce/pull/1416)) ([PFW-553](https://github.com/angelleye/paypal-woocommerce/pull/1418))
