@@ -1144,7 +1144,7 @@ class AngellEYE_Utility {
                     </tr>
                     <tr>
                         <td><?php echo __('Total Capture:', 'paypal-for-woocommerce'); ?></td>
-                        <td><?php echo get_woocommerce_currency_symbol() . '' . $this->total_DoCapture ?></td>
+                        <td><?php echo get_woocommerce_currency_symbol( $order->get_currency() ) . '' . $this->total_DoCapture ?></td>
                     </tr>
                 </tbody>
             </table>
