@@ -1628,6 +1628,9 @@ class AngellEYE_Utility {
     }
 
     public static function crypting($string, $action = 'e') {
+        if ( ! defined( 'AUTH_SALT' ) || ! defined( 'SECURE_AUTH_SALT' ) ) {
+            return false;
+        }
         $secret_key = AUTH_SALT;
         $secret_iv = SECURE_AUTH_SALT;
         $output = false;
