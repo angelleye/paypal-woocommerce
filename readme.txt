@@ -131,6 +131,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Tweak - Adds required hooks for our PayPal Shipment tracking. ([PFW-563](https://github.com/angelleye/paypal-woocommerce/pull/1423))
 * Tweak – Adjustments “Thank you” page message. ([PFW-566](https://github.com/angelleye/paypal-woocommerce/pull/1425))
 * Fix - Resolves jQuery conflict. ([PFW-565](https://github.com/angelleye/paypal-woocommerce/pull/1424))
+* Fix - "WooCommerce Booster Currency Switcher" plugin compatibility. ([PFW-571](https://github.com/angelleye/paypal-woocommerce/pull/1429))
 
 = 2.1.14 - 02.03.2020 =
 * Fix - Resolves an issue with W3 Total Cache. ([PFW-561](https://github.com/angelleye/paypal-woocommerce/pull/1422))
