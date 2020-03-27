@@ -134,6 +134,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Correct year format as per cardinal commerce docs. ([#1430](https://github.com/angelleye/paypal-woocommerce/pull/1430))
 * Fix - "WooCommerce Booster Currency Switcher" plugin compatibility. ([PFW-571](https://github.com/angelleye/paypal-woocommerce/pull/1429))
 * Fix - Resolves a conflict with multi-currency sites with Braintree. ([PFW-574](https://github.com/angelleye/paypal-woocommerce/pull/1434))
+* Fix - Resolves a conflict with the Express Checkout PHP code. ([PFW-578](https://github.com/angelleye/paypal-woocommerce/pull/1436))
 
 = 2.1.14 - 02.03.2020 =
 * Fix - Resolves an issue with W3 Total Cache. ([PFW-561](https://github.com/angelleye/paypal-woocommerce/pull/1422))
