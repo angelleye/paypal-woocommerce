@@ -1353,7 +1353,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function order_received_text($text, $order) {
             if ($order && ( $order->has_status('completed') || $order->has_status('processing')) && in_array( $order->get_payment_method(),  array('paypal_advanced', 'paypal_credit_card_rest', 'paypal_express', 'paypal_pro', 'paypal_pro_payflow')) ) {
-                return esc_html__( 'Thank you for your payment. Your transaction has been completed, and a receipt for your purchase has been emailed to you. Log into your PayPal account to view transaction details.', 'paypal-for-woocommerce' );
+                return esc_html__( 'Thank you for your payment. Your transaction has been completed, and a receipt for your purchase has been emailed to you.', 'paypal-for-woocommerce' );
             }
             return $text;
         }

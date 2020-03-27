@@ -127,6 +127,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.1.14 - 03.27.2020 =
+* Tweak - Adds required hooks for our PayPal Shipment tracking. ([PFW-563](https://github.com/angelleye/paypal-woocommerce/pull/1423))
+* Tweak – Adjustments “Thank you” page message. ([PFW-566](https://github.com/angelleye/paypal-woocommerce/pull/1425))
+* Fix - Resolves jQuery conflict. ([PFW-565](https://github.com/angelleye/paypal-woocommerce/pull/1424))
+* Fix - Correct year format as per cardinal commerce docs. ([#1430](https://github.com/angelleye/paypal-woocommerce/pull/1430))
+
 = 2.1.14 - 02.03.2020 =
 * Fix - Resolves an issue with W3 Total Cache. ([PFW-561](https://github.com/angelleye/paypal-woocommerce/pull/1422))
 

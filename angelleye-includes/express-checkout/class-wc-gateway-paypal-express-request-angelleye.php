@@ -752,9 +752,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $SECFields['landingpage'] = 'Login';
             }
             $SECFields = $this->function_helper->angelleye_paypal_for_woocommerce_needs_shipping($SECFields);
+            if(is_object($order)) {
+                $currencycode = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+            } else {
+                $currencycode = get_woocommerce_currency();
+            }
             $Payment = array(
                 'amt' => AngellEYE_Gateway_Paypal::number_format($order_total, $order),
-                'currencycode' => get_woocommerce_currency(),
+                'currencycode' => $currencycode,
                 'custom' => apply_filters('ae_ppec_custom_parameter', ''),
                 'notetext' => '',
                 'paymentaction' => ($this->gateway->payment_action == 'Authorization' || WC()->cart->total == 0 ) ? 'Authorization' : $this->gateway->payment_action,
