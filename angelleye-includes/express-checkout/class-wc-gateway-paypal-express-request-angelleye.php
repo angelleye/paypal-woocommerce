@@ -967,14 +967,26 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     if ($order_status == 'completed') {
                         break;
                     }
-                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'expresscheckout', 'paypal_here'))) {
                         break;
                     }
                     $order->add_order_note(__('Payment Completed via Express Checkout', 'paypal-for-woocommerce'));
                     $order->payment_complete($transaction_id);
                     break;
+                case 'completed_funds_held' :
+                    $order_status = version_compare(WC_VERSION, '3.0', '<') ? $order->status : $order->get_status();
+                    if ($order_status == 'completed') {
+                        break;
+                    }
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'expresscheckout', 'paypal_here'))) {
+                        break;
+                    }
+                    $order->payment_complete($transaction_id);
+                    $url = $this->angelleye_wc_gateway()->get_transaction_url($order);
+                    $order->add_order_note(__('The payment for this order has completed successfully, but PayPal has placed the funds on hold.  Please review the <a href="' . esc_url($url) . '">PayPal transaction details</a> for more information.', 'paypal-for-woocommerce'));
+                    break;
                 case 'pending' :
-                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'expresscheckout'))) {
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'expresscheckout', 'paypal_here'))) {
                         break;
                     }
                     switch (strtolower($pending_reason)) {
@@ -1671,6 +1683,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         } else {
             return null;
         }
+    }
+    
+    public function angelleye_wc_gateway() {
+        global $woocommerce;
+        $gateways = $woocommerce->payment_gateways->payment_gateways();
+        return $gateways['paypal_express'];
     }
 
 }
