@@ -288,12 +288,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     WC()->customer->set_calculated_shipping(true);
                 }
                 if ($this->angelleye_ec_force_to_display_checkout_page()) {
-                    if ($this->angelleye_ec_force_to_display_checkout_page()) {
-                        if (!empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true && !empty($_GET['key'])) {
-                            WC()->session->set('order_awaiting_payment', absint( wp_unslash( $_GET['order_id'] ) ) ) ;
-                        } else {
-                            $this->angelleye_wp_safe_redirect(wc_get_checkout_url(), 'get_express_checkout_details');
-                        }
+                    if (!empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true && !empty($_GET['key'])) {
+                        WC()->session->set('order_awaiting_payment', absint( wp_unslash( $_GET['order_id'] ) ) ) ;
+                    } else {
+                        $this->angelleye_wp_safe_redirect(wc_get_checkout_url(), 'get_express_checkout_details');
                     }
                 }
             } else {
