@@ -700,7 +700,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 WC()->session->set('CardNumber', $card->number);
                 $this->centinel_client->add('CardExpMonth', $card->exp_month);
                 WC()->session->set('CardExpMonth', $card->exp_month);
-                $this->centinel_client->add('CardExpYear', $card->exp_year);
+                $card_exp_year = DateTime::createFromFormat('y', $card->exp_year);
+                $card_exp_year_full = $card_exp_year->format('Y');
+                $this->centinel_client->add('CardExpYear', $card_exp_year_full);
                 WC()->session->set('CardExpYear', $card->exp_year);
                 $this->centinel_client->add('CardCode', $card->cvc);
                 WC()->session->set('CardCode', $card->cvc);
