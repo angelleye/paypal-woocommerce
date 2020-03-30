@@ -288,12 +288,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     WC()->customer->set_calculated_shipping(true);
                 }
                 if ($this->angelleye_ec_force_to_display_checkout_page()) {
-                    if ($this->angelleye_ec_force_to_display_checkout_page()) {
-                        if (!empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true && !empty($_GET['key'])) {
-                            WC()->session->set('order_awaiting_payment', absint( wp_unslash( $_GET['order_id'] ) ) ) ;
-                        } else {
-                            $this->angelleye_wp_safe_redirect(wc_get_checkout_url(), 'get_express_checkout_details');
-                        }
+                    if (!empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true && !empty($_GET['key'])) {
+                        WC()->session->set('order_awaiting_payment', absint( wp_unslash( $_GET['order_id'] ) ) ) ;
+                    } else {
+                        $this->angelleye_wp_safe_redirect(wc_get_checkout_url(), 'get_express_checkout_details');
                     }
                 }
             } else {
@@ -752,9 +750,14 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $SECFields['landingpage'] = 'Login';
             }
             $SECFields = $this->function_helper->angelleye_paypal_for_woocommerce_needs_shipping($SECFields);
+            if(is_object($order)) {
+                $currencycode = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+            } else {
+                $currencycode = get_woocommerce_currency();
+            }
             $Payment = array(
                 'amt' => AngellEYE_Gateway_Paypal::number_format($order_total, $order),
-                'currencycode' => get_woocommerce_currency(),
+                'currencycode' => $currencycode,
                 'custom' => apply_filters('ae_ppec_custom_parameter', ''),
                 'notetext' => '',
                 'paymentaction' => ($this->gateway->payment_action == 'Authorization' || WC()->cart->total == 0 ) ? 'Authorization' : $this->gateway->payment_action,
@@ -962,14 +965,26 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     if ($order_status == 'completed') {
                         break;
                     }
-                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money'))) {
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'expresscheckout', 'paypal_here'))) {
                         break;
                     }
                     $order->add_order_note(__('Payment Completed via Express Checkout', 'paypal-for-woocommerce'));
                     $order->payment_complete($transaction_id);
                     break;
+                case 'completed_funds_held' :
+                    $order_status = version_compare(WC_VERSION, '3.0', '<') ? $order->status : $order->get_status();
+                    if ($order_status == 'completed') {
+                        break;
+                    }
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'expresscheckout', 'paypal_here'))) {
+                        break;
+                    }
+                    $order->payment_complete($transaction_id);
+                    $url = $this->angelleye_wc_gateway()->get_transaction_url($order);
+                    $order->add_order_note(__('The payment for this order has completed successfully, but PayPal has placed the funds on hold.  Please review the <a href="' . esc_url($url) . '">PayPal transaction details</a> for more information.', 'paypal-for-woocommerce'));
+                    break;
                 case 'pending' :
-                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'expresscheckout'))) {
+                    if (!in_array(strtolower($transaction_type), array('merchtpmt', 'cart', 'instant', 'express_checkout', 'web_accept', 'masspay', 'send_money', 'expresscheckout', 'paypal_here'))) {
                         break;
                     }
                     switch (strtolower($pending_reason)) {
@@ -1666,6 +1681,12 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         } else {
             return null;
         }
+    }
+    
+    public function angelleye_wc_gateway() {
+        global $woocommerce;
+        $gateways = $woocommerce->payment_gateways->payment_gateways();
+        return $gateways['paypal_express'];
     }
 
 }

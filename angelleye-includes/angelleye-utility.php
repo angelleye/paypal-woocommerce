@@ -1046,13 +1046,13 @@ class AngellEYE_Utility {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $payment_method = get_post_meta($post->ID, '_payment_method', true);
         $payment_action = get_post_meta($post->ID, '_payment_action', true);
-        
-            $transaction_id = $this->angelleye_get_order_transaction_id($post);
-            $posts_array = get_posts($args);
-            if (empty($this->angelleye_woocommerce_order_actions)) {
-                $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions();
-            }
-            if( $payment_method != 'braintree') {
+        $currency_code = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+        $transaction_id = $this->angelleye_get_order_transaction_id($post);
+        $posts_array = get_posts($args);
+        if (empty($this->angelleye_woocommerce_order_actions)) {
+            $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions();
+        }
+        if( $payment_method != 'braintree') {
             foreach ($posts_array as $post_data):
                 $payment_status = get_post_meta($post_data->ID, 'PAYMENTSTATUS', true);
                 //$payment_status = get_post_meta($post->ID, 'post_status', true);
@@ -1061,7 +1061,7 @@ class AngellEYE_Utility {
                 }
             endforeach;
             if (empty($this->angelleye_woocommerce_order_actions)) {
-                
+
                 $this->angelleye_display_user_instruction_for_payment_action($payment_action, $this->angelleye_woocommerce_order_actions);
             }
         }
@@ -1144,7 +1144,11 @@ class AngellEYE_Utility {
                     </tr>
                     <tr>
                         <td><?php echo __('Total Capture:', 'paypal-for-woocommerce'); ?></td>
-                        <td><?php echo get_woocommerce_currency_symbol() . '' . $this->total_DoCapture ?></td>
+<<<<<<< HEAD
+                        <td><?php echo get_woocommerce_currency_symbol($currency_code) . '' . $this->total_DoCapture ?></td>
+=======
+                        <td><?php echo get_woocommerce_currency_symbol( $order->get_currency() ) . '' . $this->total_DoCapture ?></td>
+>>>>>>> 7e29fb2fb87417f8e8d23d22c02f2af7379e5836
                     </tr>
                 </tbody>
             </table>
@@ -1186,7 +1190,7 @@ class AngellEYE_Utility {
                                     }
                                 }
                                 ?></td>
-                            <td><?php echo get_woocommerce_currency_symbol() . '' . esc_attr(get_post_meta($post->ID, 'AMT', true)); ?></td>
+                            <td><?php echo get_woocommerce_currency_symbol($currency_code) . '' . esc_attr(get_post_meta($post->ID, 'AMT', true)); ?></td>
                             <?php
                             $PENDINGREASON = esc_attr(get_post_meta($post->ID, 'PENDINGREASON', true));
                             if (empty($PENDINGREASON)) {
@@ -1628,6 +1632,9 @@ class AngellEYE_Utility {
     }
 
     public static function crypting($string, $action = 'e') {
+        if ( ! defined( 'AUTH_SALT' ) || ! defined( 'SECURE_AUTH_SALT' ) ) {
+            return false;
+        }
         $secret_key = AUTH_SALT;
         $secret_iv = SECURE_AUTH_SALT;
         $output = false;

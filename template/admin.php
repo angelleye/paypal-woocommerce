@@ -12,6 +12,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
     <h2 class="nav-tab-wrapper">
         <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_payment_gateway_products" class="nav-tab <?php echo $active_tab == 'general_settings' ? 'nav-tab-active' : ''; ?>"><?php echo __('General', 'paypal-for-woocommerce'); ?></a>
         <a href="?page=<?php echo $this->plugin_slug; ?>&tab=tools" class="nav-tab <?php echo $active_tab == 'tools' ? 'nav-tab-active' : ''; ?>"><?php echo __('Tools', 'paypal-for-woocommerce'); ?></a>
+        <?php do_action('angelleye_setting_main_menu_tab'); ?>
     </h2>
     <?php if ($active_tab == 'general_settings') { ?>
         <h2 class="nav-tab-wrapper">

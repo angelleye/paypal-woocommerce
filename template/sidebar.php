@@ -22,22 +22,22 @@
             </div>
         </div>
         <script type="text/javascript">
-            $("#angelleye_sendy").click(function () {
+            jQuery("#angelleye_sendy").click(function () {
                 var data = {
                     'action': 'angelleye_marketing_sendy_subscription',
-                    'email': $('#angelleye_sendy_email').val()
+                    'email': jQuery('#angelleye_sendy_email').val()
                 };
-                $.post(ajaxurl, data, function () {
+                jQuery.post(ajaxurl, data, function () {
                     
                 })
                 .done(function (response) {
                     
                     console.log(response);
                     if( response.result === "true" ) {
-                        $('#angelleye_sendy_msg').html(response.message);
-                        $('#angelleye_sendy_email').val("");
+                        jQuery('#angelleye_sendy_msg').html(response.message);
+                        jQuery('#angelleye_sendy_email').val("");
                     } else {
-                        $('#angelleye_sendy_msg').html(response.message);
+                        jQuery('#angelleye_sendy_msg').html(response.message);
                     }
                 })
                 .fail(function (response) {
