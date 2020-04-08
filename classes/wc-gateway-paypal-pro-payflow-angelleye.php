@@ -678,6 +678,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $this->enable_3dsecure = false;
         }
 
+        $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
+        
         if ($this->enable_3dsecure) {
 
             if ($this->threedsecure_type == 'cardinalcommerce') {
