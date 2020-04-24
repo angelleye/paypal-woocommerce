@@ -60,36 +60,30 @@ class AngellEYE_PFW_Payment_Logger {
                 $request_param['mode'] = ($sandbox) ? 'sandbox' : 'live';
                 $request_param['product_id'] = $product_id;
                 if ($request['METHOD'] == 'DoExpressCheckoutPayment') {
-                    if ($opt_in == 'yes') {
-                        if (isset($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID']) && !empty($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'])) {
-                            $request_param['merchant_id'] = $result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'];
-                        } elseif (isset($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID']) && !empty($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'])) {
-                            $request_param['merchant_id'] = $result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'];
-                        }
+                    if (isset($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID']) && !empty($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'])) {
+                        $request_param['merchant_id'] = $result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'];
+                    } elseif (isset($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID']) && !empty($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'])) {
+                        $request_param['merchant_id'] = $result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'];
                     }
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['PAYMENTINFO_0_TRANSACTIONID']) ? $result['PAYMENTINFO_0_TRANSACTIONID'] : '';
                     $request_param['amount'] = isset($result['PAYMENTINFO_0_AMT']) ? $result['PAYMENTINFO_0_AMT'] : '0.00';
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'DoDirectPayment') {
-                    if ($opt_in == 'yes') {
-                        if (isset($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID']) && !empty($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'])) {
-                            $request_param['merchant_id'] = $result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'];
-                        } elseif (isset($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID']) && !empty($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'])) {
-                            $request_param['merchant_id'] = $result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'];
-                        }
+                    if (isset($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID']) && !empty($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'])) {
+                        $request_param['merchant_id'] = $result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'];
+                    } elseif (isset($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID']) && !empty($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'])) {
+                        $request_param['merchant_id'] = $result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'];
                     }
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['TRANSACTIONID']) ? $result['TRANSACTIONID'] : '';
                     $request_param['amount'] = isset($result['AMT']) ? $result['AMT'] : '0.00';
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'DoCapture') {
-                    if ($opt_in == 'yes') {
-                        if (isset($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID']) && !empty($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'])) {
-                            $request_param['merchant_id'] = $result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'];
-                        } elseif (isset($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID']) && !empty($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'])) {
-                            $request_param['merchant_id'] = $result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'];
-                        }
+                    if (isset($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID']) && !empty($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'])) {
+                        $request_param['merchant_id'] = $result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'];
+                    } elseif (isset($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID']) && !empty($result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'])) {
+                        $request_param['merchant_id'] = $result['PAYMENTINFO_0_SELLERPAYPALACCOUNTID'];
                     }
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['TRANSACTIONID']) ? $result['TRANSACTIONID'] : '';
