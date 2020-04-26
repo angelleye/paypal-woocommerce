@@ -107,7 +107,7 @@ class AngellEYE_PFW_Payment_Logger {
                         $request_param['status'] = 'Failure';
                     }
 
-                    $request_param['merchant_id'] = isset($result['merchant_id']) ? $result['merchant_id'] : '';;
+                    $request_param['merchant_id'] = isset($request['merchant_id']) ? $request['merchant_id'] : '';
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['PNREF']) ? $result['PNREF'] : '';
                     $request_param['amount'] = isset($result['AMT']) ? $result['AMT'] : '0.00';
