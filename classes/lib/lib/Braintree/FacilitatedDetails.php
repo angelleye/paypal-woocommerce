@@ -1,6 +1,11 @@
 <?php
 namespace Braintree;
 
+/**
+ * @property-read string $merchantId
+ * @property-read string $merchantName
+ * @property-read string $paymentMethodNonce
+ */
 class FacilitatedDetails extends Base
 {
     public static function factory($attributes)
@@ -24,6 +29,4 @@ class FacilitatedDetails extends Base
         return __CLASS__ . '[' .
                 Util::attributesToString($this->_attributes) .']';
     }
-
 }
-class_alias('Braintree\FacilitatedDetails', 'Braintree_FacilitatedDetails');

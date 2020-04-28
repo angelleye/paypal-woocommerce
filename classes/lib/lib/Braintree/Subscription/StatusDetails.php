@@ -14,11 +14,10 @@ use Braintree\Instance;
  * @property-read string $planId
  * @property-read string $balance
  * @property-read string $status
- * @property-read string $timestamp
+ * @property-read \DateTime $timestamp
  * @property-read string $subscriptionSource
  * @property-read string $user
  */
 class StatusDetails extends Instance
 {
 }
-class_alias('Braintree\Subscription\StatusDetails', 'Braintree_Subscription_StatusDetails');

@@ -24,6 +24,15 @@ class CreditCardNumbers
         '6011111111111117',
         '6011000990139424',
         ];
+
+    public static $hiper = '6370950000000005';
+    public static $hiperCard = '6062820524845321';
+
+    public static $elo = '5066991111111118';
+    public static $eloCards = [
+        '5066991111111118'
+    ];
+
     public static $JCBs          = [
         '3530111333300000',
         '3566002020360505',
@@ -71,9 +80,9 @@ class CreditCardNumbers
         return array_merge(
                 self::$amExes,
                 self::$discoverCards,
+                self::$eloCards,
                 self::$masterCards,
                 self::$visas
                 );
     }
 }
-class_alias('Braintree\Test\CreditCardNumbers', 'Braintree_Test_CreditCardNumbers');

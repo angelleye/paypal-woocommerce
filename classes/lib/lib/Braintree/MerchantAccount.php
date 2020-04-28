@@ -1,6 +1,16 @@
 <?php
 namespace Braintree;
 
+/**
+ * @property-read \Braintree\MerchantAccount\BusinessDetails $businessDetails
+ * @property-read string $currencyIsoCode
+ * @property-read boolean $default
+ * @property-read \Braintree\MerchantAccount\FundingDetails $fundingDetails
+ * @property-read string $id
+ * @property-read \Braintree\MerchantAccount\IndividualDetails $individualDetails
+ * @property-read \Braintree\MerchantAccount $masterMerchantAccount
+ * @property-read string $status
+ */
 class MerchantAccount extends Base
 {
     const STATUS_ACTIVE = 'active';
@@ -61,4 +71,3 @@ class MerchantAccount extends Base
         return Configuration::gateway()->merchantAccount()->update($merchant_account_id, $attributes);
     }
 }
-class_alias('Braintree\MerchantAccount', 'Braintree_MerchantAccount');

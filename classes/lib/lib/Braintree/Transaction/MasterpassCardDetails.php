@@ -12,6 +12,7 @@ use Braintree\Instance;
  *
  * @property-read string $bin
  * @property-read string $callId
+ * @property-read string $cardType
  * @property-read string $cardholderName
  * @property-read string $commercial
  * @property-read string $countryOfIssuance
@@ -48,4 +49,3 @@ class MasterpassCardDetails extends Instance
 
     }
 }
-class_alias('Braintree\Transaction\MasterpassCardDetails', 'Braintree_Transaction_MasterpassCardDetails');

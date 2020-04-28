@@ -141,36 +141,74 @@ namespace Braintree;
  * @category   Resources
  *
  *
+ * @property-read \Braintree\AddOn[] $addons
+ * @property-read string $additionalProcessorResponse raw response from processor
+ * @property-read string $amount transaction amount
+ * @property-read \Braintree\Transaction\AmexExpressCheckoutCardDetails $amexExpressCheckoutCardDetails transaction Amex Express Checkout card info
+ * @property-read \Braintree\Transaction\AndroidPayCardDetails $androidPayCardDetails transaction Android Pay card info
+ * @property-read \Braintree\Transaction\ApplePayCardDetails $applePayCardDetails transaction Apple Pay card info
+ * @property-read \Braintree\AuthorizationAdjustment[] $authorizationAdjustments populated when a transaction has authorization adjustments created when submitted for settlement
+ * @property-read \DateTime $authorizationExpiresAt DateTime authorization will expire
  * @property-read string $avsErrorResponseCode
  * @property-read string $avsPostalCodeResponseCode
  * @property-read string $avsStreetAddressResponseCode
- * @property-read string $cvvResponseCode
- * @property-read string $id transaction id
- * @property-read string $amount transaction amount
- * @property-read Braintree\Transaction\AddressDetails $billingDetails transaction billing address
+ * @property-read \Braintree\Transaction\AddressDetails $billingDetails transaction billing address
+ * @property-read string $channel
  * @property-read \DateTime $createdAt transaction created DateTime
- * @property-read Braintree\ApplePayCardDetails $applePayCardDetails transaction Apple Pay card info
- * @property-read Braintree\AndroidPayCardDetails $androidPayCardDetails transaction Android Pay card info
- * @property-read Braintree\AmexExpressCheckoutCardDetails $amexExpressCheckoutCardDetails transaction Amex Express Checkout card info
- * @property-read Braintree\CreditCardDetails $creditCardDetails transaction credit card info
- * @property-read Braintree\CoinbaseDetails $coinbaseDetails transaction Coinbase account info
- * @property-read Braintree\MasterpassCardDetails $masterpassCardDetails transaction Masterpass card info
- * @property-read Braintree\PayPalDetails $paypalDetails transaction paypal account info
- * @property-read Braintree\Transaction\CustomerDetails $customerDetails transaction customer info
- * @property-read Braintree\VenmoAccount $venmoAccountDetails transaction Venmo Account info
- * @property-read Braintree\IdealPayment $idealPaymentDetails transaction Ideal Payment info
- * @property-read Braintree\VisaCheckoutCardDetails $visaCheckoutCardDetails transaction Visa Checkout card info
- * @property-read array  $customFields custom fields passed with the request
+ * @property-read \Braintree\Transaction\CreditCardDetails $creditCardDetails transaction credit card info
+ * @property-read string $currencyIsoCode
+ * @property-read array $customFields custom fields passed with the request
+ * @property-read \Braintree\Transaction\CustomerDetails $customerDetails transaction customer info
+ * @property-read string $cvvResponseCode
+ * @property-read \Braintree\Descriptor $descriptor
+ * @property-read Braintree\DisbursementDetails $disbursementDetails populated when transaction is disbursed
+ * @property-read string $discountAmount
+ * @property-read \Braintree\Discount[] $discounts
+ * @property-read \Braintree\Dispute[] $disputes populated when transaction is disputed
+ * @property-read string $escrowStatus
+ * @property-read \Braintree\FacilitatedDetails $facilitatedDetails
+ * @property-read \Braintree\FacilitatorDetails $facilitatorDetails
+ * @property-read string $gatewayRejectionReason
+ * @property-read string $graphQLId transaction graphQLId
+ * @property-read string $id transaction id
+ * @property-read \Braintree\TransactionLineItem[] $lineItems
+ * @property-read \Braintree\Transaction\MasterpassCardDetails $masterpassCardDetails transaction Masterpass card info
+ * @property-read string $merchantAccountId
+ * @property-read string $networkTransactionId
+ * @property-read string $orderId
+ * @property-read string $paymentInstrumentType
+ * @property-read \Braintree\Transaction\PayPalDetails $paypalDetails transaction paypal account info
+ * @property-read \Braintree\Transaction\PayPalHereDetails $paypalHereDetails 
+ * @property-read \Braintree\Transaction\LocalPaymentDetails $localPaymentDetails transaction local payment info
+ * @property-read string $planId
+ * @property-read string $processorAuthorizationCode
  * @property-read string $processorResponseCode gateway response code
- * @property-read string $additionalProcessorResponse raw response from processor
- * @property-read Braintree\Transaction\AddressDetails $shippingDetails transaction shipping address
+ * @property-read string $processorResponseText
+ * @property-read string $processorResponseType
+ * @property-read string $processorSettlementResponseCode
+ * @property-read string $processorSettlementResponseText
+ * @property-read string $purchaseOrderNumber
+ * @property-read mixed $reccuring
+ * @property-read mixed $refundIds
+ * @property-read string $refundedTransactionId
+ * @property-read \Braintree\RiskData $riskData
+ * @property-read \Braintree\Transaction\SamsungPayCardDetails $samsungPayCardDetails transaction Samsung Pay card info
+ * @property-read string $serviceFeeAmount
+ * @property-read string $settlementBatchId
+ * @property-read string $shippingAmount
+ * @property-read \Braintree\Transaction\AddressDetails $shippingDetails transaction shipping address
  * @property-read string $status transaction status
- * @property-read array  $statusHistory array of StatusDetails objects
+ * @property-read \Braintree\Transaction\StatusDetails[] $statusHistory array of StatusDetails objects
+ * @property-read \Braintree\Transaction\SubscriptionDetails $subscriptionDetails
+ * @property-read string $subscriptionId
+ * @property-read string $taxAmount
+ * @property-read string $taxExcempt
+ * @property-read \Braintree\ThreeDSecureInfo $threeDSecureInfo
  * @property-read string $type transaction type
  * @property-read \DateTime $updatedAt transaction updated DateTime
- * @property-read Braintree\Disbursement $disbursementDetails populated when transaction is disbursed
- * @property-read Braintree\Dispute $disputes populated when transaction is disputed
- * @property-read Braintree\AuthorizationAdjustment $authorizationAdjustments populated when a transaction has authorization adjustments created when submitted for settlement
+ * @property-read \Braintree\VenmoAccount $venmoAccountDetails transaction Venmo Account info
+ * @property-read \Braintree\Transaction\VisaCheckoutCardDetails $visaCheckoutCardDetails transaction Visa Checkout card info
+ * @property-read string $voiceReferralName
  *
  */
 
@@ -219,11 +257,21 @@ class Transaction extends Base
     const DUPLICATE      = 'duplicate';
     const FRAUD          = 'fraud';
     const THREE_D_SECURE = 'three_d_secure';
+    const TOKEN_ISSUANCE = 'token_issuance';
     const APPLICATION_INCOMPLETE = 'application_incomplete';
 
     // Industry Types
     const LODGING_INDUSTRY           = 'lodging';
     const TRAVEL_AND_CRUISE_INDUSTRY = 'travel_cruise';
+    const TRAVEL_AND_FLIGHT_INDUSTRY = 'travel_flight';
+
+    // Additional Charge Types
+    const RESTAURANT = 'lodging';
+    const GIFT_SHOP  = 'gift_shop';
+    const MINI_BAR   = 'mini_bar';
+    const TELEPHONE  = 'telephone';
+    const LAUNDRY    = 'laundry';
+    const OTHER      = 'other';
 
     /**
      * sets instance properties from an array of values
@@ -269,6 +317,14 @@ class Transaction extends Base
             );
         }
 
+        if (isset($transactionAttribs['samsungPayCard'])) {
+            $this->_set('samsungPayCardDetails',
+                new Transaction\SamsungPayCardDetails(
+                    $transactionAttribs['samsungPayCard']
+                )
+            );
+        }
+
         if (isset($transactionAttribs['amexExpressCheckoutCard'])) {
             $this->_set('amexExpressCheckoutCardDetails',
                 new Transaction\AmexExpressCheckoutCardDetails(
@@ -293,14 +349,6 @@ class Transaction extends Base
             );
         }
 
-        if (isset($transactionAttribs['coinbaseAccount'])) {
-            $this->_set('coinbaseDetails',
-                new Transaction\CoinbaseDetails(
-                    $transactionAttribs['coinbaseAccount']
-                )
-            );
-        }
-
         if (isset($transactionAttribs['usBankAccount'])) {
             $this->_set('usBankAccount',
                 new Transaction\UsBankAccountDetails(
@@ -309,18 +357,26 @@ class Transaction extends Base
             );
         }
 
-        if (isset($transactionAttribs['idealPayment'])) {
-            $this->_set('idealPayment',
-                new Transaction\IdealPaymentDetails(
-                    $transactionAttribs['idealPayment']
-                )
-            );
-        }
-
         if (isset($transactionAttribs['paypal'])) {
             $this->_set('paypalDetails',
                 new Transaction\PayPalDetails(
                     $transactionAttribs['paypal']
+                )
+            );
+        }
+
+        if (isset($transactionAttribs['paypalHere'])) {
+            $this->_set('paypalHereDetails',
+                new Transaction\PayPalHereDetails(
+                    $transactionAttribs['paypalHere']
+                )
+            );
+        }
+
+        if (isset($transactionAttribs['localPayment'])) {
+            $this->_set('localPaymentDetails',
+                new Transaction\LocalPaymentDetails(
+                    $transactionAttribs['localPayment']
                 )
             );
         }
@@ -476,7 +532,7 @@ class Transaction extends Base
         }
     }
 
-    /** @return bool */
+    /** @return boolean */
     public function isDisbursed() {
         return $this->disbursementDetails->isValid();
     }
@@ -506,11 +562,6 @@ class Transaction extends Base
     public static function cloneTransaction($transactionId, $attribs)
     {
         return Configuration::gateway()->transaction()->cloneTransaction($transactionId, $attribs);
-    }
-
-    public static function createFromTransparentRedirect($queryString)
-    {
-        return Configuration::gateway()->transaction()->createFromTransparentRedirect($queryString);
     }
 
     public static function createTransactionUrl()
@@ -603,4 +654,3 @@ class Transaction extends Base
         return Configuration::gateway()->transaction()->refund($transactionId, $amount);
     }
 }
-class_alias('Braintree\Transaction', 'Braintree_Transaction');
