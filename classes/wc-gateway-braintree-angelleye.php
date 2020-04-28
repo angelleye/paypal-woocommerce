@@ -1413,7 +1413,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $this->public_key = $this->sandbox == false ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
         }
         try {
-            require_once( 'lib/lib/Braintree.php' );
+            if(!class_exists('Braintree')){
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/lib/Braintree.php');
+            }
             $this->braintree_gateway = new Braintree\Gateway([
                 'environment' => $this->environment,
                 'merchantId' => $this->merchant_id,
