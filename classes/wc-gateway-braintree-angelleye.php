@@ -809,7 +809,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                             if ( $('.is_submit').length == 0) {
                                     if(('iframe[name^="braintree-"]')) {
-                                        ('.bt-modal-body').html('');
+                                        $('.bt-modal-body').html('');
                                     }
                                     $(function() {
                                         onFetchClientToken(clientToken);
