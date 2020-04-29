@@ -2211,8 +2211,17 @@ class AngellEYE_Utility {
 	}
 
         public static function angelleye_display_marketing_sidebar($id = null) {
-            wp_enqueue_style('angelleye_marketing_css');
-            require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/sidebar.php' );
+            if (false === ( $html = get_transient('angelleye_dynamic_marketing_sidebar_html_pfw') )) {
+                $response = wp_remote_get('https://8aystwpoqi.execute-api.us-east-2.amazonaws.com/AngellEyeDynamicSidebar?pluginId=1');
+                if (is_array($response) && !is_wp_error($response)) {
+                    if (!empty($response['body'])) {
+                        set_transient('angelleye_dynamic_marketing_sidebar_html_pfw', $response['body'], 24 * HOUR_IN_SECONDS);
+                        echo $response['body'];
+                    }
+                }
+            } else {
+                echo $html;
+            }
         }
 
         public static function angelleye_get_push_notifications() {
