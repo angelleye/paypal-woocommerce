@@ -808,7 +808,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 iframe.parentNode.removeChild(iframe);
                             }
                             if ( $('.is_submit').length == 0) {
-                                
+                                    if(('iframe[name^="braintree-"]')) {
+                                        ('.bt-modal-body').html('');
+                                    }
                                     $(function() {
                                         onFetchClientToken(clientToken);
                                     });
@@ -1656,7 +1658,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             return;
         }
         if ($this->enable_braintree_drop_in) {
-            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.20.4/js/dropin.min.js', array('jquery'), null, false);
+            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.22.1/js/dropin.min.js', array('jquery'), null, false);
         } else {
             wp_enqueue_style('braintree_checkout', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/braintree-checkout.css', array(), VERSION_PFW);
             wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.35.0/js/client.min.js', array('jquery'), null, true);
