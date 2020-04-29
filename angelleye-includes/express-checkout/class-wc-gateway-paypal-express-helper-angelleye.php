@@ -284,7 +284,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if ($this->enabled == 'yes' && $this->show_on_product_page == 'yes' && $is_ec_button_enable_product_level == 'yes') {
                 $ec_html_button = '';
                 $_product = wc_get_product($product->get_id());
-                if ($_product->is_type('variation') || $_product->is_type('variable') || $_product->is_type('simple')) {
+	            $_allowed_product_type = apply_filters('angelleye_ec_product_type_allowed', array('variation', 'variable', 'simple') );
+	            if ( in_array( $_product->get_type(), $_allowed_product_type, true ) ) {
                     if ($_product->is_type('simple') && (version_compare(WC_VERSION, '3.0', '<') == false)) {
                         ?>
                         <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
