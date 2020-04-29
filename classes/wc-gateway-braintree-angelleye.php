@@ -808,7 +808,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 iframe.parentNode.removeChild(iframe);
                             }
                             if ( $('.is_submit').length == 0) {
-                                    if(('iframe[name^="braintree-"]')) {
+                                    if($('iframe[name^="braintree-"]').length) {
                                         $('.bt-modal-body').html('');
                                     }
                                     $(function() {
