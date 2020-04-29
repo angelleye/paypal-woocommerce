@@ -6,7 +6,6 @@ use InvalidArgumentException;
 
 /**
  * Braintree Utility methods
- * PHP version 5
  */
 
 class Util
@@ -61,6 +60,9 @@ class Util
         case 404:
             throw new Exception\NotFound();
             break;
+        case 408;
+            throw new Exception\RequestTimeout();
+            break;
         case 426:
             throw new Exception\UpgradeRequired();
             break;
@@ -70,12 +72,54 @@ class Util
         case 500:
             throw new Exception\ServerError();
             break;
-        case 503:
-            throw new Exception\DownForMaintenance();
+        case 504;
+            throw new Exception\GatewayTimeout();
             break;
         default:
             throw new Exception\Unexpected('Unexpected HTTP_RESPONSE #' . $statusCode);
             break;
+        }
+    }
+
+    /**
+     * throws an exception based on the type of error returned from graphql
+     * @param array $response complete graphql response
+     * @throws Exception multiple types depending on the error
+     * @return void
+     */
+    public static function throwGraphQLResponseException($response)
+    {
+        if(!array_key_exists("errors", $response) || !($errors = $response["errors"])) {
+            return;
+        }
+
+        foreach ($errors as $error) {
+            $message = $error["message"];
+            if ($error["extensions"] == null) {
+                throw new Exception\Unexpected("Unexpected exception:" . $message);
+            }
+
+            $errorClass = $error["extensions"]["errorClass"];
+
+            if ($errorClass == "VALIDATION") {
+                continue;
+            } else if ($errorClass == "AUTHENTICATION") {
+                throw new Exception\Authentication();
+            } else if ($errorClass == "AUTHORIZATION") {
+                throw new Exception\Authorization($message);
+            } else if ($errorClass == "NOT_FOUND") {
+                throw new Exception\NotFound();
+            } else if ($errorClass == "UNSUPPORTED_CLIENT") {
+                throw new Exception\UpgradeRequired();
+            } else if ($errorClass == "RESOURCE_LIMIT") {
+                throw new Exception\TooManyRequests();
+            } else if ($errorClass == "INTERNAL") {
+                throw new Exception\ServerError();
+            } else if ($errorClass == "SERVICE_AVAILABILITY") {
+                throw new Exception\ServiceUnavailable();
+            } else {
+                throw new Exception\Unexpected('Unexpected exception ' . $message);
+            }
         }
     }
 
@@ -420,4 +464,3 @@ class Util
         return $invalidKeys;
     }
 }
-class_alias('Braintree\Util', 'Braintree_Util');

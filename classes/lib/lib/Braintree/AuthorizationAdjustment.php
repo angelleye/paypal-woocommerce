@@ -7,8 +7,8 @@ namespace Braintree;
  * @package Braintree
  *
  * @property-read string $amount
- * @property-read DateTime $timestamp
  * @property-read boolean $success
+ * @property-read \DateTime $timestamp
  *
  */
 
@@ -32,4 +32,3 @@ class AuthorizationAdjustment extends Base
         return __CLASS__ . '[' . Util::attributesToString($this->_attributes) . ']';
     }
 }
-class_alias('Braintree\AuthorizationAdjustment', 'Braintree_Authorization_Adjustment');
