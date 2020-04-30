@@ -1175,7 +1175,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'recurring' => '', // Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring.
                 'swipe' => '', // Required for card-present transactions.  Used to pass either Track 1 or Track 2, but not both.
                 'orderid' => $this->invoice_id_prefix . str_replace("#", "", $order->get_order_number()), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
-                'orderdesc' => 'Order ' . $order->get_order_number() . ' on ' . get_bloginfo('name'), //
+                'orderdesc' => $this->get_order_item_names($order),
                 'billtoemail' => $billing_email, // Account holder's email address.
                 'billtophonenum' => '', // Account holder's phone number.
                 'billtofirstname' => $firstname, // Account holder's first name.
@@ -1889,7 +1889,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'recurring' => '', // Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring.
                 'swipe' => '', // Required for card-present transactions.  Used to pass either Track 1 or Track 2, but not both.
                 'orderid' => $this->invoice_id_prefix . $order->get_order_number(), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
-                'orderdesc' => 'Order ' . $order->get_order_number() . ' on ' . get_bloginfo('name'), //
+                'orderdesc' => $this->get_order_item_names($order), //
                 'billtoemail' => $billing_email, // Account holder's email address.
                 'billtophonenum' => '', // Account holder's phone number.
                 'billtostreet' => $billing_address_1 . ' ' . $billing_address_2, // The cardholder's street address (number and street name).  150 char max
@@ -2447,6 +2447,15 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         }
         $value = wc_clean($value);
         return $value;
+    }
+    
+    public function get_order_item_names( $order ) {
+        $item_names = array();
+        foreach ( $order->get_items() as $item ) {
+            $item_names[] = $item->get_name();
+        }
+        $orderdesc = apply_filters( 'ae_pppf_paypal_orderdesc', implode( ', ', $item_names ), $order );
+        return substr($orderdesc, 0, 127);
     }
 
 }
