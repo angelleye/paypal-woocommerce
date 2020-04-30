@@ -473,7 +473,22 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $this->add_log("Generate a client token Braintree\Exception\SSLCertificate" . $e->getMessage());
             wp_redirect(wc_get_cart_url());
             exit;
-        } catch (Braintree\Exception\NotFound $e) {
+        }catch (InvalidArgumentException $e){
+	        if ($e->getMessage() == 'Customer specified by customer_id does not exist') {
+		        if (is_user_logged_in()) {
+			        $customer_id = get_current_user_id();
+			        delete_user_meta($customer_id, 'braintree_customer_id');
+			        $clientToken = $this->braintree_gateway->clientToken()->generate();
+		        }
+	        } else {
+		        $error = $this->get_braintree_exception_message($e);
+		        wc_add_notice($error, 'error');
+		        $this->add_log("Generate a client token Braintree\Exception\NotFound" . $e->getMessage());
+		        wp_redirect(wc_get_cart_url());
+		        exit;
+	        }
+        }
+        catch (Braintree\Exception\NotFound $e) {
             if ($e->getMessage() == 'Customer specified by customer_id does not exist') {
                 if (is_user_logged_in()) {
                     $customer_id = get_current_user_id();
@@ -488,8 +503,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 exit;
             }
         } catch (Exception $ex) {
-
-            $error = $this->get_braintree_exception_message($e);
+            $error = $this->get_braintree_exception_message($ex);
             wc_add_notice($error, 'error');
             wp_redirect(wc_get_cart_url());
             exit;
@@ -513,7 +527,16 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             var is_registration_required = "<?php echo WC()->checkout()->is_registration_required(); ?>";
 	    var is_logged_in = "<?php echo is_user_logged_in(); ?>";
         </script>
-         <?php 
+         <?php
+	    $order_total = $this->get_order_total();
+
+	    /**
+         * //Adding it since Braintree doesn't support 0, it throws error
+	     * 94505 - Amount can be any number of digits optionally followed by a decimal point . and up to two decimal places following the decimal point. Commas , are not allowed.
+	     *   The amount you specified must be a number greater than 0.
+	     */
+	    if($order_total==0) $order_total = 0.01;
+
         if ($this->enable_braintree_drop_in) {
             ?>
             <div id="braintree-cc-form" class="wc-payment-form">
@@ -581,7 +604,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             container: "#braintree-payment-form",
                             <?php if($this->threed_secure_enabled === true) { ?>
                                threeDSecure: {
-                                amount: '<?php echo $this->get_order_total(); ?>',
+                                amount: <?php echo $order_total; ?>,
                               },     
                             <?php } ?>
                             locale: '<?php echo AngellEYE_Utility::get_button_locale_code(); ?>',
@@ -595,7 +618,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 <?php } ?>
                                 transactionInfo: {
                                   totalPriceStatus: 'FINAL',
-                                  totalPrice: '<?php echo $this->get_order_total(); ?>',
+                                  totalPrice: '<?php echo $order_total; ?>',
                                   currencyCode: '<?php echo get_woocommerce_currency(); ?>'
                                 },
                                 cardRequirements: {
@@ -609,7 +632,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 paymentRequest: {
                                   total: {
                                     label: '<?php echo __('My Store', 'paypal-for-woocommerce'); ?>',
-                                    amount: '<?php echo $this->get_order_total(); ?>'
+                                    amount: '<?php echo $order_total; ?>'
                                   }
                                 }
                             },
@@ -701,7 +724,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 </div>
                 <?php 
             if (is_checkout() || is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) {
-                
+
                 ?>
                 <script type="text/javascript">
                     var angelleye_dropinInstance;
@@ -933,7 +956,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     }
                                     <?php if($this->threed_secure_enabled === true) { ?>
                                         components.threeDSecure.verifyCard({
-                                            amount: '<?php echo $this->get_order_total(); ?>',
+                                            amount: <?php echo $order_total ?>,
                                             nonce: payload.nonce,
                                             addFrame: addFrame,
                                             removeFrame: removeFrame
