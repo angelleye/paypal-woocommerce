@@ -528,14 +528,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 	    var is_logged_in = "<?php echo is_user_logged_in(); ?>";
         </script>
          <?php
-	    $order_total = $this->get_order_total();
-
-	    /**
-         * //Adding it since Braintree doesn't support 0, it throws error
-	     * 94505 - Amount can be any number of digits optionally followed by a decimal point . and up to two decimal places following the decimal point. Commas , are not allowed.
-	     *   The amount you specified must be a number greater than 0.
-	     */
-	    if($order_total==0) $order_total = 0.01;
+        $order_total = $this->get_order_total();
 
         if ($this->enable_braintree_drop_in) {
             ?>
