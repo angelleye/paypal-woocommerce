@@ -529,7 +529,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         </script>
          <?php
         $order_total = $this->get_order_total();
-
+        if($order_total == 0) { $order_total = '0.01'; }
         if ($this->enable_braintree_drop_in) {
             ?>
             <div id="braintree-cc-form" class="wc-payment-form">
