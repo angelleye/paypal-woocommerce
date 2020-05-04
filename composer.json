@@ -1,0 +1,16 @@
+{
+    "name": "angelleye/paypal-woocommerce",
+    "description": "PayPal payment gateway extension for WooCommerce.",
+    "type": "wordpress-plugin",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Angell EYE",
+            "email": "service@angelleye.com"
+        }
+    ],
+    "require": {
+	"php": ">=5.4.0",
+	"composer/installers": "~1.0"
+    }
+}
