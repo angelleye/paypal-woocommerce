@@ -529,7 +529,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         </script>
          <?php
         $order_total = $this->get_order_total();
-        if($order_total == 0) { $order_total = '0.01'; }
         if ($this->enable_braintree_drop_in) {
             ?>
             <div id="braintree-cc-form" class="wc-payment-form">
@@ -586,6 +585,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 $form.unblock();
                             }
                         });
+                        var threeDSecureParameters = {
+                            amount: <?php echo $order_total; ?>,
+                        };
                         var button = document.querySelector('#place_order');
                         var $form = $( 'form.checkout, form#order_review, form#add_payment_method' );
                         var checkout_form = document.querySelector('form.checkout, form#order_review, form#add_payment_method')
@@ -596,9 +598,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             authorization: clientToken,
                             container: "#braintree-payment-form",
                             <?php if($this->threed_secure_enabled === true) { ?>
-                               threeDSecure: {
-                                amount: <?php echo $order_total; ?>,
-                              },     
+                               threeDSecure: true,     
                             <?php } ?>
                             locale: '<?php echo AngellEYE_Utility::get_button_locale_code(); ?>',
                             paypal: {
@@ -653,7 +653,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                             checkout_form.addEventListener('submit', function (event) {
                             if(is_angelleye_braintree_selected()) {
-                                dropinInstance.requestPaymentMethod(function (err, payload) {
+                                dropinInstance.requestPaymentMethod({
+                                    threeDSecure: threeDSecureParameters
+                                },
+                                function (err, payload) {
                                     if(err) {
                                         $('.woocommerce-error').remove();
                                         $('.braintree-device-data', ccForm).remove();
