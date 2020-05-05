@@ -46,6 +46,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->enabled = $this->get_option('enabled');
+        if (version_compare(PHP_VERSION, '7.2.0', '<')) {
+            $this->enabled = false;
+        }
         $this->sandbox = 'yes' === $this->get_option('sandbox', 'yes');
         if ($this->sandbox == false) {
             $this->sandbox = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
@@ -76,7 +79,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'), 0);
-        add_action('admin_notices', array($this, 'checks'));
         add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_braintree_credit_card_form_fields'), 10, 2);
         $this->customer_id;
         add_filter('clean_url', array($this, 'adjust_fraud_script_tag'));
@@ -93,6 +95,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $GLOBALS['hide_save_button'] = true;
         ?>
         <h3><?php _e('Braintree', 'paypal-for-woocommerce'); ?></h3>
+        <?php $this->checks(); ?>
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <div id="angelleye_paypal_marketing_table">
         <table class="form-table">
@@ -175,11 +178,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enabled == 'no') {
             return;
         }
-        if (version_compare(phpversion(), '5.2.1', '<')) {
-            echo '<div class="error"><p>' . sprintf(__('Braintree Error: Braintree requires PHP 5.2.1 and above. You are using version %s.', 'paypal-for-woocommerce'), phpversion()) . '</p></div>';
+        if (version_compare(PHP_VERSION, '7.2.0', '<')) {
+            echo '<div id="message" class="notice notice-error is-dismissible"><p>' . sprintf(__('Braintree Error: Braintree requires PHP 7.2.0 and above. You are using version %s.', 'paypal-for-woocommerce'), phpversion()) . '</p></div>';
         }
         if (!is_ssl() && $this->enable_braintree_drop_in == false && $this->sandbox == false) {
-            echo '<div class="error"><p>' . sprintf(__('Braintree is enabled, but the <a href="%s">force SSL option</a> is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - Braintree custome credit card UI will only work in sandbox mode.', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout')) . '</p></div>';
+            echo '<div id="message" class="notice notice-error is-dismissible"><p>' . sprintf(__('Braintree is enabled, but the <a href="%s">force SSL option</a> is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - Braintree custome credit card UI will only work in sandbox mode.', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout')) . '</p></div>';
         }
         $this->add_dependencies_admin_notices();
     }
@@ -192,6 +195,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             return false;
         }
         if (!$this->merchant_id || !$this->public_key || !$this->private_key) {
+            return false;
+        }
+        if (version_compare(PHP_VERSION, '7.2.0', '<')) {
             return false;
         }
         return true;
@@ -1446,7 +1452,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             
         } catch (Exception $ex) {
             $this->add_log('Error: Unable to Load Braintree. Reason: ' . $ex->getMessage());
-            WP_Error(404, 'Error: Unable to Load Braintree. Reason: ' . $ex->getMessage());
+            return new WP_Error(404, 'Error: Unable to Load Braintree. Reason: ' . $ex->getMessage());
         }
     }
 
