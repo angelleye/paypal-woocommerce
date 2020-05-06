@@ -671,7 +671,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
      * Process the payment
      */
     function process_payment($order_id) {
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
         $card = $this->get_posted_card();
 
         if (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] != 'new') {
