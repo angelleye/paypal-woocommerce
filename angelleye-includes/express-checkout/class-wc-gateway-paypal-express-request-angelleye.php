@@ -332,8 +332,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 }
             }
 
-            $this->confirm_order_id = esc_attr($_GET['order_id']);
-            $order = new WC_Order($this->confirm_order_id);
+            $this->confirm_order_id = absint( wp_unslash( $_GET['order_id'] ) );
+            $order = wc_get_order($this->confirm_order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             if ($old_wc) {

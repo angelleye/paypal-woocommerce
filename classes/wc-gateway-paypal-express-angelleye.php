@@ -2923,7 +2923,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'Force_tls_one_point_two' => $this->Force_tls_one_point_two
         );
         $PayPal = new Angelleye_PayPal_WC($PayPalConfig);
-        $order_id = wc_clean($_GET['order_id']);
+        $order_id = absint( wp_unslash( $_GET['order_id'] ) );
         $order = wc_get_order($order_id);
         $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
         require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
