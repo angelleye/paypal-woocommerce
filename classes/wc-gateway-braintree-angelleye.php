@@ -200,6 +200,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (version_compare(PHP_VERSION, '7.2.0', '<')) {
             return false;
         }
+        $missing_extensions = $this->get_missing_dependencies();
+        if (count($missing_extensions) > 0) {
+            return false;
+        }
         return true;
     }
 
