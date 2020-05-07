@@ -2304,6 +2304,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     } else {
                         if ( $order_id > 0 && ( $order = wc_get_order( $order_id ) ) && $order->has_status( array( 'pending', 'failed' ) ) ) {
                             $_POST = WC()->session->get( 'post_data' );
+                            $_POST['post_data'] = WC()->session->get( 'post_data' );
                             $this->posted = WC()->session->get( 'post_data' );
                             $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
                             if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
@@ -2332,10 +2333,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                     $this->posted['payment_method'] = $this->id;
 
                                 }
+                                
                             $this->angelleye_check_cart_items();
                             
                             $validate_data = WC()->session->get( 'validate_data' );
-                            
+                            WC()->cart->calculate_totals();
                             if( !empty($validate_data) ) {
                                 $order_id = WC()->checkout()->create_order($validate_data);
                             } else {
@@ -2355,10 +2357,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             do_action('woocommerce_checkout_order_processed', $order_id, $this->posted, $order);
                         } else {
                             $_POST = WC()->session->get( 'post_data' );
+                            $_POST['post_data'] = WC()->session->get( 'post_data' );
                             $this->posted = WC()->session->get( 'post_data' );
                         }
                         if ( $order_id == 0 ) {
                             $_POST = WC()->session->get( 'post_data' );
+                            $_POST['post_data'] = WC()->session->get( 'post_data' );
                             $this->posted = WC()->session->get( 'post_data' );
                             $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
                             if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
@@ -2394,6 +2398,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $this->angelleye_check_cart_items();
                             
                             $validate_data = WC()->session->get( 'validate_data' );
+                            
+                            WC()->cart->calculate_totals();
                             
                             if( !empty($validate_data) ) {
                                 $order_id = WC()->checkout()->create_order($validate_data);
