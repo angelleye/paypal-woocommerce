@@ -9,7 +9,6 @@ use JsonSerializable;
  * Braintree base class and initialization
  * Provides methods to child classes. This class cannot be instantiated.
  *
- *  PHP version 5
  */
 abstract class Base implements JsonSerializable
 {
@@ -42,6 +41,9 @@ abstract class Base implements JsonSerializable
      */
     public function __get($name)
     {
+        if (isset($this->_attributes['globalId'])) {
+            $this->_attributes['graphQLId'] = $this->_attributes['globalId'];
+        }
         if (array_key_exists($name, $this->_attributes)) {
             return $this->_attributes[$name];
         }
@@ -52,7 +54,7 @@ abstract class Base implements JsonSerializable
     }
 
     /**
-     * Checks for the existance of a property stored in the private $_attributes property
+     * Checks for the existence of a property stored in the private $_attributes property
      *
      * @ignore
      * @param string $name

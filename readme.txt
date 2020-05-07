@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.0
-Tested up to: 5.4.0
-Stable tag: 2.1.16
+Tested up to: 5.4
+Stable tag: 2.2.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,16 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 2.2.2 - 04.30.2020 =
+* Fix - Resolves fatal error on WooCommerce Payment methods page & Cartflows checkout ([PFW-602](https://github.com/angelleye/paypal-woocommerce/pull/1450))
+
+= 2.2.1 - 04.30.2020 =
+* Tweak - PayFlow - Memo Field Adjustment ([PFW-596](https://github.com/angelleye/paypal-woocommerce/pull/1449))
+
+= 2.2.0 - 04.29.2020 =
+* Feature - Upgrades Braintree SDK from 3.34.0. to 5.0.0 ([PFW-595](https://github.com/angelleye/paypal-woocommerce/pull/1448))
+* Tweak - Added filter to override allowed product type with express checkout payment method. ([PFW-587](https://github.com/angelleye/paypal-woocommerce/pull/1447))
 
 = 2.1.16 - 04.07.2020 =
 * Verification - WooCommerce 4.0.1 and WordPress 5.4 compatibility.

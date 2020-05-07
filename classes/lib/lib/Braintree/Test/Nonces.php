@@ -35,7 +35,6 @@ class Nonces
    public static $amexExpressCheckout = "fake-amex-express-checkout-nonce";
    public static $abstractTransactable = "fake-abstract-transactable-nonce";
    public static $europe = "fake-europe-bank-account-nonce";
-   public static $coinbase = "fake-coinbase-nonce";
    public static $transactableVisa = "fake-valid-visa-nonce";
    public static $transactableAmEx = "fake-valid-amex-nonce";
    public static $transactableMasterCard = "fake-valid-mastercard-nonce";
@@ -49,6 +48,21 @@ class Nonces
    public static $transactableHealthcare = "fake-valid-healthcare-nonce";
    public static $transactableDebit = "fake-valid-debit-nonce";
    public static $transactablePayroll = "fake-valid-payroll-nonce";
+   public static $threeDSecureVisaFullAuthenticationNonce = "fake-three-d-secure-visa-full-authentication-nonce";
+   public static $threeDSecureVisaLookupTimeout = "fake-three-d-secure-visa-lookup-timeout-nonce";
+   public static $threeDSecureVisaFailedSignature = "fake-three-d-secure-visa-failed-signature-nonce";
+   public static $threeDSecureVisaFailedAuthentication = "fake-three-d-secure-visa-failed-authentication-nonce";
+   public static $threeDSecureVisaAttemptsNonParticipating = "fake-three-d-secure-visa-attempts-non-participating-nonce";
+   public static $threeDSecureVisaNoteEnrolled = "fake-three-d-secure-visa-not-enrolled-nonce";
+   public static $threeDSecureVisaUnavailable = "fake-three-d-secure-visa-unavailable-nonce";
+   public static $threeDSecureVisaMPILookupError = "fake-three-d-secure-visa-mpi-lookup-error-nonce";
+   public static $threeDSecureVisaMPIAuthenticateError = "fake-three-d-secure-visa-mpi-authenticate-error-nonce";
+   public static $threeDSecureVisaAuthenticationUnavailable = "fake-three-d-secure-visa-authentication-unavailable-nonce";
+   public static $threeDSecureVisaBypassedAuthentication = "fake-three-d-secure-visa-bypassed-authentication-nonce";
+   public static $threeDSecureTwoVisaSuccessfulFrictionlessAuthentication = "fake-three-d-secure-two-visa-successful-frictionless-authentication-nonce";
+   public static $threeDSecureTwoVisaSuccessfulStepUpAuthentication = "fake-three-d-secure-two-visa-successful-step-up-authentication-nonce";
+   public static $threeDSecureTwoVisaErrorOnLookup = "fake-three-d-secure-two-visa-error-on-lookup-nonce";
+   public static $threeDSecureTwoVisaTimeoutOnLookup = "fake-three-d-secure-two-visa-timeout-on-lookup-nonce";
    public static $transactableNoIndicators = "fake-valid-no-indicators-nonce";
    public static $transactableUnknownIndicators = "fake-valid-unknown-indicators-nonce";
    public static $transactableCountryOfIssuanceUSA = "fake-valid-country-of-issuance-usa-nonce";
@@ -60,9 +74,11 @@ class Nonces
    public static $processorDeclinedDiscover = "fake-processor-declined-discover-nonce";
    public static $processorFailureJCB = "fake-processor-failure-jcb-nonce";
    public static $luhnInvalid = "fake-luhn-invalid-nonce";
+   public static $localPayment = "fake-local-payment-method-nonce";
    public static $paypalFuturePaymentRefreshToken = "fake-paypal-future-refresh-token-nonce";
    public static $sepa = "fake-sepa-bank-account-nonce";
    public static $gatewayRejectedFraud = "fake-gateway-rejected-fraud-nonce";
+   public static $gatewayRejectedTokenIssuance = "fake-token-issuance-error-venmo-account-nonce";
    public static $venmoAccount = "fake-venmo-account-nonce";
    public static $visaCheckoutAmEx = "fake-visa-checkout-amex-nonce";
    public static $visaCheckoutDiscover = "fake-visa-checkout-discover-nonce";
@@ -72,5 +88,8 @@ class Nonces
    public static $masterpassDiscover = "fake-masterpass-discover-nonce";
    public static $masterpassMasterCard = "fake-masterpass-mastercard-nonce";
    public static $masterpassVisa = "fake-masterpass-visa-nonce";
+   public static $samsungPayAmEx = "tokensam_fake_american_express";
+   public static $samsungPayDiscover = "tokensam_fake_discover";
+   public static $samsungPayMasterCard = "tokensam_fake_mastercard";
+   public static $samsungPayVisa = "tokensam_fake_visa";
 }
-class_alias('Braintree\Test\Nonces', 'Braintree_Test_Nonces');

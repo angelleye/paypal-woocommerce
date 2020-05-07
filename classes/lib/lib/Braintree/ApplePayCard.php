@@ -14,17 +14,20 @@ namespace Braintree;
  *
  * @property-read string $bin
  * @property-read string $cardType
- * @property-read string $createdAt
+ * @property-read \DateTime $createdAt
  * @property-read string $customerId
+ * @property-read boolean $default
  * @property-read string $expirationDate
  * @property-read string $expirationMonth
  * @property-read string $expirationYear
+ * @property-read boolean $expired
  * @property-read string $imageUrl
  * @property-read string $last4
  * @property-read string $token
  * @property-read string $paymentInstrumentName
  * @property-read string $sourceDescription
- * @property-read string $updatedAt
+ * @property-read \Braintree\Subscription[] $subscriptions
+ * @property-read \DateTime $updatedAt
  */
 class ApplePayCard extends Base
 {
@@ -97,4 +100,3 @@ class ApplePayCard extends Base
         $this->_set('expirationDate', $this->expirationMonth . '/' . $this->expirationYear);
     }
 }
-class_alias('Braintree\ApplePayCard', 'Braintree_ApplePayCard');

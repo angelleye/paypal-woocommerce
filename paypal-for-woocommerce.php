@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           2.1.16
+ * Version:           2.2.2
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,9 +13,9 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.0
- * Tested up to: 5.4.0
+ * Tested up to: 5.4
  * WC requires at least: 3.0.0
- * WC tested up to: 4.0.1
+ * WC tested up to: 4.0
  *
  *************
  * Attribution
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '2.1.16');
+    define('VERSION_PFW', '2.2.2');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -633,7 +633,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     wp_enqueue_script( 'deactivation-modal', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/deactivation-form-modal.js', null, VERSION_PFW, true );
                     wp_localize_script( 'deactivation-modal', 'angelleye_ajax_data', array( 'nonce' => wp_create_nonce( 'angelleye-ajax' ) ) );
             }
-            wp_enqueue_style( 'angelleye_marketing_css', plugins_url( 'assets/css/angelleye-marketing-sidebar.css' , __FILE__ ), array(), VERSION_PFW );
         }
         
         public function angelleye_woocommerce_pfw_ed_shipping_bulk_tool() {
@@ -1287,20 +1286,21 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 if ( !is_null( $token ) && $token->get_gateway_id() === 'braintree' && get_current_user_id() == $token->get_user_id() && isset( $_REQUEST['_wpnonce'] ) || true === wp_verify_nonce( wp_unslash( $_REQUEST['_wpnonce'] ), 'delete-payment-method-' . $token_id ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
                     try {
                         $gateways = $woocommerce->payment_gateways->payment_gateways();
-                        $gateways['braintree']->angelleye_braintree_lib();
+	                    $gateways['braintree']->angelleye_braintree_lib();
                         $token_value = $token->get_token();
-                        Braintree_PaymentMethod::delete($token_value);
-                    } catch (Braintree_Exception_NotFound $e) {
+
+	                    $gateways['braintree']->braintree_gateway->paymentMethod()->delete($token_value);
+                    } catch (\Braintree\Exception\NotFound $e) {
                         $gateways['braintree']->add_log("Braintree_PaymentMethod::delete Braintree_Exception_NotFound: " . $e->getMessage());
-                    } catch (Braintree_Exception_Authentication $e) {
+                    } catch (\Braintree\Exception\Authentication $e) {
                         $gateways['braintree']->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
-                    } catch (Braintree_Exception_Authorization $e) {
+                    } catch (\Braintree\Exception\Authorization $e) {
                         $gateways['braintree']->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
-                    } catch (Braintree_Exception_DownForMaintenance $e) {
-                        $gateways['braintree']->add_log("Braintree_Exception_DownForMaintenance: Request times out.");
-                    } catch (Braintree_Exception_ServerError $e) {
+                    } catch (\Braintree\Exception\ServiceUnavailable $e) {
+                        $gateways['braintree']->add_log("Braintree_Exception_ServiceUnavailable: Request times out.");
+                    } catch (\Braintree\Exception\ServerError $e) {
                         $gateways['braintree']->add_log("Braintree_Exception_ServerError" . $e->getMessage());
-                    } catch (Braintree_Exception_SSLCertificate $e) {
+                    } catch (\Braintree\Exception\SSLCertificate $e) {
                         $gateways['braintree']->add_log("Braintree_Exception_SSLCertificate" . $e->getMessage());
                     } catch (Exception $ex) {
                         $gateways['braintree']->add_log("Exception" . $ex->getMessage());
@@ -1319,24 +1319,24 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         $payment_tokens = WC_Payment_Tokens::get_customer_tokens( $customer_id, 'braintree' );
                         foreach ( $payment_tokens as $payment_token ) {
                              $token_value = $payment_token->get_token();
-                             try {
-                                 Braintree_PaymentMethod::find($token_value);
-                             } catch (Braintree_Exception_NotFound $e) {
-                                $gateways['braintree']->add_log("Braintree_PaymentMethod::delete Braintree_Exception_NotFound: " . $e->getMessage());
-                                WC_Payment_Tokens::delete( $payment_token->get_id() );
-                            } catch (Braintree_Exception_Authentication $e) {
-                                $gateways['braintree']->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
-                            } catch (Braintree_Exception_Authorization $e) {
-                                $gateways['braintree']->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
-                            } catch (Braintree_Exception_DownForMaintenance $e) {
-                                $gateways['braintree']->add_log("Braintree_Exception_DownForMaintenance: Request times out.");
-                            } catch (Braintree_Exception_ServerError $e) {
-                                $gateways['braintree']->add_log("Braintree_Exception_ServerError" . $e->getMessage());
-                            } catch (Braintree_Exception_SSLCertificate $e) {
-                                $gateways['braintree']->add_log("Braintree_Exception_SSLCertificate" . $e->getMessage());
-                            } catch (Exception $ex) {
-                                $gateways['braintree']->add_log("Exception" . $ex->getMessage());
-                            }
+	                        try {
+		                        $gateways['braintree']->braintree_gateway->paymentMethod()->find($token_value);
+	                        } catch (\Braintree\Exception\NotFound $e) {
+		                        $gateways['braintree']->add_log("Braintree_PaymentMethod::find Braintree_Exception_NotFound: " . $e->getMessage());
+		                        WC_Payment_Tokens::delete( $payment_token->get_id() );
+	                        } catch (\Braintree\Exception\Authentication $e) {
+		                        $gateways['braintree']->add_log("Braintree_ClientToken::generate Exception: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
+	                        } catch (\Braintree\Exception\Authorization $e) {
+		                        $gateways['braintree']->add_log("Braintree_ClientToken::generate Exception: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
+	                        } catch (\Braintree\Exception\ServiceUnavailable $e) {
+		                        $gateways['braintree']->add_log("Braintree_Exception_ServiceUnavailable: Request times out.");
+	                        } catch (\Braintree\Exception\ServerError $e) {
+		                        $gateways['braintree']->add_log("Braintree_Exception_ServerError" . $e->getMessage());
+	                        } catch (\Braintree\Exception\SSLCertificate $e) {
+		                        $gateways['braintree']->add_log("Braintree_Exception_SSLCertificate" . $e->getMessage());
+	                        } catch (Exception $ex) {
+		                        $gateways['braintree']->add_log("Exception" . $ex->getMessage());
+	                        }
                         }
                     }
                     

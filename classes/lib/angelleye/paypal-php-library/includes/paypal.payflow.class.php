@@ -192,8 +192,8 @@ class Angelleye_PayPal_PayFlow extends Angelleye_PayPal_WC
                     return $NVPResponse;
                 }
 		$NVPResponse = strstr($NVPResponse,"RESULT");
-                
-                do_action('angelleye_paypal_response_data', $NVPResponse, $NVPRequest, '1', $this->Sandbox, true, 'paypal_payflow');
+		$NVPRequestMod =$NVPRequest.'&merchant_id='.$this->APIVendor;
+        do_action('angelleye_paypal_response_data', $NVPResponse, $NVPRequestMod, '1', $this->Sandbox, true, 'paypal_payflow');
                 
 		$NVPResponseArray = $this->NVPToArray($NVPResponse);
 

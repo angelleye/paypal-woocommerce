@@ -198,21 +198,21 @@ class Cartflows_Pro_Gateway_Braintree_AngellEYE {
             }
             
             try {
-                $gateway->response = Braintree_Transaction::sale($request_data);
+                $gateway->response = $gateway->braintree_gateway->transaction()->sale($request_data);
                 do_action('angelleye_paypal_response_data', $gateway->response, $request_data, '1', $gateway->sandbox, false, 'braintree');
-            } catch (Braintree_Exception_Authentication $e) {
+            } catch (\Braintree\Exception\Authentication $e) {
                 $gateway->add_log("Braintree_Transaction::sale Braintree_Exception_Authentication: API keys are incorrect, Please double-check that you haven't accidentally tried to use your sandbox keys in production or vice-versa.");
                 return $success = false;
-            } catch (Braintree_Exception_Authorization $e) {
+            } catch (\Braintree\Exception\Authorization $e) {
                 $gateway->add_log("Braintree_Transaction::sale Braintree_Exception_Authorization: The API key that you're using is not authorized to perform the attempted action according to the role assigned to the user who owns the API key.");
                 return $success = false;
-            } catch (Braintree_Exception_DownForMaintenance $e) {
+            } catch (\Braintree\Exception\ServiceUnavailable $e) {
                 $gateway->add_log("Braintree_Transaction::sale Braintree_Exception_DownForMaintenance: Request times out.");
                 return $success = false;
-            } catch (Braintree_Exception_ServerError $e) {
+            } catch (\Braintree\Exception\ServerError $e) {
                 $gateway->add_log("Braintree_Transaction::sale Braintree_Exception_ServerError " . $e->getMessage());
                 return $success = false;
-            } catch (Braintree_Exception_SSLCertificate $e) {
+            } catch (\Braintree\Exception\SSLCertificate $e) {
                 $gateway->add_log("Braintree_Transaction::sale Braintree_Exception_SSLCertificate " . $e->getMessage());
                 return $success = false;
             } catch (Exception $e) {
