@@ -574,6 +574,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         unset(WC()->session->post_data);
         unset(WC()->session->shiptoname);
         unset(WC()->session->payeremail);
+        unset(WC()->session->validate_data);
     }
 
     public function ec_is_checkout() {
