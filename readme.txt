@@ -127,6 +127,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.2.3 - 05.07.2020 =
+* Tweak - Added the PPREF Meta Key for the Payflow Payment Processor Gateway ([PFW-611](https://github.com/angelleye/paypal-woocommerce/pull/1452))
+* Tweak - Woo Checkout Add-Ons Compatibility ([PFW-614](https://github.com/angelleye/paypal-woocommerce/pull/1455))
+* Fix - Fixes Braintree requirement validation notice ([PFW-603](https://github.com/angelleye/paypal-woocommerce/pull/1456))
+
 = 2.2.2 - 04.30.2020 =
 * Fix - Resolves fatal error on WooCommerce Payment methods page & Cartflows checkout ([PFW-602](https://github.com/angelleye/paypal-woocommerce/pull/1450))
 
