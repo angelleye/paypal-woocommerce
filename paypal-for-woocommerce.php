@@ -1320,7 +1320,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         foreach ( $payment_tokens as $payment_token ) {
                              $token_value = $payment_token->get_token();
 	                        try {
-		                        $gateways['braintree']->braintree_gateway->paymentMethod()->find($token_value);
+                                        if( !empty($gateways['braintree']->braintree_gateway) ) {
+                                            $gateways['braintree']->braintree_gateway->paymentMethod()->find($token_value);
+                                        }
 	                        } catch (\Braintree\Exception\NotFound $e) {
 		                        $gateways['braintree']->add_log("Braintree_PaymentMethod::find Braintree_Exception_NotFound: " . $e->getMessage());
 		                        WC_Payment_Tokens::delete( $payment_token->get_id() );
