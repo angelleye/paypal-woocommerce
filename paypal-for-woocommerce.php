@@ -1133,11 +1133,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woo_woocommerce_product_data_tabs($product_data_tabs) {
-            $product_data_tabs['angelleye_paypal_for_woo_payment_action'] = array(
-                'label' => __( 'Payment Action', 'paypal-for-woocommerce' ),
-                'target' => 'angelleye_paypal_for_woo_payment_action',
-            );
+            global $woocommerce;
+            $gateways = $woocommerce->payment_gateways->payment_gateways();
+            if( !empty($gateways) ) {
+                $product_data_tabs['angelleye_paypal_for_woo_payment_action'] = array(
+                    'label' => __( 'Payment Action', 'paypal-for-woocommerce' ),
+                    'target' => 'angelleye_paypal_for_woo_payment_action',
+                );
+            }
             return $product_data_tabs;
+            
         }
         
         public function angelleye_paypal_for_woo_product_date_panels() {
@@ -1151,7 +1156,26 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                 'label'       => __( 'Enable Payment Action', 'paypal-for-woocommerce' ),
                         )
                 );
-                
+               $required_gateway = array('braintree', 'paypal_pro_payflow', 'paypal_express');
+               $payment_gateway_option = array() ;
+               $gateways_array = $woocommerce->payment_gateways->payment_gateways();
+               $payment_gateway_option[''] = 'Select Payment Gateway';
+               foreach ($gateways_array as $gateways_key => $payment_gateway) {
+                   if(in_array($gateways_key, $required_gateway)) {
+                        $payment_gateway_option[$gateways_key] = $payment_gateway->method_title;
+                   }
+               }
+               
+               woocommerce_wp_select(
+                    array(
+                            'id'          => 'woo_product_gateway_name',
+                            'label'       => __( 'Payment Gateway', 'paypal-for-woocommerce' ),
+                            'options' => $payment_gateway_option,
+                            'desc_tip'    => false,
+                            'description' => __(''),
+                    )
+                );
+               
                 woocommerce_wp_select(
                     array(
                             'id'          => 'woo_product_payment_action',
