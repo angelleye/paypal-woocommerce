@@ -1156,25 +1156,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                 'label'       => __( 'Enable Payment Action', 'paypal-for-woocommerce' ),
                         )
                 );
-               $required_gateway = array('braintree', 'paypal_pro_payflow', 'paypal_express');
-               $payment_gateway_option = array() ;
-               $gateways_array = $woocommerce->payment_gateways->payment_gateways();
-               $payment_gateway_option[''] = 'Select Payment Gateway';
-               foreach ($gateways_array as $gateways_key => $payment_gateway) {
-                   if(in_array($gateways_key, $required_gateway)) {
-                        $payment_gateway_option[$gateways_key] = $payment_gateway->method_title;
-                   }
-               }
-               
-               woocommerce_wp_select(
-                    array(
-                            'id'          => 'woo_product_gateway_name',
-                            'label'       => __( 'Payment Gateway', 'paypal-for-woocommerce' ),
-                            'options' => $payment_gateway_option,
-                            'desc_tip'    => false,
-                            'description' => __(''),
-                    )
-                );
                
                 woocommerce_wp_select(
                     array(

@@ -182,7 +182,7 @@ jQuery(document).ready(function ($) {
         } 
     }).change();
     $('#woo_product_payment_action').change(function () {
-        if ( $(this).val() === 'Authorization' && $('#woo_product_gateway_name').val() === 'paypal_pro_payflow') {
+        if ( $(this).val() === 'Authorization' ) {
             $('#woo_product_payment_action_authorization').closest('p').show();
         } else {
             $('#woo_product_payment_action_authorization').closest('p').hide();
@@ -190,29 +190,15 @@ jQuery(document).ready(function ($) {
     }).change();
     $('#enable_payment_action').change(function () {
         if ($(this).is(':checked')) {
-            $('.woo_product_gateway_name_field').closest('p').show();
-            
-            if( $('#woo_product_payment_action').val() == 'Authorization' && $('#woo_product_gateway_name').val() === 'paypal_pro_payflow' )  {
-                $('.woo_product_payment_action_authorization_field').closest('p').show();
+            $('.woo_product_payment_action_field').show();
+            if( $('#woo_product_payment_action').val() == 'Authorization') {
+                $('.woo_product_payment_action_authorization_field').show();
             }
         } else {
-            $('.woo_product_gateway_name_field').closest('p').hide();
-            $('.woo_product_payment_action_field').closest('p').hide();
-            $('.woo_product_payment_action_authorization_field').closest('p').hide();
+            $('.woo_product_payment_action_field').hide();
+            $('.woo_product_payment_action_authorization_field').hide();
         }
     }).change();
-    $('#woo_product_gateway_name').change( function () {
-        if ($('#woo_product_gateway_name').val() === '') {
-            $('.woo_product_payment_action_field').closest('p').hide();
-            $('.woo_product_payment_action_authorization_field').closest('p').hide();
-        } else {
-            $('.woo_product_payment_action_field').closest('p').show();
-        }
-        if( $('#woo_product_gateway_name').val() !== 'paypal_pro_payflow' ) {
-            $('.woo_product_payment_action_authorization_field').closest('p').hide();
-        }
-    }).change();
-    
     $('#pfw-bulk-action-payment-action-type').change(function () {
         if ($(this).val() == 'Authorization') {
             $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-payment-authorization-type').show(); 
