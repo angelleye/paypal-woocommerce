@@ -66,8 +66,9 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
     public function process_offer_payment($order, $product) {
         try {
             $gateway = $this->get_wc_gateway();
-            $gateway->angelleye_load_paypal_payflow_class(null, $this, $order);
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            do_action('angelleye_paypal_for_woocommerce_product_level_payment_action', $gateway, '', $order_id);
+            $gateway->angelleye_load_paypal_payflow_class(null, $this, $order);
             $description = sprintf(__('%1$s - Order %2$s - One Time offer', 'cartflows-pro'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES), $order->get_order_number());
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
 
