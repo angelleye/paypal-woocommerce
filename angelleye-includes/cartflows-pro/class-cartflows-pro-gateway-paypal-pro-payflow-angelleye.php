@@ -83,7 +83,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
 
             $PayPalRequestData = array(
                 'tender' => 'C',
-                'trxtype' => 'S',
+                'trxtype' => $gateway->payment_action,
                 'amt' => AngellEYE_Gateway_Paypal::number_format($product['price'], $order),
                 'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 'comment1' => apply_filters('ae_pppf_custom_parameter', $customer_note, $order),

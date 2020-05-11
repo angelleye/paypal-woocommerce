@@ -673,15 +673,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     function process_payment($order_id) {
         $order = new WC_Order($order_id);
         $card = $this->get_posted_card();
-
+        do_action('angelleye_paypal_for_woocommerce_product_level_payment_action', $this->gateway, $this, $order_id);
         if (!empty($_POST['wc-paypal_pro_payflow-payment-token']) && $_POST['wc-paypal_pro_payflow-payment-token'] != 'new') {
             $this->enable_3dsecure = false;
         }
-
-        $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
-        
         if ($this->enable_3dsecure) {
-
             if ($this->threedsecure_type == 'cardinalcommerce') {
                 if (!class_exists('CentinelClient'))
                     include_once('lib/CentinelClient.php');

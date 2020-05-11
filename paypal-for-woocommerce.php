@@ -149,7 +149,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('woocommerce_product_data_tabs', array( $this, 'angelleye_paypal_for_woo_woocommerce_product_data_tabs' ), 99, 1);
             add_action('woocommerce_product_data_panels', array( $this, 'angelleye_paypal_for_woo_product_date_panels' ));
             add_action('woocommerce_process_product_meta', array( $this, 'angelleye_paypal_for_woo_product_process_product_meta' ));
-            add_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_payflow', array( $this, 'angelleye_paypal_for_woo_product_level_payment_action' ), 10, 3);
             add_action('angelleye_paypal_for_woocommerce_product_level_payment_action', array( $this, 'angelleye_paypal_for_woo_product_level_payment_action' ), 10, 3);
             add_action( 'wp_head', array( $this, 'paypal_for_woo_head_mark' ), 1 );     
             add_action( 'admin_footer', array($this, 'angelleye_add_deactivation_form'));
@@ -1231,15 +1230,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         }
                     }
                 }
-                if( $gateway_setting->id === 'braintree') {
+                if( empty($payment_action) ) {
+                    return;
+                }
+                if( $gateway_setting->id === 'braintree' || $gateway_setting->id === 'paypal_express') {
                     if( isset($payment_action['Authorization']) && !empty($payment_action['Authorization'])) {
                         $gateway_setting->payment_action = 'Authorization';
                     } elseif(isset($payment_action['Sale']) && !empty($payment_action['Sale'])) {
                         $gateway_setting->payment_action = 'Sale';
                     }
-                } elseif ($gateway_setting->id === 'paypal_express') {
-                
-                } elseif ($gateway_setting->id === 'paypal_pro_payflow' && !empty($payment_action) ) {
+                } elseif ($gateway_setting->id === 'paypal_pro_payflow' ) {
                     if( isset($payment_action['Authorization']) && !empty($payment_action['Authorization'])) {
                         $gateway_setting->payment_action = 'Authorization';
                         if($payment_action['Authorization'] == 'Full Authorization') {
