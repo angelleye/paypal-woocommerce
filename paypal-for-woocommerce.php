@@ -1178,8 +1178,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                 'Full Authorization' => 'Full Authorization',
                                 'Card Verification' => 'Card Verification',
                             ),
-                            'desc_tip'    => 'true',
-                            'description' => __(''),
+                            'description' => __('This option will only work for <b>PayPal Payments Pro 2.0 (PayFlow)</b> payment method.'),
                     )
 		);
                 ?>
