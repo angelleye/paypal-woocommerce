@@ -1018,6 +1018,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
      * Process the payment
      */
     public function process_payment($order_id) {
+        $this->angelleye_braintree_lib($order_id);
         if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
             $this->storeInVaultOnSuccess = true;
         }
