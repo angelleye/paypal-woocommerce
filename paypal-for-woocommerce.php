@@ -1147,6 +1147,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function angelleye_paypal_for_woo_product_date_panels() {
             global $woocommerce, $post;
+            
             ?>
             <div id="angelleye_paypal_for_woo_payment_action" class="panel woocommerce_options_panel">
                 <?php
@@ -1170,17 +1171,21 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                             'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
                     )
                 );
-                woocommerce_wp_select(
-                    array(
-                            'id'          => 'woo_product_payment_action_authorization',
-                            'label'       => __( 'Authorization Type', 'paypal-for-woocommerce' ),
-                            'options' => array(
-                                'Full Authorization' => 'Full Authorization',
-                                'Card Verification' => 'Card Verification',
-                            ),
-                            'description' => __('This option will only work for <b>PayPal Payments Pro 2.0 (PayFlow)</b> payment method.'),
-                    )
-		);
+                
+                $gateways = $woocommerce->payment_gateways->payment_gateways();
+                if( isset($gateways['paypal_pro_payflow']) && ( isset($gateways['paypal_pro_payflow']->enabled) && 'no' != $gateways['paypal_pro_payflow']->enabled ) ) {
+                    woocommerce_wp_select(
+                        array(
+                                'id'          => 'woo_product_payment_action_authorization',
+                                'label'       => __( 'Authorization Type', 'paypal-for-woocommerce' ),
+                                'options' => array(
+                                    'Full Authorization' => 'Full Authorization',
+                                    'Card Verification' => 'Card Verification',
+                                ),
+                                'description' => __('This option will only work with <b>PayPal Payments Pro 2.0 (PayFlow)</b> payment method.'),
+                        )
+                    );
+                }
                 ?>
             </div>
             <?php
