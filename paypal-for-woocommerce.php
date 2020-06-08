@@ -1394,10 +1394,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function own_angelleye_woocommerce_email_actions($actions) {
-            $actions[] = 'woocommerce_order_status_cancelled_to_partial-paymen';
-            $actions[] = 'woocommerce_order_status_failed_to_partial-paymen';
-            $actions[] = 'woocommerce_order_status_on-hold_to_partial-paymen';
-            $actions[] = 'woocommerce_order_status_pending_to_partial-paymen';
+            $actions[] = 'woocommerce_order_status_cancelled_to_partial-payment';
+            $actions[] = 'woocommerce_order_status_failed_to_partial-payment';
+            $actions[] = 'woocommerce_order_status_on-hold_to_partial-payment';
+            $actions[] = 'woocommerce_order_status_pending_to_partial-payment';
             return $actions;
         }
     } 
