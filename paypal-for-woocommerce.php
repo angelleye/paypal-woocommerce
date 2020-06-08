@@ -160,6 +160,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'init', array( $this, 'angelleye_register_post_status' ), 99 );
             add_filter( 'woocommerce_email_classes', array($this, 'angelleye_woocommerce_email_classes'), 10, 1);
             add_filter( 'wc_get_template', array($this, 'own_angelleye_wc_get_template'), 10, 5);
+            add_filter( 'woocommerce_email_actions', array($this, 'own_angelleye_woocommerce_email_actions'), 10);
             $this->customer_id;
         }
 
@@ -1390,6 +1391,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $template = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/emails/' . $template_name;
             }
             return $template;
+        }
+        
+        public function own_angelleye_woocommerce_email_actions($actions) {
+            $actions[] = 'woocommerce_order_status_cancelled_to_partial-paymen';
+            $actions[] = 'woocommerce_order_status_failed_to_partial-paymen';
+            $actions[] = 'woocommerce_order_status_on-hold_to_partial-paymen';
+            $actions[] = 'woocommerce_order_status_pending_to_partial-paymen';
+            return $actions;
         }
     } 
 }
