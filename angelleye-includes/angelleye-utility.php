@@ -154,7 +154,7 @@ class AngellEYE_Utility {
         $this->order_id = $order_id;
         $paypal_payment_action = array();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
+        $this->payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
         $payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
         if ((isset($this->payment_method) && !empty($this->payment_method)) && (isset($payment_action) && !empty($payment_action)) ) {
             switch ($this->payment_method) {
@@ -585,7 +585,7 @@ class AngellEYE_Utility {
         }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
+        $this->payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
         remove_action('woocommerce_order_action_wc_paypal_express_doreauthorization', array($this, 'angelleye_wc_paypal_express_doreauthorization'));
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
         $this->call_do_reauthorization($order);
@@ -1040,7 +1040,7 @@ class AngellEYE_Utility {
         );
         $order = wc_get_order($post->ID);
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $payment_method = get_post_meta($post->ID, '_payment_method', true);
+        $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         $payment_action = get_post_meta($post->ID, '_payment_action', true);
         $currency_code = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
         $transaction_id = $this->angelleye_get_order_transaction_id($post);
@@ -1084,7 +1084,6 @@ class AngellEYE_Utility {
                 <div class="angelleye_authorization_box" style="display: none;">
                     <?php
                     $remain_capture = 0;
-                    $payment_method = get_post_meta($post->ID, '_payment_method', true);
                     $remain_authorize_amount_text = '';
                     if ($payment_method == 'paypal_express') {
                         if (isset($this->remain_authorize_amount)) {
@@ -1098,10 +1097,7 @@ class AngellEYE_Utility {
                         $remain_capture = $order->get_total() - ( $this->total_DoVoid + $this->total_DoCapture );
                         $remain_capture = self::number_format($remain_capture, $order);
                     }
-                    
-                    
                     ?>
-                    
                     <input type="text" placeholder="Enter amount <?php echo $remain_capture; ?>" id="_regular_price" name="_regular_price" <?php if($remain_capture > 0 ) { echo "value='$remain_capture'"; } ?>class="short wc_input_price text-box" style="width: 220px">
                 </div>
                 <?php $this->angelleye_express_checkout_transaction_capture_dropdownbox($post->ID); ?>
@@ -1216,7 +1212,7 @@ class AngellEYE_Utility {
             $payment_action = 'DoAuthorization';
         }
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $payment_method = get_post_meta($order_id, '_payment_method', true);
+        $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         $TRANSACTIONID = '';
         if (isset($response['PAYMENTINFO_0_TRANSACTIONID']) && !empty($response['PAYMENTINFO_0_TRANSACTIONID'])) {
             $TRANSACTIONID = $response['PAYMENTINFO_0_TRANSACTIONID'];
@@ -1275,8 +1271,8 @@ class AngellEYE_Utility {
             $order = wc_get_order($post_id);
             if (empty($this->payment_method)) {
                 $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-                $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
+                $order_id = $old_wc ? $order->id : $order->get_id();
+                $this->payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
             }
             if (!empty($_POST['angelleye_payment_action'])) {
                 $action = wc_clean($_POST['angelleye_payment_action']);
@@ -1337,7 +1333,7 @@ class AngellEYE_Utility {
         if (empty($_first_transaction_id)) {
             return false;
         }
-        $payment_method = get_post_meta($order_id, '_payment_method', true);
+        $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
         if( $payment_method != 'braintree') {
             $this->angelleye_get_transactionDetails($_first_transaction_id);
         }
@@ -1362,7 +1358,7 @@ class AngellEYE_Utility {
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
-        $payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
+        $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
         if ($this->total_DoCapture == 0 && $this->total_Pending_DoAuthorization == 0) {
             if ('Order' == $payment_action) {
                 $post_status = 'Order';
@@ -1574,7 +1570,7 @@ class AngellEYE_Utility {
         }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $_payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
+        $_payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
         $_payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
         if (isset($_payment_method) && !empty($_payment_method) && isset($_payment_action) && !empty($_payment_action)) {
             if ( (($_payment_method == 'paypal_pro' || $_payment_method == 'paypal_express' || $_payment_method == 'paypal_pro_payflow' || $_payment_method == 'braintree')) && ($_payment_method != "Sale" && $order->get_total() > 0)) {
@@ -1602,8 +1598,8 @@ class AngellEYE_Utility {
             }
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order = wc_get_order($post->ID);
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-            $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
+            $order_id = $old_wc ? $order->id : $order->get_id();
+            $this->payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
         }
     }
 
@@ -1617,8 +1613,8 @@ class AngellEYE_Utility {
                 if (empty($order)) {
                     return false;
                 }
-                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-                $this->payment_method = $old_wc ? get_post_meta($order_id, '_payment_method', true) : get_post_meta($order->get_id(), '_payment_method', true);
+                $order_id = $old_wc ? $order->id : $order->get_id();
+                $this->payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
             }
         }
     }

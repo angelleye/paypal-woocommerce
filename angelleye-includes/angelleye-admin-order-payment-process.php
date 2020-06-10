@@ -278,7 +278,11 @@ class AngellEYE_Admin_Order_Payment_Process {
         AngellEYE_Utility::angelleye_set_address($new_order_id, $shipping_details, 'shipping');
         AngellEYE_Utility::angelleye_set_address($new_order_id, $billing_details, 'billing');
         $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
-        update_post_meta($new_order_id, '_payment_method', $this->payment_method);
+        if ($old_wc) {
+            update_post_meta($new_order_id, '_payment_method', $this->payment_method);
+        } else {
+            $new_order->set_payment_method($this->payment_method);
+        }
         $payment_method_title = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method_title : $order->get_payment_method_title();
         update_post_meta($new_order_id, '_payment_method_title', $payment_method_title);
         update_post_meta($new_order_id, '_created_via', 'create_new_reference_order');
