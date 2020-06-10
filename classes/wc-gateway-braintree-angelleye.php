@@ -12,6 +12,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
      */
     public $customer_id;
     public $braintree_gateway;
+     public $gateway;
 
     function __construct() {
         $this->id = 'braintree';
@@ -1017,6 +1018,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
      * Process the payment
      */
     public function process_payment($order_id) {
+        $this->angelleye_braintree_lib($order_id);
         if (AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
             $this->storeInVaultOnSuccess = true;
         }
@@ -1437,6 +1439,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $this->private_key = $this->sandbox == false ? $this->get_option('private_key') : $this->get_option('sandbox_private_key');
             $this->public_key = $this->sandbox == false ? $this->get_option('public_key') : $this->get_option('sandbox_public_key');
         }
+        do_action('angelleye_paypal_for_woocommerce_product_level_payment_action', $this->gateway, $this, $order_id);
         try {
             if(!class_exists('Braintree')){
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/lib/Braintree.php');

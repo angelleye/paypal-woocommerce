@@ -500,6 +500,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } else {
                 
             }
+            do_action('angelleye_paypal_for_woocommerce_product_level_payment_action', $this->gateway);
             if( $this->send_items ) {
                 $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
             } else {
@@ -599,6 +600,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'DECPFields' => $DECPFields,
                 'Payments' => $Payments
             );
+            
             $this->paypal_response = $this->paypal->DoExpressCheckoutPayment(apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request, $this->gateway, $this, $this->confirm_order_id));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'DoExpressCheckoutPayment');
         } catch (Exception $ex) {
@@ -642,6 +644,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function angelleye_set_express_checkout_request() {
+        do_action('angelleye_paypal_for_woocommerce_product_level_payment_action', $this->gateway);
         try {
             $order_id = '';
             $Payments = array();
@@ -895,7 +898,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             $this->paypal_request = $this->angelleye_add_billing_agreement_param($PayPalRequestData, $this->gateway->supports('tokenization'));
             $this->paypal_request = AngellEYE_Utility::angelleye_express_checkout_validate_shipping_address($this->paypal_request);
-            do_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_express', $this->gateway, $this, $order_id, $this->paypal_request);
+            
             $this->paypal_response = $this->paypal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request, $this->gateway, $this, $order_id));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'SetExpressCheckout');
             return $this->paypal_response;

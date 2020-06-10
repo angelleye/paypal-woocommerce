@@ -149,7 +149,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('woocommerce_product_data_tabs', array( $this, 'angelleye_paypal_for_woo_woocommerce_product_data_tabs' ), 99, 1);
             add_action('woocommerce_product_data_panels', array( $this, 'angelleye_paypal_for_woo_product_date_panels' ));
             add_action('woocommerce_process_product_meta', array( $this, 'angelleye_paypal_for_woo_product_process_product_meta' ));
-            add_action('angelleye_paypal_for_woocommerce_multi_account_api_paypal_payflow', array( $this, 'angelleye_paypal_for_woo_product_level_payment_action' ), 10, 3);
+            add_action('angelleye_paypal_for_woocommerce_product_level_payment_action', array( $this, 'angelleye_paypal_for_woo_product_level_payment_action' ), 10, 3);
             add_action( 'wp_head', array( $this, 'paypal_for_woo_head_mark' ), 1 );     
             add_action( 'admin_footer', array($this, 'angelleye_add_deactivation_form'));
             add_action( 'wp_ajax_angelleye_send_deactivation', array($this, 'angelleye_handle_plugin_deactivation_request'));
@@ -1133,15 +1133,21 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woo_woocommerce_product_data_tabs($product_data_tabs) {
-            $product_data_tabs['angelleye_paypal_for_woo_payment_action'] = array(
-                'label' => __( 'Payment Action', 'paypal-for-woocommerce' ),
-                'target' => 'angelleye_paypal_for_woo_payment_action',
-            );
+            global $woocommerce;
+            $gateways = $woocommerce->payment_gateways->payment_gateways();
+            if( !empty($gateways) ) {
+                $product_data_tabs['angelleye_paypal_for_woo_payment_action'] = array(
+                    'label' => __( 'Payment Action', 'paypal-for-woocommerce' ),
+                    'target' => 'angelleye_paypal_for_woo_payment_action',
+                );
+            }
             return $product_data_tabs;
+            
         }
         
         public function angelleye_paypal_for_woo_product_date_panels() {
             global $woocommerce, $post;
+            
             ?>
             <div id="angelleye_paypal_for_woo_payment_action" class="panel woocommerce_options_panel">
                 <?php
@@ -1151,7 +1157,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                                 'label'       => __( 'Enable Payment Action', 'paypal-for-woocommerce' ),
                         )
                 );
-                
+               
                 woocommerce_wp_select(
                     array(
                             'id'          => 'woo_product_payment_action',
@@ -1165,18 +1171,21 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                             'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
                     )
                 );
-                woocommerce_wp_select(
-                    array(
-                            'id'          => 'woo_product_payment_action_authorization',
-                            'label'       => __( 'Authorization Type', 'paypal-for-woocommerce' ),
-                            'options' => array(
-                                'Full Authorization' => 'Full Authorization',
-                                'Card Verification' => 'Card Verification',
-                            ),
-                            'desc_tip'    => 'true',
-                            'description' => __(''),
-                    )
-		);
+                
+                $gateways = $woocommerce->payment_gateways->payment_gateways();
+                if( isset($gateways['paypal_pro_payflow']) && ( isset($gateways['paypal_pro_payflow']->enabled) && 'no' != $gateways['paypal_pro_payflow']->enabled ) ) {
+                    woocommerce_wp_select(
+                        array(
+                                'id'          => 'woo_product_payment_action_authorization',
+                                'label'       => __( 'Authorization Type', 'paypal-for-woocommerce' ),
+                                'options' => array(
+                                    'Full Authorization' => 'Full Authorization',
+                                    'Card Verification' => 'Card Verification',
+                                ),
+                                'description' => __('This option will only work with <b>PayPal Payments Pro 2.0 (PayFlow)</b> payment method.'),
+                        )
+                    );
+                }
                 ?>
             </div>
             <?php
@@ -1225,7 +1234,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         }
                     }
                 }
-                if( !empty($payment_action) ) {
+                if( empty($payment_action) ) {
+                    return;
+                }
+                if( $gateway_setting->id === 'braintree' || $gateway_setting->id === 'paypal_express') {
+                    if( isset($payment_action['Authorization']) && !empty($payment_action['Authorization'])) {
+                        $gateway_setting->payment_action = 'Authorization';
+                    } elseif(isset($payment_action['Sale']) && !empty($payment_action['Sale'])) {
+                        $gateway_setting->payment_action = 'Sale';
+                    }
+                } elseif ($gateway_setting->id === 'paypal_pro_payflow' ) {
                     if( isset($payment_action['Authorization']) && !empty($payment_action['Authorization'])) {
                         $gateway_setting->payment_action = 'Authorization';
                         if($payment_action['Authorization'] == 'Full Authorization') {
