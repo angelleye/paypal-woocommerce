@@ -1666,7 +1666,7 @@ class AngellEYE_Utility {
     public static function angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id = null) {
         global $product, $wp_query, $post;
         $is_sandbox_set = false;
-        if (isset(WC()->cart) && sizeof(WC()->cart->get_cart()) > 0) {
+        if (did_action( 'wp_loaded' ) && isset(WC()->cart) && sizeof(WC()->cart->get_cart()) > 0) {
             foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
                 $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
                 $product_type = get_post_type($product_id);
