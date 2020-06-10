@@ -1023,7 +1023,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $this->storeInVaultOnSuccess = true;
         }
         $this->storeInVaultOnSuccess = apply_filters('angelleye_braintree_store_in_vault_on_success', $this->storeInVaultOnSuccess);
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
         if( $this->payment_action == 'Sale' ) {
             $success = $this->angelleye_do_payment($order);
         } else {
@@ -1981,7 +1981,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function subscription_process_payment($order_id) {
         $this->angelleye_braintree_lib($order_id);
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (isset($_POST['wc-braintree-payment-token']) && 'new' !== $_POST['wc-braintree-payment-token']) {
             $token_id = wc_clean($_POST['wc-braintree-payment-token']);
@@ -2771,7 +2771,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     
     public function subscription_change_payment($order_id) {
         $this->angelleye_braintree_lib($order_id);
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (isset($_POST['wc-braintree-payment-token']) && 'new' !== $_POST['wc-braintree-payment-token']) {
             $token_id = wc_clean($_POST['wc-braintree-payment-token']);

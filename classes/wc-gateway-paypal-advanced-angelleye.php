@@ -386,7 +386,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $order_id = absint( wp_unslash( $_REQUEST['USER1']));
 
         // Create order object
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
 
         //check for the status of the order, if completed or processing, redirect to thanks page. This case happens when silentpost is on
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
@@ -1012,7 +1012,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @return void
      * */
     public function process_payment($order_id) {
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         if (!empty($_POST['wc-paypal_advanced-new-payment-method']) && $_POST['wc-paypal_advanced-new-payment-method'] == true) {
@@ -1183,7 +1183,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         //get the mode
         $PF_MODE = $this->testmode == true ? 'TEST' : 'LIVE';
         //create order object
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
 
         //get the tokens
         $old_wc = version_compare(WC_VERSION, '3.0', '<');

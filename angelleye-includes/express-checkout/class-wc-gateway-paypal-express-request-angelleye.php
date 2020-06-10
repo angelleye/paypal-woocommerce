@@ -332,8 +332,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 }
             }
 
-            $this->confirm_order_id = esc_attr($_GET['order_id']);
-            $order = new WC_Order($this->confirm_order_id);
+            $this->confirm_order_id = absint( wp_unslash( $_GET['order_id'] ) );
+            $order = wc_get_order($this->confirm_order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             if ($old_wc) {
@@ -486,7 +486,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_do_express_checkout_payment_request() {
         try {
             if (!empty($this->confirm_order_id)) {
-                $order = new WC_Order($this->confirm_order_id);
+                $order = wc_get_order($this->confirm_order_id);
                 $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
                 $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
             } else {

@@ -757,7 +757,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      * Process the payment
      */
     function process_payment($order_id) {
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
 
         $this->log('Processing order #' . $order_id);
 
@@ -1985,7 +1985,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function free_signup_order_payment($order_id) {
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
         $this->log('Processing order #' . $order_id);
         if ( (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') || $this->is_subscription($order_id)) {
             $token_id = wc_clean($_POST['wc-paypal_pro-payment-token']);

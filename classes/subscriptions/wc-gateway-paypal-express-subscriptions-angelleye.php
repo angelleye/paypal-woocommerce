@@ -79,7 +79,7 @@ class WC_Gateway_PayPal_Express_Subscriptions_AngellEYE extends WC_Gateway_PayPa
     
     public function free_signup_with_token_payment_tokenization($order_id) {
         if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
-            $order = new WC_Order($order_id);
+            $order = wc_get_order($order_id);
             if ($order->get_total() == 0) {
                 return true;
             }
