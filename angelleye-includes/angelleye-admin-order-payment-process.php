@@ -278,7 +278,11 @@ class AngellEYE_Admin_Order_Payment_Process {
         AngellEYE_Utility::angelleye_set_address($new_order_id, $shipping_details, 'shipping');
         AngellEYE_Utility::angelleye_set_address($new_order_id, $billing_details, 'billing');
         $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
-        update_post_meta($new_order_id, '_payment_method', $this->payment_method);
+        if ($old_wc) {
+            update_post_meta($new_order_id, '_payment_method', $this->payment_method);
+        } else {
+            $new_order->set_payment_method($this->payment_method);
+        }
         $payment_method_title = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method_title : $order->get_payment_method_title();
         update_post_meta($new_order_id, '_payment_method_title', $payment_method_title);
         update_post_meta($new_order_id, '_created_via', 'create_new_reference_order');
@@ -480,7 +484,7 @@ class AngellEYE_Admin_Order_Payment_Process {
                 if (!empty($first_transaction_id)) {
                     $tokens_array[] = $first_transaction_id;
                 }
-                $transaction_id = get_post_meta($value['id'], '_transaction_id', true);
+                $transaction_id = $order->get_transaction_id();
                 if (!empty($transaction_id)) {
                     $tokens_array[] = $transaction_id;
                 }
@@ -492,7 +496,7 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_get_transaction_id_by_order_id($order) {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $transaction_id = get_post_meta($order_id, '_transaction_id', true);
+        $transaction_id = $order->get_transaction_id();
         if (!empty($transaction_id)) {
             return $transaction_id;
         }
@@ -545,7 +549,8 @@ class AngellEYE_Admin_Order_Payment_Process {
             if (!empty($result['ACK']) && ($result['ACK'] == 'Success' || $result['ACK'] == 'SuccessWithWarning')) {
                 $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
                 if ($this->gateway_settings['payment_action'] != 'Sale') {
-                    $payment_order_meta = array('_transaction_id' => $result['TRANSACTIONID'], '_payment_action' => $this->gateway_settings['payment_action'], '_first_transaction_id' => $result['TRANSACTIONID']);
+                    $order->set_transaction_id($result['TRANSACTIONID']);
+                    $payment_order_meta = array('_payment_action' => $this->gateway_settings['payment_action'], '_first_transaction_id' => $result['TRANSACTIONID']);
                     AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 }
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($result, $order, $this->gateway_settings['payment_action']);

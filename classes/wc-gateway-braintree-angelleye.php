@@ -2556,7 +2556,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $payment_method_nonce = $token->get_token();
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             update_post_meta($order_id, '_first_transaction_id', $payment_method_nonce);
-            $payment_order_meta = array('_transaction_id' => $payment_method_nonce, '_payment_action' => $this->payment_action);
+            $order->set_transaction_id($payment_method_nonce);
+            $payment_order_meta = array('_payment_action' => $this->payment_action);
             AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
             $order->update_status('on-hold', __('Authorization only transaction', 'paypal-for-woocommerce'));
             $this->save_payment_token($order, $payment_method_nonce);
@@ -2703,7 +2704,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         if( !empty($payment_method_token) ) {
             update_post_meta($order_id, '_first_transaction_id', $payment_method_token);
-            $payment_order_meta = array('_transaction_id' => $payment_method_token, '_payment_action' => $this->payment_action);
+            $order->set_transaction_id($payment_method_token);
+            $payment_order_meta = array('_payment_action' => $this->payment_action);
             AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
             $order->update_status('on-hold', __('Authorization only transaction', 'paypal-for-woocommerce'));
             $this->save_payment_token($order, $payment_method_token);
