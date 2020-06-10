@@ -460,7 +460,7 @@ class AngellEYE_Utility {
                     update_post_meta($AUTHORIZATIONID, 'PAYMENTSTATUS', $do_capture_result['PAYMENTSTATUS']);
                 }
             }
-            $payment_order_meta = array('_transaction_id' => $do_capture_result['TRANSACTIONID']);
+            $order->set_transaction_id($do_capture_result['TRANSACTIONID']);
             self::angelleye_add_order_meta($order_id, $payment_order_meta);
             self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_capture_result, $order, 'DoCapture');
             $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
@@ -551,8 +551,7 @@ class AngellEYE_Utility {
                         ' DoVoid AUTHORIZATIONID: ' . $do_void_result['AUTHORIZATIONID'] . ' )'
                 );
                 $this->angelleye_get_transactionDetails($do_void_result['AUTHORIZATIONID']);
-                $payment_order_meta = array('_transaction_id' => $do_void_result['AUTHORIZATIONID']);
-                self::angelleye_add_order_meta($order_id, $payment_order_meta);
+                $order->set_transaction_id($do_void_result['AUTHORIZATIONID']);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_void_result, $order, 'DoVoid');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
@@ -620,8 +619,7 @@ class AngellEYE_Utility {
                         ' ( Response Code: ' . $do_reauthorization_result["ACK"] . ", " .
                         ' DoReauthorization AUTHORIZATIONID: ' . $do_reauthorization_result['AUTHORIZATIONID'] . ' )'
                 );
-                $payment_order_meta = array('_transaction_id' => $do_reauthorization_result['AUTHORIZATIONID']);
-                self::angelleye_add_order_meta($order_id, $payment_order_meta);
+                $order->set_transaction_id($do_reauthorization_result['AUTHORIZATIONID']);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_reauthorization_result, $order, 'DoReauthorization');
             } else {
                 $ErrorCode = urldecode($do_reauthorization_result["L_ERRORCODE0"]);
@@ -710,8 +708,7 @@ class AngellEYE_Utility {
                         ' ( Response Code: ' . $do_authorization_result["ACK"] . ", " .
                         ' DoAuthorization AUTHORIZATIONID: ' . $do_authorization_result['TRANSACTIONID'] . ' )'
                 );
-                $payment_order_meta = array('_transaction_id' => $do_authorization_result['TRANSACTIONID']);
-                self::angelleye_add_order_meta($order_id, $payment_order_meta);
+                $order->set_transaction_id($do_authorization_result['TRANSACTIONID']);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_authorization_result, $order, 'DoAuthorization');
             } else {
                 $ErrorCode = urldecode($do_authorization_result["L_ERRORCODE0"]);
@@ -1028,8 +1025,7 @@ class AngellEYE_Utility {
             return false;
         }
         $order = wc_get_order($post->ID);
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $transaction_id = get_post_meta($order_id, '_transaction_id', true);
+        $transaction_id = $order->get_transaction_id();
         return ( !empty($transaction_id) ) ? $transaction_id : false;
     }
 
@@ -1819,9 +1815,7 @@ class AngellEYE_Utility {
                             ' Delayed Capture AUTHORIZATIONID: ' . $do_delayed_capture_result['PNREF'] . ' )'
                     );
                 }
-
-                $payment_order_meta = array('_transaction_id' => $do_delayed_capture_result['PNREF']);
-                self::angelleye_add_order_meta($order_id, $payment_order_meta);
+                $order->set_transaction_id($do_delayed_capture_result['PNREF']);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_delayed_capture_result, $order, 'DoCapture');
                 $this->angelleye_get_transactionDetails($do_delayed_capture_result['PNREF']);
                 $this->angelleye_get_transactionDetails($transaction_id);
@@ -1878,8 +1872,7 @@ class AngellEYE_Utility {
                         ' Void AUTHORIZATIONID: ' . $transaction_id . ' )'
                 );
                 $this->angelleye_get_transactionDetails($transaction_id);
-                $payment_order_meta = array('_transaction_id' => $transaction_id);
-                self::angelleye_add_order_meta($order_id, $payment_order_meta);
+                $order->set_transaction_id($transaction_id);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_void_result, $order, 'DoVoid');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
@@ -1941,8 +1934,7 @@ class AngellEYE_Utility {
                 );
                 update_post_meta($order_id, '_first_transaction_id', $do_authorization_result['PNREF']);
                 update_post_meta($order_id, '_trans_date', current_time('mysql'));
-                $payment_order_meta = array('_transaction_id' => $transaction_id);
-                self::angelleye_add_order_meta($order_id, $payment_order_meta);
+                $order->set_transaction_id($transaction_id);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_authorization_result, $order, 'DoAuthorization');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
@@ -2172,9 +2164,7 @@ class AngellEYE_Utility {
                     update_post_meta($order_id, 'is_sandbox', $gateway_obj->sandbox);
                     $order->payment_complete($result->transaction->id);
                     $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $gateway_obj->title, $result->transaction->id));
-                    $payment_order_meta = array('_transaction_id' => $result->transaction->id);
-                    self::angelleye_add_order_meta($order_id, $payment_order_meta);
-                    
+                    $order->set_transaction_id($result->transaction->id);
                     $insert_paypal_transaction = array(
                         'ID' => '',
                         'post_type' => 'paypal_transaction',

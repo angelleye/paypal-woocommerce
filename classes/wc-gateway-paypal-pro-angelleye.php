@@ -1351,7 +1351,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
                 }
-                $payment_order_meta = array('_transaction_id' => $PayPalResult['TRANSACTIONID'], '_payment_action' => $this->payment_action);
+                $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
+                $payment_order_meta = array('_payment_action' => $this->payment_action);
                 AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                 $angelleye_utility = new AngellEYE_Utility(null, null);
@@ -1927,7 +1928,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 $this->save_payment_token($order, $PayPalResult['TRANSACTIONID']);
                 update_post_meta($order_id, '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
-                $payment_order_meta = array('_transaction_id' => $PayPalResult['TRANSACTIONID'], '_payment_action' => $this->payment_action);
+                $payment_order_meta = array('_payment_action' => $this->payment_action);
+                $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
                 AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                 $angelleye_utility = new AngellEYE_Utility(null, null);
@@ -2279,11 +2281,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $order->update_status('on-hold');
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-            if ($old_wc) {
-                update_post_meta($order_id, '_transaction_id', $PayPalResult['TRANSACTIONID']);
-            } else {
-                update_post_meta($order->get_id(), '_transaction_id', $PayPalResult['TRANSACTIONID']);
-            }
+            $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
             if ( $old_wc ) {
                 if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
                     $order->reduce_order_stock();
