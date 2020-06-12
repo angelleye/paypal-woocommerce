@@ -486,7 +486,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);
                 update_post_meta($order_id, 'is_sandbox', $this->testmode);
-                $order->update_status('wc-partialpaid');
+                $order->update_status('wc-partial-payment');
                 if ($old_wc) {
                     if (!get_post_meta($orderid, '_order_stock_reduced', true)) {
                         $order->reduce_order_stock();
