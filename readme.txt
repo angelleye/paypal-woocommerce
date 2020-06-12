@@ -129,9 +129,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 2.2.5 - 06.10.2020 =
 * Feature - Product Level Authorization and Capture with Express Checkout and Braintree Payment Gateway ([PFW-560](https://github.com/angelleye/paypal-woocommerce/pull/1441))
-* Fix - Call get_cart function after wp_loaded action ([PFW-641](https://github.com/angelleye/paypal-woocommerce/pull/1460))
 * Tweak - Improved data accessors to use WooCommerce functions ([PFW-619](https://github.com/angelleye/paypal-woocommerce/pull/1462))
+* Fix - Call get_cart function after wp_loaded action ([PFW-641](https://github.com/angelleye/paypal-woocommerce/pull/1460))
 * Fix - Cartflow discount issue resolved ([PFW-640](https://github.com/angelleye/paypal-woocommerce/pull/1459))
+* Tweak - Partial Success Order Handling ([PFW-636](https://github.com/angelleye/paypal-woocommerce/pull/1458))
 
 = 2.2.4 - 04.06.2020 =
 * Compatibility with WooCommerce 4.2 & WordPress 5.4.1
