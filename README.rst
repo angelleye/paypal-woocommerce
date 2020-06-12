@@ -8,7 +8,7 @@ All of our plugins are now hosted on our own servers, giving us more freedom and
 
 Please install the `Angell EYE Updater <https://www.angelleye.com/product/angelleye-updater-wordpress/>`_ in order to receive notices and automated updates going forward.
 
-If you have any questions or concerns, please `create a ticket <www.angelleye.com/support>`_ and we'll be happy to get you taken care of.
+If you have any questions or concerns, please `create a ticket <https://www.angelleye.com/support>`_ and we'll be happy to get you taken care of.
 
 ###################
 Introduction
