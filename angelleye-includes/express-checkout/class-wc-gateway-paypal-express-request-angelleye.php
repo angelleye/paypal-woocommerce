@@ -473,6 +473,23 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 wc_clear_notices();
                 $this->angelleye_wp_safe_redirect(add_query_arg('utm_nooverride', '1', $this->gateway->get_return_url($order)), 'do_express_checkout_payment');
                 exit();
+            } elseif ($this->response_helper->ec_is_response_partialsuccess($this->paypal_response)) {
+                do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
+                apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
+                do_action('woocommerce_before_pay_action', $order);
+                update_post_meta($order_id, 'is_sandbox', $this->testmode);
+                $order->update_status('wc-partial-payment');
+                if ($old_wc) {
+                    if (!get_post_meta($orderid, '_order_stock_reduced', true)) {
+                        $order->reduce_order_stock();
+                    }
+                } else {
+                    wc_maybe_reduce_stock_levels($orderid);
+                }
+                WC()->cart->empty_cart();
+                wc_clear_notices();
+                $this->angelleye_wp_safe_redirect(add_query_arg('utm_nooverride', '1', $this->gateway->get_return_url($order)), 'do_express_checkout_payment');
+                exit();
             } else {
                 $this->angelleye_add_order_note_with_error($order, $paypal_action_name = 'DoExpressCheckoutPayment');
                 $this->angelleye_write_error_log_and_send_email_notification($paypal_action_name = 'DoExpressCheckoutPayment');
