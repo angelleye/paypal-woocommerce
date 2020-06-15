@@ -664,6 +664,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
         // Format values
         $card_number = str_replace(array(' ', '-'), '', $card_number);
+        
+        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) ? wc_clean($_POST['paypal_pro-card-cardholder-first']) : '';
+        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) ? wc_clean($_POST['paypal_pro-card-cardholder-last']) : '';
 
         if (isset($_POST['paypal_pro-card-startdate'])) {
             $card_start = wc_clean($_POST['paypal_pro-card-startdate']);
@@ -697,7 +700,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     'exp_month' => $card_exp_month,
                     'exp_year' => $card_exp_year,
                     'start_month' => $card_start_month,
-                    'start_year' => $card_start_year
+                    'start_year' => $card_start_year,
+                    'firstname' => $firstname,
+                    'lastname' => $lastname
         );
     }
 
@@ -1033,14 +1038,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $GLOBALS['wp_rewrite'] = new WP_Rewrite();
         }
 
-        if(!empty($_POST['paypal_pro-card-cardholder-first'])) {
-            $firstname = wc_clean($_POST['paypal_pro-card-cardholder-first']);
+        if(!empty($card->firstname)) {
+            $firstname = $card->firstname;
         } else {
             $firstname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
         }
 
-        if(!empty($_POST['paypal_pro-card-cardholder-last'])) {
-            $lastname = wc_clean($_POST['paypal_pro-card-cardholder-last']);
+        if(!empty($card->lastname)) {
+            $lastname = $card->lastname;
         } else {
             $lastname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
         }
