@@ -1142,18 +1142,18 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $billing_state = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_state : $order->get_billing_state();
             $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_email : $order->get_billing_email();
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-first'])) {
-                $firstname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']);
+            if (!empty($card->firstname)) {
+                $firstname = $card->firstname;
             } else {
                 $firstname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
             }
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-last'])) {
+            if (!empty($card->lastname)) {
                 $lastname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']);
             } else {
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
-
+            
             $order_amt = AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order);
             if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
                 $order_amt = '0.00';
@@ -1731,6 +1731,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $card_exp_month = isset($_POST['paypal_pro_payflow_card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_month']) : '';
         $card_number = str_replace(array(' ', '-'), '', $card_number);
         $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
+        $firstname = isset($_POST['paypal_pro_payflow-card-cardholder-first']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']) : '';
+        $lastname = isset($_POST['paypal_pro_payflow-card-cardholder-last']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']) : '';
         if ($card_type == 'amex') {
             if (WC()->countries->get_base_country() == 'CA' && get_woocommerce_currency() == 'USD' && apply_filters('angelleye_paypal_pro_payflow_amex_ca_usd', true, $this)) {
                 throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
@@ -1754,7 +1756,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'exp_month' => $card_exp_month,
                     'exp_year' => $card_exp_year,
                     'start_month' => '',
-                    'start_year' => ''
+                    'start_year' => '',
+                    'firstname' => $firstname,
+                    'lastname' => $lastname
         );
     }
 
@@ -1850,14 +1854,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
         try {
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-first'])) {
-                $firstname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']);
+            if (!empty($card->firstname)) {
+                $firstname = $card->firstname;
             } else {
                 $firstname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
             }
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-last'])) {
-                $lastname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']);
+            if (!empty($card->lastname)) {
+                $lastname = $card->lastname;
             } else {
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
