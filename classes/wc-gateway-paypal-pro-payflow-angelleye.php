@@ -1149,7 +1149,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
 
             if (!empty($card->lastname)) {
-                $lastname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']);
+                $lastname = $card->lastname;
             } else {
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
