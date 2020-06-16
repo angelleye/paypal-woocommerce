@@ -1638,8 +1638,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         }
         $card = $this->get_posted_card();
 
-        if (strlen($card_exp_year) == 4) {
-            $card_exp_year = $card_exp_year - 2000;
+        if (strlen($card->exp_year) == 4) {
+            $card->exp_year = $card->exp_year - 2000;
         }
 
         do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
@@ -1666,7 +1666,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $card->exp_month > 12 ||
                 $card->exp_month < 1 ||
                 $card->exp_year < date('y') ||
-                $card_exp_year > date('y') + 20
+                $card->exp_year > date('y') + 20
         ) {
             wc_add_notice(__('Card expiration date is invalid', 'paypal-for-woocommerce'), "error");
             return false;
