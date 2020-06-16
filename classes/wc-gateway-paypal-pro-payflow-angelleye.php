@@ -1636,31 +1636,24 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 return true;
             }
         }
-        $card_number = isset($_POST['paypal_pro_payflow-card-number']) ? wc_clean($_POST['paypal_pro_payflow-card-number']) : '';
-        $card_cvc = isset($_POST['paypal_pro_payflow-card-cvc']) ? wc_clean($_POST['paypal_pro_payflow-card-cvc']) : '';
-        $card_exp_year = isset($_POST['paypal_pro_payflow-card_expiration_year']) ? wc_clean($_POST['paypal_pro_payflow-card_expiration_year']) : '';
-        $card_exp_month = isset($_POST['paypal_pro_payflow-card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow-card_expiration_month']) : '';
-
-
-        // Format values
-        $card_number = str_replace(array(' ', '-'), '', $card_number);
+        $card = $this->get_posted_card();
 
         if (strlen($card_exp_year) == 4) {
             $card_exp_year = $card_exp_year - 2000;
         }
 
-        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_exp_month, $card_exp_year);
+        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
 
         // Check card number
 
-        if (empty($card_number) || !ctype_digit((string) $card_number)) {
+        if (empty($card->number) || !ctype_digit((string) $card->number)) {
             wc_add_notice(__('Card number is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         }
 
         // Check card security code
 
-        if (!ctype_digit((string) $card_cvc)) {
+        if (!ctype_digit((string) $card->cvc)) {
             wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'), "error");
             return false;
         }
@@ -1668,18 +1661,18 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         // Check card expiration data
 
         if (
-                !ctype_digit((string) $card_exp_month) ||
-                !ctype_digit((string) $card_exp_year) ||
-                $card_exp_month > 12 ||
-                $card_exp_month < 1 ||
-                $card_exp_year < date('y') ||
+                !ctype_digit((string) $card->exp_month) ||
+                !ctype_digit((string) $card->exp_year) ||
+                $card->exp_month > 12 ||
+                $card->exp_month < 1 ||
+                $card->exp_year < date('y') ||
                 $card_exp_year > date('y') + 20
         ) {
             wc_add_notice(__('Card expiration date is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         }
 
-        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_exp_month, $card_exp_year);
+        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
 
         return true;
     }
