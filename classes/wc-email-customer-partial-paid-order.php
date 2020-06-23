@@ -27,6 +27,14 @@ if (!class_exists('WC_Email_Partially_Paid_Order', false)) :
             add_action('woocommerce_order_status_on-hold_to_partial-payment_notification', array($this, 'trigger'), 10, 2);
             add_action('woocommerce_order_status_pending_to_partial-payment_notification', array($this, 'trigger'), 10, 2);
 
+            if( class_exists( 'WC_Email_New_Order' ) ) {
+                $new_order_email = new WC_Email_New_Order();
+                add_action('woocommerce_order_status_cancelled_to_partial-payment_notification', array($new_order_email, 'trigger'), 10, 2);
+                add_action('woocommerce_order_status_failed_to_partial-payment_notification', array($new_order_email, 'trigger'), 10, 2);
+                add_action('woocommerce_order_status_on-hold_to_partial-payment_notification', array($new_order_email, 'trigger'), 10, 2);
+                add_action('woocommerce_order_status_pending_to_partial-payment_notification', array($new_order_email, 'trigger'), 10, 2);
+            }
+            
             // Call parent constructor.
             parent::__construct();
             
