@@ -10,8 +10,7 @@ if (!class_exists('WC_Email_Admin_Partially_Paid_Order', false)) :
 
         public function __construct() {
             $this->id = 'admin_partially_paid_order';
-            $this->customer_email = true;
-
+       
             $this->title = __('New order', 'paypal-for-woocommerce');
             $this->description = __('New order emails are sent to chosen recipient(s) when a new order is received.', 'paypal-for-woocommerce');
             $this->template_html = 'angelleye-admin-new-partial-paid-order.php';
@@ -26,20 +25,23 @@ if (!class_exists('WC_Email_Admin_Partially_Paid_Order', false)) :
             add_action('woocommerce_order_status_failed_to_partial-payment_notification', array($this, 'trigger'), 10, 2);
             add_action('woocommerce_order_status_on-hold_to_partial-payment_notification', array($this, 'trigger'), 10, 2);
             add_action('woocommerce_order_status_pending_to_partial-payment_notification', array($this, 'trigger'), 10, 2);
+            add_action('woocommerce_order_status_processing_to_partial-payment_notification', array($this, 'trigger'), 10, 2);
 
 
             // Call parent constructor.
             parent::__construct();
+            
+            $this->recipient = $this->get_option( 'recipient', get_option( 'admin_email' ) );
 
             $this->template_base = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/emails';
         }
 
         public function get_default_subject() {
-            return __('[{site_title}]: New order #{order_number}', 'paypal-for-woocommerce');
+            return __('[{site_title}]: New order #{order_number} has Partially Paid', 'paypal-for-woocommerce');
         }
 
         public function get_default_heading() {
-            return __('New Order: #{order_number}', 'paypal-for-woocommerce');
+            return __('New Order: #{order_number} has Partially Paid', 'paypal-for-woocommerce');
         }
 
         public function trigger($order_id, $order = false) {

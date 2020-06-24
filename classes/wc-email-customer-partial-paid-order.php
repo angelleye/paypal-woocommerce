@@ -26,15 +26,8 @@ if (!class_exists('WC_Email_Partially_Paid_Order', false)) :
             add_action('woocommerce_order_status_failed_to_partial-payment_notification', array($this, 'trigger'), 10, 2);
             add_action('woocommerce_order_status_on-hold_to_partial-payment_notification', array($this, 'trigger'), 10, 2);
             add_action('woocommerce_order_status_pending_to_partial-payment_notification', array($this, 'trigger'), 10, 2);
+            add_action('woocommerce_order_status_processing_to_partial-payment_notification', array($this, 'trigger'), 10, 2);
 
-            if( class_exists( 'WC_Email_Admin_Partially_Paid_Order' ) ) {
-                $new_order_email = new WC_Email_Admin_Partially_Paid_Order();
-                add_action('woocommerce_order_status_cancelled_to_partial-payment_notification', array($new_order_email, 'trigger'), 10, 2);
-                add_action('woocommerce_order_status_failed_to_partial-payment_notification', array($new_order_email, 'trigger'), 10, 2);
-                add_action('woocommerce_order_status_on-hold_to_partial-payment_notification', array($new_order_email, 'trigger'), 10, 2);
-                add_action('woocommerce_order_status_pending_to_partial-payment_notification', array($new_order_email, 'trigger'), 10, 2);
-            }
-            
             // Call parent constructor.
             parent::__construct();
             
@@ -42,11 +35,11 @@ if (!class_exists('WC_Email_Partially_Paid_Order', false)) :
         }
 
         public function get_default_subject() {
-            return __('Your {site_title} order has been received!', 'paypal-for-woocommerce');
+            return __('[{site_title}]: Order #{order_number} has Partially Paid', 'paypal-for-woocommerce');
         }
 
         public function get_default_heading() {
-            return __('Thank you for your order', 'paypal-for-woocommerce');
+            return __('Order Partially Paid: #{order_number}', 'paypal-for-woocommerce');
         }
 
         public function trigger($order_id, $order = false) {
@@ -97,7 +90,7 @@ if (!class_exists('WC_Email_Partially_Paid_Order', false)) :
         }
 
         public function get_default_additional_content() {
-            return __('Thanks for using {site_address}!', 'paypal-for-woocommerce');
+            return __('We look forward to fulfilling your order soon.', 'paypal-for-woocommerce');
         }
 
     }

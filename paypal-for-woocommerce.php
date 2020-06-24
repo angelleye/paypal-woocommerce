@@ -1417,6 +1417,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $actions[] = 'woocommerce_order_status_failed_to_partial-payment';
             $actions[] = 'woocommerce_order_status_on-hold_to_partial-payment';
             $actions[] = 'woocommerce_order_status_pending_to_partial-payment';
+            $actions[] = 'woocommerce_order_status_processing_to_partial-payment';
             return $actions;
         }
     } 
