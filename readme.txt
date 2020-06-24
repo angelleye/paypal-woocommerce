@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.2.6 - 06.24.2020 =
+* Tweak - Improved Partial Success Email Template ([PFW-643](https://github.com/angelleye/paypal-woocommerce/pull/1464))
+
 = 2.2.5 - 06.10.2020 =
 * Feature - Product Level Authorization and Capture with Express Checkout and Braintree Payment Gateway ([PFW-560](https://github.com/angelleye/paypal-woocommerce/pull/1441))
 * Tweak - Improved data accessors to use WooCommerce functions ([PFW-619](https://github.com/angelleye/paypal-woocommerce/pull/1462))
