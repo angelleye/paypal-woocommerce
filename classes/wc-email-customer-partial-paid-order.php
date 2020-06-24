@@ -12,7 +12,7 @@ if (!class_exists('WC_Email_Partially_Paid_Order', false)) :
             $this->id = 'customer_partially_paid_order';
             $this->customer_email = true;
 
-            $this->title = __('Partially Paid order - customer', 'paypal-for-woocommerce');
+            $this->title = __('Partially Paid order - Customer', 'paypal-for-woocommerce');
             $this->description = __('This is an order notification sent to customers containing order details after partially paid.', 'paypal-for-woocommerce');
             $this->template_html = 'angelleye-customer-partial-paid-order.php';
             $this->template_plain = 'plain/angelleye-customer-partial-paid-order.php';
