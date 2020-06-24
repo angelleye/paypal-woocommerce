@@ -569,7 +569,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             ?>
         </table>
             <p class="submit">
-                <button name="save" class="button-primary woocommerce-save-button" type="submit" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>"><?php esc_html_e( 'Save changes', 'woocommerce' ); ?></button>
+                <button name="save" class="button-primary woocommerce-save-button" type="submit" value="<?php esc_attr_e( 'Save changes', 'paypal-for-woocommerce' ); ?>"><?php esc_html_e( 'Save changes', 'paypal-for-woocommerce' ); ?></button>
 		<?php wp_nonce_field( 'woocommerce-settings' ); ?>
             </p>
         </div>
