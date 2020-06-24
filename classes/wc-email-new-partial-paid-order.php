@@ -12,8 +12,8 @@ if (!class_exists('WC_Email_Admin_Partially_Paid_Order', false)) :
             $this->id = 'admin_partially_paid_order';
             $this->customer_email = true;
 
-            $this->title = __('New order', 'woocommerce');
-            $this->description = __('New order emails are sent to chosen recipient(s) when a new order is received.', 'woocommerce');
+            $this->title = __('New order', 'paypal-for-woocommerce');
+            $this->description = __('New order emails are sent to chosen recipient(s) when a new order is received.', 'paypal-for-woocommerce');
             $this->template_html = 'angelleye-admin-new-partial-paid-order.php';
             $this->template_plain = 'plain/angelleye-admin-new-partial-paid-order.php';
             $this->placeholders = array(
@@ -35,11 +35,11 @@ if (!class_exists('WC_Email_Admin_Partially_Paid_Order', false)) :
         }
 
         public function get_default_subject() {
-            return __('[{site_title}]: New order #{order_number}', 'woocommerce');
+            return __('[{site_title}]: New order #{order_number}', 'paypal-for-woocommerce');
         }
 
         public function get_default_heading() {
-            return __('New Order: #{order_number}', 'woocommerce');
+            return __('New Order: #{order_number}', 'paypal-for-woocommerce');
         }
 
         public function trigger($order_id, $order = false) {
@@ -89,7 +89,7 @@ if (!class_exists('WC_Email_Admin_Partially_Paid_Order', false)) :
         }
 
         public function get_default_additional_content() {
-            return __('Congratulations on the sale.', 'woocommerce');
+            return __('Congratulations on the sale.', 'paypal-for-woocommerce');
         }
 
     }
