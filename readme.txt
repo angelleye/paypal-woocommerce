@@ -128,6 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 2.2.6 - 06.24.2020 =
+* Fix - Update PayPal Payflow Iframe ([PFW-644](https://github.com/angelleye/paypal-woocommerce/pull/1465))
 * Tweak - Improved Partial Success Email Template ([PFW-643](https://github.com/angelleye/paypal-woocommerce/pull/1464))
 
 = 2.2.5 - 06.10.2020 =
