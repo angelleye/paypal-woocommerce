@@ -1401,11 +1401,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
         public function angelleye_woocommerce_email_classes($emails) {
             $emails['WC_Email_Partially_Paid_Order'] = include PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/classes/wc-email-customer-partial-paid-order.php';
+            $emails['WC_Email_Admin_Partially_Paid_Order'] = include PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/classes/wc-email-new-partial-paid-order.php';
             return $emails;
         }
         
         public function own_angelleye_wc_get_template($template, $template_name, $args, $template_path, $default_path) {
-            if(!empty($template) && ($template_name === 'angelleye-customer-partial-paid-order.php' || $template_name === 'plain/angelleye-customer-partial-paid-order.php')) {
+            if(!empty($template) && ($template_name === 'angelleye-customer-partial-paid-order.php' || $template_name === 'plain/angelleye-customer-partial-paid-order.php' || $template_name === 'plain/angelleye-admin-new-partial-paid-order.php' || $template_name === 'angelleye-admin-new-partial-paid-order.php')) {
                 $template = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/emails/' . $template_name;
             }
             return $template;
