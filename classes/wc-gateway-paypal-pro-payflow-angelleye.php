@@ -228,36 +228,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'default' => __('Pay with your credit card.', 'paypal-for-woocommerce')
             ),
-            'invoice_id_prefix' => array(
-                'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce'),
-            ),
-            'card_icon' => array(
-                'title' => __('Card Icon', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'default' => plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__))),
-                'class' => 'button_upload'
-            ),
-            'error_email_notify' => array(
-                'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
-                'default' => 'yes',
-                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
-            ),
-            'error_display_type' => array(
-                'title' => __('Error Display Type', 'paypal-for-woocommerce'),
-                'type' => 'select',
-                'label' => __('Display detailed or generic errors', 'paypal-for-woocommerce'),
-                'class' => 'error_display_type_option wc-enhanced-select',
-                'options' => array(
-                    'detailed' => 'Detailed',
-                    'generic' => 'Generic'
-                ),
-                'description' => __('Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
-									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce')
-            ),
             'testmode' => array(
                 'title' => __('PayPal Sandbox', 'paypal-for-woocommerce'),
                 'label' => __('Enable PayPal Sandbox/Test Mode', 'paypal-for-woocommerce'),
@@ -324,69 +294,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'default' => '',
                 'custom_attributes' => array('autocomplete' => 'new-password'),
             ),
-            'enable_3dsecure' => array(
-                'title' => __('3DSecure', 'paypal-for-woocommerce'),
-                'label' => __('Enable 3DSecure', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Allows merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)', 'paypal-for-woocommerce'),
-                'default' => 'no'
-            ),
-            'threedsecure_type' => array(
-                'title' => __('3-D Secure authentication Type', 'paypal-for-woocommerce'),
-                'label' => __('3-D Secure authentication Type.', 'paypal-for-woocommerce'),
-                'description' => __('Using Payflow, you can authenticate cardholders with the 3-D Secure protocol in one of two ways.'),
-                'type' => 'select',
-                'class' => 'wc-enhanced-select',
-                'options' => array(
-                    'buyer_authentication_service' => 'Payflow Buyer Authentication service',
-                    'cardinalcommerce' => '3rd-Party Merchant Plug-ins (CardinalCommerce)',
-                ),
-                'default' => 'buyer_authentication_service'
-            ),
-            'centinel_pid' => array(
-                'title' => __('Centinel PID', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Processor ID.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'centinel_mid' => array(
-                'title' => __('Centinel MID', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Merchant ID.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'centinel_pwd' => array(
-                'title' => __('Transaction Password', 'paypal-for-woocommerce'),
-                'type' => 'password',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Transaction Password.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'liability_shift' => array(
-                'title' => __('Liability Shift', 'paypal-for-woocommerce'),
-                'label' => __('Require liability shift', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce'),
-                'default' => 'no'
-            ),
-            'send_items' => array(
-                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
-                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
-                'default' => 'yes'
-            ),
-            'subtotal_mismatch_behavior' => array(
-                'title' => __('Subtotal Mismatch Behavior', 'paypal-for-woocommerce'),
-                'type' => 'select',
-                'class' => 'wc-enhanced-select',
-                'description' => __('Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce'),
-                'default' => ($this->send_items) ? 'add' : 'drop',
-                'desc_tip' => true,
-                'options' => array(
-                    'add' => __('Add another line item', 'paypal-for-woocommerce'),
-                    'drop' => __('Do not send line items to PayPal', 'paypal-for-woocommerce'),
-                ),
-            ),
             'payment_action' => array(
                 'title' => __('Payment Action', 'paypal-for-woocommerce'),
                 'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
@@ -435,6 +342,109 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 ),
                 'default' => 'Processing',
                 'desc_tip' => true,
+            ),
+            '3dsecure'           => array(
+		'title'       => __( '3DSecure Settings', 'paypal-for-woocommerce' ),
+		'type'        => 'title',
+		'description' => '',
+            ),
+            'enable_3dsecure' => array(
+                'title' => __('3DSecure', 'paypal-for-woocommerce'),
+                'label' => __('Enable 3DSecure', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Allows merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
+            'threedsecure_type' => array(
+                'title' => __('3-D Secure authentication Type', 'paypal-for-woocommerce'),
+                'label' => __('3-D Secure authentication Type.', 'paypal-for-woocommerce'),
+                'description' => __('Using Payflow, you can authenticate cardholders with the 3-D Secure protocol in one of two ways.'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select',
+                'options' => array(
+                    'buyer_authentication_service' => 'Payflow Buyer Authentication service',
+                    'cardinalcommerce' => '3rd-Party Merchant Plug-ins (CardinalCommerce)',
+                ),
+                'default' => 'buyer_authentication_service'
+            ),
+            'centinel_pid' => array(
+                'title' => __('Centinel PID', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Processor ID.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'centinel_mid' => array(
+                'title' => __('Centinel MID', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Merchant ID.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'centinel_pwd' => array(
+                'title' => __('Transaction Password', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Transaction Password.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'liability_shift' => array(
+                'title' => __('Liability Shift', 'paypal-for-woocommerce'),
+                'label' => __('Require liability shift', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
+            'advanced_options'           => array(
+		'title'       => __( 'Advanced options', 'paypal-for-woocommerce' ),
+		'type'        => 'title',
+		'description' => '',
+            ),
+            'send_items' => array(
+                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
+                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
+                'default' => 'yes'
+            ),
+            'invoice_id_prefix' => array(
+                'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce'),
+            ),
+            'card_icon' => array(
+                'title' => __('Card Icon', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'default' => plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__))),
+                'class' => 'button_upload'
+            ),
+            'error_email_notify' => array(
+                'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
+                'default' => 'yes',
+                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
+            ),
+            'error_display_type' => array(
+                'title' => __('Error Display Type', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'label' => __('Display detailed or generic errors', 'paypal-for-woocommerce'),
+                'class' => 'error_display_type_option wc-enhanced-select',
+                'options' => array(
+                    'detailed' => 'Detailed',
+                    'generic' => 'Generic'
+                ),
+                'description' => __('Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
+									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce')
+            ),
+            'subtotal_mismatch_behavior' => array(
+                'title' => __('Subtotal Mismatch Behavior', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select',
+                'description' => __('Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce'),
+                'default' => ($this->send_items) ? 'add' : 'drop',
+                'desc_tip' => true,
+                'options' => array(
+                    'add' => __('Add another line item', 'paypal-for-woocommerce'),
+                    'drop' => __('Do not send line items to PayPal', 'paypal-for-woocommerce'),
+                ),
             ),
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),

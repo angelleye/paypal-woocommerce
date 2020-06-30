@@ -211,26 +211,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'default' => __('Pay with your credit card', 'paypal-for-woocommerce')
             ),
-
-            'invoice_id_prefix' => array(
-                'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce'),
-            ),
-            'card_icon' => array(
-                'title' => __('Card Icon', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
-                'class' => 'button_upload',
-            ),
-            'error_email_notify' => array(
-                'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
-                'default' => 'yes',
-                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
-            ),
-             'testmode' => array(
+            'testmode' => array(
                 'title' => __('Test Mode', 'paypal-for-woocommerce'),
                 'label' => __('Enable PayPal Sandbox/Test Mode', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -277,6 +258,24 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => '',
                 'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
+            'payment_action' => array(
+                'title' => __('Payment Action', 'paypal-for-woocommerce'),
+                'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
+                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
+                'type' => 'select',
+                'css'      => 'max-width:150px;',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'Sale' => 'Sale',
+                    'Authorization' => 'Authorization',
+                ),
+                'default' => 'Sale'
+            ),
+            '3dsecure'           => array(
+		'title'       => __( '3DSecure Settings', 'paypal-for-woocommerce' ),
+		'type'        => 'title',
+		'description' => '',
+            ),
             'enable_3dsecure' => array(
                 'title' => __('3DSecure', 'paypal-for-woocommerce'),
                 'label' => __('Enable 3DSecure', 'paypal-for-woocommerce'),
@@ -309,6 +308,48 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
+            'advanced_options'           => array(
+		'title'       => __( 'Advanced options', 'paypal-for-woocommerce' ),
+		'type'        => 'title',
+		'description' => '',
+            ),
+            'invoice_id_prefix' => array(
+                'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce'),
+            ),
+            'card_icon' => array(
+                'title' => __('Card Icon', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
+                'class' => 'button_upload',
+            ),
+            'send_items' => array(
+                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
+                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
+                'default' => 'yes'
+            ),
+            'subtotal_mismatch_behavior' => array(
+		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
+		'type'        => 'select',
+		'class'       => 'wc-enhanced-select',
+		'description' => __( 'Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce' ),
+		'default'     => ($this->send_items) ? 'add' : 'drop',
+		'desc_tip'    => true,
+		'options'     => array(
+			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
+			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
+		),
+            ),
+            'error_email_notify' => array(
+                'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
+                'default' => 'yes',
+                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
+            ),
             'error_display_type' => array(
                 'title' => __('Error Display Type', 'paypal-for-woocommerce'),
                 'type' => 'select',
@@ -321,19 +362,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 ),
                 'description' => __('Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
 									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce')
-            ),
-            'payment_action' => array(
-                'title' => __('Payment Action', 'paypal-for-woocommerce'),
-                'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
-                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
-                'type' => 'select',
-                'css'      => 'max-width:150px;',
-                'class'    => 'wc-enhanced-select',
-                'options' => array(
-                    'Sale' => 'Sale',
-                    'Authorization' => 'Authorization',
-                ),
-                'default' => 'Sale'
             ),
             'pending_authorization_order_status' => array(
                 'title' => __('Pending Authorization Order Status', 'paypal-for-woocommerce'),
@@ -361,25 +389,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => 'ignore_warnings_and_proceed_as_usual',
                 'desc_tip' => true,
             ),
-            'send_items' => array(
-                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
-                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
-                'default' => 'yes'
-            ),
-            'subtotal_mismatch_behavior' => array(
-		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
-		'type'        => 'select',
-		'class'       => 'wc-enhanced-select',
-		'description' => __( 'Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce' ),
-		'default'     => ($this->send_items) ? 'add' : 'drop',
-		'desc_tip'    => true,
-		'options'     => array(
-			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
-			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
-		),
-            ),
             'enable_notifyurl' => array(
                 'title' => __('Enable PayPal IPN', 'paypal-for-woocommerce'),
                 'label' => __('Enable Instant Payment Notification.', 'paypal-for-woocommerce'),
@@ -388,6 +397,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => 'no',
                 'class' => 'angelleye_enable_notifyurl'
             ),
+            'notifyurl' => array(
+                'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
+                'class' => 'angelleye_notifyurl'
+            ),
             'enable_tokenized_payments' => array(
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
@@ -395,12 +410,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
-            ),
-            'notifyurl' => array(
-                'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
-                'class' => 'angelleye_notifyurl'
             ),
             'fraud_management_filters' => array(
                 'title' => __('Fraud Management Filters ', 'paypal-for-woocommerce'),
