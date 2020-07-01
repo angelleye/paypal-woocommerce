@@ -43,7 +43,6 @@ jQuery(function () {
 });
 jQuery(document).ready(function ($) {
     jQuery('#woocommerce_paypal_express_disallowed_funding_methods').closest('table').addClass('angelleye_smart_button_setting_left');
-    jQuery('.display_smart_button_previews_button').html('<input type="hidden" name="angelleye_smart_button_preview_and_refresh" class="button-primary angelleye_smart_button_preview_and_refresh" value="Preview & Refresh Smart Button">');
     if (angelleye_admin.is_paypal_credit_enable == "no") {
         jQuery("#woocommerce_paypal_express_show_paypal_credit").attr("disabled", true);
         jQuery("label[for='woocommerce_paypal_express_show_paypal_credit']").css('color', '#666');
