@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.0
 Tested up to: 5.4.2
-Stable tag: 2.2.7
+Stable tag: 2.2.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,8 +127,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 2.2.7 - 07.01.2020 =
+= 2.2.8 - 07.01.2020 =
 * Feature - Compatibility added for Split Payment across Credit Cards ([PFW-642](https://github.com/angelleye/paypal-woocommerce/pull/1466))
+
+= 2.2.7 - 07.01.2020 =
 * Fix - Special character support added for API Username ([PFW-645](https://github.com/angelleye/paypal-woocommerce/pull/1468))
 * Tweak - UI fixes on Settings page ([PFW-646](https://github.com/angelleye/paypal-woocommerce/pull/1467))
 
