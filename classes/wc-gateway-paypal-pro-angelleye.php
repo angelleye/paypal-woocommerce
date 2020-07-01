@@ -211,26 +211,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'default' => __('Pay with your credit card', 'paypal-for-woocommerce')
             ),
-
-            'invoice_id_prefix' => array(
-                'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce'),
-            ),
-            'card_icon' => array(
-                'title' => __('Card Icon', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
-                'class' => 'button_upload',
-            ),
-            'error_email_notify' => array(
-                'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
-                'default' => 'yes',
-                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
-            ),
-             'testmode' => array(
+            'testmode' => array(
                 'title' => __('Test Mode', 'paypal-for-woocommerce'),
                 'label' => __('Enable PayPal Sandbox/Test Mode', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -277,6 +258,24 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => '',
                 'custom_attributes' => array( 'autocomplete' => 'new-password'),
             ),
+            'payment_action' => array(
+                'title' => __('Payment Action', 'paypal-for-woocommerce'),
+                'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
+                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
+                'type' => 'select',
+                'css'      => 'max-width:150px;',
+                'class'    => 'wc-enhanced-select',
+                'options' => array(
+                    'Sale' => 'Sale',
+                    'Authorization' => 'Authorization',
+                ),
+                'default' => 'Sale'
+            ),
+            '3dsecure'           => array(
+		'title'       => __( '3DSecure Settings', 'paypal-for-woocommerce' ),
+		'type'        => 'title',
+		'description' => '',
+            ),
             'enable_3dsecure' => array(
                 'title' => __('3DSecure', 'paypal-for-woocommerce'),
                 'label' => __('Enable 3DSecure', 'paypal-for-woocommerce'),
@@ -309,6 +308,48 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
+            'advanced_options'           => array(
+		'title'       => __( 'Advanced options', 'paypal-for-woocommerce' ),
+		'type'        => 'title',
+		'description' => '',
+            ),
+            'invoice_id_prefix' => array(
+                'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce'),
+            ),
+            'card_icon' => array(
+                'title' => __('Card Icon', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'default' => plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))),
+                'class' => 'button_upload',
+            ),
+            'send_items' => array(
+                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
+                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
+                'default' => 'yes'
+            ),
+            'subtotal_mismatch_behavior' => array(
+		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
+		'type'        => 'select',
+		'class'       => 'wc-enhanced-select',
+		'description' => __( 'Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce' ),
+		'default'     => ($this->send_items) ? 'add' : 'drop',
+		'desc_tip'    => true,
+		'options'     => array(
+			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
+			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
+		),
+            ),
+            'error_email_notify' => array(
+                'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
+                'default' => 'yes',
+                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
+            ),
             'error_display_type' => array(
                 'title' => __('Error Display Type', 'paypal-for-woocommerce'),
                 'type' => 'select',
@@ -321,19 +362,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 ),
                 'description' => __('Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
 									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce')
-            ),
-            'payment_action' => array(
-                'title' => __('Payment Action', 'paypal-for-woocommerce'),
-                'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
-                'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
-                'type' => 'select',
-                'css'      => 'max-width:150px;',
-                'class'    => 'wc-enhanced-select',
-                'options' => array(
-                    'Sale' => 'Sale',
-                    'Authorization' => 'Authorization',
-                ),
-                'default' => 'Sale'
             ),
             'pending_authorization_order_status' => array(
                 'title' => __('Pending Authorization Order Status', 'paypal-for-woocommerce'),
@@ -361,25 +389,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => 'ignore_warnings_and_proceed_as_usual',
                 'desc_tip' => true,
             ),
-            'send_items' => array(
-                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
-                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
-                'default' => 'yes'
-            ),
-            'subtotal_mismatch_behavior' => array(
-		'title'       => __( 'Subtotal Mismatch Behavior', 'paypal-for-woocommerce' ),
-		'type'        => 'select',
-		'class'       => 'wc-enhanced-select',
-		'description' => __( 'Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce' ),
-		'default'     => ($this->send_items) ? 'add' : 'drop',
-		'desc_tip'    => true,
-		'options'     => array(
-			'add'  => __( 'Add another line item', 'paypal-for-woocommerce' ),
-			'drop' => __( 'Do not send line items to PayPal', 'paypal-for-woocommerce' ),
-		),
-            ),
             'enable_notifyurl' => array(
                 'title' => __('Enable PayPal IPN', 'paypal-for-woocommerce'),
                 'label' => __('Enable Instant Payment Notification.', 'paypal-for-woocommerce'),
@@ -388,6 +397,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => 'no',
                 'class' => 'angelleye_enable_notifyurl'
             ),
+            'notifyurl' => array(
+                'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
+                'class' => 'angelleye_notifyurl'
+            ),
             'enable_tokenized_payments' => array(
                 'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                 'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
@@ -395,12 +410,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future.', 'paypal-for-woocommerce'),
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
-            ),
-            'notifyurl' => array(
-                'title' => __('PayPal IPN URL', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('Your URL for receiving Instant Payment Notification (IPN) about transactions.', 'paypal-for-woocommerce'),
-                'class' => 'angelleye_notifyurl'
             ),
             'fraud_management_filters' => array(
                 'title' => __('Fraud Management Filters ', 'paypal-for-woocommerce'),
@@ -621,7 +630,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $form_html = "";
         $form_html .= '<p class="' . $class . '">';
         $form_html .= '<label for="cc-expire-month">' . apply_filters( 'cc_form_label_expiry', __("Expiration Date", 'paypal-for-woocommerce'), $this->id ) . '<span class="required">*</span></label>';
-        $form_html .= '<select name="paypal_pro_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month mr5">';
+        $form_html .= '<select ' . $this->field_name('card_expiration_month') . ' class="woocommerce-select woocommerce-cc-month mr5">';
         $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
         $months = array();
         for ($i = 1; $i <= 12; $i++) :
@@ -637,7 +646,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
         }
         $form_html .= '</select>';
-        $form_html .= '<select name="paypal_pro_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year ml5">';
+        $form_html .= '<select ' . $this->field_name('card_expiration_year') . ' class="woocommerce-select woocommerce-cc-year ml5">';
         $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
         for ($i = date('y'); $i <= date('y') + 15; $i++) {
             if($this->credit_card_year_field == 'four_digit') {
@@ -656,14 +665,17 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      * Format and get posted details
      * @return object
      */
-    private function get_posted_card() {
+    public function get_posted_card() {
         $card_number = isset($_POST['paypal_pro-card-number']) ? wc_clean($_POST['paypal_pro-card-number']) : '';
         $card_cvc = isset($_POST['paypal_pro-card-cvc']) ? wc_clean($_POST['paypal_pro-card-cvc']) : '';
-        $card_exp_month = isset($_POST['paypal_pro_card_expiration_month']) ? wc_clean($_POST['paypal_pro_card_expiration_month']) : '';
-        $card_exp_year = isset($_POST['paypal_pro_card_expiration_year']) ? wc_clean($_POST['paypal_pro_card_expiration_year']) : '';
+        $card_exp_month = isset($_POST['paypal_pro-card_expiration_month']) ? wc_clean($_POST['paypal_pro-card_expiration_month']) : '';
+        $card_exp_year = isset($_POST['paypal_pro-card_expiration_year']) ? wc_clean($_POST['paypal_pro-card_expiration_year']) : '';
 
         // Format values
         $card_number = str_replace(array(' ', '-'), '', $card_number);
+        
+        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) ? wc_clean($_POST['paypal_pro-card-cardholder-first']) : '';
+        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) ? wc_clean($_POST['paypal_pro-card-cardholder-last']) : '';
 
         if (isset($_POST['paypal_pro-card-startdate'])) {
             $card_start = wc_clean($_POST['paypal_pro-card-startdate']);
@@ -697,7 +709,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     'exp_month' => $card_exp_month,
                     'exp_year' => $card_exp_year,
                     'start_month' => $card_start_month,
-                    'start_year' => $card_start_year
+                    'start_year' => $card_start_year,
+                    'firstname' => $firstname,
+                    'lastname' => $lastname
         );
     }
 
@@ -756,7 +770,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     /**
      * Process the payment
      */
-    function process_payment($order_id) {
+    public function process_payment($order_id) {
         $order = wc_get_order($order_id);
 
         $this->log('Processing order #' . $order_id);
@@ -1033,14 +1047,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $GLOBALS['wp_rewrite'] = new WP_Rewrite();
         }
 
-        if(!empty($_POST['paypal_pro-card-cardholder-first'])) {
-            $firstname = wc_clean($_POST['paypal_pro-card-cardholder-first']);
+        if(!empty($card->firstname)) {
+            $firstname = $card->firstname;
         } else {
             $firstname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
         }
 
-        if(!empty($_POST['paypal_pro-card-cardholder-last'])) {
-            $lastname = wc_clean($_POST['paypal_pro-card-cardholder-last']);
+        if(!empty($card->lastname)) {
+            $lastname = $card->lastname;
         } else {
             $lastname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
         }
@@ -1511,11 +1525,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enable_cardholder_first_last_name && $current_id == $this->id) {
             $fields['card-cardholder-first'] = '<p class="form-row form-row-first">
                     <label for="' . esc_attr($this->id) . '-card-first-name">' . __('Cardholder First Name', 'paypal-for-woocommerce') . '</label>
-                    <input id="' . esc_attr($this->id) . '-card-first-name" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First Name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-first' . '" />
+                    <input class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First Name', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cardholder-first') . '/>
             </p>';
             $fields['card-cardholder-last'] = '<p class="form-row form-row-last">
                     <label for="' . esc_attr($this->id) . '-card-last-name">' . __('Cardholder Last Name', 'paypal-for-woocommerce') . '</label>
-                    <input id="' . esc_attr($this->id) . '-card-last-name" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __('Last Name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-last' . '" />
+                    <input class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __('Last Name', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cardholder-first') . '/>
             </p>';
 
             foreach ($fields as $field) {
@@ -1550,16 +1564,16 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $fields = array(
                     'card-number-field' => '<p class="form-row form-row-wide">
                         <label for="' . esc_attr($this->id) . '-card-number">' . apply_filters( 'cc_form_label_card_number', __('Card number', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-                        <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
+                        <input class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
                     </p>',
                     'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class),
                     '<p class="form-row form-row-last">
 			<label for="' . esc_attr($this->id) . '-card-cvc">' . apply_filters( 'cc_form_label_card_code', __('Card Security Code', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-			<input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
+			<input class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
                     </p>',
                     'card-startdate-field' => '<p class="form-row form-row-last">
                         <label for="' . esc_attr($this->id) . '-card-startdate">' . apply_filters( 'cc_form_label_start_expiry', __('Start Date (MM/YY)', 'paypal-for-woocommerce'), $this->id ) . '</label>
-                        <input id="' . esc_attr($this->id) . '-card-startdate" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . __('MM / YY', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-startdate' . '" />
+                        <input class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="' . __('MM / YY', 'paypal-for-woocommerce') . '" name="' . $this->id . '-card-startdate' . '" />
                      </p>'
                 );
 
@@ -1567,12 +1581,12 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $fields = array(
                     'card-number-field' => '<p class="form-row form-row-wide">
                         <label for="' . esc_attr($this->id) . '-card-number">' . apply_filters( 'cc_form_label_card_number', __('Card number', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-                        <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
+                        <input class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
                     </p>',
                     'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_credit_card_form_expiration_date_selectbox($class),
                     '<p class="form-row form-row-last">
 			<label for="' . esc_attr($this->id) . '-card-cvc">' . apply_filters( 'cc_form_label_card_code', __('Card Security Code', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-			<input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
+			<input class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
                     </p>'
                 );
 

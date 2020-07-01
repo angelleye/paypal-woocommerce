@@ -1,7 +1,6 @@
-.woocommerce #payment .form-row select, .woocommerce-page #payment .form-row selec {
+.woocommerce #payment .form-row select, .woocommerce-page #payment .form-row select {
     padding: 7px;
-    width: 100px;
-    margin: 0 1em 0 0;
+    margin: 0 6px 0 0;
     border-color: #c7c1c6;
     border-top-color: rgb(199, 193, 198);
     border-top-color: #bbb3b9;
@@ -9,10 +8,29 @@
     background-size: 32px 20px;
     border-radius: 3px;
     font-size: 1.5em;
+    color: #939393;
+}
+.woocommerce-page #payment .form-row select option {
+  color: black;
 }
 .et_pb_module #wcf-embed-checkout-form .woocommerce #order_review .payment_method_braintree .input-text {
     font-size: 21px;
 }
 .theme-Divi p.woocommerce-notice.woocommerce-notice--success.woocommerce-thankyou-order-received {
     margin-bottom: 1.625em;
+}
+
+.woocommerce-checkout #payment div.payment_box .wc-credit-card-form-cardholder {
+    font-size: 1.5em;
+    padding: 8px;
+    background-repeat: no-repeat;
+    background-position: right .618em center;
+    background-size: 32px 20px;
+}
+
+.woocommerce-page #payment .form-row select.woocommerce-cc-month {
+    width: 52%;
+}
+.woocommerce-page #payment .form-row select.woocommerce-cc-year {
+    width: 43%;
 }

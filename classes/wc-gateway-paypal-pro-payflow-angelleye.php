@@ -228,36 +228,6 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
                 'description' => __('This controls the description which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'default' => __('Pay with your credit card.', 'paypal-for-woocommerce')
             ),
-            'invoice_id_prefix' => array(
-                'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce'),
-            ),
-            'card_icon' => array(
-                'title' => __('Card Icon', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'default' => plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__))),
-                'class' => 'button_upload'
-            ),
-            'error_email_notify' => array(
-                'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
-                'default' => 'yes',
-                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
-            ),
-            'error_display_type' => array(
-                'title' => __('Error Display Type', 'paypal-for-woocommerce'),
-                'type' => 'select',
-                'label' => __('Display detailed or generic errors', 'paypal-for-woocommerce'),
-                'class' => 'error_display_type_option wc-enhanced-select',
-                'options' => array(
-                    'detailed' => 'Detailed',
-                    'generic' => 'Generic'
-                ),
-                'description' => __('Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
-									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce')
-            ),
             'testmode' => array(
                 'title' => __('PayPal Sandbox', 'paypal-for-woocommerce'),
                 'label' => __('Enable PayPal Sandbox/Test Mode', 'paypal-for-woocommerce'),
@@ -324,69 +294,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'default' => '',
                 'custom_attributes' => array('autocomplete' => 'new-password'),
             ),
-            'enable_3dsecure' => array(
-                'title' => __('3DSecure', 'paypal-for-woocommerce'),
-                'label' => __('Enable 3DSecure', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Allows merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)', 'paypal-for-woocommerce'),
-                'default' => 'no'
-            ),
-            'threedsecure_type' => array(
-                'title' => __('3-D Secure authentication Type', 'paypal-for-woocommerce'),
-                'label' => __('3-D Secure authentication Type.', 'paypal-for-woocommerce'),
-                'description' => __('Using Payflow, you can authenticate cardholders with the 3-D Secure protocol in one of two ways.'),
-                'type' => 'select',
-                'class' => 'wc-enhanced-select',
-                'options' => array(
-                    'buyer_authentication_service' => 'Payflow Buyer Authentication service',
-                    'cardinalcommerce' => '3rd-Party Merchant Plug-ins (CardinalCommerce)',
-                ),
-                'default' => 'buyer_authentication_service'
-            ),
-            'centinel_pid' => array(
-                'title' => __('Centinel PID', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Processor ID.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'centinel_mid' => array(
-                'title' => __('Centinel MID', 'paypal-for-woocommerce'),
-                'type' => 'text',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Merchant ID.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'centinel_pwd' => array(
-                'title' => __('Transaction Password', 'paypal-for-woocommerce'),
-                'type' => 'password',
-                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Transaction Password.', 'paypal-for-woocommerce'),
-                'default' => ''
-            ),
-            'liability_shift' => array(
-                'title' => __('Liability Shift', 'paypal-for-woocommerce'),
-                'label' => __('Require liability shift', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce'),
-                'default' => 'no'
-            ),
-            'send_items' => array(
-                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
-                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
-                'default' => 'yes'
-            ),
-            'subtotal_mismatch_behavior' => array(
-                'title' => __('Subtotal Mismatch Behavior', 'paypal-for-woocommerce'),
-                'type' => 'select',
-                'class' => 'wc-enhanced-select',
-                'description' => __('Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce'),
-                'default' => ($this->send_items) ? 'add' : 'drop',
-                'desc_tip' => true,
-                'options' => array(
-                    'add' => __('Add another line item', 'paypal-for-woocommerce'),
-                    'drop' => __('Do not send line items to PayPal', 'paypal-for-woocommerce'),
-                ),
-            ),
             'payment_action' => array(
                 'title' => __('Payment Action', 'paypal-for-woocommerce'),
                 'label' => __('Whether to process as a Sale or Authorization.', 'paypal-for-woocommerce'),
@@ -435,6 +342,109 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 ),
                 'default' => 'Processing',
                 'desc_tip' => true,
+            ),
+            '3dsecure'           => array(
+		'title'       => __( '3DSecure Settings', 'paypal-for-woocommerce' ),
+		'type'        => 'title',
+		'description' => '',
+            ),
+            'enable_3dsecure' => array(
+                'title' => __('3DSecure', 'paypal-for-woocommerce'),
+                'label' => __('Enable 3DSecure', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Allows merchants to pass 3-D Secure authentication data to PayPal for debit and credit cards. Updating your site with 3-D Secure enables your participation in the Verified by Visa and MasterCard SecureCode programs. (Required to accept Maestro)', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
+            'threedsecure_type' => array(
+                'title' => __('3-D Secure authentication Type', 'paypal-for-woocommerce'),
+                'label' => __('3-D Secure authentication Type.', 'paypal-for-woocommerce'),
+                'description' => __('Using Payflow, you can authenticate cardholders with the 3-D Secure protocol in one of two ways.'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select',
+                'options' => array(
+                    'buyer_authentication_service' => 'Payflow Buyer Authentication service',
+                    'cardinalcommerce' => '3rd-Party Merchant Plug-ins (CardinalCommerce)',
+                ),
+                'default' => 'buyer_authentication_service'
+            ),
+            'centinel_pid' => array(
+                'title' => __('Centinel PID', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Processor ID.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'centinel_mid' => array(
+                'title' => __('Centinel MID', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Merchant ID.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'centinel_pwd' => array(
+                'title' => __('Transaction Password', 'paypal-for-woocommerce'),
+                'type' => 'password',
+                'description' => __('If enabling 3D Secure, enter your Cardinal Centinel Transaction Password.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'liability_shift' => array(
+                'title' => __('Liability Shift', 'paypal-for-woocommerce'),
+                'label' => __('Require liability shift', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Only accept payments when liability shift has occurred.', 'paypal-for-woocommerce'),
+                'default' => 'no'
+            ),
+            'advanced_options'           => array(
+		'title'       => __( 'Advanced options', 'paypal-for-woocommerce' ),
+		'type'        => 'title',
+		'description' => '',
+            ),
+            'send_items' => array(
+                'title' => __('Send Item Details', 'paypal-for-woocommerce'),
+                'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
+                'default' => 'yes'
+            ),
+            'invoice_id_prefix' => array(
+                'title' => __('Invoice ID Prefix', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Add a prefix to the invoice ID sent to PayPal. This can resolve duplicate invoice problems when working with multiple websites on the same PayPal account.', 'paypal-for-woocommerce'),
+            ),
+            'card_icon' => array(
+                'title' => __('Card Icon', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'default' => plugins_url('/assets/images/payflow-cards.png', plugin_basename(dirname(__FILE__))),
+                'class' => 'button_upload'
+            ),
+            'error_email_notify' => array(
+                'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
+                'default' => 'yes',
+                'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce')
+            ),
+            'error_display_type' => array(
+                'title' => __('Error Display Type', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'label' => __('Display detailed or generic errors', 'paypal-for-woocommerce'),
+                'class' => 'error_display_type_option wc-enhanced-select',
+                'options' => array(
+                    'detailed' => 'Detailed',
+                    'generic' => 'Generic'
+                ),
+                'description' => __('Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details
+									and helps to prevent fraudulant activity on your site.', 'paypal-for-woocommerce')
+            ),
+            'subtotal_mismatch_behavior' => array(
+                'title' => __('Subtotal Mismatch Behavior', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select',
+                'description' => __('Internally, WC calculates line item prices and taxes out to four decimal places; however, PayPal can only handle amounts out to two decimal places (or, depending on the currency, no decimal places at all). Occasionally, this can cause discrepancies between the way WooCommerce calculates prices versus the way PayPal calculates them. If a mismatch occurs, this option controls how the order is dealt with so payment can still be taken.', 'paypal-for-woocommerce'),
+                'default' => ($this->send_items) ? 'add' : 'drop',
+                'desc_tip' => true,
+                'options' => array(
+                    'add' => __('Add another line item', 'paypal-for-woocommerce'),
+                    'drop' => __('Do not send line items to PayPal', 'paypal-for-woocommerce'),
+                ),
             ),
             'softdescriptor' => array(
                 'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
@@ -1142,18 +1152,18 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $billing_state = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_state : $order->get_billing_state();
             $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_email : $order->get_billing_email();
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-first'])) {
-                $firstname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']);
+            if (!empty($card->firstname)) {
+                $firstname = $card->firstname;
             } else {
                 $firstname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
             }
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-last'])) {
-                $lastname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']);
+            if (!empty($card->lastname)) {
+                $lastname = $card->lastname;
             } else {
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
-
+            
             $order_amt = AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order);
             if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
                 $order_amt = '0.00';
@@ -1524,7 +1534,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $form_html = "";
         $form_html .= '<p class="form-row form-row-first">';
         $form_html .= '<label for="cc-expire-month">' . apply_filters('cc_form_label_expiry', __("Expiration Date", 'paypal-for-woocommerce'), $this->id) . '<span class="required">*</span></label>';
-        $form_html .= '<select name="paypal_pro_payflow_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month mr5">';
+        $form_html .= '<select ' . $this->field_name('card_expiration_month') . ' class="woocommerce-select woocommerce-cc-month mr5">';
         $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
         $months = array();
         for ($i = 1; $i <= 12; $i++) :
@@ -1545,7 +1555,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
         }
         $form_html .= '</select>';
-        $form_html .= '<select name="paypal_pro_payflow_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year ml5">';
+        $form_html .= '<select ' . $this->field_name('card_expiration_year') . ' class="woocommerce-select woocommerce-cc-year ml5">';
         $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
         for ($i = date('y'); $i <= date('y') + 15; $i++) {
             if ($this->credit_card_year_field == 'four_digit') {
@@ -1636,31 +1646,24 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 return true;
             }
         }
-        $card_number = isset($_POST['paypal_pro_payflow-card-number']) ? wc_clean($_POST['paypal_pro_payflow-card-number']) : '';
-        $card_cvc = isset($_POST['paypal_pro_payflow-card-cvc']) ? wc_clean($_POST['paypal_pro_payflow-card-cvc']) : '';
-        $card_exp_year = isset($_POST['paypal_pro_payflow_card_expiration_year']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_year']) : '';
-        $card_exp_month = isset($_POST['paypal_pro_payflow_card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_month']) : '';
+        $card = $this->get_posted_card();
 
-
-        // Format values
-        $card_number = str_replace(array(' ', '-'), '', $card_number);
-
-        if (strlen($card_exp_year) == 4) {
-            $card_exp_year = $card_exp_year - 2000;
+        if (strlen($card->exp_year) == 4) {
+            $card->exp_year = $card->exp_year - 2000;
         }
 
-        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_exp_month, $card_exp_year);
+        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
 
         // Check card number
 
-        if (empty($card_number) || !ctype_digit((string) $card_number)) {
+        if (empty($card->number) || !ctype_digit((string) $card->number)) {
             wc_add_notice(__('Card number is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         }
 
         // Check card security code
 
-        if (!ctype_digit((string) $card_cvc)) {
+        if (!ctype_digit((string) $card->cvc)) {
             wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'), "error");
             return false;
         }
@@ -1668,18 +1671,18 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         // Check card expiration data
 
         if (
-                !ctype_digit((string) $card_exp_month) ||
-                !ctype_digit((string) $card_exp_year) ||
-                $card_exp_month > 12 ||
-                $card_exp_month < 1 ||
-                $card_exp_year < date('y') ||
-                $card_exp_year > date('y') + 20
+                !ctype_digit((string) $card->exp_month) ||
+                !ctype_digit((string) $card->exp_year) ||
+                $card->exp_month > 12 ||
+                $card->exp_month < 1 ||
+                $card->exp_year < date('y') ||
+                $card->exp_year > date('y') + 20
         ) {
             wc_add_notice(__('Card expiration date is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         }
 
-        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_exp_month, $card_exp_year);
+        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
 
         return true;
     }
@@ -1693,12 +1696,12 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $fields = array(
                 'card-number-field' => '<p class="form-row form-row-wide">
                             <label for="' . esc_attr($this->id) . '-card-number">' . apply_filters('cc_form_label_card_number', __('Card number', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-                            <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
+                            <input class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
                         </p>',
                 'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox(),
                 '<p class="form-row form-row-last">
                             <label for="' . esc_attr($this->id) . '-card-cvc">' . apply_filters('cc_form_label_card_code', __('Card Security Code', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-                            <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
+                            <input class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
                         </p>'
             );
             return $fields;
@@ -1711,11 +1714,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         if ($this->enable_cardholder_first_last_name && $current_id == $this->id) {
             $fields['card-cardholder-first'] = '<p class="form-row form-row-first">
                     <label for="' . esc_attr($this->id) . '-card-first-name">' . __('Cardholder First Name', 'paypal-for-woocommerce') . '</label>
-                    <input id="' . esc_attr($this->id) . '-card-first-name" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First Name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-first' . '" />
+                    <input class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First Name', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cardholder-first') . ' />
             </p>';
             $fields['card-cardholder-last'] = '<p class="form-row form-row-last">
                     <label for="' . esc_attr($this->id) . '-card-last-name">' . __('Cardholder Last Name', 'paypal-for-woocommerce') . '</label>
-                    <input id="' . esc_attr($this->id) . '-card-last-name" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __('Last Name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-last' . '" />
+                    <input class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __('Last Name', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cardholder-first') . ' />
             </p>';
 
             foreach ($fields as $field) {
@@ -1727,10 +1730,12 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     public function get_posted_card() {
         $card_number = isset($_POST['paypal_pro_payflow-card-number']) ? wc_clean($_POST['paypal_pro_payflow-card-number']) : '';
         $card_cvc = isset($_POST['paypal_pro_payflow-card-cvc']) ? wc_clean($_POST['paypal_pro_payflow-card-cvc']) : '';
-        $card_exp_year = isset($_POST['paypal_pro_payflow_card_expiration_year']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_year']) : '';
-        $card_exp_month = isset($_POST['paypal_pro_payflow_card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_month']) : '';
+        $card_exp_year = isset($_POST['paypal_pro_payflow-card_expiration_year']) ? wc_clean($_POST['paypal_pro_payflow-card_expiration_year']) : '';
+        $card_exp_month = isset($_POST['paypal_pro_payflow-card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow-card_expiration_month']) : '';
         $card_number = str_replace(array(' ', '-'), '', $card_number);
         $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
+        $firstname = isset($_POST['paypal_pro_payflow-card-cardholder-first']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']) : '';
+        $lastname = isset($_POST['paypal_pro_payflow-card-cardholder-last']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']) : '';
         if ($card_type == 'amex') {
             if (WC()->countries->get_base_country() == 'CA' && get_woocommerce_currency() == 'USD' && apply_filters('angelleye_paypal_pro_payflow_amex_ca_usd', true, $this)) {
                 throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
@@ -1754,7 +1759,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'exp_month' => $card_exp_month,
                     'exp_year' => $card_exp_year,
                     'start_month' => '',
-                    'start_year' => ''
+                    'start_year' => '',
+                    'firstname' => $firstname,
+                    'lastname' => $lastname
         );
     }
 
@@ -1850,14 +1857,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
         try {
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-first'])) {
-                $firstname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']);
+            if (!empty($card->firstname)) {
+                $firstname = $card->firstname;
             } else {
                 $firstname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
             }
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-last'])) {
-                $lastname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']);
+            if (!empty($card->lastname)) {
+                $lastname = $card->lastname;
             } else {
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
