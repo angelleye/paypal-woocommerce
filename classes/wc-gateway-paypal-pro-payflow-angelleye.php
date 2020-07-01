@@ -1142,18 +1142,18 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $billing_state = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_state : $order->get_billing_state();
             $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_email : $order->get_billing_email();
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-first'])) {
-                $firstname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']);
+            if (!empty($card->firstname)) {
+                $firstname = $card->firstname;
             } else {
                 $firstname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
             }
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-last'])) {
-                $lastname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']);
+            if (!empty($card->lastname)) {
+                $lastname = $card->lastname;
             } else {
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
-
+            
             $order_amt = AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order);
             if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
                 $order_amt = '0.00';
@@ -1524,7 +1524,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $form_html = "";
         $form_html .= '<p class="form-row form-row-first">';
         $form_html .= '<label for="cc-expire-month">' . apply_filters('cc_form_label_expiry', __("Expiration Date", 'paypal-for-woocommerce'), $this->id) . '<span class="required">*</span></label>';
-        $form_html .= '<select name="paypal_pro_payflow_card_expiration_month" id="cc-expire-month" class="woocommerce-select woocommerce-cc-month mr5">';
+        $form_html .= '<select ' . $this->field_name('card_expiration_month') . ' class="woocommerce-select woocommerce-cc-month mr5">';
         $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
         $months = array();
         for ($i = 1; $i <= 12; $i++) :
@@ -1545,7 +1545,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
         }
         $form_html .= '</select>';
-        $form_html .= '<select name="paypal_pro_payflow_card_expiration_year" id="cc-expire-year" class="woocommerce-select woocommerce-cc-year ml5">';
+        $form_html .= '<select ' . $this->field_name('card_expiration_year') . ' class="woocommerce-select woocommerce-cc-year ml5">';
         $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
         for ($i = date('y'); $i <= date('y') + 15; $i++) {
             if ($this->credit_card_year_field == 'four_digit') {
@@ -1636,31 +1636,24 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 return true;
             }
         }
-        $card_number = isset($_POST['paypal_pro_payflow-card-number']) ? wc_clean($_POST['paypal_pro_payflow-card-number']) : '';
-        $card_cvc = isset($_POST['paypal_pro_payflow-card-cvc']) ? wc_clean($_POST['paypal_pro_payflow-card-cvc']) : '';
-        $card_exp_year = isset($_POST['paypal_pro_payflow_card_expiration_year']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_year']) : '';
-        $card_exp_month = isset($_POST['paypal_pro_payflow_card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_month']) : '';
+        $card = $this->get_posted_card();
 
-
-        // Format values
-        $card_number = str_replace(array(' ', '-'), '', $card_number);
-
-        if (strlen($card_exp_year) == 4) {
-            $card_exp_year = $card_exp_year - 2000;
+        if (strlen($card->exp_year) == 4) {
+            $card->exp_year = $card->exp_year - 2000;
         }
 
-        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_exp_month, $card_exp_year);
+        do_action('before_angelleye_pro_payflow_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
 
         // Check card number
 
-        if (empty($card_number) || !ctype_digit((string) $card_number)) {
+        if (empty($card->number) || !ctype_digit((string) $card->number)) {
             wc_add_notice(__('Card number is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         }
 
         // Check card security code
 
-        if (!ctype_digit((string) $card_cvc)) {
+        if (!ctype_digit((string) $card->cvc)) {
             wc_add_notice(__('Card security code is invalid (only digits are allowed)', 'paypal-for-woocommerce'), "error");
             return false;
         }
@@ -1668,18 +1661,18 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         // Check card expiration data
 
         if (
-                !ctype_digit((string) $card_exp_month) ||
-                !ctype_digit((string) $card_exp_year) ||
-                $card_exp_month > 12 ||
-                $card_exp_month < 1 ||
-                $card_exp_year < date('y') ||
-                $card_exp_year > date('y') + 20
+                !ctype_digit((string) $card->exp_month) ||
+                !ctype_digit((string) $card->exp_year) ||
+                $card->exp_month > 12 ||
+                $card->exp_month < 1 ||
+                $card->exp_year < date('y') ||
+                $card->exp_year > date('y') + 20
         ) {
             wc_add_notice(__('Card expiration date is invalid', 'paypal-for-woocommerce'), "error");
             return false;
         }
 
-        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card_number, $card_cvc, $card_exp_month, $card_exp_year);
+        do_action('after_angelleye_pro_payflow_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
 
         return true;
     }
@@ -1693,12 +1686,12 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $fields = array(
                 'card-number-field' => '<p class="form-row form-row-wide">
                             <label for="' . esc_attr($this->id) . '-card-number">' . apply_filters('cc_form_label_card_number', __('Card number', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-                            <input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
+                            <input class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
                         </p>',
                 'card-expiry-field' => $this->paypal_for_woocommerce_paypal_pro_payflow_credit_card_form_expiration_date_selectbox(),
                 '<p class="form-row form-row-last">
                             <label for="' . esc_attr($this->id) . '-card-cvc">' . apply_filters('cc_form_label_card_code', __('Card Security Code', 'paypal-for-woocommerce'), $this->id) . ' <span class="required">*</span></label>
-                            <input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
+                            <input class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
                         </p>'
             );
             return $fields;
@@ -1711,11 +1704,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         if ($this->enable_cardholder_first_last_name && $current_id == $this->id) {
             $fields['card-cardholder-first'] = '<p class="form-row form-row-first">
                     <label for="' . esc_attr($this->id) . '-card-first-name">' . __('Cardholder First Name', 'paypal-for-woocommerce') . '</label>
-                    <input id="' . esc_attr($this->id) . '-card-first-name" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First Name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-first' . '" />
+                    <input class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First Name', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cardholder-first') . ' />
             </p>';
             $fields['card-cardholder-last'] = '<p class="form-row form-row-last">
                     <label for="' . esc_attr($this->id) . '-card-last-name">' . __('Cardholder Last Name', 'paypal-for-woocommerce') . '</label>
-                    <input id="' . esc_attr($this->id) . '-card-last-name" class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __('Last Name', 'paypal-for-woocommerce') . '" name="' . $current_id . '-card-cardholder-last' . '" />
+                    <input class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __('Last Name', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cardholder-first') . ' />
             </p>';
 
             foreach ($fields as $field) {
@@ -1727,10 +1720,12 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     public function get_posted_card() {
         $card_number = isset($_POST['paypal_pro_payflow-card-number']) ? wc_clean($_POST['paypal_pro_payflow-card-number']) : '';
         $card_cvc = isset($_POST['paypal_pro_payflow-card-cvc']) ? wc_clean($_POST['paypal_pro_payflow-card-cvc']) : '';
-        $card_exp_year = isset($_POST['paypal_pro_payflow_card_expiration_year']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_year']) : '';
-        $card_exp_month = isset($_POST['paypal_pro_payflow_card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow_card_expiration_month']) : '';
+        $card_exp_year = isset($_POST['paypal_pro_payflow-card_expiration_year']) ? wc_clean($_POST['paypal_pro_payflow-card_expiration_year']) : '';
+        $card_exp_month = isset($_POST['paypal_pro_payflow-card_expiration_month']) ? wc_clean($_POST['paypal_pro_payflow-card_expiration_month']) : '';
         $card_number = str_replace(array(' ', '-'), '', $card_number);
         $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
+        $firstname = isset($_POST['paypal_pro_payflow-card-cardholder-first']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']) : '';
+        $lastname = isset($_POST['paypal_pro_payflow-card-cardholder-last']) ? wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']) : '';
         if ($card_type == 'amex') {
             if (WC()->countries->get_base_country() == 'CA' && get_woocommerce_currency() == 'USD' && apply_filters('angelleye_paypal_pro_payflow_amex_ca_usd', true, $this)) {
                 throw new Exception(__('Your processor is unable to process the Card Type in the currency requested. Please try another card type', 'paypal-for-woocommerce'));
@@ -1754,7 +1749,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'exp_month' => $card_exp_month,
                     'exp_year' => $card_exp_year,
                     'start_month' => '',
-                    'start_year' => ''
+                    'start_year' => '',
+                    'firstname' => $firstname,
+                    'lastname' => $lastname
         );
     }
 
@@ -1850,14 +1847,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
         try {
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-first'])) {
-                $firstname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-first']);
+            if (!empty($card->firstname)) {
+                $firstname = $card->firstname;
             } else {
                 $firstname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
             }
 
-            if (!empty($_POST['paypal_pro_payflow-card-cardholder-last'])) {
-                $lastname = wc_clean($_POST['paypal_pro_payflow-card-cardholder-last']);
+            if (!empty($card->lastname)) {
+                $lastname = $card->lastname;
             } else {
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
