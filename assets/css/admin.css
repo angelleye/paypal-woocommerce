@@ -224,11 +224,6 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     width: 300px;
     margin: 0px;
 }
-
-.angelleye_smart_button_setting_left {
-    width: 49%;
-    float: left;
-}
 #woocommerce_paypal_express_angelleye_smart_button_preview_title, .display_smart_button_previews, .display_smart_button_previews_button {
     margin: auto;
     width: 50%;
@@ -378,6 +373,15 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     padding-right: 38px;
     position: relative;
 }
+
+#woocommerce_paypal_express_angelleye_smart_button_preview_title, #woocommerce_paypal_express_paypal_marketing_solutions {
+    border-bottom:none !important;
+}
+#angelleye_paypal_marketing_table h3.wc-settings-sub-title {
+    font-size: 1.2em;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
         display: block;
@@ -463,9 +467,6 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
     }
     
 @media screen and (min-width: 320px) and (max-width: 1120px) {
-    .angelleye_smart_button_setting_left {
-        width: 100%;
-    }
     #woocommerce_paypal_express_angelleye_smart_button_preview_title, .display_smart_button_previews, .display_smart_button_previews_button {
         width: 100%;
     }

@@ -974,11 +974,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
         $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
         $this->form_fields = array(
-            'general'           => array(
-                'title'       => __( 'General', 'paypal-for-woocommerce' ),
-                'type'        => 'title',
-                'description' => '',
-            ),
             'enabled' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                 'label' => __('Enable PayPal Express', 'paypal-for-woocommerce'),
@@ -1465,12 +1460,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'yes',
                 'class' => ''
             ),
-            'display_enable_in_context_checkout_flow_section' => array(
-                'title' => __('<hr />', 'paypal-for-woocommerce'),
-                'type' => 'title',
-                'class' => '',
-                'description' => __('', 'paypal-for-woocommerce'),
-            ),
             'smart_buttons'           => array(
                 'title'       => __( 'Smart Payment Buttons', 'paypal-for-woocommerce' ),
                 'type'        => 'title',
@@ -1481,12 +1470,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('The enhanced PayPal Express Checkout with In-Context gives your customers a simplified checkout experience that keeps them at your website throughout the payment authorization process.', 'paypal-for-woocommerce'),
                 'default' => 'yes'
-            ),
-            'button_styles' => array(
-                'title' => __('', 'paypal-for-woocommerce'),
-                'type' => 'title',
-                'class' => 'in_context_checkout_part',
-                'description' => '<div class="in_context_checkout_part angelleye_button_settings_selector">Customize your PayPal button with colors, sizes, shapes, layout and funding sources.</div>',
             ),
             'disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
