@@ -127,6 +127,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.2.7 - 07.01.2020 =
+* Feature - Compatibility added for Split Payment across Credit Cards ([PFW-642](https://github.com/angelleye/paypal-woocommerce/pull/1466))
+* Fix - Special character support added for API Username ([PFW-645](https://github.com/angelleye/paypal-woocommerce/pull/1468))
+* Tweak - UI fixes on Settings page ([PFW-646](https://github.com/angelleye/paypal-woocommerce/pull/1467))
+
 = 2.2.6 - 06.24.2020 =
 * Fix - Update PayPal Payflow Iframe ([PFW-644](https://github.com/angelleye/paypal-woocommerce/pull/1465))
 * Tweak - Improved Partial Success Email Template ([PFW-643](https://github.com/angelleye/paypal-woocommerce/pull/1464))
