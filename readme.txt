@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.2.9 - 07.02.2020 =
+* Fix - Resolves Special character issue with API password ([PFW-650](https://github.com/angelleye/paypal-woocommerce/pull/1469))
+
 = 2.2.8 - 07.01.2020 =
 * Feature - Compatibility added for Split Payment across Credit Cards ([PFW-642](https://github.com/angelleye/paypal-woocommerce/pull/1466))
 
