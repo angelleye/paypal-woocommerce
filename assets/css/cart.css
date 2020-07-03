@@ -88,7 +88,6 @@ a.paypal_checkout_button_bottom {
 @media screen and (max-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom {
         width: 100%;
-        max-width: 500px;
     }
 }
 
