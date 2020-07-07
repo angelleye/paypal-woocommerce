@@ -57,20 +57,21 @@ jQuery(document).ready(function ($) {
             jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').hide();
             jQuery('woocommerce_paypal_express_enable_google_analytics_click').closest('tr').hide();
             jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').hide();
-            jQuery('.angelleye_smart_button_setting_left').show();
             jQuery('.in_context_checkout_part').show();
             jQuery('.in_context_checkout_part').next('p').show();
-            jQuery('.in_context_checkout_part').parents('table').show();
+            jQuery('.in_context_checkout_part').parents('tr').show();
         } else {
+            jQuery('.in_context_checkout_part_other').hide();
+            jQuery('.in_context_checkout_part_other').next('p').hide();
+            jQuery('.in_context_checkout_part_other').parents('table').hide();
             jQuery('.display_smart_button_previews').hide();
             jQuery('.angelleye_button_settings_selector').hide();
             jQuery('#woocommerce_paypal_express_show_paypal_credit').closest('tr').show();
-            jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').show();
-            jQuery('.angelleye_smart_button_setting_left').hide();
             jQuery('woocommerce_paypal_express_enable_google_analytics_click').closest('tr').show();
-            jQuery('.in_context_checkout_part_other').parents('table').hide();
-            jQuery('.in_context_checkout_part_other').hide();
-            jQuery('.in_context_checkout_part_other').next('p').hide();
+            jQuery('#woocommerce_paypal_express_checkout_with_pp_button_type').closest('tr').show();
+            jQuery('.in_context_checkout_part').show();
+            jQuery('.in_context_checkout_part').next('p').hide();
+            jQuery('.in_context_checkout_part').parents('tr').hide();
         }
     }).change();
     $("#woocommerce_paypal_express_customer_service_number").attr("maxlength", "16");
