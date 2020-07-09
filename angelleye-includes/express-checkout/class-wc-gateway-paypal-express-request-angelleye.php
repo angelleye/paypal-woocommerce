@@ -306,9 +306,15 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_do_express_checkout_payment() {
         try {
             if (!isset($_GET['order_id'])) {
-                // todo need to redirect to cart page.
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->angelleye_redirect();
             }
-
+            $this->confirm_order_id = absint( wp_unslash( $_GET['order_id'] ) );
+            $order = wc_get_order($this->confirm_order_id);
+            if($order === false) {
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
+                $this->angelleye_redirect();
+            }
             if (WC()->cart->needs_shipping()) {
                 $errors = new WP_Error();
                 $shipping_country = WC()->customer->get_shipping_country();
@@ -332,8 +338,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 }
             }
 
-            $this->confirm_order_id = absint( wp_unslash( $_GET['order_id'] ) );
-            $order = wc_get_order($this->confirm_order_id);
+            
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             if ($old_wc) {
@@ -1642,6 +1647,8 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 wp_update_user(apply_filters('woocommerce_checkout_customer_userdata', $userdata, WC()->customer));
                 wc_clear_notices();
             }
+            WC()->session->set('paypal_express_checkout', $paypal_express_checkout);
+            WC()->session->set('post_data', $post_data);
         }
     }
 
