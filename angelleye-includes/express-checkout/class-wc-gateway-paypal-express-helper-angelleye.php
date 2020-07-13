@@ -401,7 +401,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         if ($this->angelleye_is_need_to_set_billing_address() == true) {
                             $_POST['billing_' . $field] = wc_clean(stripslashes($value));
                         } elseif (empty($post_data)) {
-                            $_POST['billing_' . $field] = wc_clean(stripslashes($value));
+                            $_POST['billing_' . $field] = '';
                         }
                         $_POST['shipping_' . $field] = wc_clean(stripslashes($value));
                     }
@@ -1175,7 +1175,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_is_need_to_set_billing_address() {
-        if ('billing_only' === get_option('woocommerce_ship_to_destination') || 'billing' === get_option('woocommerce_ship_to_destination') || $this->billing_address) {
+        if ('billing_only' === get_option('woocommerce_ship_to_destination') || $this->billing_address) {
             return true;
         } else {
             return false;
