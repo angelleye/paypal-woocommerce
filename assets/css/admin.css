@@ -462,7 +462,7 @@ label[for=woocommerce_paypal_express_paypal_marketing_solutions_enabled] {
 
     @media screen and (min-width: 400px) {
         .display_smart_button_previews {
-           min-width: 150px;
+           width: 250px;
         }
     }
     
