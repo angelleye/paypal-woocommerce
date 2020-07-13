@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.0
 Tested up to: 5.4.2
-Stable tag: 2.2.9
+Stable tag: 2.2.10
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 2.2.10 - 07.13.2020 =
+* Fix - Smart button responsive issue resolved ([PFW-625](https://github.com/angelleye/paypal-woocommerce/pull/1473))
+* Tweak - Translation file update ([PFW-647](https://github.com/angelleye/paypal-woocommerce/pull/1472))
+* Fix - Billing address override issue resolved with Express Checkout ([PFW-652](https://github.com/angelleye/paypal-woocommerce/pull/1470))
+* Fix - Allow users to Re-enable Smart Payment Buttons once it's disabled ([PFW-654](https://github.com/angelleye/paypal-woocommerce/pull/1471))
 
 = 2.2.9 - 07.02.2020 =
 * Fix - Resolves Special character issue with API password ([PFW-650](https://github.com/angelleye/paypal-woocommerce/pull/1469))
