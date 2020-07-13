@@ -831,7 +831,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $class_top = 'paypal_checkout_button_bottom';
                 $class_cc_top = 'paypal_checkout_button_cc_bottom';
                 $angelleye_smart_button = 'angelleye_smart_button_bottom';
-                $angelleye_proceed_to_checkout_button_separator = '<div class="angelleye-proceed-to-checkout-button-separator">' . __('&mdash; OR &mdash;', 'paypal-for-woocommerce') . '</div>';
+                $angelleye_proceed_to_checkout_button_separator = '<div class="angelleye-proceed-to-checkout-button-separator">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</div>';
                 $cart_button_html .= apply_filters('angelleye_proceed_to_checkout_button_separator', $angelleye_proceed_to_checkout_button_separator);
             }
             if ($this->enable_in_context_checkout_flow == 'no') {
