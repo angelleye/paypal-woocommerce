@@ -63,7 +63,9 @@ if (!defined('AEU_ZIP_URL')) {
 if (!function_exists('angelleye_queue_update')) {
     require_once( 'angelleye-includes/angelleye-functions.php' );
 }
+require_once( 'angelleye-includes/angelleye-session-functions.php' );
 require_once( 'angelleye-includes/angelleye-conditional-functions.php' );
+
 /**
  * Set global parameters
  */
@@ -1062,8 +1064,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 return false;
             }
             $row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_enable_guest_checkout' ) );
-            $paypal_express_checkout = WC()->session->get( 'paypal_express_checkout' );
-            $ec_save_to_account = WC()->session->get( 'ec_save_to_account' );
+            $paypal_express_checkout = angelleye_get_session( 'paypal_express_checkout' );
+            $ec_save_to_account = angelleye_get_session( 'ec_save_to_account' );
             if( !empty($row->option_value) && $row->option_value == 'yes' && isset($paypal_express_checkout) && !empty($paypal_express_checkout) && isset($ec_save_to_account) && $ec_save_to_account == 'on') {
                $return =  'no';
             } else {

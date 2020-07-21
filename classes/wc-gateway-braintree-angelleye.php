@@ -2799,7 +2799,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 );
                 
             } else {
-                WC()->session->set('reload_checkout', true);
+                angelleye_set_session('reload_checkout', true);
                 return array(
                     'result' => 'fail',
                     'redirect' => ''
