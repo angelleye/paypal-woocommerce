@@ -537,7 +537,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $paypal_express_terms = angelleye_get_session('paypal_express_terms');
             if ($this->ec_is_checkout() && $this->function_helper->ec_is_express_checkout()) {
                 $classes[] = 'express-checkout';
-                if ($this->show_on_checkout && isset($paypal_express_terms)) {
+                if ($this->show_on_checkout && $paypal_express_terms === true) {
                     $classes[] = 'express-hide-terms';
                 }
             }
@@ -561,7 +561,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             return $checked_default;
         }
         $paypal_express_terms = angelleye_get_session('paypal_express_terms');
-        if ($this->show_on_checkout && isset($paypal_express_terms)) {
+        if ($this->show_on_checkout && $paypal_express_terms === true) {
             $checked_default = true;
         }
         return $checked_default;
