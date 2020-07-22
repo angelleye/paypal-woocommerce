@@ -354,9 +354,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function ec_get_session_data($key = '') {
         try {
-            if (!class_exists('WooCommerce') || WC()->session == null) {
-                return false;
-            }
             $session_data = angelleye_get_session('paypal_express_checkout');
             if (isset($session_data[$key])) {
                 $session_data = $session_data[$key];

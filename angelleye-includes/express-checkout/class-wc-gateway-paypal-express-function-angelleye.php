@@ -37,9 +37,6 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
     }
 
     public function ec_is_express_checkout() {
-        if ( ! class_exists( 'WooCommerce' ) || WC()->session == null ) {
-            return false;
-        }
         $paypal_express_checkout = angelleye_get_session( 'paypal_express_checkout' );
         if( isset($paypal_express_checkout['token']) && !empty($paypal_express_checkout['token']) && isset($paypal_express_checkout['payer_id']) && !empty($paypal_express_checkout['payer_id']) ) {
             return true;
