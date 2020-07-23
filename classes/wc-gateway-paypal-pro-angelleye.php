@@ -800,13 +800,13 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->centinel_client->add('TransactionMode', 'S');
             $this->centinel_client->add('ProductCode', 'PHY');
             $this->centinel_client->add('CardNumber', $card->number);
-            WC()->session->set('CardNumber', $card->number);
+            angelleye_set_session('CardNumber', $card->number);
             $this->centinel_client->add('CardExpMonth', $card->exp_month);
-            WC()->session->set('CardExpMonth', $card->exp_month);
+            angelleye_set_session('CardExpMonth', $card->exp_month);
             $this->centinel_client->add('CardExpYear', $card->exp_year);
-            WC()->session->set('CardExpYear', $card->exp_year);
+            angelleye_set_session('CardExpYear', $card->exp_year);
             $this->centinel_client->add('CardCode', $card->cvc);
-            WC()->session->set('CardCode', $card->cvc);
+            angelleye_set_session('CardCode', $card->cvc);
 
             if(!empty($card->firstname) && !empty($card->lastname)) {
                 $billing_first_name = $card->firstname;
@@ -862,16 +862,16 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
 
             // Save response in session
-            WC()->session->set('Centinel_ErrorNo', $this->get_centinel_value("ErrorNo"));
-            WC()->session->set('Centinel_ErrorDesc', $this->get_centinel_value("ErrorDesc"));
-            WC()->session->set('Centinel_TransactionId', $this->get_centinel_value("TransactionId"));
-            WC()->session->set('Centinel_OrderId', $this->get_centinel_value("OrderId"));
-            WC()->session->set('Centinel_Enrolled', $this->get_centinel_value("Enrolled"));
-            WC()->session->set('Centinel_ACSUrl', $this->get_centinel_value("ACSUrl"));
-            WC()->session->set('Centinel_Payload', $this->get_centinel_value("Payload"));
-            WC()->session->set('Centinel_EciFlag', $this->get_centinel_value("EciFlag"));
-            WC()->session->set('Centinel_card_start_month', $card->start_month);
-            WC()->session->set('Centinel_card_start_year', $card->start_year);
+            angelleye_set_session('Centinel_ErrorNo', $this->get_centinel_value("ErrorNo"));
+            angelleye_set_session('Centinel_ErrorDesc', $this->get_centinel_value("ErrorDesc"));
+            angelleye_set_session('Centinel_TransactionId', $this->get_centinel_value("TransactionId"));
+            angelleye_set_session('Centinel_OrderId', $this->get_centinel_value("OrderId"));
+            angelleye_set_session('Centinel_Enrolled', $this->get_centinel_value("Enrolled"));
+            angelleye_set_session('Centinel_ACSUrl', $this->get_centinel_value("ACSUrl"));
+            angelleye_set_session('Centinel_Payload', $this->get_centinel_value("Payload"));
+            angelleye_set_session('Centinel_EciFlag', $this->get_centinel_value("EciFlag"));
+            angelleye_set_session('Centinel_card_start_month', $card->start_month);
+            angelleye_set_session('Centinel_card_start_year', $card->start_year);
 
 
             if ($this->get_centinel_value("ErrorNo")) {
@@ -905,8 +905,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     public function handle_3dsecure() {
         if (!empty($_GET['acs'])) {
             $order_id = wc_clean($_GET['acs']);
-            $acsurl = WC()->session->get('Centinel_ACSUrl');
-            $payload = WC()->session->get('Centinel_Payload');
+            $acsurl = angelleye_get_session('Centinel_ACSUrl');
+            $payload = angelleye_get_session('Centinel_Payload');
             ?>
             <html>
                 <head>
@@ -964,14 +964,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->centinel_client->add("MerchantId", $this->centinel_mid);
                 $this->centinel_client->add("TransactionPwd", $this->centinel_pwd);
                 $this->centinel_client->add("TransactionType", 'C');
-                $this->centinel_client->add('TransactionId', WC()->session->get('Centinel_TransactionId'));
+                $this->centinel_client->add('TransactionId', angelleye_get_session('Centinel_TransactionId'));
                 $this->centinel_client->add('PAResPayload', $pares);
                 $this->centinel_client->sendHttp($this->centinel_url, "5000", "15000");
 
                 $response_to_log = $this->centinel_client->response;
                 $response_to_log['CardNumber'] = 'XXX';
                 $response_to_log['CardCode'] = 'XXX';
-                $this->log('Centinal transaction ID ' . WC()->session->get('Centinel_TransactionId'));
+                $this->log('Centinal transaction ID ' . angelleye_get_session('Centinel_TransactionId'));
                 $this->log('Centinal client request : ' . print_r($this->centinel_client->request, true));
                 $this->log('Centinal client response: ' . print_r($response_to_log, true));
                 $this->log('3dsecure pa_res_status: ' . $this->get_centinel_value("PAResStatus"));
@@ -993,15 +993,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $card->cvc = $this->get_centinel_value("CardCode");
                 $card->exp_month = $this->get_centinel_value("CardExpMonth");
                 $card->exp_year = $this->get_centinel_value("CardExpYear");
-                $card->start_month = WC()->session->get('Centinel_card_start_month');
-                $card->start_year = WC()->session->get('Centinel_card_start_year');
+                $card->start_month = angelleye_get_session('Centinel_card_start_month');
+                $card->start_year = angelleye_get_session('Centinel_card_start_year');
 
                 $centinel = new stdClass();
                 $centinel->paresstatus = $this->get_centinel_value("PAResStatus");
                 $centinel->xid = $this->get_centinel_value("Xid");
                 $centinel->cavv = $this->get_centinel_value("Cavv");
                 $centinel->eciflag = $this->get_centinel_value("EciFlag");
-                $centinel->enrolled = WC()->session->get('Centinel_Enrolled');
+                $centinel->enrolled = angelleye_get_session('Centinel_Enrolled');
                 $this->do_payment($order, $card->number, $card->type, $card->exp_month, $card->exp_year, $card->cvc, $centinel->paresstatus, "Y", $centinel->cavv, $centinel->eciflag, $centinel->xid, $card->start_month, $card->start_year);
                 $this->clear_centinel_session();
                 wp_safe_redirect($redirect_url);
@@ -1437,16 +1437,16 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      * @return void
      */
     function clear_centinel_session() {
-        WC()->session->set('Centinel_ErrorNo', null);
-        WC()->session->set('Centinel_ErrorDesc', null);
-        WC()->session->set('Centinel_TransactionId', null);
-        WC()->session->set('Centinel_OrderId', null);
-        WC()->session->set('Centinel_Enrolled', null);
-        WC()->session->set('Centinel_ACSUrl', null);
-        WC()->session->set('Centinel_Payload', null);
-        WC()->session->set('Centinel_EciFlag', null);
-        WC()->session->set('Centinel_card_start_month', null);
-        WC()->session->set('Centinel_card_start_year', null);
+        angelleye_set_session('Centinel_ErrorNo', null);
+        angelleye_set_session('Centinel_ErrorDesc', null);
+        angelleye_set_session('Centinel_TransactionId', null);
+        angelleye_set_session('Centinel_OrderId', null);
+        angelleye_set_session('Centinel_Enrolled', null);
+        angelleye_set_session('Centinel_ACSUrl', null);
+        angelleye_set_session('Centinel_Payload', null);
+        angelleye_set_session('Centinel_EciFlag', null);
+        angelleye_set_session('Centinel_card_start_month', null);
+        angelleye_set_session('Centinel_card_start_year', null);
     }
 
     /**
@@ -1547,7 +1547,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     public function get_centinel_value($key) {
         $value = $this->centinel_client->getValue($key);
         if (empty($value)) {
-            $value = WC()->session->get($key);
+            $value = angelleye_get_session($key);
         }
         $value = wc_clean($value);
         return $value;

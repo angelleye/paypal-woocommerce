@@ -705,18 +705,18 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $this->centinel_client->add('TransactionMode', 'S');
                 $this->centinel_client->add('ProductCode', 'PHY');
                 $this->centinel_client->add('CardNumber', $card->number);
-                WC()->session->set('CardNumber', $card->number);
+                angelleye_set_session('CardNumber', $card->number);
                 $this->centinel_client->add('CardExpMonth', $card->exp_month);
-                WC()->session->set('CardExpMonth', $card->exp_month);
+                angelleye_set_session('CardExpMonth', $card->exp_month);
                 if (strlen($card->exp_year) == 2) {
                     $card_exp_year_full += 2000;
                 } else {
                     $card_exp_year_full = $card->exp_year;
                 }
                 $this->centinel_client->add('CardExpYear', $card_exp_year_full);
-                WC()->session->set('CardExpYear', $card_exp_year_full);
+                angelleye_set_session('CardExpYear', $card_exp_year_full);
                 $this->centinel_client->add('CardCode', $card->cvc);
-                WC()->session->set('CardCode', $card->cvc);
+                angelleye_set_session('CardCode', $card->cvc);
 
                 if(!empty($card->firstname) && !empty($card->lastname)) {
                     $billing_first_name = $card->firstname;
@@ -772,16 +772,16 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
 
                 // Save response in session
-                WC()->session->set('Centinel_ErrorNo', $this->get_centinel_value("ErrorNo"));
-                WC()->session->set('Centinel_ErrorDesc', $this->get_centinel_value("ErrorDesc"));
-                WC()->session->set('Centinel_TransactionId', $this->get_centinel_value("TransactionId"));
-                WC()->session->set('Centinel_OrderId', $this->get_centinel_value("OrderId"));
-                WC()->session->set('Centinel_Enrolled', $this->get_centinel_value("Enrolled"));
-                WC()->session->set('Centinel_ACSUrl', $this->get_centinel_value("ACSUrl"));
-                WC()->session->set('Centinel_Payload', $this->get_centinel_value("Payload"));
-                WC()->session->set('Centinel_EciFlag', $this->get_centinel_value("EciFlag"));
-                WC()->session->set('Centinel_card_start_month', $card->start_month);
-                WC()->session->set('Centinel_card_start_year', $card->start_year);
+                angelleye_set_session('Centinel_ErrorNo', $this->get_centinel_value("ErrorNo"));
+                angelleye_set_session('Centinel_ErrorDesc', $this->get_centinel_value("ErrorDesc"));
+                angelleye_set_session('Centinel_TransactionId', $this->get_centinel_value("TransactionId"));
+                angelleye_set_session('Centinel_OrderId', $this->get_centinel_value("OrderId"));
+                angelleye_set_session('Centinel_Enrolled', $this->get_centinel_value("Enrolled"));
+                angelleye_set_session('Centinel_ACSUrl', $this->get_centinel_value("ACSUrl"));
+                angelleye_set_session('Centinel_Payload', $this->get_centinel_value("Payload"));
+                angelleye_set_session('Centinel_EciFlag', $this->get_centinel_value("EciFlag"));
+                angelleye_set_session('Centinel_card_start_month', $card->start_month);
+                angelleye_set_session('Centinel_card_start_year', $card->start_year);
 
 
                 if ($this->get_centinel_value("ErrorNo")) {
@@ -810,10 +810,10 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $order_amt = '0.00';
                 }
                 $redirect_url = $this->get_return_url($order);
-                WC()->session->set('acct', $card->number);
-                WC()->session->set('exp_month', $card->exp_month);
-                WC()->session->set('exp_year', $card->exp_year);
-                WC()->session->set('cvv2', $card->cvc);
+                angelleye_set_session('acct', $card->number);
+                angelleye_set_session('exp_month', $card->exp_month);
+                angelleye_set_session('exp_year', $card->exp_year);
+                angelleye_set_session('cvv2', $card->cvc);
 
                 $PayPalRequestData = array(
                     'trxtype' => 'E',
@@ -863,19 +863,19 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
                 if (isset($PayPalResult['AUTHENTICATION_ID']) && $PayPalResult['RESULT'] == 0) {
                     if (!empty($PayPalResult['AUTHENTICATION_ID'])) {
-                        WC()->session->set('AUTHENTICATION_ID', $PayPalResult['AUTHENTICATION_ID']);
+                        angelleye_set_session('AUTHENTICATION_ID', $PayPalResult['AUTHENTICATION_ID']);
                     }
                     if (!empty($PayPalResult['AUTHENTICATION_STATUS'])) {
-                        WC()->session->set('AUTHENTICATION_STATUS', $PayPalResult['AUTHENTICATION_STATUS']);
+                        angelleye_set_session('AUTHENTICATION_STATUS', $PayPalResult['AUTHENTICATION_STATUS']);
                     }
                     if (!empty($PayPalResult['ACSURL'])) {
-                        WC()->session->set('ACSURL', $PayPalResult['ACSURL']);
+                        angelleye_set_session('ACSURL', $PayPalResult['ACSURL']);
                     }
                     if (!empty($PayPalResult['PAREQ'])) {
-                        WC()->session->set('PAREQ', $PayPalResult['PAREQ']);
+                        angelleye_set_session('PAREQ', $PayPalResult['PAREQ']);
                     }
                     if (!empty($PayPalResult['ECI'])) {
-                        WC()->session->set('ECI', $PayPalResult['ECI']);
+                        angelleye_set_session('ECI', $PayPalResult['ECI']);
                     }
                     if (isset($PayPalResult['AUTHENTICATION_STATUS']) && 'E' === $PayPalResult['AUTHENTICATION_STATUS']) {
                         $this->add_log('Doing 3dsecure payment authorization');
@@ -938,11 +938,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         if (!empty($_GET['acs'])) {
             $order_id = wc_clean($_GET['acs']);
             if ($this->threedsecure_type == 'cardinalcommerce') {
-                $acsurl = WC()->session->get('Centinel_ACSUrl');
-                $payload = WC()->session->get('Centinel_Payload');
+                $acsurl = angelleye_get_session('Centinel_ACSUrl');
+                $payload = angelleye_get_session('Centinel_Payload');
             } else {
-                $acsurl = WC()->session->get('ACSUrl');
-                $payload = WC()->session->get('PAREQ');
+                $acsurl = angelleye_get_session('ACSUrl');
+                $payload = angelleye_get_session('PAREQ');
             }
             ?>
             <html>
@@ -1001,14 +1001,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $this->centinel_client->add("MerchantId", $this->centinel_mid);
                     $this->centinel_client->add("TransactionPwd", $this->centinel_pwd);
                     $this->centinel_client->add("TransactionType", 'C');
-                    $this->centinel_client->add('TransactionId', WC()->session->get('Centinel_TransactionId'));
+                    $this->centinel_client->add('TransactionId', angelleye_get_session('Centinel_TransactionId'));
                     $this->centinel_client->add('PAResPayload', $pares);
                     $this->centinel_client->sendHttp($this->centinel_url, "5000", "15000");
 
                     $response_to_log = $this->centinel_client->response;
                     $response_to_log['CardNumber'] = 'XXX';
                     $response_to_log['CardCode'] = 'XXX';
-                    $this->add_log('Centinal transaction ID ' . WC()->session->get('Centinel_TransactionId'));
+                    $this->add_log('Centinal transaction ID ' . angelleye_get_session('Centinel_TransactionId'));
                     $this->add_log('Centinal client request : ' . print_r($this->centinel_client->request, true));
                     $this->add_log('Centinal client response: ' . print_r($response_to_log, true));
                     $this->add_log('3dsecure pa_res_status: ' . $this->get_centinel_value("PAResStatus"));
@@ -1025,14 +1025,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $card->cvc = $this->get_centinel_value("CardCode");
                     $card->exp_month = $this->get_centinel_value("CardExpMonth");
                     $card->exp_year = $this->get_centinel_value("CardExpYear");
-                    $card->start_month = WC()->session->get('Centinel_card_start_month');
-                    $card->start_year = WC()->session->get('Centinel_card_start_year');
+                    $card->start_month = angelleye_get_session('Centinel_card_start_month');
+                    $card->start_year = angelleye_get_session('Centinel_card_start_year');
                     $centinel_data = array();
                     $centinel_data['AUTHSTATUS3DS'] = $this->get_centinel_value("PAResStatus");
                     $centinel_data['XID'] = $this->get_centinel_value("Xid");
                     $centinel_data['CAVV'] = $this->get_centinel_value("Cavv");
                     $centinel_data['ECI'] = $this->get_centinel_value("EciFlag");
-                    $centinel_data['MPIVENDOR3DS'] = WC()->session->get('Centinel_Enrolled');
+                    $centinel_data['MPIVENDOR3DS'] = angelleye_get_session('Centinel_Enrolled');
                     $this->do_payment($order, $card->number, $card->exp_month . $card->exp_year, $card->cvc, $centinel_data);
                     $this->clear_centinel_session();
                     wp_safe_redirect($redirect_url);
@@ -1100,10 +1100,10 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                                 }
                             }
                             $centinel['THREEDSVERSION'] = '1.0.2';
-                            $acct = WC()->session->get('acct');
-                            $exp_month = WC()->session->get('exp_month');
-                            $exp_year = WC()->session->get('exp_year');
-                            $cvv2 = WC()->session->get('cvv2');
+                            $acct = angelleye_get_session('acct');
+                            $exp_month = angelleye_get_session('exp_month');
+                            $exp_year = angelleye_get_session('exp_year');
+                            $cvv2 = angelleye_get_session('cvv2');
                             $this->do_payment($order, $acct, $exp_month . $exp_year, $cvv2, $centinel);
                             wp_safe_redirect($redirect_url);
                             exit();
@@ -2422,16 +2422,16 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
 
     function clear_centinel_session() {
-        WC()->session->set('Centinel_ErrorNo', null);
-        WC()->session->set('Centinel_ErrorDesc', null);
-        WC()->session->set('Centinel_TransactionId', null);
-        WC()->session->set('Centinel_OrderId', null);
-        WC()->session->set('Centinel_Enrolled', null);
-        WC()->session->set('Centinel_ACSUrl', null);
-        WC()->session->set('Centinel_Payload', null);
-        WC()->session->set('Centinel_EciFlag', null);
-        WC()->session->set('Centinel_card_start_month', null);
-        WC()->session->set('Centinel_card_start_year', null);
+        angelleye_set_session('Centinel_ErrorNo', null);
+        angelleye_set_session('Centinel_ErrorDesc', null);
+        angelleye_set_session('Centinel_TransactionId', null);
+        angelleye_set_session('Centinel_OrderId', null);
+        angelleye_set_session('Centinel_Enrolled', null);
+        angelleye_set_session('Centinel_ACSUrl', null);
+        angelleye_set_session('Centinel_Payload', null);
+        angelleye_set_session('Centinel_EciFlag', null);
+        angelleye_set_session('Centinel_card_start_month', null);
+        angelleye_set_session('Centinel_card_start_year', null);
     }
 
     /**
@@ -2441,7 +2441,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     public function get_centinel_value($key) {
         $value = $this->centinel_client->getValue($key);
         if (empty($value)) {
-            $value = WC()->session->get($key);
+            $value = angelleye_get_session($key);
         }
         $value = wc_clean($value);
         return $value;

@@ -74,7 +74,7 @@ class Angelleye_Cartflows_Pro_Helper {
     }
 
     function angelleye_express_checkout_cartflow($bool) {
-        $post_data = WC()->session->get('post_data');
+        $post_data = angelleye_get_session('post_data');
         if (!empty($post_data)) {
             if (!empty($post_data['_wcf_flow_id'])) {
                 $order_bump = get_post_meta($post_data['_wcf_checkout_id'], 'wcf-pre-checkout-offer', true);
