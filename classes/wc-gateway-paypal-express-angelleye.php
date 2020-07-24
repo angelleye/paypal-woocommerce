@@ -174,7 +174,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
         $this->order_button_text = ($this->function_helper->ec_is_express_checkout() == false) ?  $this->checkout_button_label :  $this->review_button_label;
         //do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
-        if ($this->save_abandoned_checkout == false || (isset( $_POST['from_checkout'] ) && 'yes' === $_POST['from_checkout'])) {
+        if ($this->save_abandoned_checkout == false && (isset( $_POST['from_checkout'] ) && 'yes' === $_POST['from_checkout'])) {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
                 return;
             }
@@ -2184,8 +2184,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     angelleye_set_session( 'paypal_express_terms', true );
                 }
                 angelleye_set_session( 'post_data', wp_unslash($_POST));
-                $_GET['pp_action'] = 'set_express_checkout';
-                $this->handle_wc_api();
+                //$_GET['pp_action'] = 'set_express_checkout';
+                $paypal_express_request->angelleye_set_express_checkout();
             }
         } catch (Exception $ex) {
             
@@ -2240,6 +2240,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
             $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
+            if (wc_notice_count('error') > 0) {
+                $paypal_express_request->angelleye_redirect();
+                 exit;
+            }
             if (!isset($_GET['pp_action'])) {
                 return;
             }
