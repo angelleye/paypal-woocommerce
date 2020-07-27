@@ -1,15 +1,3 @@
-.woocommerce #payment .form-row select, .woocommerce-page #payment .form-row select {
-    padding: 7px;
-    margin: 0 6px 0 0;
-    border-color: #c7c1c6;
-    border-top-color: rgb(199, 193, 198);
-    border-top-color: #bbb3b9;
-    background-repeat: no-repeat;
-    background-size: 32px 20px;
-    border-radius: 3px;
-    font-size: 1.5em;
-    color: #939393;
-}
 .woocommerce-page #payment .form-row select option {
   color: black;
 }
@@ -30,7 +18,18 @@
 
 .woocommerce-page #payment .form-row select.woocommerce-cc-month {
     width: 52%;
+    min-width: 100px;
+    margin-bottom: 10px;
+   
+    margin-right: 10px;
 }
 .woocommerce-page #payment .form-row select.woocommerce-cc-year {
     width: 43%;
+    min-width: 100px;
+   
+    
+}
+
+.woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-month, .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-year {
+    border: 1px solid #bbb;
 }
