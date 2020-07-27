@@ -20,14 +20,11 @@
     width: 52%;
     min-width: 100px;
     margin-bottom: 10px;
-   
     margin-right: 10px;
 }
 .woocommerce-page #payment .form-row select.woocommerce-cc-year {
     width: 43%;
     min-width: 100px;
-   
-    
 }
 
 .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-month, .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-year {
