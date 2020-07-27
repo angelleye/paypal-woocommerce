@@ -14,16 +14,18 @@
 }
 
 .woocommerce-page #payment .form-row select.woocommerce-cc-month {
-    width: 52%;
+    width: 45%;
     min-width: 100px;
     margin-bottom: 10px;
     margin-right: 10px;
     color: #43454b;
+    display: inline;
 }
 .woocommerce-page #payment .form-row select.woocommerce-cc-year {
-    width: 43%;
+    width: 45%;
     min-width: 100px;
     color: #43454b;
+    display: inline;
 }
 
 .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-month, .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-year {
