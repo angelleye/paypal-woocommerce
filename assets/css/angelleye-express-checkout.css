@@ -242,9 +242,3 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
         width: 100%;
     }
 }
-
-@media screen and (min-width: 400px) {
-    .angelleye_smart_button_top, .angelleye_smart_button_bottom, .angelleye_smart_button_checkout_top {
-       width: 250px;
-    }
-}
