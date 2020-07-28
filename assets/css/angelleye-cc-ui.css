@@ -4,7 +4,6 @@
 .theme-Divi p.woocommerce-notice.woocommerce-notice--success.woocommerce-thankyou-order-received {
     margin-bottom: 1.625em;
 }
-
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form-cardholder {
     font-size: 1.5em;
     padding: 8px;
@@ -12,22 +11,33 @@
     background-position: right .618em center;
     background-size: 32px 20px;
 }
-
-.woocommerce-page #payment .form-row select.woocommerce-cc-month {
-    width: 45%;
-    min-width: 100px;
-    margin-bottom: 10px;
-    margin-right: 10px;
-    color: #43454b;
-    display: inline;
-}
 .woocommerce-page #payment .form-row select.woocommerce-cc-year {
-    width: 45%;
+     width: 48%;
     min-width: 100px;
     color: #43454b;
-    display: inline;
+    display: inline-block;
+    margin-bottom: 0px;
+    vertical-align: baseline;
 }
-
+.woocommerce-page #payment .form-row select.woocommerce-cc-month {
+    width: 48%;
+    min-width: 100px;
+    color: #43454b;
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 10px;
+    vertical-align: baseline;
+}
+.woocommerce-page #payment .form-row select.woocommerce-cc-month {
+    
+}
 .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-month, .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-year {
     border: 1px solid #bbb;
+}
+@media (max-width:572px) {
+    .payment_method_paypal_pro_payflow .form-row, .payment_method_paypal_pro .form-row  {
+        float: none !important;
+        width: auto !important;
+        margin: 0 auto 0 auto;
+    }
 }
