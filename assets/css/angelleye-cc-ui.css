@@ -43,9 +43,13 @@
    width: 100%;
    display: block;
 }
-
-
-
+.woocommerce-checkout #payment div.payment_box .wc-credit-card-form-cardholder {
+    font-size: 1.5em;
+    padding: 8px;
+    background-repeat: no-repeat;
+    background-position: right .618em center;
+    background-size: 32px 20px;
+}
 .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-month, .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-year {
     border: 1px solid #bbb;
 }
