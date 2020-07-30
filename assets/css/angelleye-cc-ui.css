@@ -1,25 +1,9 @@
-.woocommerce #payment .form-row select, .woocommerce-page #payment .form-row select {
-    padding: 7px;
-    margin: 0 6px 0 0;
-    border-color: #c7c1c6;
-    border-top-color: rgb(199, 193, 198);
-    border-top-color: #bbb3b9;
-    background-repeat: no-repeat;
-    background-size: 32px 20px;
-    border-radius: 3px;
-    font-size: 1.5em;
-    color: #939393;
-}
-.woocommerce-page #payment .form-row select option {
-  color: black;
-}
 .et_pb_module #wcf-embed-checkout-form .woocommerce #order_review .payment_method_braintree .input-text {
     font-size: 21px;
 }
 .theme-Divi p.woocommerce-notice.woocommerce-notice--success.woocommerce-thankyou-order-received {
     margin-bottom: 1.625em;
 }
-
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form-cardholder {
     font-size: 1.5em;
     padding: 8px;
@@ -27,10 +11,48 @@
     background-position: right .618em center;
     background-size: 32px 20px;
 }
-
-.woocommerce-page #payment .form-row select.woocommerce-cc-month {
-    width: 52%;
-}
 .woocommerce-page #payment .form-row select.woocommerce-cc-year {
-    width: 43%;
+    width: 48%;
+    min-width: 100px;
+    color: #43454b;
+    display: inline-block;
+    margin-bottom: 0px;
+    vertical-align: baseline;
+}
+.woocommerce-page #payment .form-row select.woocommerce-cc-month {
+    width: 48%;
+    min-width: 100px;
+    color: #43454b;
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 10px;
+    vertical-align: baseline;
+}
+.theme-storefront.woocommerce-page #payment .form-row select.woocommerce-cc-month, .theme-storefront.woocommerce-page #payment .form-row select.woocommerce-cc-year {
+    font-size: 1.41575em;
+    padding: 0.6180469716em;
+    background-color: #f2f2f2;
+    color: #43454b;
+    border: 0;
+    box-sizing: border-box;
+    font-weight: normal;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.125);
+    min-width: 135px;
+}
+.theme-Avada.woocommerce-page #payment .form-row label[for="cc-expire-month"]{
+   width: 100%;
+   display: block;
+}
+
+
+
+.woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-month, .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-year {
+    border: 1px solid #bbb;
+}
+@media (max-width:572px) {
+    .payment_method_paypal_pro_payflow .form-row, .payment_method_paypal_pro .form-row  {
+        float: none !important;
+        width: auto !important;
+        margin: 0 auto 0 auto;
+    }
 }

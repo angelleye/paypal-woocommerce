@@ -1536,7 +1536,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $form_html = "";
         $form_html .= '<p class="form-row form-row-first">';
         $form_html .= '<label for="cc-expire-month">' . apply_filters('cc_form_label_expiry', __("Expiration Date", 'paypal-for-woocommerce'), $this->id) . '<span class="required">*</span></label>';
-        $form_html .= '<select ' . $this->field_name('card_expiration_month') . ' class="woocommerce-select woocommerce-cc-month mr5">';
+        $form_html .= '<select ' . $this->field_name('card_expiration_month') . ' class="woocommerce-select woocommerce-cc-month mr5 wc-credit-card-form-card-cvc">';
         $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
         $months = array();
         for ($i = 1; $i <= 12; $i++) :
@@ -1557,7 +1557,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
         }
         $form_html .= '</select>';
-        $form_html .= '<select ' . $this->field_name('card_expiration_year') . ' class="woocommerce-select woocommerce-cc-year ml5">';
+        $form_html .= '<select ' . $this->field_name('card_expiration_year') . ' class="woocommerce-select woocommerce-cc-year ml5 wc-credit-card-form-card-cvc">';
         $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
         for ($i = date('y'); $i <= date('y') + 15; $i++) {
             if ($this->credit_card_year_field == 'four_digit') {
@@ -1716,11 +1716,11 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         if ($this->enable_cardholder_first_last_name && $current_id == $this->id) {
             $fields['card-cardholder-first'] = '<p class="form-row form-row-first">
                     <label for="' . esc_attr($this->id) . '-card-first-name">' . __('Cardholder First Name', 'paypal-for-woocommerce') . '</label>
-                    <input class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . esc_attr__('First Name', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cardholder-first') . ' />
+                    <input class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . esc_attr__('First Name', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cardholder-first') . ' />
             </p>';
             $fields['card-cardholder-last'] = '<p class="form-row form-row-last">
                     <label for="' . esc_attr($this->id) . '-card-last-name">' . __('Cardholder Last Name', 'paypal-for-woocommerce') . '</label>
-                    <input class="input-text wc-credit-card-form-cardholder" type="text" autocomplete="off" placeholder="' . __('Last Name', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cardholder-last') . ' />
+                    <input class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="' . __('Last Name', 'paypal-for-woocommerce') . '" ' . $this->field_name('card-cardholder-last') . ' />
             </p>';
 
             foreach ($fields as $field) {
