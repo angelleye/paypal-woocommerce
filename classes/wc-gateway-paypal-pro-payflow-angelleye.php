@@ -2495,7 +2495,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         return substr($orderdesc, 0, 127);
     }
     
-    public function angelleye_pfw_payflow_add_google_recaptcha() {
+    public function own_angelleye_pfw_payflow_add_google_recaptcha() {
         if( $this->enable_google_recaptcha ) {
             wp_enqueue_script('pfw_payflow_recaptcha', 'https://www.google.com/recaptcha/api.js?render='.$this->recaptcha_site_key, array(), '', true);
             echo '<input type="hidden" id="pfw_payflow_google" name="pfw_payflow_google" value="">';
