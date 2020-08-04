@@ -159,6 +159,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->enable_google_recaptcha = 'yes' === $this->get_option('enable_google_recaptcha', 'no');
         $this->recaptcha_site_key = $this->get_option('recaptcha_site_key', '');
         $this->recaptcha_secret_key = $this->get_option('recaptcha_secret_key', '');
+        if($this->enable_google_recaptcha) {
+            if(empty($this->recaptcha_site_key) || empty($this->recaptcha_secret_key)) {
+                $this->enable_google_recaptcha = false;
+            }
+        }
         // Maestro
         if (!$this->enable_3dsecure) {
             unset($this->available_card_types['GB']['Maestro']);
@@ -644,6 +649,33 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
              $this->form();
         }
         do_action('payment_fields_saved_payment_methods', $this);
+        if( $this->enable_google_recaptcha ) {
+            wp_enqueue_script('pfw_recaptcha', 'https://www.google.com/recaptcha/api.js?render='.$this->recaptcha_site_key, array(), '', true);
+            echo '<input type="hidden" id="pfw_google" name="pfw_google" value="">';
+            ?>
+            <script>
+                jQuery(document).ready(function(){
+                    var pfw_grecaptcha = function(  ) {
+                        grecaptcha.ready(function() {
+                                grecaptcha.execute('<?php echo $this->recaptcha_site_key; ?>', {action: 'submit'}).then(function(token) {
+                                console.log(token);
+                                document.getElementById("pfw_google").value = token;
+                            });
+                        });
+                    };
+                    jQuery(document.body).on('updated_checkout checkout_error', function () {
+                        pfw_grecaptcha();
+                    });
+                    setInterval(function(){ 
+                        pfw_grecaptcha();
+                    }, 110000);
+                });
+            </script>
+            <?php
+        }
+        ?>
+        <?php
+        
     }
 
     public function save_payment_method_checkbox() {
@@ -748,6 +780,27 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function validate_fields() {
         try {
+            if( $this->enable_google_recaptcha ) {
+                if(isset($_POST['pfw_google']) && !empty($_POST['pfw_google']) ) {
+                    $response_data = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', array(
+                            'body'    => array('secret' => $this->recaptcha_secret_key, 'response' => $_POST['pfw_google'])
+                        ) );
+                    if (is_wp_error($response_data)) {
+                        throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
+                    }
+                    $body = wp_remote_retrieve_body($response_data);
+                    if( !empty($body)) {
+                        $response = json_decode($body);
+                        if(!$response->success ) {
+                            throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
+                        } elseif($response->score == 0.0) {
+                            throw new Exception(__('Very likely a bot', 'paypal-for-woocommerce'));
+                        }
+                    } 
+                } else {
+                    throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
+                }
+            }
             if (isset($_POST['wc-paypal_pro-payment-token']) && 'new' !== $_POST['wc-paypal_pro-payment-token']) {
                 $token_id = wc_clean($_POST['wc-paypal_pro-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
