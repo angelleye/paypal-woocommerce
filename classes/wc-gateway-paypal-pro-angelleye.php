@@ -156,6 +156,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->api_password = $this->get_option('sandbox_api_password');
             $this->api_signature = $this->get_option('sandbox_api_signature');
         }
+        $this->enable_google_recaptcha = 'yes' === $this->get_option('enable_google_recaptcha', 'no');
+        $this->recaptcha_site_key = $this->get_option('recaptcha_site_key', '');
+        $this->recaptcha_secret_key = $this->get_option('recaptcha_secret_key', '');
         // Maestro
         if (!$this->enable_3dsecure) {
             unset($this->available_card_types['GB']['Maestro']);
@@ -473,6 +476,25 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 ),
                 'default' => 'four_digit'
             ),
+            'enable_google_recaptcha' => array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'label' => __('Enable Google reCAPTCHA', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => 'Sign up and get your keys here: <a target="_blank" href="https://www.google.com/recaptcha/admin" target="_blank">https://www.google.com/recaptcha/admin</a> (you will get a SITE key and a SECRET key)',
+                'default' => 'no'
+            ),
+            'recaptcha_site_key' => array(
+                'title' => __('reCAPTCHA SITE key', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'recaptcha_secret_key' => array(
+                'title' => __('reCAPTCHA SECRET key', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -532,6 +554,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     production.show();
                 }
             }).change();
+            jQuery('#woocommerce_paypal_pro_enable_google_recaptcha').change(function () {
+                var google_recaptcha_fields = jQuery('#woocommerce_paypal_pro_recaptcha_site_key, #woocommerce_paypal_pro_recaptcha_secret_key').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    google_recaptcha_fields.show();
+                } else {
+                    google_recaptcha_fields.hide();
+                }
+            }).change();
             jQuery('#woocommerce_paypal_pro_send_items').change(function () {
                 var paypal_pro_subtotal_mismatch_behavior = jQuery('#woocommerce_paypal_pro_subtotal_mismatch_behavior').closest('tr');
                 if (jQuery(this).is(':checked')) {
@@ -586,6 +616,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      */
     public function payment_fields() {
         do_action('before_angelleye_pc_payment_fields', $this);
+        wp_enqueue_script('google-recaptcha', 'https://www.google.com/recaptcha/api.js', array('jquery'), null, false);
         if ($this->description) {
             echo '<p>' . wp_kses_post($this->description);
         }

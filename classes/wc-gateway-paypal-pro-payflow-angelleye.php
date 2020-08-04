@@ -166,6 +166,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->fraud_codes = array('125', '128', '131', '126', '127');
         $this->fraud_error_codes = array('125', '128', '131');
         $this->fraud_warning_codes = array('126', '127');
+        $this->enable_google_recaptcha = 'yes' === $this->get_option('enable_google_recaptcha', 'no');
         do_action('angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null);
     }
 
@@ -516,6 +517,25 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'description' => __('Display card holder first and last name in credit card form.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
+            'enable_google_recaptcha' => array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'label' => __('Enable Google reCAPTCHA', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => 'Sign up and get your keys here: <a target="_blank" href="https://www.google.com/recaptcha/admin" target="_blank">https://www.google.com/recaptcha/admin</a> (you will get a SITE key and a SECRET key)',
+                'default' => 'no'
+            ),
+            'recaptcha_site_key' => array(
+                'title' => __('reCAPTCHA SITE key', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'recaptcha_secret_key' => array(
+                'title' => __('reCAPTCHA SECRET key', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -612,6 +632,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 } else {
                     sandbox.hide();
                     production.show();
+                }
+            }).change();
+            jQuery('#woocommerce_paypal_pro_payflow_enable_google_recaptcha').change(function () {
+                var payflow_google_recaptcha_fields = jQuery('#woocommerce_paypal_pro_payflow_recaptcha_site_key, #woocommerce_paypal_pro_payflow_recaptcha_secret_key').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    payflow_google_recaptcha_fields.show();
+                } else {
+                    payflow_google_recaptcha_fields.hide();
                 }
             }).change();
             jQuery('#woocommerce_paypal_pro_payflow_send_items').change(function () {
@@ -1520,6 +1548,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         } else {
             $this->form();
         }
+        wp_enqueue_script('google-recaptcha', 'https://www.google.com/recaptcha/api.js', array('jquery'), null, false);
+        echo '<div class="g-recaptcha brochure__form__captcha" data-sitekey="YOUR SITE KEY"></div>';
         do_action('payment_fields_saved_payment_methods', $this);
     }
 
