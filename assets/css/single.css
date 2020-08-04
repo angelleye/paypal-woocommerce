@@ -85,9 +85,3 @@ input.single_add_to_cart_button.paypal_checkout_button {
         width: 100%;
     }
 }
-
-@media screen and (min-width: 400px) {
-    .angelleye_button_single {
-       width: 250px;
-    }
-}

@@ -661,7 +661,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $form_html = "";
         $form_html .= '<p class="' . $class . '">';
         $form_html .= '<label for="cc-expire-month">' . apply_filters( 'cc_form_label_expiry', __("Expiration Date", 'paypal-for-woocommerce'), $this->id ) . '<span class="required">*</span></label>';
-        $form_html .= '<select ' . $this->field_name('card_expiration_month') . ' class="woocommerce-select woocommerce-cc-month mr5">';
+        $form_html .= '<select ' . $this->field_name('card_expiration_month') . ' class="woocommerce-select woocommerce-cc-month mr5 wc-credit-card-form-card-cvc">';
         $form_html .= '<option value="">' . __('Month', 'paypal-for-woocommerce') . '</option>';
         $months = array();
         for ($i = 1; $i <= 12; $i++) :
@@ -677,7 +677,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
         }
         $form_html .= '</select>';
-        $form_html .= '<select ' . $this->field_name('card_expiration_year') . ' class="woocommerce-select woocommerce-cc-year ml5">';
+        $form_html .= '<select ' . $this->field_name('card_expiration_year') . ' class="woocommerce-select woocommerce-cc-year ml5 wc-credit-card-form-card-cvc">';
         $form_html .= '<option value="">' . __('Year', 'paypal-for-woocommerce') . '</option>';
         for ($i = date('y'); $i <= date('y') + 15; $i++) {
             if($this->credit_card_year_field == 'four_digit') {
