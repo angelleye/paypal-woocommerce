@@ -488,7 +488,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                 'label' => __('Enable Google reCAPTCHA v3', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => 'Sign up and get your keys here: <a target="_blank" href="https://www.google.com/recaptcha/admin" target="_blank">https://www.google.com/recaptcha/admin</a> (you will get a SITE key and a SECRET key)',
+                'description' => 'Sign up and get your keys : <a target="_blank" href="https://www.google.com/recaptcha/admin/create" target="_blank">https://www.google.com/recaptcha/admin</a> (you will get a SITE key and a SECRET key)',
                 'default' => 'no'
             ),
             'recaptcha_site_key' => array(
