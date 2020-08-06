@@ -531,7 +531,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                 'label' => __('Enable Google reCAPTCHA v3', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => 'Sign up and get your keys : <a target="_blank" href="https://www.google.com/recaptcha/admin/create" target="_blank">https://www.google.com/recaptcha/admin</a> (you will get a SITE key and a SECRET key)',
+                'description' => 'Sign up and get your keys : <a target="_blank" href="https://www.google.com/recaptcha/admin/create" target="_blank">https://www.google.com/recaptcha/admin/create</a> (you will get a SITE key and a SECRET key)',
                 'default' => 'no'
             ),
             'recaptcha_site_key' => array(
