@@ -2535,7 +2535,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $response = json_decode($body);
                     if(!$response->success ) {
                         throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
-                    } elseif($response->score === 0.0) {
+                    } 
+                    if($response->score == 0.0) {
                         throw new Exception(__('Very likely a bot', 'paypal-for-woocommerce'));
                     }
                 } 
