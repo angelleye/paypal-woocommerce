@@ -195,23 +195,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <p><?php _e($this->method_description, 'paypal-for-woocommerce'); ?></p>
         <div id="angelleye_paypal_marketing_table">
         <table class="form-table">
-             <?php 
-            $this->enable_tokenized_payments = $was_enable_tokenized_payments = $this->get_option('enable_tokenized_payments', 'no');
-            if(class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
-                $this->enable_tokenized_payments = 'no';
-                $this->is_multi_account_active = 'yes';
-            } else {
-                $this->is_multi_account_active = 'no';
-            }
-            $enable_tokenized_payments_text = '';
-            if($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
-                $enable_tokenized_payments_text = __('Payment tokenization is not available when using the PayPal Multi-Account add-on, and it has been disabled.', 'paypal-for-woocommerce');
-            } elseif($was_enable_tokenized_payments == 'no' && $this->is_multi_account_active == 'yes') {
-                $enable_tokenized_payments_text = __('Token payments are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
-            }
-            if (!empty($enable_tokenized_payments_text) && !get_user_meta($user_id, 'ignore_token_multi_account_ec')) {
-                echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . $enable_tokenized_payments_text . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_token_multi_account_ec">Dismiss</button></div></div>';
-            }
+            <?php 
             if(version_compare(WC_VERSION,'2.6','<')) {
                 AngellEYE_Utility::woo_compatibility_notice();    
             } else {
