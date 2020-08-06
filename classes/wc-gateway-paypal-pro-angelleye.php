@@ -492,15 +492,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'default' => 'no'
             ),
             'recaptcha_site_key' => array(
-                'title' => __('reCAPTCHA SITE key', 'paypal-for-woocommerce'),
+                'title' => __('reCAPTCHA V3 - Site Key', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('', 'paypal-for-woocommerce'),
+                'description' => __('Please enter only Google reCAPTCHA V3 Credentials, V2 Credentials are not supported', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
             'recaptcha_secret_key' => array(
-                'title' => __('reCAPTCHA SECRET key', 'paypal-for-woocommerce'),
+                'title' => __('reCAPTCHA V3 - Secret Key', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('', 'paypal-for-woocommerce'),
+                'description' => __('Please enter only Google reCAPTCHA V3 Credentials, V2 Credentials are not supported', 'paypal-for-woocommerce'),
                 'default' => ''
             ),
             'debug' => array(
@@ -2391,7 +2391,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     if(!$response->success ) {
                         throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
                     }
-                    if($response->score == 0.0) {
+                    if($response->score < 0.2) {
                         throw new Exception(__('Very likely a bot', 'paypal-for-woocommerce'));
                     }
                 } 
