@@ -166,7 +166,18 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->fraud_codes = array('125', '128', '131', '126', '127');
         $this->fraud_error_codes = array('125', '128', '131');
         $this->fraud_warning_codes = array('126', '127');
+        $this->enable_google_recaptcha = 'yes' === $this->get_option('enable_google_recaptcha', 'no');
+        $this->recaptcha_site_key = $this->get_option('recaptcha_site_key', '');
+        $this->recaptcha_secret_key = $this->get_option('recaptcha_secret_key', '');
+        if($this->enable_google_recaptcha) {
+            if(empty($this->recaptcha_site_key) || empty($this->recaptcha_secret_key)) {
+                $this->enable_google_recaptcha = false;
+            }
+        }
         do_action('angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null);
+        if( $this->enable_google_recaptcha ) {
+            add_action('angelleye_pfw_payflow_add_google_recaptcha', array($this, 'own_angelleye_pfw_payflow_add_google_recaptcha'));
+        }
     }
 
     public function add_log($message, $level = 'info') {
@@ -516,6 +527,25 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'description' => __('Display card holder first and last name in credit card form.', 'paypal-for-woocommerce'),
                 'default' => 'no'
             ),
+            'enable_google_recaptcha' => array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'label' => __('Enable Google reCAPTCHA v3', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => 'Sign up and get your keys : <a target="_blank" href="https://www.google.com/recaptcha/admin/create" target="_blank">https://www.google.com/recaptcha/admin/create</a> (you will get a SITE key and a SECRET key)',
+                'default' => 'no'
+            ),
+            'recaptcha_site_key' => array(
+                'title' => __('reCAPTCHA V3 - Site Key', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Please enter only Google reCAPTCHA V3 Credentials, V2 Credentials are not supported', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'recaptcha_secret_key' => array(
+                'title' => __('reCAPTCHA V3 - Secret Key', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Please enter only Google reCAPTCHA V3 Credentials, V2 Credentials are not supported', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -612,6 +642,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 } else {
                     sandbox.hide();
                     production.show();
+                }
+            }).change();
+            jQuery('#woocommerce_paypal_pro_payflow_enable_google_recaptcha').change(function () {
+                var payflow_google_recaptcha_fields = jQuery('#woocommerce_paypal_pro_payflow_recaptcha_site_key, #woocommerce_paypal_pro_payflow_recaptcha_secret_key').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    payflow_google_recaptcha_fields.show();
+                } else {
+                    payflow_google_recaptcha_fields.hide();
                 }
             }).change();
             jQuery('#woocommerce_paypal_pro_payflow_send_items').change(function () {
@@ -1521,6 +1559,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $this->form();
         }
         do_action('payment_fields_saved_payment_methods', $this);
+        do_action('angelleye_pfw_payflow_add_google_recaptcha');
     }
 
     public function save_payment_method_checkbox() {
@@ -1638,7 +1677,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
      * @since    1.1.7.6
      */
     public function validate_fields() {
-
+        $this->angelleye_pfw_payflow_validate_google_recaptcha();
         if (isset($_POST['wc-paypal_pro_payflow-payment-token']) && 'new' !== $_POST['wc-paypal_pro_payflow-payment-token']) {
             $token_id = wc_clean($_POST['wc-paypal_pro_payflow-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
@@ -2454,6 +2493,57 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         }
         $orderdesc = apply_filters( 'ae_pppf_paypal_orderdesc', implode( ', ', $item_names ), $order );
         return substr($orderdesc, 0, 127);
+    }
+    
+    public function own_angelleye_pfw_payflow_add_google_recaptcha() {
+        if( $this->enable_google_recaptcha ) {
+            wp_enqueue_script('pfw_payflow_recaptcha', 'https://www.google.com/recaptcha/api.js?render='.$this->recaptcha_site_key, array(), '', true);
+            echo '<input type="hidden" id="pfw_payflow_google" name="pfw_payflow_google" value="">';
+            ?>
+            <script>
+                jQuery(document).ready(function(){
+                    var pfw_payflow_grecaptcha = function(  ) {
+                        grecaptcha.ready(function() {
+                                grecaptcha.execute('<?php echo $this->recaptcha_site_key; ?>', {action: 'submit'}).then(function(token) {
+                                document.getElementById("pfw_payflow_google").value = token;
+                            });
+                        });
+                    };
+                    jQuery(document.body).on('updated_checkout checkout_error', function () {
+                        pfw_payflow_grecaptcha();
+                    });
+                    setInterval(function(){ 
+                        pfw_payflow_grecaptcha();
+                    }, 110000);
+                });
+            </script>
+            <?php
+        }
+    }
+    
+    public function angelleye_pfw_payflow_validate_google_recaptcha() {
+        if( $this->enable_google_recaptcha ) {
+            if(isset($_POST['pfw_payflow_google']) && !empty($_POST['pfw_payflow_google']) ) {
+                $response_data = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', array(
+                        'body'    => array('secret' => $this->recaptcha_secret_key, 'response' => $_POST['pfw_payflow_google'])
+                    ) );
+                if (is_wp_error($response_data)) {
+                    throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
+                }
+                $body = wp_remote_retrieve_body($response_data);
+                if( !empty($body)) {
+                    $response = json_decode($body);
+                    if(!$response->success ) {
+                        throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
+                    } 
+                    if($response->score < 0.2) {
+                        throw new Exception(__('Very likely a bot', 'paypal-for-woocommerce'));
+                    }
+                } 
+            } else {
+                throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
+            }
+        }
     }
 
 }

@@ -156,6 +156,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->api_password = $this->get_option('sandbox_api_password');
             $this->api_signature = $this->get_option('sandbox_api_signature');
         }
+        $this->enable_google_recaptcha = 'yes' === $this->get_option('enable_google_recaptcha', 'no');
+        $this->recaptcha_site_key = $this->get_option('recaptcha_site_key', '');
+        $this->recaptcha_secret_key = $this->get_option('recaptcha_secret_key', '');
+        if($this->enable_google_recaptcha) {
+            if(empty($this->recaptcha_site_key) || empty($this->recaptcha_secret_key)) {
+                $this->enable_google_recaptcha = false;
+            }
+        }
         // Maestro
         if (!$this->enable_3dsecure) {
             unset($this->available_card_types['GB']['Maestro']);
@@ -183,6 +191,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->calculation_angelleye = new WC_Gateway_Calculation_AngellEYE();
         }
         do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
+        if( $this->enable_google_recaptcha ) {
+            add_action('angelleye_pfw_add_google_recaptcha', array($this, 'own_angelleye_pfw_add_google_recaptcha'));
+        }
     }
 
     /**
@@ -473,6 +484,25 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 ),
                 'default' => 'four_digit'
             ),
+            'enable_google_recaptcha' => array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'label' => __('Enable Google reCAPTCHA v3', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => 'Sign up and get your keys : <a target="_blank" href="https://www.google.com/recaptcha/admin/create" target="_blank">https://www.google.com/recaptcha/admin/create</a> (you will get a SITE key and a SECRET key)',
+                'default' => 'no'
+            ),
+            'recaptcha_site_key' => array(
+                'title' => __('reCAPTCHA V3 - Site Key', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Please enter only Google reCAPTCHA V3 Credentials, V2 Credentials are not supported', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'recaptcha_secret_key' => array(
+                'title' => __('reCAPTCHA V3 - Secret Key', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Please enter only Google reCAPTCHA V3 Credentials, V2 Credentials are not supported', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
             'debug' => array(
                 'title' => __('Debug Log', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -532,6 +562,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     production.show();
                 }
             }).change();
+            jQuery('#woocommerce_paypal_pro_enable_google_recaptcha').change(function () {
+                var google_recaptcha_fields = jQuery('#woocommerce_paypal_pro_recaptcha_site_key, #woocommerce_paypal_pro_recaptcha_secret_key').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    google_recaptcha_fields.show();
+                } else {
+                    google_recaptcha_fields.hide();
+                }
+            }).change();
             jQuery('#woocommerce_paypal_pro_send_items').change(function () {
                 var paypal_pro_subtotal_mismatch_behavior = jQuery('#woocommerce_paypal_pro_subtotal_mismatch_behavior').closest('tr');
                 if (jQuery(this).is(':checked')) {
@@ -586,6 +624,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      */
     public function payment_fields() {
         do_action('before_angelleye_pc_payment_fields', $this);
+        
         if ($this->description) {
             echo '<p>' . wp_kses_post($this->description);
         }
@@ -613,6 +652,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
              $this->form();
         }
         do_action('payment_fields_saved_payment_methods', $this);
+        do_action('angelleye_pfw_add_google_recaptcha');
     }
 
     public function save_payment_method_checkbox() {
@@ -717,6 +757,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function validate_fields() {
         try {
+
+            $this->angelleye_pfw_validate_google_recaptcha();
             if (isset($_POST['wc-paypal_pro-payment-token']) && 'new' !== $_POST['wc-paypal_pro-payment-token']) {
                 $token_id = wc_clean($_POST['wc-paypal_pro-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
@@ -2304,6 +2346,57 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             } else {
                 wc_maybe_reduce_stock_levels( $order_id );
+            }
+        }
+    }
+    
+    public function own_angelleye_pfw_add_google_recaptcha() {
+        if( $this->enable_google_recaptcha ) {
+            wp_enqueue_script('pfw_recaptcha', 'https://www.google.com/recaptcha/api.js?render='.$this->recaptcha_site_key, array(), '', true);
+            echo '<input type="hidden" id="pfw_google" name="pfw_google" value="">';
+            ?>
+            <script>
+                jQuery(document).ready(function(){
+                    var pfw_grecaptcha = function(  ) {
+                        grecaptcha.ready(function() {
+                                grecaptcha.execute('<?php echo $this->recaptcha_site_key; ?>', {action: 'submit'}).then(function(token) {
+                                document.getElementById("pfw_google").value = token;
+                            });
+                        });
+                    };
+                    jQuery(document.body).on('updated_checkout checkout_error', function () {
+                        pfw_grecaptcha();
+                    });
+                    setInterval(function(){ 
+                        pfw_grecaptcha();
+                    }, 110000);
+                });
+            </script>
+            <?php
+        }
+    }
+    
+    public function angelleye_pfw_validate_google_recaptcha() {
+        if( $this->enable_google_recaptcha ) {
+            if(isset($_POST['pfw_google']) && !empty($_POST['pfw_google']) ) {
+                $response_data = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', array(
+                        'body'    => array('secret' => $this->recaptcha_secret_key, 'response' => $_POST['pfw_google'])
+                    ) );
+                if (is_wp_error($response_data)) {
+                    throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
+                }
+                $body = wp_remote_retrieve_body($response_data);
+                if( !empty($body)) {
+                    $response = json_decode($body);
+                    if(!$response->success ) {
+                        throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
+                    }
+                    if($response->score < 0.2) {
+                        throw new Exception(__('Very likely a bot', 'paypal-for-woocommerce'));
+                    }
+                } 
+            } else {
+                throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
             }
         }
     }
