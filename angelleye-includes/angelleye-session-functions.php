@@ -8,7 +8,11 @@ if (!function_exists('angelleye_set_session')) {
                 return false;
             }
             if (WC()->session == null) {
-                WC()->initialize_session();
+                if (version_compare(WC_VERSION, '3.6.3', '>')) {
+                    WC()->initialize_session();
+                } else {
+                    angelleye_session_init();
+                }
             }
             if (WC()->session) {
                 WC()->session->set($key, $value);
@@ -16,7 +20,7 @@ if (!function_exists('angelleye_set_session')) {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -29,7 +33,11 @@ if (!function_exists('angelleye_get_session')) {
                 return false;
             }
             if (WC()->session == null) {
-                WC()->initialize_session();
+                if (version_compare(WC_VERSION, '3.6.3', '>')) {
+                    WC()->initialize_session();
+                } else {
+                    angelleye_session_init();
+                }
             }
             if (WC()->session) {
                 $angelleye_session = WC()->session->get($key);
@@ -38,7 +46,7 @@ if (!function_exists('angelleye_get_session')) {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -52,7 +60,11 @@ if (!function_exists('angelleye_unset_session')) {
                 return false;
             }
             if (WC()->session == null) {
-                WC()->initialize_session();
+                if (version_compare(WC_VERSION, '3.6.3', '>')) {
+                    WC()->initialize_session();
+                } else {
+                    angelleye_session_init();
+                }
             }
             if (WC()->session) {
                 WC()->session->__unset($key);
@@ -61,6 +73,19 @@ if (!function_exists('angelleye_unset_session')) {
         }
 
     } catch (Exception $ex) {
-
+        
     }
+}
+
+if (!function_exists('angelleye_session_init')) {
+
+    function angelleye_session_init() {
+        if (is_admin()) {
+            return false;
+        }
+        $session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
+        $session = new $session_class();
+        $session->init();
+    }
+
 }
