@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.3.3 - 08.17.2020 =
+* Fix - Adds WooCommerce 3.6.3 Compatibility. ([PFW-673](https://github.com/angelleye/paypal-woocommerce/pull/1484))
+
 = 2.3.3 - 08.08.2020 =
 * Feature - Google reCAPTCHA v3 on Checkout page with PayFlow and DDP Gateway ([PFW-668](https://github.com/angelleye/paypal-woocommerce/pull/1483))
 * Tweak - Removed "Token Payment Not Available with PFWMA" admin notice ([PFW-669](https://github.com/angelleye/paypal-woocommerce/pull/1482))
