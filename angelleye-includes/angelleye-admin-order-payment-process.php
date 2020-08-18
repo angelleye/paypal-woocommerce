@@ -9,6 +9,7 @@ class AngellEYE_Admin_Order_Payment_Process {
     public $utility;
     public $gateway_calculation;
     public $gateway_settings;
+    public $confirm_order_id;
 
     public function __construct() {
         if (is_admin() && !defined('DOING_AJAX')) {
@@ -586,7 +587,7 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_reference_transaction_request_ec_pp_pf($order, $referenceid) {
         $this->angelleye_load_calculation();
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $this->confirm_order_id = $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $PayPalRequestData = array();
         $DRTFields = array(
             'referenceid' => $referenceid,
