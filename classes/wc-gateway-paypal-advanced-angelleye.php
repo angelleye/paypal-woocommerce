@@ -542,13 +542,13 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
         // Determine the ERRORURL,CANCELURL and SILENTPOSTURL
         
-        $cancelurl = add_query_arg('cancel_ec_trans', 'true', WC()->api_request_url('WC_Gateway_PayPal_Advanced_AngellEYE'));
+        $cancelurl = add_query_arg('cancel_ec_trans', 'true', untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Advanced_AngellEYE')));
         $paypal_args['CANCELURL[' . strlen($cancelurl) . ']'] = $cancelurl;
 
-        $errorurl = add_query_arg('error', 'true', WC()->api_request_url('WC_Gateway_PayPal_Advanced_AngellEYE'));
+        $errorurl = add_query_arg('error', 'true', untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Advanced_AngellEYE')));
         $paypal_args['ERRORURL[' . strlen($errorurl) . ']'] = $errorurl;
 
-        $silentposturl = add_query_arg('silent', 'true', WC()->api_request_url('WC_Gateway_PayPal_Advanced_AngellEYE'));
+        $silentposturl = add_query_arg('silent', 'true', untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Advanced_AngellEYE')));
         $paypal_args['SILENTPOSTURL[' . strlen($silentposturl) . ']'] = $silentposturl;
         if( $this->send_items ) {
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
