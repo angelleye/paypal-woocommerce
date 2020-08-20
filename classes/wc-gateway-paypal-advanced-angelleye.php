@@ -1347,7 +1347,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             if (sizeof($order->get_items()) > 0 && $order->get_subtotal() > 0) {
                 foreach ($order->get_items() as $item) {
                     if ($item['qty']) {
-                        $product = $order->get_product_from_item($item);
+                        $product = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_product_from_item( $item ) : $item->get_product();
                         $item_name = $item['name'];
                         $paypal_args['L_NAME' . $item_loop . '[' . strlen($item_name) . ']'] = $item_name;
                         if ($product->get_sku()) {
@@ -1553,7 +1553,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             if( $this->is_subscription($order_id) ) {
                 foreach ($order->get_items() as $cart_item_key => $values) {
-                    $product = $order->get_product_from_item($values);
+                    $product = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_product_from_item( $values ) : $values->get_product();
                     $product_id = $product->get_id();
                     $product_type = get_post_type($product_id);
                     if($product_type == 'product_variation') {

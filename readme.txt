@@ -2,9 +2,9 @@
 Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
-Requires at least: 5.0
+Requires at least: 5.2
 Tested up to: 5.5
-Stable tag: 2.3.4
+Stable tag: 2.3.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 2.3.5 - 08.20.2020 =
+* Fix - Resolves a PHP error, Reference Transaction from admin side. ([PFW-674](https://github.com/angelleye/paypal-woocommerce/pull/1485))
+* Tweak - Adds WooCommerce 4.4.0 Compatibility. ([PFW-675](https://github.com/angelleye/paypal-woocommerce/pull/1486))
 
 = 2.3.4 - 08.17.2020 =
 * Fix - Adds WooCommerce 3.6.3 Compatibility. ([PFW-673](https://github.com/angelleye/paypal-woocommerce/pull/1484))
