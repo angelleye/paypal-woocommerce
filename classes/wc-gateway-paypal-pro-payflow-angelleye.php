@@ -818,7 +818,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
                     return array(
                         'result' => 'success',
-                        'redirect' => add_query_arg(array('acs' => $order_id), WC()->api_request_url('WC_Gateway_PayPal_Pro_PayFlow_AngellEYE', is_ssl()))
+                        'redirect' => add_query_arg(array('acs' => $order_id), untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Pro_PayFlow_AngellEYE', is_ssl())))
                     );
                 } elseif ($this->liability_shift && 'N' !== $this->get_centinel_value("Enrolled")) {
                     wc_add_notice(apply_filters('angelleye_pc_process_payment_authentication_unavailable', __('Authentication unavailable. Please try a different payment method or card.', 'paypal-for-woocommerce')), 'error');
@@ -905,7 +905,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $this->add_log('PaReq: ' . $PayPalResult['PAREQ']);
                         return array(
                             'result' => 'success',
-                            'redirect' => add_query_arg(array('acs' => $order_id), WC()->api_request_url('WC_Gateway_PayPal_Pro_PayFlow_AngellEYE', is_ssl()))
+                            'redirect' => add_query_arg(array('acs' => $order_id), untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Pro_PayFlow_AngellEYE', is_ssl())))
                         );
                     } elseif ($this->liability_shift === false && 'E' !== $PayPalResult['AUTHENTICATION_STATUS']) {
                         $pass_required_field = array('AUTHENTICATION_ID', 'AUTHENTICATION_STATUS', 'ECI');

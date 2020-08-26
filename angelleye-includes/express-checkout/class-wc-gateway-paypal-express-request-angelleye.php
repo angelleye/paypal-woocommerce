@@ -670,9 +670,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $cancel_url = add_query_arg('utm_nooverride', '1', $cancel_url);
             $order_total = '';
             if( !empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4' ) {
-                $returnurl = urldecode(add_query_arg(array('pp_action' => 'get_express_checkout_details', 'utm_nooverride' => 1, 'request_from' => 'JSv4'), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
+                $returnurl = urldecode(add_query_arg(array('pp_action' => 'get_express_checkout_details', 'utm_nooverride' => 1, 'request_from' => 'JSv4'), untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE'))));
             } else {
-                $returnurl = urldecode(add_query_arg(array('pp_action' => 'get_express_checkout_details', 'utm_nooverride' => 1), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
+                $returnurl = urldecode(add_query_arg(array('pp_action' => 'get_express_checkout_details', 'utm_nooverride' => 1), untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE'))));
             }
             
             if (!empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true && !empty($_GET['key'])) {
@@ -696,7 +696,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         'key' => wc_clean($_GET['key']),
                         'order_id' => $order_id,
                         'utm_nooverride' => 1
-                                    ), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
+                                    ), untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE'))));
                 } else {
                     $returnurl = urldecode(add_query_arg(array(
                         'pp_action' => 'get_express_checkout_details',
@@ -704,7 +704,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         'key' => wc_clean($_GET['key']),
                         'order_id' => $order_id,
                         'utm_nooverride' => 1
-                                    ), WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
+                                    ), untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE'))));
                 }
                 angelleye_set_session('order_awaiting_payment', absint( wp_unslash( $order_id) ) );
             } else {

@@ -10,7 +10,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->home_url = is_ssl() ? home_url('/', 'https') : home_url('/'); //set the urls (cancel or return) based on SSL
         $this->testurl = 'https://pilot-payflowpro.paypal.com';
         $this->liveurl = 'https://payflowpro.paypal.com';
-        $this->relay_response_url = add_query_arg('wc-api', 'WC_Gateway_PayPal_Advanced_AngellEYE', $this->home_url);
+        $this->relay_response_url = WC()->api_request_url('WC_Gateway_PayPal_Advanced_AngellEYE');
         $this->method_title = __('PayPal Advanced', 'paypal-for-woocommerce');
         $this->secure_token_id = '';
         $this->securetoken = '';
@@ -541,13 +541,14 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         }
 
         // Determine the ERRORURL,CANCELURL and SILENTPOSTURL
-        $cancelurl = add_query_arg('wc-api', 'WC_Gateway_PayPal_Advanced_AngellEYE', add_query_arg('cancel_ec_trans', 'true', $this->home_url));
+        
+        $cancelurl = add_query_arg('cancel_ec_trans', 'true', untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Advanced_AngellEYE')));
         $paypal_args['CANCELURL[' . strlen($cancelurl) . ']'] = $cancelurl;
 
-        $errorurl = add_query_arg('wc-api', 'WC_Gateway_PayPal_Advanced_AngellEYE', add_query_arg('error', 'true', $this->home_url));
+        $errorurl = add_query_arg('error', 'true', untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Advanced_AngellEYE')));
         $paypal_args['ERRORURL[' . strlen($errorurl) . ']'] = $errorurl;
 
-        $silentposturl = add_query_arg('wc-api', 'WC_Gateway_PayPal_Advanced_AngellEYE', add_query_arg('silent', 'true', $this->home_url));
+        $silentposturl = add_query_arg('silent', 'true', untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Advanced_AngellEYE')));
         $paypal_args['SILENTPOSTURL[' . strlen($silentposturl) . ']'] = $silentposturl;
         if( $this->send_items ) {
             $PaymentData = $this->calculation_angelleye->order_calculation($order_id);

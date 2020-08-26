@@ -928,7 +928,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
                 return array(
                     'result' => 'success',
-                    'redirect' => add_query_arg(array('acs' => $order_id), WC()->api_request_url('WC_Gateway_PayPal_Pro_AngellEYE', is_ssl()))
+                    'redirect' => add_query_arg(array('acs' => $order_id), untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Pro_AngellEYE', is_ssl())))
                 );
             } elseif ($this->liability_shift && 'N' !== $this->get_centinel_value("Enrolled")) {
                 wc_add_notice(apply_filters('angelleye_pc_process_payment_authentication_unavailable', __('Authentication unavailable. Please try a different payment method or card.', 'paypal-for-woocommerce')), 'error');
