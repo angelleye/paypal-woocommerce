@@ -74,7 +74,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->button_label = !empty($this->setting['button_label']) ? $this->setting['button_label'] : 'checkout';
                 $this->button_tagline = !empty($this->setting['button_tagline']) ? $this->setting['button_tagline'] : 'false';
                 $this->button_layout = !empty($this->setting['button_layout']) ? $this->setting['button_layout'] : 'horizontal';
-                $this->button_fundingicons = !empty($this->setting['button_fundingicons']) ? $this->setting['button_fundingicons'] : 'true';
                 // Product Page
                 $this->single_product_configure_settings_value = !empty($this->setting['single_product_configure_settings']) ? $this->setting['single_product_configure_settings'] : 'no';
                 $this->single_product_configure_settings = 'yes' === $this->single_product_configure_settings_value;
@@ -597,15 +596,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             if ($this->button_layout == 'vertical') {
                 $this->button_tagline = '';
-                $this->button_fundingicons = '';
             }
             if ($this->mini_cart_button_layout == 'vertical') {
                 $this->button_tagline = '';
-                $this->button_fundingicons = '';
             }
             if ($this->wsc_cart_button_layout == 'vertical') {
                 $this->button_tagline = '';
-                $this->button_fundingicons = '';
             }
 
             if ($this->testmode == false) {
@@ -672,7 +668,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'wsc_cart_button_layout' => $this->wsc_cart_button_layout,
                     'wsc_cart_button_height' => $this->wsc_cart_button_height,
                     'wsc_cart_button_label' => $this->wsc_cart_button_label,
-                    'button_fundingicons' => $this->button_fundingicons,
                     'cancel_page' => add_query_arg('pp_action', 'cancel_order', untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE'))),
                     'get_express_checkout_details' => add_query_arg(array('pp_action' => 'get_express_checkout_details', 'utm_nooverride' => 1, 'request_from' => 'JSv4'), untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE'))),
                     'is_paypal_credit_enable' => $this->is_paypal_credit_enable ? "yes" : 'no',
