@@ -753,6 +753,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'taxidtype' => '',
                 'taxid' => ''
             );
+            
+            if($_REQUEST['request_from'] == 'JSv4') {
+         
+                $SECFields['returnurl'] = 'https://www.paypal.com/checkoutnow/error';
+                $SECFields['cancelurl'] = 'https://www.paypal.com/checkoutnow/error';
+            }
+            
             $usePayPalCredit = (!empty($_GET['use_paypal_credit']) && $_GET['use_paypal_credit'] == true) ? true : false;
             if ($usePayPalCredit) {
                 $SECFields['solutiontype'] = 'Sole';
