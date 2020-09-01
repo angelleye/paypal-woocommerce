@@ -626,8 +626,17 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $smart_js_arg = array();
                 $smart_js_arg['client-id'] = $this->client_id;
                 $smart_js_arg['currency'] = get_woocommerce_currency();
-                //$smart_js_arg['merchant-id'] = 'EYQ22WLX6GNLY';
-                
+                $merchant_id_array = get_option('angelleye_express_checkout_default_pal');
+                if( !empty($merchant_id_array) && !empty($merchant_id_array['PAL'])) {
+                    $smart_js_arg['merchant-id'] = $merchant_id_array['PAL'];
+                } else {
+                    require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
+                    $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
+                    $merchant_id = $paypal_express_request->angelleye_get_paldetails($this);
+                    if($merchant_id) {
+                        $smart_js_arg['merchant-id'] = $merchant_id;
+                    }
+                }
                 if ($this->disallowed_funding_methods !== false && count($this->disallowed_funding_methods) > 0) {
                     $smart_js_arg['disable-funding'] = implode(',', $this->disallowed_funding_methods);
                 }
