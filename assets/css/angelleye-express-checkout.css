@@ -165,7 +165,6 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
 }
 .angelleye_button_single {
     clear: both;
-    float: left;
 }
 .single_add_to_cart_button.paypal_checkout_button.paypal_checkout_button_cc {
     border: none !important;

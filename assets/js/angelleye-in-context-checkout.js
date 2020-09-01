@@ -43,7 +43,7 @@ jQuery(function ($) {
     function display_smart_button_on_product_page() {
         if ($('.angelleye_button_single').length > 0) {
             $('.angelleye_button_single').empty();
-            angelleye_cart_style_object = {size: angelleye_in_content_param.button_size,
+            angelleye_cart_style_object = {
                 color: angelleye_in_content_param.button_color,
                 shape: angelleye_in_content_param.button_shape,
                 label: angelleye_in_content_param.button_label,
@@ -129,7 +129,7 @@ jQuery(function ($) {
                 angelleye_button_selector.push(".angelleye_smart_button_top");
             }
         }
-        angelleye_cart_style_object = {size: angelleye_in_content_param.button_size,
+        angelleye_cart_style_object = {
             color: angelleye_in_content_param.button_color,
             shape: angelleye_in_content_param.button_shape,
             label: angelleye_in_content_param.button_label,
@@ -204,7 +204,7 @@ jQuery(function ($) {
 
         angelleye_button_selector.push(".angelleye_smart_button_mini");
 
-        angelleye_cart_style_object = {size: angelleye_in_content_param.mini_cart_button_size,
+        angelleye_cart_style_object = {
             color: angelleye_in_content_param.button_color,
             shape: angelleye_in_content_param.button_shape,
             label: angelleye_in_content_param.mini_cart_button_label,
@@ -217,7 +217,6 @@ jQuery(function ($) {
         angelleye_button_selector.forEach(function (selector) {
             $(selector).html("");
             if (selector.length > 0 && $(selector).length > 0) {
-                angelleye_cart_style_object['size'] = 'responsive';
                 paypal.Buttons({
                     style: angelleye_cart_style_object,
                     createOrder: function () {
@@ -273,7 +272,7 @@ jQuery(function ($) {
     function display_smart_button_on_wsc_cart() {
         var angelleye_button_selector = [];
         angelleye_button_selector.push(".angelleye_smart_button_wsc");
-        angelleye_cart_style_object = {size: angelleye_in_content_param.wsc_cart_button_size,
+        angelleye_cart_style_object = {
             color: angelleye_in_content_param.button_color,
             shape: angelleye_in_content_param.button_shape,
             label: angelleye_in_content_param.wsc_cart_button_label,
@@ -340,7 +339,7 @@ jQuery(function ($) {
     function display_smart_button_checkout_bottom() {
             var angelleye_button_selector = [];
             angelleye_button_selector.push(".angelleye_smart_button_checkout_bottom");
-            angelleye_cart_style_object = {size: angelleye_in_content_param.button_size,
+            angelleye_cart_style_object = {
                 color: angelleye_in_content_param.button_color,
                 shape: angelleye_in_content_param.button_shape,
                 label: angelleye_in_content_param.button_label,

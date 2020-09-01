@@ -393,7 +393,6 @@ jQuery(document).ready(function ($) {
         } else {
             var payer_id = jQuery('#woocommerce_paypal_express_api_username').val();
         }
-        var angelleye_size = jQuery("#woocommerce_paypal_express_button_size").val();
         var angelleye_height = jQuery("#woocommerce_paypal_express_button_height").val();
         var angelleye_color = jQuery("#woocommerce_paypal_express_button_color").val();
         var angelleye_shape = jQuery("#woocommerce_paypal_express_button_shape").val();
@@ -402,9 +401,6 @@ jQuery(document).ready(function ($) {
         var angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
         if (angelleye_layout === 'vertical') {
             angelleye_tagline = '';
-            if (angelleye_size === 'small') {
-                angelleye_size = 'medium';
-            }
             if (angelleye_label === 'credit') {
                 angelleye_label = 'checkout';
             }
@@ -412,7 +408,7 @@ jQuery(document).ready(function ($) {
         if (angelleye_label === 'credit') {
             angelleye_color = 'darkblue';
         }
-        var style_object = {size: angelleye_size,
+        var style_object = {
             color: angelleye_color,
             shape: angelleye_shape,
             label: angelleye_label,
