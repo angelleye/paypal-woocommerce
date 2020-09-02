@@ -299,17 +299,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 credit_messaging_home_page_hide_show();
             }).change();
             jQuery('#woocommerce_paypal_express_credit_messaging_home_layout_type').change(function () {
-                credit_messaging_text_layout_field_parent = jQuery('.credit_messaging_text_layout_field').closest('tr');
-                credit_messaging_text_layout_field_p_tag = jQuery('.credit_messaging_text_layout_field').next("p");
-                credit_messaging_text_layout_field = jQuery('.credit_messaging_text_layout_field');
+                credit_messaging_home_text_layout_field_parent = jQuery('.credit_messaging_home_text_layout_field').closest('tr');
+                credit_messaging_home_text_layout_field_p_tag = jQuery('.credit_messaging_home_text_layout_field').next("p");
+                credit_messaging_home_text_layout_field = jQuery('.credit_messaging_home_text_layout_field');
                 credit_messaging_flex_layout_field_parent = jQuery('.credit_messaging_flex_layout_field').closest('tr');
                 credit_messaging_flex_layout_field_p_tag = jQuery('.credit_messaging_flex_layout_field').next("p");
                 credit_messaging_flex_layout_field = jQuery('.credit_messaging_flex_layout_field');
                 if (this.value === 'text') {
                     if (is_credit_messaging_home_page_enable()) {
-                        credit_messaging_text_layout_field_parent.show();
-                        credit_messaging_text_layout_field.show();
-                        credit_messaging_text_layout_field_p_tag.show();
+                        credit_messaging_home_text_layout_field_parent.show();
+                        credit_messaging_home_text_layout_field.show();
+                        credit_messaging_home_text_layout_field_p_tag.show();
                         credit_messaging_flex_layout_field_parent.hide();
                         credit_messaging_flex_layout_field_p_tag.hide();
                         credit_messaging_flex_layout_field.hide();
@@ -320,9 +320,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_flex_layout_field_p_tag.show();
                         credit_messaging_flex_layout_field.show();
                     }
-                    credit_messaging_text_layout_field_parent.hide();
-                    credit_messaging_text_layout_field.hide();
-                    credit_messaging_text_layout_field_p_tag.hide();
+                    credit_messaging_home_text_layout_field_parent.hide();
+                    credit_messaging_home_text_layout_field.hide();
+                    credit_messaging_home_text_layout_field_p_tag.hide();
                 }
                 jQuery('#woocommerce_paypal_express_credit_messaging_home_text_layout_logo_type').trigger('change');
             }).change();
@@ -1644,7 +1644,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_home_text_layout_logo_type'] = array(
             'title' => __('Logo Type', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_home_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'primary',
             'desc_tip' => true,
@@ -1653,7 +1653,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_home_text_layout_logo_position'] = array(
             'title' => __('Logo Position', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_home_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'left',
             'desc_tip' => true,
@@ -1662,7 +1662,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_home_text_layout_text_size'] = array(
             'title' => __('Text Size', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_home_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => '12',
             'desc_tip' => true,
@@ -1671,7 +1671,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_home_text_layout_text_color'] = array(
             'title' => __('Text Color', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_home_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'black',
             'desc_tip' => true,
@@ -1713,7 +1713,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_product_text_layout_logo_type'] = array(
             'title' => __('Logo Type', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_product_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'primary',
             'desc_tip' => true,
@@ -1722,7 +1722,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_product_text_layout_logo_position'] = array(
             'title' => __('Logo Position', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_product_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'left',
             'desc_tip' => true,
@@ -1731,7 +1731,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_product_text_layout_text_size'] = array(
             'title' => __('Text Size', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_product_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => '12',
             'desc_tip' => true,
@@ -1740,7 +1740,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_product_text_layout_text_color'] = array(
             'title' => __('Text Color', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_product_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'black',
             'desc_tip' => true,
@@ -1782,7 +1782,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_cart_text_layout_logo_type'] = array(
             'title' => __('Logo Type', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_cart_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'primary',
             'desc_tip' => true,
@@ -1791,7 +1791,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_cart_text_layout_logo_position'] = array(
             'title' => __('Logo Position', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_cart_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'left',
             'desc_tip' => true,
@@ -1800,7 +1800,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_cart_text_layout_text_size'] = array(
             'title' => __('Text Size', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_cart_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => '12',
             'desc_tip' => true,
@@ -1809,7 +1809,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_cart_text_layout_text_color'] = array(
             'title' => __('Text Color', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_cart_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'black',
             'desc_tip' => true,
@@ -1851,7 +1851,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_checkout_text_layout_logo_type'] = array(
             'title' => __('Logo Type', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_checkout_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'primary',
             'desc_tip' => true,
@@ -1860,7 +1860,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_checkout_text_layout_logo_position'] = array(
             'title' => __('Logo Position', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_checkout_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'left',
             'desc_tip' => true,
@@ -1869,7 +1869,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_checkout_text_layout_text_size'] = array(
             'title' => __('Text Size', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_checkout_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => '12',
             'desc_tip' => true,
@@ -1878,7 +1878,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_checkout_text_layout_text_color'] = array(
             'title' => __('Text Color', 'paypal-for-woocommerce'),
             'type' => 'select',
-            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_text_layout_field',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_checkout_text_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => 'black',
             'desc_tip' => true,
