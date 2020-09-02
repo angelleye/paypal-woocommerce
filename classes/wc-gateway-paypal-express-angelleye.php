@@ -241,6 +241,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         ?>
         <script type="text/javascript">
+            jQuery('#woocommerce_paypal_express_enabled_credit_messaging').change(function () {
+                credit_messaging_field_parent = jQuery('.credit_messaging_field').closest('tr');
+                credit_messaging_field_p_tag = jQuery('.credit_messaging_field').next("p");
+                credit_messaging_field = jQuery('.credit_messaging_field');
+                if (jQuery(this).is(':checked')) {
+                    credit_messaging_field_parent.show();
+                    credit_messaging_field.show();
+                    credit_messaging_field_p_tag.show();
+                } else {
+                    credit_messaging_field_parent.hide();
+                    credit_messaging_field.hide();
+                    credit_messaging_field_p_tag.hide();
+                }
+                jQuery('#woocommerce_paypal_express_credit_messaging_page_type').trigger('change');
+            }).change();
             var is_credit_messaging_enable = function () {
                 if (jQuery('#woocommerce_paypal_express_enabled_credit_messaging').is(':checked')) {
                     return true;
@@ -280,21 +295,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
                 jQuery('#woocommerce_paypal_express_credit_messaging_home_layout_type').trigger('change');
             };
-            jQuery('#woocommerce_paypal_express_enabled_credit_messaging').change(function () {
-                credit_messaging_field_parent = jQuery('.credit_messaging_field').closest('tr');
-                credit_messaging_field_p_tag = jQuery('.credit_messaging_field').next("p");
-                credit_messaging_field = jQuery('.credit_messaging_field');
-                if (jQuery(this).is(':checked')) {
-                    credit_messaging_field_parent.show();
-                    credit_messaging_field.show();
-                    credit_messaging_field_p_tag.show();
-                } else {
-                    credit_messaging_field_parent.hide();
-                    credit_messaging_field.hide();
-                    credit_messaging_field_p_tag.hide();
-                }
-                jQuery('#woocommerce_paypal_express_credit_messaging_page_type').trigger('change');
-            }).change();
             jQuery('#woocommerce_paypal_express_credit_messaging_page_type').change(function () {
                 credit_messaging_home_page_hide_show();
             }).change();
