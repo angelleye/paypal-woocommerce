@@ -134,7 +134,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->cancel_page_id = $this->get_option('cancel_page', '');
         $this->fraud_management_filters = $this->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
-        $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
         $this->show_on_minicart = $this->get_option('show_on_minicart', 'no');
         $this->pending_authorization_order_status = $this->get_option('pending_authorization_order_status', 'On Hold');
         $this->enable_in_context_checkout_flow = $this->get_option('enable_in_context_checkout_flow', 'yes');
@@ -171,7 +170,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->page_style = $this->get_option('page_style', '');
         $this->review_button_label = $this->get_option('review_button_label', __('Place Order', 'paypal-for-woocommerce'));
         $this->checkout_button_label = $this->get_option('checkout_button_label', __('Proceed to PayPal', 'paypal-for-woocommerce'));
-        add_action('woocommerce_update_options_payment_gateways_paypal_express', array($this, 'angelleye_update_marketing_solution'), 10);
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'), 999);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
         if (!has_action('woocommerce_api_' . strtolower('WC_Gateway_PayPal_Express_AngellEYE'))) {
@@ -241,89 +239,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             $display_disable_terms = 'no';
         }
-        $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
-        $report_home = 'https://business.paypal.com/merchantdata/reportHome?cid=' . $this->paypal_marketing_solutions_cid_production;
         ?>
-        <script>
-            function display_notice_and_disable_marketing_solution() {
-                jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('disabled', 'disabled');
-                jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('readonly', 'readonly');
-                jQuery('.display_msg_when_activated').html('');
-                jQuery('.display_msg_when_activated').html('<span class="pms-red">PayPal Marketing Solutions only available for Live mode.<br/><br/></span>');
-            }
-        </script>
-        <?php if ($this->is_us == true) { ?>
-            <div id="more-info-popup" style="display:none;">
-                <iframe width="889" height="554" src="https://www.youtube.com/embed/hXWFn8_jUDc" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
-            </div>
-
-            <script src='https://www.paypalobjects.com/muse/partners/muse-button-bundle.js'></script>
-            <script>
-
-            <?php if (!empty($this->paypal_marketing_solutions_cid_production)) { ?>
-                var muse_options_production = {
-                    onContainerCreate: callback_onsuccess_production,
-                    url: '<?php echo $this->home_url; ?>',
-                    parnter_name: 'Angell EYE',
-                    bn_code: 'AngellEYE_SP_MarketingSolutions',
-                    promotionsEnabled: 'True',
-                    env: 'production',
-                    cid: '<?php echo $this->paypal_marketing_solutions_cid_production; ?>'
-                }
-            <?php } ?>
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_cid_production').closest('tr').hide();
-            jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('tr').find('th').hide();
-
-            <?php
-            if (!empty($this->paypal_marketing_solutions_cid_production)) {
-                ?> jQuery('#pms-paypalInsightsLink').show();
-                jQuery('.display_when_deactivated').hide();
-                jQuery('.pms-view-more').hide();
-
-                jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').css({'display': 'none'});
-                <?php
-            } else {
-                ?>
-                display_notice_and_disable_marketing_solution();
-                jQuery('#woocommerce_paypal_express_paypal_marketing_solutions_enabled').closest('table').addClass('marketing_solutions_full_width');
-                jQuery('#pms-paypalInsightsLink').hide();
-                jQuery('#angelleye_wp_marketing_solutions_button_production').hide();
-                <?php
-            }
-            ?>
-
-            jQuery('.view-paypal-insight-result').on('click', function (event) {
-                event.preventDefault();
-                var win = window.open('<?php echo $report_home; ?>', '_blank');
-                win.focus();
-            });
-            <?php if (!empty($this->paypal_marketing_solutions_cid_production)) { ?>
-                function callback_onsuccess_production(containerId) {
-                    muse_options_production.cid = containerId;
-                }
-                MUSEButton('angelleye_wp_marketing_solutions_button_production', muse_options_production);
-            <?php } ?>
-            </script>
-        <?php } ?>
         <script type="text/javascript">
-            jQuery("#woocommerce_paypal_express_testmode, #woocommerce_paypal_express_api_username, #woocommerce_paypal_express_api_password, #woocommerce_paypal_express_api_signature").on('keyup change keypress', function () {
-                if (jQuery(this).is(':checked') === false) {
-                    var api_username = (jQuery('#woocommerce_paypal_express_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_username').val() : jQuery('#woocommerce_paypal_express_api_username').text();
-                    var api_password = (jQuery('#woocommerce_paypal_express_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_password').val() : jQuery('#woocommerce_paypal_express_api_password').text();
-                    var api_signature = (jQuery('#woocommerce_paypal_express_api_signature').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_signature').val() : jQuery('#woocommerce_paypal_express_api_signature').text();
-                    if (api_username.length > 0 && api_password.length > 0 && api_signature.length > 0) {
-                        jQuery('.display_msg_when_activated').html('');
-                        jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('disabled', '');
-                        jQuery("#woocommerce_paypal_express_paypal_marketing_solutions_enabled").prop('readonly', '');
-                    } else {
-                        display_notice_and_disable_marketing_solution();
-                    }
-                } else {
-                    display_notice_and_disable_marketing_solution();
-                }
-            }).change();
-
-
             jQuery("#woocommerce_paypal_express_button_layout").change(function () {
                 var angelleye_button_tagline = jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
                 if (this.value === 'vertical') {
@@ -626,7 +543,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $cancel_page[$p->ID] = $p->post_title;
         }
         $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
-        $this->paypal_marketing_solutions_cid_production = $this->get_option('paypal_marketing_solutions_cid_production', '');
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -1594,68 +1510,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => $this->disallowed_funding_methods_array,
             );
         }
-        if ($this->is_us == true) {
-            $this->form_fields['paypal_marketing_solutions'] = array(
-                'title' => __('<hr></hr>PayPal Marketing Solutions', 'paypal-for-woocommerce'),
-                'type' => 'title',
-                'description' => __('<div id="pms-muse-container">
-				<div class="pms-muse-left-container">
-					<div class="pms-muse-description">
-						<p>' . __('Get free business insights into your customers’ shopping habits; like how often they shop, how much they spend, and how they interact with your website.', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p>' . __('Help drive sales by displaying relevant PayPal offers and promotional messages to your customers on your website. Manage Settings to choose which messages, if any, you want to show, as well as how and where these messages appear on your website.', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p class="display_when_deactivated">' . __('All FREE to you as a valued PayPal merchant. Simply ‘Enable’ now!', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p class="display_when_deactivated">' . __('By enabling, you acknowledge that you have the right to use the PayPal Insights tool and to collect information from shoppers on your site.  See <a target="_blank" href="https://www.paypal.com/webapps/mpp/ua/useragreement-full">terms and conditions</a>.', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p class="display_when_deactivated">' . __('By enabling, you acknowledge that you have agreed to, and accepted the terms of, the PayPal User Agreement, including the <a target="_blank" href="https://www.paypal.com/webapps/mpp/ua/useragreement-full">terms and conditions</a> thereof applicable to the PayPal Advertising Program.', 'wp-paypal-marketing-solutions') . '</p>
-                                                <p class="display_msg_when_activated"></p>
-					</div>
-                                        <div class="wrap">
-                                            <div id="angelleye_wp_marketing_solutions_button_production"></div>
-                                            <div id="pms-paypalInsightsLink"><button class="paypal-px-btn view-paypal-insight-result">' . __('View Shopper Insights', '') . '</button></div>
-                                        </div>
-				</div>
-				<div class="pms-muse-right-container">
-					<div>
-                                            <img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse1.png"/>
-                                            <div><p>' . __('Merchants like you have increased their average order value (AOV) by <b>up to 68%*</b>.', 'wp-paypal-marketing-solutions') . '</p></div>
-					</div>
-					<div>
-                                            <img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse2.png"/>
-                                            <div><p>' . __('Join <b>20,000 merchants</b> who are promoting financing options on their site to boost sales.', 'wp-paypal-marketing-solutions') . '</p></div>
-					</div>
-					<div>
-                                            <img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/muse3.png"/>
-                                            <div><p>' . __('<b>Get insights</b> about your visitors and how they shop on your site.', 'wp-paypal-marketing-solutions') . '</p></div>
-					</div>
-                                        <div class="wrap pms-center-moreinfo">
-                                            <div>
-                                                <div><a href="#TB_inline?&width=889&height=558&inlineId=more-info-popup" class="thickbox"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
-                                            </div>
-                                        </div>
-                                </div>
-                         </div>
-                ', 'paypal-for-woocommerce'),
-            );
-            $this->form_fields['paypal_marketing_solutions_enabled'] = array(
-                'title' => __('', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => '&nbsp;&nbsp;Enable PayPal Marketing Solutions',
-                'default' => 'no',
-                'class' => 'checkbox',
-                'desc_tip' => true,
-                'description' => __('This enables PayPal Marketing Solutions for valuable customer insights.', ''),
-            );
-            $this->form_fields['paypal_marketing_solutions_cid_production'] = array(
-                'type' => 'hidden',
-                'default' => '',
-            );
-            $this->form_fields['paypal_marketing_solutions_details_note'] = array(
-                'type' => 'title',
-                'default' => '',
-                'description' => '<p class="font11">' . __("* As reported in Nielsen’s PayPal Credit Average Order Value Study for activity occurring from April 2015 to March 2016 (small merchants) and October 2015 to March 2016 (midsize merchants), which compared PayPal Credit transactions to credit and debit card transactions on websites that offer PayPal Credit as a payment option or within the PayPal Wallet. Nielsen measured 284890 transactions across 27 mid and small merchants. Copyright Nielsen 2016.", 'paypal-for-woocommerce') . '</p><hr>',
-            );
-        }
-
-
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
     }
 
@@ -2392,74 +2246,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         }
-    }
-
-    public function angelleye_update_marketing_solution() {
-        if (!empty($_POST['reset']) && 'reset' == $_POST['reset']) {
-            unset($_POST['reset']);
-            return false;
-        }
-        if (!empty($_POST['woocommerce_paypal_express_paypal_marketing_solutions_enabled']) && $_POST['woocommerce_paypal_express_paypal_marketing_solutions_enabled'] == true) {
-            if (empty($_POST['woocommerce_paypal_express_testmode'])) {
-                if ($_POST['woocommerce_paypal_express_api_username'] != $this->api_username || empty($this->paypal_marketing_solutions_cid_production)) {
-                    $cid_production = '';
-                    $result = array();
-                    $website_name = get_bloginfo('name');
-                    $website_url = get_bloginfo('url');
-                    $website_url = str_ireplace('www.', '', parse_url($website_url, PHP_URL_HOST));
-                    $post = '{"owner_id":"woocommerce_container","owner_type":"PAYPAL","application_context":{"terms_accepted":true,"partner_name":"' . $website_name . '"},"name":"woocommerce_container","description":"Container created from PayPal for WooCommerce plugin","url":"' . $website_url . '","published":true,"tags":[{"tag_definition_id":"credit","enabled":true,"configuration":[{"id":"analytics-id","value":"' . wc_clean($_POST['woocommerce_paypal_express_api_username']) . '-1"},{"id":"variant","value":"slide-up"},{"id":"flow","value":"credit"},{"id":"mobile-flow","value":"credit"},{"id":"is-mobile-enabled","value":"true"},{"id":"is-desktop-enabled","value":"true"},{"id":"limit","value":"3"}]}, {"tag_definition_id": "analytics", "enabled": true, "configuration": [{"id": "analytics-id", "value": "' . wc_clean($_POST['woocommerce_paypal_express_api_username']) . '-1"}]}]}';
-                    $headers = array(
-                        'Accept: application/json',
-                        'Content-Type: application/json',
-                        'Content-Length: ' . strlen($post),
-                        "x_nvp_pwd: " . wc_clean($_POST['woocommerce_paypal_express_api_password']),
-                        "x_nvp_signature: " . wc_clean($_POST['woocommerce_paypal_express_api_signature']),
-                        "x_nvp_user: " . wc_clean($_POST['woocommerce_paypal_express_api_username'])
-                    );
-                    $result_response = $this->angelleye_paypal_marketing_solutions_request($post, $headers);
-                    if (!empty($result_response['response'])) {
-                        self::$log_enabled = true;
-                        self::log('PayPal Marketing Solution request: ' . print_r($post, true), 'info', 'paypal_marketing_solutions');
-                        $Response = json_decode($result_response['response']);
-                        self::log('PayPal Marketing Solution response: ' . json_encode($Response), 'info', 'paypal_marketing_solutions');
-                        if (!empty($result_response['httpCode']) && $result_response['httpCode'] == 400) {
-                            if (!empty($Response->details[0]->issue) && 'EXISTING_CONTAINER' == $Response->details[0]->issue) {
-                                $cid_production = !empty($Response->details[0]->value) ? $Response->details[0]->value : '';
-                                $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = $cid_production;
-                            } else {
-                                unset($_POST['woocommerce_paypal_express_paypal_marketing_solutions_enabled']);
-                                $result['error_msg'] = !empty($Response->message) ? $Response->message : '';
-                                echo '<div class="notice error"><p>' . $result['error_msg'] . '</p></div>';
-                            }
-                        } elseif (!empty($result_response['httpCode']) && $result_response['httpCode'] == 201) {
-                            $result['success'] = true;
-                            $link = $Response->links[0];
-                            $e = explode('/', $link->href);
-                            $_POST['woocommerce_paypal_express_paypal_marketing_solutions_cid_production'] = end($e);
-                        }
-                    } else {
-                        unset($_POST['woocommerce_paypal_express_paypal_marketing_solutions_enabled']);
-                    }
-                }
-            }
-        }
-    }
-
-    public function angelleye_paypal_marketing_solutions_request($post, $headers) {
-        $result = array();
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_VERBOSE, 1);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_URL, 'https://api.paypal.com/proxy/v1/offers/containers');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_SSLVERSION, 6);
-        $result['response'] = curl_exec($curl);
-        $result['httpCode'] = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-        return $result;
     }
 
     public function angelleye_paypal_express_checkout_redirect_to_paypal($data, $errors = null) {

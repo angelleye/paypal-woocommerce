@@ -149,25 +149,6 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                                     </fieldset>
                                 </td>
                             </tr>
-                            <?php 
-                            global $wpdb;
-                            $change_proceed_checkout_button_text = get_option('change_proceed_checkout_button_text');
-                            $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", 'woocommerce_paypal_express_settings'));
-                            $this->setting = isset($row->option_value) ? maybe_unserialize($row->option_value) : array();
-                            $this->paypal_marketing_solutions_cid_production = !empty($this->setting['paypal_marketing_solutions_cid_production']) ? $this->setting['paypal_marketing_solutions_cid_production'] : '';
-                            if( !empty($this->paypal_marketing_solutions_cid_production) ) {
-                            ?>
-                            <tr valign="top" class="">
-                                <th class="titledesc" scope="row"><?php echo __('PayPal Marketing Solutions', 'paypal-for-woocommerce'); ?></th>
-                                <td class="forminp forminp-checkbox">
-                                    <fieldset>
-                                        <label for="reset_paypal_marketing_solutions">
-                                            <?php echo '<p><a href="'.esc_url(add_query_arg("reset_paypal_marketing_solutions",1)).'" class="button reset_paypal_marketing_solutions">Reset PayPal Marketing Solutions</a></p>'; ?>					
-                                        </label> 														
-                                    </fieldset>
-                                </td>
-                            </tr>
-                            <?php } ?>
                             <tr valign="top" class="">
                                 <th class="titledesc" scope="row"><?php echo __('Checkout Button Text', 'paypal-for-woocommerce'); ?></th>
                                 <td class="forminp forminp-checkbox">
