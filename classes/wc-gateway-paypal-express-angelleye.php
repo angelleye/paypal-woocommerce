@@ -1695,6 +1695,213 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'desc_tip' => true,
             'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
         );
+        $this->form_fields['credit_messaging_product'] = array(
+            'title' => __('Product Page Settings', 'paypal-for-woocommerce'),
+            'type' => 'title',
+            'class' => 'credit_messaging_field credit_messaging_product_base_field',
+            'description' => __('Enable the Product Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Product page.', 'paypal-for-woocommerce'),
+        );
+        $this->form_fields['credit_messaging_product_layout_type'] = array(
+            'title' => __('Layout Type', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'text',
+            'desc_tip' => true,
+            'options' => array('text' => __('Text Layout', 'paypal-for-woocommerce'), 'flex' => __('Flex Layout', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_product_text_layout_logo_type'] = array(
+            'title' => __('Logo Type', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'primary',
+            'desc_tip' => true,
+            'options' => array('primary' => __('Primary', 'paypal-for-woocommerce'), 'alternative' => __('Alternative', 'paypal-for-woocommerce'), 'inline' => __('Inline', 'paypal-for-woocommerce'), 'none' => __('None', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_product_text_layout_logo_position'] = array(
+            'title' => __('Logo Position', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'left',
+            'desc_tip' => true,
+            'options' => array('left' => __('Left', 'paypal-for-woocommerce'), 'right' => __('Right', 'paypal-for-woocommerce'), 'top' => __('Top', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_product_text_layout_text_size'] = array(
+            'title' => __('Text Size', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => '12',
+            'desc_tip' => true,
+            'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_product_text_layout_text_color'] = array(
+            'title' => __('Text Color', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'black',
+            'desc_tip' => true,
+            'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_product_flex_layout_color'] = array(
+            'title' => __('Color', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_flex_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'blue',
+            'desc_tip' => true,
+            'options' => array('blue' => __('Blue', 'paypal-for-woocommerce'), 'black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'white-no-border' => __('White (No Border)', 'paypal-for-woocommerce'), 'gray' => __('Gray', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_product_flex_layout_ratio'] = array(
+            'title' => __('Ratio', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_product_field credit_messaging_flex_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => '1x1',
+            'desc_tip' => true,
+            'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_cart'] = array(
+            'title' => __('Cart Page Settings', 'paypal-for-woocommerce'),
+            'type' => 'title',
+            'class' => 'credit_messaging_field credit_messaging_cart_base_field',
+            'description' => __('Enable the Cart Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Cart page.', 'paypal-for-woocommerce'),
+        );
+        $this->form_fields['credit_messaging_cart_layout_type'] = array(
+            'title' => __('Layout Type', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'text',
+            'desc_tip' => true,
+            'options' => array('text' => __('Text Layout', 'paypal-for-woocommerce'), 'flex' => __('Flex Layout', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_cart_text_layout_logo_type'] = array(
+            'title' => __('Logo Type', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'primary',
+            'desc_tip' => true,
+            'options' => array('primary' => __('Primary', 'paypal-for-woocommerce'), 'alternative' => __('Alternative', 'paypal-for-woocommerce'), 'inline' => __('Inline', 'paypal-for-woocommerce'), 'none' => __('None', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_cart_text_layout_logo_position'] = array(
+            'title' => __('Logo Position', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'left',
+            'desc_tip' => true,
+            'options' => array('left' => __('Left', 'paypal-for-woocommerce'), 'right' => __('Right', 'paypal-for-woocommerce'), 'top' => __('Top', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_cart_text_layout_text_size'] = array(
+            'title' => __('Text Size', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => '12',
+            'desc_tip' => true,
+            'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_cart_text_layout_text_color'] = array(
+            'title' => __('Text Color', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'black',
+            'desc_tip' => true,
+            'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_cart_flex_layout_color'] = array(
+            'title' => __('Color', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_flex_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'blue',
+            'desc_tip' => true,
+            'options' => array('blue' => __('Blue', 'paypal-for-woocommerce'), 'black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'white-no-border' => __('White (No Border)', 'paypal-for-woocommerce'), 'gray' => __('Gray', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_cart_flex_layout_ratio'] = array(
+            'title' => __('Ratio', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_cart_field credit_messaging_flex_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => '1x1',
+            'desc_tip' => true,
+            'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_checkout'] = array(
+            'title' => __('Checkout Page Settings', 'paypal-for-woocommerce'),
+            'type' => 'title',
+            'class' => 'credit_messaging_field credit_messaging_checkout_base_field',
+            'description' => __('Enable the Checkout Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Checkout page.', 'paypal-for-woocommerce'),
+        );
+        $this->form_fields['credit_messaging_checkout_layout_type'] = array(
+            'title' => __('Layout Type', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'text',
+            'desc_tip' => true,
+            'options' => array('text' => __('Text Layout', 'paypal-for-woocommerce'), 'flex' => __('Flex Layout', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_checkout_text_layout_logo_type'] = array(
+            'title' => __('Logo Type', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'primary',
+            'desc_tip' => true,
+            'options' => array('primary' => __('Primary', 'paypal-for-woocommerce'), 'alternative' => __('Alternative', 'paypal-for-woocommerce'), 'inline' => __('Inline', 'paypal-for-woocommerce'), 'none' => __('None', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_checkout_text_layout_logo_position'] = array(
+            'title' => __('Logo Position', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'left',
+            'desc_tip' => true,
+            'options' => array('left' => __('Left', 'paypal-for-woocommerce'), 'right' => __('Right', 'paypal-for-woocommerce'), 'top' => __('Top', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_checkout_text_layout_text_size'] = array(
+            'title' => __('Text Size', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => '12',
+            'desc_tip' => true,
+            'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_checkout_text_layout_text_color'] = array(
+            'title' => __('Text Color', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'black',
+            'desc_tip' => true,
+            'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_checkout_flex_layout_color'] = array(
+            'title' => __('Color', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_flex_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'blue',
+            'desc_tip' => true,
+            'options' => array('blue' => __('Blue', 'paypal-for-woocommerce'), 'black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'white-no-border' => __('White (No Border)', 'paypal-for-woocommerce'), 'gray' => __('Gray', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_checkout_flex_layout_ratio'] = array(
+            'title' => __('Ratio', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_checkout_field credit_messaging_flex_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => '1x1',
+            'desc_tip' => true,
+            'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
+        );
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
     }
 
