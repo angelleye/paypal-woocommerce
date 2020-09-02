@@ -1143,6 +1143,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'vertical' => __('Vertical', 'paypal-for-woocommerce')
                 ),
             ),
+            'button_size' => array(
+                'title' => __('Button Size', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                'default' => 'small',
+                'desc_tip' => true,
+                'options' => array(
+                    'small' => __('Small', 'paypal-for-woocommerce'),
+                    'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'large' => __('Large', 'paypal-for-woocommerce'),
+                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
+                ),
+            ),
             'button_height' => array(
                 'title' => __('Button Height', 'paypal-for-woocommerce'),
                 'type' => 'select',
@@ -1241,6 +1255,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'vertical' => __('Vertical', 'paypal-for-woocommerce')
                 ),
             ),
+            'single_product_button_size' => array(
+                'title' => __('Button Size', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                'default' => 'small',
+                'desc_tip' => true,
+                'options' => array(
+                    'small' => __('Small', 'paypal-for-woocommerce'),
+                    'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'large' => __('Large', 'paypal-for-woocommerce'),
+                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
+                ),
+            ),
             'single_product_button_height' => array(
                 'title' => __('Button Height', 'paypal-for-woocommerce'),
                 'type' => 'select',
@@ -1296,6 +1324,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     'vertical' => __('Vertical', 'paypal-for-woocommerce')
                 ),
             ),
+            'cart_button_size' => array(
+                'title' => __('Button Size', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                'default' => 'small',
+                'desc_tip' => true,
+                'options' => array(
+                    'small' => __('Small', 'paypal-for-woocommerce'),
+                    'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'large' => __('Large', 'paypal-for-woocommerce'),
+                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
+                ),
+            ),
             'cart_button_height' => array(
                 'title' => __('Button Height', 'paypal-for-woocommerce'),
                 'type' => 'select',
@@ -1349,6 +1391,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => array(
                     'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
                     'vertical' => __('Vertical', 'paypal-for-woocommerce')
+                ),
+            ),
+            'mini_cart_button_size' => array(
+                'title' => __('Button Size', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                'default' => 'small',
+                'desc_tip' => true,
+                'options' => array(
+                    'small' => __('Small', 'paypal-for-woocommerce'),
+                    'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'large' => __('Large', 'paypal-for-woocommerce'),
+                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
                 ),
             ),
             'mini_cart_button_height' => array(
@@ -1413,6 +1469,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => array(
                     'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
                     'vertical' => __('Vertical', 'paypal-for-woocommerce')
+                ),
+            ),
+            'checkout_page_button_size' => array(
+                'title' => __('Button Size', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                'default' => 'small',
+                'desc_tip' => true,
+                'options' => array(
+                    'small' => __('Small', 'paypal-for-woocommerce'),
+                    'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'large' => __('Large', 'paypal-for-woocommerce'),
+                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
                 ),
             ),
             'checkout_page_button_height' => array(
@@ -1480,6 +1550,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => array(
                     'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
                     'vertical' => __('Vertical', 'paypal-for-woocommerce')
+                ),
+            );
+            $this->form_fields['wsc_cart_button_size'] = array(
+                'title' => __('Button Size', 'paypal-for-woocommerce'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                'default' => 'small',
+                'desc_tip' => true,
+                'options' => array(
+                    'small' => __('Small', 'paypal-for-woocommerce'),
+                    'medium' => __('Medium', 'paypal-for-woocommerce'),
+                    'large' => __('Large', 'paypal-for-woocommerce'),
+                    'responsive' => __('Responsive', 'paypal-for-woocommerce'),
                 ),
             );
             $this->form_fields['wsc_cart_button_height'] = array(
