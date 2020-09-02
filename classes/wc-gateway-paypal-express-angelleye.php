@@ -302,13 +302,24 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 credit_messaging_text_layout_field_parent = jQuery('.credit_messaging_text_layout_field').closest('tr');
                 credit_messaging_text_layout_field_p_tag = jQuery('.credit_messaging_text_layout_field').next("p");
                 credit_messaging_text_layout_field = jQuery('.credit_messaging_text_layout_field');
+                credit_messaging_flex_layout_field_parent = jQuery('.credit_messaging_flex_layout_field').closest('tr');
+                credit_messaging_flex_layout_field_p_tag = jQuery('.credit_messaging_flex_layout_field').next("p");
+                credit_messaging_flex_layout_field = jQuery('.credit_messaging_flex_layout_field');
                 if (this.value === 'text') {
                     if (is_credit_messaging_home_page_enable()) {
                         credit_messaging_text_layout_field_parent.show();
                         credit_messaging_text_layout_field.show();
                         credit_messaging_text_layout_field_p_tag.show();
+                        credit_messaging_flex_layout_field_parent.hide();
+                        credit_messaging_flex_layout_field_p_tag.hide();
+                        credit_messaging_flex_layout_field.hide();
                     }
                 } else {
+                    if (is_credit_messaging_home_page_enable()) {
+                        credit_messaging_flex_layout_field_parent.show();
+                        credit_messaging_flex_layout_field_p_tag.show();
+                        credit_messaging_flex_layout_field.show();
+                    }
                     credit_messaging_text_layout_field_parent.hide();
                     credit_messaging_text_layout_field.hide();
                     credit_messaging_text_layout_field_p_tag.hide();
@@ -317,7 +328,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }).change();
             jQuery('#woocommerce_paypal_express_credit_messaging_home_text_layout_logo_type').change(function () {
                 credit_messaging_home_text_layout_logo_position = jQuery('#woocommerce_paypal_express_credit_messaging_home_text_layout_logo_position').closest('tr');
-                if (this.value === 'primary' || this.value === 'alternative') {
+                if (jQuery('#woocommerce_paypal_express_credit_messaging_home_layout_type').val() === 'text' && (this.value === 'primary' || this.value === 'alternative')) {
                     if (is_credit_messaging_home_page_enable()) {
                         credit_messaging_home_text_layout_logo_position.show();
                     }
@@ -1647,6 +1658,42 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'default' => 'left',
             'desc_tip' => true,
             'options' => array('left' => __('Left', 'paypal-for-woocommerce'), 'right' => __('Right', 'paypal-for-woocommerce'), 'top' => __('Top', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_home_text_layout_text_size'] = array(
+            'title' => __('Text Size', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => '12',
+            'desc_tip' => true,
+            'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_home_text_layout_text_color'] = array(
+            'title' => __('Text Color', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_text_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'black',
+            'desc_tip' => true,
+            'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_home_flex_layout_color'] = array(
+            'title' => __('Color', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_flex_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => 'blue',
+            'desc_tip' => true,
+            'options' => array('blue' => __('Blue', 'paypal-for-woocommerce'), 'black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'white-no-border' => __('White (No Border)', 'paypal-for-woocommerce'), 'gray' => __('Gray', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_home_flex_layout_ratio'] = array(
+            'title' => __('Ratio', 'paypal-for-woocommerce'),
+            'type' => 'select',
+            'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_flex_layout_field',
+            'description' => __('', 'paypal-for-woocommerce'),
+            'default' => '1x1',
+            'desc_tip' => true,
+            'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
         );
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
     }
