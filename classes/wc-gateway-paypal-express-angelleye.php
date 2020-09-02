@@ -241,6 +241,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         ?>
         <script type="text/javascript">
+            jQuery('#woocommerce_paypal_express_enabled_credit_messaging').change(function () {
+                credit_messaging_field_parent = jQuery('.credit_messaging_field').closest('tr');
+                credit_messaging_field_p_tag = jQuery('.credit_messaging_field').next("p");
+                credit_messaging_field = jQuery('.credit_messaging_field');
+                if (jQuery(this).is(':checked')) {
+                    credit_messaging_field_parent.show();
+                    credit_messaging_field.show();
+                    credit_messaging_field_p_tag.show();
+                } else {
+                    credit_messaging_field_parent.hide();
+                    credit_messaging_field.hide();
+                    credit_messaging_field_p_tag.hide();
+                }
+            }).change();
             jQuery("#woocommerce_paypal_express_button_layout").change(function () {
                 var angelleye_button_tagline = jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
                 if (this.value === 'vertical') {
@@ -1511,13 +1525,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
         }
         $this->form_fields['credit_messaging'] = array(
-            'title' => __('PayPal Credit messaging', 'paypal-for-woocommerce'),
+            'title' => __('PayPal Credit messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
             'type' => 'title',
-            'description' => __('To add PayPal Credit messaging to your site.', 'paypal-for-woocommerce'),
+            'description' => __('To add PayPal Credit messaging - Buy Now Pay Later to your site.', 'paypal-for-woocommerce'),
         );
         $this->form_fields['enabled_credit_messaging'] = array(
             'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
-            'label' => __('Enable PayPal Credit messaging', 'paypal-for-woocommerce'),
+            'label' => __('Enable PayPal Credit messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
             'type' => 'checkbox',
             'description' => '',
             'default' => 'yes'
@@ -1525,11 +1539,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->form_fields['credit_messaging_page_type'] = array(
             'title' => __('Page Type', 'paypal-for-woocommerce'),
             'type' => 'multiselect',
-            'class' => 'wc-enhanced-select',
+            'class' => 'wc-enhanced-select credit_messaging_field',
             'description' => __('', 'paypal-for-woocommerce'),
             'default' => array('home', 'product', 'cart', 'checkout'),
             'desc_tip' => true,
             'options' => array('home' => __('Home', 'paypal-for-woocommerce'), 'product' => __('Product', 'paypal-for-woocommerce'), 'cart' => __('Cart', 'paypal-for-woocommerce'), 'checkout' => __('Checkout', 'paypal-for-woocommerce'))
+        );
+        $this->form_fields['credit_messaging_home'] = array(
+            'title' => __('Home Page Settings', 'paypal-for-woocommerce'),
+            'type' => 'title',
+            'class' => 'credit_messaging_field credit_messaging_home_field',
+            'description' => __('Enable the Home Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Home page.', 'paypal-for-woocommerce'),
         );
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
     }
