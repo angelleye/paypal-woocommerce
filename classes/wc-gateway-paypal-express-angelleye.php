@@ -284,7 +284,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (is_credit_messaging_enable() === false) {
                     return false;
                 }
-                if (jQuery.inArray('home', jQuery('#woocommerce_paypal_express_credit_messaging_page_type').val()) === -1) {
+                if (jQuery.inArray('product', jQuery('#woocommerce_paypal_express_credit_messaging_page_type').val()) === -1) {
                     return false;
                 }
                 return true;
@@ -317,7 +317,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (is_credit_messaging_enable() === false) {
                     return false;
                 }
-                if (jQuery.inArray('home', jQuery('#woocommerce_paypal_express_credit_messaging_page_type').val()) === -1) {
+                if (jQuery.inArray('cart', jQuery('#woocommerce_paypal_express_credit_messaging_page_type').val()) === -1) {
                     return false;
                 }
                 return true;
@@ -350,7 +350,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (is_credit_messaging_enable() === false) {
                     return false;
                 }
-                if (jQuery.inArray('home', jQuery('#woocommerce_paypal_express_credit_messaging_page_type').val()) === -1) {
+                if (jQuery.inArray('checkout', jQuery('#woocommerce_paypal_express_credit_messaging_page_type').val()) === -1) {
                     return false;
                 }
                 return true;
