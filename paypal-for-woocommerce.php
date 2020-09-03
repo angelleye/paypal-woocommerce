@@ -395,22 +395,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             wp_localize_script( 'angelleye_admin', 'angelleye_admin', $translation_array );
             if( !empty($_GET['tab']) && !empty($_GET['section']) && $_GET['tab'] == 'checkout' && $_GET['section'] == 'paypal_express') {
                 $smart_js_arg = array();
-                $merchant_id_array = get_option('angelleye_express_checkout_default_pal');
-                if( !empty($merchant_id_array) && !empty($merchant_id_array['PAL'])) {
-                    //$smart_js_arg['merchant-id'] = $merchant_id_array['PAL'];
-                } else {
-                    require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
-                    $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
-                    $merchant_id = $paypal_express_request->angelleye_get_paldetails($this);
-                    if($merchant_id) {
-                       // $smart_js_arg['merchant-id'] = $merchant_id;
-                    }
-                }
                 $smart_js_arg['components'] = "buttons,messages";
-                $smart_js_arg['client-id'] = 'sb';
                 $smart_js_arg['currency'] = get_woocommerce_currency();
                 if ($pp_settings['testmode']=='yes') {
                     $smart_js_arg['buyer-country'] = WC()->countries->get_base_country();
+                    $smart_js_arg['client-id'] = 'sb';
+                } else {
+                    $merchant_id_array = get_option('angelleye_express_checkout_default_pal');
+                    if( !empty($merchant_id_array) && !empty($merchant_id_array['PAL'])) {
+                        $smart_js_arg['merchant-id'] = $merchant_id_array['PAL'];
+                    } 
+                    $smart_js_arg['client-id'] = 'AeO-lMwbXF_Qk0ZLogCGxumMVF0APN90MpzqB4t9AS6pzsQkUvA2aM6QFHBRica8TaSRY9cagsGetkrb';
                 }
                 wp_enqueue_script('admin-checkout-js', add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'), array(), null, true);
                 
