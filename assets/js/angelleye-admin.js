@@ -418,8 +418,12 @@ jQuery(document).ready(function ($) {
         if (angelleye_height !== '') {
             style_object['height'] = parseInt(angelleye_height);
         }
-        paypal.Buttons({
-            style: style_object
-        }).render('.display_smart_button_previews');
+        if (typeof paypal !== 'undefined') {
+            paypal.Buttons({
+                style: style_object
+            }).render('.display_smart_button_previews');
+        }
+
+
     }
 });

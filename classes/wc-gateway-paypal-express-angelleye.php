@@ -241,6 +241,120 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         ?>
         <script type="text/javascript">
+            var home_page_credit_messaging_preview = function () {
+                var home_style_object = {};
+                home_style_object['layout'] = jQuery('#woocommerce_paypal_express_credit_messaging_home_layout_type').val();
+                if (home_style_object['layout'] === 'text') {
+                    home_style_object['logo'] = {};
+                    home_style_object['logo']['type'] = jQuery('#woocommerce_paypal_express_credit_messaging_home_text_layout_logo_type').val();
+                    if (home_style_object['logo']['type'] === 'primary' || home_style_object['logo']['type'] === 'alternative') {
+                        home_style_object['logo']['position'] = jQuery('#woocommerce_paypal_express_credit_messaging_home_text_layout_logo_position').val();
+                    }
+                    home_style_object['text'] = {};
+                    home_style_object['text']['size'] = parseInt(jQuery('#woocommerce_paypal_express_credit_messaging_home_text_layout_text_size').val());
+                    home_style_object['text']['color'] = jQuery('#woocommerce_paypal_express_credit_messaging_home_text_layout_text_color').val();
+                } else {
+                    home_style_object['color'] = jQuery('#woocommerce_paypal_express_credit_messaging_home_flex_layout_color').val();
+                    home_style_object['ratio'] = jQuery('#woocommerce_paypal_express_credit_messaging_home_flex_layout_ratio').val();
+                }
+                if (typeof paypal !== 'undefined' && is_credit_messaging_home_page_enable()) {
+                    paypal.Messages({
+                        amount: 500,
+                        placement: 'home',
+                        style: home_style_object
+                    }).render('.pp_message_home');
+                }
+            };
+            var product_page_credit_messaging_preview = function () {
+                var product_style_object = {};
+                product_style_object['layout'] = jQuery('#woocommerce_paypal_express_credit_messaging_product_layout_type').val();
+                if (product_style_object['layout'] === 'text') {
+                    product_style_object['logo'] = {};
+                    product_style_object['logo']['type'] = jQuery('#woocommerce_paypal_express_credit_messaging_product_text_layout_logo_type').val();
+                    if (product_style_object['logo']['type'] === 'primary' || product_style_object['logo']['type'] === 'alternative') {
+                        product_style_object['logo']['position'] = jQuery('#woocommerce_paypal_express_credit_messaging_product_text_layout_logo_position').val();
+                    }
+                    product_style_object['text'] = {};
+                    product_style_object['text']['size'] = parseInt(jQuery('#woocommerce_paypal_express_credit_messaging_product_text_layout_text_size').val());
+                    product_style_object['text']['color'] = jQuery('#woocommerce_paypal_express_credit_messaging_product_text_layout_text_color').val();
+                } else {
+                    product_style_object['color'] = jQuery('#woocommerce_paypal_express_credit_messaging_product_flex_layout_color').val();
+                    product_style_object['ratio'] = jQuery('#woocommerce_paypal_express_credit_messaging_product_flex_layout_ratio').val();
+                }
+                if (typeof paypal !== 'undefined' && is_credit_messaging_product_page_enable()) {
+                    paypal.Messages({
+                        amount: 500,
+                        placement: 'product',
+                        style: product_style_object
+                    }).render('.pp_message_product');
+                }
+            };
+            var cart_page_credit_messaging_preview = function () {
+                var cart_style_object = {};
+                cart_style_object['layout'] = jQuery('#woocommerce_paypal_express_credit_messaging_cart_layout_type').val();
+                if (cart_style_object['layout'] === 'text') {
+                    cart_style_object['logo'] = {};
+                    cart_style_object['logo']['type'] = jQuery('#woocommerce_paypal_express_credit_messaging_cart_text_layout_logo_type').val();
+                    if (cart_style_object['logo']['type'] === 'primary' || cart_style_object['logo']['type'] === 'alternative') {
+                        cart_style_object['logo']['position'] = jQuery('#woocommerce_paypal_express_credit_messaging_cart_text_layout_logo_position').val();
+                    }
+                    cart_style_object['text'] = {};
+                    cart_style_object['text']['size'] = parseInt(jQuery('#woocommerce_paypal_express_credit_messaging_cart_text_layout_text_size').val());
+                    cart_style_object['text']['color'] = jQuery('#woocommerce_paypal_express_credit_messaging_cart_text_layout_text_color').val();
+                } else {
+                    cart_style_object['color'] = jQuery('#woocommerce_paypal_express_credit_messaging_cart_flex_layout_color').val();
+                    cart_style_object['ratio'] = jQuery('#woocommerce_paypal_express_credit_messaging_cart_flex_layout_ratio').val();
+                }
+                if (typeof paypal !== 'undefined' && is_credit_messaging_cart_page_enable()) {
+                    paypal.Messages({
+                        amount: 500,
+                        placement: 'cart',
+                        style: cart_style_object
+                    }).render('.pp_message_cart');
+                }
+            };
+            var checkout_page_credit_messaging_preview = function () {
+                var checkout_style_object = {};
+                checkout_style_object['layout'] = jQuery('#woocommerce_paypal_express_credit_messaging_checkout_layout_type').val();
+                if (checkout_style_object['layout'] === 'text') {
+                    checkout_style_object['logo'] = {};
+                    checkout_style_object['logo']['type'] = jQuery('#woocommerce_paypal_express_credit_messaging_checkout_text_layout_logo_type').val();
+                    if (checkout_style_object['logo']['type'] === 'primary' || checkout_style_object['logo']['type'] === 'alternative') {
+                        checkout_style_object['logo']['position'] = jQuery('#woocommerce_paypal_express_credit_messaging_checkout_text_layout_logo_position').val();
+                    }
+                    checkout_style_object['text'] = {};
+                    checkout_style_object['text']['size'] = parseInt(jQuery('#woocommerce_paypal_express_credit_messaging_checkout_text_layout_text_size').val());
+                    checkout_style_object['text']['color'] = jQuery('#woocommerce_paypal_express_credit_messaging_checkout_text_layout_text_color').val();
+                } else {
+                    checkout_style_object['color'] = jQuery('#woocommerce_paypal_express_credit_messaging_checkout_flex_layout_color').val();
+                    checkout_style_object['ratio'] = jQuery('#woocommerce_paypal_express_credit_messaging_checkout_flex_layout_ratio').val();
+                }
+                if (typeof paypal !== 'undefined' && is_credit_messaging_checkout_page_enable()) {
+                    paypal.Messages({
+                        amount: 500,
+                        placement: 'checkout',
+                        style: checkout_style_object
+                    }).render('.pp_message_checkout');
+                }
+            };
+            jQuery(document).ready(function ($) {
+                jQuery('.credit_messaging_home_field').change(function () {
+                    home_page_credit_messaging_preview();
+                });
+                jQuery('.credit_messaging_product_field').change(function () {
+                    product_page_credit_messaging_preview();
+                });
+                jQuery('.credit_messaging_cart_field').change(function () {
+                    cart_page_credit_messaging_preview();
+                });
+                jQuery('.credit_messaging_checkout_field').change(function () {
+                    checkout_page_credit_messaging_preview();
+                });
+                home_page_credit_messaging_preview();
+                product_page_credit_messaging_preview();
+                cart_page_credit_messaging_preview();
+                checkout_page_credit_messaging_preview();
+            });
             var is_credit_messaging_enable = function () {
                 if (jQuery('#woocommerce_paypal_express_enabled_credit_messaging').is(':checked')) {
                     return true;
@@ -1851,6 +1965,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'class' => 'credit_messaging_field credit_messaging_home_base_field',
             'description' => __('Enable the Home Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Home page.', 'paypal-for-woocommerce'),
         );
+        $this->form_fields['credit_messaging_home_preview'] = array(
+            'title' => __('', 'paypal-for-woocommerce'),
+            'type' => 'title',
+            'class' => '',
+            'description' => '<div class="pp_message_home"></div>',
+        );
         $this->form_fields['credit_messaging_home_layout_type'] = array(
             'title' => __('Layout Type', 'paypal-for-woocommerce'),
             'type' => 'select',
@@ -1919,6 +2039,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'type' => 'title',
             'class' => 'credit_messaging_field credit_messaging_product_base_field',
             'description' => __('Enable the Product Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Product page.', 'paypal-for-woocommerce'),
+        );
+        $this->form_fields['credit_messaging_product_preview'] = array(
+            'title' => __('', 'paypal-for-woocommerce'),
+            'type' => 'title',
+            'class' => '',
+            'description' => '<div class="pp_message_product"></div>',
         );
         $this->form_fields['credit_messaging_product_layout_type'] = array(
             'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -1989,6 +2115,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'class' => 'credit_messaging_field credit_messaging_cart_base_field',
             'description' => __('Enable the Cart Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Cart page.', 'paypal-for-woocommerce'),
         );
+        $this->form_fields['credit_messaging_cart_preview'] = array(
+            'title' => __('', 'paypal-for-woocommerce'),
+            'type' => 'title',
+            'class' => '',
+            'description' => '<div class="pp_message_cart"></div>',
+        );
         $this->form_fields['credit_messaging_cart_layout_type'] = array(
             'title' => __('Layout Type', 'paypal-for-woocommerce'),
             'type' => 'select',
@@ -2057,6 +2189,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'type' => 'title',
             'class' => 'credit_messaging_field credit_messaging_checkout_base_field',
             'description' => __('Enable the Checkout Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Checkout page.', 'paypal-for-woocommerce'),
+        );
+        $this->form_fields['credit_messaging_checkout_preview'] = array(
+            'title' => __('', 'paypal-for-woocommerce'),
+            'type' => 'title',
+            'class' => '',
+            'description' => '<div class="pp_message_checkout"></div>',
         );
         $this->form_fields['credit_messaging_checkout_layout_type'] = array(
             'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -2229,7 +2367,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if ($this->function_helper->ec_is_express_checkout()) {
                 $return_url = add_query_arg('order_id', $order_id, $this->function_helper->ec_get_checkout_url('do_express_checkout_payment', $order_id));
                 if (is_user_logged_in() && !empty($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] == '1') {
-
+                    
                 } else {
                     if (empty($_POST['shipping_country'])) {
                         $paypal_express_checkout = angelleye_get_session('paypal_express_checkout');
@@ -2281,7 +2419,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $paypal_express_request->angelleye_set_express_checkout();
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2381,7 +2519,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $paypal_express_request->angelleye_get_express_checkout_details();
                     $order_id = absint(angelleye_get_session('order_awaiting_payment'));
                     if (!empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true) {
-
+                        
                     } else {
                         if ($order_id > 0 && ( $order = wc_get_order($order_id) ) && $order->has_status(array('pending', 'failed'))) {
                             $_POST = angelleye_get_session('post_data');
@@ -2557,7 +2695,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     break;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2822,7 +2960,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         try {
             WC()->checkout->check_cart_items();
         } catch (Exception $ex) {
-
+            
         }
         if (wc_notice_count('error') > 0) {
             self::log(print_r(wc_get_notices(), true));
@@ -2898,7 +3036,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $this->function_helper->ec_redirect_after_checkout();
                 }
             } catch (Exception $ex) {
-
+                
             }
         }
     }
