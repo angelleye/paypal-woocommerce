@@ -1969,7 +1969,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'title' => __('', 'paypal-for-woocommerce'),
             'type' => 'title',
             'class' => '',
-            'description' => '<div class="pp_message_home"></div>',
+            'description' => '<div class="pp_message_home credit_messaging_field credit_messaging_home_field"></div>',
         );
         $this->form_fields['credit_messaging_home_layout_type'] = array(
             'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -2044,7 +2044,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'title' => __('', 'paypal-for-woocommerce'),
             'type' => 'title',
             'class' => '',
-            'description' => '<div class="pp_message_product"></div>',
+            'description' => '<div class="pp_message_product credit_messaging_field credit_messaging_product_field"></div>',
         );
         $this->form_fields['credit_messaging_product_layout_type'] = array(
             'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -2119,7 +2119,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'title' => __('', 'paypal-for-woocommerce'),
             'type' => 'title',
             'class' => '',
-            'description' => '<div class="pp_message_cart"></div>',
+            'description' => '<div class="pp_message_cart credit_messaging_field credit_messaging_cart_field"></div>',
         );
         $this->form_fields['credit_messaging_cart_layout_type'] = array(
             'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -2194,7 +2194,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'title' => __('', 'paypal-for-woocommerce'),
             'type' => 'title',
             'class' => '',
-            'description' => '<div class="pp_message_checkout"></div>',
+            'description' => '<div class="pp_message_checkout credit_messaging_field credit_messaging_checkout_field"></div>',
         );
         $this->form_fields['credit_messaging_checkout_layout_type'] = array(
             'title' => __('Layout Type', 'paypal-for-woocommerce'),
