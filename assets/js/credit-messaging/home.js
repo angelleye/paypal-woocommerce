@@ -23,7 +23,6 @@ jQuery(function ($) {
         }
         if (typeof paypal !== 'undefined') {
             paypal.Messages({
-                amount: 500,
                 placement: 'home',
                 style: home_style_object
             }).render('.angelleye_pp_message_home');
