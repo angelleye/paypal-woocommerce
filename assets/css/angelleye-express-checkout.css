@@ -252,6 +252,10 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
 	width: 100%;
 	display: inline-block;
 }
+.angelleye_pp_message_home, .angelleye_pp_message_product, .angelleye_pp_message_cart, .angelleye_pp_message_checkout  {
+    margin: 0 auto;
+    padding: 10px 0 10px 0px;
+}
 @media screen and (max-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom, angelleye_smart_button_checkout_top {
         width: 100%;
