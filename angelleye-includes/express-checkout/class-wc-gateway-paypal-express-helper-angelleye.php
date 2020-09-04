@@ -241,7 +241,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('woocommerce_before_checkout_process', array($this, 'angelleye_woocommerce_before_checkout_process'), 10);
                 if ($this->enabled_credit_messaging) {
                     add_action('woocommerce_before_shop_loop', array($this, 'angelleye_display_credit_messaging_home_page'), 10, 99);
-                    add_action( 'woocommerce_single_product_summary', array($this, 'angelleye_display_credit_messaging_product_page'), 11 );
+                    add_action('woocommerce_single_product_summary', array($this, 'angelleye_display_credit_messaging_product_page'), 11);
                     add_action('woocommerce_before_cart_table', array($this, 'angelleye_display_credit_messaging_cart_page'), 9);
                     add_filter('angelleye_bottom_cart_page', array($this, 'angelleye_display_credit_messaging_bottom_cart_page'), 10, 1);
                     add_action('woocommerce_before_checkout_form', array($this, 'angelleye_display_credit_messaging_payment_page'), 4);
@@ -1430,11 +1430,11 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         $this->angelleye_paypal_credit_messaging_js_enqueue($placement = 'cart');
         echo '<div class="angelleye_pp_message_cart"></div>';
     }
-    
+
     public function angelleye_display_credit_messaging_bottom_cart_page($button) {
         wp_enqueue_script('angelleye-credit-messaging-cart', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/cart.js', array('jquery'), $this->version, true);
         $this->angelleye_paypal_credit_messaging_js_enqueue($placement = 'cart');
-        $button .=  '<div class="angelleye_pp_message_cart"></div>';
+        $button .= '<div class="angelleye_pp_message_cart"></div>';
         return $button;
     }
 
@@ -1450,37 +1450,77 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $enqueue_script_param = array();
             switch ($placement) {
                 case 'home':
-                    $required_keys = array('credit_messaging_home_layout_type', 'credit_messaging_home_text_layout_logo_type', 'credit_messaging_home_text_layout_logo_position', 'credit_messaging_home_text_layout_text_size', 'credit_messaging_home_text_layout_text_color', 'credit_messaging_home_flex_layout_color', 'credit_messaging_home_flex_layout_ratio');
+                    $required_keys = array(
+                        'credit_messaging_home_layout_type' => 'flex',
+                        'credit_messaging_home_text_layout_logo_type' => 'primary',
+                        'credit_messaging_home_text_layout_logo_position' => 'left',
+                        'credit_messaging_home_text_layout_text_size' => '12',
+                        'credit_messaging_home_text_layout_text_color' => 'black',
+                        'credit_messaging_home_flex_layout_color' => 'blue',
+                        'credit_messaging_home_flex_layout_ratio' => '8x1'
+                    );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$value] = $this->setting[$value];
+                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
                     }
                     wp_localize_script('angelleye-credit-messaging-home', 'angelleye_credit_messaging', $enqueue_script_param);
                     break;
                 case 'category':
-                    $required_keys = array('credit_messaging_category_layout_type', 'credit_messaging_category_text_layout_logo_type', 'credit_messaging_category_text_layout_logo_position', 'credit_messaging_category_text_layout_text_size', 'credit_messaging_category_text_layout_text_color', 'credit_messaging_category_flex_layout_color', 'credit_messaging_category_flex_layout_ratio');
+                    $required_keys = array(
+                        'credit_messaging_category_layout_type' => 'flex',
+                        'credit_messaging_category_text_layout_logo_type' => 'primary',
+                        'credit_messaging_category_text_layout_logo_position' => 'left',
+                        'credit_messaging_category_text_layout_text_size' => '12',
+                        'credit_messaging_category_text_layout_text_color' => 'black',
+                        'credit_messaging_category_flex_layout_color' => 'blue',
+                        'credit_messaging_category_flex_layout_ratio' => '8x1'
+                    );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$value] = $this->setting[$value];
+                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
                     }
                     wp_localize_script('angelleye-credit-messaging-category', 'angelleye_credit_messaging', $enqueue_script_param);
                     break;
                 case 'product':
-                    $required_keys = array('credit_messaging_product_layout_type', 'credit_messaging_product_text_layout_logo_type', 'credit_messaging_product_text_layout_logo_position', 'credit_messaging_product_text_layout_text_size', 'credit_messaging_product_text_layout_text_color', 'credit_messaging_product_flex_layout_color', 'credit_messaging_product_flex_layout_ratio');
+                    $required_keys = array(
+                        'credit_messaging_product_layout_type' => 'text',
+                        'credit_messaging_product_text_layout_logo_type' => 'primary',
+                        'credit_messaging_product_text_layout_logo_position' => 'left',
+                        'credit_messaging_product_text_layout_text_size' => '12',
+                        'credit_messaging_product_text_layout_text_color' => 'black',
+                        'credit_messaging_product_flex_layout_color' => 'blue',
+                        'credit_messaging_product_flex_layout_ratio' => '8x1'
+                    );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$value] = $this->setting[$value];
+                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
                     }
                     wp_localize_script('angelleye-credit-messaging-product', 'angelleye_credit_messaging', $enqueue_script_param);
                     break;
                 case 'cart':
-                    $required_keys = array('credit_messaging_cart_layout_type', 'credit_messaging_cart_text_layout_logo_type', 'credit_messaging_cart_text_layout_logo_position', 'credit_messaging_cart_text_layout_text_size', 'credit_messaging_cart_text_layout_text_color', 'credit_messaging_cart_flex_layout_color', 'credit_messaging_cart_flex_layout_ratio');
+                    $required_keys = array(
+                        'credit_messaging_cart_layout_type' => 'text',
+                        'credit_messaging_cart_text_layout_logo_type' => 'primary',
+                        'credit_messaging_cart_text_layout_logo_position' => 'left',
+                        'credit_messaging_cart_text_layout_text_size' => '12',
+                        'credit_messaging_cart_text_layout_text_color' => 'black',
+                        'credit_messaging_cart_flex_layout_color' => 'blue',
+                        'credit_messaging_cart_flex_layout_ratio' => '8x1'
+                    );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$value] = $this->setting[$value];
+                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
                     }
                     wp_localize_script('angelleye-credit-messaging-cart', 'angelleye_credit_messaging', $enqueue_script_param);
                     break;
                 case 'payment':
-                    $required_keys = array('credit_messaging_payment_layout_type', 'credit_messaging_payment_text_layout_logo_type', 'credit_messaging_payment_text_layout_logo_position', 'credit_messaging_payment_text_layout_text_size', 'credit_messaging_payment_text_layout_text_color', 'credit_messaging_payment_flex_layout_color', 'credit_messaging_payment_flex_layout_ratio');
+                    $required_keys = array(
+                        'credit_messaging_payment_layout_type' => 'text',
+                        'credit_messaging_payment_text_layout_logo_type' => 'primary',
+                        'credit_messaging_payment_text_layout_logo_position' => 'left',
+                        'credit_messaging_payment_text_layout_text_size' => '12',
+                        'credit_messaging_payment_text_layout_text_color' => 'black',
+                        'credit_messaging_payment_flex_layout_color' => 'blue',
+                        'credit_messaging_payment_flex_layout_ratio' => '8x1'
+                    );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$value] = $this->setting[$value];
+                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
                     }
                     wp_localize_script('angelleye-credit-messaging-payment', 'angelleye_credit_messaging', $enqueue_script_param);
                     break;
