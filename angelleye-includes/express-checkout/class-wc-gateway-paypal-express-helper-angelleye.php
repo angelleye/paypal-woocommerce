@@ -240,15 +240,23 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('widget_title', array($this, 'angelleye_maybe_enqueue_checkout_js'), 10, 3);
                 add_action('woocommerce_before_checkout_process', array($this, 'angelleye_woocommerce_before_checkout_process'), 10);
                 if ($this->enabled_credit_messaging) {
-                    add_action('woocommerce_before_shop_loop', array($this, 'angelleye_display_credit_messaging_home_page'), 10, 99);
-                    add_action('woocommerce_single_product_summary', array($this, 'angelleye_display_credit_messaging_product_page'), 11);
-                    add_action('woocommerce_before_cart_table', array($this, 'angelleye_display_credit_messaging_cart_page'), 9);
-                    add_filter('angelleye_bottom_cart_page', array($this, 'angelleye_display_credit_messaging_bottom_cart_page'), 10, 1);
-                    add_action('woocommerce_before_checkout_form', array($this, 'angelleye_display_credit_messaging_payment_page'), 4);
-                    if ($this->checkout_page_disable_smart_button == false && $this->enable_in_context_checkout_flow == 'yes') {
-                        add_action('woocommerce_review_order_after_submit', array($this, 'angelleye_display_credit_messaging_payment_page'), 9);
+                    if ($this->is_paypal_credit_messaging_enable_for_page($page = 'home')) {
+                        add_filter('the_content', array($this, 'angelleye_display_credit_messaging_home_page_content'), 10);
+                        add_action('woocommerce_before_shop_loop', array($this, 'angelleye_display_credit_messaging_home_page'), 10, 99);
                     }
-                    add_filter('the_content', array($this, 'angelleye_display_credit_messaging_home_page_content'), 10);
+                    if ($this->is_paypal_credit_messaging_enable_for_page($page = 'product')) {
+                        add_action('woocommerce_single_product_summary', array($this, 'angelleye_display_credit_messaging_product_page'), 11);
+                    }
+                    if ($this->is_paypal_credit_messaging_enable_for_page($page = 'cart')) {
+                        add_action('woocommerce_before_cart_table', array($this, 'angelleye_display_credit_messaging_cart_page'), 9);
+                        add_filter('angelleye_bottom_cart_page', array($this, 'angelleye_display_credit_messaging_bottom_cart_page'), 10, 1);
+                    }
+                    if ($this->is_paypal_credit_messaging_enable_for_page($page = 'payment')) {
+                        add_action('woocommerce_before_checkout_form', array($this, 'angelleye_display_credit_messaging_payment_page'), 4);
+                        if ($this->checkout_page_disable_smart_button == false && $this->enable_in_context_checkout_flow == 'yes') {
+                            add_action('woocommerce_review_order_after_submit', array($this, 'angelleye_display_credit_messaging_payment_page'), 9);
+                        }
+                    }
                 }
             }
         } catch (Exception $ex) {
@@ -428,36 +436,36 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             <div class="express-provided-address">
                 <a href="#" class="ex-show-address-fields" data-type="<?php echo esc_attr('billing'); ?>"><?php esc_html_e('Edit', 'paypal-for-woocommerce'); ?></a>
                 <address>
-                    <?php
-                    $address = array(
-                        'first_name' => WC()->checkout->get_value($type . '_first_name'),
-                        'last_name' => WC()->checkout->get_value($type . '_last_name'),
-                        'company' => WC()->checkout->get_value($type . '_company'),
-                        'address_1' => WC()->checkout->get_value($type . '_address_1'),
-                        'address_2' => WC()->checkout->get_value($type . '_address_2'),
-                        'city' => WC()->checkout->get_value($type . '_city'),
-                        'state' => WC()->checkout->get_value($type . '_state'),
-                        'postcode' => WC()->checkout->get_value($type . '_postcode'),
-                        'country' => WC()->checkout->get_value($type . '_country'),
-                    );
+            <?php
+            $address = array(
+                'first_name' => WC()->checkout->get_value($type . '_first_name'),
+                'last_name' => WC()->checkout->get_value($type . '_last_name'),
+                'company' => WC()->checkout->get_value($type . '_company'),
+                'address_1' => WC()->checkout->get_value($type . '_address_1'),
+                'address_2' => WC()->checkout->get_value($type . '_address_2'),
+                'city' => WC()->checkout->get_value($type . '_city'),
+                'state' => WC()->checkout->get_value($type . '_state'),
+                'postcode' => WC()->checkout->get_value($type . '_postcode'),
+                'country' => WC()->checkout->get_value($type . '_country'),
+            );
 
-                    $shipping_details = $this->ec_get_session_data('shipping_details');
-                    $email = WC()->checkout->get_value($type . '_email');
-                    if (empty($email)) {
-                        $email = !empty($shipping_details['email']) ? $shipping_details['email'] : '';
-                    }
-                    $phone = WC()->checkout->get_value($type . '_phone');
-                    if (empty($phone)) {
-                        $phone = !empty($shipping_details['phone']) ? $shipping_details['phone'] : '';
-                    }
-                    $formatted_address = WC()->countries->get_formatted_address($address);
-                    $formatted_address = str_replace('<br/>-<br/>', '<br/>', $formatted_address);
-                    echo $formatted_address;
-                    if (!empty($shipping_details)) {
-                        echo!empty($email) ? '<p class="angelleye-woocommerce-customer-details-email">' . $email . '</p>' : '';
-                        echo!empty($phone) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $phone . '</p>' : '';
-                    }
-                    ?>
+            $shipping_details = $this->ec_get_session_data('shipping_details');
+            $email = WC()->checkout->get_value($type . '_email');
+            if (empty($email)) {
+                $email = !empty($shipping_details['email']) ? $shipping_details['email'] : '';
+            }
+            $phone = WC()->checkout->get_value($type . '_phone');
+            if (empty($phone)) {
+                $phone = !empty($shipping_details['phone']) ? $shipping_details['phone'] : '';
+            }
+            $formatted_address = WC()->countries->get_formatted_address($address);
+            $formatted_address = str_replace('<br/>-<br/>', '<br/>', $formatted_address);
+            echo $formatted_address;
+            if (!empty($shipping_details)) {
+                echo!empty($email) ? '<p class="angelleye-woocommerce-customer-details-email">' . $email . '</p>' : '';
+                echo!empty($phone) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $phone . '</p>' : '';
+            }
+            ?>
                 </address>
 
             </div>
@@ -572,7 +580,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function is_paypal_sdk_required() {
         if ($this->enabled_credit_messaging) {
-            if(is_product_taxonomy() || is_product_category() || is_product_tag() || is_shop() || (is_home() || is_front_page())) {
+            if (is_product_taxonomy() || is_product_category() || is_product_tag() || is_shop() || (is_home() || is_front_page())) {
                 return true;
             }
         }
@@ -1414,7 +1422,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
         return $content;
     }
-    
+
     public function angelleye_display_credit_messaging_home_page() {
         if (is_shop()) {
             wp_enqueue_script('angelleye-in-context-checkout-js');
@@ -1455,6 +1463,18 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         wp_enqueue_script('angelleye-credit-messaging-payment', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/payment.js', array('jquery'), $this->version, true);
         $this->angelleye_paypal_credit_messaging_js_enqueue($placement = 'payment');
         echo '<div class="angelleye_pp_message_payment"></div>';
+    }
+
+    public function is_paypal_credit_messaging_enable_for_page($page = '') {
+        if ($this->enabled_credit_messaging) {
+            if (empty($page)) {
+                return false;
+            }
+            if (in_array($page, $this->credit_messaging_page_type)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function angelleye_paypal_credit_messaging_js_enqueue($placement = '') {
