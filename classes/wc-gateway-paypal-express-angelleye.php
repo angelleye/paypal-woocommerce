@@ -1976,7 +1976,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'type' => 'select',
             'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field',
             'description' => __('', 'paypal-for-woocommerce'),
-            'default' => 'text',
+            'default' => 'flex',
             'desc_tip' => true,
             'options' => array('text' => __('Text Layout', 'paypal-for-woocommerce'), 'flex' => __('Flex Layout', 'paypal-for-woocommerce'))
         );
@@ -2030,7 +2030,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'type' => 'select',
             'class' => 'wc-enhanced-select credit_messaging_field credit_messaging_home_field credit_messaging_home_flex_layout_field',
             'description' => __('', 'paypal-for-woocommerce'),
-            'default' => '1x1',
+            'default' => '8x1',
             'desc_tip' => true,
             'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
         );

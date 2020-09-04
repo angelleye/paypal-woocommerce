@@ -1,10 +1,12 @@
 jQuery(function ($) {
+      console.log(angelleye_credit_messaging);
     if (typeof paypal === 'undefined') {
         return false;
     }
     if (typeof angelleye_credit_messaging === 'undefined') {
         return false;
     }
+  
     var front_end_product_page_credit_messaging_preview = function () {
         var product_style_object = {};
         product_style_object['layout'] = angelleye_credit_messaging.credit_messaging_product_layout_type;
