@@ -23,7 +23,7 @@ jQuery(function ($) {
         }
         if (typeof paypal !== 'undefined') {
             paypal.Messages({
-                amount: 500,
+                amount: angelleye_credit_messaging.amount,
                 placement: 'payment',
                 style: payment_style_object
             }).render('.angelleye_pp_message_payment');

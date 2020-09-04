@@ -1480,6 +1480,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public function angelleye_paypal_credit_messaging_js_enqueue($placement = '') {
         if (!empty($placement)) {
             $enqueue_script_param = array();
+            $enqueue_script_param['amount'] = $this->angelleye_ec_get_order_total();
             switch ($placement) {
                 case 'home':
                     $required_keys = array(
@@ -1560,6 +1561,21 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     break;
             }
         }
+    }
+
+    public function angelleye_ec_get_order_total() {
+        global $product;
+        $total = 0;
+        $order_id = absint(get_query_var('order-pay'));
+        if(is_product()) {
+            $total = $product->get_regular_price();
+        } elseif (0 < $order_id) {
+            $order = wc_get_order($order_id);
+            $total = (float) $order->get_total();
+        } elseif (0 < WC()->cart->total) {
+            $total = (float) WC()->cart->total;
+        }
+        return $total;
     }
 
 }

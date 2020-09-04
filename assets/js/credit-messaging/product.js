@@ -1,5 +1,4 @@
 jQuery(function ($) {
-      console.log(angelleye_credit_messaging);
     if (typeof paypal === 'undefined') {
         return false;
     }
@@ -25,7 +24,7 @@ jQuery(function ($) {
         }
         if (typeof paypal !== 'undefined') {
             paypal.Messages({
-                amount: 500,
+                amount: angelleye_credit_messaging.amount,
                 placement: 'product',
                 style: product_style_object
             }).render('.angelleye_pp_message_product');
