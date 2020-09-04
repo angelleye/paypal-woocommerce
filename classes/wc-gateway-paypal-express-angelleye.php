@@ -735,9 +735,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 var angelleye_button_tagline = jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
                 if (this.value === 'vertical') {
                     angelleye_button_tagline.hide();
-                    jQuery("#woocommerce_paypal_express_button_label option[value='credit']").prop('disabled', true);
-                } else {
-                    jQuery("#woocommerce_paypal_express_button_label option[value='credit']").prop('disabled', false);
                 }
             }).change();
             jQuery('#woocommerce_paypal_express_payment_action').change(function () {
@@ -749,17 +746,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }).change();
             jQuery('#woocommerce_paypal_express_button_label').change(function () {
                 var paypal_express_button_tagline = jQuery('#woocommerce_paypal_express_button_tagline').closest('tr').hide();
-                if (this.value === 'credit') {
-                    jQuery('#woocommerce_paypal_express_button_color').closest('tr').hide();
-                    if (jQuery("#woocommerce_paypal_express_button_layout").val() !== 'vertical') {
-                        paypal_express_button_tagline.show();
-                    }
-                } else {
-                    jQuery('#woocommerce_paypal_express_button_color').closest('tr').show();
-                    if (jQuery("#woocommerce_paypal_express_button_layout").val() !== 'vertical') {
-                        paypal_express_button_tagline.show();
-                    }
-                }
                 if (jQuery('#woocommerce_paypal_express_button_label').val() === 'buynow') {
                     paypal_express_button_tagline.hide();
                 }
@@ -814,52 +800,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     subtotal_mismatch_behavior.show();
                 } else {
                     subtotal_mismatch_behavior.hide();
-                }
-            }).change();
-
-            jQuery('#woocommerce_paypal_express_disallowed_funding_methods').change(function () {
-                if (jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_disallowed_funding_methods').val())) {
-                    if (jQuery("#woocommerce_paypal_express_button_label option[value='credit']").length === 0) {
-                        jQuery('#woocommerce_paypal_express_button_label').append(jQuery("<option></option>").attr("value", "credit").text("Credit"));
-                    }
-                } else {
-                    jQuery('#woocommerce_paypal_express_button_label option[value="credit"]').remove();
-                }
-            }).change();
-            jQuery('#woocommerce_paypal_express_single_product_disallowed_funding_methods').change(function () {
-                if (jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_single_product_disallowed_funding_methods').val())) {
-                    if (jQuery("#woocommerce_paypal_express_single_product_button_label option[value='credit']").length === 0) {
-                        jQuery('#woocommerce_paypal_express_single_product_button_label').append(jQuery("<option></option>").attr("value", "credit").text("Credit"));
-                    }
-                } else {
-                    jQuery('#woocommerce_paypal_express_single_product_button_label option[value="credit"]').remove();
-                }
-            }).change();
-            jQuery('#woocommerce_paypal_express_cart_disallowed_funding_methods').change(function () {
-                if (jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_cart_disallowed_funding_methods').val())) {
-                    if (jQuery("#woocommerce_paypal_express_cart_button_label option[value='credit']").length === 0) {
-                        jQuery('#woocommerce_paypal_express_cart_button_label').append(jQuery("<option></option>").attr("value", "credit").text("Credit"));
-                    }
-                } else {
-                    jQuery('#woocommerce_paypal_express_cart_button_label option[value="credit"]').remove();
-                }
-            }).change();
-            jQuery('#woocommerce_paypal_express_mini_cart_disallowed_funding_methods').change(function () {
-                if (jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_mini_cart_disallowed_funding_methods').val())) {
-                    if (jQuery("#woocommerce_paypal_express_mini_cart_button_label option[value='credit']").length === 0) {
-                        jQuery('#woocommerce_paypal_express_mini_cart_button_label').append(jQuery("<option></option>").attr("value", "credit").text("Credit"));
-                    }
-                } else {
-                    jQuery('#woocommerce_paypal_express_mini_cart_button_label option[value="credit"]').remove();
-                }
-            }).change();
-            jQuery('#woocommerce_paypal_express_checkout_page_disallowed_funding_methods').change(function () {
-                if (jQuery.inArray('credit', jQuery('#woocommerce_paypal_express_checkout_page_disallowed_funding_methods').val())) {
-                    if (jQuery("#woocommerce_paypal_express_checkout_page_button_label option[value='credit']").length === 0) {
-                        jQuery('#woocommerce_paypal_express_checkout_page_button_label').append(jQuery("<option></option>").attr("value", "credit").text("Credit"));
-                    }
-                } else {
-                    jQuery('#woocommerce_paypal_express_checkout_page_button_label option[value="credit"]').remove();
                 }
             }).change();
             jQuery('#woocommerce_paypal_express_show_on_checkout').change(function () {

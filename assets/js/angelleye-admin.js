@@ -401,12 +401,6 @@ jQuery(document).ready(function ($) {
         var angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
         if (angelleye_layout === 'vertical') {
             angelleye_tagline = '';
-            if (angelleye_label === 'credit') {
-                angelleye_label = 'checkout';
-            }
-        }
-        if (angelleye_label === 'credit') {
-            angelleye_color = 'darkblue';
         }
         var style_object = {
             color: angelleye_color,
