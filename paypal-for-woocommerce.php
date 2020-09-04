@@ -392,11 +392,15 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 'locale' => ($this->use_wp_locale_code === 'yes' && AngellEYE_Utility::get_button_locale_code() != '') ? AngellEYE_Utility::get_button_locale_code() : ''
 
             );
-            wp_localize_script( 'angelleye_admin', 'angelleye_admin', $translation_array );
             if( !empty($_GET['tab']) && !empty($_GET['section']) && $_GET['tab'] == 'checkout' && $_GET['section'] == 'paypal_express') {
                 $smart_js_arg = array();
                 $smart_js_arg['components'] = "buttons,messages";
                 $smart_js_arg['currency'] = get_woocommerce_currency();
+                $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
+                $disallowed_funding_methods = !empty($pp_settings['disallowed_funding_methods']) ? (array) $pp_settings['disallowed_funding_methods'] : array();
+                if ($disallowed_funding_methods !== false && count($disallowed_funding_methods) > 0) {
+                    $smart_js_arg['disable-funding'] = implode(',', $disallowed_funding_methods);
+                }
                 if ($pp_settings['testmode']=='yes') {
                     $smart_js_arg['buyer-country'] = WC()->countries->get_base_country();
                     $smart_js_arg['client-id'] = 'sb';
@@ -407,10 +411,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     } 
                     $smart_js_arg['client-id'] = 'AeO-lMwbXF_Qk0ZLogCGxumMVF0APN90MpzqB4t9AS6pzsQkUvA2aM6QFHBRica8TaSRY9cagsGetkrb';
                 }
-                wp_enqueue_script('admin-checkout-js', add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'), array(), null, true);
+                $admin_paypal_sdk_js = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
+                $translation_array['paypal_sdk_url'] = $admin_paypal_sdk_js;
+                wp_enqueue_script('admin-checkout-js', $admin_paypal_sdk_js, array(), null, true);
                 
             }
             wp_enqueue_script( 'angelleye_admin');
+            wp_localize_script( 'angelleye_admin', 'angelleye_admin', $translation_array );
         }
 
         /**

@@ -1462,6 +1462,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'title',
                 'description' => '',
             ),
+            'angelleye_smart_button_preview_title' => array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'type' => 'title',
+                'class' => '',
+                'description' => '<div class="display_smart_button_previews"></div>',
+            ),
             'enable_in_context_checkout_flow' => array(
                 'title' => __('Enable Smart Buttons', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
@@ -1471,7 +1477,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'disallowed_funding_methods' => array(
                 'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part admin_smart_button_preview',
                 'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -1480,7 +1486,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'button_layout' => array(
                 'title' => __('Button Layout', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part admin_smart_button_preview',
                 'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                 'default' => 'horizontal',
                 'desc_tip' => true,
@@ -1492,7 +1498,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'button_size' => array(
                 'title' => __('Button Size', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part admin_smart_button_preview',
                 'description' => __('Set the size of the buttons you would like displayed.  Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                 'default' => 'small',
                 'desc_tip' => true,
@@ -1506,7 +1512,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'button_height' => array(
                 'title' => __('Button Height', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'in_context_checkout_part',
+                'class' => 'in_context_checkout_part admin_smart_button_preview',
                 'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -1515,7 +1521,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'button_label' => array(
                 'title' => __('Button Label', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part admin_smart_button_preview',
                 'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
                 'default' => 'checkout',
                 'desc_tip' => true,
@@ -1524,7 +1530,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'button_color' => array(
                 'title' => __('Button Color', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part admin_smart_button_preview',
                 'description' => __('Set the color you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
                 'default' => 'gold',
                 'desc_tip' => true,
@@ -1539,7 +1545,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'button_shape' => array(
                 'title' => __('Button Shape', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part admin_smart_button_preview',
                 'description' => __('Set the shape you would like to use for the buttons.', 'paypal-for-woocommerce'),
                 'default' => 'pill',
                 'desc_tip' => true,
@@ -1551,7 +1557,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'button_tagline' => array(
                 'title' => __('Button Tagline ', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select in_context_checkout_part_tagline in_context_checkout_part',
+                'class' => 'wc-enhanced-select in_context_checkout_part_tagline in_context_checkout_part admin_smart_button_preview',
                 'description' => __('Enable this to display a tagline below the PayPal buttons..', 'paypal-for-woocommerce'),
                 'default' => 'false',
                 'desc_tip' => true,
@@ -1562,17 +1568,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'enable_google_analytics_click' => array(
                 'title' => __('Google Analytics', 'paypal-for-woocommerce'),
-                'class' => 'in_context_checkout_part',
+                'class' => 'in_context_checkout_part admin_smart_button_preview',
                 'type' => 'checkbox',
                 'label' => __('Enable Google Analytics Click Tracking.'),
                 'default' => 'no'
             ),
-            'angelleye_smart_button_preview_title' => array(
-                'title' => __('', 'paypal-for-woocommerce'),
-                'type' => 'title',
-                'class' => '',
-                'description' => '<div><div class="display_smart_button_previews_button"></div><div class="display_smart_button_previews"></div></div>',
-            ),
+            
             'single_product_button_settings' => array(
                 'title' => __('Single Product Button Settings', 'paypal-for-woocommerce'),
                 'class' => 'in_context_checkout_part',
