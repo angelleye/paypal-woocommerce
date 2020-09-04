@@ -243,7 +243,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     add_action('woocommerce_before_shop_loop', array($this, 'angelleye_display_credit_messaging_home_page'), 10, 99);
                     add_action('woocommerce_after_add_to_cart_button', array($this, 'angelleye_display_credit_messaging_product_page'), 9);
                     add_action('woocommerce_before_cart_table', array($this, 'angelleye_display_credit_messaging_cart_page'), 9);
-                    add_action('woocommerce_proceed_to_checkout', array($this, 'angelleye_display_credit_messaging_cart_page'), 21);
+                    add_filter('angelleye_bottom_cart_page', array($this, 'angelleye_display_credit_messaging_bottom_cart_page'), 10, 1);
                     add_action('woocommerce_before_checkout_form', array($this, 'angelleye_display_credit_messaging_payment_page'), 4);
                     if ($this->checkout_page_disable_smart_button == false && $this->enable_in_context_checkout_flow == 'yes') {
                         add_action('woocommerce_review_order_after_submit', array($this, 'angelleye_display_credit_messaging_payment_page'), 9);
@@ -802,6 +802,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $angelleye_smart_button = 'angelleye_smart_button_bottom';
                 $angelleye_proceed_to_checkout_button_separator = '<div class="angelleye-proceed-to-checkout-button-separator">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</div>';
                 $cart_button_html .= apply_filters('angelleye_proceed_to_checkout_button_separator', $angelleye_proceed_to_checkout_button_separator);
+                $cart_button_html = apply_filters('angelleye_bottom_cart_page', $cart_button_html);
             }
             if ($this->enable_in_context_checkout_flow == 'no') {
                 switch ($this->checkout_with_pp_button_type) {
@@ -1428,6 +1429,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         wp_enqueue_script('angelleye-credit-messaging-cart', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/cart.js', array('jquery'), $this->version, true);
         $this->angelleye_paypal_credit_messaging_js_enqueue($placement = 'cart');
         echo '<div class="angelleye_pp_message_cart"></div>';
+    }
+    
+    public function angelleye_display_credit_messaging_bottom_cart_page($button) {
+        wp_enqueue_script('angelleye-credit-messaging-cart', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/cart.js', array('jquery'), $this->version, true);
+        $this->angelleye_paypal_credit_messaging_js_enqueue($placement = 'cart');
+        $button .=  '<div class="angelleye_pp_message_cart"></div>';
+        return $button;
     }
 
     public function angelleye_display_credit_messaging_payment_page() {
