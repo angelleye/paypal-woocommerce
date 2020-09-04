@@ -254,7 +254,7 @@ and (max-device-width: 1080px) {
 }
 .angelleye_pp_message_home, .angelleye_pp_message_product, .angelleye_pp_message_cart, .angelleye_pp_message_payment, .angelleye_pp_message_category {
     display: block;
-    margin: 0 0 1em;
+    margin: 15px 0px 15px 0px;
 }
 @media screen and (max-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom, angelleye_smart_button_checkout_top {

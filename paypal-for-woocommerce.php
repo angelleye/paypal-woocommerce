@@ -380,7 +380,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             wp_enqueue_media();
             wp_enqueue_script( 'jquery');
             // Localize the script with new data
-            wp_register_script( 'angelleye_admin', plugins_url( '/assets/js/angelleye-admin.js' , __FILE__ ), array( 'jquery' ), VERSION_PFW);
+            wp_register_script( 'angelleye_admin', plugins_url( '/assets/js/angelleye-admin.js' , __FILE__ ), array( 'jquery' ), time());
             $this->use_wp_locale_code = !empty($pp_settings['use_wp_locale_code']) ? $pp_settings['use_wp_locale_code'] : 'yes';
             $translation_array = array(
                 'is_ssl' => is_ssl() ? "yes":"no",

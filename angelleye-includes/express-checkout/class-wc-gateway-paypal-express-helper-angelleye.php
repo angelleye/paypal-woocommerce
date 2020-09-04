@@ -241,7 +241,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('woocommerce_before_checkout_process', array($this, 'angelleye_woocommerce_before_checkout_process'), 10);
                 if ($this->enabled_credit_messaging) {
                     add_action('woocommerce_before_shop_loop', array($this, 'angelleye_display_credit_messaging_home_page'), 10, 99);
-                    add_action('woocommerce_after_add_to_cart_button', array($this, 'angelleye_display_credit_messaging_product_page'), 9);
+                    add_action( 'woocommerce_single_product_summary', array($this, 'angelleye_display_credit_messaging_product_page'), 11 );
                     add_action('woocommerce_before_cart_table', array($this, 'angelleye_display_credit_messaging_cart_page'), 9);
                     add_filter('angelleye_bottom_cart_page', array($this, 'angelleye_display_credit_messaging_bottom_cart_page'), 10, 1);
                     add_action('woocommerce_before_checkout_form', array($this, 'angelleye_display_credit_messaging_payment_page'), 4);
