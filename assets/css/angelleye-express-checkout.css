@@ -238,15 +238,12 @@ and (max-device-width: 1080px) {
 }
 .angelleye_small {
     width: 150px;
-    display: inline-block;
 }
 .angelleye_medium {
     width: 250px;
-    display: inline-block;
 }
 .angelleye_large {
     width: 350px;
-    display: inline-block;
 }
 .angelleye_responsive {
     width: 100%;
