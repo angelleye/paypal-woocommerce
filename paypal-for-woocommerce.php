@@ -409,7 +409,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     if( !empty($merchant_id_array) && !empty($merchant_id_array['PAL'])) {
                         $smart_js_arg['merchant-id'] = $merchant_id_array['PAL'];
                     } 
-                    $smart_js_arg['client-id'] = 'AeO-lMwbXF_Qk0ZLogCGxumMVF0APN90MpzqB4t9AS6pzsQkUvA2aM6QFHBRica8TaSRY9cagsGetkrb';
+                    $smart_js_arg['client-id'] = 'AUESd5dCP7FmcZnzB7v32UIo-gGgnJupvdfLle9TBJwOC4neACQhDVONBv3hc1W-pXlXS6G-KA5y4Kzv';
                 }
                 $admin_paypal_sdk_js = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
                 $translation_array['paypal_sdk_url'] = $admin_paypal_sdk_js;
