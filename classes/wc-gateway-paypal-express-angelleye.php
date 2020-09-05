@@ -194,11 +194,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function process_admin_options() {
-        if (isset($_POST)) {
-            delete_option('angelleye_express_checkout_default_pal');
-            $this->angelleye_get_merchant_id();
-        }
         parent::process_admin_options();
+        delete_option('angelleye_express_checkout_default_pal');
+        $this->angelleye_get_merchant_id();
     }
 
     public function admin_options() {
@@ -3269,21 +3267,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function angelleye_get_merchant_id() {
-
-        $this->testmode = (isset($_POST['woocommerce_paypal_express_testmode']) && $_POST['woocommerce_paypal_express_testmode'] == 1) ? true : false;
-        if ($this->testmode == true) {
-            $this->API_Endpoint = "https://api-3t.sandbox.paypal.com/nvp";
-            $this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
-            $this->api_username = $_POST['woocommerce_paypal_express_sandbox_api_username'];
-            $this->api_password = $_POST['woocommerce_paypal_express_sandbox_api_password'];
-            $this->api_signature = $_POST['woocommerce_paypal_express_sandbox_api_signature'];
-        } else {
-            $this->API_Endpoint = "https://api-3t.paypal.com/nvp";
-            $this->PAYPAL_URL = "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=";
-            $this->api_username = $_POST['woocommerce_paypal_express_api_username'];
-            $this->api_password = $_POST['woocommerce_paypal_express_api_password'];
-            $this->api_signature = $_POST['woocommerce_paypal_express_api_signature'];
-        }
         require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
         $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
         $paypal_express_request->angelleye_get_paldetails($this);
