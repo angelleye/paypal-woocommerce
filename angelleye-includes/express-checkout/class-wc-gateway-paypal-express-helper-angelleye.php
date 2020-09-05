@@ -176,7 +176,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
                 $this->enabled_credit_messaging = 'yes' === $this->enabled_credit_messaging_value;
 
-                add_action('woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'), 10);
+                add_action('woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'), 11);
 
                 add_action('wp_head', array($this, 'angelleye_add_header_meta'), 0);
                 add_action('woocommerce_add_to_cart_redirect', array($this, 'add_to_cart_redirect'), 9999);

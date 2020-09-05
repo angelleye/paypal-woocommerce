@@ -270,7 +270,19 @@ hr {
     border-bottom: none;
     padding-bottom: 0px;
 }
-
+.angelleye_small {
+    width: 150px;
+}
+.angelleye_medium {
+    width: 250px;
+}
+.angelleye_large {
+    width: 350px;
+}
+.angelleye_responsive {
+    width: 100%;
+    display: inline-block;
+}
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
         display: block;
