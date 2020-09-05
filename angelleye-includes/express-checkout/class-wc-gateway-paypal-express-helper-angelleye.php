@@ -1568,7 +1568,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         $total = 0;
         $order_id = absint(get_query_var('order-pay'));
         if(is_product()) {
-            $total = $product->get_regular_price();
+            $total = $product->get_price();
         } elseif (0 < $order_id) {
             $order = wc_get_order($order_id);
             $total = (float) $order->get_total();
