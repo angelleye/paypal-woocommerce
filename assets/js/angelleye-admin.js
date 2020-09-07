@@ -410,18 +410,9 @@ jQuery(document).ready(function ($) {
         }
 
         if (typeof paypal !== 'undefined') {
-            paypal.getFundingSources().forEach(function (fundingSource) {
-                if ($.inArray(fundingSource, $('#woocommerce_paypal_express_disallowed_funding_methods').val()) > -1) {
-                    return;
-                }
-                var button = paypal.Buttons({
-                    fundingSource: fundingSource,
-                    style : ( paypal.FUNDING.PAYPAL === fundingSource ) ? style_object : { layout: style_object.layout, shape: style_object.shape }
-                });
-                if (button.isEligible()) {
-                    button.render('.display_smart_button_previews');
-                }
-            });
+            paypal.Buttons({
+                style: style_object
+            }).render('.display_smart_button_previews');
         }
     }
 });
