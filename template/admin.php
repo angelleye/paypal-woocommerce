@@ -133,6 +133,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                     echo '<div class="updated"><p>' . __('Settings were saved successfully.', 'paypal-for-woocommerce') . '</p></div>';
                 }
                 $Force_tls_one_point_two = get_option('Force_tls_one_point_two');
+                $change_proceed_checkout_button_text = get_option('change_proceed_checkout_button_text');
                 ?>
                 <div id="angelleye_paypal_marketing_table">
                 <form method="post">
