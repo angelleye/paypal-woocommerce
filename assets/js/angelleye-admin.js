@@ -386,8 +386,8 @@ jQuery(document).ready(function ($) {
         if (api_username.length === 0 || api_password.length === 0 || api_signature.length === 0) {
             return false;
         }
-        $( ".display_smart_button_previews" ).removeClass( "angelleye_small angelleye_medium angelleye_large angelleye_responsive" );
-        $('.display_smart_button_previews').addClass( 'angelleye_' + $('#woocommerce_paypal_express_button_size').val() );
+        $(".display_smart_button_previews").removeClass("angelleye_small angelleye_medium angelleye_large angelleye_responsive");
+        $('.display_smart_button_previews').addClass('angelleye_' + $('#woocommerce_paypal_express_button_size').val());
         jQuery(".display_smart_button_previews").html('');
         var angelleye_height = jQuery("#woocommerce_paypal_express_button_height").val();
         var angelleye_color = jQuery("#woocommerce_paypal_express_button_color").val();
@@ -408,10 +408,20 @@ jQuery(document).ready(function ($) {
         if (angelleye_height !== '') {
             style_object['height'] = parseInt(angelleye_height);
         }
+
         if (typeof paypal !== 'undefined') {
-            paypal.Buttons({
-                style: style_object
-            }).render('.display_smart_button_previews');
+            paypal.getFundingSources().forEach(function (fundingSource) {
+                if ($.inArray(fundingSource, $('#woocommerce_paypal_express_disallowed_funding_methods').val()) > -1) {
+                    return;
+                }
+                var button = paypal.Buttons({
+                    fundingSource: fundingSource,
+                    style : ( paypal.FUNDING.PAYPAL === fundingSource ) ? style_object : { layout: style_object.layout, shape: style_object.shape }
+                });
+                if (button.isEligible()) {
+                    button.render('.display_smart_button_previews');
+                }
+            });
         }
     }
 });

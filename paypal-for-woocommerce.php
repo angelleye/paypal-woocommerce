@@ -394,7 +394,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             );
             if( !empty($_GET['tab']) && !empty($_GET['section']) && $_GET['tab'] == 'checkout' && $_GET['section'] == 'paypal_express') {
                 $smart_js_arg = array();
-                $smart_js_arg['components'] = "buttons,messages";
+                $smart_js_arg['components'] = "buttons,messages,funding-eligibility";
                 $smart_js_arg['currency'] = get_woocommerce_currency();
                 $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
                 $disallowed_funding_methods = !empty($pp_settings['disallowed_funding_methods']) ? (array) $pp_settings['disallowed_funding_methods'] : array();
