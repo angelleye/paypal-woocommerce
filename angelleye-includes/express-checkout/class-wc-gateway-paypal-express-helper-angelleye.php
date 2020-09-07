@@ -9,6 +9,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public $function_helper;
     public $posted;
     public $version;
+    public $is_us;
 
     /**
      * The single instance of the class
@@ -175,7 +176,11 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->enabled_credit_messaging_value = 'no';
                 }
                 $this->enabled_credit_messaging = 'yes' === $this->enabled_credit_messaging_value;
-
+                if($this->enabled_credit_messaging) {
+                    if($this->is_us === false) {
+                        $this->enabled_credit_messaging = false;
+                    }
+                }
                 add_action('woocommerce_after_add_to_cart_button', array($this, 'buy_now_button'), 11);
 
                 add_action('wp_head', array($this, 'angelleye_add_header_meta'), 0);
