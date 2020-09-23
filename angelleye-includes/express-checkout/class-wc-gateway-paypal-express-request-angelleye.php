@@ -754,9 +754,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
 
             if ($_REQUEST['request_from'] == 'JSv4') {
-
-                $SECFields['returnurl'] = 'https://www.paypal.com/checkoutnow/error';
-                $SECFields['cancelurl'] = 'https://www.paypal.com/checkoutnow/error';
+                if(is_angelleye_multi_account_active() === false) {
+                    $SECFields['returnurl'] = 'https://www.paypal.com/checkoutnow/error';
+                    $SECFields['cancelurl'] = 'https://www.paypal.com/checkoutnow/error';
+                }
             }
 
             $usePayPalCredit = (!empty($_GET['use_paypal_credit']) && $_GET['use_paypal_credit'] == true) ? true : false;
@@ -1713,7 +1714,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 if (isset($PayPalResult['ACK']) && $PayPalResult['ACK'] == 'Success') {
                     if (isset($PayPalResult['PAL']) && !empty($PayPalResult['PAL'])) {
                         $merchant_account_id = $PayPalResult['PAL'];
-                        update_option('angelleye_express_checkout_default_pal', array('Sandbox' => $gateways->testmode, 'APIUsername' => $gateways->api_username, 'PAL' => $merchant_account_id));
+                        update_option('angelleye_express_checkout_default_pal', array('Sandbox' => $this->testmode, 'APIUsername' => $this->api_username, 'PAL' => $merchant_account_id));
                         return $merchant_account_id;
                     }
                 }
