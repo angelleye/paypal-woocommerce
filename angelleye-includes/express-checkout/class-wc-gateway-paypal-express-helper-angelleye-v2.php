@@ -1458,6 +1458,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
     
     public function angelleye_display_credit_messaging_category_page() {
+        if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+            return false;
+        }
         if (is_shop() === false && $this->credit_messaging_category_shortcode === false) {
             wp_enqueue_script('angelleye-in-context-checkout-js');
             wp_enqueue_script('angelleye-credit-messaging-category', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/category.js', array('jquery'), $this->version, true);
