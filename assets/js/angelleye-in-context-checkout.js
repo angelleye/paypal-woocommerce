@@ -139,7 +139,6 @@ jQuery(function ($) {
         if (typeof angelleye_in_content_param.button_height !== "undefined" && angelleye_in_content_param.button_height !== '') {
             angelleye_cart_style_object['height'] = parseInt(angelleye_in_content_param.button_height);
         }
-        console.log(angelleye_cart_style_object);
         angelleye_button_selector.forEach(function (selector) {
             $(selector).html("");
             if (selector.length > 0 && $(selector).length > 0) {

@@ -20,7 +20,7 @@
     display: none;
 }
 .express-checkout .wc-terms-and-conditions {
-   width: 100%; 
+    width: 100%; 
 }
 .express-checkout #ship-to-different-address {
     display: none;
@@ -68,7 +68,7 @@
 }
 
 .single_add_to_cart_button:disabled[disabled]{
-cursor: not-allowed;
+    cursor: not-allowed;
     opacity: .5;
 }
 #express_checkout_button_product_page .express_checkout_button a input.disabled {
@@ -101,7 +101,7 @@ div.widget_shopping_cart_content a.paypal_checkout_button {
 div.widget_shopping_cart_content a.paypal_checkout_button image {
     box-shadow: none;
     max-width: 100%;
-     padding: 0;
+    padding: 0;
 }
 
 div.widget_shopping_cart_content a.paypal_checkout_button .ec_checkout_page_button_type_paypalimage, div.widget_shopping_cart_content a.paypal_checkout_button .ec_checkout_page_button_type_customimage {
@@ -178,18 +178,18 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
     text-align: center;
 }
 @media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 1024px) {
-      .angelleye_button_single a.paypal_checkout_button img.ppcreditlogo.ec_checkout_page_button_type_pc {
-          margin: 0px;
-      }
+and (min-device-width: 320px) 
+and (max-device-width: 1024px) {
+    .angelleye_button_single a.paypal_checkout_button img.ppcreditlogo.ec_checkout_page_button_type_pc {
+        margin: 0px;
+    }
 }
 @media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 1080px) {
-      .angelleye_button_single a.paypal_checkout_button img.ppcreditlogo.ec_checkout_page_button_type_pc {
-          margin: 0px;
-      }
+and (min-device-width: 320px) 
+and (max-device-width: 1080px) {
+    .angelleye_button_single a.paypal_checkout_button img.ppcreditlogo.ec_checkout_page_button_type_pc {
+        margin: 0px;
+    }
 }
 
 .angelleye-woocommerce-customer-details-email::before {
@@ -208,8 +208,8 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
     position: absolute;
 }
 .angelleye-woocommerce-customer-details-phone, .angelleye-woocommerce-customer-details-email {
-        margin-bottom: 0;
-        padding-left: 1.5em;
+    margin-bottom: 0;
+    padding-left: 1.5em;
 }
 
 .angelleye-woocommerce-customer-details-phone::before {
@@ -237,20 +237,23 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
     max-width: 500px;
 }
 .angelleye_small {
-	width: 150px;
-	display: inline-block;
+    width: 150px;
 }
 .angelleye_medium {
-	width: 250px;
-	display: inline-block;
+    width: 250px;
 }
 .angelleye_large {
-	width: 350px;
-	display: inline-block;
+    width: 350px;
 }
 .angelleye_responsive {
-	width: 100%;
-	display: inline-block;
+    width: 100%;
+    display: inline-block;
+}
+.angelleye_pp_message_home, .angelleye_pp_message_product, .angelleye_pp_message_cart, .angelleye_pp_message_payment, .angelleye_pp_message_category {
+    display: block;
+    margin: 15px 0px 15px 0px;
+    position: relative;
+    z-index: 99999;
 }
 @media screen and (max-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom, angelleye_smart_button_checkout_top {
