@@ -1410,6 +1410,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_display_credit_messaging_home_page_content($content) {
+        if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+            return $content;
+        }
         if ((is_home() || is_front_page())) {
             wp_enqueue_script('angelleye-in-context-checkout-js');
             wp_enqueue_script('angelleye-credit-messaging-home', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/home.js', array('jquery'), $this->version, true);
@@ -1421,6 +1424,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_display_credit_messaging_home_page() {
+        if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+            return false;
+        }
         if (is_shop()) {
             wp_enqueue_script('angelleye-in-context-checkout-js');
             wp_enqueue_script('angelleye-credit-messaging-home', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/home.js', array('jquery'), $this->version, true);
@@ -1435,6 +1441,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_display_credit_messaging_product_page() {
+        if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+            return false;
+        }
         wp_enqueue_script('angelleye-in-context-checkout-js');
         wp_enqueue_script('angelleye-credit-messaging-product', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/product.js', array('jquery'), $this->version, true);
         $this->angelleye_paypal_credit_messaging_js_enqueue($placement = 'product');
@@ -1442,6 +1451,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_display_credit_messaging_cart_page() {
+        if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+            return false;
+        }
         wp_enqueue_script('angelleye-in-context-checkout-js');
         wp_enqueue_script('angelleye-credit-messaging-cart', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/cart.js', array('jquery'), $this->version, true);
         $this->angelleye_paypal_credit_messaging_js_enqueue($placement = 'cart');
@@ -1449,6 +1461,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_display_credit_messaging_bottom_cart_page($button) {
+        if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+            return false;
+        }
         wp_enqueue_script('angelleye-credit-messaging-cart', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/cart.js', array('jquery'), $this->version, true);
         $this->angelleye_paypal_credit_messaging_js_enqueue($placement = 'cart');
         $button .= '<div class="angelleye_pp_message_cart"></div>';
@@ -1456,6 +1471,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function angelleye_display_credit_messaging_payment_page() {
+        if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+            return false;
+        }
         wp_enqueue_script('angelleye-in-context-checkout-js');
         wp_enqueue_script('angelleye-credit-messaging-payment', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/credit-messaging/payment.js', array('jquery'), $this->version, true);
         $this->angelleye_paypal_credit_messaging_js_enqueue($placement = 'payment');
