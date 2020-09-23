@@ -2,6 +2,19 @@ jQuery(function ($) {
     if (typeof angelleye_in_content_param === 'undefined') {
         return false;
     }
+    
+    var angelleye_hide_button = function () {
+        $('#place_order').show();
+        $('.angelleye_pp_message_payment:eq(1)').hide();
+        $('.angelleye_smart_button_checkout_bottom').hide();
+    };
+    
+    var angelleye_show_button = function () {
+        $('#place_order').hide();
+        $('.angelleye_pp_message_payment:eq(1)').show();
+        $('.angelleye_smart_button_checkout_bottom').show();
+    };
+    
     var get_attributes = function () {
         var select = $('.variations_form').find('.variations select'),
                 data = {},
@@ -23,24 +36,13 @@ jQuery(function ($) {
         };
     };
 
+    if( angelleye_in_content_param.is_checkout !== 'yes') {
     display_smart_button_on_cart_checkout();
+    }
     display_smart_button_on_min_cart();
     display_smart_button_on_product_page();
     display_smart_button_on_wsc_cart();
-
-    function is_funding_icon_should_show_in_content() {
-        var disallowed_funding_methods = angelleye_in_content_param.disallowed_funding_methods;
-        if (disallowed_funding_methods === null) {
-            disallowed_funding_methods = [];
-        }
-        if ($.inArray('card', disallowed_funding_methods) > -1) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    function display_smart_button_on_product_page() {
+     function display_smart_button_on_product_page() {
         if ($('.angelleye_button_single').length > 0) {
             $('.angelleye_button_single').empty();
             angelleye_cart_style_object = {
@@ -53,7 +55,8 @@ jQuery(function ($) {
             if (typeof angelleye_in_content_param.button_height !== "undefined" && angelleye_in_content_param.button_height !== '') {
                 angelleye_cart_style_object['height'] = parseInt(angelleye_in_content_param.button_height);
             }
-            $('.angelleye_button_single').addClass( 'angelleye_' + angelleye_in_content_param.button_size );
+            $(".angelleye_button_single").removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
+            $('.angelleye_button_single').addClass('angelleye_' + angelleye_in_content_param.button_layout + '_' + angelleye_in_content_param.button_size);
             paypal.Buttons({
                 style: angelleye_cart_style_object,
                 createOrder: function () {
@@ -142,7 +145,8 @@ jQuery(function ($) {
         angelleye_button_selector.forEach(function (selector) {
             $(selector).html("");
             if (selector.length > 0 && $(selector).length > 0) {
-                $(selector).addClass( 'angelleye_' + angelleye_in_content_param.button_size );
+                $(selector).removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
+                $(selector).addClass('angelleye_' + angelleye_in_content_param.button_layout + '_' + angelleye_in_content_param.button_size);
                 paypal.Buttons({
                     style: angelleye_cart_style_object,
                     createOrder: function () {
@@ -218,7 +222,8 @@ jQuery(function ($) {
         angelleye_button_selector.forEach(function (selector) {
             $(selector).html("");
             if (selector.length > 0 && $(selector).length > 0) {
-                $(selector).addClass( 'angelleye_' + angelleye_in_content_param.mini_cart_button_size );
+                $(selector).removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
+                $(selector).addClass('angelleye_' + angelleye_in_content_param.button_layout + '_' + angelleye_in_content_param.button_size);
                 paypal.Buttons({
                     style: angelleye_cart_style_object,
                     createOrder: function () {
@@ -287,7 +292,8 @@ jQuery(function ($) {
         angelleye_button_selector.forEach(function (selector) {
             $(selector).html("");
             if (selector.length > 0 && $(selector).length > 0) {
-                $(selector).addClass( 'angelleye_' + angelleye_in_content_param.wsc_cart_button_size );
+                $(selector).removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
+                $(selector).addClass('angelleye_' + angelleye_in_content_param.wsc_cart_button_layout + '_' + angelleye_in_content_param.wsc_cart_button_size);
                 paypal.Buttons({
                     style: angelleye_cart_style_object,
                     createOrder: function () {
@@ -355,7 +361,8 @@ jQuery(function ($) {
             angelleye_button_selector.forEach(function (selector) {
                 $(selector).html("");
                 if (selector.length > 0 && $(selector).length > 0) {
-                    $(selector).addClass( 'angelleye_' + angelleye_in_content_param.button_size );
+                    $(selector).removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
+                    $(selector).addClass('angelleye_' + angelleye_in_content_param.button_layout + '_' + angelleye_in_content_param.button_size);
                     paypal.Buttons({
                         style: angelleye_cart_style_object,
                         createOrder: function () {
@@ -368,13 +375,11 @@ jQuery(function ($) {
                                             .attr('value', 'yes')
                                             )
                                     .serialize();
-                            return paypal.request({
-                                method: 'post',
-                                url: angelleye_in_content_param.set_express_checkout,
-                                body: data,
-                            }).then(function (response) {
-                                return response.token;
+                            
+                            return $.post(angelleye_in_content_param.set_express_checkout, data).then(function (data) {
+                                return data.token;
                             });
+                            
                         },
                         onApprove: function (data, actions) {
                             $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
@@ -395,6 +400,7 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
+                            console.log("on cancel");
                             $('.woocommerce').unblock();
                             window.location.href = window.location.href;
                         },
@@ -410,6 +416,7 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
+                            console.log("on error");
                             $('.woocommerce').unblock();
                             window.location.href = window.location.href;
                         }
@@ -421,7 +428,7 @@ jQuery(function ($) {
             });
     }
 
-    $(document.body).on('cart_totals_refreshed updated_shipping_method wc_fragments_refreshed updated_checkout updated_wc_div updated_cart_totals wc_fragments_loaded', function (event) {
+    $(document.body).on('updated_cart_totals updated_checkout', function (event) {
         display_smart_button_on_cart_checkout();
     });
     if (angelleye_in_content_param.checkout_page_disable_smart_button === "no") {
@@ -455,25 +462,19 @@ jQuery(function ($) {
             var is_checked = $('#payment_method_paypal_express').is(':checked');
             if ($('input[name="wc-paypal_express-payment-token"]:checked').length > 0) {
                 if (is_checked && $('input[name="wc-paypal_express-payment-token"]').length && $('input[name="wc-paypal_express-payment-token"]:checked').val() === 'new') {
-                    $('#place_order').hide();
-                    $('.angelleye_smart_button_checkout_bottom').show();
+                    angelleye_show_button();
                 } else if (is_checked && $('input[name="wc-paypal_express-payment-token"]').length && $('input[name="wc-paypal_express-payment-token"]:checked').val() !== 'new') {
-                    $('#place_order').show();
-                    $('.angelleye_smart_button_checkout_bottom').hide();
+                    angelleye_hide_button();
                 } else if (is_checked) {
-                    $('.angelleye_smart_button_checkout_bottom').show();
-                    $('#place_order').hide();
+                    angelleye_show_button();
                 } else {
-                    $('.angelleye_smart_button_checkout_bottom').hide();
-                    $('#place_order').show();
+                    angelleye_hide_button();
                 }
             } else {
                 if (is_checked) {
-                    $('.angelleye_smart_button_checkout_bottom').show();
-                    $('#place_order').hide();
+                    angelleye_show_button();
                 } else {
-                    $('.angelleye_smart_button_checkout_bottom').hide();
-                    $('#place_order').show();
+                    angelleye_hide_button();
                 }
             }
         }
@@ -482,11 +483,9 @@ jQuery(function ($) {
         });
         $('form.checkout').on('click', 'input[name="wc-paypal_express-payment-token"]', function () {
             if ($(this).val() === 'new') {
-                $('#place_order').hide();
-                $('.angelleye_smart_button_checkout_bottom').show();
+                angelleye_show_button();
             } else if ($(this).val() !== 'new') {
-                $('#place_order').show();
-                $('.angelleye_smart_button_checkout_bottom').hide();
+                angelleye_hide_button();
             }
         });
     }

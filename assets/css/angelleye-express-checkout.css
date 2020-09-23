@@ -233,27 +233,45 @@ and (max-device-width: 1080px) {
     margin-bottom: 10px;
 }
 
-.angelleye_smart_button_top, .angelleye_smart_button_bottom, .angelleye_smart_button_checkout_top {
+.angelleye_smart_button_top, .angelleye_smart_button_bottom, .angelleye_smart_button_checkout_top, .angelleye_smart_button_checkout_bottom {
     max-width: 500px;
 }
-.angelleye_small {
+.angelleye_vertical_small {
     width: 150px;
 }
-.angelleye_medium {
+.angelleye_vertical_medium {
     width: 250px;
 }
-.angelleye_large {
+.angelleye_vertical_large {
     width: 350px;
 }
-.angelleye_responsive {
-    width: 100%;
-    display: inline-block;
+.angelleye_horizontal_small {
+    width: 300px;
 }
+.angelleye_horizontal_medium {
+    width: 400px;
+}
+.angelleye_horizontal_large {
+    width: 500px;
+}
+
+.angelleye_smart_button_bottom {
+    position: relative;
+    margin: 0 auto;
+}
+
 .angelleye_pp_message_home, .angelleye_pp_message_product, .angelleye_pp_message_cart, .angelleye_pp_message_payment, .angelleye_pp_message_category {
     display: block;
     margin: 15px 0px 15px 0px;
     position: relative;
     z-index: 99999;
+}
+.wc-proceed-to-checkout .angelleye_pp_message_cart.angelleye_flex {
+    display: flex;
+    justify-content: center;
+}
+.wc-proceed-to-checkout .angelleye_pp_message_cart.angelleye_text {
+    display: inline-block;
 }
 @media screen and (max-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom, angelleye_smart_button_checkout_top {

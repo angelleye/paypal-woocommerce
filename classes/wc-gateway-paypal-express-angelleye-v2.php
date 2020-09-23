@@ -241,6 +241,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         ?>
         <script type="text/javascript">
         <?php if ($this->is_us) { ?>
+                
+                
                 var home_page_credit_messaging_preview = function () {
                     var home_style_object = {};
                     home_style_object['layout'] = jQuery('#woocommerce_paypal_express_credit_messaging_home_layout_type').val();
@@ -265,6 +267,83 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }).render('.pp_message_home');
                     }
                 };
+                
+                var hide_show_home_shortcode = function () {
+                  
+                   jQuery('#woocommerce_paypal_express_credit_messaging_home_shortcode').change(function () {
+                        var home_preview_shortcode = jQuery('#woocommerce_paypal_express_credit_messaging_home_preview_shortcode').closest('tr');
+                        if (jQuery(this).is(':checked')) {
+                            if (is_credit_messaging_enable() === true && is_credit_messaging_home_page_enable()) {
+                                home_preview_shortcode.show();
+                            }
+                        } else {
+                            home_preview_shortcode.hide();
+                        }
+                    }).change();
+                  
+                };
+                
+                var hide_show_category_shortcode = function () {
+                  
+                   jQuery('#woocommerce_paypal_express_credit_messaging_category_shortcode').change(function () {
+                        var category_preview_shortcode = jQuery('#woocommerce_paypal_express_credit_messaging_category_preview_shortcode').closest('tr');
+                        if (jQuery(this).is(':checked')) {
+                            if (is_credit_messaging_enable() === true && is_credit_messaging_category_page_enable()) {
+                                category_preview_shortcode.show();
+                            }
+                        } else {
+                            category_preview_shortcode.hide();
+                        }
+                    }).change();
+                  
+                };
+                
+                var hide_show_product_shortcode = function () {
+                  
+                   jQuery('#woocommerce_paypal_express_credit_messaging_product_shortcode').change(function () {
+                        var product_preview_shortcode = jQuery('#woocommerce_paypal_express_credit_messaging_product_preview_shortcode').closest('tr');
+                        if (jQuery(this).is(':checked')) {
+                            if (is_credit_messaging_enable() === true && is_credit_messaging_product_page_enable()) {
+                                product_preview_shortcode.show();
+                            }
+                        } else {
+                            product_preview_shortcode.hide();
+                        }
+                    }).change();
+                  
+                };
+                
+                
+                var hide_show_cart_shortcode = function () {
+                  
+                   jQuery('#woocommerce_paypal_express_credit_messaging_cart_shortcode').change(function () {
+                        var cart_preview_shortcode = jQuery('#woocommerce_paypal_express_credit_messaging_cart_preview_shortcode').closest('tr');
+                        if (jQuery(this).is(':checked')) {
+                            if (is_credit_messaging_enable() === true && is_credit_messaging_cart_page_enable()) {
+                                cart_preview_shortcode.show();
+                            }
+                        } else {
+                            cart_preview_shortcode.hide();
+                        }
+                    }).change();
+                  
+                };
+                
+                var hide_show_payment_shortcode = function () {
+                  
+                   jQuery('#woocommerce_paypal_express_credit_messaging_payment_shortcode').change(function () {
+                        var payment_preview_shortcode = jQuery('#woocommerce_paypal_express_credit_messaging_payment_preview_shortcode').closest('tr');
+                        if (jQuery(this).is(':checked')) {
+                            if (is_credit_messaging_enable() === true && is_credit_messaging_payment_page_enable()) {
+                                payment_preview_shortcode.show();
+                            }
+                        } else {
+                            payment_preview_shortcode.hide();
+                        }
+                    }).change();
+                  
+                };
+                
                 var category_page_credit_messaging_preview = function () {
                     var category_style_object = {};
                     category_style_object['layout'] = jQuery('#woocommerce_paypal_express_credit_messaging_category_layout_type').val();
@@ -405,6 +484,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     credit_messaging_home_base_field_parent = jQuery('.credit_messaging_home_base_field').closest('tr');
                     credit_messaging_home_base_field_p_tag = jQuery('.credit_messaging_home_base_field').next("p");
                     credit_messaging_home_base_field = jQuery('.credit_messaging_home_base_field');
+                    credit_messaging_home_preview = jQuery('#woocommerce_paypal_express_credit_messaging_home_preview');
                     if (is_credit_messaging_home_page_enable()) {
                         credit_messaging_home_field_parent.show();
                         credit_messaging_home_field.show();
@@ -412,6 +492,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_home_base_field_parent.show();
                         credit_messaging_home_base_field.show();
                         credit_messaging_home_base_field_p_tag.show();
+                        credit_messaging_home_preview.show();
                     } else {
                         credit_messaging_home_field_parent.hide();
                         credit_messaging_home_field.hide();
@@ -419,8 +500,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_home_base_field_parent.hide();
                         credit_messaging_home_base_field.hide();
                         credit_messaging_home_base_field_p_tag.hide();
+                        credit_messaging_home_preview.hide();
                     }
                     jQuery('#woocommerce_paypal_express_credit_messaging_home_layout_type').trigger('change');
+                    hide_show_home_shortcode();
                 };
                 var is_credit_messaging_category_page_enable = function () {
                     if (is_credit_messaging_enable() === false) {
@@ -438,6 +521,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     credit_messaging_category_base_field_parent = jQuery('.credit_messaging_category_base_field').closest('tr');
                     credit_messaging_category_base_field_p_tag = jQuery('.credit_messaging_category_base_field').next("p");
                     credit_messaging_category_base_field = jQuery('.credit_messaging_category_base_field');
+                    credit_messaging_category_preview = jQuery('#woocommerce_paypal_express_credit_messaging_category_preview');
                     if (is_credit_messaging_category_page_enable()) {
                         credit_messaging_category_field_parent.show();
                         credit_messaging_category_field.show();
@@ -445,6 +529,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_category_base_field_parent.show();
                         credit_messaging_category_base_field.show();
                         credit_messaging_category_base_field_p_tag.show();
+                        credit_messaging_category_preview.show();
                     } else {
                         credit_messaging_category_field_parent.hide();
                         credit_messaging_category_field.hide();
@@ -452,8 +537,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_category_base_field_parent.hide();
                         credit_messaging_category_base_field.hide();
                         credit_messaging_category_base_field_p_tag.hide();
+                        credit_messaging_category_preview.hide();
                     }
                     jQuery('#woocommerce_paypal_express_credit_messaging_category_layout_type').trigger('change');
+                    hide_show_category_shortcode();
                 };
                 var is_credit_messaging_product_page_enable = function () {
                     if (is_credit_messaging_enable() === false) {
@@ -471,6 +558,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     credit_messaging_product_base_field_parent = jQuery('.credit_messaging_product_base_field').closest('tr');
                     credit_messaging_product_base_field_p_tag = jQuery('.credit_messaging_product_base_field').next("p");
                     credit_messaging_product_base_field = jQuery('.credit_messaging_product_base_field');
+                    credit_messaging_product_preview = jQuery('#woocommerce_paypal_express_credit_messaging_product_preview');
                     if (is_credit_messaging_product_page_enable()) {
                         credit_messaging_product_field_parent.show();
                         credit_messaging_product_field.show();
@@ -478,6 +566,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_product_base_field_parent.show();
                         credit_messaging_product_base_field.show();
                         credit_messaging_product_base_field_p_tag.show();
+                        credit_messaging_product_preview.show();
                     } else {
                         credit_messaging_product_field_parent.hide();
                         credit_messaging_product_field.hide();
@@ -485,8 +574,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_product_base_field_parent.hide();
                         credit_messaging_product_base_field.hide();
                         credit_messaging_product_base_field_p_tag.hide();
+                        credit_messaging_product_preview.hide();
                     }
                     jQuery('#woocommerce_paypal_express_credit_messaging_product_layout_type').trigger('change');
+                    hide_show_product_shortcode();
                 };
                 var is_credit_messaging_cart_page_enable = function () {
                     if (is_credit_messaging_enable() === false) {
@@ -504,6 +595,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     credit_messaging_cart_base_field_parent = jQuery('.credit_messaging_cart_base_field').closest('tr');
                     credit_messaging_cart_base_field_p_tag = jQuery('.credit_messaging_cart_base_field').next("p");
                     credit_messaging_cart_base_field = jQuery('.credit_messaging_cart_base_field');
+                    credit_messaging_cart_preview = jQuery('#woocommerce_paypal_express_credit_messaging_cart_preview');
                     if (is_credit_messaging_cart_page_enable()) {
                         credit_messaging_cart_field_parent.show();
                         credit_messaging_cart_field.show();
@@ -511,6 +603,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_cart_base_field_parent.show();
                         credit_messaging_cart_base_field.show();
                         credit_messaging_cart_base_field_p_tag.show();
+                        credit_messaging_cart_preview.show();
                     } else {
                         credit_messaging_cart_field_parent.hide();
                         credit_messaging_cart_field.hide();
@@ -518,8 +611,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_cart_base_field_parent.hide();
                         credit_messaging_cart_base_field.hide();
                         credit_messaging_cart_base_field_p_tag.hide();
+                        credit_messaging_cart_preview.hide();
                     }
                     jQuery('#woocommerce_paypal_express_credit_messaging_cart_layout_type').trigger('change');
+                    hide_show_cart_shortcode();
                 };
                 var is_credit_messaging_payment_page_enable = function () {
                     if (is_credit_messaging_enable() === false) {
@@ -537,6 +632,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     credit_messaging_payment_base_field_parent = jQuery('.credit_messaging_payment_base_field').closest('tr');
                     credit_messaging_payment_base_field_p_tag = jQuery('.credit_messaging_payment_base_field').next("p");
                     credit_messaging_payment_base_field = jQuery('.credit_messaging_payment_base_field');
+                    credit_messaging_payment_preview = jQuery('#woocommerce_paypal_express_credit_messaging_payment_preview');
                     if (is_credit_messaging_payment_page_enable()) {
                         credit_messaging_payment_field_parent.show();
                         credit_messaging_payment_field.show();
@@ -544,6 +640,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_payment_base_field_parent.show();
                         credit_messaging_payment_base_field.show();
                         credit_messaging_payment_base_field_p_tag.show();
+                        credit_messaging_payment_preview.show();
                     } else {
                         credit_messaging_payment_field_parent.hide();
                         credit_messaging_payment_field.hide();
@@ -551,8 +648,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_payment_base_field_parent.hide();
                         credit_messaging_payment_base_field.hide();
                         credit_messaging_payment_base_field_p_tag.hide();
+                        credit_messaging_payment_preview.hide();
                     }
                     jQuery('#woocommerce_paypal_express_credit_messaging_payment_layout_type').trigger('change');
+                    hide_show_payment_shortcode();
                 };
                 jQuery('#woocommerce_paypal_express_enabled_credit_messaging').change(function () {
                     credit_messaging_field_parent = jQuery('.credit_messaging_field').closest('tr');
@@ -770,6 +869,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         credit_messaging_payment_text_layout_logo_position.hide();
                     }
                 }).change();
+                
         <?php } ?>
             jQuery("#woocommerce_paypal_express_button_layout").change(function () {
                 var angelleye_button_tagline = jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
@@ -1428,7 +1528,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'cancel_page' => array(
                 'title' => __('Cancel Page', 'paypal-for-woocommerce'),
-                'description' => __('Sets the page users will be returned to if they click the Cancel link on the PayPal checkout pages.'),
+                'description' => __('Sets the page users will be returned to if they click the Cancel link on the PayPal checkout pages. As such, this option will be ignored when CartFlows checkout is used'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select',
                 'options' => $cancel_page,
@@ -1982,13 +2082,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         if ($this->is_us) {
             $this->form_fields['credit_messaging'] = array(
-                'title' => __('PayPal Credit messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
+                'title' => __('PayPal Credit Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
                 'type' => 'title',
-                'description' => __('To add PayPal Credit messaging - Buy Now Pay Later to your site.', 'paypal-for-woocommerce'),
+                'description' => __('PayPal Credit is a revolving line of credit that gives your customers the flexibility to buy now and pay over time, while you receive full payment immediately.  Buyer-facing messaging allows you to present this option to your buyers, increasing conversion rates and average order total.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['enabled_credit_messaging'] = array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
-                'label' => __('Enable PayPal Credit messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
+                'label' => __('Enable PayPal Credit Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => '',
                 'default' => 'no'
@@ -2006,7 +2106,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Home Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_home_base_field',
-                'description' => __('Enable the Home Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Home page.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Home Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_home_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2077,11 +2177,27 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
             );
+            $this->form_fields['credit_messaging_home_shortcode'] = array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'label' => __('I need a shortcode so that I can place the message in a better spot on Home page.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'class' => 'credit_messaging_field credit_messaging_home_field credit_messaging_home_shortcode',
+                'description' => '',
+                'default' => 'no'
+            );
+            $this->form_fields['credit_messaging_home_preview_shortcode'] = array(
+                'title' => __('Shortcode', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'class' => 'credit_messaging_field credit_messaging_home_field credit_messaging_home_preview_shortcode ',
+                'description' => '',
+                'custom_attributes'    => array('readonly' => 'readonly'),
+                'default' => '[aepfw_bnpl_message placement="home"]'
+            );
             $this->form_fields['credit_messaging_category'] = array(
                 'title' => __('Category Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_category_base_field',
-                'description' => __('Enable the Category Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Category page.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Category Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_category_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2152,11 +2268,27 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
             );
+            $this->form_fields['credit_messaging_category_shortcode'] = array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'label' => __('I need a shortcode so that I can place the message in a better spot on Category page.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'class' => 'credit_messaging_field credit_messaging_category_field credit_messaging_category_shortcode',
+                'description' => '',
+                'default' => 'no'
+            );
+            $this->form_fields['credit_messaging_category_preview_shortcode'] = array(
+                'title' => __('Shortcode', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'class' => 'credit_messaging_field credit_messaging_category_field credit_messaging_category_preview_shortcode ',
+                'description' => '',
+                'custom_attributes'    => array('readonly' => 'readonly'),
+                'default' => '[aepfw_bnpl_message placement="category"]'
+            );
             $this->form_fields['credit_messaging_product'] = array(
                 'title' => __('Product Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_product_base_field',
-                'description' => __('Enable the Product Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Product page.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Product Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_product_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2227,11 +2359,27 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
             );
+            $this->form_fields['credit_messaging_product_shortcode'] = array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'label' => __('I need a shortcode so that I can place the message in a better spot on Product page.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'class' => 'credit_messaging_field credit_messaging_product_field credit_messaging_product_shortcode',
+                'description' => '',
+                'default' => 'no'
+            );
+            $this->form_fields['credit_messaging_product_preview_shortcode'] = array(
+                'title' => __('Shortcode', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'class' => 'credit_messaging_field credit_messaging_product_field credit_messaging_product_preview_shortcode ',
+                'description' => '',
+                'custom_attributes'    => array('readonly' => 'readonly'),
+                'default' => '[aepfw_bnpl_message placement="product"]'
+            );
             $this->form_fields['credit_messaging_cart'] = array(
                 'title' => __('Cart Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_cart_base_field',
-                'description' => __('Enable the Cart Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Cart page.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Cart Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_cart_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2302,11 +2450,27 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
             );
+            $this->form_fields['credit_messaging_cart_shortcode'] = array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'label' => __('I need a shortcode so that I can place the message in a better spot on Cart page.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'class' => 'credit_messaging_field credit_messaging_cart_field credit_messaging_cart_shortcode',
+                'description' => '',
+                'default' => 'no'
+            );
+            $this->form_fields['credit_messaging_cart_preview_shortcode'] = array(
+                'title' => __('Shortcode', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'class' => 'credit_messaging_field credit_messaging_cart_field credit_messaging_cart_preview_shortcode ',
+                'description' => '',
+                'custom_attributes'    => array('readonly' => 'readonly'),
+                'default' => '[aepfw_bnpl_message placement="cart"]'
+            );
             $this->form_fields['credit_messaging_payment'] = array(
                 'title' => __('Payment Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_payment_base_field',
-                'description' => __('Enable the payment Page specific PayPal Credit messaging - Buy Now Pay Later settings, and the options set will be applied to the PayPal Credit messaging - Buy Now Pay Later on your Payment page.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Home Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_payment_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2376,6 +2540,22 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => '1x1',
                 'desc_tip' => true,
                 'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
+            );
+            $this->form_fields['credit_messaging_payment_shortcode'] = array(
+                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                'label' => __('I need a shortcode so that I can place the message in a better spot on Payment page.', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'class' => 'credit_messaging_field credit_messaging_payment_field credit_messaging_payment_shortcode',
+                'description' => '',
+                'default' => 'no'
+            );
+            $this->form_fields['credit_messaging_payment_preview_shortcode'] = array(
+                'title' => __('Shortcode', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'class' => 'credit_messaging_field credit_messaging_payment_field credit_messaging_payment_preview_shortcode ',
+                'description' => '',
+                'custom_attributes'    => array('readonly' => 'readonly'),
+                'default' => '[aepfw_bnpl_message placement="payment"]'
             );
         }
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
