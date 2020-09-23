@@ -19,4 +19,14 @@ if (!function_exists('is_angelleye_ec_review_page')) {
     }
 
 }
+if (!function_exists('is_angelleye_multi_account_active')) {
+
+    function is_angelleye_multi_account_active() {
+        if (function_exists('run_paypal_for_woocommerce_multi_account_management')) {
+            return true;
+        }
+        return false;
+    }
+
+}
 
