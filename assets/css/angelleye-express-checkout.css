@@ -165,7 +165,6 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
 }
 .angelleye_button_single {
     clear: both;
-    float: left;
 }
 .single_add_to_cart_button.paypal_checkout_button.paypal_checkout_button_cc {
     border: none !important;
@@ -236,6 +235,22 @@ form div.angelleye_ec_save_to_accoount_box p.form-row.woocommerce-SavedPaymentMe
 
 .angelleye_smart_button_top, .angelleye_smart_button_bottom, .angelleye_smart_button_checkout_top {
     max-width: 500px;
+}
+.angelleye_small {
+	width: 150px;
+	display: inline-block;
+}
+.angelleye_medium {
+	width: 250px;
+	display: inline-block;
+}
+.angelleye_large {
+	width: 350px;
+	display: inline-block;
+}
+.angelleye_responsive {
+	width: 100%;
+	display: inline-block;
 }
 @media screen and (max-width: 400px) {
     .angelleye_smart_button_top, .angelleye_smart_button_bottom, angelleye_smart_button_checkout_top {
