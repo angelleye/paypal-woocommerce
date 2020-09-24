@@ -241,8 +241,11 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         ?>
         <script type="text/javascript">
         <?php if ($this->is_us) { ?>
-
-
+                jQuery('.pms-view-more').on('click', function (event) {
+                    event.preventDefault();
+                    var win = window.open('https://www.angelleye.com/paypal-buy-now-pay-later/', '_blank');
+                    win.focus();
+                });
                 var home_page_credit_messaging_preview = function () {
                     var home_style_object = {};
                     home_style_object['layout'] = jQuery('#woocommerce_paypal_express_credit_messaging_home_layout_type').val();
