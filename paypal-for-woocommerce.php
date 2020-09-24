@@ -197,12 +197,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 		            'id'    => 'pfw_options',
 	            ),
 	            array(
-		            'title'    => __( 'Version Mark', 'woocommerce' ),
-		            'desc'     => __( 'Remove PFW Version mark from frontend', 'woocommerce' ),
+		            'title'    => __( 'Hide Version Tag', 'woocommerce' ),
+		            'desc'     => __( 'Hide plugin version tag from front end source code.', 'woocommerce' ),
 		            'id'       => 'pfw_hide_frontend_mark',
 		            'default'  => 'no',
 		            'type'     => 'checkbox',
-		            'desc_tip' => __( 'Removes the PayPal for WooCommerce version description from the frontend HTML source.', 'woocommerce' ),
+		            'desc_tip' => __( 'Removes the PayPal for WooCommerce plugin version from front end source code.', 'woocommerce' ),
 	            ),
 	            array(
 		            'type' => 'sectionend',
