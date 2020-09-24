@@ -400,7 +400,6 @@ jQuery(function ($) {
                             });
                         },
                         onCancel: function (data, actions) {
-                            console.log("on cancel");
                             $('.woocommerce').unblock();
                             window.location.href = window.location.href;
                         },
@@ -416,7 +415,6 @@ jQuery(function ($) {
                             }
                         },
                         onError: function (err, actions) {
-                            console.log("on error");
                             $('.woocommerce').unblock();
                             window.location.href = window.location.href;
                         }

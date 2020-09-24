@@ -174,7 +174,6 @@ jQuery(document).ready(function ($) {
     });
     // change target where type -- toggle categories/value inputs
     $('#pfw-bulk-action-type').change(function () {
-        console.log($(this).val());
         $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-payment-action-type').hide(); 
         $('.angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section.pfw-bulk-action-payment-authorization-type').hide();
         if ($(this).val() == 'enable_payment_action') {

@@ -21,7 +21,6 @@ jQuery(function ($) {
             cart_style_object['color'] = angelleye_credit_messaging.credit_messaging_cart_flex_layout_color;
             cart_style_object['ratio'] = angelleye_credit_messaging.credit_messaging_cart_flex_layout_ratio;
         }
-        console.log(angelleye_credit_messaging.credit_messaging_cart_layout_type);
         $('.angelleye_pp_message_cart').addClass('angelleye_' + angelleye_credit_messaging.credit_messaging_cart_layout_type);
         if (typeof paypal !== 'undefined') {
             paypal.Messages({
