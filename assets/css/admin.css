@@ -289,22 +289,96 @@ hr {
     width: 500px;
 }
 
-.angelleye_paypal_credit_info_container {
-    color: #23282D;
+.pms-promote-credit {
+    width: 442px;
+    height: 50px;
+    font-family: HelveticaNeue;
+    font-size: 21px;
+    font-weight: 500;
+    color: #2c2e2f;
+}
+
+.pms-muse-left-container {
+    width: 58%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.pms-muse-description {
+    margin-right: 40px;
+}
+
+.pms-muse-description p {
     font-size: 13px;
-    font-weight: normal;
-    line-height: 20px;
-    padding: 3px 5px;
-    -webkit-font-smoothing: antialiased;
+    line-height: 1.31;
+    margin-bottom: 38px;
+}
+
+.pms-muse-right-container {
+    width: 35%;
+    color: #6c7378;
+    display: inline-block;
+    margin-left: 40px;
+    vertical-align: top;
+}
+
+.pms-muse-right-container > div img {
+    display: inline-block;
+    margin-left: 35%;
+}
+
+.pms-paypalTOC {
+    color: #6c7378;
+    font-size: .7em;
+}
+
+hr {
+    height: 2px;
+    color: #708090;
+    background-color: #708090;
+}
+
+#pms-paypalInsightsLink {
+    float: left;
+    font-size: 1em;
+    margin-left: 10px;
+}
+
+#pms-muse-container {
     width: 100%;
 }
-.angelleye_paypal_credit_info_left_container {
-    margin: auto;
-    width: 50%;
+#angelleye_wp_marketing_solutions_button_production {
+    margin: 0 auto;
+    float: left;
 }
-.angelleye_paypal_credit_info_description {
-    margin-top: 30px;
-    min-width: 150px;
+.agelleye-paypal-px-btn {
+    width: 305px;
+    height: 50px;
+    line-height: 1.4em;
+}
+.pms-green {
+    color:green;
+}
+.pms-red {
+    color:red;
+}
+
+.pms-center-moreinfo {
+    margin: 0 auto !important;
+    width: 63%;
+}
+
+
+#pms-reset {
+    margin-left: 3px;
+    margin-top: 26px;
+}
+
+#TB_window img#TB_Image {
+    border-right: none !important;
+    border-bottom: none !important;
+    border-top: none !important;
+    border-left: none !important;
 }
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
