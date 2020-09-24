@@ -288,6 +288,15 @@ hr {
 .angelleye_horizontal_large {
     width: 500px;
 }
+.angelleye_paypal_credit_info ul {
+  display: block;
+  list-style-type: disc;
+  margin-top: 1em;
+  margin-bottom: 1 em;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 15px;
+}
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {
         display: block;

@@ -2084,7 +2084,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->form_fields['credit_messaging'] = array(
                 'title' => __('PayPal Credit Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
                 'type' => 'title',
-                'description' => __('PayPal Credit is a revolving line of credit that gives your customers the flexibility to buy now and pay over time, while you receive full payment immediately.  Buyer-facing messaging allows you to present this option to your buyers, increasing conversion rates and average order total.', 'paypal-for-woocommerce'),
+                'description' => __('PayPal Credit is a revolving line of credit that gives your customers the flexibility to buy now and pay over time, while you receive full payment immediately.  Buyer-facing messaging allows you to present this option to your buyers, increasing conversion rates and average order total.', 'paypal-for-woocommerce') . ''
+                . '<br>'
+                . '<div class="angelleye_paypal_credit_info">'
+                . '<ul>'
+                . '<li>Grow Sales - Businesses that promoted PayPal Credit on their websites saw a 21% increase in sales vs. those that did not.</li>'
+                . '<li>Attract New Customers - 85% of PayPal Credit users surveyed are more likely to shop at a retailer or online shop that offers interest-free credit options.</li>'
+                . '<li>Increase Average Order Value - Merchants with pay-over-time messaging on their websites saw a 56% increase in overall PayPal average order value.</li>'
+                . '<li>Increase Conversion Rates - Help convert browsing consumers into buying consumers, increase average order volume, and drive more revenues.</li>'
+                . '<li>28% of shoppers now prefer retailers that offer an instant-financing solution.</li>'
+                . '<li>56% of consumers agree that they prefer to pay a purchase back with installments rather than a credit card.</li>'
+                . '</ul>'
+                . '</div>'
             );
             $this->form_fields['enabled_credit_messaging'] = array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
