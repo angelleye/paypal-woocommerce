@@ -368,30 +368,27 @@ hr {
     width: 63%;
 }
 
-
-
-
 .paypal-px-btn {
-  width: 110px;
-height: 31px;
-border-radius: 100px;
-background-color: #0070ba;
-color: #fff;
-border: none;
-cursor: pointer;
-font-size: .8rem;
+    width: 110px;
+    height: 31px;
+    border-radius: 100px;
+    background-color: #0070ba;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: .8rem;
 
 
-text-align: center;
-margin-left: 30%;
+    text-align: center;
+    margin-left: 30%;
 }
 
 .paypal-px-btn:hover {
-  background-color: #003087;
+    background-color: #003087;
 }
 
 .paypal-px-btn:focus {
-  outline: none;
+    outline: none;
 }
 
 @media only all and (max-width: 1200px) {
