@@ -130,7 +130,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'admin_enqueue_scripts', array( $this , 'admin_scripts' ) );
             add_action( 'admin_print_styles', array( $this , 'admin_styles' ) );
            
-           add_action( 'admin_menu', array( $this, 'angelleye_admin_menu_own' ) );
+            add_action( 'admin_menu', array( $this, 'angelleye_admin_menu_own' ) );
             add_action( 'product_type_options', array( $this, 'angelleye_product_type_options_own' ), 10, 1);
             add_action( 'woocommerce_process_product_meta', array( $this, 'angelleye_woocommerce_process_product_meta_own' ), 10, 1 );
             add_filter( 'woocommerce_add_to_cart_sold_individually_quantity', array( $this, 'angelleye_woocommerce_add_to_cart_sold_individually_quantity' ), 10, 5 );
@@ -162,19 +162,57 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_email_classes', array($this, 'angelleye_woocommerce_email_classes'), 10, 1);
             add_filter( 'wc_get_template', array($this, 'own_angelleye_wc_get_template'), 10, 5);
             add_filter( 'woocommerce_email_actions', array($this, 'own_angelleye_woocommerce_email_actions'), 10);
+            add_filter( 'woocommerce_general_settings', array($this, 'include_pfw_settings'), 10, 1);
             $this->customer_id;
         }
 
+	    /**
+	     * Injects the PFW Version number in frontend HTML header
+	     */
         public function paypal_for_woo_head_mark() {
-            echo sprintf(
-                '<!-- This site has installed %1$s %2$s - %3$s -->',
-                esc_html( 'PayPal for WooCommerce' ),
-                ( 'v' . VERSION_PFW ),
-                esc_url( 'https://www.angelleye.com/product/woocommerce-paypal-plugin/' )
-            );
-            echo chr(10) . chr(13);
+            $hide_watermark = get_option('pfw_hide_frontend_mark', 'no');
+            if($hide_watermark != 'yes'){
+                echo sprintf(
+                    '<!-- This site has installed %1$s %2$s - %3$s -->',
+                    esc_html( 'PayPal for WooCommerce' ),
+                    ( 'v' . VERSION_PFW ),
+                    esc_url( 'https://www.angelleye.com/product/woocommerce-paypal-plugin/' )
+                );
+                echo chr(10) . chr(13);
+            }
 	    }
-        
+
+	    /**
+         * Extends PFW Setting in WooCommerce Setting -> General tab
+	     * @param array $general_settings
+	     *
+	     * @return array
+	     */
+	    public function include_pfw_settings( $general_settings = [] ) {
+            $pfw_settings = [
+	            array(
+		            'title' => __( 'PayPal for WooCommerce Options', 'woocommerce' ),
+		            'type'  => 'title',
+		            'desc'  => '',
+		            'id'    => 'pfw_options',
+	            ),
+	            array(
+		            'title'    => __( 'Version Mark', 'woocommerce' ),
+		            'desc'     => __( 'Remove PFW Version mark from frontend', 'woocommerce' ),
+		            'id'       => 'pfw_hide_frontend_mark',
+		            'default'  => 'no',
+		            'type'     => 'checkbox',
+		            'desc_tip' => __( 'Removes the PayPal for WooCommerce version description from the frontend HTML source.', 'woocommerce' ),
+	            ),
+	            array(
+		            'type' => 'sectionend',
+		            'id'   => 'pfw_options',
+	            ),
+            ];
+
+            return array_merge($general_settings, $pfw_settings);
+	    }
+
         /*
          * Adds class name to HTML body to enable easy conditional CSS styling
          * @access public
