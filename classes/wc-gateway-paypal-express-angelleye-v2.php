@@ -2086,8 +2086,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'title',
                 'description' => __('PayPal Credit is a revolving line of credit that gives your customers the flexibility to buy now and pay over time, while you receive full payment immediately.  Buyer-facing messaging allows you to present this option to your buyers, increasing conversion rates and average order total.', 'paypal-for-woocommerce') . ''
                 . '<br>'
-                . '<div class="angelleye_paypal_credit_info">'
-                . '<ul>'
+                . '<div class="angelleye_paypal_credit_info_container">'
+                . '<div class="angelleye_paypal_credit_info_left_container"><div class="angelleye_paypal_credit_info_description">'
                 . '<li>Grow Sales - Businesses that promoted PayPal Credit on their websites saw a 21% increase in sales vs. those that did not.</li>'
                 . '<li>Attract New Customers - 85% of PayPal Credit users surveyed are more likely to shop at a retailer or online shop that offers interest-free credit options.</li>'
                 . '<li>Increase Average Order Value - Merchants with pay-over-time messaging on their websites saw a 56% increase in overall PayPal average order value.</li>'
