@@ -2103,12 +2103,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 				</div>
 				<div class="pms-muse-right-container">
 					<div>
-                                            <img src="https://www.angelleye.com/wp-content/uploads/2020/09/lift-AOVs.png">
-                                            <div><p>56% of consumers agree that they prefer to pay a purchase back with installments rather than a credit card.</p></div>
+                                            <img src='. PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/increase-conversion-rates-1.png>
+                                            <div><p>Help convert browsing consumers into buying consumers, increase average order volume, and drive more revenues.</p></div>
 					</div>
 					<div>
-                                            <img src="https://www.angelleye.com/wp-content/uploads/2020/09/Grow-Sales.png">
-                                            <div><p>Businesses that promoted PayPal Credit on their websites saw a 21% increase in sales vs. those that did not.</p></div>
+                                            <img src='. PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/reduced-costs.png>
+                                            <div><p>Merchants that implement PayPal Credit instantly make it accessible to over 300 million PayPal consumers and can co-market to millions of PayPal Credit consumers with billions in purchasing power.</p></div>
 					</div>
                                         <div class="wrap pms-center-moreinfo">
                                             <div>
