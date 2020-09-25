@@ -465,6 +465,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     cart_page_credit_messaging_preview();
                     payment_page_credit_messaging_preview();
                 });
+                setTimeout(function() {
+                    jQuery('#woocommerce_paypal_express_enabled_credit_messaging').trigger('change');
+                  }, 5000);
                 var is_credit_messaging_enable = function () {
                     if (jQuery('#woocommerce_paypal_express_enabled_credit_messaging').is(':checked')) {
                         return true;
