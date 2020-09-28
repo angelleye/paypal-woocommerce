@@ -406,7 +406,9 @@ hr {
 .woocommerce table.form-table select.angelleye_medium_size .select2-container {
     min-width: 200px !important;
 }
-
+.copy-shortcode {
+    margin-left: 3px !important;
+}
 
 
 @media only all and (max-width: 1200px) {

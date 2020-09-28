@@ -2145,7 +2145,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->form_fields['credit_messaging_page_type'] = array(
                 'title' => __('Page Type', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'css'  => 'width: 200px;',
+                'css'  => 'width: 240px;',
                 'class' => 'wc-enhanced-select credit_messaging_field angelleye_medium_size',
                 'default' => array('home', 'category', 'product', 'cart', 'payment'),
                 'options' => array('home' => __('Home', 'paypal-for-woocommerce'), 'category' => __('Category', 'paypal-for-woocommerce'), 'product' => __('Product', 'paypal-for-woocommerce'), 'cart' => __('Cart', 'paypal-for-woocommerce'), 'payment' => __('Payment', 'paypal-for-woocommerce')),
