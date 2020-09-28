@@ -161,7 +161,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_email_classes', array($this, 'angelleye_woocommerce_email_classes'), 10, 1);
             add_filter( 'wc_get_template', array($this, 'own_angelleye_wc_get_template'), 10, 5);
             add_filter( 'woocommerce_email_actions', array($this, 'own_angelleye_woocommerce_email_actions'), 10);
-            add_filter( 'woocommerce_general_settings', array($this, 'include_pfw_settings'), 10, 1);
             $this->customer_id;
         }
 
@@ -181,37 +180,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
 	    }
 
-	    /**
-         * Extends PFW Setting in WooCommerce Setting -> General tab
-	     * @param array $general_settings
-	     *
-	     * @return array
-	     */
-	    public function include_pfw_settings( $general_settings = [] ) {
-            $pfw_settings = [
-	            array(
-		            'title' => __( 'PayPal for WooCommerce Options', 'woocommerce' ),
-		            'type'  => 'title',
-		            'desc'  => '',
-		            'id'    => 'pfw_options',
-	            ),
-	            array(
-		            'title'    => __( 'Hide Version Tag', 'woocommerce' ),
-		            'desc'     => __( 'Hide plugin version tag from front end source code.', 'woocommerce' ),
-		            'id'       => 'pfw_hide_frontend_mark',
-		            'default'  => 'no',
-		            'type'     => 'checkbox',
-		            'desc_tip' => __( 'Removes the PayPal for WooCommerce plugin version from front end source code.', 'woocommerce' ),
-	            ),
-	            array(
-		            'type' => 'sectionend',
-		            'id'   => 'pfw_options',
-	            ),
-            ];
-
-            return array_merge($general_settings, $pfw_settings);
-	    }
-
+	    
         /*
          * Adds class name to HTML body to enable easy conditional CSS styling
          * @access public
