@@ -2131,6 +2131,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => '<div id="pms-muse-container">
 				<div class="pms-muse-left-container">
 					<div class="pms-muse-description">
+                                                <h2>PayPal Credit Messaging</h2>
+                                                <h3>Offer &#8220;Buy Now Pay Later&#8221; to Buyers</h3>
                                                 <p>PayPal Credit is a revolving line of credit that gives your customers the flexibility to buy now and pay over time, while you receive full payment immediately.</p>
                                                 <p>Buyer-facing messaging allows you to present this option to your buyers, increasing conversion rates and average order total.</p>
 					</div>'
@@ -2156,6 +2158,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'description' => '</div><div class="pms-muse-right-container">
+                                        <h2>Why Add Buy Now Pay Later?</h2>
+                                        <h3>Help Turn Browsers into Buyers!</h3>
 					<ul>
                                         <li>Grow Sales - Businesses that promoted PayPal Credit on their websites saw a 21% increase in sales vs. those that did not.&#185;</li>
                                         <li>Attract New Customers - 85% of PayPal Credit users surveyed are morelikely to shop at a retailer or online shop that offers interest-free credit options.&#178;</li>
