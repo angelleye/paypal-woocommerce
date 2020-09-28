@@ -265,7 +265,7 @@ hr {
     border-bottom: 1px solid #ccc;
     padding-bottom: 10px;
 }
-#angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_home_preview, #angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_product_preview, #angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_cart_preview , #angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_payment_preview, #angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_category_preview{
+#angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_home_preview, #angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_product_preview, #angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_cart_preview , #angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_payment_preview, #angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_category_preview, #angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging, #angelleye_paypal_marketing_table h3#woocommerce_paypal_express_credit_messaging_data{
     font-size: inherit;
     border-bottom: none;
     padding-bottom: 0px;
@@ -299,27 +299,34 @@ hr {
 }
 
 .pms-muse-left-container {
-    width: 58%;
+    width: 45%;
     display: inline-block;
     vertical-align: top;
+    border-right: 2px solid #dfdfdf;
+    height: 870px;
 }
 
-.pms-muse-description {
-    margin-right: 40px;
-}
+
 
 .pms-muse-description p {
     font-size: 13px;
     line-height: 1.31;
     margin-bottom: 38px;
 }
-
+.pms-muse-right-container ul {
+    list-style : disc;
+}
+sup {
+  vertical-align: top;
+  font-size: smaller;
+}
 .pms-muse-right-container {
-    width: 35%;
+    width: 50%;
     color: #6c7378;
     display: inline-block;
-    margin-left: 40px;
+    margin-left: 28px;
     vertical-align: top;
+    
 }
 
 .pms-muse-right-container > div img {
@@ -346,6 +353,8 @@ hr {
 
 #pms-muse-container {
     width: 100%;
+    border-bottom: 2px solid #dfdfdf;
+    border-top: 2px solid #dfdfdf;
 }
 #angelleye_wp_marketing_solutions_button_production {
     margin: 0 auto;
@@ -390,6 +399,15 @@ hr {
 .paypal-px-btn:focus {
     outline: none;
 }
+
+.angelleye_medium_size {
+    width: 150px;
+}
+.woocommerce table.form-table select.angelleye_medium_size .select2-container {
+    min-width: 200px !important;
+}
+
+
 
 @media only all and (max-width: 1200px) {
     .angelleye-notice-dismiss {

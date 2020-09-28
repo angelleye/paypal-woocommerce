@@ -242,6 +242,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $display_disable_terms = 'no';
         }
         ?>
+        
+        <style>
+            .woocommerce table.form-table .select2-container {
+                min-width: 150px !important;
+            }
+            #pms-muse-container .form-table th {
+                width: 100px !important;
+            }
+        </style>
+       
         <script type="text/javascript">
         <?php if ($this->is_us) { ?>
                 jQuery('.pms-view-more').on('click', function (event) {
@@ -1052,6 +1062,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function init_form_fields() {
+        
         $this->send_items_value = !empty($this->settings['send_items']) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
         $this->send_items = 'yes' === $this->send_items_value;
         $rest_url = get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=paypal_express&pms_reset=true';
@@ -2117,39 +2128,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->form_fields['credit_messaging'] = array(
                 'title' => __('PayPal Credit Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
                 'type' => 'title',
-                'description' => __('PayPal Credit is a revolving line of credit that gives your customers the flexibility to buy now and pay over time, while you receive full payment immediately.  Buyer-facing messaging allows you to present this option to your buyers, increasing conversion rates and average order total.', 'paypal-for-woocommerce') . ''
-                . '<br>'
-                . '<div id="pms-muse-container">
+                'description' => '<div id="pms-muse-container">
 				<div class="pms-muse-left-container">
 					<div class="pms-muse-description">
-						<p>Grow Sales - Businesses that promoted PayPal Credit on their websites saw a 21% increase in sales vs. those that did not.</p>
-                                                <p>Attract New Customers - 85% of PayPal Credit users surveyed are more likely to shop at a retailer or online shop that offers interest-free credit options.</p>
-                                                <p>Increase Average Order Value - Merchants with pay-over-time messaging on their websites saw a 56% increase in overall PayPal average order value.</p>
-                                                <p>Increase Conversion Rates - Help convert browsing consumers into buying consumers, increase average order volume, and drive more revenues.</p> 
-                                                <p>28% of shoppers now prefer retailers that offer an instant-financing solution.</p> 
-                                                <p>56% of consumers agree that they prefer to pay a purchase back with installments rather than a credit card.</p> 
-					</div>
-                                        
-				</div>
-				<div class="pms-muse-right-container">
-					<div>
-                                            <img src='. PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/increase-conversion-rates-1.png>
-                                            <div><p>Help convert browsing consumers into buying consumers, increase average order volume, and drive more revenues.</p></div>
-					</div>
-					<div>
-                                            <img src='. PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/reduced-costs.png>
-                                            <div><p>Merchants that implement PayPal Credit instantly make it accessible to over 300 million PayPal consumers and can co-market to millions of PayPal Credit consumers with billions in purchasing power.</p></div>
-					</div>
-                                        <div class="wrap pms-center-moreinfo">
-                                            <div>
-                                                <div><a target="_blank" href="https://www.angelleye.com/paypal-buy-now-pay-later/?utm_source=pfw&utm_medium=settings_more_info&utm_campaign=bnpl"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
-                                            </div>
-                                        </div>
-                                        
-                                </div>
-                         </div>'
-                
-                
+                                                <p>PayPal Credit is a revolving line of credit that gives your customers the flexibility to buy now and pay over time, while you receive full payment immediately.</p>
+                                                <p>Buyer-facing messaging allows you to present this option to your buyers, increasing conversion rates and average order total.</p>
+					</div>'
             );
             $this->form_fields['enabled_credit_messaging'] = array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -2161,11 +2145,48 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->form_fields['credit_messaging_page_type'] = array(
                 'title' => __('Page Type', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
-                'class' => 'wc-enhanced-select credit_messaging_field',
-                'description' => __('', 'paypal-for-woocommerce'),
+                'css'               => 'width: 200px;',
+                'class' => 'wc-enhanced-select credit_messaging_field angelleye_medium_size',
                 'default' => array('home', 'category', 'product', 'cart', 'payment'),
-                'desc_tip' => true,
-                'options' => array('home' => __('Home', 'paypal-for-woocommerce'), 'category' => __('Category', 'paypal-for-woocommerce'), 'product' => __('Product', 'paypal-for-woocommerce'), 'cart' => __('Cart', 'paypal-for-woocommerce'), 'payment' => __('Payment', 'paypal-for-woocommerce'))
+                'options' => array('home' => __('Home', 'paypal-for-woocommerce'), 'category' => __('Category', 'paypal-for-woocommerce'), 'product' => __('Product', 'paypal-for-woocommerce'), 'cart' => __('Cart', 'paypal-for-woocommerce'), 'payment' => __('Payment', 'paypal-for-woocommerce')),
+                'description' => '',
+                
+            );
+            $this->form_fields['credit_messaging_data'] = array(
+                'title' => __('', 'paypal-for-woocommerce'),
+                'type' => 'title',
+                'description' => '</div><div class="pms-muse-right-container">
+					<ul>
+                                        <li>Grow Sales - Businesses that promoted PayPal Credit on their websites saw a 21% increase in sales vs. those that did not.&#185;</li>
+                                        <li>Attract New Customers - 85% of PayPal Credit users surveyed are morelikely to shop at a retailer or online shop that offers interest-free credit options.&#178;</li>
+                                        <li>Increase Average Order Value - Merchants with pay-over-time messaging on their websites saw a 56% increase in overall PayPal average order value.&#179;</li>
+                                        <li>28% of shoppers now prefer retailers that offer an instant-financing solution.&#8308;</li>
+                                        <li>56% of consumers agree that they prefer to pay a purchase back with installments rather than a credit card.&#8309;</li>
+                                        <li>42% of PayPal Credit users would not have made their most recent purchase if PayPal Credit wasn’t offered.&#8310;</li>
+                                        <li>Businesses that promoted PayPal Credit on their site and at checkout saw 214% larger PayPal Credit transactions than those who did not.&#8311;</li>
+                                        </ul>
+                                        <br>
+                                        <div>
+                                        <p style="font-size: smaller;">
+                                        &#185;Average annual incremental sales based on PayPal’s analysis of internal data among 210 merchants with messaging and buttons against a broader group of merchants that did not, with 24-month continuous DCC volume between January 2016 and November 2019.<br><br>
+                                        &#178;Online study commissioned by PayPal and conducted by Logica Research in May 2020 involving 2,000 U.S. consumers, where half were PayPal Credit users and half were non-PayPal Credit users, May 2020<br><br>
+                                        &#179;Average lift in overall PayPal AOV for merchants with PayPal Credit messaging  vs. those without, 2019 PayPal internal data<br><br>
+                                        &#8308;Excerpted from Payments Journal, “Does the Answer to POS Consumer Financing Lie in Bank-Fintech Collaboration?”, Yaacov Martin, February 15, 2019<br><br>
+                                        &#8309;Online study commissioned by PayPal and conducted by Logica Research in May 2020 involving 2,000 U.S. consumers, half were PayPal Credit users and half were non-PayPal Credit users, May 2020<br><br>
+                                        &#8310;Online study commissioned by PayPal and conducted by Logica Research in November 2018 involving 2,000 U.S. consumers, half were PayPal Credit users and half were non-PayPal Credit users.<br><br>
+                                        &#8311;Based on PayPal’s analysis of internal data of all PayPal and PayPal Credit active customers and volume from December 2017 – November 2018.<br><br>
+                                        </p>
+                                        </div>
+                                        <div class="wrap pms-center-moreinfo">
+                                            <div>
+                                                <div><a target="_blank" href="https://www.angelleye.com/paypal-buy-now-pay-later/?utm_source=pfw&utm_medium=settings_more_info&utm_campaign=bnpl"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                </div>
+                         </div>'
+                
+                
             );
             $this->form_fields['credit_messaging_home'] = array(
                 'title' => __('Home Page Settings', 'paypal-for-woocommerce'),
