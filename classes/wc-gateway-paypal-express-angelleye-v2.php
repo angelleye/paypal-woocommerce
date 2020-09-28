@@ -243,7 +243,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <?php if ($this->is_us) { ?>
                 jQuery('.pms-view-more').on('click', function (event) {
                     event.preventDefault();
-                    var win = window.open('https://www.angelleye.com/paypal-buy-now-pay-later/', '_blank');
+                    var win = window.open('https://www.angelleye.com/paypal-buy-now-pay-later/?utm_source=pfw&utm_medium=settings_more_info&utm_campaign=bnpl', '_blank');
                     win.focus();
                 });
                 var home_page_credit_messaging_preview = function () {
@@ -2115,7 +2115,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 					</div>
                                         <div class="wrap pms-center-moreinfo">
                                             <div>
-                                                <div><a target="_blank" href="https://www.angelleye.com/paypal-buy-now-pay-later/"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
+                                                <div><a target="_blank" href="https://www.angelleye.com/paypal-buy-now-pay-later/?utm_source=pfw&utm_medium=settings_more_info&utm_campaign=bnpl"><button class="pms-view-more paypal-px-btn">More Info</button></a></div>
                                             </div>
                                         </div>
                                         
