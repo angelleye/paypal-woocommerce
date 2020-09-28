@@ -807,7 +807,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         $credit_messaging_text = '';
         if($this->is_multi_account_active == 'yes') {
-            $credit_messaging_text = __('PayPal Credit messaging - Buy Now Pay Later are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+            $credit_messaging_text = __('PayPal Credit Messaging - Buy Now Pay Later is not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
         }
         if($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
             $enable_tokenized_payments_text = __('Payment tokenization is not available when using the PayPal Multi-Account add-on, and it has been disabled.', 'paypal-for-woocommerce');
