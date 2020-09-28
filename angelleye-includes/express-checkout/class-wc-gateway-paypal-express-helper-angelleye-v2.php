@@ -145,6 +145,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->show_paypal_credit = !empty($this->setting['show_paypal_credit']) ? $this->setting['show_paypal_credit'] : 'yes';
                 $this->enable_google_analytics_click = !empty($this->setting['enable_google_analytics_click']) ? $this->setting['enable_google_analytics_click'] : 'no';
 
+                $this->payment_action = !empty($this->setting['payment_action']) ? $this->setting['payment_action'] : 'Sale';
+                
                 if ($this->is_paypal_credit_enable == false) {
                     $this->show_paypal_credit = 'no';
                 }
@@ -713,6 +715,15 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 if ($this->enabled_credit_messaging) {
                     $smart_js_arg['components'] = 'buttons,messages';
                 }
+                $sdk_intend = 'capture';
+                if( $this->payment_action === 'Sale') {
+                    $sdk_intend = 'capture';
+                } elseif($this->payment_action === 'Authorization') {
+                    $sdk_intend = 'authorize';
+                } else {
+                    $sdk_intend = 'order';
+                }
+                $smart_js_arg['intent'] = $sdk_intend;
                 $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
                 wp_register_script('angelleye-in-context-checkout-js', add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'), array(), null, true);
                 wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min-v2.js', array('jquery', 'angelleye-in-context-checkout-js'), time(), false);
