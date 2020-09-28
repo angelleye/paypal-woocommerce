@@ -399,13 +399,6 @@ hr {
 .paypal-px-btn:focus {
     outline: none;
 }
-
-.angelleye_medium_size {
-    width: 150px;
-}
-.woocommerce table.form-table select.angelleye_medium_size .select2-container {
-    min-width: 200px !important;
-}
 .copy-shortcode {
     margin-left: 3px !important;
 }
