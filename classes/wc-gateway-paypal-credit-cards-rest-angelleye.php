@@ -18,7 +18,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         $this->has_fields = true;
         $this->method_title = 'PayPal Credit Card (REST)';
         $this->woocommerce_paypal_supported_currencies = array('AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP');
-        $this->method_description = __('PayPal direct credit card payments using the REST API.  This allows you to accept credit cards directly on the site without the need for the full Payments Pro.', 'paypal-for-woocommerce');
+        $this->method_description = __('DEPRECATED - PayPal direct credit card payments using the REST API.  This allows you to accept credit cards directly on the site without the need for the full Payments Pro.', 'paypal-for-woocommerce');
         $this->supports = array(
             'subscriptions',
             'products',
@@ -84,8 +84,13 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
         if ($this->is_valid_for_use_paypal_credit_card_rest()) {
             ?>
             <h3><?php echo (!empty($this->method_title) ) ? $this->method_title : __('Settings', 'paypal-for-woocommerce'); ?></h3>
-            <?php echo (!empty($this->method_description) ) ? wpautop($this->method_description) : ''; ?>
+            <?php echo (!empty($this->method_description) ) ? wpautop(str_replace('DEPRECATED - ', '', $this->method_description)) : '';
+            ?>
+
             <div id="angelleye_paypal_marketing_table">
+                <?php echo '<div class="notice notice-warning">
+             <p><strong>DEPRECATED</strong><br>This gateway option is no longer available for new users.  This can only be used if you already have an approved REST Credit Card account, and are grandfathered in so that you can continue using it.  </p>
+         </div>'; ?>
             <table class="form-table">
             <?php
                 if(version_compare(WC_VERSION,'2.6','<')) {
