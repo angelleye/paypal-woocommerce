@@ -2126,7 +2126,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         if ($this->is_us) {
             $this->form_fields['credit_messaging'] = array(
-                'title' => __('PayPal Credit Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
+                'title' => __('', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'description' => '<div id="pms-muse-container">
 				<div class="pms-muse-left-container">
@@ -2151,7 +2151,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'class' => 'wc-enhanced-select credit_messaging_field angelleye_medium_size',
                 'default' => array('home', 'category', 'product', 'cart', 'payment'),
                 'options' => array('home' => __('Home', 'paypal-for-woocommerce'), 'category' => __('Category', 'paypal-for-woocommerce'), 'product' => __('Product', 'paypal-for-woocommerce'), 'cart' => __('Cart', 'paypal-for-woocommerce'), 'payment' => __('Payment', 'paypal-for-woocommerce')),
-                'description' => '<div style="font-size: smaller;">set the page(s) you want to display messaging on, and then adjust that page\'s display option below.</div>',
+                'description' => '<div style="font-size: smaller;">Set the page(s) you want to display messaging on, and then adjust that page\'s display option below.</div>',
                 
             );
             $this->form_fields['credit_messaging_data'] = array(
@@ -2162,7 +2162,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                         <h3>Help Turn Browsers into Buyers!</h3>
 					<ul>
                                         <li>Grow Sales - Businesses that promoted PayPal Credit on their websites saw a 21% increase in sales vs. those that did not.&#185;</li>
-                                        <li>Attract New Customers - 85% of PayPal Credit users surveyed are morelikely to shop at a retailer or online shop that offers interest-free credit options.&#178;</li>
+                                        <li>Attract New Customers - 85% of PayPal Credit users surveyed are moreli kely to shop at a retailer or online shop that offers interest-free credit options.&#178;</li>
                                         <li>Increase Average Order Value - Merchants with pay-over-time messaging on their websites saw a 56% increase in overall PayPal average order value.&#179;</li>
                                         <li>28% of shoppers now prefer retailers that offer an instant-financing solution.&#8308;</li>
                                         <li>56% of consumers agree that they prefer to pay a purchase back with installments rather than a credit card.&#8309;</li>
