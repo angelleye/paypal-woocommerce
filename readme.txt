@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.2
 Tested up to: 5.5.1
-Stable tag: 2.3.8
+Stable tag: 2.4.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 2.4.0 - 09.28.2020 =
+* Feature - Upgrades PayPal Smart Button JS. ([PFW-682](https://github.com/angelleye/paypal-woocommerce/pull/1490)) ([PFW-692](https://github.com/angelleye/paypal-woocommerce/pull/1495))
+* Feature - Adds PayPal Credit Messaging - Buy Now Pay Later. ([PFW-679](https://github.com/angelleye/paypal-woocommerce/pull/1493)) ([PFW-692](https://github.com/angelleye/paypal-woocommerce/pull/1495))
+* Tweak - Adds Deprecation notice for the PayPal Credit Card Rest API. ([PFW-685](https://github.com/angelleye/paypal-woocommerce/pull/1489))
+* Tweak - Removes meta tag for PayPal Smart button. ([PFW-676](https://github.com/angelleye/paypal-woocommerce/pull/1492))
+* Tweak - Removes the Version string from HTML header. ([PFW-694](https://github.com/angelleye/paypal-woocommerce/pull/1494))
 
 = 2.3.8 - 09.09.2020 =
 * Verification - WooCommerce 4.5.0 compatibility.
