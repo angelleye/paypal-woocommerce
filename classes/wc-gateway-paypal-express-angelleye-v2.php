@@ -2162,7 +2162,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                         <h3>Help Turn Browsers into Buyers!</h3>
 					<ul>
                                         <li>Grow Sales - Businesses that promoted PayPal Credit on their websites saw a 21% increase in sales vs. those that did not.&#185;</li>
-                                        <li>Attract New Customers - 85% of PayPal Credit users surveyed are moreli kely to shop at a retailer or online shop that offers interest-free credit options.&#178;</li>
+                                        <li>Attract New Customers - 85% of PayPal Credit users surveyed are more likely to shop at a retailer or online shop that offers interest-free credit options.&#178;</li>
                                         <li>Increase Average Order Value - Merchants with pay-over-time messaging on their websites saw a 56% increase in overall PayPal average order value.&#179;</li>
                                         <li>28% of shoppers now prefer retailers that offer an instant-financing solution.&#8308;</li>
                                         <li>56% of consumers agree that they prefer to pay a purchase back with installments rather than a credit card.&#8309;</li>
