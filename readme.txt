@@ -132,7 +132,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Adds PayPal Credit Messaging - Buy Now Pay Later. ([PFW-679](https://github.com/angelleye/paypal-woocommerce/pull/1493)) ([PFW-692](https://github.com/angelleye/paypal-woocommerce/pull/1495))
 * Tweak - Adds Deprecation notice for the PayPal Credit Card Rest API. ([PFW-685](https://github.com/angelleye/paypal-woocommerce/pull/1489))
 * Tweak - Removes meta tag for PayPal Smart button. ([PFW-676](https://github.com/angelleye/paypal-woocommerce/pull/1492))
-* Tweak - Removes the Version string from HTML header. ([PFW-694](https://github.com/angelleye/paypal-woocommerce/pull/1494))
+* Tweak - Removes the Version string from HTML header. ([PFW-694](https://github.com/angelleye/paypal-woocommerce/pull/1494)) ([PFW-694-A](https://github.com/angelleye/paypal-woocommerce/pull/1496))
 
 = 2.3.8 - 09.09.2020 =
 * Verification - WooCommerce 4.5.0 compatibility.
