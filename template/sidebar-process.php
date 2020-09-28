@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') or die('Direct access not allowed');
+
 add_action('wp_ajax_angelleye_marketing_sendy_subscription', 'own_angelleye_marketing_sendy_subscription');
 
 if (!function_exists('own_angelleye_marketing_sendy_subscription')) {
