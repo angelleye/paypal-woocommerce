@@ -138,7 +138,6 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
         unset(WC()->session->paypal_express_checkout);
         unset(WC()->session->paypal_express_terms);
         unset(WC()->session->ec_save_to_account);
-        unset(WC()->session->held_order_received_text);
         unset(WC()->session->post_data);
         unset(WC()->session->shiptoname);
         unset(WC()->session->payeremail);

@@ -205,7 +205,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('woocommerce_before_checkout_shipping_form', array($this, 'angelleye_shipping_sec_title'), 10);
                 add_filter('woocommerce_terms_is_checked_default', array($this, 'ec_terms_express_checkout'));
                 add_action('woocommerce_cart_emptied', array($this, 'ec_clear_session_data'));
-                add_filter('woocommerce_thankyou_order_received_text', array($this, 'ec_order_received_text'), 10, 2);
                 add_action('wp_enqueue_scripts', array($this, 'ec_enqueue_scripts'), 10);
                 add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'), 10);
                 if ($this->enable_in_context_checkout_flow == 'no') {
@@ -574,7 +573,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         unset(WC()->session->paypal_express_checkout);
         unset(WC()->session->paypal_express_terms);
         unset(WC()->session->ec_save_to_account);
-        unset(WC()->session->held_order_received_text);
         unset(WC()->session->post_data);
         unset(WC()->session->shiptoname);
         unset(WC()->session->payeremail);
@@ -588,15 +586,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
         }
         return false;
-    }
-
-    public function ec_order_received_text($text, $order) {
-        $held_order_received_text = angelleye_get_session('held_order_received_text');
-        if ($order && $order->has_status('on-hold') && isset($held_order_received_text)) {
-            $text = $held_order_received_text;
-            unset(WC()->session->held_order_received_text);
-        }
-        return $text;
     }
 
     public function is_paypal_sdk_required() {
