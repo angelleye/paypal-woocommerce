@@ -109,9 +109,11 @@ jQuery(function ($) {
                     },
                     onCancel: function (data, actions) {
                         $('.woocommerce').unblock();
+                        $( document.body ).trigger( 'angelleye_paypal_oncancel' );
                         window.location.href = window.location.href;
                     },
                     onClick: function () {
+                        $( document.body ).trigger( 'angelleye_paypal_onclick' );
                         if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
                             if (typeof ga != 'undefined' && $.isFunction(ga)) {
                                 ga('send', {
@@ -124,6 +126,7 @@ jQuery(function ($) {
                     },
                     onError: function (err, actions) {
                         $('.woocommerce').unblock();
+                        $( document.body ).trigger( 'angelleye_paypal_onerror' );
                         window.location.href = angelleye_in_content_param.cancel_page;
                     }
                 }, '.angelleye_button_single');
@@ -214,9 +217,11 @@ jQuery(function ($) {
                         },
                         onCancel: function (data, actions) {
                             $('.woocommerce').unblock();
+                            $( document.body ).trigger( 'angelleye_paypal_oncancel' );
                             window.location.href = window.location.href;
                         },
                         onClick: function () {
+                            $( document.body ).trigger( 'angelleye_paypal_onclick' );
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
                                 if (typeof ga != 'undefined' && $.isFunction(ga)) {
                                     ga('send', {
@@ -229,6 +234,7 @@ jQuery(function ($) {
                         },
                         onError: function (err, actions) {
                             $('.woocommerce').unblock();
+                            $( document.body ).trigger( 'angelleye_paypal_onerror' );
                             window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);
@@ -310,9 +316,11 @@ jQuery(function ($) {
                         },
                         onCancel: function (data, actions) {
                             $('.woocommerce').unblock();
+                            $( document.body ).trigger( 'angelleye_paypal_oncancel' );
                             window.location.href = window.location.href;
                         },
                         onClick: function () {
+                            $( document.body ).trigger( 'angelleye_paypal_onclick' );
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
                                 if (typeof ga != 'undefined' && $.isFunction(ga)) {
                                     ga('send', {
@@ -325,6 +333,7 @@ jQuery(function ($) {
                         },
                         onError: function (err, actions) {
                             $('.woocommerce').unblock();
+                            $( document.body ).trigger( 'angelleye_paypal_onerror' );
                             window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);
@@ -403,9 +412,11 @@ jQuery(function ($) {
                         },
                         onCancel: function (data, actions) {
                             $('.woocommerce').unblock();
+                            $( document.body ).trigger( 'angelleye_paypal_oncancel' );
                             window.location.href = window.location.href;
                         },
                         onClick: function () {
+                            $( document.body ).trigger( 'angelleye_paypal_onclick' );
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
                                 if (typeof ga != 'undefined' && $.isFunction(ga)) {
                                     ga('send', {
@@ -418,6 +429,7 @@ jQuery(function ($) {
                         },
                         onError: function (err, actions) {
                             $('.woocommerce').unblock();
+                            $( document.body ).trigger( 'angelleye_paypal_onerror' );
                             window.location.href = angelleye_in_content_param.cancel_page;
                         }
                     }, selector);
@@ -508,9 +520,11 @@ jQuery(function ($) {
                         },
                         onCancel: function (data, actions) {
                             $('.woocommerce').unblock();
+                            $( document.body ).trigger( 'angelleye_paypal_oncancel' );
                             window.location.href = window.location.href;
                         },
                         onClick: function () {
+                            $( document.body ).trigger( 'angelleye_paypal_onclick' );
                             if (angelleye_in_content_param.enable_google_analytics_click === 'yes') {
                                 if (typeof ga != 'undefined' && $.isFunction(ga)) {
                                     ga('send', {
@@ -523,6 +537,7 @@ jQuery(function ($) {
                         },
                         onError: function (err, actions) {
                             $('.woocommerce').unblock();
+                            $( document.body ).trigger( 'angelleye_paypal_onerror' );
                             window.location.href = window.location.href;
                         }
                     }, selector);
