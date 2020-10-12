@@ -2493,7 +2493,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                             });
                         });
                     };
-                    jQuery(document.body).on('updated_checkout checkout_error', function () {
+                    jQuery(document.body).on('updated_checkout checkout_error init_add_payment_method', function () {
                         pfw_payflow_grecaptcha();
                     });
                     setInterval(function(){ 
@@ -2506,28 +2506,36 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
     
     public function angelleye_pfw_payflow_validate_google_recaptcha() {
-        if( $this->enable_google_recaptcha ) {
-            if(isset($_POST['pfw_payflow_google']) && !empty($_POST['pfw_payflow_google']) ) {
-                $response_data = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', array(
-                        'body'    => array('secret' => $this->recaptcha_secret_key, 'response' => $_POST['pfw_payflow_google'])
-                    ) );
-                if (is_wp_error($response_data)) {
+        try {
+            if( $this->enable_google_recaptcha ) {
+                if(isset($_POST['pfw_payflow_google']) && !empty($_POST['pfw_payflow_google']) ) {
+                    $response_data = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', array(
+                            'body'    => array('secret' => $this->recaptcha_secret_key, 'response' => $_POST['pfw_payflow_google'])
+                        ) );
+                    if (is_wp_error($response_data)) {
+                        throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
+                    }
+                    $body = wp_remote_retrieve_body($response_data);
+                    if( !empty($body)) {
+                        $response = json_decode($body);
+                        if(!$response->success ) {
+                            throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
+                        } 
+                        if($response->score < 0.2) {
+                            throw new Exception(__('Very likely a bot', 'paypal-for-woocommerce'));
+                        }
+                    } 
+                } else {
                     throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
                 }
-                $body = wp_remote_retrieve_body($response_data);
-                if( !empty($body)) {
-                    $response = json_decode($body);
-                    if(!$response->success ) {
-                        throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
-                    } 
-                    if($response->score < 0.2) {
-                        throw new Exception(__('Very likely a bot', 'paypal-for-woocommerce'));
-                    }
-                } 
-            } else {
-                throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
             }
+        } catch (Exception $e) {
+            if ( $e->getMessage() ) {
+                wc_add_notice( $e->getMessage(), 'error' );
+            }
+            return false;
         }
+        
     }
 
 }
