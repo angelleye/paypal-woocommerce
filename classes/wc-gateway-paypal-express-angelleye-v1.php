@@ -1871,20 +1871,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => $this->disallowed_funding_methods_array,
             );     
         }
-        if ($this->is_us) {
-            $this->form_fields['credit_messaging'] = array(
-                'title' => __('PayPal Credit messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
-                'type' => 'title',
-                'description' => __('To add PayPal Credit messaging - Buy Now Pay Later to your site.', 'paypal-for-woocommerce'),
-            );
-            $this->form_fields['enabled_credit_messaging'] = array(
-                'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
-                'label' => __('Enable PayPal Credit messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'description' => $credit_messaging_text,
-                'default' => 'no'
-            );
-        }
+        $this->form_fields['credit_messaging'] = array(
+            'title' => __('PayPal Credit messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
+            'type' => 'title',
+            'description' => __('To add PayPal Credit messaging - Buy Now Pay Later to your site.', 'paypal-for-woocommerce'),
+        );
+        $this->form_fields['enabled_credit_messaging'] = array(
+            'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+            'label' => __('Enable PayPal Credit messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
+            'type' => 'checkbox',
+            'description' => $credit_messaging_text,
+            'default' => 'no'
+        );
     }
 
     public function is_available() {

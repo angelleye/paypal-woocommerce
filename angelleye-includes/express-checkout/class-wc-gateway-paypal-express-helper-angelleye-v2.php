@@ -180,11 +180,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
                 $this->enabled_credit_messaging = 'yes' === $this->enabled_credit_messaging_value;
                 if ($this->enabled_credit_messaging) {
-                    if ($this->is_us === false) {
-                        $this->enabled_credit_messaging = false;
-                    }
-                }
-                if ($this->enabled_credit_messaging) {
                     $this->credit_messaging_home_shortcode_value = isset($this->setting['credit_messaging_home_shortcode']) ? $this->setting['credit_messaging_home_shortcode'] : 'no';
                     $this->credit_messaging_home_shortcode = 'yes' === $this->credit_messaging_home_shortcode_value;
                     $this->credit_messaging_category_shortcode_value = isset($this->setting['credit_messaging_category_shortcode']) ? $this->setting['credit_messaging_category_shortcode'] : 'no';
