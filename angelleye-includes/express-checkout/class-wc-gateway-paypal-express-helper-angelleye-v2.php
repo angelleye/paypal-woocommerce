@@ -681,6 +681,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $smart_js_arg = array();
                 $smart_js_arg['client-id'] = $this->client_id;
                 $smart_js_arg['currency'] = get_woocommerce_currency();
+                if (($funding_key = array_search('elv', $this->disallowed_funding_methods)) !== false) {
+                    unset($this->disallowed_funding_methods[$funding_key]);
+                }
                 if ($this->disallowed_funding_methods !== false && count($this->disallowed_funding_methods) > 0) {
                     $smart_js_arg['disable-funding'] = implode(',', $this->disallowed_funding_methods);
                 }
