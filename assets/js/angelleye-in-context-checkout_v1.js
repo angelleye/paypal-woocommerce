@@ -2,6 +2,9 @@ jQuery(function ($) {
     if (typeof angelleye_in_content_param === 'undefined') {
         return false;
     }
+    if (typeof paypal === 'undefined') {
+        return false;
+    }
     display_smart_button_on_cart_checkout();
     display_smart_button_on_min_cart();
     display_smart_button_on_product_page();

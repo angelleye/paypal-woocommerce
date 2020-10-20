@@ -3,6 +3,10 @@ jQuery(function ($) {
         return false;
     }
     
+    if (typeof paypal === 'undefined') {
+        return false;
+    }
+    
     var angelleye_hide_button = function () {
         $('#place_order').show();
         $('.angelleye_pp_message_payment:eq(1)').hide();
