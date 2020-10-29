@@ -2088,7 +2088,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function handle_wc_api() {
         try {
-            $this->angelleye_check_cart_items();
             if ( isset( $_POST['from_checkout'] ) && 'yes' === $_POST['from_checkout'] ) {
                 WC()->checkout->process_checkout();
             }
@@ -2132,6 +2131,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                      wp_safe_redirect( $cancel_url );
                      exit;
                 case 'set_express_checkout':
+                    $this->angelleye_check_cart_items();
                     if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == 'true') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
                         angelleye_set_session( 'ec_save_to_account', 'on' );
                     } else {
@@ -2140,6 +2140,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     $paypal_express_request->angelleye_set_express_checkout();
                     break;
                 case 'get_express_checkout_details':
+                    $this->angelleye_check_cart_items();
                     $paypal_express_request->angelleye_get_express_checkout_details();
                     $order_id = absint(angelleye_get_session('order_awaiting_payment'));
                     if( !empty($_GET['pay_for_order']) && $_GET['pay_for_order'] == true ) {
@@ -2176,7 +2177,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                                 }
                                 
-                            $this->angelleye_check_cart_items();
                             
                             $validate_data = angelleye_get_session( 'validate_data' );
                     
@@ -2237,7 +2237,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 }
                                 $this->posted['payment_method'] = $this->id;
                             }
-                            $this->angelleye_check_cart_items();
                             
                             $validate_data = angelleye_get_session( 'validate_data' );
                             
