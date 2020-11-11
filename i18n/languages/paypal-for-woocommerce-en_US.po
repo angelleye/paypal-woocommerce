@@ -5,11 +5,11 @@ msgstr ""
 "Project-Id-Version: PayPal for WooCommerce 2.4.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/paypal-for-"
 "woocommerce\n"
-"POT-Creation-Date: 2020-11-04 13:47+0530\n"
+"POT-Creation-Date: 2020-11-11 17:04+0530\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2020-11-04 13:49+0530\n"
+"PO-Revision-Date: 2020-11-11 17:04+0530\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.2.3\n"
 "Last-Translator: \n"
@@ -19,7 +19,7 @@ msgstr ""
 #: angelleye-includes/angelleye-admin-order-payment-process.php:25
 #: angelleye-includes/angelleye-admin-order-payment-process.php:26
 msgid "Reference Transaction"
-msgstr "Reference Transaction"
+msgstr ""
 
 #: angelleye-includes/angelleye-admin-order-payment-process.php:333
 #: angelleye-includes/angelleye-admin-order-payment-process.php:353
