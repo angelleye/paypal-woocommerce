@@ -68,7 +68,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
             $gateway = $this->get_wc_gateway();
             $gateway->angelleye_load_paypal_pro_class(null, $gateway, $order);
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-            $description = sprintf(__('%1$s - Order %2$s - One Time offer', 'cartflows-pro'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES), $order->get_order_number());
+            $description = sprintf(__('%1$s - Order %2$s - One Time offer', 'paypal-for-woocommerce'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES), $order->get_order_number());
             $DPFields = array(
                 'paymentaction' => 'Sale',
                 'ipaddress' => WC_Geolocation::get_ip_address(),
