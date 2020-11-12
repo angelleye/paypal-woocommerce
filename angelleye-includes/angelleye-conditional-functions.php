@@ -30,3 +30,11 @@ if (!function_exists('is_angelleye_multi_account_active')) {
 
 }
 
+if (!function_exists('angelleye_is_us_based_store')) {
+
+    function angelleye_is_us_based_store() {
+        $base_location = wc_get_base_location();
+        return in_array($base_location['country'], array('US', 'PR', 'GU', 'VI', 'AS', 'MP'), true);
+    }
+
+}
