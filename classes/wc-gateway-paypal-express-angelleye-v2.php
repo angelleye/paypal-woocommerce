@@ -3515,7 +3515,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 if (!empty($_multi_account_api_username)) {
                                     add_metadata('payment_token', $save_result, '_multi_account_api_username', $_multi_account_api_username);
                                 }
-                                wc_add_notice(__('Payment method updated.', 'woocommerce-subscriptions'), 'success');
+                                wc_add_notice(__('Payment method updated.', 'paypal-for-woocommerce'), 'success');
                                 if (!is_ajax()) {
                                     wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                                     exit;

@@ -93,7 +93,7 @@ class PayPal_Rest_API_Utility {
                 if ($this->is_renewal($order_id)) {
                     return true;
                 }
-                wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
                 return array(
                     'result' => 'fail',
                     'redirect' => ''
@@ -104,7 +104,7 @@ class PayPal_Rest_API_Utility {
                 if ($this->is_renewal($order_id)) {
                     return true;
                 }
-                wc_add_notice(__("Error processing checkout. Please try again. ", 'woo-paypal-plus'), 'error');
+                wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
                 return array(
                     'result' => 'fail',
                     'redirect' => ''
