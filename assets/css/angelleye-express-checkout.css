@@ -274,7 +274,8 @@ and (max-device-width: 1080px) {
     display: inline-block;
 }
 @media screen and (max-width: 400px) {
-    .angelleye_smart_button_top, .angelleye_smart_button_bottom, angelleye_smart_button_checkout_top {
+    .angelleye_smart_button_top, .angelleye_smart_button_bottom, .angelleye_smart_button_checkout_top, .angelleye_smart_button_checkout_bottom {
         width: 100%;
+        margin: 0 auto;
     }
 }
