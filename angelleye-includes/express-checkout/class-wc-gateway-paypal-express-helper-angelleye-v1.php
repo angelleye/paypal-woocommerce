@@ -162,7 +162,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
                 }
                 $this->is_paypal_credit_enable = true;
-                if (substr(get_option("woocommerce_default_country"), 0, 2) == 'US') {
+                if (angelleye_is_us_based_store() == 'US') {
                     $this->is_us = true;
                 } else {
                     $this->is_us = false;
