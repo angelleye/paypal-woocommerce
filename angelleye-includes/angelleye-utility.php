@@ -1620,15 +1620,18 @@ class AngellEYE_Utility {
     }
 
     public static function crypting($string, $action = 'e') {
-        if ( ! defined( 'AUTH_SALT' ) || ! defined( 'SECURE_AUTH_SALT' ) ) {
-            return false;
+        $angelleye_auth_salt = get_option('angelleye_auth_salt');
+        $angelleye_secure_auth_salt = get_option('angelleye_secure_auth_salt');
+        if(empty($angelleye_auth_salt) || empty($angelleye_secure_auth_salt)) {
+            update_option('angelleye_auth_salt', AUTH_SALT);
+            update_option('angelleye_secure_auth_salt', SECURE_AUTH_SALT);
+            $angelleye_auth_salt = AUTH_SALT;
+            $angelleye_secure_auth_salt = SECURE_AUTH_SALT;
         }
-        $secret_key = AUTH_SALT;
-        $secret_iv = SECURE_AUTH_SALT;
         $output = false;
         $encrypt_method = "AES-256-CBC";
-        $key = hash('sha256', $secret_key);
-        $iv = substr(hash('sha256', $secret_iv), 0, 16);
+        $key = hash('sha256', $angelleye_auth_salt);
+        $iv = substr(hash('sha256', $angelleye_secure_auth_salt), 0, 16);
         if ($action == 'e') {
             $output = base64_encode(openssl_encrypt($string, $encrypt_method, $key, 0, $iv));
         } else if ($action == 'd') {
