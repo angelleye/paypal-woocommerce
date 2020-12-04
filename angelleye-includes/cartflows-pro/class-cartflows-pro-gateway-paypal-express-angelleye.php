@@ -39,10 +39,10 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
      * Constructor
      */
     public function __construct() {
-
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'), 20);
-
         add_filter('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', array($this, 'modify_paypal_arguments'), 999);
+        add_filter('angelleye_woocommerce_express_checkout_do_reference_transaction_request_args', array($this, 'modify_do_reference_transaction_request_paypal_arguments'), 999);
+
         add_action('cartflows_offer_subscription_created', array($this, 'add_subscription_payment_meta_for_ppec'), 10, 3);
     }
 
@@ -52,13 +52,10 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
      * @return void
      */
     public function payment_scripts() {
-
         if (_is_wcf_base_offer_type() && !wcf_pro()->utils->is_reference_transaction() && $this->has_paypal_gateway()) {
-
             wp_enqueue_script(
                     'wcf-paypal-script', 'https://www.paypalobjects.com/api/checkout.js', array('jquery'), CARTFLOWS_PRO_VER, true
             );
-
             if (!wcf_pro()->utils->is_zero_value_offered_product()) {
                 $script = $this->generate_script();
                 wp_add_inline_script('wcf-paypal-script', $script);
@@ -72,20 +69,15 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
      * @return bool
      */
     public function has_paypal_gateway() {
-
         $order_id = isset($_GET['wcf-order']) ? absint($_GET['wcf-order']) : '';
-
         if (empty($order_id)) {
             return false;
         }
-
         $order = wc_get_order($order_id);
         $gateway = $order->get_payment_method();
-
         if ('paypal_express' === $gateway) {
             return true;
         }
-
         return false;
     }
 
@@ -106,7 +98,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
         }
         ob_start();
         ?>
-        (function($){
+        (function($){ $(document).ready(function($) {
 
         var $wcf_angelleye = {
         init: function () {
@@ -114,6 +106,13 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
         'wcf-upsell-offer',
         'wcf-downsell-offer'
         ];
+
+        $('a[href*="wcf-up-offer-yes"], a[href*="wcf-down-offer-yes"]').each(function(e) {
+
+        var current_id = $(this).attr('id');
+
+        getButtons.push( current_id );
+        });
 
         window.paypalCheckoutReady = function () {
         paypal.checkout.setup(
@@ -125,11 +124,55 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
         click: function () {
 
+        var variation_id = 0;
+        var input_qty = 0;
+
+        var variation_wrapper = $('.wcf-offer-product-variation');
+
+        if( variation_wrapper.length > 0 ) {
+
+        var variation_form 	 = variation_wrapper.find('.variations_form'),
+        variation_input   = variation_form.find('input.variation_id');
+
+        // Set variation id here.
+        variation_id = parseInt( variation_input.val() );
+
+        if( $('.var_not_selected').length > 0 || '' === variation_id || 0 === variation_id ){
+
+        variation_form.find('.variations select').each(function(){
+
+        if( $(this).val().length === 0 ){
+        $(this).addClass('var_not_selected');
+        }
+        });
+
+        $([ document.documentElement, document.body ]).animate({
+        scrollTop: variation_form.find('.variations select').offset().top-100
+        }, 1000);
+
+        return false;
+        }
+        }
+
+        var quantity_wrapper = $('.wcf-offer-product-quantity');
+
+        if ( quantity_wrapper.length > 0 ) {
+
+        var quantity_input = quantity_wrapper.find('input[name="quantity"]');
+        var quantity_value = parseInt( quantity_input.val() );
+
+        if( quantity_value > 0 ) {
+        input_qty = quantity_value;
+        }
+        }
+
         var postData = {
         step_id: cartflows.current_step,
+        variation_id: variation_id,
+        input_qty: input_qty,
         order_id: <?php echo isset($_GET['wcf-order']) ? intval($_GET['wcf-order']) : 0; ?>,
-        order_key: '<?php echo isset($_GET['wcf-key']) ? sanitize_text_field($_GET['wcf-key']) : ''; ?>',
-        session_key: '<?php echo isset($_GET['wcf-sk']) ? sanitize_text_field($_GET['wcf-sk']) : ''; ?>',
+        order_key: '<?php echo isset($_GET['wcf-key']) ? sanitize_text_field(wp_unslash($_GET['wcf-key'])) : ''; ?>',
+        session_key: '<?php echo isset($_GET['wcf-sk']) ? sanitize_text_field(wp_unslash($_GET['wcf-sk'])) : ''; ?>',
         action: 'cartflows_front_create_paypal_express_angelleye_checkout_token'
         };
 
@@ -152,7 +195,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
         };
 
         $wcf_angelleye.init();
-        })(jQuery);
+        }); })(jQuery);
         <?php
         return ob_get_clean();
     }
@@ -182,6 +225,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
             return $payer_id;
         } else {
             $result = $this->get_woo_pal_details();
+
             if (!empty($result['PAL'])) {
                 update_option($option_key, wc_clean($result['PAL']));
 
@@ -468,62 +512,99 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
         wcf()->logger->log(__CLASS__ . '::' . __FUNCTION__ . ' : Entering ');
 
-        // translators: blog name.
-        $description = sprintf(_x('Orders with %s', 'data sent to PayPal', 'paypal-for-woocommerce'), get_bloginfo('name'));
+        if (true === wcf_pro()->utils->is_reference_transaction()) {
 
-        $description = html_entity_decode($description, ENT_NOQUOTES, 'UTF-8');
+            // translators: blog name.
+            $description = sprintf(_x('Orders with %s', 'data sent to PayPal', 'cartflows-pro'), get_bloginfo('name'));
 
-        if (true === wcf_pro()->utils->is_reference_transaction() && $data && isset($_POST['_wcf_checkout_id'])) {
-            $data['returnurl'] = add_query_arg(array('create-billing-agreement' => true), $data['SECFields']['returnurl']);
+            $description = html_entity_decode($description, ENT_NOQUOTES, 'UTF-8');
 
-            $BillingAgreements = array();
-            $Item = array(
-                'l_billingtype' => '',
-                'l_billingtype' => 'MerchantInitiatedBilling',
-                'l_billingagreementdescription' => '',
-                'l_paymenttype' => '',
-                'l_paymenttype' => 'Any',
-                'l_billingagreementcustom' => ''
-            );
-            array_push($BillingAgreements, $Item);
-            $data['BillingAgreements'] = $BillingAgreements;
+            if (true === wcf_pro()->utils->is_reference_transaction() && $data && isset($_POST['_wcf_checkout_id'])) {
+                $data['returnurl'] = add_query_arg(array('create-billing-agreement' => true), $data['SECFields']['returnurl']);
+
+                $BillingAgreements = array();
+                $Item = array(
+                    'l_billingtype' => '',
+                    'l_billingtype' => 'MerchantInitiatedBilling',
+                    'l_billingagreementdescription' => $description,
+                    'l_paymenttype' => '',
+                    'l_paymenttype' => 'Any',
+                    'l_billingagreementcustom' => ''
+                );
+                array_push($BillingAgreements, $Item);
+                $data['BillingAgreements'] = $BillingAgreements;
+            }
         }
 
-        if (true === wcf_pro()->utils->is_reference_transaction() && $data && isset($data['METHOD']) && 'DoReferenceTransaction' == $data['METHOD']) {
 
-            $step_id = isset($_POST['step_id']) ? (int) $_POST['step_id'] : '';
-            $order_id = isset($_POST['order_id']) ? (int) $_POST['order_id'] : '';
-            $order = wc_get_order($order_id);
-            $offer_package = wcf_pro()->utils->get_offer_data($step_id);
+        return $data;
+    }
 
-            /**
-             * If we do not have the current order set that means its not the upsell accept call but the call containing subscriptions.
-             */
-            $data['AMT'] = $offer_package['total'];
-            $data['ITEMAMT'] = $offer_package['total'];
+    public function modify_do_reference_transaction_request_paypal_arguments($data) {
 
-            // We setup shippingamt as 0.
-            if (( isset($offer_package['shipping']) && isset($offer_package['shipping']['diff']) ) && 0 < $offer_package['shipping']['diff']) {
-                $data['SHIPPINGAMT'] = 0;
-                $data['SHIPDISCAMT'] = ( isset($offer_package['shipping']) && isset($offer_package['shipping']['diff']) ) ? $offer_package['shipping']['diff']['cost'] : 0;
-            } else {
-                $data['SHIPPINGAMT'] = ( isset($offer_package['shipping']) && isset($offer_package['shipping']['diff']) ) ? $offer_package['shipping']['diff']['cost'] : 0;
+        wcf()->logger->log(__CLASS__ . '::' . __FUNCTION__ . ' : Entering ');
+
+        if (true === wcf_pro()->utils->is_reference_transaction()) {
+
+            // translators: blog name.
+            $description = sprintf(_x('Orders with %s', 'data sent to PayPal', 'cartflows-pro'), get_bloginfo('name'));
+
+            $description = html_entity_decode($description, ENT_NOQUOTES, 'UTF-8');
+
+
+
+            if ($data && isset($data['METHOD']) && 'DoReferenceTransaction' == $data['METHOD']) {
+
+                $step_id = isset($_POST['step_id']) ? (int) $_POST['step_id'] : 0;
+                $order_id = isset($_POST['order_id']) ? (int) $_POST['order_id'] : 0;
+
+                // Return if the step  id is not in the query string.
+                if ($step_id < 1) {
+                    return $data;
+                }
+
+                // Return if the order id is not in the query string.
+                if ($order_id < 1) {
+                    return $data;
+                }
+
+                $step_id = isset($_POST['step_id']) ? (int) $_POST['step_id'] : '';
+                $order_id = isset($_POST['order_id']) ? (int) $_POST['order_id'] : '';
+                $order = wc_get_order($order_id);
+                $variation_id = isset($_POST['variation_id']) ? intval($_POST['variation_id']) : '';
+                $input_qty = isset($_POST['input_qty']) ? intval($_POST['input_qty']) : '';
+                $offer_package = wcf_pro()->utils->get_offer_data($step_id, $variation_id, $input_qty, $order_id);
+
+                /**
+                 * If we do not have the current order set that means its not the upsell accept call but the call containing subscriptions.
+                 */
+                $data['AMT'] = $offer_package['total'];
+                $data['ITEMAMT'] = $offer_package['total'];
+
+                // shippingamt shoud be 0.
+                if (( isset($offer_package['shipping']) && isset($offer_package['shipping']['diff']) ) && 0 < $offer_package['shipping']['diff']) {
+                    $data['SHIPPINGAMT'] = 0;
+                    $data['SHIPDISCAMT'] = ( isset($offer_package['shipping']) && isset($offer_package['shipping']['diff']) ) ? $offer_package['shipping']['diff']['cost'] : 0;
+                } else {
+                    $data['SHIPPINGAMT'] = ( isset($offer_package['shipping']) && isset($offer_package['shipping']['diff']) ) ? $offer_package['shipping']['diff']['cost'] : 0;
+                    $data['SHIPDISCAMT'] = 0;
+                }
+
+                $data['TAXAMT'] = ( isset($offer_package['taxes']) ) ? $offer_package['taxes'] : 0;
+                $data['INVNUM'] = 'WC-' . $order_id . '_' . $step_id;
+                $data['INSURANCEAMT'] = 0;
+                $data['HANDLINGAMT'] = 0;
+                $data = $this->remove_previous_line_items($data);
+
+                $data['L_NAME0'] = $offer_package['name'];
+                $data['L_DESC0'] = $offer_package['desc'];
+                $data['L_AMT0'] = wc_format_decimal($offer_package['unit_price_tax'], 2);
+                $data['L_QTY0'] = $offer_package['qty'];
+
+                $item_amt = $offer_package['total'];
+
+                $data['ITEMAMT'] = $item_amt;
             }
-
-            $data['TAXAMT'] = ( isset($offer_package['taxes']) ) ? $offer_package['taxes'] : 0;
-            $data['INVNUM'] = 'WC-' . $order->get_id();
-            $data['INSURANCEAMT'] = 0;
-            $data['HANDLINGAMT'] = 0;
-            $data = $this->remove_previous_line_items($data);
-
-            $data['L_NAME'] = $offer_package['name'];
-            $data['L_DESC'] = $offer_package['desc'];
-            $data['L_AMT'] = wc_format_decimal($offer_package['price'], 2);
-            $data['L_QTY'] = $offer_package['qty'];
-
-            $item_amt = $offer_package['total'];
-
-            $data['ITEMAMT'] = $item_amt;
         }
 
         return $data;
@@ -881,11 +962,8 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
      * @return bool
      */
     public function process_offer_payment($order, $product) {
-
         $is_successful = false;
         try {
-
-
             $order_id = $order->get_id();
             $api_prefix = '';
             $testmode = $this->wc_gateway()->settings['testmode'];
@@ -900,35 +978,27 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
             $this->setup_api_vars(
                     $this->key, $environment, $this->wc_gateway()->get_option($api_prefix . 'api_username'), $this->wc_gateway()->get_option($api_prefix . 'api_password'), $this->wc_gateway()->get_option($api_prefix . 'api_signature')
             );
-
             $this->add_reference_trans_args($this->get_token($order), $order, array(), $product);
-
             $this->add_credentials_param($this->api_username, $this->api_password, $this->api_signature, 124);
-
             $request = new stdClass();
             $request->path = '';
             $request->method = 'POST';
-            $request->body = $this->to_string();
-
-
-
+            $parameters = apply_filters('angelleye_woocommerce_express_checkout_do_reference_transaction_request_args', $this->get_parameters());
+            $request->body = http_build_query($parameters, '', '&');
             $response = $this->perform_request($request);
-
             if ($this->has_error_api_response($response)) {
                 wcf()->logger->log('PayPal DoReferenceTransactionCall Failed');
-                wcf()->logger->log(print_r($response, true)); //phpcs:ignore
+                wcf()->logger->log(print_r($response, true));
                 $is_successful = false;
             } else {
-
+                wcf()->logger->log(print_r($response, true));
                 $is_successful = true;
                 $this->store_offer_transaction($order, $response, $product);
             }
         } catch (Exception $e) {
-
             // translators: exception message.
             $order_note = sprintf(__('PayPal Exp Transaction Failed (%s)', 'cartflows-pro'), $e->getMessage());
         }
-
         return $is_successful;
     }
 

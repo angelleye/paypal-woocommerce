@@ -1473,7 +1473,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $Payment['order_items'] = array();
         }
         $PayPalRequestData['PaymentDetails'] = $PaymentDetails;
-        $this->paypal_response = $this->paypal->DoReferenceTransaction($PayPalRequestData);
+        $this->paypal_response = $this->paypal->DoReferenceTransaction(apply_filters('angelleye_woocommerce_express_checkout_do_reference_transaction_request_args', $PayPalRequestData));
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($this->paypal_response, $methos_name = 'DoExpressCheckoutPayment', $gateway = 'PayPal Express Checkout', $this->gateway->error_email_notify);
         $this->save_payment_token($order, $referenceid);
         WC_Gateway_PayPal_Express_AngellEYE::log('Test Mode: ' . $this->testmode);
