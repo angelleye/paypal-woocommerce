@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Paypal Gateway.
  *
@@ -24,6 +23,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
      * @var key
      */
     public $key = 'paypal_express';
+    public $is_api_refund = true;
 
     /**
      *  Initiator.
@@ -43,6 +43,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'), 20);
 
         add_filter('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', array($this, 'modify_paypal_arguments'), 999);
+        add_action('cartflows_offer_subscription_created', array($this, 'add_subscription_payment_meta_for_ppec'), 10, 3);
     }
 
     /**
@@ -93,71 +94,68 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
      *
      * @return string
      */
-    
     public function generate_script() {
-        $testmode = $this->wc_gateway()->get_option( 'testmode', 'live' );
-        if($testmode == 'yes') {
+        $testmode = $this->wc_gateway()->get_option('testmode', 'live');
+        if ($testmode == 'yes') {
             $environment = 'sandbox';
         } else {
             $environment = 'live';
         }
-        if ( 'sandbox' == $environment ) {
-                $api_prefix = 'sandbox_';
+        if ('sandbox' == $environment) {
+            $api_prefix = 'sandbox_';
         }
         ob_start();
         ?>
         (function($){
 
-                var $wcf_angelleye = {
-                        init: function () {
-                                var getButtons = [
-                                        'wcf-upsell-offer',
-                                        'wcf-downsell-offer'
-                                ];
+        var $wcf_angelleye = {
+        init: function () {
+        var getButtons = [
+        'wcf-upsell-offer',
+        'wcf-downsell-offer'
+        ];
 
-                                window.paypalCheckoutReady = function () {
-                                        paypal.checkout.setup(
-                                                '<?php echo $this->get_woo_payer_id(); ?>',
-                                                {
-                                                        environment: '<?php echo $environment; ?>',
-                                                        buttons: getButtons,
-                                                        locale: 'en_US',
+        window.paypalCheckoutReady = function () {
+        paypal.checkout.setup(
+        '<?php echo $this->get_woo_payer_id(); ?>',
+        {
+        environment: '<?php echo $environment; ?>',
+        buttons: getButtons,
+        locale: 'en_US',
 
-                                                        click: function () {
+        click: function () {
 
-                                                                var postData = {
-                                                                        step_id: cartflows.current_step,
-                                                                        order_id: <?php echo isset( $_GET['wcf-order'] ) ? intval( $_GET['wcf-order'] ) : 0; ?>,
-                                                                        order_key: '<?php echo isset( $_GET['wcf-key'] ) ? sanitize_text_field( $_GET['wcf-key'] ) : ''; ?>',
-                                                                        session_key: '<?php echo isset( $_GET['wcf-sk'] ) ? sanitize_text_field( $_GET['wcf-sk'] ) : ''; ?>',
-                                                                        action: 'cartflows_front_create_paypal_express_angelleye_checkout_token'
-                                                                };
+        var postData = {
+        step_id: cartflows.current_step,
+        order_id: <?php echo isset($_GET['wcf-order']) ? intval($_GET['wcf-order']) : 0; ?>,
+        order_key: '<?php echo isset($_GET['wcf-key']) ? sanitize_text_field($_GET['wcf-key']) : ''; ?>',
+        session_key: '<?php echo isset($_GET['wcf-sk']) ? sanitize_text_field($_GET['wcf-sk']) : ''; ?>',
+        action: 'cartflows_front_create_paypal_express_angelleye_checkout_token'
+        };
 
-                                                                paypal.checkout.initXO();
+        paypal.checkout.initXO();
 
-                                                                var action = $.post(cartflows.ajax_url, postData);
+        var action = $.post(cartflows.ajax_url, postData);
 
-                                                                action.done(function (data) {
-                                                                        paypal.checkout.startFlow(data.token);
-                                                                });
+        action.done(function (data) {
+        paypal.checkout.startFlow(data.token);
+        });
 
-                                                                action.fail(function () {
-                                                                        paypal.checkout.closeFlow();
-                                                                });
-                                                        }
-                                                }
-                                        );
-                                }
-                        }
-                };
+        action.fail(function () {
+        paypal.checkout.closeFlow();
+        });
+        }
+        }
+        );
+        }
+        }
+        };
 
-                $wcf_angelleye.init();
+        $wcf_angelleye.init();
         })(jQuery);
         <?php
-
         return ob_get_clean();
-	}
-
+    }
 
     /**
      * Get Payer ID from option value.
@@ -230,10 +228,12 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
      */
     public function generate_express_checkout_token() {
 
-        $step_id = intval($_POST['step_id']);
-        $order_id = intval($_POST['order_id']);
-        $order_key = sanitize_text_field($_POST['order_key']);
-        $session_key = $_POST['session_key'];
+        $step_id = isset($_POST['step_id']) ? intval($_POST['step_id']) : 0;
+        $order_id = isset($_POST['order_id']) ? intval($_POST['order_id']) : 0;
+        $order_key = isset($_POST['order_key']) ? sanitize_text_field(wp_unslash($_POST['order_key'])) : '';
+        $session_key = isset($_POST['session_key']) ? sanitize_text_field(wp_unslash($_POST['session_key'])) : '';
+        $variation_id = isset($_POST['variation_id']) ? intval($_POST['variation_id']) : '';
+        $input_qty = isset($_POST['input_qty']) ? intval($_POST['input_qty']) : '';
 
         $is_valid_order = true;
 
@@ -251,22 +251,31 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
                             'order_id' => $order_id,
                             'order_key' => $order_key,
                             'session_key' => $session_key,
+                            'variation_id' => $variation_id,
+                            'input_qty' => $input_qty,
                         )
                 ),
                 'cancel_url' => $this->get_callback_url(
                         array(
-                            'action' => 'cancel_url',
+                            'action' => 'cartflows_paypal_cancel',
                             'step_id' => $step_id,
                             'order_id' => $order_id,
                             'order_key' => $order_key,
                             'session_key' => $session_key,
+                            'variation_id' => $variation_id,
+                            'input_qty' => $input_qty,
                         )
                 ),
                 'notify_url' => $this->get_callback_url('notify_url'),
                 'order' => $order,
                 'step_id' => $step_id,
+                'variation_id' => $variation_id,
+                'input_qty' => $input_qty,
                     ), true
             );
+
+            wcf()->logger->log('Generate express checkout token'); //phpcs:ignore
+            wcf()->logger->log(print_r($response, true)); //phpcs:ignore
 
             if (isset($response['TOKEN']) && '' !== $response['TOKEN']) {
 
@@ -339,7 +348,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
     public function add_express_checkout_params($args, $is_upsell = false) {
 
         // translators: placeholder is blogname.
-        $default_description = sprintf(_x('Orders with %s', 'data sent to paypal', 'paypal-for-woocommerce'), get_bloginfo('name'));
+        $default_description = sprintf(_x('Orders with %s', 'data sent to paypal', 'cartflows-pro'), get_bloginfo('name'));
 
         $defaults = array(
             'currency' => get_woocommerce_currency(),
@@ -380,9 +389,9 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
         if (isset($args['order'])) {
 
             if (true === $is_upsell) {
-                $this->add_payment_params($args['order'], $args['step_id'], $args['payment_action'], false, true);
+                $this->add_payment_params($args['order'], $args['step_id'], $args['payment_action'], false, true, $args['variation_id'], $args['input_qty']);
             } else {
-                $this->add_payment_params($args['order'], $args['step_id'], $args['payment_action']);
+                $this->add_payment_params($args['order'], $args['step_id'], $args['payment_action'], false, false);
             }
         }
 
@@ -464,7 +473,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
         $description = html_entity_decode($description, ENT_NOQUOTES, 'UTF-8');
 
-        if (true === wcf_pro()->utils->is_reference_transaction() && $data && isset($data['SECFields']['returnurl']) && strpos($data['SECFields']['returnurl'], 'get_express_checkout_details') == true && !isset($data['BillingAgreements']) && isset($_POST['_wcf_checkout_id'])) {
+        if (true === wcf_pro()->utils->is_reference_transaction() && $data && isset($_POST['_wcf_checkout_id'])) {
             $data['returnurl'] = add_query_arg(array('create-billing-agreement' => true), $data['SECFields']['returnurl']);
 
             $BillingAgreements = array();
@@ -541,9 +550,9 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
                 }
 
                 // get token to retrieve checkout details with.
-                $token = esc_attr($_GET['token']);
-                $order_id = intval($_GET['order_id']);
-                $step_id = intval($_GET['step_id']);
+                $token = esc_attr(sanitize_text_field(wp_unslash($_GET['token'])));
+                $order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
+                $step_id = isset($_GET['step_id']) ? intval($_GET['step_id']) : 0;
 
                 try {
 
@@ -555,7 +564,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
                         $order = wc_get_order($order_id);
 
                         if (is_null($order)) {
-                            throw new Exception(__('Unable to find order for PayPal billing agreement.', 'paypal-for-woocommerce'));
+                            throw new Exception(__('Unable to find order for PayPal billing agreement.', 'cartflows-pro'));
                         }
 
                         // we need to process an initial payment.
@@ -605,9 +614,9 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
                     }
                 } catch (Exception $e) {
 
-                    wc_add_notice(__('An error occurred, please try again or try an alternate form of payment.', 'paypal-for-woocommerce'), 'error');
+                    wc_add_notice(__('An error occurred, please try again or try an alternate form of payment.', 'cartflows-pro'), 'error');
 
-                    wp_redirect(wc_get_cart_url());
+                    wp_safe_redirect(wc_get_cart_url());
                 }
 
                 exit;
@@ -671,7 +680,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
                 )
         );
 
-        $this->add_payment_params($order, $args['step_id'], $args['payment_action']);
+        $this->add_payment_params($order, $args['step_id'], $args['payment_action'], false, false);
     }
 
     /**
@@ -731,8 +740,12 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
         $step_id = isset($_GET['step_id']) ? intval($_GET['step_id']) : 0;
         $order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
-        $order_key = isset($_GET['order_key']) ? sanitize_text_field($_GET['order_key']) : '';
-        $session_key = isset($_GET['session_key']) ? $_GET['session_key'] : '';
+        $order_key = isset($_GET['order_key']) ? sanitize_text_field(wp_unslash($_GET['order_key'])) : '';
+        $session_key = isset($_GET['session_key']) ? sanitize_text_field(wp_unslash($_GET['session_key'])) : '';
+        $variation_id = isset($_GET['variation_id']) ? intval($_GET['variation_id']) : '';
+        $input_qty = isset($_GET['input_qty']) ? intval($_GET['input_qty']) : '';
+
+        $order = wc_get_order($order_id);
 
         switch ($_GET['action']) {
 
@@ -741,7 +754,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
                 $data = wcf_pro()->session->get_data($flow_id);
 
-                $offer_product = wcf_pro()->utils->get_offer_data($step_id);
+                $offer_product = wcf_pro()->utils->get_offer_data($step_id, $variation_id, $input_qty, $order_id);
 
                 if (isset($_GET['token']) && !empty($_GET['token'])) {
 
@@ -759,7 +772,10 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
                         $get_paypal_data = $data['paypal'];
                     }
 
-                    $express_checkout_details_response = $this->perform_express_checkout_details_request($_GET['token']);
+                    $express_checkout_details_response = $this->perform_express_checkout_details_request(sanitize_text_field(wp_unslash($_GET['token'])));
+
+                    wcf()->logger->log('Express checkout token return request'); //phpcs:ignore
+                    wcf()->logger->log(print_r($express_checkout_details_response, true)); //phpcs:ignore
 
                     /**
                      * Check if product total is greater than 0.
@@ -804,11 +820,20 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
                         $response_checkout = $this->perform_request($request);
 
+                        wcf()->logger->log('Express $response_checkout checkout token charge'); //phpcs:ignore
+                        wcf()->logger->log(print_r($response_checkout, true)); //phpcs:ignore
+
                         if (false === $this->has_error_api_response($response_checkout)) {
                             $api_response_result = true;
+
+                            // Store transaction ID for the CartFlows offer.
+                            $this->store_offer_transaction($order, $response_checkout, $offer_product);
                         }
                     } else {
                         $api_response_result = true;
+
+                        // Store transaction ID for the CartFlows offer.
+                        $this->store_offer_transaction($order, $response_checkout, $offer_product);
                     }
 
                     /*                     * ** DoExpressCheckout Call Completed */
@@ -817,21 +842,21 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
                      */
                     $api_response_result = apply_filters('cartflows_gateway_in_offer_transaction_paypal_after_express_checkout_response', $api_response_result, $express_checkout_details_response['TOKEN'], $express_checkout_details_response['PAYERID'], $this);
 
-                    $result = wcf_pro()->flow->after_offer_charge($step_id, $order_id, $order_key, $api_response_result);
+                    $result = wcf_pro()->flow->after_offer_charge($step_id, $order_id, $order_key, $api_response_result, $variation_id, $input_qty);
 
-                    wp_redirect($result['redirect']);
+                    wp_safe_redirect($result['redirect']);
                     exit;
                 } else {
 
-                    $result = wcf_pro()->flow->after_offer_charge($step_id, $order_id, $order_key, $api_response_result);
+                    $result = wcf_pro()->flow->after_offer_charge($step_id, $order_id, $order_key, $api_response_result, $variation_id, $input_qty);
 
-                    wp_redirect($result['redirect']);
+                    wp_safe_redirect($result['redirect']);
                     exit;
                 }
 
                 break;
 
-            case 'cancel_url':
+            case 'cartflows_paypal_cancel':
                 $url = get_permalink($step_id);
 
                 $args = array(
@@ -842,13 +867,14 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
                 $url = add_query_arg($args, $url);
 
-                wp_redirect($url);
+                wp_safe_redirect($url);
                 exit;
         }
     }
 
     /**
      * Processes offer payment.
+     * This will be executed if the reference transaction setting is disabled.
      *
      * @param array $order order details.
      * @param array $product product details.
@@ -884,24 +910,48 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
             $request->method = 'POST';
             $request->body = $this->to_string();
 
+
+
             $response = $this->perform_request($request);
 
             if ($this->has_error_api_response($response)) {
                 wcf()->logger->log('PayPal DoReferenceTransactionCall Failed');
-                wcf()->logger->log(print_r($response, true));
+                wcf()->logger->log(print_r($response, true)); //phpcs:ignore
                 $is_successful = false;
             } else {
 
                 $is_successful = true;
+                $this->store_offer_transaction($order, $response, $product);
             }
         } catch (Exception $e) {
 
             // translators: exception message.
-            $order_note = sprintf(__('PayPal Exp Transaction Failed (%s)', 'paypal-for-woocommerce'), $e->getMessage());
-            $order->add_order_note($order_note);
+            $order_note = sprintf(__('PayPal Exp Transaction Failed (%s)', 'cartflows-pro'), $e->getMessage());
         }
 
         return $is_successful;
+    }
+
+    /**
+     * Store Offer Trxn Charge.
+     *
+     * @param WC_Order $order    The order that is being paid for.
+     * @param Object   $response The response that is send from the payment gateway.
+     * @param array    $product  Product data.
+     */
+    public function store_offer_transaction($order, $response, $product) {
+
+        $order_id = $order->get_id();
+        $txn_id = '';
+
+        if (!isset($response['PAYMENTINFO_0_TRANSACTIONID'])) {
+            $txn_id = $response['TRANSACTIONID'];
+        } else {
+            $txn_id = $response['PAYMENTINFO_0_TRANSACTIONID'];
+        }
+
+        $order->update_meta_data('cartflows_offer_txn_resp_' . $product['step_id'], $txn_id);
+        $order->save();
     }
 
     /**
@@ -936,7 +986,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
                 )
         );
 
-        $this->add_payment_params($order, $offer_product['step_id'], $args['payment_action'], true, true);
+        $this->add_payment_params($order, $offer_product['step_id'], $args['payment_action'], true, true, $args['variation_id'], $args['input_qty']);
     }
 
     /**
@@ -997,6 +1047,151 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
         }
 
         return $array;
+    }
+
+    /**
+     * Is gateway support offer refund?
+     *
+     * @return bool
+     */
+    public function is_api_refund() {
+
+        return $this->is_api_refund;
+    }
+
+    /**
+     * Process offer refund.
+     *
+     * @param object $order the order object.
+     * @param array  $offer_data offer data.
+     *
+     * @return bool
+     */
+    public function process_offer_refund($order, $offer_data) {
+
+        $order_id = $offer_data['order_id'];
+        $transaction_id = $offer_data['transaction_id'];
+        $refund_amount = $offer_data['refund_amount'];
+        $refund_reason = $offer_data['refund_reason'];
+        $response_id = false;
+
+        if (!is_null($refund_amount) && class_exists('WC_Gateway_Paypal')) {
+
+            $available_gateways = WC()->payment_gateways->payment_gateways();
+
+            if (isset($available_gateways['paypal'])) {
+
+                if (!class_exists('WC_Gateway_Paypal_API_Handler')) {
+                    include_once wc()->plugin_path() . '/includes/gateways/paypal/includes/class-wc-gateway-paypal-api-handler.php';
+                }
+
+                $environment = $this->get_wc_gateway()->get_option('environment', 'live');
+                $test_mode = ( 'live' !== $environment );
+
+                WC_Gateway_Paypal_API_Handler::$api_username = $test_mode ? $this->get_wc_gateway()->get_option('sandbox_api_username') : $this->get_wc_gateway()->get_option('api_username');
+                WC_Gateway_Paypal_API_Handler::$api_password = $test_mode ? $this->get_wc_gateway()->get_option('sandbox_api_password') : $this->get_wc_gateway()->get_option('api_password');
+                WC_Gateway_Paypal_API_Handler::$api_signature = $test_mode ? $this->get_wc_gateway()->get_option('sandbox_api_signature') : $this->get_wc_gateway()->get_option('api_signature');
+                WC_Gateway_Paypal_API_Handler::$sandbox = $test_mode;
+
+                $result = WC_Gateway_Paypal_API_Handler::refund_transaction($order, $refund_amount, $refund_reason);
+
+                if (is_wp_error($result)) {
+                    wcf()->logger->log(
+                            "Paypal offer refund failed. Order: {$order_id}, Error: " .
+                            wp_json_encode($result->get_error_message())
+                    );
+                } else {
+                    switch (strtolower($result->ACK)) { //phpcs:ignore
+                        case 'success':
+                        case 'successwithwarning':
+                            $response_id = $result->REFUNDTRANSACTIONID; //phpcs:ignore
+                    }
+                }
+                if (isset($result->L_LONGMESSAGE0)) { //phpcs:ignore
+                    wcf()->logger->log(
+                            'Paypal Express Checkout offer refund error message: ' .
+                            wp_json_encode($result->L_LONGMESSAGE0) //phpcs:ignore
+                    );
+                }
+            }
+
+            wcf()->logger->log('Paypal Express Checkout offer refund response id: ' . $response_id);
+        }
+
+        return $response_id;
+    }
+
+    /**
+     * Get WooCommerce payment geteways.
+     *
+     * @return array
+     */
+    public function get_wc_gateway() {
+
+        global $woocommerce;
+
+        $gateways = $woocommerce->payment_gateways->payment_gateways();
+
+        return $gateways[$this->key];
+    }
+
+    /**
+     * Setup the Payment data for Paypal Automatic Subscription.
+     *
+     * @param WC_Subscription $subscription An instance of a subscription object.
+     * @param object          $order Object of order.
+     * @param array           $offer_product array of offer product.
+     */
+    public function add_subscription_payment_meta_for_ppec($subscription, $order, $offer_product) {
+
+        if ('ppec_paypal' === $order->get_payment_method()) {
+
+            $subscription_id = $subscription->get_id();
+
+            update_post_meta($subscription_id, '_ppec_billing_agreement_id', $order->get_meta('_ppec_billing_agreement_id', true));
+        }
+    }
+
+    /**
+     * Modify offer refund data.
+     *
+     * @param array  $request request.
+     * @param object $order the order object.
+     * @param float  $amount refund amount.
+     *
+     * @return object
+     */
+    public function offer_refund_request_data($request, $order, $amount) {
+
+        if (isset($_POST['cartflows_refund'])) {
+
+            $payment_method = $order->get_payment_method();
+
+            if ($this->key === $payment_method) {
+
+                wcf()->logger->log('Paypal Express Refund Request: ' . wp_json_encode($request));
+
+                if (isset($_POST['transaction_id']) && !empty($_POST['transaction_id'])) { //phpcs:ignore
+                    $request['TRANSACTIONID'] = sanitize_text_field(wp_unslash($_POST['transaction_id']));
+
+                    $environment = $this->get_wc_gateway()->get_option('environment', 'live');
+
+                    if ('live' === $environment) {
+                        $request['USER'] = $this->get_wc_gateway()->get_option('api_username');
+                        $request['PWD'] = $this->get_wc_gateway()->get_option('api_password');
+                        $request['SIGNATURE'] = $this->get_wc_gateway()->get_option('api_signature');
+                    } else {
+                        $request['USER'] = $this->get_wc_gateway()->get_option('sandbox_api_username');
+                        $request['PWD'] = $this->get_wc_gateway()->get_option('sandbox_api_password');
+                        $request['SIGNATURE'] = $this->get_wc_gateway()->get_option('sandbox_api_signature');
+                    }
+                }
+
+                wcf()->logger->log('Paypal Express Modified Refund Request: ' . wp_json_encode($request));
+            }
+        }
+
+        return $request;
     }
 
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Stripe Gateway.
+ * PayPal Pro Gateway.
  *
  * @package cartflows
  */
@@ -24,6 +24,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
      * @var key
      */
     public $key = 'paypal_pro';
+    public $is_api_refund = true;
 
     /**
      *  Initiator
@@ -155,6 +156,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
             }
             if ($gateway->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
                 $gateway->save_payment_token($order, $PayPalResult['TRANSACTIONID']);
+                $this->store_offer_transaction($order, $PayPalResult['TRANSACTIONID'], $product);
                 return true;
             } else {
                 $error_code = isset($PayPalResult['ERRORS'][0]['L_ERRORCODE']) ? $PayPalResult['ERRORS'][0]['L_ERRORCODE'] : '';
@@ -179,6 +181,66 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
         } catch (Exception $ex) {
             return false;
         }
+    }
+
+    public function is_api_refund() {
+        return $this->is_api_refund;
+    }
+
+    public function process_offer_refund($order, $offer_data) {
+        $order_id = $offer_data['order_id'];
+        $transaction_id = $offer_data['transaction_id'];
+        $refund_amount = $offer_data['refund_amount'];
+        $reason = $offer_data['refund_reason'];
+        $response_id = false;
+        wcf()->logger->log('Begin Refund');
+        wcf()->logger->log('Order ID: ' . print_r($order_id, true));
+        wcf()->logger->log('Transaction ID: ' . print_r($order->get_transaction_id(), true));
+        $gateway = $this->get_wc_gateway();
+        $gateway->angelleye_load_paypal_pro_class(null, $gateway, $order);
+        if ($reason) {
+            if (255 < strlen($reason)) {
+                $reason = substr($reason, 0, 252) . '...';
+            }
+            $reason = html_entity_decode($reason, ENT_NOQUOTES, 'UTF-8');
+        }
+        $RTFields = array(
+            'transactionid' => $transaction_id,
+            'payerid' => '',
+            'invoiceid' => '',
+            'refundtype' => $order->get_total() == $refund_amount ? 'Full' : 'Partial',
+            'amt' => AngellEYE_Gateway_Paypal::number_format($refund_amount, $order),
+            'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
+            'note' => $reason,
+            'retryuntil' => '',
+            'refundsource' => '',
+            'merchantstoredetail' => '',
+            'refundadvice' => '',
+            'refunditemdetails' => '',
+            'msgsubid' => '',
+            'storeid' => '',
+            'terminalid' => ''
+        );
+        $PayPalRequestData = array('RTFields' => $RTFields);
+        $PayPalResult = $gateway->PayPal->RefundTransaction(apply_filters('angelleye_woocommerce_paypal_pro_refund_request_args', $PayPalRequestData));
+        AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, 'RefundTransaction', 'PayPal Website Payments Pro (DoDirectPayment)', $this->error_email_notify);
+        $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
+        $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
+        wcf()->logger->log('Refund Request: ' . print_r($gateway->PayPal->NVPToArray($gateway->PayPal->MaskAPIResult($PayPalRequest)), true));
+        wcf()->logger->log('Refund Response: ' . print_r($gateway->PayPal->NVPToArray($gateway->PayPal->MaskAPIResult($PayPalResponse)), true));
+        if ($gateway->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
+            update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['REFUNDTRANSACTIONID']);
+            $order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
+            $response_id = $PayPalResult['REFUNDTRANSACTIONID'];
+        } else {
+            $response_id = false;
+        }
+        return $response_id;
+    }
+
+    public function store_offer_transaction($order, $response, $product) {
+        $order->update_meta_data('cartflows_offer_txn_resp_' . $product['step_id'], $response);
+        $order->save();
     }
 
 }
