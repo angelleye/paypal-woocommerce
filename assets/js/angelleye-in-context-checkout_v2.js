@@ -382,7 +382,6 @@ jQuery(function ($) {
                     paypal.Buttons({
                         style: angelleye_cart_style_object,
                         createOrder: function () {
-                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var data = $(selector).closest('form')
                                     .add($('<input type="hidden" name="request_from" /> ')
                                             .attr('value', 'JSv4')
