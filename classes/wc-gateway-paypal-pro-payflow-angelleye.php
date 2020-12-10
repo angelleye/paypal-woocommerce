@@ -1328,6 +1328,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
              * Check for errors or fraud filter warnings and proceed accordingly.
              */
             if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_warning_codes))) {
+                $order->set_transaction_id($PayPalResult['PNREF']);
                 if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
                     $order->add_order_note('Card : ' . $PayPalResult['RESPMSG']);
                     add_post_meta($order_id, 'payment_action_authorization', $this->payment_action_authorization);
@@ -1456,7 +1457,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     }
                     $payment_order_meta = array('_payment_action' => $this->payment_action);
                     AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
-                    $order->set_transaction_id($PayPalResult['PNREF']);
+                    
                     AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                     $angelleye_utility = new AngellEYE_Utility(null, null);
                     $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
@@ -1472,7 +1473,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     } else {
                         $order->payment_complete($PayPalResult['PNREF']);
                     }
-                    $order->set_transaction_id($PayPalResult['PNREF']);                      
                 }
                 WC()->cart->empty_cart();
                 return array(
@@ -2003,6 +2003,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 throw new Exception($fc_empty_response);
             }
             if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_warning_codes))) {
+                $order->set_transaction_id($PayPalResult['PNREF']);
                 if (isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
                     $order->update_status('failed', __('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                     throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
@@ -2063,7 +2064,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     } else {
                         update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['PNREF']);
                     }
-                    $order->set_transaction_id($PayPalResult['PNREF']);
                     $payment_order_meta = array('_payment_action' => $this->payment_action);
                     AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                     AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
@@ -2080,7 +2080,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     } else {
                         $order->payment_complete($PayPalResult['PNREF']);
                     }
-                    $order->set_transaction_id($PayPalResult['PNREF']);
+                    
                 }
                 $this->save_payment_token($order, $PayPalResult['PNREF']);
                 $this->are_reference_transactions_enabled($PayPalResult['PNREF']);

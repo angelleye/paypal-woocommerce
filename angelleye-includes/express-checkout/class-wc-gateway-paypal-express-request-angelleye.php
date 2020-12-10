@@ -368,6 +368,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $payment_meta = array('Payment type' => !empty($this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE']) ? $this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE'] : '', 'PayPal Transaction Fee' => !empty($this->paypal_response['PAYMENTINFO_0_FEEAMT']) ? $this->paypal_response['PAYMENTINFO_0_FEEAMT'] : '');
             AngellEYE_Utility::angelleye_add_paypal_payment_meta($order_id, $payment_meta);
             if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
+                $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 do_action('ae_add_custom_order_note', $order, $card = null, $token = null, $this->paypal_response);
                 apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);
@@ -408,7 +409,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $order->payment_complete($this->paypal_response['BILLINGAGREEMENTID']);
                 } else {
                     $this->update_payment_status_by_paypal_responce($this->confirm_order_id, $this->paypal_response);
-                    $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 }
                 $payeremail = angelleye_get_session('payeremail');
                 if ($old_wc) {
@@ -425,6 +425,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 wc_clear_notices();
                 $this->angelleye_wp_safe_redirect(add_query_arg('utm_nooverride', '1', $this->gateway->get_return_url($order)), 'do_express_checkout_payment');
             } elseif ($this->response_helper->ec_is_response_successwithwarning($this->paypal_response)) {
+                $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
                 apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);
@@ -462,7 +463,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     } else {
                         $this->update_payment_status_by_paypal_responce($this->confirm_order_id, $this->paypal_response);
                     }
-                    $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                     WC()->cart->empty_cart();
                 }
                 if ($old_wc) {
@@ -478,6 +478,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_wp_safe_redirect(add_query_arg('utm_nooverride', '1', $this->gateway->get_return_url($order)), 'do_express_checkout_payment');
                 exit();
             } elseif ($this->response_helper->ec_is_response_partialsuccess($this->paypal_response)) {
+                $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
                 apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);

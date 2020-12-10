@@ -1282,6 +1282,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
 
         if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
+            $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
             // Add order note
             $order->add_order_note(sprintf(__('PayPal Pro (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             //$order->add_order_note("PayPal Results: ".print_r($PayPalResult,true));
@@ -1409,7 +1410,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
                 }
-                $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
+                
                 $payment_order_meta = array('_payment_action' => $this->payment_action);
                 AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
@@ -1962,6 +1963,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             throw new Exception($pc_empty_response);
         }
         if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
+            $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
             $order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             $avs_response_code = isset($PayPalResult['AVSCODE']) ? $PayPalResult['AVSCODE'] : '';
             $avs_response_message = $this->PayPal->GetAVSCodeMessage($avs_response_code);
@@ -1987,7 +1989,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->save_payment_token($order, $PayPalResult['TRANSACTIONID']);
                 update_post_meta($order_id, '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
                 $payment_order_meta = array('_payment_action' => $this->payment_action);
-                $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
                 AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
                 $angelleye_utility = new AngellEYE_Utility(null, null);
@@ -2336,10 +2337,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if($this->successwithwarning_payment_response == 'ignore_warnings_and_proceed_as_usual') {
             $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
         } else {
+            $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
             $order->update_status('on-hold');
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-            $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
             if ( $old_wc ) {
                 if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
                     $order->reduce_order_stock();
