@@ -129,6 +129,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         production.show();
                     }
                 }).change();
+                jQuery('#woocommerce_braintree_enable_braintree_ach').change(function () {
+                    var braintree_ach_field = jQuery('#woocommerce_braintree_ach_tokenization_key, #woocommerce_braintree_ach_business_name').closest('tr');
+                    if (jQuery(this).is(':checked')) {
+                        braintree_ach_field.show();
+                    } else {
+                        braintree_ach_field.hide();
+                    }
+                }).change();
                 jQuery('#woocommerce_braintree_enable_google_pay').change(function () {
                     if (jQuery('#woocommerce_braintree_enable_google_pay').is(':checked')) {
                         jQuery('#woocommerce_braintree_merchant_id_google_pay').closest('tr').show();
@@ -395,6 +403,32 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'hidden',
                 'default' => 'yes',
                 'class' => ''
+            ),
+            'braintree_ach_settings' => array(
+                'title' => __('Braintree ACH Settings', 'paypal-for-woocommerce'),
+                'type' => 'title',
+                'description' => '',
+            ),
+            'enable_braintree_ach' => array(
+                'title' => __('Enable Braintree ACH', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable Braintree ACH', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'description' => ''
+            ),
+            'ach_tokenization_key' => array(
+                'title' => __('Tokenization Key', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Your Braintree Tokenization Key', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true
+            ),
+            'ach_business_name' => array(
+                'title' => __('Business name', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('For all ACH transactions, you are required to collect a mandate or “proof of authorization” from the customer to prove that you have their explicit permission to debit their bank account. We will put your business name in authorization text', 'paypal-for-woocommerce'),
+                'default' => '',
+                'desc_tip' => true
             ),
             'advanced' => array(
                 'title' => __('Fraud Settings (Kount)', 'paypal-for-woocommerce'),
@@ -1686,13 +1720,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             return;
         }
         if ($this->enable_braintree_drop_in) {
-            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.20.4/js/dropin.min.js', array('jquery'), null, false);
+            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.25.0/js/dropin.min.js', array('jquery'), null, false);
         } else {
             wp_enqueue_style('braintree_checkout', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/braintree-checkout.css', array(), VERSION_PFW);
-            wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.35.0/js/client.min.js', array('jquery'), null, true);
-            wp_enqueue_script('braintree-data-collector', 'https://js.braintreegateway.com/web/3.35.0/js/data-collector.min.js', array('jquery'), null, true);
-            wp_enqueue_script('braintree-three-d-secure', 'https://js.braintreegateway.com/web/3.35.0/js/three-d-secure.js', array('jquery'), null, true);
-            wp_enqueue_script('braintree-gateway-hosted-fields', 'https://js.braintreegateway.com/web/3.35.0/js/hosted-fields.min.js', array('jquery'), null, true);
+            wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.70.0/js/client.min.js', array('jquery'), null, true);
+            wp_enqueue_script('braintree-data-collector', 'https://js.braintreegateway.com/web/3.70.0/js/data-collector.min.js', array('jquery'), null, true);
+            wp_enqueue_script('braintree-three-d-secure', 'https://js.braintreegateway.com/web/3.70.0/js/three-d-secure.min.js', array('jquery'), null, true);
+            wp_enqueue_script('braintree-gateway-hosted-fields', 'https://js.braintreegateway.com/web/3.70.0/js/hosted-fields.min.js', array('jquery'), null, true);
         }
     }
 
