@@ -1445,9 +1445,29 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
-            'fraud_management' => array(
-                'title' => __('Fraud Management', 'paypal-for-woocommerce'),
+            'fraudnet_integration' => array(
+                'title' => __('FraudNet Protection Integration', 'paypal-for-woocommerce'),
                 'type' => 'title',
+                'description' => '',
+            ),
+            'enable_fraudnet_integration' => array(
+                'title' => __('Enable FraudNet Integration', 'paypal-for-woocommerce'),
+                'label' => __('Enable FraudNet Integration', 'paypal-for-woocommerce'),
+                'type' => 'checkbox',
+                'description' => __('FraudNet is a JavaScript library developed by PayPal and embedded into a merchant’s web page to collect browser-based data to help reduce fraud. Upon checkout, these data elements are sent directly to PayPal Risk Services for fraud and risk assessment.','paypal-for-woocommerce'),
+                'default' => 'no',
+                'class' => '',
+                'desc_tip' => true,
+            ),
+            'fraudnet_swi' => array(
+                'title' => __('Source Website Identifier', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('This field is now required to be filled in for all new PayPal Express Checkout users. Existing users who already have Reference Transactions enabled are not required to use Fraudnet protection and an SWI (Source Website Identifier), although to take advantage of Fraudnet protection, you will be required to add one in.', 'paypal-for-woocommerce'),
+                'default' => ''
+            ),
+            'fraud_management'           => array(
+                'title'       => __( 'Fraud Management', 'paypal-for-woocommerce' ),
+                'type'        => 'title',
                 'description' => '',
             ),
             'fraud_management_filters' => array(
@@ -1455,7 +1475,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => '',
                 'description' => __('Choose how you would like to handle orders when Fraud Management Filters are flagged.', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select',
+                'class'    => 'wc-enhanced-select',
                 'options' => array(
                     'ignore_warnings_and_proceed_as_usual' => __('Ignore warnings and proceed as usual.', 'paypal-for-woocommerce'),
                     'place_order_on_hold_for_further_review' => __('Place order On Hold for further review.', 'paypal-for-woocommerce'),
