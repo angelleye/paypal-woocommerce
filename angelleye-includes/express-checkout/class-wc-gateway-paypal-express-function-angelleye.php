@@ -142,5 +142,6 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
         unset(WC()->session->shiptoname);
         unset(WC()->session->payeremail);
         unset(WC()->session->validate_data);
+        unset(WC()->session->angelleye_fraudnet_f);
     }
 }
