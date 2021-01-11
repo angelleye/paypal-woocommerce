@@ -700,7 +700,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $wsc_cart_allowed_funding_methods_json = json_encode(array_values(array_diff($this->wsc_cart_allowed_funding_methods, $this->wsc_cart_disallowed_funding_methods)));
                 $wsc_cart_disallowed_funding_methods_json = json_encode($this->wsc_cart_disallowed_funding_methods);
                 wp_register_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.min.js', array('jquery'), null, false);
-                wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min-v1.js', array('jquery', 'angelleye-in-context-checkout-js'), time(), false);
+                wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min-v1.js', array('jquery', 'angelleye-in-context-checkout-js'), time(), true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
                     'environment' => ( $this->testmode == true) ? 'sandbox' : 'production',
                     'locale' => ($this->use_wp_locale_code === 'yes' && AngellEYE_Utility::get_button_locale_code() != '') ? AngellEYE_Utility::get_button_locale_code() : '',

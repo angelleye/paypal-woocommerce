@@ -717,7 +717,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $smart_js_arg['intent'] = $sdk_intend;
                 $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
                 wp_register_script('angelleye-in-context-checkout-js', add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'), array(), null, true);
-                wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min-v2.js', array('jquery', 'angelleye-in-context-checkout-js'), time(), false);
+                wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min-v2.js', array('jquery', 'angelleye-in-context-checkout-js'), time(), true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
                     'environment' => ( $this->testmode == true) ? 'sandbox' : 'production',
                     'locale' => ($this->use_wp_locale_code === 'yes' && AngellEYE_Utility::get_button_locale_code() != '') ? AngellEYE_Utility::get_button_locale_code() : '',
