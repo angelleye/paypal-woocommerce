@@ -345,6 +345,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     production.show();
                 }
             }).change();
+            jQuery('#woocommerce_paypal_express_enable_fraudnet_integration').change(function () {
+                paypal_express_fraudnet_swi = jQuery('#woocommerce_paypal_express_fraudnet_swi').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    paypal_express_fraudnet_swi.show();
+                } else {
+                    paypal_express_fraudnet_swi.hide();
+                }
+            }).change();
             jQuery('#woocommerce_paypal_express_send_items').change(function () {
                 var subtotal_mismatch_behavior = jQuery('#woocommerce_paypal_express_subtotal_mismatch_behavior').closest('tr');
                 if (jQuery(this).is(':checked')) {
