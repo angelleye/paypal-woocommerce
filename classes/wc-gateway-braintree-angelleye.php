@@ -2846,7 +2846,115 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
     
     public function angelleye_braintree_payment_fields() {
-        echo '<hr><br>';
-        echo 'Pay through your Bank Account';
+        echo '<span class="angelleye_seprater_center">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</span><br>';
+        echo __('Pay through your Bank Account', 'paypal-for-woocommerce');
+        $default_fields = array(
+                'angelleye-bank-account-type' => '<p class="form-row form-row-first">
+                        <label for="angelleye-bank-account-type">' . esc_html__( 'Account Type', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+                        <select name="angelleye-bank-account-type" id="angelleye-bank-account-type" class="angelleye-bank-account-type">
+										<option value="">Select</option><option value="S">Savings</option><option value="C">Checking</option>
+									</select>
+                </p>',
+                'angelleye-account-holder-name' => '<p class="form-row form-row-first">
+                        <label for="angelleye-account-holder-name">' . esc_html__( 'Account Holder Name', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+                        <input id="angelleye-account-holder-name" class="input-text angelleye-account-holder-name" inputmode="numeric" autocapitalize="no" spellcheck="no" type="tel"  name="angelleye-account-holder-name" />
+                </p>',
+                'angelleye-routing-number' => '<p class="form-row form-row-first">
+                        <label for="angelleye-routing-number">' . esc_html__( 'Routing Number', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+                        <input id="angelleye-routing-number" class="input-text angelleye-routing-number" inputmode="numeric" autocapitalize="no" spellcheck="no" type="tel"  name="angelleye-routing-number" />
+                </p>',
+                'angelleye-account-number' => '<p class="form-row form-row-first">
+                        <label for="angelleye-account-number">' . esc_html__( 'Account Number', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+                        <input id="angelleye-account-number" class="input-text angelleye-account-number" inputmode="numeric" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" name="angelleye-account-number" />
+                </p>',
+        );
+        
+        
+        ?>
+        <fieldset id="wc-<?php echo esc_attr( $this->id ); ?>-us-bank-account-form" class='wc-credit-card-form wc-payment-form'>
+                
+                <?php
+                foreach ( $default_fields as $field ) {
+                        echo $field; 
+                }
+                ?>
+                
+                <div class="clear"></div>
+        </fieldset>
+        <script type="text/javascript">
+            braintree.client.create({
+                authorization: angelleye_gravity_form_braintree_ach_handler_strings.ach_bt_token
+            }, function (clientErr, clientInstance) {
+                if (clientErr) {
+                    alert('There was an error creating the Client, Please check your Braintree Settings.');
+                    console.error('clientErr',clientErr);
+                    return;
+                }
+                braintree.dataCollector.create({
+                    client: clientInstance,
+                    paypal: true
+                }, function (err, dataCollectorInstance) {
+                    if (err) {
+                        alert('We are unable to validate your system, please try again.');
+                        resetButtonLoading(submitbtn, curlabel);
+                        console.error('dataCollectorError',err);
+                        return;
+                    }
+                    var deviceData = dataCollectorInstance.deviceData;
+                    braintree.usBankAccount.create({
+                        client: clientInstance
+                    }, function (usBankAccountErr, usBankAccountInstance) {
+                        if (usBankAccountErr) {
+                            alert('There was an error initiating the bank request. Please try again.');
+                            resetButtonLoading(submitbtn, curlabel);
+                            console.error('usBankAccountErr',usBankAccountErr);
+                            return;
+                        }
+                        var bankDetails = {
+                            accountNumber: account_number, //'1000000000',
+                            routingNumber: routing_number, //'011000015',
+                            accountType: account_type == 'S' ? 'savings' : 'checking',
+                            ownershipType: account_type == 'S' ? 'personal' : 'business',
+                            billingAddress: {
+                                streetAddress: streetAddress, //'1111 Thistle Ave',
+                                extendedAddress: extendedAddress,
+                                locality: locality, //'Fountain Valley',
+                                region: region, //'CA',
+                                postalCode: postalCode //'92708'
+                            }
+                        };
+                        if (bankDetails.ownershipType === 'personal') {
+                            bankDetails.firstName = account_holder_namebreak[0];
+                            bankDetails.lastName = account_holder_namebreak[1];
+                        } else {
+                            bankDetails.businessName = account_holdername;
+                        }
+                        usBankAccountInstance.tokenize({
+                            bankDetails: bankDetails,
+                            mandateText: 'By clicking ["Submit"], I authorize Braintree, a service of PayPal, on behalf of ' + angelleye_gravity_form_braintree_ach_handler_strings.ach_business_name + ' (i) to verify my bank account information using bank information and consumer reports and (ii) to debit my bank account.'
+                        }, function (tokenizeErr, tokenizedPayload) {
+                            if (tokenizeErr) {
+                                var errormsg = tokenizeErr['details']['originalError']['details']['originalError'][0]['message'];
+                                if (errormsg.indexOf("Variable 'zipCode' has an invalid value") != -1)
+                                    alert('Please enter valid postal code.');
+                                else if (errormsg.indexOf("Variable 'state' has an invalid value") != -1)
+                                    alert('Please enter valid state code. (e.g.: CA)');
+                                else
+                                alert(errormsg);
+                                resetButtonLoading(submitbtn, curlabel);
+                                console.error('tokenizeErr', tokenizeErr);
+                                return;
+                            }
+                            form.append("<input type='hidden' name='ach_device_corelation' value='" + deviceData + "' />");
+                            form.append('<input type="hidden" name="ach_token" value="' + tokenizedPayload.nonce + '" />');
+                            form.submit();
+                        });
+                    });
+                });
+            });
+        
+        
+        </script>
+        <?php
     }
 }

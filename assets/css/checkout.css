@@ -81,6 +81,7 @@ p.woocommerce-SavedPaymentMethods-saveNew {
 p.woocommerce-SavedPaymentMethods-saveNew label {
     vertical-align: middle;
 }
+
 @media screen and (max-width: 400px) {
     #add_payment_method #payment .payment_method_paypal_express img, .woocommerce-checkout #payment .payment_method_paypal_express img {
         width: 77px;
