@@ -198,7 +198,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->api_password = !empty($this->setting['api_password']) ? $this->setting['api_password'] : '';
                     $this->api_signature = !empty($this->setting['api_signature']) ? $this->setting['api_signature'] : '';
                 }
-                $this->angelleye_skip_text = !empty($this->setting['angelleye_skip_text']) ? $this->setting['angelleye_skip_text'] : 'Skip the forms and pay faster with PayPal!';
+                $this->angelleye_skip_text = !empty($this->setting['angelleye_skip_text']) ? $this->setting['angelleye_skip_text'] : __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce');
+                if($this->angelleye_skip_text === 'Skip the forms and pay faster with PayPal!') {
+                    $this->angelleye_skip_text = __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce');
+                }
                 $this->skip_final_review = !empty($this->setting['skip_final_review']) ? $this->setting['skip_final_review'] : 'no';
                 $this->disable_term_value = !empty($this->setting['disable_term']) ? $this->setting['disable_term'] : 'no';
                 $this->disable_term = 'yes' === $this->disable_term_value;
