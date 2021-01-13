@@ -1725,13 +1725,20 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         if ($this->enable_braintree_drop_in) {
             wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.25.0/js/dropin.min.js', array('jquery'), null, false);
-            
+            if($this->enable_braintree_ach) {
+                wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.61.0/js/client.min.js', array('jquery'), null, true);
+                wp_enqueue_script('braintree-us-bank-account', 'https://js.braintreegateway.com/web/3.61.0/js/us-bank-account.min.js', array('jquery'), null, true);
+                wp_enqueue_script('braintree-data-collector', 'https://js.braintreegateway.com/web/3.61.0/js/data-collector.min.js', array('jquery'), null, true);
+            }
         } else {
             wp_enqueue_style('braintree_checkout', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/braintree-checkout.css', array(), VERSION_PFW);
             wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.61.0/js/client.min.js', array('jquery'), null, true);
             wp_enqueue_script('braintree-data-collector', 'https://js.braintreegateway.com/web/3.61.0/js/data-collector.min.js', array('jquery'), null, true);
             wp_enqueue_script('braintree-three-d-secure', 'https://js.braintreegateway.com/web/3.61.0/js/three-d-secure.min.js', array('jquery'), null, true);
             wp_enqueue_script('braintree-gateway-hosted-fields', 'https://js.braintreegateway.com/web/3.61.0/js/hosted-fields.min.js', array('jquery'), null, true);
+            if($this->enable_braintree_ach) {
+                wp_enqueue_script('braintree-us-bank-account', 'https://js.braintreegateway.com/web/3.61.0/js/us-bank-account.min.js', array('jquery'), null, true);
+            }
         }
     }
 
@@ -2848,10 +2855,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
     
     public function angelleye_braintree_payment_fields() {
-        wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.61.0/js/client.min.js', array('jquery'), null, true);
-            wp_enqueue_script('braintree-us-bank-account', 'https://js.braintreegateway.com/web/3.61.0/js/us-bank-account.min.js', array('jquery'), null, true);
-            wp_enqueue_script('braintree-data-collector', 'https://js.braintreegateway.com/web/3.61.0'
-                    . '/js/data-collector.min.js', array('jquery'), null, true);
+        echo '<div id="angelleye_us_bank_account_ui">';
         echo '<span class="angelleye_seprater_center">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</span><br>';
         echo __('Pay through your Bank Account', 'paypal-for-woocommerce');
         $default_fields = array(
@@ -2884,31 +2888,91 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
             <div class="clear"></div>
         </fieldset>
-        <?php if (is_checkout() || is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) { ?>
-                <script type="text/javascript">
-                    (function ($) {
+        </div>
+        <?php if (( is_checkout() || is_checkout_pay_page() || is_add_payment_method_page()) && is_ajax()) { ?>
+        <script type="text/javascript">
+                (function ($) {
                     braintree.client.create({
-  authorization: 'CLIENT_TOKEN_FROM_SERVER'
-}, function (clientErr, clientInstance) {
-  if (clientErr) {
-    console.error('There was an error creating the Client.');
-    throw clientErr;
-  }
+                authorization: "<?php echo $this->ach_tokenization_key; ?>"
+            }, function (clientErr, clientInstance) {
+                if (clientErr) {
+                    alert('There was an error creating the Client, Please check your Braintree Settings.');
+                    console.error('clientErr',clientErr);
+                    return;
+                }
 
-  braintree.usBankAccount.create({
-    client: clientInstance
-  }, function (usBankAccountErr, usBankAccountInstance) {
-    if (usBankAccountErr) {
-      console.error('There was an error creating the USBankAccount instance.');
-      throw usBankAccountErr;
-    }
+                braintree.dataCollector.create({
+                    client: clientInstance,
+                    paypal: true
+                }, function (err, dataCollectorInstance) {
+                    if (err) {
+                        alert('We are unable to validate your system, please try again.');
+                        
+                        console.error('dataCollectorError',err);
+                        return;
+                    }
 
-    // Use the usBankAccountInstance here.
-    // ...
-  });
-});
-                    
+                    var deviceData = dataCollectorInstance.deviceData;
+
+                    braintree.usBankAccount.create({
+                        client: clientInstance
+                    }, function (usBankAccountErr, usBankAccountInstance) {
+                        if (usBankAccountErr) {
+                            if(usBankAccountErr.code === 'US_BANK_ACCOUNT_NOT_ENABLED') {
+                                $('#angelleye_us_bank_account_ui').hide();
+                            }
+                            console.error('usBankAccountErr', usBankAccountErr);
+                            return;
+                        }
+
+                        var bankDetails = {
+                            accountNumber: account_number, //'1000000000',
+                            routingNumber: routing_number, //'011000015',
+                            accountType: account_type == 'S' ? 'savings' : 'checking',
+                            ownershipType: account_type == 'S' ? 'personal' : 'business',
+                            billingAddress: {
+                                streetAddress: streetAddress, //'1111 Thistle Ave',
+                                extendedAddress: extendedAddress,
+                                locality: locality, //'Fountain Valley',
+                                region: region, //'CA',
+                                postalCode: postalCode //'92708'
+                            }
+                        };
+
+                        if (bankDetails.ownershipType === 'personal') {
+                            bankDetails.firstName = account_holder_namebreak[0];
+                            bankDetails.lastName = account_holder_namebreak[1];
+                        } else {
+                            bankDetails.businessName = account_holdername;
+                        }
+
+                        usBankAccountInstance.tokenize({
+                            bankDetails: bankDetails,
+                            mandateText: 'By clicking ["Submit"], I authorize Braintree, a service of PayPal, on behalf of ' + angelleye_gravity_form_braintree_ach_handler_strings.ach_business_name + ' (i) to verify my bank account information using bank information and consumer reports and (ii) to debit my bank account.'
+                        }, function (tokenizeErr, tokenizedPayload) {
+                            if (tokenizeErr) {
+                                var errormsg = tokenizeErr['details']['originalError']['details']['originalError'][0]['message'];
+                                if (errormsg.indexOf("Variable 'zipCode' has an invalid value") != -1)
+                                    alert('Please enter valid postal code.');
+                                else if (errormsg.indexOf("Variable 'state' has an invalid value") != -1)
+                                    alert('Please enter valid state code. (e.g.: CA)');
+                                else
+                                    alert(errormsg);
+
+
+                                console.error('tokenizeErr', tokenizeErr);
+                                return;
+                            }
+
+                            form.append("<input type='hidden' name='ach_device_corelation' value='" + deviceData + "' />");
+                            form.append('<input type="hidden" name="ach_token" value="' + tokenizedPayload.nonce + '" />');
+                            form.submit();
+                        });
+                    });
+                });
+            });
                 }(jQuery));
+
         </script>
         <?php
         }
