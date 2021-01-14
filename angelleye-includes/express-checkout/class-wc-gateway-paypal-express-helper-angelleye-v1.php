@@ -198,7 +198,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->api_password = !empty($this->setting['api_password']) ? $this->setting['api_password'] : '';
                     $this->api_signature = !empty($this->setting['api_signature']) ? $this->setting['api_signature'] : '';
                 }
-                $this->angelleye_skip_text = !empty($this->setting['angelleye_skip_text']) ? $this->setting['angelleye_skip_text'] : 'Skip the forms and pay faster with PayPal!';
+                $this->angelleye_skip_text = !empty($this->setting['angelleye_skip_text']) ? $this->setting['angelleye_skip_text'] : __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce');
+                if($this->angelleye_skip_text === 'Skip the forms and pay faster with PayPal!') {
+                    $this->angelleye_skip_text = __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce');
+                }
                 $this->skip_final_review = !empty($this->setting['skip_final_review']) ? $this->setting['skip_final_review'] : 'no';
                 $this->disable_term_value = !empty($this->setting['disable_term']) ? $this->setting['disable_term'] : 'no';
                 $this->disable_term = 'yes' === $this->disable_term_value;
@@ -700,7 +703,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $wsc_cart_allowed_funding_methods_json = json_encode(array_values(array_diff($this->wsc_cart_allowed_funding_methods, $this->wsc_cart_disallowed_funding_methods)));
                 $wsc_cart_disallowed_funding_methods_json = json_encode($this->wsc_cart_disallowed_funding_methods);
                 wp_register_script('angelleye-in-context-checkout-js', 'https://www.paypalobjects.com/api/checkout.min.js', array('jquery'), null, false);
-                wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min-v1.js', array('jquery', 'angelleye-in-context-checkout-js'), time(), false);
+                wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min-v1.js', array('jquery', 'angelleye-in-context-checkout-js'), time(), true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
                     'environment' => ( $this->testmode == true) ? 'sandbox' : 'production',
                     'locale' => ($this->use_wp_locale_code === 'yes' && AngellEYE_Utility::get_button_locale_code() != '') ? AngellEYE_Utility::get_button_locale_code() : '',
