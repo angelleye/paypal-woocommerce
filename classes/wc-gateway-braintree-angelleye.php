@@ -3157,7 +3157,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         var ccForm = $('form.checkout, #order_review, form#add_payment_method');
                         var unique_form_for_validation = $('form.checkout, form#add_payment_method' );
                         braintree.client.create({
-                            authorization: "<?php echo $this->client_token; ?>"
+                            authorization: "<?php echo $this->ach_tokenization_key; ?>"
                         }, function (clientErr, clientInstance) {
                         if (clientErr) {
                             alert('There was an error creating the Client, Please check your Braintree Settings.');
@@ -3260,7 +3260,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     }
                                     usBankAccountInstance.tokenize({
                                         bankDetails: bankDetails,
-                                        mandateText: 'By clicking ["Submit"], I authorize Braintree, a service of PayPal, on behalf of ' + "<?php echo ach_business_name; ?>" + ' (i) to verify my bank account information using bank information and consumer reports and (ii) to debit my bank account.'
+                                        mandateText: 'By clicking ["Submit"], I authorize Braintree, a service of PayPal, on behalf of ' + "<?php echo $this->ach_business_name; ?>" + ' (i) to verify my bank account information using bank information and consumer reports and (ii) to debit my bank account.'
                                     }, function (tokenizeErr, tokenizedPayload) {
                                         if (tokenizeErr) {
                                             var errormsg = tokenizeErr['details']['originalError']['details']['originalError'][0]['message'];
