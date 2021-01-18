@@ -1080,7 +1080,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if( $this->enable_braintree_ach && isset($_POST['braintree_ach_token'] )) {
             $braintree_customer_id = $this->angelleye_braintree_ach_create_customer_id($order);
             $payment_method_token = $this->braintree_ach_create_payment_method($braintree_customer_id);
-            $success = $this->angelleye_ach_process_payment($order, $payment_method_token);
+            if($payment_method_token) {
+                $success = $this->angelleye_ach_process_payment($order, $payment_method_token);
+            }
         } else {
             if( $this->payment_action == 'Sale' ) {
                 $success = $this->angelleye_do_payment($order);
@@ -1237,10 +1239,16 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         try {
             $result = $this->braintree_gateway->paymentMethod()->create($payment_method_request);
-            if(isset($result->paymentMethod->token)) {
+            if(isset($result->paymentMethod->verified) && ($result->paymentMethod->verified)) {
                 return $result->paymentMethod->token;
             } else {
-                return false;
+                if( isset($result->paymentMethod->verifications[0]->processorResponseText) && !empty($result->paymentMethod->verifications[0]->processorResponseText)) {
+                     wc_add_notice($result->paymentMethod->verifications[0]->processorResponseText, 'error');
+                     return false;
+                } else {
+                    wc_add_notice(__( 'Error processing checkout. Please try again.', 'paypal-for-woocommerce' ), 'error');
+                    return false;
+                }
             }
             
         } catch (Braintree\Exception\Authentication $e) {
