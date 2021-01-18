@@ -3078,21 +3078,21 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $default_fields = array(
                 'angelleye-bank-account-type' => '<p class="form-row form-row-first">
                         <label for="angelleye-bank-account-type">' . esc_html__( 'Account Type', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label>
-                        <select name="angelleye-bank-account-type" id="angelleye-bank-account-type" class="angelleye-bank-account-type">
+                        <select name="angelleye-bank-account-type" id="angelleye-bank-account-type" class="angelleye-bank-account-type angelleye_us_bank_field">
 										<option value="">Select</option><option value="S">Savings</option><option value="C">Checking</option>
 									</select>
                 </p>',
                 'angelleye-account-holder-name' => '<p class="form-row form-row-first">
                         <label for="angelleye-account-holder-name">' . esc_html__( 'Account Holder Name', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label>
-                        <input id="angelleye-account-holder-name" class="input-text angelleye-account-holder-name" inputmode="numeric" autocapitalize="no" spellcheck="no" type="tel"  name="angelleye-account-holder-name" />
+                        <input id="angelleye-account-holder-name" class="input-text angelleye-account-holder-name angelleye_us_bank_field"  autocapitalize="no" spellcheck="no" type="text"  name="angelleye-account-holder-name" />
                 </p>',
                 'angelleye-routing-number' => '<p class="form-row form-row-first">
                         <label for="angelleye-routing-number">' . esc_html__( 'Routing Number', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label>
-                        <input id="angelleye-routing-number" class="input-text angelleye-routing-number" inputmode="numeric" autocapitalize="no" spellcheck="no" type="tel"  name="angelleye-routing-number" />
+                        <input id="angelleye-routing-number" class="input-text angelleye-routing-number angelleye_us_bank_field"  autocapitalize="no" spellcheck="no" type="text"  name="angelleye-routing-number" />
                 </p>',
                 'angelleye-account-number' => '<p class="form-row form-row-first">
                         <label for="angelleye-account-number">' . esc_html__( 'Account Number', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label>
-                        <input id="angelleye-account-number" class="input-text angelleye-account-number" inputmode="numeric" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" name="angelleye-account-number" />
+                        <input id="angelleye-account-number" class="input-text angelleye-account-number angelleye_us_bank_field"  autocorrect="no" autocapitalize="no" spellcheck="no" type="text" name="angelleye-account-number" />
                 </p>',
         );
         ?>
