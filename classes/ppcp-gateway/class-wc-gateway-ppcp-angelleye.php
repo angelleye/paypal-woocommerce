@@ -28,9 +28,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function angelleye_defind_hooks() {
+
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-        if(is_admin()) {
-            add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+        if (is_admin()) {
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         }
     }
 
@@ -71,23 +72,29 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ),
             'live_onboarding' => array(
                 'title' => __('Connect to PayPal', 'woocommerce-paypal-payments'),
-                'type' => 'title',
+                'type' => 'angelleye_ppcp_onboarding',
+                'gateway' => 'angelleye_ppcp',
+                'mode' => 'live',
                 'description' => __('Setup or link an existing PayPal account.', 'woocommerce-paypal-payments'),
             ),
             'live_disconnect' => array(
                 'title' => __('Disconnect from PayPal', 'woocommerce-paypal-payments'),
-                'type' => 'title',
-                'description' => __('Setup or link an existing PayPal account.', 'woocommerce-paypal-payments'),
+                'type' => 'angelleye_ppcp_text',
+                'mode' => 'live',
+                'description' => __('Click to reset current credentials and use another account.', 'woocommerce-paypal-payments'),
             ),
             'sandbox_onboarding' => array(
                 'title' => __('Connect to PayPal', 'woocommerce-paypal-payments'),
-                'type' => 'title',
+                'type' => 'angelleye_ppcp_onboarding',
+                'gateway' => 'angelleye_ppcp',
+                'mode' => 'sandbox',
                 'description' => __('Setup or link an existing PayPal account.', 'woocommerce-paypal-payments'),
             ),
             'sandbox_disconnect' => array(
                 'title' => __('Disconnect from PayPal', 'woocommerce-paypal-payments'),
-                'type' => 'title',
-                'description' => __('Setup or link an existing PayPal account.', 'woocommerce-paypal-payments'),
+                'type' => 'angelleye_ppcp_text',
+                'mode' => 'sandbox',
+                'description' => __('Click to reset current credentials and use another account.', 'woocommerce-paypal-payments'),
             ),
             'api_credentials' => array(
                 'title' => __('API Credentials', 'woocommerce-gateway-paypal-express-checkout'),
@@ -162,15 +169,39 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             'redirect' => $this->get_return_url($order),
         );
     }
-    
+
     public function enqueue_scripts() {
         $screen = get_current_screen();
+        if ($screen && 'woocommerce_page_wc-settings' === $screen->id && isset($_GET['tab'], $_GET['section']) && 'checkout' === $_GET['tab'] && 'angelleye_ppcp' === $_GET['section']) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'classes/ppcp-gateway/js/admin/wc-gateway-ppcp-angelleye-settings.js', array('jquery'), time(), true);
+        }
+    }
 
-		// Only enqueue the setting scripts on the PayPal Checkout settings screen.
-		if ( $screen && 'woocommerce_page_wc-settings' === $screen->id && isset( $_GET['tab'], $_GET['section'] ) && 'checkout' === $_GET['tab'] && 'angelleye_ppcp' === $_GET['section'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			wp_enqueue_script( 'wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'classes/ppcp-gateway/js/admin/wc-gateway-ppcp-angelleye-settings.js', array( 'jquery' ), time(), true );
-		}
-        
+    public function generate_angelleye_ppcp_onboarding_html($field_key, $data) {
+        if (isset($data['type']) && $data['type'] === 'angelleye_ppcp_onboarding') {
+            ob_start();
+            ?>
+            <tr valign="top">
+                <th scope="row" class="titledesc">
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.       ?></label>
+                </th>
+                <td class="forminp">
+                    <?php echo $this->angelleye_get_signup_link('yes'); ?>
+                </td>
+            </tr>
+            <?php
+            return ob_get_clean();
+        }
+    }
+
+    public function angelleye_get_signup_link($testmode = 'yes') {
+        try {
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/ppcp-gateway/class-paypal-rest-seller-onboarding.php');
+            $seller_onboarding = new PayPal_Rest_Seller_Onboarding($testmode);
+            echo $seller_onboarding->angelleye_genrate_signup_link();
+        } catch (Exception $ex) {
+            
+        }
     }
 
 }
