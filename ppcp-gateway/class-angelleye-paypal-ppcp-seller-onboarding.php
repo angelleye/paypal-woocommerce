@@ -1,6 +1,6 @@
 <?php
 
-class PayPal_Rest_Seller_Onboarding {
+class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     private $dcc_applies;
     public $on_board_host;
@@ -11,14 +11,14 @@ class PayPal_Rest_Seller_Onboarding {
     public $partner_merchant_id;
 
     public function __construct() {
-        if (!class_exists('PayPal_Rest_DCC_Validate')) {
-            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-paypal-rest-dcc-validate.php');
+        if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
         }
         if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
         }
         $this->settings = new WC_Gateway_PPCP_AngellEYE_Settings();
-        $this->dcc_applies = new PayPal_Rest_DCC_Validate();
+        $this->dcc_applies = new AngellEYE_PayPal_PPCP_DCC_Validate();
         $this->partner_merchant_id = PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID;
         $this->on_board_host = 'https://kcppdevelopers.aetesting.xyz/paypal-seller-onboarding/seller-onboarding.php';
         add_action('wc_ajax_ppcp_login_seller', array($this, 'angelleye_ppcp_login_seller'));
@@ -193,4 +193,4 @@ class PayPal_Rest_Seller_Onboarding {
 
 }
 
-new PayPal_Rest_Seller_Onboarding();
+new AngellEYE_PayPal_PPCP_Seller_Onboarding();

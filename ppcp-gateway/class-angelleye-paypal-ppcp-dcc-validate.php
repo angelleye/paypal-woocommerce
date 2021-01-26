@@ -1,6 +1,6 @@
 <?php
 
-class PayPal_Rest_DCC_Validate {
+class AngellEYE_PayPal_PPCP_DCC_Validate {
 
     /**
      * The matrix which countries and currency combinations can be used for DCC.
