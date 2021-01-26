@@ -76,6 +76,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function enqueue_scripts() {
         if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
+            wp_enqueue_style('wc-gateway-ppcp-angelleye-settings-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-gateway-admin.css', array(), VERSION_PFW, 'all');
             wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings.js', array('jquery'), time(), true);
             wp_localize_script('wc-gateway-ppcp-angelleye-settings', 'ppcp_angelleye_param', array(
                 'angelleye_ppcp_is_local_server' => ( angelleye_ppcp_is_local_server() == true) ? 'yes' : 'no',
@@ -143,6 +144,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                         <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
                     } else {
                         echo __('We could not properly connect to PayPal', '');
+                        ?>
+                        <a href="#" class="angelleye_ppcp_gateway_manual_credential_input"><?php echo __('Toggle to manual credential input', ''); ?></a>
+                        <?php
                     }
                     ?>
                 </td>
@@ -153,7 +157,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function angelleye_display_paypal_signup_button($url, $id, $label) {
-        ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a><?php
+        ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a>
+            <span class="angelleye_ppcp_gateway_setting_sepraer"><?php echo __('OR', ''); ?></span>
+            <a href="#" class="angelleye_ppcp_gateway_manual_credential_input"><?php echo __('Toggle to manual credential input', ''); ?></a>
+            <?php
     }
 
     public function angelleye_get_signup_link($testmode = 'yes') {

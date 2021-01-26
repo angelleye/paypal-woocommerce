@@ -60,6 +60,17 @@ jQuery(function ($) {
             }
         }
     }).change();
+    $(".angelleye_ppcp_gateway_manual_credential_input").on('click',function(e){
+        e.preventDefault();
+        var ppcp_production_fields = $('#woocommerce_angelleye_ppcp_live_email_address, #woocommerce_angelleye_ppcp_live_merchant_id, #woocommerce_angelleye_ppcp_live_client_id, #woocommerce_angelleye_ppcp_live_secret_key').closest('tr');
+        var ppcp_sandbox_fields = $('#woocommerce_angelleye_ppcp_sandbox_email_address, #woocommerce_angelleye_ppcp_sandbox_merchant_id, #woocommerce_angelleye_ppcp_sandbox_client_id, #woocommerce_angelleye_ppcp_sandbox_secret_key').closest('tr');
+        $('#woocommerce_angelleye_ppcp_api_credentials').toggle();
+        if ($('#woocommerce_angelleye_ppcp_testmode').is(':checked')) {
+            ppcp_sandbox_fields.toggle();
+        } else {
+            ppcp_production_fields.toggle();
+        }
+    });
     $(".angelleye-ppcp-disconnect").click(function () {
         if ($('#woocommerce_angelleye_ppcp_testmode').is(':checked')) {
             $('#woocommerce_angelleye_ppcp_sandbox_email_address, #woocommerce_angelleye_ppcp_sandbox_merchant_id, #woocommerce_angelleye_ppcp_sandbox_client_id, #woocommerce_angelleye_ppcp_sandbox_secret_key').val('');
@@ -68,5 +79,6 @@ jQuery(function ($) {
         }
         $('.woocommerce-save-button').click();
     });
+    
 });
    
