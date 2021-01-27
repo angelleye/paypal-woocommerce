@@ -151,6 +151,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => '',
                     'desc_tip' => true
                 ),
+                'sandbox_api_credentials' => array(
+                    'title' => __('Sandbox API Credentials', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => 'Your account setting is set to sandbox, no real charging takes place. To accept live payments, switch your environment to live and connect your PayPal account.',
+                ),
                 'sandbox_email_address' => array(
                     'title' => __('Sandbox Email address', 'paypal-for-woocommerce'),
                     'type' => 'text',
