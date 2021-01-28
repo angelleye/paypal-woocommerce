@@ -89,7 +89,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
        // add_action('woocommerce_admin_order_data_after_order_details', array($this, 'woocommerce_admin_order_data_after_order_details'), 10, 1);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_update_settings'), 10, 1);
         do_action('angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null);
-        add_action('angelleye_braintree_payment_fields', array($this, 'angelleye_braintree_payment_fields'), 10);
+        if($this->enable_braintree_ach) {
+            add_action('angelleye_braintree_payment_fields', array($this, 'angelleye_braintree_payment_fields'), 10);
+        }
         $this->storeInVaultOnSuccess = false;
     }
 
