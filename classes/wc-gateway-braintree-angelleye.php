@@ -628,9 +628,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         }
                         function is_angelleye_braintree_selected() {
                             if ($('#payment_method_braintree').is(':checked')) {
-                                if($('#angelleye-account-holder-name').length > 0 &&  $('#angelleye-routing-number').length > 0 && $('#angelleye-account-number').length > 0 ){
-                                    return false;
-                                } 
+                                if($('#angelleye-account-holder-name').length) {
+                                    if($('#angelleye-account-holder-name').val().length > 0 &&  $('#angelleye-routing-number').val().length > 0 && $('#angelleye-account-number').val().length > 0 ){
+                                        return false;
+                                    } 
+                                }
                                 return true;
                             } else {
                                 return false;
@@ -781,8 +783,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     (function ($) {
                             function is_angelleye_braintree_selected() {
                                 if ($('#payment_method_braintree').is(':checked')) {
-                                    if($('#angelleye-routing-number').val() !== '' &&  $('#angelleye-routing-number').val() !== '' && $('#angelleye-account-number').val() !== '' ){
-                                        return false;
+                                    if($('#angelleye-account-holder-name').length) {
+                                        if($('#angelleye-account-holder-name').val().length > 0 &&  $('#angelleye-routing-number').val().length > 0 && $('#angelleye-account-number').val().length > 0 ){
+                                            return false;
+                                        }
                                     }
                                     return true;
                                 } else {
@@ -815,6 +819,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 } else {
                                     return false;
                                 }
+                                
                                 if($("input:radio[name='wc-braintree-payment-token']").is(":checked") && $("input[name='wc-braintree-payment-token']:checked").val() != 'new') {
                                     return true;
                                 }
@@ -3130,23 +3135,28 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             return true;
                         }
                         $('form.checkout').on('checkout_place_order_braintree', function () {
-                            return braintree_ach_formHandler();
+                            if(is_angelleye_ach_braintree_selected()) {
+                                return braintree_ach_formHandler();
+                            }
                         });
                         $( 'form#order_review' ).on( 'submit', function () {
-                            return braintree_ach_formHandler();
+                            if(is_angelleye_ach_braintree_selected()) {
+                                return braintree_ach_formHandler();
+                            }
                         });
                         $( 'form#add_payment_method' ).on( 'submit', function () {
                              $('.woocommerce-error').remove();
-                             return braintree_ach_formHandler();
+                             if(is_angelleye_ach_braintree_selected()) {
+                                return braintree_ach_formHandler();
+                            }
                         });
                         function is_angelleye_ach_braintree_selected() {
                             if ($('#payment_method_braintree').is(':checked')) {
-                                if($('#angelleye-account-holder-name').length > 0 &&  $('#angelleye-routing-number').length > 0 && $('#angelleye-account-number').length > 0 ){
+                                if($('#angelleye-account-holder-name').val().length > 0 &&  $('#angelleye-routing-number').val().length > 0 && $('#angelleye-account-number').val().length > 0 ){
                                     return true;
                                 } else {
                                     return false;
                                 }
-                                
                             } else {
                                 return false;
                             }
