@@ -32,7 +32,7 @@ class AngellEYE_PayPal_PPCP_Response {
     public function angelleye_ppcp_write_log($url, $request, $response) {
         $this->api_log->log('PFW Version : ' . VERSION_PFW);
         $this->api_log->log('Request URL : ' . $url);
-        $this->api_log->log('Request Data : ' . wc_print_r($request, true));
+        $this->api_log->log('Request Body : ' . wc_print_r($request, true));
         $this->api_log->log('Response Code: ' . wp_remote_retrieve_response_code($response));
         $this->api_log->log('Response Message: ' . wp_remote_retrieve_response_message($response));
         $this->api_log->log('Response Body : ' . wc_print_r(json_decode(wp_remote_retrieve_body($response), true), true));

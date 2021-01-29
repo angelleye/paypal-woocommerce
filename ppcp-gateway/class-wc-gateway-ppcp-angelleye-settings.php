@@ -185,16 +185,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true
                 )
             );
-
-
             if (angelleye_ppcp_is_local_server()) {
-                /*  unset($angelleye_ppcp_gateway_setting['live_onboarding']);
-                  unset($angelleye_ppcp_gateway_setting['live_disconnect']);
-                  unset($angelleye_ppcp_gateway_setting['sandbox_onboarding']);
-                  unset($angelleye_ppcp_gateway_setting['sandbox_disconnect']); */
+                unset($this->angelleye_ppcp_gateway_setting['live_onboarding']);
+                unset($this->angelleye_ppcp_gateway_setting['live_disconnect']);
+                unset($this->angelleye_ppcp_gateway_setting['sandbox_onboarding']);
+                unset($this->angelleye_ppcp_gateway_setting['sandbox_disconnect']);
             }
-
-
             return $this->angelleye_ppcp_gateway_setting;
         }
 
