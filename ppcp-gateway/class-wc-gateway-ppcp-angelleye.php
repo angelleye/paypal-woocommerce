@@ -97,7 +97,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                   ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                    ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <button type="button" class="button angelleye-ppcp-disconnect"><?php echo __('Disconnect', ''); ?></button>
@@ -122,31 +122,33 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                   ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                    ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
-                    $signup_link = $this->angelleye_get_signup_link($testmode);
-                    if ($signup_link) {
-                        $url = add_query_arg($args, $signup_link);
-                        $this->angelleye_display_paypal_signup_button($url, $id, $label);
-                        $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
-                        ?>
-                        <script type="text/javascript">
-                            document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
-                                element.addEventListener('click', (e) => {
-                                    if ('undefined' === typeof PAYPAL) {
-                                        e.preventDefault();
-                                        alert('PayPal');
-                                    }
-                                });
-                            });</script>
-                        <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
-                    } else {
-                        echo __('We could not properly connect to PayPal', '');
-                        ?>
-                        <a href="#" class="angelleye_ppcp_gateway_manual_credential_input"><?php echo __('Toggle to manual credential input', ''); ?></a>
-                        <?php
+                    if ($this->is_live_seller_onboarding_done === 'no' && $testmode === 'no' || $this->is_sandbox_seller_onboarding_done === 'no' && $testmode === 'yes') {
+                        $signup_link = $this->angelleye_get_signup_link($testmode);
+                        if ($signup_link) {
+                            $url = add_query_arg($args, $signup_link);
+                            $this->angelleye_display_paypal_signup_button($url, $id, $label);
+                            $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
+                            ?>
+                            <script type="text/javascript">
+                                document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                    element.addEventListener('click', (e) => {
+                                        if ('undefined' === typeof PAYPAL) {
+                                            e.preventDefault();
+                                            alert('PayPal');
+                                        }
+                                    });
+                                });</script>
+                            <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
+                        } else {
+                            echo __('We could not properly connect to PayPal', '');
+                            ?>
+                            <a href="#" class="angelleye_ppcp_gateway_manual_credential_input"><?php echo __('Toggle to manual credential input', ''); ?></a>
+                            <?php
+                        }
                     }
                     ?>
                 </td>
@@ -158,9 +160,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function angelleye_display_paypal_signup_button($url, $id, $label) {
         ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a>
-            <span class="angelleye_ppcp_gateway_setting_sepraer"><?php echo __('OR', ''); ?></span>
-            <a href="#" class="angelleye_ppcp_gateway_manual_credential_input"><?php echo __('Toggle to manual credential input', ''); ?></a>
-            <?php
+        <span class="angelleye_ppcp_gateway_setting_sepraer"><?php echo __('OR', ''); ?></span>
+        <a href="#" class="angelleye_ppcp_gateway_manual_credential_input"><?php echo __('Toggle to manual credential input', ''); ?></a>
+        <?php
     }
 
     public function angelleye_get_signup_link($testmode = 'yes') {

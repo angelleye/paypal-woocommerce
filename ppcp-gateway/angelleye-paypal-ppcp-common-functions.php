@@ -32,9 +32,9 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
         return false;
     }
 
-    if (!function_exists('angelleye_get_raw_data')) {
+    if (!function_exists('angelleye_ppcp_get_raw_data')) {
 
-        function angelleye_get_raw_data() {
+        function angelleye_ppcp_get_raw_data() {
             try {
                 if (function_exists('phpversion') && version_compare(phpversion(), '5.6', '>=')) {
                     return file_get_contents('php://input');
@@ -47,6 +47,19 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
             } catch (Exception $ex) {
                 
             }
+        }
+
+    }
+
+    if (!function_exists('angelleye_ppcp_remove_empty_key')) {
+
+        function angelleye_ppcp_remove_empty_key($data) {
+            $original = $data;
+            $data = array_filter($data);
+            $data = array_map(function ($e) {
+                return is_array($e) ? angelleye_ppcp_remove_empty_key($e) : $e;
+            }, $data);
+            return $original === $data ? $data : angelleye_ppcp_remove_empty_key($data);
         }
 
     }

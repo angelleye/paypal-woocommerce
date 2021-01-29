@@ -9,9 +9,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     public $host;
     public $partner_merchant_id;
     public $api_request;
-    public $api_response;
-    public $api_log;
-    public $api_error;
+    public $webhook;
     public $result;
 
     public function __construct() {
@@ -37,21 +35,13 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (!class_exists('AngellEYE_PayPal_PPCP_Request')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
             }
-            if (!class_exists('AngellEYE_PayPal_PPCP_Response')) {
-                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-response.php';
-            }
-            if (!class_exists('AngellEYE_PayPal_PPCP_Error')) {
-                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-error.php';
-            }
-            if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
-                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
+            if (!class_exists('AngellEYE_PayPal_PPCP_Webhook')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-webhook.php';
             }
             $this->settings = new WC_Gateway_PPCP_AngellEYE_Settings();
             $this->dcc_applies = new AngellEYE_PayPal_PPCP_DCC_Validate();
             $this->api_request = new AngellEYE_PayPal_PPCP_Request();
-            $this->api_response = new AngellEYE_PayPal_PPCP_Response();
-            $this->api_error = new AngellEYE_PayPal_PPCP_Error();
-            $this->api_log = new AngellEYE_PayPal_PPCP_Log();
+            $this->webhook = new AngellEYE_PayPal_PPCP_Webhook();
         } catch (Exception $ex) {
             
         }
@@ -92,7 +82,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_ppcp_login_seller() {
         try {
-            $posted_raw = angelleye_get_raw_data();
+            $posted_raw = angelleye_ppcp_get_raw_data();
             if (empty($posted_raw)) {
                 return false;
             }
@@ -114,11 +104,17 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if ($is_sandbox) {
                 $this->settings->set('sandbox_secret_key', $credentials['client_secret']);
                 $this->settings->set('sandbox_client_id', $credentials['client_id']);
+                delete_transient('angelleye_ppcp_sandbox_access_token');
+                delete_transient('angelleye_ppcp_sandbox_client_token');
             } else {
                 $this->settings->set('live_secret_key', $credentials['client_secret']);
                 $this->settings->set('live_client_id', $credentials['client_id']);
+                delete_transient('angelleye_ppcp_live_access_token');
+                delete_transient('angelleye_ppcp_live_client_token');
             }
             $this->settings->persist();
+            // need to add single time cron here to create webhook
+            //$this->webhook->angelleye_ppcp_create_webhooks_request();
         } catch (Exception $ex) {
             
         }
