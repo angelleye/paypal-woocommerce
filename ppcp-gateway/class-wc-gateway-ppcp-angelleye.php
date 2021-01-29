@@ -53,6 +53,14 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
+    
+    public function process_admin_options() {
+        delete_transient('angelleye_ppcp_sandbox_access_token');
+        delete_transient('angelleye_ppcp_live_access_token');
+        delete_transient('angelleye_ppcp_sandbox_client_token');
+        delete_transient('angelleye_ppcp_live_client_token');
+        parent::process_admin_options();
+    }
 
     public function init_form_fields() {
         try {
