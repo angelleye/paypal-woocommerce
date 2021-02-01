@@ -103,6 +103,35 @@ jQuery(function ($) {
         }
         $('.woocommerce-save-button').click();
     });
+    
+    $('#woocommerce_angelleye_ppcp_enable_product_button_settings').change(function () {
+        if ($(this).is(':checked')) {
+            $('.angelleye_ppcp_product_button_settings').closest('tr').show();
+        } else {
+            $('.angelleye_ppcp_product_button_settings').closest('tr').hide();
+        }
+    }).change();
+    $('#woocommerce_angelleye_ppcp_enable_cart_button_settings').change(function () {
+        if ($(this).is(':checked')) {
+            $('.angelleye_ppcp_cart_button_settings').closest('tr').show();
+        } else {
+            $('.angelleye_ppcp_cart_button_settings').closest('tr').hide();
+        }
+    }).change();
+    $('#woocommerce_angelleye_ppcp_enable_checkout_button_settings').change(function () {
+        if ($(this).is(':checked')) {
+            $('.angelleye_ppcp_checkout_button_settings').closest('tr').show();
+        } else {
+            $('.angelleye_ppcp_checkout_button_settings').closest('tr').hide();
+        }
+    }).change();
+    $('#woocommerce_angelleye_ppcp_enable_mini_cart_button_settings').change(function () {
+        if ($(this).is(':checked')) {
+            $('.angelleye_ppcp_mini_cart_button_settings').closest('tr').show();
+        } else {
+            $('.angelleye_ppcp_mini_cart_button_settings').closest('tr').hide();
+        }
+    }).change();
 
 });
    
