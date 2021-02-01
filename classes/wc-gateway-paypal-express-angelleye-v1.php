@@ -2587,7 +2587,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     
     public function angelleye_check_cart_items() {
         try {
-            WC()->checkout->check_cart_items();
+            WC()->cart->check_cart_items();
         } catch (Exception $ex) {
 
         }            
