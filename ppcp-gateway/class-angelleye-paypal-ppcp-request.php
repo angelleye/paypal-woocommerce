@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || exit;
+
 class AngellEYE_PayPal_PPCP_Request {
 
     public $is_sandbox;
@@ -14,10 +16,20 @@ class AngellEYE_PayPal_PPCP_Request {
     public $api_response;
     public $result;
     public $settings;
+    public $api_request;
+    protected static $_instance = null;
+
+    public static function instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
         $this->is_sandbox = $this->settings->has('testmode') && $this->settings->get('testmode');
+        $this->paymentaction = $this->settings->get('paymentaction', 'capture');
         if ($this->is_sandbox) {
             $this->token_url = 'https://api.sandbox.paypal.com/v1/oauth2/token';
             $this->paypal_oauth_api = 'https://api.sandbox.paypal.com/v1/oauth2/token/';
@@ -42,13 +54,6 @@ class AngellEYE_PayPal_PPCP_Request {
                 $this->angelleye_ppcp_get_access_token();
             }
         }
-        /* if (is_checkout() || is_checkout_pay_page()) {
-          if (!$this->client_token) {
-          if (!empty($this->client_id) && !empty($this->secret_key) && !empty($this->access_token)) {
-          // $this->angelleye_ppcp_get_genrate_token();
-          }
-          }
-          } */
     }
 
     public function request($url, $args) {
@@ -68,8 +73,8 @@ class AngellEYE_PayPal_PPCP_Request {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
-            $this->settings = new WC_Gateway_PPCP_AngellEYE_Settings();
-            $this->api_response = new AngellEYE_PayPal_PPCP_Response();
+            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->api_response = AngellEYE_PayPal_PPCP_Response::instance();
         } catch (Exception $ex) {
             
         }
@@ -121,6 +126,7 @@ class AngellEYE_PayPal_PPCP_Request {
                         set_transient('angelleye_ppcp_live_client_token', $api_response['client_token'], 3000);
                     }
                     $this->client_token = $api_response['client_token'];
+                    return $this->client_token;
                 }
             }
         } catch (Exception $ex) {

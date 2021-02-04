@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || exit;
+
 if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 
     class WC_Gateway_PPCP_AngellEYE_Settings {
@@ -7,14 +9,22 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $angelleye_ppcp_gateway_setting;
         public $gateway_key;
         public $settings = array();
+        protected static $_instance = null;
+
+        public static function instance() {
+            if (is_null(self::$_instance)) {
+                self::$_instance = new self();
+            }
+            return self::$_instance;
+        }
 
         public function __construct() {
             $this->gateway_key = 'woocommerce_angelleye_ppcp_settings';
         }
 
-        public function get($id) {
+        public function get($id, $default = false) {
             if (!$this->has($id)) {
-                return false;
+                return $default;
             }
             return $this->settings[$id];
         }
@@ -39,7 +49,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             $this->settings = get_option($this->gateway_key, array());
             $defaults = array(
-                'title' => __('PayPal Checkout', 'paypal-for-woocommerce'),
+                'title' => __('PayPal Complete Payments', 'paypal-for-woocommerce'),
                 'description' => __(
                         'Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce'
                 )
@@ -58,14 +68,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'label' => __('Enable PayPal Checkout', 'paypal-for-woocommerce'),
+                    'label' => __('Enable PayPal Complete Payments', 'paypal-for-woocommerce'),
                     'default' => 'no',
                 ),
                 'title' => array(
                     'title' => __('Title', 'paypal-for-woocommerce'),
                     'type' => 'text',
                     'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
-                    'default' => __('PayPal Checkout', 'paypal-for-woocommerce'),
+                    'default' => __('PayPal Complete Payments', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
                 'description' => array(
@@ -191,7 +201,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'title',
                     'class' => '',
                 ),
-                'enable_product_button_settings' => array(
+                'enable_product_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'class' => '',
                     'type' => 'checkbox',
@@ -205,7 +215,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'multiselect',
                     'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
                     'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
-                    'default' => '',
+                    'default' => array(),
                     'desc_tip' => true,
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
@@ -231,7 +241,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'horizontal',
                     'desc_tip' => true,
                     'options' => array(
-                        'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
+                        'horizontal' => __('Horizontal (Recommended)', 'paypal-for-woocommerce'),
                         'vertical' => __('Vertical', 'paypal-for-woocommerce')
                     ),
                 ),
@@ -267,13 +277,13 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'select',
                     'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
                     'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
-                    'default' => 'checkout',
+                    'default' => 'paypal',
                     'desc_tip' => true,
                     'options' => array(
+                        'paypal' => __('PayPal (Recommended)', 'paypal-for-woocommerce'),
                         'checkout' => __('Checkout', 'paypal-for-woocommerce'),
-                        'pay' => __('Pay', 'paypal-for-woocommerce'),
                         'buynow' => __('Buy Now', 'paypal-for-woocommerce'),
-                        'paypal' => __('PayPal', 'paypal-for-woocommerce')
+                        'pay' => __('Pay', 'paypal-for-woocommerce'),
                     ),
                 ),
                 'product_button_tagline' => array(
@@ -294,7 +304,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'title',
                     'class' => '',
                 ),
-                'enable_cart_button_settings' => array(
+                'enable_cart_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'class' => '',
                     'type' => 'checkbox',
@@ -308,7 +318,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'multiselect angelleye_ppcp_cart_button_settings',
                     'class' => 'wc-enhanced-select',
                     'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
-                    'default' => '',
+                    'default' => array(),
                     'desc_tip' => true,
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
@@ -331,11 +341,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'select',
                     'class' => 'wc-enhanced-select angelleye_ppcp_cart_button_settings',
                     'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
-                    'default' => 'horizontal',
+                    'default' => 'vertical',
                     'desc_tip' => true,
                     'options' => array(
+                        'vertical' => __('Vertical (Recommended)', 'paypal-for-woocommerce'),
                         'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
-                        'vertical' => __('Vertical', 'paypal-for-woocommerce')
                     ),
                 ),
                 'cart_style_color' => array(
@@ -370,13 +380,13 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'select',
                     'class' => 'wc-enhanced-select angelleye_ppcp_cart_button_settings',
                     'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
-                    'default' => 'checkout',
+                    'default' => 'paypal',
                     'desc_tip' => true,
                     'options' => array(
+                        'paypal' => __('PayPal (Recommended)', 'paypal-for-woocommerce'),
                         'checkout' => __('Checkout', 'paypal-for-woocommerce'),
-                        'pay' => __('Pay', 'paypal-for-woocommerce'),
                         'buynow' => __('Buy Now', 'paypal-for-woocommerce'),
-                        'paypal' => __('PayPal', 'paypal-for-woocommerce')
+                        'pay' => __('Pay', 'paypal-for-woocommerce'),
                     ),
                 ),
                 'cart_button_tagline' => array(
@@ -397,7 +407,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'title',
                     'class' => '',
                 ),
-                'enable_checkout_button_settings' => array(
+                'enable_checkout_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'class' => '',
                     'type' => 'checkbox',
@@ -411,7 +421,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'multiselect',
                     'class' => 'wc-enhanced-select angelleye_ppcp_checkout_button_settings',
                     'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
-                    'default' => '',
+                    'default' => array(),
                     'desc_tip' => true,
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
@@ -434,11 +444,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'select',
                     'class' => 'wc-enhanced-select angelleye_ppcp_checkout_button_settings',
                     'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
-                    'default' => 'horizontal',
+                    'default' => 'vertical',
                     'desc_tip' => true,
                     'options' => array(
+                        'vertical' => __('Vertical (Recommended)', 'paypal-for-woocommerce'),
                         'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
-                        'vertical' => __('Vertical', 'paypal-for-woocommerce')
                     ),
                 ),
                 'checkout_style_color' => array(
@@ -473,13 +483,13 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'select',
                     'class' => 'wc-enhanced-select angelleye_ppcp_checkout_button_settings',
                     'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
-                    'default' => 'checkout',
+                    'default' => 'paypal',
                     'desc_tip' => true,
                     'options' => array(
+                        'paypal' => __('PayPal', 'paypal-for-woocommerce'),
                         'checkout' => __('Checkout', 'paypal-for-woocommerce'),
-                        'pay' => __('Pay', 'paypal-for-woocommerce'),
                         'buynow' => __('Buy Now', 'paypal-for-woocommerce'),
-                        'paypal' => __('PayPal', 'paypal-for-woocommerce')
+                        'pay' => __('Pay', 'paypal-for-woocommerce'),
                     ),
                 ),
                 'checkout_button_tagline' => array(
@@ -500,7 +510,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'title',
                     'class' => '',
                 ),
-                'enable_mini_cart_button_settings' => array(
+                'enable_mini_cart_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'class' => '',
                     'type' => 'checkbox',
@@ -514,7 +524,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'multiselect',
                     'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
                     'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
-                    'default' => '',
+                    'default' => array(),
                     'desc_tip' => true,
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
@@ -537,11 +547,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'select',
                     'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
                     'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
-                    'default' => 'horizontal',
+                    'default' => 'vertical',
                     'desc_tip' => true,
                     'options' => array(
+                        'vertical' => __('Vertical (Recommended)', 'paypal-for-woocommerce'),
                         'horizontal' => __('Horizontal', 'paypal-for-woocommerce'),
-                        'vertical' => __('Vertical', 'paypal-for-woocommerce')
                     ),
                 ),
                 'mini_cart_style_color' => array(
@@ -579,10 +589,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'mini_cart',
                     'desc_tip' => true,
                     'options' => array(
-                        'checkout' => __('mini_cart', 'paypal-for-woocommerce'),
-                        'pay' => __('Pay', 'paypal-for-woocommerce'),
+                        'paypal' => __('PayPal (Recommended)', 'paypal-for-woocommerce'),
+                        'checkout' => __('Checkout', 'paypal-for-woocommerce'),
                         'buynow' => __('Buy Now', 'paypal-for-woocommerce'),
-                        'paypal' => __('PayPal', 'paypal-for-woocommerce')
+                        'pay' => __('Pay', 'paypal-for-woocommerce'),
                     ),
                 ),
                 'mini_cart_button_tagline' => array(
@@ -617,7 +627,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('Invoice prefix', 'paypal-for-woocommerce'),
                     'type' => 'text',
                     'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'paypal-for-woocommerce'),
-                    'default' => 'WC-PSB',
+                    'default' => 'WC-PPCP',
                     'desc_tip' => true,
                 ),
                 'brand_name' => array(

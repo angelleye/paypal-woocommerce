@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || exit;
+
 class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public $dcc_applies;
@@ -11,6 +13,14 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     public $api_request;
     public $webhook;
     public $result;
+    protected static $_instance = null;
+
+    public static function instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
 
     public function __construct() {
         try {
@@ -38,10 +48,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (!class_exists('AngellEYE_PayPal_PPCP_Webhook')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-webhook.php';
             }
-            $this->settings = new WC_Gateway_PPCP_AngellEYE_Settings();
-            $this->dcc_applies = new AngellEYE_PayPal_PPCP_DCC_Validate();
-            $this->api_request = new AngellEYE_PayPal_PPCP_Request();
-            $this->webhook = new AngellEYE_PayPal_PPCP_Webhook();
+            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
+            $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
+            $this->webhook = AngellEYE_PayPal_PPCP_Webhook::instance();
         } catch (Exception $ex) {
             
         }
@@ -207,5 +217,3 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     }
 
 }
-
-new AngellEYE_PayPal_PPCP_Seller_Onboarding();

@@ -1,6 +1,17 @@
 <?php
 
+defined('ABSPATH') || exit;
+
 class AngellEYE_PayPal_PPCP_DCC_Validate {
+
+    protected static $_instance = null;
+
+    public static function instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
 
     /**
      * The matrix which countries and currency combinations can be used for DCC.

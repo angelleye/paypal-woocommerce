@@ -1,9 +1,19 @@
 <?php
 
+defined('ABSPATH') || exit;
+
 class AngellEYE_PayPal_PPCP_Response {
 
     public $settings;
     public $api_log;
+    protected static $_instance = null;
+
+    public static function instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
@@ -27,8 +37,6 @@ class AngellEYE_PayPal_PPCP_Response {
         }
     }
 
-
-                
     public function angelleye_ppcp_write_log($url, $request, $response) {
         $this->api_log->log('PFW Version : ' . VERSION_PFW);
         $this->api_log->log('Request URL : ' . $url);
@@ -46,8 +54,8 @@ class AngellEYE_PayPal_PPCP_Response {
             if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
             }
-            $this->settings = new WC_Gateway_PPCP_AngellEYE_Settings();
-            $this->api_log = new AngellEYE_PayPal_PPCP_Log();
+            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
         } catch (Exception $ex) {
             
         }
