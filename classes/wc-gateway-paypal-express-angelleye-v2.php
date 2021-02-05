@@ -1473,7 +1473,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             ),
             'enable_fraudnet_integration' => array(
                 'title' => __('Enable FraudNet Integration', 'paypal-for-woocommerce'),
-                'label' => __('Enable FraudNet Integration', 'paypal-for-woocommerce'),
+                'label' => __('FraudNet Protection Integration (only required for Reference Transactions.)', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => __('FraudNet is a JavaScript library developed by PayPal and embedded into a merchant’s web page to collect browser-based data to help reduce fraud. Upon checkout, these data elements are sent directly to PayPal Risk Services for fraud and risk assessment.','paypal-for-woocommerce'),
                 'default' => 'no',
@@ -1483,8 +1483,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'fraudnet_swi' => array(
                 'title' => __('Source Website Identifier', 'paypal-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('This field is now required to be filled in for all new PayPal Express Checkout users. Existing users who already have Reference Transactions enabled are not required to use Fraudnet protection and an SWI (Source Website Identifier), although to take advantage of Fraudnet protection, you will be required to add one in.', 'paypal-for-woocommerce'),
-                'default' => ''
+                'description' => __('This field is now required to be filled in for all new PayPal Express Checkout merchants. Existing users who already have Reference Transactions enabled are not required to use Fraudnet protection and an SWI (Source Website Identifier), although to take advantage of Fraudnet protection, you will be required to add one in. PayPal support will provide you with your personal source Website Identifier.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'css' => 'min-width: 440px;',
+                'placeholder' => __('Your Personal source Website Identifier (provided by PayPal support.)', ''),
             ),
             'seller_protection' => array(
                 'title' => __('Seller Protection', 'paypal-for-woocommerce'),
