@@ -43,7 +43,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
         add_filter('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', array($this, 'modify_paypal_arguments'), 999);
         add_filter('angelleye_woocommerce_express_checkout_do_reference_transaction_request_args', array($this, 'modify_do_reference_transaction_request_paypal_arguments'), 999);
 
-        add_action('cartflows_offer_subscription_created', array($this, 'add_subscription_payment_meta_for_ppec'), 10, 3);
+        add_action('cartflows_offer_subscription_created', array($this, 'add_subscription_payment_meta_for_paypal_express'), 10, 3);
     }
 
     /**
@@ -1212,13 +1212,12 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
      * @param object          $order Object of order.
      * @param array           $offer_product array of offer product.
      */
-    public function add_subscription_payment_meta_for_ppec($subscription, $order, $offer_product) {
+    public function add_subscription_payment_meta_for_paypal_express($subscription, $order, $offer_product) {
 
-        if ('ppec_paypal' === $order->get_payment_method()) {
-
+        if ('paypal_express' === $order->get_payment_method()) {
             $subscription_id = $subscription->get_id();
-
-            update_post_meta($subscription_id, '_ppec_billing_agreement_id', $order->get_meta('_ppec_billing_agreement_id', true));
+            update_post_meta($subscription_id, '_payment_tokens_id', $order->get_meta('BILLINGAGREEMENTID', true));
+            update_post_meta($subscription_id, 'BILLINGAGREEMENTID', $order->get_meta('BILLINGAGREEMENTID', true));
         }
     }
 

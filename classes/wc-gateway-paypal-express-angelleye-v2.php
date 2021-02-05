@@ -116,7 +116,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->brand_name = $this->get_option('brand_name', get_bloginfo('name'));
         $this->customer_service_number = $this->get_option('customer_service_number', '');
         $this->use_wp_locale_code = $this->get_option('use_wp_locale_code', 'yes');
-        $this->angelleye_skip_text = $this->get_option('angelleye_skip_text', 'Skip the forms and pay faster with PayPal!');
+        $this->angelleye_skip_text = !empty($this->setting['angelleye_skip_text']) ? $this->setting['angelleye_skip_text'] : __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce');
+        if($this->angelleye_skip_text === 'Skip the forms and pay faster with PayPal!') {
+            $this->angelleye_skip_text = __('Skip the forms and pay faster with PayPal!', 'paypal-for-woocommerce');
+        }
         $this->skip_final_review = $this->get_option('skip_final_review', 'no');
         $this->disable_term = $this->get_option('disable_term', 'no');
         $this->payment_action = $this->get_option('payment_action', 'Sale');
@@ -1247,21 +1250,21 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'type' => 'text',
                 'description' => __('This controls the title of order review page which the user sees during checkout.', 'paypal-for-woocommerce'),
                 'desc_tip' => true,
-                'default' => 'Review Order'
+                'default' => __('Review Order', 'paypal-for-woocommerce')
             ),
             'review_button_label' => array(
                 'title' => __('Order Review Page Button Label', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the label of the button on the order review page which the buyer sees during checkout.', 'paypal-for-woocommerce'),
                 'desc_tip' => true,
-                'default' => 'Place order'
+                'default' => __('Place order', 'paypal-for-woocommerce')
             ),
             'checkout_button_label' => array(
                 'title' => __('Checkout Page Button Label', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the label of the button on the checkout page which the buyer sees during checkout.', 'paypal-for-woocommerce'),
                 'desc_tip' => true,
-                'default' => 'Proceed to PayPal'
+                'default' => __('Proceed to PayPal', 'paypal-for-woocommerce')
             ),
             'order_review_page_custom_message' => array(
                 'title' => __('Order Review Message', 'paypal-for-woocommerce'),
@@ -1292,7 +1295,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Custom Text', 'paypal-for-woocommerce'),
                 'type' => 'text',
                 'class' => 'pp_button_type_text_button',
-                'default' => 'Proceed to Checkout',
+                'default' => __('Proceed to Checkout', 'paypal-for-woocommerce'),
             ),
             'show_on_cart' => array(
                 'title' => __('Cart Page', 'paypal-for-woocommerce'),
