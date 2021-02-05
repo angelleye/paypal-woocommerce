@@ -51,8 +51,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
                     $this->enable_tokenized_payments = 'no';
                 }
-                $this->save_abandoned_checkout_value = !empty($this->setting['save_abandoned_checkout']) ? $this->setting['save_abandoned_checkout'] : 'no';
-                $this->save_abandoned_checkout = 'yes' === $this->save_abandoned_checkout_value;
                 $this->checkout_with_pp_button_type = !empty($this->setting['checkout_with_pp_button_type']) ? $this->setting['checkout_with_pp_button_type'] : 'paypalimage';
                 $this->pp_button_type_text_button = !empty($this->setting['pp_button_type_text_button']) ? $this->setting['pp_button_type_text_button'] : 'Proceed to Checkout';
                 $this->pp_button_type_my_custom = !empty($this->setting['pp_button_type_my_custom']) ? $this->setting['pp_button_type_my_custom'] : WC_Gateway_PayPal_Express_AngellEYE::angelleye_get_paypalimage();
