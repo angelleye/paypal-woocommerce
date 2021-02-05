@@ -2791,5 +2791,26 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
     }
     
+    public function get_saved_payment_method_option_html( $token ) {
+        $html = sprintf(
+                '<li class="woocommerce-SavedPaymentMethods-token">
+                        <input id="wc-%1$s-payment-token-%2$s" type="radio" name="wc-%1$s-payment-token" value="%2$s" style="width:auto;" class="woocommerce-SavedPaymentMethods-tokenInput" %4$s />
+                        <label for="wc-%1$s-payment-token-%2$s">%3$s</label>
+                </li>',
+                esc_attr( $this->id ),
+                esc_attr( $token->get_id() ),
+                esc_html( $this->angelleye_get_display_name($token) ),
+                checked( $token->is_default(), true, false )
+        );
+        return apply_filters( 'woocommerce_payment_gateway_get_saved_payment_method_option_html', $html, $token, $this );
+    }
     
+    public function angelleye_get_display_name( $token ) {
+        $display = sprintf(
+                __( '%1$s ending in %2$s', 'paypal-for-woocommerce' ),
+                $token->get_card_type(),
+                $token->get_last4()
+        );
+        return $display;
+    }
 }
