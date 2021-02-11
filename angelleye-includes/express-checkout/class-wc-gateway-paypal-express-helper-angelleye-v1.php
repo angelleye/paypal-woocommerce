@@ -162,11 +162,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
                 }
                 $this->is_paypal_credit_enable = true;
-                if (angelleye_is_us_based_store() == 'US') {
-                    $this->is_us = true;
-                } else {
-                    $this->is_us = false;
-                }
                 if ($this->is_paypal_credit_enable == true) {
                     $this->allowed_funding_methods = !empty($this->setting['allowed_funding_methods']) ? $this->setting['allowed_funding_methods'] : array(
                         'credit', 'card', 'elv', 'venmo'
