@@ -26,7 +26,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->skip_final_review = $this->gateway->get_option('skip_final_review', 'no');
             $this->billing_address = 'yes' === $this->gateway->get_option('billing_address', 'no');
             $this->disable_term = 'yes' === $this->gateway->get_option('disable_term', 'no');
-            $this->save_abandoned_checkout = 'yes' === $this->gateway->get_option('save_abandoned_checkout', 'no');
             $this->softdescriptor = $this->gateway->get_option('softdescriptor', '');
             $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'yes');
             $this->fraud_management_filters = $this->gateway->get_option('fraud_management_filters', 'place_order_on_hold_for_further_review');
@@ -115,15 +114,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     ));
                     exit();
                 } else {
-                    if ($this->save_abandoned_checkout == true) {
-                        wp_send_json(array(
-                            'url' => $payPalURL
-                        ));
-                    } else {
-                        return array(
-                            'url' => $payPalURL
-                        );
-                    }
+                    return array(
+                        'url' => $payPalURL
+                    );
                     exit();
                 }
             } else {
@@ -142,13 +135,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     ));
                     exit();
                 }
-                if ($this->save_abandoned_checkout == true) {
-                    wp_send_json(array(
-                        'url' => $payPalURL
-                    ));
-                } else {
-                    return $payPalURL;
-                }
+                return $payPalURL;
                 exit();
             } else {
                 $args = array(
@@ -160,11 +147,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         ob_end_clean();
                     }
                     ob_start();
-                    if ($this->save_abandoned_checkout == true) {
-                        return $args;
-                    } else {
-                        wp_send_json($args);
-                    }
+                    wp_send_json($args);
                 } else {
                     echo '<!--WC_START-->' . json_encode($args) . '<!--WC_END-->';
                 }
@@ -756,7 +739,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'taxid' => ''
             );
 
-            if ($_REQUEST['request_from'] == 'JSv4') {
+            if (empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
                 if(is_angelleye_multi_account_active() === false) {
                     $SECFields['returnurl'] = 'https://www.paypal.com/checkoutnow/error';
                     $SECFields['cancelurl'] = 'https://www.paypal.com/checkoutnow/error';

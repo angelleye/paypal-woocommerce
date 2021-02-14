@@ -103,7 +103,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
         $this->debug = 'yes' === $this->get_option('debug', 'no');
-        $this->save_abandoned_checkout = 'yes' === $this->get_option('save_abandoned_checkout', 'no');
         self::$log_enabled = $this->debug;
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
         $this->show_on_checkout = $this->get_option('show_on_checkout', 'both');
@@ -185,16 +184,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
         $this->order_button_text = ($this->function_helper->ec_is_express_checkout() == false) ? $this->checkout_button_label : $this->review_button_label;
         //do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
-        if ($this->save_abandoned_checkout == false && (isset($_POST['from_checkout']) && 'yes' === $_POST['from_checkout'])) {
-            if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
-                return;
-            }
+        
+        if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
+            return;
+        } else {
             if (version_compare(WC_VERSION, '3.0', '<')) {
                 add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 1);
             } else {
                 add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 2);
             }
         }
+        
     }
 
     public function process_admin_options() {
@@ -1640,12 +1640,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'class' => '',
                 'desc_tip' => true,
-            ),
-            'save_abandoned_checkout' => array(
-                'title' => __('Save Abandoned Checkouts', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('If a buyer choose to pay with PayPal from the WooCommerce checkout page, but they never return from PayPal, this will save the order as pending with all available details to that point.  Note that this will not work when Express Checkout Shortcut buttons are used.'),
-                'default' => 'no'
             ),
             'debug' => array(
                 'title' => __('Debug', 'paypal-for-woocommerce'),
@@ -3364,7 +3358,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function angelleye_check_cart_items() {
         try {
-            WC()->checkout->check_cart_items();
+            WC()->cart->check_cart_items();
         } catch (Exception $ex) {
             
         }
