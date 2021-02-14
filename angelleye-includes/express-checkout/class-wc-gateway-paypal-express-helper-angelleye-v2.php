@@ -10,6 +10,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public $posted;
     public $version;
     public $is_us;
+    public $is_fraudnet_ready = false;
 
     /**
      * The single instance of the class
@@ -259,6 +260,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
                 add_action('widget_title', array($this, 'angelleye_maybe_enqueue_checkout_js'), 10, 3);
                 add_action('woocommerce_before_checkout_process', array($this, 'angelleye_woocommerce_before_checkout_process'), 10);
+                add_action('angelleye_fraudnet_hook', array($this, 'own_angelleye_fraudnet_hook'), 99, 1);
+                add_action('wp_enqueue_scripts', array($this, 'own_angelleye_fraudnet_script'), 99, 1);
                 if ($this->enabled_credit_messaging) {
                     if ($this->is_paypal_credit_messaging_enable_for_page($page = 'home') && $this->credit_messaging_home_shortcode === false) {
                         add_filter('the_content', array($this, 'angelleye_display_credit_messaging_home_page_content'), 10);
@@ -331,6 +334,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     } else {
                         wp_enqueue_script('angelleye-in-context-checkout-js');
                         wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+                        do_action('angelleye_fraudnet_hook', $this->setting);
                     }
                     $ec_html_button .= '</div>';
                     if ($this->enable_tokenized_payments == 'yes') {
@@ -581,6 +585,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         unset(WC()->session->shiptoname);
         unset(WC()->session->payeremail);
         unset(WC()->session->validate_data);
+        unset(WC()->session->angelleye_fraudnet_f);
     }
 
     public function ec_is_checkout() {
@@ -769,16 +774,19 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if (is_checkout() || is_cart() || $this->is_angelleye_product_page()) {
                 wp_enqueue_script('angelleye-in-context-checkout-js');
                 wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+                do_action('angelleye_fraudnet_hook', $this->setting);
             }
             if ($this->show_on_cart == 'yes' && $this->show_on_minicart == 'yes') {
                 wp_enqueue_script('angelleye-in-context-checkout-js');
                 wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+                do_action('angelleye_fraudnet_hook', $this->setting);
             }
             if (is_checkout()) {
                 $js_value['is_page_name'] = 'checkout_page';
                 wp_enqueue_script('angelleye-express-checkout-js', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-express-checkout.js', array(), $this->version, true);
                 wp_localize_script('angelleye-express-checkout-js', 'angelleye_js_value', $js_value);
             }
+            
             wp_enqueue_style('angelleye-express-checkout-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/angelleye-express-checkout.css', array(), $this->version, 'all');
         } catch (Exception $ex) {
 
@@ -804,6 +812,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $this->woocommerce_before_cart();
             wp_enqueue_script('angelleye-in-context-checkout-js');
             wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+            do_action('angelleye_fraudnet_hook', $this->setting);
             $mini_cart_button_html = '';
             $mini_cart_button_html .= $this->woocommerce_paypal_express_checkout_button_angelleye($return = true, 'mini');
             $mini_cart_button_html .= "<div class='clear'></div>";
@@ -868,6 +877,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             } else {
                 wp_enqueue_script('angelleye-in-context-checkout-js');
                 wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+                do_action('angelleye_fraudnet_hook', $this->setting);
                 $cart_button_html .= "<div class='$angelleye_smart_button'></div>";
             }
             if ($this->enable_tokenized_payments == 'yes') {
@@ -937,6 +947,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if ($this->enable_in_context_checkout_flow == 'yes') {
                 wp_enqueue_script('angelleye-in-context-checkout-js');
                 wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+                do_action('angelleye_fraudnet_hook', $this->setting);
                 $ec_top_checkout_button .= "<div class='angelleye_smart_button_checkout_top'></div>";
             }
             if ($this->enable_tokenized_payments == 'yes') {
@@ -1387,6 +1398,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         }
         wp_enqueue_script('angelleye-in-context-checkout-js');
         wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+        do_action('angelleye_fraudnet_hook', $this->setting);
         ?>
         <div class="angelleye_smart_button_checkout_bottom"></div>
         <?php
@@ -1817,11 +1829,64 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         return false;
     }
     
+    public function own_angelleye_fraudnet_hook($setting) {
+        $this->is_fraudnet_ready = true;
+    }
+
+    public function own_angelleye_fraudnet_script() {
+        if (WC()->cart->is_empty()) {
+            return false;
+        }
+        if($this->is_fraudnet_ready === false) {
+            return false;
+        }
+        $angelleye_fraudnet_f = angelleye_get_session('angelleye_fraudnet_f');
+        if (!empty($angelleye_fraudnet_f)) {
+            return false;
+        }
+        $settings = $this->setting;
+        if( !empty($settings['enable_fraudnet_integration']) && 'yes' === $settings['enable_fraudnet_integration'] && !empty($settings['fraudnet_swi'])) {
+            $uuid = $this->angelleye_generate_request_id();
+            angelleye_set_session( 'angelleye_fraudnet_f', $uuid);
+            ?>
+            <!-- PayPal BEGIN -->
+            <script type="application/json" fncls="fnparams-dede7cc5-15fd-4c75-a9f4-36c430ee3a99">
+                {
+                    "f":"<?php echo $uuid; ?>",
+                    "s":"<?php echo $settings['fraudnet_swi']; ?>"
+                }
+            </script>
+            }
+            <script type="text/javascript" src="https://c.paypal.com/da/r/fb.js"></script>
+            <!-- PayPal END -->
+            <?php
+        }
+    }
+    
+    public function angelleye_generate_request_id() {
+        static $pid = -1;
+        static $addr = -1;
+        if ($pid == -1) {
+            $pid = getmypid();
+        }
+        if ($addr == -1) {
+            if (array_key_exists('SERVER_ADDR', $_SERVER)) {
+                $addr = ip2long($_SERVER['SERVER_ADDR']);
+            } else {
+                $addr = php_uname('n');
+            }
+        }
+        $str = $addr . $pid . $_SERVER['REQUEST_TIME'] . mt_rand(0, 0xffff);
+        if (32 < strlen($str)) {
+            $str = substr($str, 0, 32);
+        }
+        return $str;
+    }
+    
     public function angelleye_in_content_js($url) {
         if (strpos($url, 'https://www.paypal.com/sdk/js') !== false) {
             "$url' async data-log-level='error";
         }
         return $url;
     }
-
 }
