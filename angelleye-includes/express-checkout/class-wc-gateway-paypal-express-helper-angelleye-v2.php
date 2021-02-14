@@ -1883,7 +1883,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     
     public function angelleye_in_content_js($url) {
         if (strpos($url, 'https://www.paypal.com/sdk/js') !== false) {
-            "$url' async data-log-level='error";
+            $url = "$url' async data-namespace='paypal_sdk";
         }
         return $url;
     }

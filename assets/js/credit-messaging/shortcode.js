@@ -1,5 +1,5 @@
 jQuery(function ($) {
-    if (typeof paypal === 'undefined') {
+    if (typeof paypal_sdk === 'undefined') {
         return false;
     }
     if (typeof angelleye_credit_messaging === 'undefined') {
@@ -21,8 +21,8 @@ jQuery(function ($) {
             shortcode_style_object['color'] = angelleye_credit_messaging.color;
             shortcode_style_object['ratio'] = angelleye_credit_messaging.ratio;
         }
-        if (typeof paypal !== 'undefined') {
-            paypal.Messages({
+        if (typeof paypal_sdk !== 'undefined') {
+            paypal_sdk.Messages({
                 amount: angelleye_credit_messaging.amount,
                 placement: angelleye_credit_messaging.placement,
                 style: shortcode_style_object
