@@ -31,7 +31,7 @@
     margin-bottom: 10px;
     vertical-align: baseline;
 }
-.theme-storefront.woocommerce-page #payment .form-row select.woocommerce-cc-month, .theme-storefront.woocommerce-page #payment .form-row select.woocommerce-cc-year {
+.theme-storefront.woocommerce-page #payment .form-row select.woocommerce-cc-month, .theme-storefront.woocommerce-page #payment .form-row select.woocommerce-cc-year, .angelleye-bank-account-type {
     font-size: 1.41575em;
     padding: 0.6180469716em;
     background-color: #f2f2f2;
@@ -42,9 +42,16 @@
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.125);
     min-width: 135px;
 }
+.woocommerce-checkout #payment div.payment_box .angelleye_us_bank_field {
+font-size: 1.5em;
+padding: 8px;
+background-repeat: no-repeat;
+background-position: right .618em center;
+background-size: 32px 20px;
+}
 .theme-Avada.woocommerce-page #payment .form-row label[for="cc-expire-month"]{
-   width: 100%;
-   display: block;
+    width: 100%;
+    display: block;
 }
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form-cardholder {
     font-size: 1.5em;
@@ -55,6 +62,17 @@
 }
 .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-month, .woocommerce form .form-row.woocommerce-validated select.woocommerce-cc-year {
     border: 1px solid #bbb;
+}
+.angelleye_seprater_center {
+    text-align: center;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 20px 0px 0 0;
+    clear: both;
+}
+.woocommerce #payment .form-row select, .woocommerce-page #payment .form-row select#angelleye-bank-account-type {
+    width: 100%;
 }
 @media (max-width:572px) {
     .payment_method_paypal_pro_payflow .form-row, .payment_method_paypal_pro .form-row  {
