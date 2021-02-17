@@ -811,7 +811,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         $credit_messaging_text = '';
         if($this->is_multi_account_active == 'yes') {
-            $credit_messaging_text = __('PayPal Credit Messaging - Buy Now Pay Later is not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+            $credit_messaging_text = __('PayPal Pay Later Messaging - Buy Now Pay Later is not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
         }
         if($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
             $enable_tokenized_payments_text = __('Payment tokenization is not available when using the PayPal Multi-Account add-on, and it has been disabled.', 'paypal-for-woocommerce');
@@ -1877,13 +1877,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );     
         }
         $this->form_fields['credit_messaging'] = array(
-            'title' => __('PayPal Credit messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
+            'title' => __('PayPal Pay Later Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
             'type' => 'title',
-            'description' => __('To add PayPal Credit messaging - Buy Now Pay Later to your site.', 'paypal-for-woocommerce'),
+            'description' => __('To add PayPal Pay Later Messaging - Buy Now Pay Later to your site.', 'paypal-for-woocommerce'),
         );
         $this->form_fields['enabled_credit_messaging'] = array(
             'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
-            'label' => __('Enable PayPal Credit messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
+            'label' => __('Enable PayPal Pay Later Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
             'type' => 'checkbox',
             'description' => $credit_messaging_text,
             'default' => 'no'

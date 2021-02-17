@@ -2116,7 +2116,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'description' => '<div id="pms-muse-container">
                                 <div class="pms-muse-left-container">
                                         <div class="pms-muse-description">
-                                                <h2>PayPal Credit Messaging</h2>
+                                                <h2>PayPal Pay Later Messaging</h2>
                                                 <h3>Offer &#8220;Buy Now Pay Later&#8221; to Buyers</h3>
                                                 <p>PayPal Credit is a revolving line of credit that gives your customers the flexibility to buy now and pay over time, while you receive full payment immediately.</p>
                                                 <p>Buyer-facing messaging allows you to present this option to your buyers, increasing conversion rates and average order total.</p>
@@ -2124,7 +2124,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             $this->form_fields['enabled_credit_messaging'] = array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
-                'label' => __('Enable PayPal Credit Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
+                'label' => __('Enable PayPal Pay Later Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
                 'description' => '',
                 'default' => 'no'
@@ -2159,7 +2159,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                         <p style="font-size: smaller;">
                                         &#185;Average annual incremental sales based on PayPal’s analysis of internal data among 210 merchants with messaging and buttons against a broader group of merchants that did not, with 24-month continuous DCC volume between January 2016 and November 2019.<br><br>
                                         &#178;Online study commissioned by PayPal and conducted by Logica Research in May 2020 involving 2,000 U.S. consumers, where half were PayPal Credit users and half were non-PayPal Credit users, May 2020<br><br>
-                                        &#179;Average lift in overall PayPal AOV for merchants with PayPal Credit messaging  vs. those without, 2019 PayPal internal data<br><br>
+                                        &#179;Average lift in overall PayPal AOV for merchants with PayPal Pay Later Messaging  vs. those without, 2019 PayPal internal data<br><br>
                                         &#8308;Excerpted from Payments Journal, “Does the Answer to POS Consumer Financing Lie in Bank-Fintech Collaboration?”, Yaacov Martin, February 15, 2019<br><br>
                                         &#8309;Online study commissioned by PayPal and conducted by Logica Research in May 2020 involving 2,000 U.S. consumers, half were PayPal Credit users and half were non-PayPal Credit users, May 2020<br><br>
                                         &#8310;Online study commissioned by PayPal and conducted by Logica Research in November 2018 involving 2,000 U.S. consumers, half were PayPal Credit users and half were non-PayPal Credit users.<br><br>
@@ -2181,7 +2181,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Home Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_home_base_field',
-                'description' => __('Configure Home Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Home Page specific settings for PayPal Pay Later Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_home_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2272,7 +2272,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Category Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_category_base_field',
-                'description' => __('Configure Category Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Category Page specific settings for PayPal Pay Later Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_category_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2363,7 +2363,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Product Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_product_base_field',
-                'description' => __('Configure Product Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Product Page specific settings for PayPal Pay Later Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_product_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2454,7 +2454,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Cart Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_cart_base_field',
-                'description' => __('Configure Cart Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Cart Page specific settings for PayPal Pay Later Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_cart_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2545,7 +2545,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Payment Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_payment_base_field',
-                'description' => __('Configure Home Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Home Page specific settings for PayPal Pay Later Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_payment_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
