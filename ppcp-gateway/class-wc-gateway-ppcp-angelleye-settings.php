@@ -89,6 +89,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('Account Settings', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'description' => '',
+                    'class' => 'ppcp_separator_heading',
                 ),
                 'testmode' => array(
                     'title' => __('PayPal sandbox', 'paypal-for-woocommerce'),
@@ -130,8 +131,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'api_credentials' => array(
                     'title' => __('API Credentials', 'paypal-for-woocommerce'),
+                    'class' => '',
+                    'description' => __('', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'description' => '',
+                    'class' => '',
                 ),
                 'live_email_address' => array(
                     'title' => __('Live Email address', 'paypal-for-woocommerce'),
@@ -194,8 +197,15 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => '',
                     'desc_tip' => true
                 ),
+                'smart_button_header' => array(
+                    'title' => __('Smart Payment Buttons Settings', 'paypal-for-woocommerce'),
+                    'class' => '',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'class' => 'ppcp_separator_heading',
+                ),
                 'product_button_settings' => array(
-                    'title' => __('Product Page Smart Button Settings', 'paypal-for-woocommerce'),
+                    'title' => __('Product Page', 'paypal-for-woocommerce'),
                     'class' => '',
                     'description' => __('Enable the Product specific button settings, and the options set will be applied to the PayPal Smart buttons on your Product pages.', 'paypal-for-woocommerce'),
                     'type' => 'title',
@@ -215,7 +225,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'multiselect',
                     'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
                     'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
-                    'default' => array(),
+                    'default' => '',
                     'desc_tip' => true,
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
@@ -298,7 +308,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     ),
                 ),
                 'cart_button_settings' => array(
-                    'title' => __('Cart Page Button Settings', 'paypal-for-woocommerce'),
+                    'title' => __('Cart Page', 'paypal-for-woocommerce'),
                     'class' => '',
                     'description' => __('Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your Cart page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
@@ -318,7 +328,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'multiselect angelleye_ppcp_cart_button_settings',
                     'class' => 'wc-enhanced-select',
                     'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
-                    'default' => array(),
+                    'default' => '',
                     'desc_tip' => true,
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
@@ -401,7 +411,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     ),
                 ),
                 'checkout_button_settings' => array(
-                    'title' => __('Checkout Page Button Settings', 'paypal-for-woocommerce'),
+                    'title' => __('Checkout Page', 'paypal-for-woocommerce'),
                     'class' => '',
                     'description' => __('Enable the checkout specific button settings, and the options set will be applied to the PayPal buttons on your checkout page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
@@ -421,7 +431,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'multiselect',
                     'class' => 'wc-enhanced-select angelleye_ppcp_checkout_button_settings',
                     'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
-                    'default' => array(),
+                    'default' => '',
                     'desc_tip' => true,
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
@@ -504,7 +514,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     ),
                 ),
                 'mini_cart_button_settings' => array(
-                    'title' => __('Mini Cart Page Button Settings', 'paypal-for-woocommerce'),
+                    'title' => __('Mini Cart Page', 'paypal-for-woocommerce'),
                     'class' => '',
                     'description' => __('Enable the Mini Cart specific button settings, and the options set will be applied to the PayPal buttons on your Mini Cart page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
@@ -524,7 +534,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'multiselect',
                     'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
                     'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
-                    'default' => array(),
+                    'default' => '',
                     'desc_tip' => true,
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
@@ -606,10 +616,469 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                             'Add the tagline. This line will only show up, if you select a horizontal layout.', 'paypal-for-woocommerce'
                     ),
                 ),
+                'pay_later_messaging_settings' => array(
+                    'title' => __('Pay Later Messaging Settings', 'paypal-for-woocommerce'),
+                    'class' => '',
+                    'description' => '',
+                    'type' => 'title',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'enabled_pay_later_messaging' => array(
+                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                    'label' => __('Enable Pay Later Messaging', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'description' => '',
+                    'default' => 'no'
+                ),
+                'pay_later_messaging_page_type' => array(
+                    'title' => __('Page Type', 'paypal-for-woocommerce'),
+                    'type' => 'multiselect',
+                    'css' => 'width: 100%;',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field',
+                    'default' => array('home', 'category', 'product', 'cart', 'payment'),
+                    'options' => array('home' => __('Home', 'paypal-for-woocommerce'), 'category' => __('Category', 'paypal-for-woocommerce'), 'product' => __('Product', 'paypal-for-woocommerce'), 'cart' => __('Cart', 'paypal-for-woocommerce'), 'payment' => __('Payment', 'paypal-for-woocommerce')),
+                    'description' => '<div style="font-size: smaller;">Set the page(s) you want to display messaging on, and then adjust that page\'s display option below.</div>',
+                ),
+                'pay_later_messaging_home_page_settings' => array(
+                    'title' => __('Home Page', 'paypal-for-woocommerce'),
+                    'class' => '',
+                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later messages</a> on Home page to promote special financing offers, which help increase sales.', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'class' => 'pay_later_messaging_field',
+                ),
+                'pay_later_messaging_home_layout_type' => array(
+                    'title' => __('Layout Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_home_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'flex',
+                    'desc_tip' => true,
+                    'options' => array('text' => __('Text Layout', 'paypal-for-woocommerce'), 'flex' => __('Flex Layout', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_home_text_layout_logo_type' => array(
+                    'title' => __('Logo Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_home_field pay_later_messaging_home_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'primary',
+                    'desc_tip' => true,
+                    'options' => array('primary' => __('Primary', 'paypal-for-woocommerce'), 'alternative' => __('Alternative', 'paypal-for-woocommerce'), 'inline' => __('Inline', 'paypal-for-woocommerce'), 'none' => __('None', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_home_text_layout_logo_position' => array(
+                    'title' => __('Logo Position', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_home_field pay_later_messaging_home_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'left',
+                    'desc_tip' => true,
+                    'options' => array('left' => __('Left', 'paypal-for-woocommerce'), 'right' => __('Right', 'paypal-for-woocommerce'), 'top' => __('Top', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_home_text_layout_text_size' => array(
+                    'title' => __('Text Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_home_field pay_later_messaging_home_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => '12',
+                    'desc_tip' => true,
+                    'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_home_text_layout_text_color' => array(
+                    'title' => __('Text Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_home_field pay_later_messaging_home_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'black',
+                    'desc_tip' => true,
+                    'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_home_flex_layout_color' => array(
+                    'title' => __('Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_home_field pay_later_messaging_home_flex_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'blue',
+                    'desc_tip' => true,
+                    'options' => array('blue' => __('Blue', 'paypal-for-woocommerce'), 'black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'white-no-border' => __('White (No Border)', 'paypal-for-woocommerce'), 'gray' => __('Gray', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_home_flex_layout_ratio' => array(
+                    'title' => __('Ratio', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_home_field pay_later_messaging_home_flex_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => '8x1',
+                    'desc_tip' => true,
+                    'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_home_shortcode' => array(
+                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                    'label' => __('I need a shortcode so that I can place the message in a better spot on Home page.', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_home_field pay_later_messaging_home_shortcode',
+                    'description' => '',
+                    'default' => 'no'
+                ),
+                'pay_later_messaging_home_preview_shortcode' => array(
+                    'title' => __('Shortcode', 'paypal-for-woocommerce'),
+                    'type' => 'copy_text',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_home_field pay_later_messaging_home_preview_shortcode preview_shortcode',
+                    'description' => '',
+                    'custom_attributes' => array('readonly' => 'readonly'),
+                    'button_class' => 'home_copy_text',
+                    'default' => '[aepfw_bnpl_message placement="home"]'
+                ),
+                'pay_later_messaging_category_page_settings' => array(
+                    'title' => __('Category Page', 'paypal-for-woocommerce'),
+                    'class' => '',
+                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later messages</a> on Category page to promote special financing offers, which help increase sales.', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'class' => 'pay_later_messaging_field',
+                ),
+                'pay_later_messaging_category_layout_type' => array(
+                    'title' => __('Layout Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_category_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'flex',
+                    'desc_tip' => true,
+                    'options' => array('text' => __('Text Layout', 'paypal-for-woocommerce'), 'flex' => __('Flex Layout', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_category_text_layout_logo_type' => array(
+                    'title' => __('Logo Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_category_field pay_later_messaging_category_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'primary',
+                    'desc_tip' => true,
+                    'options' => array('primary' => __('Primary', 'paypal-for-woocommerce'), 'alternative' => __('Alternative', 'paypal-for-woocommerce'), 'inline' => __('Inline', 'paypal-for-woocommerce'), 'none' => __('None', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_category_text_layout_logo_position' => array(
+                    'title' => __('Logo Position', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_category_field pay_later_messaging_category_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'left',
+                    'desc_tip' => true,
+                    'options' => array('left' => __('Left', 'paypal-for-woocommerce'), 'right' => __('Right', 'paypal-for-woocommerce'), 'top' => __('Top', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_category_text_layout_text_size' => array(
+                    'title' => __('Text Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_category_field pay_later_messaging_category_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => '12',
+                    'desc_tip' => true,
+                    'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_category_text_layout_text_color' => array(
+                    'title' => __('Text Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_category_field pay_later_messaging_category_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'black',
+                    'desc_tip' => true,
+                    'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_category_flex_layout_color' => array(
+                    'title' => __('Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_category_field pay_later_messaging_category_flex_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'blue',
+                    'desc_tip' => true,
+                    'options' => array('blue' => __('Blue', 'paypal-for-woocommerce'), 'black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'white-no-border' => __('White (No Border)', 'paypal-for-woocommerce'), 'gray' => __('Gray', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_category_flex_layout_ratio' => array(
+                    'title' => __('Ratio', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_category_field pay_later_messaging_category_flex_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => '8x1',
+                    'desc_tip' => true,
+                    'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_category_shortcode' => array(
+                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                    'label' => __('I need a shortcode so that I can place the message in a better spot on category page.', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_category_field pay_later_messaging_category_shortcode',
+                    'description' => '',
+                    'default' => 'no'
+                ),
+                'pay_later_messaging_category_preview_shortcode' => array(
+                    'title' => __('Shortcode', 'paypal-for-woocommerce'),
+                    'type' => 'copy_text',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_category_field pay_later_messaging_category_preview_shortcode preview_shortcode',
+                    'description' => '',
+                    'button_class' => 'category_copy_text',
+                    'custom_attributes' => array('readonly' => 'readonly'),
+                    'default' => '[aepfw_bnpl_message placement="category"]'
+                ),
+                'pay_later_messaging_product_page_settings' => array(
+                    'title' => __('Product Page', 'paypal-for-woocommerce'),
+                    'class' => '',
+                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later messages</a> on Product page to promote special financing offers, which help increase sales.', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'class' => 'pay_later_messaging_field',
+                ),
+                'pay_later_messaging_product_layout_type' => array(
+                    'title' => __('Layout Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_product_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'flex',
+                    'desc_tip' => true,
+                    'options' => array('text' => __('Text Layout', 'paypal-for-woocommerce'), 'flex' => __('Flex Layout', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_product_text_layout_logo_type' => array(
+                    'title' => __('Logo Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_product_field pay_later_messaging_product_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'primary',
+                    'desc_tip' => true,
+                    'options' => array('primary' => __('Primary', 'paypal-for-woocommerce'), 'alternative' => __('Alternative', 'paypal-for-woocommerce'), 'inline' => __('Inline', 'paypal-for-woocommerce'), 'none' => __('None', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_product_text_layout_logo_position' => array(
+                    'title' => __('Logo Position', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_product_field pay_later_messaging_product_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'left',
+                    'desc_tip' => true,
+                    'options' => array('left' => __('Left', 'paypal-for-woocommerce'), 'right' => __('Right', 'paypal-for-woocommerce'), 'top' => __('Top', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_product_text_layout_text_size' => array(
+                    'title' => __('Text Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_product_field pay_later_messaging_product_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => '12',
+                    'desc_tip' => true,
+                    'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_product_text_layout_text_color' => array(
+                    'title' => __('Text Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_product_field pay_later_messaging_product_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'black',
+                    'desc_tip' => true,
+                    'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_product_flex_layout_color' => array(
+                    'title' => __('Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_product_field pay_later_messaging_product_flex_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'blue',
+                    'desc_tip' => true,
+                    'options' => array('blue' => __('Blue', 'paypal-for-woocommerce'), 'black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'white-no-border' => __('White (No Border)', 'paypal-for-woocommerce'), 'gray' => __('Gray', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_product_flex_layout_ratio' => array(
+                    'title' => __('Ratio', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_product_field pay_later_messaging_product_flex_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => '8x1',
+                    'desc_tip' => true,
+                    'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_product_shortcode' => array(
+                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                    'label' => __('I need a shortcode so that I can place the message in a better spot on product page.', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_product_field pay_later_messaging_product_shortcode',
+                    'description' => '',
+                    'default' => 'no'
+                ),
+                'pay_later_messaging_product_preview_shortcode' => array(
+                    'title' => __('Shortcode', 'paypal-for-woocommerce'),
+                    'type' => 'copy_text',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_product_field pay_later_messaging_product_preview_shortcode preview_shortcode',
+                    'description' => '',
+                    'button_class' => 'product_copy_text',
+                    'custom_attributes' => array('readonly' => 'readonly'),
+                    'default' => '[aepfw_bnpl_message placement="product"]'
+                ),
+                'pay_later_messaging_cart_page_settings' => array(
+                    'title' => __('Cart Page', 'paypal-for-woocommerce'),
+                    'class' => '',
+                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later messages</a> on Cart page to promote special financing offers, which help increase sales.', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'class' => 'pay_later_messaging_field',
+                ),
+                'pay_later_messaging_cart_layout_type' => array(
+                    'title' => __('Layout Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_cart_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'flex',
+                    'desc_tip' => true,
+                    'options' => array('text' => __('Text Layout', 'paypal-for-woocommerce'), 'flex' => __('Flex Layout', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_cart_text_layout_logo_type' => array(
+                    'title' => __('Logo Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_cart_field pay_later_messaging_cart_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'primary',
+                    'desc_tip' => true,
+                    'options' => array('primary' => __('Primary', 'paypal-for-woocommerce'), 'alternative' => __('Alternative', 'paypal-for-woocommerce'), 'inline' => __('Inline', 'paypal-for-woocommerce'), 'none' => __('None', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_cart_text_layout_logo_position' => array(
+                    'title' => __('Logo Position', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_cart_field pay_later_messaging_cart_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'left',
+                    'desc_tip' => true,
+                    'options' => array('left' => __('Left', 'paypal-for-woocommerce'), 'right' => __('Right', 'paypal-for-woocommerce'), 'top' => __('Top', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_cart_text_layout_text_size' => array(
+                    'title' => __('Text Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_cart_field pay_later_messaging_cart_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => '12',
+                    'desc_tip' => true,
+                    'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_cart_text_layout_text_color' => array(
+                    'title' => __('Text Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_cart_field pay_later_messaging_cart_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'black',
+                    'desc_tip' => true,
+                    'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_cart_flex_layout_color' => array(
+                    'title' => __('Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_cart_field pay_later_messaging_cart_flex_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'blue',
+                    'desc_tip' => true,
+                    'options' => array('blue' => __('Blue', 'paypal-for-woocommerce'), 'black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'white-no-border' => __('White (No Border)', 'paypal-for-woocommerce'), 'gray' => __('Gray', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_cart_flex_layout_ratio' => array(
+                    'title' => __('Ratio', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_cart_field pay_later_messaging_cart_flex_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => '8x1',
+                    'desc_tip' => true,
+                    'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_cart_shortcode' => array(
+                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                    'label' => __('I need a shortcode so that I can place the message in a better spot on cart page.', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_cart_field pay_later_messaging_cart_shortcode',
+                    'description' => '',
+                    'default' => 'no'
+                ),
+                'pay_later_messaging_cart_preview_shortcode' => array(
+                    'title' => __('Shortcode', 'paypal-for-woocommerce'),
+                    'type' => 'copy_text',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_cart_field pay_later_messaging_cart_preview_shortcode preview_shortcode',
+                    'description' => '',
+                    'button_class' => 'cart_copy_text',
+                    'custom_attributes' => array('readonly' => 'readonly'),
+                    'default' => '[aepfw_bnpl_message placement="cart"]'
+                ),
+                'pay_later_messaging_payment_page_settings' => array(
+                    'title' => __('Payment Page', 'paypal-for-woocommerce'),
+                    'class' => '',
+                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later messages</a> on Payment page to promote special financing offers, which help increase sales.', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'class' => 'pay_later_messaging_field',
+                ),
+                'pay_later_messaging_payment_layout_type' => array(
+                    'title' => __('Layout Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_payment_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'flex',
+                    'desc_tip' => true,
+                    'options' => array('text' => __('Text Layout', 'paypal-for-woocommerce'), 'flex' => __('Flex Layout', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_payment_text_layout_logo_type' => array(
+                    'title' => __('Logo Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_payment_field pay_later_messaging_payment_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'primary',
+                    'desc_tip' => true,
+                    'options' => array('primary' => __('Primary', 'paypal-for-woocommerce'), 'alternative' => __('Alternative', 'paypal-for-woocommerce'), 'inline' => __('Inline', 'paypal-for-woocommerce'), 'none' => __('None', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_payment_text_layout_logo_position' => array(
+                    'title' => __('Logo Position', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_payment_field pay_later_messaging_payment_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'left',
+                    'desc_tip' => true,
+                    'options' => array('left' => __('Left', 'paypal-for-woocommerce'), 'right' => __('Right', 'paypal-for-woocommerce'), 'top' => __('Top', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_payment_text_layout_text_size' => array(
+                    'title' => __('Text Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_payment_field pay_later_messaging_payment_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => '12',
+                    'desc_tip' => true,
+                    'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_payment_text_layout_text_color' => array(
+                    'title' => __('Text Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_payment_field pay_later_messaging_payment_text_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'black',
+                    'desc_tip' => true,
+                    'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_payment_flex_layout_color' => array(
+                    'title' => __('Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_payment_field pay_later_messaging_payment_flex_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => 'blue',
+                    'desc_tip' => true,
+                    'options' => array('blue' => __('Blue', 'paypal-for-woocommerce'), 'black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'white-no-border' => __('White (No Border)', 'paypal-for-woocommerce'), 'gray' => __('Gray', 'paypal-for-woocommerce'), 'monochrome' => __('Monochrome', 'paypal-for-woocommerce'), 'grayscale' => __('Grayscale', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_payment_flex_layout_ratio' => array(
+                    'title' => __('Ratio', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field pay_later_messaging_payment_field pay_later_messaging_payment_flex_layout_field',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'default' => '8x1',
+                    'desc_tip' => true,
+                    'options' => array('1x1' => __('Flexes between 120px and 300px wide', 'paypal-for-woocommerce'), '1x4' => __('160px wide', 'paypal-for-woocommerce'), '8x1' => __('Flexes between 250px and 768px wide', 'paypal-for-woocommerce'), '20x1' => __('Flexes between 250px and 1169px wide', 'paypal-for-woocommerce'))
+                ),
+                'pay_later_messaging_payment_shortcode' => array(
+                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                    'label' => __('I need a shortcode so that I can place the message in a better spot on payment page.', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_payment_field pay_later_messaging_payment_shortcode',
+                    'description' => '',
+                    'default' => 'no'
+                ),
+                'pay_later_messaging_payment_preview_shortcode' => array(
+                    'title' => __('Shortcode', 'paypal-for-woocommerce'),
+                    'type' => 'copy_text',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_payment_field pay_later_messaging_payment_preview_shortcode preview_shortcode',
+                    'description' => '',
+                    'button_class' => 'payment_copy_text',
+                    'custom_attributes' => array('readonly' => 'readonly'),
+                    'default' => '[aepfw_bnpl_message placement="payment"]'
+                ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'description' => '',
+                    'class' => 'ppcp_separator_heading',
                 ),
                 'paymentaction' => array(
                     'title' => __('Payment action', 'paypal-for-woocommerce'),
@@ -651,7 +1120,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'payee_preferred' => array(
                     'title' => __('Instant Payments ', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'default' => false,
+                    'default' => 'no',
                     'desc_tip' => true,
                     'description' => __(
                             'If you enable this setting, PayPal will be instructed not to allow the buyer to use funding sources that take additional time to complete (for example, eChecks). Instead, the buyer will be required to use an instant funding source, such as an instant transfer, a credit/debit card, or PayPal Credit.', 'paypal-for-woocommerce'
@@ -672,11 +1141,18 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('If you are based in Europe, you are subjected to PSD2. PayPal recommends this option', 'paypal-for-woocommerce'),
                     'default' => 'no',
                 ),
+                'order_review_page_enable_coupons' => array(
+                    'title' => __('Enable/Disable coupons', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('Enable the use of coupon codes', 'paypal-for-woocommerce'),
+                    'description' => __('Coupons can be applied from the order review.', 'paypal-for-woocommerce'),
+                    'default' => 'yes',
+                ),
                 'debug' => array(
                     'title' => __('Debug log', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
                     'label' => __('Enable logging', 'paypal-for-woocommerce'),
-                    'default' => 'no',
+                    'default' => 'yes',
                     'description' => sprintf(__('Log PayPal events, such as Webhook, Payment, Refund inside %s Note: this may log personal information. We recommend using this for debugging purposes only and deleting the logs when finished.', 'paypal-for-woocommerce'), '<code>' . WC_Log_Handler_File::get_log_file_path('angelleye_ppcp') . '</code>'),
                 ),
             );
@@ -685,6 +1161,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 unset($this->angelleye_ppcp_gateway_setting['live_disconnect']);
                 unset($this->angelleye_ppcp_gateway_setting['sandbox_onboarding']);
                 unset($this->angelleye_ppcp_gateway_setting['sandbox_disconnect']);
+            }
+            if (wc_coupons_enabled() === false) {
+                unset($this->angelleye_ppcp_gateway_setting['order_review_page_enable_coupons']);
             }
             return $this->angelleye_ppcp_gateway_setting;
         }

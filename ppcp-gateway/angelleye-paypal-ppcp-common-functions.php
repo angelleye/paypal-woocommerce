@@ -151,6 +151,7 @@ if (!function_exists('angelleye_ppcp_get_wpml_locale')) {
 if (!function_exists('angelleye_ppcp_is_local_server')) {
 
     function angelleye_ppcp_is_local_server() {
+        return false;
         if (!isset($_SERVER['HTTP_HOST'])) {
             return;
         }
@@ -215,6 +216,139 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
         function angelleye_ppcp_readable($tex) {
             $tex = ucwords(strtolower(str_replace('_', ' ', $tex)));
             return $tex;
+        }
+
+    }
+
+    if (!function_exists('angelleye_ppcp_may_register_webhook')) {
+
+        function angelleye_ppcp_may_register_webhook() {
+            if (angelleye_ppcp_is_local_server() === false) {
+                if (wp_next_scheduled('angelleyel_ppcp_create_webhook')) {
+                    $timestamp = wp_next_scheduled('angelleyel_ppcp_create_webhook');
+                    wp_unschedule_event($timestamp, 'angelleyel_ppcp_create_webhook');
+                    wp_clear_scheduled_hook('angelleyel_ppcp_create_webhook');
+                }
+                wp_schedule_single_event(time() + 120, 'angelleyel_ppcp_create_webhook');
+            }
+        }
+
+    }
+
+    if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
+
+        function angelleye_ppcp_get_mapped_billing_address($checkout_details) {
+            if (empty($checkout_details->payer)) {
+                return array();
+            }
+            $phone = '';
+            if (!empty($checkout_details->payer->phone_number)) {
+                $phone = $checkout_details->payer->phone_number;
+            } elseif (!empty($_POST['billing_phone'])) {
+                $phone = wc_clean($_POST['billing_phone']);
+            }
+            $billing_address = array();
+            $billing_address['first_name'] = !empty($checkout_details->payer->name->given_name) ? $checkout_details->payer->name->given_name : '';
+            $billing_address['last_name'] = !empty($checkout_details->payer->name->surname) ? $checkout_details->payer->name->surname : '';
+            $billing_address['company'] = !empty($checkout_details->payer->business_name) ? $checkout_details->payer->business_name : '';
+            if (!empty($checkout_details->payer->address->address_line_1) && !empty($checkout_details->payer->address->postal_code)) {
+                $billing_address['address_1'] = !empty($checkout_details->payer->address->address_line_1) ? $checkout_details->payer->address->address_line_1 : '';
+                $billing_address['address_2'] = !empty($checkout_details->payer->address->address_line_2) ? $checkout_details->payer->address->address_line_2 : '';
+                $billing_address['city'] = !empty($checkout_details->payer->address->admin_area_2) ? $checkout_details->payer->address->admin_area_2 : '';
+                $billing_address['state'] = !empty($checkout_details->payer->address->admin_area_1) ? $checkout_details->payer->address->admin_area_1 : '';
+                $billing_address['postcode'] = !empty($checkout_details->payer->address->postal_code) ? $checkout_details->payer->address->postal_code : '';
+                $billing_address['country'] = !empty($checkout_details->payer->address->country_code) ? $checkout_details->payer->address->country_code : '';
+                $billing_address['phone'] = $phone;
+                $billing_address['email'] = !empty($checkout_details->payer->email_address) ? $checkout_details->payer->email_address : '';
+            } else {
+                $billing_address['address_1'] = !empty($checkout_details->purchase_units[0]->shipping->address->address_line_1) ? $checkout_details->purchase_units[0]->shipping->address->address_line_1 : '';
+                $billing_address['address_2'] = !empty($checkout_details->purchase_units[0]->shipping->address->address_line_2) ? $checkout_details->purchase_units[0]->shipping->address->address_line_2 : '';
+                $billing_address['city'] = !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_2) ? $checkout_details->purchase_units[0]->shipping->address->admin_area_2 : '';
+                $billing_address['state'] = !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_1) ? $checkout_details->purchase_units[0]->shipping->address->admin_area_1 : '';
+                $billing_address['postcode'] = !empty($checkout_details->purchase_units[0]->shipping->address->postal_code) ? $checkout_details->purchase_units[0]->shipping->address->postal_code : '';
+                $billing_address['country'] = !empty($checkout_details->purchase_units[0]->shipping->address->country_code) ? $checkout_details->purchase_units[0]->shipping->address->country_code : '';
+                $billing_address['phone'] = $phone;
+                $billing_address['email'] = !empty($checkout_details->payer->email_address) ? $checkout_details->payer->email_address : '';
+            }
+            return $billing_address;
+        }
+
+    }
+
+    if (!function_exists('angelleye_ppcp_get_mapped_shipping_address')) {
+
+        function angelleye_ppcp_get_mapped_shipping_address($checkout_details) {
+            if (empty($checkout_details->purchase_units[0]) || empty($checkout_details->purchase_units[0]->shipping)) {
+                return array();
+            }
+            if (!empty($checkout_details->purchase_units[0]->shipping->name->full_name)) {
+                $name = explode(' ', $checkout_details->purchase_units[0]->shipping->name->full_name);
+                $first_name = array_shift($name);
+                $last_name = implode(' ', $name);
+            } else {
+                $first_name = '';
+                $last_name = '';
+            }
+            $result = array(
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'address_1' => !empty($checkout_details->purchase_units[0]->shipping->address->address_line_1) ? $checkout_details->purchase_units[0]->shipping->address->address_line_1 : '',
+                'address_2' => !empty($checkout_details->purchase_units[0]->shipping->address->address_line_2) ? $checkout_details->purchase_units[0]->shipping->address->address_line_2 : '',
+                'city' => !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_2) ? $checkout_details->purchase_units[0]->shipping->address->admin_area_2 : '',
+                'state' => !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_1) ? $checkout_details->purchase_units[0]->shipping->address->admin_area_1 : '',
+                'postcode' => !empty($checkout_details->purchase_units[0]->shipping->address->postal_code) ? $checkout_details->purchase_units[0]->shipping->address->postal_code : '',
+                'country' => !empty($checkout_details->purchase_units[0]->shipping->address->country_code) ? $checkout_details->purchase_units[0]->shipping->address->country_code : '',
+            );
+            if (!empty($checkout_details->payer->business_name)) {
+                $result['company'] = $checkout_details->payer->business_name;
+            }
+            return $result;
+        }
+
+    }
+
+    if (!function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
+        function angelleye_ppcp_update_customer_addresses_from_paypal($shipping_details, $billing_details) {
+            if (!empty(WC()->customer)) {
+                $customer = WC()->customer;
+
+                if (!empty($billing_details['address_1'])) {
+                    $customer->set_billing_address($billing_details['address_1']);
+                }
+                if (!empty($billing_details['address_2'])) {
+                    $customer->set_billing_address_2($billing_details['address_2']);
+                }
+                if (!empty($billing_details['city'])) {
+                    $customer->set_billing_city($billing_details['city']);
+                }
+                if (!empty($billing_details['postcode'])) {
+                    $customer->set_billing_postcode($billing_details['postcode']);
+                }
+                if (!empty($billing_details['state'])) {
+                    $customer->set_billing_state($billing_details['state']);
+                }
+                if (!empty($billing_details['country'])) {
+                    $customer->set_billing_country($billing_details['country']);
+                }
+                if (!empty($shipping_details['address_1'])) {
+                    $customer->set_shipping_address($shipping_details['address_1']);
+                }
+                if (!empty($shipping_details['address_2'])) {
+                    $customer->set_shipping_address_2($shipping_details['address_2']);
+                }
+                if (!empty($shipping_details['city'])) {
+                    $customer->set_shipping_city($shipping_details['city']);
+                }
+                if (!empty($shipping_details['postcode'])) {
+                    $customer->set_shipping_postcode($shipping_details['postcode']);
+                }
+                if (!empty($shipping_details['state'])) {
+                    $customer->set_shipping_state($shipping_details['state']);
+                }
+                if (!empty($shipping_details['country'])) {
+                    $customer->set_shipping_country($shipping_details['country']);
+                }
+            }
         }
 
     }

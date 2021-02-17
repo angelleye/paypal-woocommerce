@@ -60,6 +60,15 @@ if (!defined('AEU_ZIP_URL')) {
 if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID')) {
     define('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID', 'LSLG4YR3NS6T4');
 }
+if (!defined('PAYPAL_PPCP_PARTNER_MERCHANT_ID')) {
+    define('PAYPAL_PPCP_PARTNER_MERCHANT_ID', 'live_merchant_id_of_angeleye');
+}
+if (!defined('PAYPAL_SELLER_ONBOARDING_LIVE_URL')) {
+    define('PAYPAL_SELLER_ONBOARDING_LIVE_URL', 'angelleye_webservice_url');
+}
+if (!defined('PAYPAL_SELLER_ONBOARDING_SANDBOX_URL')) {
+    define('PAYPAL_SELLER_ONBOARDING_SANDBOX_URL', 'https://ppdev.in/paypal-seller-onboarding/seller-onboarding.php');
+}
 
 
 /**
@@ -381,10 +390,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/angelleye-paypal-ppcp-common-functions.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php');
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-pay-later-messaging.php');
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-admin-action.php');
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-webhook.php');
             AngellEYE_PayPal_PPCP_Smart_Button::instance();
             AngellEYE_PayPal_PPCP_Webhook::instance();
             Angelleye_PayPal_Express_Checkout_Helper::instance();
+            AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
+            AngellEYE_PayPal_PPCP_Pay_Later::instance();
+            AngellEYE_PayPal_PPCP_Admin_Action::instance();
+            AngellEYE_PayPal_PPCP_Front_Action::instance();
             add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
         }
 
