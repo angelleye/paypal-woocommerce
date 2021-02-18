@@ -242,7 +242,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'style_layout' => $this->style_layout,
             'style_tagline' => $this->style_tagline,
             'page' => $page,
-            'checkout_url' => wc_get_checkout_url(),
+            'checkout_url' => add_query_arg(array('utm_nooverride' => '1'), wc_get_checkout_url()),
             'display_order_page' => add_query_arg(array('angelleye_ppcp_action' => 'display_order_page', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),
             'cc_capture' => add_query_arg(array('angelleye_ppcp_action' => 'cc_capture', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),
             'create_order_url' => add_query_arg(array('angelleye_ppcp_action' => 'create_order', 'utm_nooverride' => '1', 'from' => $page), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),
