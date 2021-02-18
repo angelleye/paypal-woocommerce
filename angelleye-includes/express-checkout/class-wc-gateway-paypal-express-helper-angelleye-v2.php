@@ -260,6 +260,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('woocommerce_before_checkout_process', array($this, 'angelleye_woocommerce_before_checkout_process'), 10);
                 add_action('angelleye_fraudnet_hook', array($this, 'own_angelleye_fraudnet_hook'), 99, 1);
                 add_action('wp_enqueue_scripts', array($this, 'own_angelleye_fraudnet_script'), 99, 1);
+                add_filter( 'script_loader_tag', array( $this, 'remove_async_attribute' ), 999, 3 );
                 if ($this->enabled_credit_messaging) {
                     if ($this->is_paypal_credit_messaging_enable_for_page($page = 'home') && $this->credit_messaging_home_shortcode === false) {
                         add_filter('the_content', array($this, 'angelleye_display_credit_messaging_home_page_content'), 10);
@@ -1832,7 +1833,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function own_angelleye_fraudnet_script() {
-        if (WC()->cart->is_empty()) {
+        if ( !isset(WC()->cart)) {
+            return false;
+        }
+        if( WC()->cart->is_empty()) {
             return false;
         }
         if($this->is_fraudnet_ready === false) {
@@ -1886,5 +1890,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $url = "$url' data-namespace='paypal_sdk";
         }
         return $url;
+    }
+    
+    public function remove_async_attribute($tag, $handle, $src) {
+        if (strpos($tag, 'https://www.paypal.com/sdk/js') !== false) {
+            $tag = str_replace(array('async', 'defer'), ' ', $tag);
+        }
+        return $tag;
     }
 }
