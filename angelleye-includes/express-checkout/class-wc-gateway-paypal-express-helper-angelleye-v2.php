@@ -1895,13 +1895,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         return $url;
     }
     
-    public function remove_async_attribute($tag, $handle, $src) {
-        if (strpos($tag, 'https://www.paypal.com/sdk/js') !== false || strpos($tag, 'angelleye-in-context-checkout') !== false) {
-            $tag = str_replace(array('async', 'defer'), ' ', $tag);
-        }
-        return $tag;
-    }
-    
     public function angelleye_exclude_javascript($excluded_handles) {
         $excluded_handles[] = 'jquery-core';
         $excluded_handles[] = 'angelleye-in-context-checkout-js';

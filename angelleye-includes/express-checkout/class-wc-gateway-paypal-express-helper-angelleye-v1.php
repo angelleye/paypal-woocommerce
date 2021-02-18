@@ -220,6 +220,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_filter('woocommerce_terms_is_checked_default', array($this, 'ec_terms_express_checkout'));
                 add_action('woocommerce_cart_emptied', array($this, 'ec_clear_session_data'));
                 add_action('wp_enqueue_scripts', array($this, 'ec_enqueue_scripts_product_page'), 0);
+                add_filter( 'sgo_js_minify_exclude', array($this, 'angelleye_exclude_javascript'), 999);
+                add_filter( 'sgo_javascript_combine_exclude', array($this, 'angelleye_exclude_javascript'), 999);
+                add_filter( 'sgo_javascript_combine_excluded_inline_content', array($this, 'angelleye_exclude_javascript'), 999);
+                add_filter( 'sgo_js_async_exclude', array($this, 'angelleye_exclude_javascript'), 999);
                 add_action('woocommerce_before_cart_table', array($this, 'top_cart_button'));
                 if ($this->enable_in_context_checkout_flow == 'no') {
                     if ($this->show_on_cart == 'yes' && $this->show_on_minicart == 'yes') {
@@ -1534,5 +1538,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $str = substr($str, 0, 32);
         }
         return $str;
+    }
+    
+    public function angelleye_exclude_javascript($excluded_handles) {
+        $excluded_handles[] = 'jquery-core';
+        $excluded_handles[] = 'angelleye-in-context-checkout-js';
+        $excluded_handles[] = 'angelleye-in-context-checkout-js-frontend';
+        return $excluded_handles;
     }
 }
