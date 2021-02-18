@@ -627,7 +627,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'label' => __('Enable Pay Later Messaging', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'description' => '',
+                    'description' => '<div style="font-size: smaller">Displays Pay Later messaging for available offers. Restrictions apply. <a target="_blank" href="https://developer.paypal.com/docs/business/pay-later/commerce-platforms/angelleye/">See terms and learn more</a></div>',
                     'default' => 'no'
                 ),
                 'pay_later_messaging_page_type' => array(
