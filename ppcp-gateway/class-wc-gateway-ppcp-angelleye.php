@@ -219,7 +219,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                 'angelleye_ppcp_onboarding_endpoint_nonce' => wp_create_nonce('ppcp_login_seller'),
                 'is_sandbox_seller_onboarding_done' => $this->is_sandbox_seller_onboarding_done,
                 'is_live_seller_onboarding_done' => $this->is_live_seller_onboarding_done,
-                'abc' => $this->settings
+                'is_advanced_card_payments' => ($this->dcc_applies->for_country_currency() === false) ? 'no' : 'yes'
                     )
             );
         }

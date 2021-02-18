@@ -115,7 +115,7 @@
                             });
                         }
                     } else {
-                        actions.redirect(angelleye_ppcp_manager.checkout_url + '?paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&from=' + angelleye_ppcp_manager.page);
+                        actions.redirect(angelleye_ppcp_manager.checkout_url + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&from=' + angelleye_ppcp_manager.page);
                     }
                 },
                 onCancel: function (data, actions) {
