@@ -260,7 +260,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('woocommerce_before_checkout_process', array($this, 'angelleye_woocommerce_before_checkout_process'), 10);
                 add_action('angelleye_fraudnet_hook', array($this, 'own_angelleye_fraudnet_hook'), 99, 1);
                 add_action('wp_enqueue_scripts', array($this, 'own_angelleye_fraudnet_script'), 99, 1);
-                add_filter( 'script_loader_tag', array( $this, 'remove_async_attribute' ), 999, 3 );
+                add_filter( 'sgo_js_minify_exclude', array($this, 'angelleye_exclude_javascript'), 999);
+                add_filter( 'sgo_javascript_combine_exclude', array($this, 'angelleye_exclude_javascript'), 999);
+                add_filter( 'sgo_javascript_combine_excluded_inline_content', array($this, 'angelleye_exclude_javascript'), 999);
+                add_filter( 'sgo_js_async_exclude', array($this, 'angelleye_exclude_javascript'), 999);
                 if ($this->enabled_credit_messaging) {
                     if ($this->is_paypal_credit_messaging_enable_for_page($page = 'home') && $this->credit_messaging_home_shortcode === false) {
                         add_filter('the_content', array($this, 'angelleye_display_credit_messaging_home_page_content'), 10);
@@ -1893,9 +1896,16 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
     
     public function remove_async_attribute($tag, $handle, $src) {
-        if (strpos($tag, 'https://www.paypal.com/sdk/js') !== false) {
+        if (strpos($tag, 'https://www.paypal.com/sdk/js') !== false || strpos($tag, 'angelleye-in-context-checkout') !== false) {
             $tag = str_replace(array('async', 'defer'), ' ', $tag);
         }
         return $tag;
+    }
+    
+    public function angelleye_exclude_javascript($excluded_handles) {
+        $excluded_handles[] = 'jquery-core';
+        $excluded_handles[] = 'angelleye-in-context-checkout-js';
+        $excluded_handles[] = 'angelleye-in-context-checkout-js-frontend';
+        return $excluded_handles;
     }
 }
