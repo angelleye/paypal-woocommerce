@@ -693,11 +693,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
                 if ($this->testmode) {
                     $smart_js_arg['buyer-country'] = WC()->countries->get_base_country();
-                } else {
-                    $merchant_id_array = get_option('angelleye_express_checkout_default_pal');
-                    if (!empty($merchant_id_array) && !empty($merchant_id_array['PAL'])) {
-                        $smart_js_arg['merchant-id'] = $merchant_id_array['PAL'];
-                    }
+                } 
+                $merchant_id_array = get_option('angelleye_express_checkout_default_pal');
+                if (!empty($merchant_id_array) && !empty($merchant_id_array['PAL'])) {
+                    $smart_js_arg['merchant-id'] = $merchant_id_array['PAL'];
                 }
                 $is_cart = is_cart() && !WC()->cart->is_empty();
                 $is_product = is_product();
