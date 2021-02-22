@@ -9,7 +9,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public $function_helper;
     public $posted;
     public $version;
-    public $is_us;
     public $is_fraudnet_ready = false;
 
     /**
@@ -135,12 +134,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
                 }
                 $this->is_paypal_credit_enable = true;
-                if (angelleye_is_us_based_store()) {
-                    $this->is_us = true;
-                } else {
-                    $this->is_us = false;
-                }
-
                 $this->show_paypal_credit = !empty($this->setting['show_paypal_credit']) ? $this->setting['show_paypal_credit'] : 'yes';
                 $this->enable_google_analytics_click = !empty($this->setting['enable_google_analytics_click']) ? $this->setting['enable_google_analytics_click'] : 'no';
 
@@ -181,9 +174,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->enabled_credit_messaging_value = 'no';
                 }
                 $this->enabled_credit_messaging = 'yes' === $this->enabled_credit_messaging_value;
-                if(angelleye_is_us_based_store() === false) {
-                    $this->enabled_credit_messaging = false;
-                }
                 if ($this->enabled_credit_messaging) {
                     $this->credit_messaging_home_shortcode_value = isset($this->setting['credit_messaging_home_shortcode']) ? $this->setting['credit_messaging_home_shortcode'] : 'no';
                     $this->credit_messaging_home_shortcode = 'yes' === $this->credit_messaging_home_shortcode_value;
