@@ -250,6 +250,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('woocommerce_before_checkout_process', array($this, 'angelleye_woocommerce_before_checkout_process'), 10);
                 add_action('angelleye_fraudnet_hook', array($this, 'own_angelleye_fraudnet_hook'), 99, 1);
                 add_action('wp_enqueue_scripts', array($this, 'own_angelleye_fraudnet_script'), 99, 1);
+                add_filter( 'sgo_js_minify_exclude', array($this, 'angelleye_exclude_javascript'), 999);
+                add_filter( 'sgo_javascript_combine_exclude', array($this, 'angelleye_exclude_javascript'), 999);
+                add_filter( 'sgo_javascript_combine_excluded_inline_content', array($this, 'angelleye_exclude_javascript'), 999);
+                add_filter( 'sgo_js_async_exclude', array($this, 'angelleye_exclude_javascript'), 999);
                 if ($this->enabled_credit_messaging) {
                     if ($this->is_paypal_credit_messaging_enable_for_page($page = 'home') && $this->credit_messaging_home_shortcode === false) {
                         add_filter('the_content', array($this, 'angelleye_display_credit_messaging_home_page_content'), 10);
@@ -1822,7 +1826,10 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function own_angelleye_fraudnet_script() {
-        if (WC()->cart->is_empty()) {
+        if ( !isset(WC()->cart)) {
+            return false;
+        }
+        if( WC()->cart->is_empty()) {
             return false;
         }
         if($this->is_fraudnet_ready === false) {
@@ -1876,5 +1883,12 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             $url = "$url' data-namespace='paypal_sdk";
         }
         return $url;
+    }
+    
+    public function angelleye_exclude_javascript($excluded_handles) {
+        $excluded_handles[] = 'jquery-core';
+        $excluded_handles[] = 'angelleye-in-context-checkout-js';
+        $excluded_handles[] = 'angelleye-in-context-checkout-js-frontend';
+        return $excluded_handles;
     }
 }
