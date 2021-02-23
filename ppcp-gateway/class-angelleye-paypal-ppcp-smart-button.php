@@ -78,7 +78,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->client_token = get_transient('angelleye_ppcp_client_token');
         }
         $this->order_review_page_enable_coupons = 'yes' === $this->settings->get('order_review_page_enable_coupons', 'yes');
-        $this->order_review_page_title = apply_filters('angelleye_ppcp_order_review_page_title',__('Confirm your PayPal order', 'paypal-for-woocommerce'));
+        $this->order_review_page_title = apply_filters('angelleye_ppcp_order_review_page_title', __('Confirm your PayPal order', 'paypal-for-woocommerce'));
         $this->order_review_page_description = apply_filters('angelleye_ppcp_order_review_page_description', __("<strong>You're almost done!</strong><br>Review your information before you place your order.", 'paypal-for-woocommerce'));
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
         $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
@@ -188,12 +188,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_action('woocommerce_checkout_process', array($this, 'copy_checkout_details_to_post'));
         add_action('woocommerce_cart_shipping_packages', array($this, 'maybe_add_shipping_information'));
         add_filter('body_class', array($this, 'angelleye_ppcp_add_class_order_review_page'));
-        
-            add_filter('woocommerce_coupons_enabled', array($this, 'angelleye_ppcp_woocommerce_coupons_enabled'), 999, 1);
-        
+        add_filter('woocommerce_coupons_enabled', array($this, 'angelleye_ppcp_woocommerce_coupons_enabled'), 999, 1);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_order_review_page_description'), 9);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_update_checkout_field_details'));
         add_action('woocommerce_review_order_before_submit', array($this, 'angelleye_ppcp_cancel_button'));
+        add_filter('sgo_js_minify_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
+        add_filter('sgo_javascript_combine_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
+        add_filter('sgo_javascript_combine_excluded_inline_content', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
+        add_filter('sgo_js_async_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
     }
 
     public function enqueue_scripts() {
@@ -647,6 +649,21 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $cancel_order_url = add_query_arg(array('angelleye_ppcp_action' => 'cancel_order', 'utm_nooverride' => '1', 'from' => 'checkout'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'));
             echo apply_filters('angelleye_ppcp_review_order_cance_button_html', '<a class="button alt angelleye_ppcp_cancel" name="woocommerce_checkout_cancel_order" href="' . esc_attr($cancel_order_url) . '" >' . $order_button_text . '</a>');
         }
+    }
+
+    public function angelleye_ppcp_exclude_javascript($excluded_handles) {
+        $excluded_handles[] = 'jquery-core';
+        $excluded_handles[] = 'angelleye_ppcp';
+        $excluded_handles[] = 'angelleye_ppcp-checkout-js';
+        $excluded_handles[] = 'angelleye_ppcp-order-review';
+        $excluded_handles[] = 'angelleye_ppcp-order-capture';
+        $excluded_handles[] = 'angelleye-pay-later-messaging-home';
+        $excluded_handles[] = 'angelleye-pay-later-messaging-category';
+        $excluded_handles[] = 'angelleye-pay-later-messaging-product';
+        $excluded_handles[] = 'angelleye-pay-later-messaging-cart';
+        $excluded_handles[] = 'angelleye-pay-later-messaging-payment';
+        $excluded_handles[] = 'angelleye-pay-later-messaging-shortcode';
+        return $excluded_handles;
     }
 
 }
