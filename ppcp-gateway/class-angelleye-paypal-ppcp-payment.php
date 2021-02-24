@@ -241,6 +241,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 exit();
             } else {
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response);
+                wc_add_notice($error_message, 'error');
                 wp_send_json_error($error_message);
             }
         } catch (Exception $ex) {
@@ -596,15 +597,15 @@ class AngellEYE_PayPal_PPCP_Payment {
             switch ($error['name']) {
                 case 'VALIDATION_ERROR':
                     foreach ($error['details'] as $e) {
-                        $message .= "\t" . $e->field . "\n\t" . $e->issue . "\n\n";
+                        $message .= "\t" . $e['field'] . "\n\t" . $e['issue'] . "\n\n";
                     }
                     break;
                 case 'INVALID_REQUEST':
                     foreach ($error['details'] as $e) {
-                        if (isset($e->field) && isset($e->description)) {
-                            $message .= "\t" . $e->field . "\n\t" . $e->description . "\n\n";
-                        } elseif (isset($e->issue)) {
-                            $message .= "\t" . $e->issue . "n\n";
+                        if (isset($e['field']) && isset($e['description'])) {
+                            $message .= "\t" . $e['field'] . "\n\t" . $e['description'] . "\n\n";
+                        } elseif (isset($e['issue'])) {
+                            $message .= "\t" . $e['issue'] . "n\n";
                         }
                     }
                     break;
@@ -618,12 +619,14 @@ class AngellEYE_PayPal_PPCP_Payment {
                     break;
             }
         }
-        if (!empty($message)) {
+        /*if (!empty($message)) {
             return $message;
-        } else if (!empty($error_object->message)) {
-            $message = $error_object->message;
-        } else if (!empty($error_object->error_description)) {
-            $message = $error_object->error_description;
+        } else */
+            
+        if (!empty($error['message'])) {
+            $message = $error['message'];
+        } else if (!empty($error['error_description'])) {
+            $message = $error['error_description'];
         } else {
             $message = $error;
         }
