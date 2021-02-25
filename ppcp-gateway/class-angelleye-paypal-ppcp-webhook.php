@@ -313,7 +313,7 @@ class AngellEYE_PayPal_PPCP_Webhook {
             $order->update_status('failed');
         }
     }
-    
+
     public function payment_status_cancelled($order) {
         if (!$order->has_status(array('refunded', 'cancelled'))) {
             $order->update_status('cancelled');
@@ -392,11 +392,18 @@ class AngellEYE_PayPal_PPCP_Webhook {
         if (!empty($_GET['angelleye_ppcp_action'])) {
             switch ($_GET['angelleye_ppcp_action']) {
                 case "webhook_handler":
-                    $this->angelleye_ppcp_handle_webhook_request_handler();
-                    ob_clean();
-                    header('HTTP/1.1 200 OK');
-                    exit();
-                    break;
+                    if (!defined('ANGELLEYE_PPCP_WEBHOOK')) {
+                        ob_clean();
+                        header('HTTP/1.1 200 OK');
+                        exit();
+                        break;
+                    } else {
+                        $this->angelleye_ppcp_handle_webhook_request_handler();
+                        ob_clean();
+                        header('HTTP/1.1 200 OK');
+                        exit();
+                        break;
+                    }
             }
         }
     }
