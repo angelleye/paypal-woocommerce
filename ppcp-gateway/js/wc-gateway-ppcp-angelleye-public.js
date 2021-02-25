@@ -321,6 +321,9 @@
         if (is_from_checkout === false) {
             smart_button_render();
         }
+        if(angelleye_ppcp_manager.is_pay_page === 'yes') {
+            smart_button_render();
+        }
         $(document.body).on('updated_cart_totals updated_checkout', function () {
             smart_button_render();
             setTimeout(function () {
@@ -328,7 +331,6 @@
                     hosted_button_render();
                 }
             }, 500);
-
         });
         $('form.checkout').on('click', 'input[name="payment_method"]', function () {
             if (is_angelleye_ppcp_selected()) {

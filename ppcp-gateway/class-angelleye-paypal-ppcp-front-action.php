@@ -65,6 +65,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     }
 
     public function handle_wc_api() {
+        global $wp;
         if (!empty($_GET['angelleye_ppcp_action'])) {
             switch ($_GET['angelleye_ppcp_action']) {
                 case "cancel_order":
@@ -73,7 +74,12 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     exit();
                     break;
                 case "create_order":
-                    if (isset($_GET['from']) && 'checkout' === $_GET['from']) {
+                    if (isset($_GET['from']) && 'pay_page' === $_GET['from']) {
+                        $woo_order_id = $_POST['woo_order_id'];
+                        angelleye_ppcp_set_session('angelleye_ppcp_woo_order_id', $woo_order_id);
+                        $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
+                        exit();
+                    } elseif (isset($_GET['from']) && 'checkout' === $_GET['from']) {
                         add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), 10, 2);
                         WC()->checkout->process_checkout();
                     } elseif (isset($_GET['from']) && 'product' === $_GET['from']) {
@@ -296,4 +302,5 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         }
         return false;
     }
+
 }

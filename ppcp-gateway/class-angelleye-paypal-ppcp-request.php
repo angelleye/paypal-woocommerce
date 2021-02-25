@@ -135,7 +135,7 @@ class AngellEYE_PayPal_PPCP_Request {
                     'blocking' => true,
                     'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, 'Accept-Language' => 'en_US'),
                     'cookies' => array(),
-                    'body' => json_encode(array('customer_id' => 'customer_1234_wow'))
+                    'body' => array(), //json_encode(array('customer_id' => 'customer_1234_wow'))
                 );
                 $paypal_api_response = wp_remote_get($this->generate_token_url, $args);
                 $this->api_log->log(print_r($args, true), 'error');
