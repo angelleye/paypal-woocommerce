@@ -903,7 +903,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                     }
                 }
-                $this->api_log->log(" Order Addone" . wc_print_r($values, true));
                 $item = array(
                     'name' => $name,
                     'description' => $desc,

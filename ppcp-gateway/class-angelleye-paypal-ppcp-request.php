@@ -104,7 +104,6 @@ class AngellEYE_PayPal_PPCP_Request {
                         'cookies' => array()
                     );
                     $paypal_api_response = wp_remote_get($this->paypal_oauth_api, $args);
-                    $this->api_log->log(print_r($paypal_api_response, true), 'error');
                     $body = wp_remote_retrieve_body($paypal_api_response);
                     $api_response = !empty($body) ? json_decode($body, true) : '';
                     if (!empty($api_response['access_token'])) {
@@ -138,7 +137,6 @@ class AngellEYE_PayPal_PPCP_Request {
                     'body' => array(), //json_encode(array('customer_id' => 'customer_1234_wow'))
                 );
                 $paypal_api_response = wp_remote_get($this->generate_token_url, $args);
-                $this->api_log->log(print_r($args, true), 'error');
                 $body = wp_remote_retrieve_body($paypal_api_response);
                 $api_response = !empty($body) ? json_decode($body, true) : '';
                 if (!empty($api_response['client_token'])) {
