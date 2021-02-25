@@ -98,7 +98,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     'Return to your shop.', 'paypal-for-woocommerce'
             ),
             'products' => array(
-                $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
+                $this->dcc_applies->for_country_currency() ? 'PPCP' : 'PPCP',
         ));
     }
 
