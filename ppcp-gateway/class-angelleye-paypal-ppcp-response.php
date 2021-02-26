@@ -17,7 +17,8 @@ class AngellEYE_PayPal_PPCP_Response {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
-        //add_action('angelleye_ppcp_request_respose_data', array($this, 'angelleye_ppcp_tpv_tracking'), 10, 3);
+        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        add_action('angelleye_ppcp_request_respose_data', array($this, 'angelleye_ppcp_tpv_tracking'), 10, 3);
     }
 
     public function parse_response($paypal_api_response, $url, $request, $action_name) {
@@ -42,8 +43,9 @@ class AngellEYE_PayPal_PPCP_Response {
 
     public function angelleye_ppcp_write_log($url, $request, $response, $action_name = 'Exception') {
         global $wp_version;
-
+        $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
         if (strpos($action_name, 'webhook') !== false) {
+            $this->api_log->webhook_log('PayPal Environment: ' . $environment);
             $this->api_log->webhook_log('WordPress Version: ' . $wp_version);
             $this->api_log->webhook_log('WooCommerce Version: ' . WC()->version);
             $this->api_log->webhook_log('PFW Version: ' . VERSION_PFW);
@@ -58,6 +60,7 @@ class AngellEYE_PayPal_PPCP_Response {
             $this->api_log->webhook_log('Response Message: ' . wp_remote_retrieve_response_message($response));
             $this->api_log->webhook_log('Response Body: ' . wc_print_r(json_decode(wp_remote_retrieve_body($response), true), true));
         } else {
+            $this->api_log->webhook_log('PayPal Environment: ' . $environment);
             $this->api_log->log('WordPress Version: ' . $wp_version);
             $this->api_log->log('WooCommerce Version: ' . WC()->version);
             $this->api_log->log('PFW Version: ' . VERSION_PFW);
@@ -95,25 +98,32 @@ class AngellEYE_PayPal_PPCP_Response {
             $allow_payment_event = array('capture_order', 'refund_order', 'authorize_order', 'void_authorized', 'capture_authorized');
             if (in_array($action_name, $allow_payment_event)) {
                 if (class_exists('AngellEYE_PFW_Payment_Logger')) {
-                    if(isset($response['purchase_units']['0']['payments']['captures'][0]['amount']['value'])) {
-                        $amount = $response['purchase_units']['0']['payments']['captures'][0]['amount']['value'];
+                    $amount = '';
+                    $transaction_id = '';
+                    if (isset($response['purchase_units']['0']['amount']['value'])) {
+                        $amount = $response['purchase_units']['0']['amount']['value'];
+                    } elseif (isset($response['amount']['value'])) {
+                        $amount = $response['amount']['value'];
                     }
-                    if(isset($response['purchase_units']['0']['payments']['captures'][0]['id'])) {
+                    if (isset($response['purchase_units']['0']['payments']['captures'][0]['id'])) {
                         $transaction_id = $response['purchase_units']['0']['payments']['captures'][0]['id'];
+                    } elseif (isset($response['purchase_units']['0']['payments']['authorizations']['0']['id'])) {
+                        $transaction_id = $response['purchase_units']['0']['payments']['authorizations']['0']['id'];
+                    } elseif (isset($response['id'])) {
+                        $transaction_id = $response['id'];
                     }
-                    $transaction_id = 
-                    $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
                     $opt_in = get_option('angelleye_send_opt_in_logging_details', 'no');
                     $payment_logger = AngellEYE_PFW_Payment_Logger::instance();
                     $request_param['type'] = $action_name;
-                    $request_param['amount'] = 
+                    $request_param['amount'] = $amount;
                     $request_param['status'] = 'Success';
-                    $request_param['site_url'] = ($opt_in === 'yes') ? get_bloginfo('url') : '';
+                    $request_param['site_url'] = get_bloginfo('url');
                     $request_param['mode'] = ($this->is_sandbox === true) ? 'sandbox' : 'live';
-                    $request_param['merchant_id'] = '';
+                    $request_param['merchant_id'] = isset($response['purchase_units']['0']['payee']['merchant_id']) ? $response['purchase_units']['0']['payee']['merchant_id'] : '';
                     $request_param['correlation_id'] = '';
-                    $request_param['transaction_id'] = '';
+                    $request_param['transaction_id'] = $transaction_id;
                     $request_param['product_id'] = '1';
+                    $this->api_log->webhook_log('TPV Request: ' . wc_print_r($request_param, true));
                     $payment_logger->angelleye_tpv_request($request_param);
                 }
             }
