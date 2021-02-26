@@ -4,8 +4,9 @@ defined('ABSPATH') || exit;
 
 class AngellEYE_PayPal_PPCP_Pay_Later {
 
-    public $settings;
+    public $setting_obj;
     public $api_log;
+    public $settings;
     protected static $_instance = null;
 
     public static function instance() {
@@ -30,7 +31,8 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
             if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
             }
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->settings = $this->setting_obj->get_load();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -39,22 +41,22 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_get_properties() {
-        $this->title = $this->settings->get('title', 'PayPal Complete Payments');
-        $this->enabled = 'yes' === $this->settings->get('enabled', 'no');
-        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        $this->title = $this->setting_obj->get('title', 'PayPal Complete Payments');
+        $this->enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         if ($this->is_sandbox) {
-            $this->client_id = $this->settings->get('sandbox_client_id');
-            $this->secret = $this->settings->get('sandbox_secret_key');
+            $this->client_id = $this->setting_obj->get('sandbox_client_id');
+            $this->secret = $this->setting_obj->get('sandbox_secret_key');
             $this->access_token = get_transient('angelleye_ppcp_sandbox_access_token');
             $this->client_token = get_transient('angelleye_ppcp_sandbox_client_token');
         } else {
-            $this->client_id = $this->settings->get('live_client_id');
-            $this->secret = $this->settings->get('live_secret_key');
+            $this->client_id = $this->setting_obj->get('live_client_id');
+            $this->secret = $this->setting_obj->get('live_secret_key');
             $this->access_token = get_transient('angelleye_ppcp_access_token');
             $this->client_token = get_transient('angelleye_ppcp_client_token');
         }
-        $this->enabled_pay_later_messaging = 'yes' === $this->settings->get('enabled_pay_later_messaging', 'no');
-        $this->pay_later_messaging_page_type = $this->settings->get('pay_later_messaging_page_type', array('home', 'category', 'product', 'cart', 'payment'));
+        $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'no');
+        $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('home', 'category', 'product', 'cart', 'payment'));
         if (empty($this->pay_later_messaging_page_type)) {
             $this->enabled_pay_later_messaging = false;
         }
@@ -62,11 +64,11 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
 
     public function angelleye_ppcp_pay_later_messaging_properties() {
         if ($this->enabled_pay_later_messaging) {
-            $this->pay_later_messaging_home_shortcode = 'yes' === $this->settings->get('pay_later_messaging_home_shortcode', 'no');
-            $this->pay_later_messaging_category_shortcode = 'yes' === $this->settings->get('pay_later_messaging_category_shortcode', 'no');
-            $this->pay_later_messaging_product_shortcode = 'yes' === $this->settings->get('pay_later_messaging_product_shortcode', 'no');
-            $this->pay_later_messaging_cart_shortcode = 'yes' === $this->settings->get('pay_later_messaging_cart_shortcode', 'no');
-            $this->pay_later_messaging_payment_shortcode = 'yes' === $this->settings->get('pay_later_messaging_payment_shortcode', 'no');
+            $this->pay_later_messaging_home_shortcode = 'yes' === $this->setting_obj->get('pay_later_messaging_home_shortcode', 'no');
+            $this->pay_later_messaging_category_shortcode = 'yes' === $this->setting_obj->get('pay_later_messaging_category_shortcode', 'no');
+            $this->pay_later_messaging_product_shortcode = 'yes' === $this->setting_obj->get('pay_later_messaging_product_shortcode', 'no');
+            $this->pay_later_messaging_cart_shortcode = 'yes' === $this->setting_obj->get('pay_later_messaging_cart_shortcode', 'no');
+            $this->pay_later_messaging_payment_shortcode = 'yes' === $this->setting_obj->get('pay_later_messaging_payment_shortcode', 'no');
         }
     }
 
@@ -201,7 +203,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                         'pay_later_messaging_home_flex_layout_ratio' => '8x1'
                     );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
+                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
                     }
                     wp_localize_script('angelleye-pay-later-messaging-home', 'angelleye_pay_later_messaging', $enqueue_script_param);
                     break;
@@ -216,7 +218,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                         'pay_later_messaging_category_flex_layout_ratio' => '8x1'
                     );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
+                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
                     }
                     wp_localize_script('angelleye-pay-later-messaging-category', 'angelleye_pay_later_messaging', $enqueue_script_param);
                     break;
@@ -231,7 +233,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                         'pay_later_messaging_product_flex_layout_ratio' => '8x1'
                     );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
+                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
                     }
                     wp_localize_script('angelleye-pay-later-messaging-product', 'angelleye_pay_later_messaging', $enqueue_script_param);
                     break;
@@ -246,7 +248,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                         'pay_later_messaging_cart_flex_layout_ratio' => '8x1'
                     );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
+                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
                     }
                     wp_localize_script('angelleye-pay-later-messaging-cart', 'angelleye_pay_later_messaging', $enqueue_script_param);
                     break;
@@ -261,7 +263,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                         'pay_later_messaging_payment_flex_layout_ratio' => '8x1'
                     );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
+                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
                     }
                     wp_localize_script('angelleye-pay-later-messaging-payment', 'angelleye_pay_later_messaging', $enqueue_script_param);
                     break;
@@ -291,7 +293,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                         'pay_later_messaging_home_flex_layout_ratio' => '8x1'
                     );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
+                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
                     }
                     return $enqueue_script_param;
                 case 'category':
@@ -305,7 +307,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                         'pay_later_messaging_category_flex_layout_ratio' => '8x1'
                     );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
+                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
                     }
                     return $enqueue_script_param;
                 case 'product':
@@ -319,7 +321,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                         'pay_later_messaging_product_flex_layout_ratio' => '8x1'
                     );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
+                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
                     }
                     return $enqueue_script_param;
                 case 'cart':
@@ -333,7 +335,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                         'pay_later_messaging_cart_flex_layout_ratio' => '8x1'
                     );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
+                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
                     }
                     return $enqueue_script_param;
                 case 'payment':
@@ -347,7 +349,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                         'pay_later_messaging_payment_flex_layout_ratio' => '8x1'
                     );
                     foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->setting[$key]) ? $this->setting[$key] : $value;
+                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
                     }
                     return $enqueue_script_param;
                 default:

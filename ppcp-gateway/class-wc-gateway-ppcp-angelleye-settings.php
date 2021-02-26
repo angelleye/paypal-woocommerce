@@ -28,6 +28,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             return $this->settings[$id];
         }
+        
+        public function get_load() {
+            return get_option($this->gateway_key, array());
+        }
 
         public function has($id) {
             $this->load();
