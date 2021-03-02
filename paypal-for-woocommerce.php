@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           2.4.9
+ * Version:           2.5.1
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,9 +13,9 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.3
- * Tested up to: 5.6.0
+ * Tested up to: 5.6.1
  * WC requires at least: 3.0.0
- * WC tested up to: 4.9.0
+ * WC tested up to: 5.0.0
  *
  *************
  * Attribution
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '2.4.9');
+    define('VERSION_PFW', '2.5.1');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -432,9 +432,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     wp_enqueue_script('angelleye-in-context-checkout-js-admin', 'https://www.paypalobjects.com/api/checkout.min.js', array(), null, true);
                 } else {
                     $smart_js_arg = array();
-                    if (angelleye_is_us_based_store()) {
-                        $smart_js_arg['components'] = "buttons,messages";
-                    }
+                    $smart_js_arg['components'] = "buttons,messages";
                     $smart_js_arg['currency'] = get_woocommerce_currency();
                     $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
                     $disallowed_funding_methods = !empty($pp_settings['disallowed_funding_methods']) ? (array) $pp_settings['disallowed_funding_methods'] : array();

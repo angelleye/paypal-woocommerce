@@ -11,7 +11,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public $checkout_fields;
     public $posted;
     public $is_multi_account_active;
-    public $is_us;
 
     public function __construct() {
         $this->id = 'paypal_express';
@@ -34,53 +33,28 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'multiple_subscriptions',
         );
         $this->is_paypal_credit_enable = true;
-        if (angelleye_is_us_based_store()) {
-            $this->is_us = true;
-        } else {
-            $this->is_us = false;
-        }
-        if ($this->is_paypal_credit_enable) {
-            $this->disallowed_funding_methods_array = array(
-                'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
-                'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
-                'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
-                'blik' => __('BLIK', 'paypal-for-woocommerce'),
-                'eps' => __('eps', 'paypal-for-woocommerce'),
-                'giropay' => __('giropay', 'paypal-for-woocommerce'),
-                'ideal' => __('iDEAL', 'paypal-for-woocommerce'),
-                'mybank' => __('MyBank', 'paypal-for-woocommerce'),
-                'p24' => __('Przelewy24', 'paypal-for-woocommerce'),
-                'sepa' => __('SEPA-Lastschrift', 'paypal-for-woocommerce'),
-                'sofort' => __('Sofort', 'paypal-for-woocommerce'),
-                'venmo' => __('Venmo', 'paypal-for-woocommerce')
-            );
-            $this->button_label_array = array(
-                'checkout' => __('Checkout', 'paypal-for-woocommerce'),
-                'pay' => __('Pay', 'paypal-for-woocommerce'),
-                'buynow' => __('Buy Now', 'paypal-for-woocommerce'),
-                'paypal' => __('PayPal', 'paypal-for-woocommerce')
-            );
-        } else {
-            $this->disallowed_funding_methods_array = array(
-                'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
-                'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
-                'blik' => __('BLIK', 'paypal-for-woocommerce'),
-                'eps' => __('eps', 'paypal-for-woocommerce'),
-                'giropay' => __('giropay', 'paypal-for-woocommerce'),
-                'ideal' => __('iDEAL', 'paypal-for-woocommerce'),
-                'mybank' => __('MyBank', 'paypal-for-woocommerce'),
-                'p24' => __('Przelewy24', 'paypal-for-woocommerce'),
-                'sepa' => __('SEPA-Lastschrift', 'paypal-for-woocommerce'),
-                'sofort' => __('Sofort', 'paypal-for-woocommerce'),
-                'venmo' => __('Venmo', 'paypal-for-woocommerce')
-            );
-            $this->button_label_array = array(
-                'checkout' => __('Checkout', 'paypal-for-woocommerce'),
-                'pay' => __('Pay', 'paypal-for-woocommerce'),
-                'buynow' => __('Buy Now', 'paypal-for-woocommerce'),
-                'paypal' => __('PayPal', 'paypal-for-woocommerce')
-            );
-        }
+        
+        $this->disallowed_funding_methods_array = array(
+            'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+            'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
+            'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
+            'blik' => __('BLIK', 'paypal-for-woocommerce'),
+            'eps' => __('eps', 'paypal-for-woocommerce'),
+            'giropay' => __('giropay', 'paypal-for-woocommerce'),
+            'ideal' => __('iDEAL', 'paypal-for-woocommerce'),
+            'mybank' => __('MyBank', 'paypal-for-woocommerce'),
+            'p24' => __('Przelewy24', 'paypal-for-woocommerce'),
+            'sepa' => __('SEPA-Lastschrift', 'paypal-for-woocommerce'),
+            'sofort' => __('Sofort', 'paypal-for-woocommerce'),
+            'venmo' => __('Venmo', 'paypal-for-woocommerce')
+        );
+        $this->button_label_array = array(
+            'checkout' => __('Checkout', 'paypal-for-woocommerce'),
+            'pay' => __('Pay', 'paypal-for-woocommerce'),
+            'buynow' => __('Buy Now', 'paypal-for-woocommerce'),
+            'paypal' => __('PayPal', 'paypal-for-woocommerce')
+        );
+        
         $this->init_form_fields();
         $this->init_settings();
         $this->send_items = 'yes' === $this->get_option('send_items', 'yes');
@@ -103,7 +77,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
         $this->debug = 'yes' === $this->get_option('debug', 'no');
-        $this->save_abandoned_checkout = 'yes' === $this->get_option('save_abandoned_checkout', 'no');
         self::$log_enabled = $this->debug;
         $this->error_email_notify = 'yes' === $this->get_option('error_email_notify', 'no');
         $this->show_on_checkout = $this->get_option('show_on_checkout', 'both');
@@ -185,16 +158,17 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
         $this->order_button_text = ($this->function_helper->ec_is_express_checkout() == false) ? $this->checkout_button_label : $this->review_button_label;
         //do_action( 'angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null );
-        if ($this->save_abandoned_checkout == false && (isset($_POST['from_checkout']) && 'yes' === $_POST['from_checkout'])) {
-            if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
-                return;
-            }
+        
+        if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
+            return;
+        } else {
             if (version_compare(WC_VERSION, '3.0', '<')) {
                 add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 1);
             } else {
                 add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 2);
             }
         }
+        
     }
 
     public function process_admin_options() {
@@ -256,7 +230,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         </style>
         
         <script type="text/javascript">
-        <?php if( angelleye_is_us_based_store() ) { ?>
+        
             jQuery('.pms-view-more').on('click', function (event) {
                 event.preventDefault();
                 var win = window.open('https://www.angelleye.com/paypal-buy-now-pay-later/?utm_source=pfw&utm_medium=settings_more_info&utm_campaign=bnpl', '_blank');
@@ -915,8 +889,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     credit_messaging_payment_text_layout_logo_position.hide();
                 }
             }).change();
-
-        <?php } ?>
             jQuery("#woocommerce_paypal_express_button_layout").change(function () {
                 var angelleye_button_tagline = jQuery("#woocommerce_paypal_express_button_tagline").closest('tr');
                 if (this.value === 'vertical') {
@@ -978,6 +950,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 } else {
                     sandbox.hide();
                     production.show();
+                }
+            }).change();
+            jQuery('#woocommerce_paypal_express_enable_fraudnet_integration').change(function () {
+                paypal_express_fraudnet_swi = jQuery('#woocommerce_paypal_express_fraudnet_swi').closest('tr');
+                if (jQuery(this).is(':checked')) {
+                    paypal_express_fraudnet_swi.show();
+                } else {
+                    paypal_express_fraudnet_swi.hide();
                 }
             }).change();
             jQuery('#woocommerce_paypal_express_send_items').change(function () {
@@ -1448,9 +1428,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'class' => 'enable_tokenized_payments'
             ),
-            'fraud_management' => array(
-                'title' => __('Fraud Management', 'paypal-for-woocommerce'),
-                'type' => 'title',
+            'fraud_management'           => array(
+                'title'       => __( 'Fraud Management', 'paypal-for-woocommerce' ),
+                'type'        => 'title',
                 'description' => '',
             ),
             'fraud_management_filters' => array(
@@ -1458,7 +1438,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'label' => '',
                 'description' => __('Choose how you would like to handle orders when Fraud Management Filters are flagged.', 'paypal-for-woocommerce'),
                 'type' => 'select',
-                'class' => 'wc-enhanced-select',
+                'class'    => 'wc-enhanced-select',
                 'options' => array(
                     'ignore_warnings_and_proceed_as_usual' => __('Ignore warnings and proceed as usual.', 'paypal-for-woocommerce'),
                     'place_order_on_hold_for_further_review' => __('Place order On Hold for further review.', 'paypal-for-woocommerce'),
@@ -1466,14 +1446,22 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'place_order_on_hold_for_further_review',
                 'desc_tip' => true,
             ),
-            'email_notify_order_cancellations' => array(
-                'title' => __('Order canceled/refunded Email Notifications', 'paypal-for-woocommerce'),
-                'label' => __('Enable buyer email notifications for Order canceled/refunded', 'paypal-for-woocommerce'),
+            'enable_fraudnet_integration' => array(
+                'title' => __('Enable FraudNet Integration', 'paypal-for-woocommerce'),
+                'label' => __('FraudNet Protection Integration (only required for Reference Transactions.)', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => __('This will send buyer email notifications for Order canceled/refunded when Auto Cancel / Refund Orders option is selected.', 'paypal-for-woocommerce'),
+                'description' => __('FraudNet is a JavaScript library developed by PayPal and embedded into a merchant’s web page to collect browser-based data to help reduce fraud. Upon checkout, these data elements are sent directly to PayPal Risk Services for fraud and risk assessment.','paypal-for-woocommerce'),
                 'default' => 'no',
-                'class' => 'email_notify_order_cancellations',
+                'class' => '',
                 'desc_tip' => true,
+            ),
+            'fraudnet_swi' => array(
+                'title' => __('Source Website Identifier', 'paypal-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('This field is now required to be filled in for all new PayPal Express Checkout merchants. Existing users who already have Reference Transactions enabled are not required to use Fraudnet protection and an SWI (Source Website Identifier), although to take advantage of Fraudnet protection, you will be required to add one in. PayPal support will provide you with your personal source Website Identifier.', 'paypal-for-woocommerce'),
+                'default' => '',
+                'css' => 'min-width: 440px;',
+                'placeholder' => __('Your Personal source Website Identifier (provided by PayPal support.)', ''),
             ),
             'seller_protection' => array(
                 'title' => __('Seller Protection', 'paypal-for-woocommerce'),
@@ -1624,12 +1612,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'class' => '',
                 'desc_tip' => true,
-            ),
-            'save_abandoned_checkout' => array(
-                'title' => __('Save Abandoned Checkouts', 'paypal-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('If a buyer choose to pay with PayPal from the WooCommerce checkout page, but they never return from PayPal, this will save the order as pending with all available details to that point.  Note that this will not work when Express Checkout Shortcut buttons are used.'),
-                'default' => 'no'
             ),
             'debug' => array(
                 'title' => __('Debug', 'paypal-for-woocommerce'),
@@ -2127,14 +2109,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'options' => $this->disallowed_funding_methods_array,
             );
         }
-        if(angelleye_is_us_based_store()) {
+        
             $this->form_fields['credit_messaging'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'description' => '<div id="pms-muse-container">
                                 <div class="pms-muse-left-container">
                                         <div class="pms-muse-description">
-                                                <h2>PayPal Credit Messaging</h2>
+                                                <h2>PayPal Pay Later Messaging</h2>
                                                 <h3>Offer &#8220;Buy Now Pay Later&#8221; to Buyers</h3>
                                                 <p>PayPal Credit is a revolving line of credit that gives your customers the flexibility to buy now and pay over time, while you receive full payment immediately.</p>
                                                 <p>Buyer-facing messaging allows you to present this option to your buyers, increasing conversion rates and average order total.</p>
@@ -2142,9 +2124,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
             $this->form_fields['enabled_credit_messaging'] = array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
-                'label' => __('Enable PayPal Credit Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
+                'label' => __('Enable PayPal Pay Later Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => '',
+                'description' => '<div style="font-size: smaller">Displays Pay Later messaging for available offers. Restrictions apply. <a target="_blank" href="https://developer.paypal.com/docs/business/pay-later/commerce-platforms/angelleye/">See terms and learn more</a></div>',
                 'default' => 'no'
             );
             $this->form_fields['credit_messaging_page_type'] = array(
@@ -2177,7 +2159,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                         <p style="font-size: smaller;">
                                         &#185;Average annual incremental sales based on PayPal’s analysis of internal data among 210 merchants with messaging and buttons against a broader group of merchants that did not, with 24-month continuous DCC volume between January 2016 and November 2019.<br><br>
                                         &#178;Online study commissioned by PayPal and conducted by Logica Research in May 2020 involving 2,000 U.S. consumers, where half were PayPal Credit users and half were non-PayPal Credit users, May 2020<br><br>
-                                        &#179;Average lift in overall PayPal AOV for merchants with PayPal Credit messaging  vs. those without, 2019 PayPal internal data<br><br>
+                                        &#179;Average lift in overall PayPal AOV for merchants with PayPal Pay Later Messaging  vs. those without, 2019 PayPal internal data<br><br>
                                         &#8308;Excerpted from Payments Journal, “Does the Answer to POS Consumer Financing Lie in Bank-Fintech Collaboration?”, Yaacov Martin, February 15, 2019<br><br>
                                         &#8309;Online study commissioned by PayPal and conducted by Logica Research in May 2020 involving 2,000 U.S. consumers, half were PayPal Credit users and half were non-PayPal Credit users, May 2020<br><br>
                                         &#8310;Online study commissioned by PayPal and conducted by Logica Research in November 2018 involving 2,000 U.S. consumers, half were PayPal Credit users and half were non-PayPal Credit users.<br><br>
@@ -2199,7 +2181,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Home Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_home_base_field',
-                'description' => __('Configure Home Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Home Page specific settings for PayPal Pay Later Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_home_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2290,7 +2272,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Category Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_category_base_field',
-                'description' => __('Configure Category Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Category Page specific settings for PayPal Pay Later Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_category_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2381,7 +2363,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Product Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_product_base_field',
-                'description' => __('Configure Product Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Product Page specific settings for PayPal Pay Later Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_product_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2472,7 +2454,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Cart Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_cart_base_field',
-                'description' => __('Configure Cart Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Cart Page specific settings for PayPal Pay Later Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_cart_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2563,7 +2545,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'title' => __('Payment Page Settings', 'paypal-for-woocommerce'),
                 'type' => 'title',
                 'class' => 'credit_messaging_field credit_messaging_payment_base_field',
-                'description' => __('Configure Home Page specific settings for PayPal Credit Messaging.', 'paypal-for-woocommerce'),
+                'description' => __('Configure Home Page specific settings for PayPal Pay Later Messaging.', 'paypal-for-woocommerce'),
             );
             $this->form_fields['credit_messaging_payment_preview'] = array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -2650,7 +2632,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'custom_attributes' => array('readonly' => 'readonly'),
                 'default' => '[aepfw_bnpl_message placement="payment"]'
             );
-        }
+        
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
     }
 
@@ -3348,7 +3330,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function angelleye_check_cart_items() {
         try {
-            WC()->checkout->check_cart_items();
+            WC()->cart->check_cart_items();
         } catch (Exception $ex) {
             
         }
@@ -3545,6 +3527,29 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
         $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
         $paypal_express_request->angelleye_get_paldetails($this);
+    }
+    
+    public function get_saved_payment_method_option_html( $token ) {
+        $html = sprintf(
+                '<li class="woocommerce-SavedPaymentMethods-token">
+                        <input id="wc-%1$s-payment-token-%2$s" type="radio" name="wc-%1$s-payment-token" value="%2$s" style="width:auto;" class="woocommerce-SavedPaymentMethods-tokenInput" %4$s />
+                        <label for="wc-%1$s-payment-token-%2$s">%3$s</label>
+                </li>',
+                esc_attr( $this->id ),
+                esc_attr( $token->get_id() ),
+                esc_html( $this->angelleye_get_display_name($token) ),
+                checked( $token->is_default(), true, false )
+        );
+        return apply_filters( 'woocommerce_payment_gateway_get_saved_payment_method_option_html', $html, $token, $this );
+    }
+    
+    public function angelleye_get_display_name( $token ) {
+        $display = sprintf(
+                __( '%1$s ending in %2$s', 'paypal-for-woocommerce' ),
+                $token->get_card_type(),
+                $token->get_last4()
+        );
+        return $display;
     }
 
 }
