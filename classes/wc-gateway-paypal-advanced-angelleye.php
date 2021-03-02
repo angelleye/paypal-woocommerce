@@ -690,6 +690,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @return void
      */
     public function admin_options() {
+        do_action('angelleye_classic_gateway_sub_menu');
         $GLOBALS['hide_save_button'] = true;
         ?>
         <h3><?php _e('PayPal Advanced', 'paypal-for-woocommerce'); ?></h3>
