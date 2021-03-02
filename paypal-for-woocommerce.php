@@ -554,7 +554,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             include_once( 'template/admin.php' );
         }
         
-       function angelleye_product_type_options_own($product_type){
+        public function angelleye_product_type_options_own($product_type){
+            global $pp_settings;
             if( isset($product_type) && !empty($product_type) ) {
                 $product_type['no_shipping_required'] = array(
                         'id'            => '_no_shipping_required',
@@ -582,7 +583,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         'wrapper_class' => '',
                         'label'         => __( 'Enable Express Checkout Button', 'paypal-for-woocommerce' ),
                         'description'   => __( 'Adds the PayPal Express Checkout button to the product page allowing buyers to checkout directly from the product page.', 'paypal-for-woocommerce' ),
-                        'default'       => 'no'
+                        'default'       => (isset($pp_settings) && $pp_settings['show_on_product_page'] == 'yes') ? 'yes' :  'no',
                 );
                 return $product_type;
             } else {
