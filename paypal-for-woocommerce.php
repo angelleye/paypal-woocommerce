@@ -504,7 +504,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * Adds PayPal gateway options for Payments Pro and Express Checkout into the WooCommerce checkout settings.
          *
          */
-        function angelleye_add_paypal_pro_gateway( $methods ) {
+        public function angelleye_add_paypal_pro_gateway( $methods ) {
             if ( class_exists( 'WC_Subscriptions_Order' ) && function_exists( 'wcs_create_renewal_order' ) ) {
                 $this->subscription_support_enabled = true;
             }
@@ -514,12 +514,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     break;
                 }
             }
-            $screen = ! function_exists( 'get_current_screen' ) ? (object) array( 'id' => 'front' ) : get_current_screen();
-            if ( ! $screen ) {
-                    $screen = (object) array( 'id' => 'front' );
-            }
             if( $this->subscription_support_enabled ) {
-                if ( 'front' === $screen->id || isset($_GET['section'])) {
+                if ((isset($_GET['tab']) && isset($_GET['section'])) || !isset($_GET['tab'])) {
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-payflow-angelleye.php' );
@@ -554,7 +550,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
                 }
             } else {
-                if ( 'front' === $screen->id || isset($_GET['section'])) {
+                if ((isset($_GET['tab']) && isset($_GET['section'])) || !isset($_GET['tab'])) {
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-payflow-angelleye.php' );
