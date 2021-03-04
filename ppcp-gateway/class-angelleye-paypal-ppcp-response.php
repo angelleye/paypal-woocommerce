@@ -60,7 +60,7 @@ class AngellEYE_PayPal_PPCP_Response {
             $this->api_log->webhook_log('Response Message: ' . wp_remote_retrieve_response_message($response));
             $this->api_log->webhook_log('Response Body: ' . wc_print_r(json_decode(wp_remote_retrieve_body($response), true), true));
         } else {
-            $this->api_log->webhook_log('PayPal Environment: ' . $environment);
+            $this->api_log->log('PayPal Environment: ' . $environment);
             $this->api_log->log('WordPress Version: ' . $wp_version);
             $this->api_log->log('WooCommerce Version: ' . WC()->version);
             $this->api_log->log('PFW Version: ' . VERSION_PFW);

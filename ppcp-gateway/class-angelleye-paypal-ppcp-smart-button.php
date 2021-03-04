@@ -693,7 +693,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
     
     public function angelleye_ppcp_hide_show_gateway($methods) {
-        if($this->enable_checkout_button === false && $this->advanced_card_payments === false) {
+        if($this->enable_checkout_button === false && $this->advanced_card_payments === false && is_checkout()) {
             foreach ($methods as $key=>$method){
                 if ($method === 'WC_Gateway_PPCP_AngellEYE') {
                     unset($methods[$key]);
