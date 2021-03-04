@@ -329,8 +329,8 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'cart_disallowed_funding_methods' => array(
                     'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
-                    'type' => 'multiselect angelleye_ppcp_cart_button_settings',
-                    'class' => 'wc-enhanced-select',
+                    'type' => 'multiselect',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_cart_button_settings',
                     'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true,
