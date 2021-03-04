@@ -173,9 +173,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_add_hooks() {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
-        add_action('woocommerce_after_add_to_cart_form', array($this, 'display_paypal_button_product_page'), 10);
-        add_action('woocommerce_proceed_to_checkout', array($this, 'display_paypal_button_cart_page'), 11);
-        add_action('angelleye_ppcp_display_paypal_button_checkout_page', array($this, 'display_paypal_button_checkout_page'));
+        if($this->enable_product_button) {
+            add_action('woocommerce_after_add_to_cart_form', array($this, 'display_paypal_button_product_page'), 10);
+        }
+        if($this->enable_cart_button) {
+            add_action('woocommerce_proceed_to_checkout', array($this, 'display_paypal_button_cart_page'), 11);
+        }
+        if($this->enable_checkout_button) {
+            add_action('angelleye_ppcp_display_paypal_button_checkout_page', array($this, 'display_paypal_button_checkout_page'));
+        }
         add_action('init', array($this, 'init'));
         add_filter('clean_url', array($this, 'angelleye_ppcp_clean_url'));
         add_action('wp_loaded', array($this, 'angelleye_ppcp_session_manager'), 999);
@@ -197,6 +203,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('sgo_javascript_combine_excluded_inline_content', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_filter('sgo_js_async_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_action('woocommerce_pay_order_after_submit', array($this, 'angelleye_ppcp_add_order_id'));
+        add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_ppcp_hide_show_gateway'),9999 );
     }
 
     public function enqueue_scripts() {
@@ -683,6 +690,18 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         ?>
         <input type="hidden" name="woo_order_id" value="<?php echo $order_id; ?>" />
         <?php
+    }
+    
+    public function angelleye_ppcp_hide_show_gateway($methods) {
+        if($this->enable_checkout_button === false && $this->advanced_card_payments === false) {
+            foreach ($methods as $key=>$method){
+                if ($method === 'WC_Gateway_PPCP_AngellEYE') {
+                    unset($methods[$key]);
+                    break;
+                }
+            }
+        }
+        return $methods;
     }
 
 }

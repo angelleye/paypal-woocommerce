@@ -14,9 +14,11 @@ function onboardingCallback(authCode, sharedId) {
     });
 }
 jQuery(function ($) {
+    console.log('17');
     if (typeof ppcp_angelleye_param === 'undefined') {
         return false;
     }
+    console.log('21');
     var psb_available = $('#woocommerce_angelleye_ppcp_enable_advanced_card_payments, #woocommerce_angelleye_ppcp_threed_secure_enabled').closest('tr');
     if (ppcp_angelleye_param.is_advanced_card_payments === 'yes') {
         psb_available.show();
@@ -141,28 +143,29 @@ jQuery(function ($) {
         $('.woocommerce-save-button').click();
     });
 
-    $('#woocommerce_angelleye_ppcp_enable_product_button_settings').change(function () {
+    $('#woocommerce_angelleye_ppcp_enable_product_button').change(function () {
+        console.log('145');
         if ($(this).is(':checked')) {
             $('.angelleye_ppcp_product_button_settings').closest('tr').show();
         } else {
             $('.angelleye_ppcp_product_button_settings').closest('tr').hide();
         }
     }).change();
-    $('#woocommerce_angelleye_ppcp_enable_cart_button_settings').change(function () {
+    $('#woocommerce_angelleye_ppcp_enable_cart_button').change(function () {
         if ($(this).is(':checked')) {
             $('.angelleye_ppcp_cart_button_settings').closest('tr').show();
         } else {
             $('.angelleye_ppcp_cart_button_settings').closest('tr').hide();
         }
     }).change();
-    $('#woocommerce_angelleye_ppcp_enable_checkout_button_settings').change(function () {
+    $('#woocommerce_angelleye_ppcp_enable_checkout_button').change(function () {
         if ($(this).is(':checked')) {
             $('.angelleye_ppcp_checkout_button_settings').closest('tr').show();
         } else {
             $('.angelleye_ppcp_checkout_button_settings').closest('tr').hide();
         }
     }).change();
-    $('#woocommerce_angelleye_ppcp_enable_mini_cart_button_settings').change(function () {
+    $('#woocommerce_angelleye_ppcp_enable_mini_cart_button').change(function () {
         if ($(this).is(':checked')) {
             $('.angelleye_ppcp_mini_cart_button_settings').closest('tr').show();
         } else {
