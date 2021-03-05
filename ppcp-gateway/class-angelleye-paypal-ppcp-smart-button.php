@@ -171,7 +171,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_add_hooks() {
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 11);
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 9);
         add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
         if($this->enable_product_button) {
             add_action('woocommerce_after_add_to_cart_form', array($this, 'display_paypal_button_product_page'), 10);
