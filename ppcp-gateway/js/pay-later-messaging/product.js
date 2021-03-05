@@ -25,8 +25,8 @@ jQuery(function ($) {
             product_style_object['color'] = angelleye_pay_later_messaging.pay_later_messaging_product_flex_layout_color;
             product_style_object['ratio'] = angelleye_pay_later_messaging.pay_later_messaging_product_flex_layout_ratio;
         }
-        if (typeof angelleye_ppcp_paypal_sdk !== 'undefined') {
-            angelleye_ppcp_paypal_sdk.Messages({
+        if (typeof angelleye_paypal_sdk !== 'undefined') {
+            angelleye_paypal_sdk.Messages({
                 amount: angelleye_pay_later_messaging.amount,
                 placement: 'product',
                 style: product_style_object

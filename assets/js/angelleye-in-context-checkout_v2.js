@@ -9,7 +9,7 @@ jQuery(function ($) {
     };
 
     var angelleye_is_paypal_js_loaded = function () {
-        if (typeof paypal_sdk === 'undefined') {
+        if (typeof angelleye_paypal_sdk === 'undefined') {
             console.log("PayPal Js not loaded");
             return false;
         }
@@ -89,7 +89,7 @@ jQuery(function ($) {
             $(".angelleye_button_single").removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
             $('.angelleye_button_single').addClass('angelleye_' + angelleye_in_content_param.button_layout + '_' + angelleye_in_content_param.button_size);
             angelleye_is_paypal_js_loaded();
-            paypal_sdk.Buttons({
+            angelleye_paypal_sdk.Buttons({
                 style: angelleye_cart_style_object,
                 createOrder: function () {
                     var data_param = {
@@ -183,7 +183,7 @@ jQuery(function ($) {
                 $(selector).removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
                 $(selector).addClass('angelleye_' + angelleye_in_content_param.button_layout + '_' + angelleye_in_content_param.button_size);
                 angelleye_is_paypal_js_loaded();
-                paypal_sdk.Buttons({
+                angelleye_paypal_sdk.Buttons({
                     style: angelleye_cart_style_object,
                     createOrder: function () {
                         var data_param = {
@@ -264,7 +264,7 @@ jQuery(function ($) {
                 $(selector).removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
                 $(selector).addClass('angelleye_' + angelleye_in_content_param.button_layout + '_' + angelleye_in_content_param.button_size);
                 angelleye_is_paypal_js_loaded();
-                paypal_sdk.Buttons({
+                angelleye_paypal_sdk.Buttons({
                     style: angelleye_cart_style_object,
                     createOrder: function () {
                         var data_param = {
@@ -338,7 +338,7 @@ jQuery(function ($) {
                 $(selector).removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
                 $(selector).addClass('angelleye_' + angelleye_in_content_param.wsc_cart_button_layout + '_' + angelleye_in_content_param.wsc_cart_button_size);
                 angelleye_is_paypal_js_loaded();
-                paypal_sdk.Buttons({
+                angelleye_paypal_sdk.Buttons({
                     style: angelleye_cart_style_object,
                     createOrder: function () {
                         var data_param = {
@@ -411,7 +411,7 @@ jQuery(function ($) {
                 $(selector).removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
                 $(selector).addClass('angelleye_' + angelleye_in_content_param.button_layout + '_' + angelleye_in_content_param.button_size);
                 angelleye_is_paypal_js_loaded();
-                paypal_sdk.Buttons({
+                angelleye_paypal_sdk.Buttons({
                     style: angelleye_cart_style_object,
                     createOrder: function () {
                         var data = $(selector).closest('form')

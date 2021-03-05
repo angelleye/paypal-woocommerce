@@ -171,7 +171,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_add_hooks() {
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 11);
         add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
         if($this->enable_product_button) {
             add_action('woocommerce_after_add_to_cart_form', array($this, 'display_paypal_button_product_page'), 10);
@@ -245,10 +245,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             array_push($components, 'messages');
         }
         if (!empty($components)) {
-            $smart_js_arg['components'] = implode(',', $components);
+            $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
         }
         $js_url = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
-        wp_register_script('angelleye_ppcp-checkout-js', $js_url, array(), null, false);
+        wp_register_script('angelleye-paypal-checkout-sdk', $js_url, array(), null, false);
         wp_register_script($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-public.js', array('jquery'), time(), false);
         wp_localize_script($this->angelleye_ppcp_plugin_name, 'angelleye_ppcp_manager', array(
             'style_color' => $this->style_color,
@@ -288,7 +288,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_cart_page() {
-        wp_enqueue_script('angelleye_ppcp-checkout-js');
+        wp_enqueue_script('angelleye-paypal-checkout-sdk');
         wp_enqueue_script($this->angelleye_ppcp_plugin_name);
         echo '<div class="angelleye_ppcp-button-container"><div id="angelleye_ppcp_cart"></div><div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</div></div>';
     }
@@ -298,14 +298,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('grouped')) {
             return;
         }
-        wp_enqueue_script('angelleye_ppcp-checkout-js');
+        wp_enqueue_script('angelleye-paypal-checkout-sdk');
         wp_enqueue_script($this->angelleye_ppcp_plugin_name);
         echo '<div class="angelleye_ppcp-button-container"><div id="angelleye_ppcp_product"></div></div>';
     }
 
     public function display_paypal_button_checkout_page() {
         if (angelleye_ppcp_has_active_session() === false) {
-            wp_enqueue_script('angelleye_ppcp-checkout-js');
+            wp_enqueue_script('angelleye-paypal-checkout-sdk');
             wp_enqueue_script($this->angelleye_ppcp_plugin_name);
             $separator = '';
             if (is_checkout_pay_page() === false) {
@@ -570,8 +570,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_clean_url($tag, $handle) {
-        if ( 'angelleye_ppcp-checkout-js' === $handle ) {
-                $tag = str_replace( ' src=', ' data-namespace="angelleye_ppcp_paypal_sdk" data-partner-attribution-id="Angelleye-123" src=', $tag );
+        if ( 'angelleye-paypal-checkout-sdk' === $handle ) {
+                $tag = str_replace( ' src=', ' data-namespace="angelleye_paypal_sdk" data-partner-attribution-id="Angelleye-123" src=', $tag );
         }
         return $tag;
     }
@@ -669,7 +669,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_exclude_javascript($excluded_handles) {
         $excluded_handles[] = 'jquery-core';
         $excluded_handles[] = 'angelleye_ppcp';
-        $excluded_handles[] = 'angelleye_ppcp-checkout-js';
+        $excluded_handles[] = 'angelleye-paypal-checkout-sdk';
         $excluded_handles[] = 'angelleye_ppcp-order-review';
         $excluded_handles[] = 'angelleye_ppcp-order-capture';
         $excluded_handles[] = 'angelleye-pay-later-messaging-home';

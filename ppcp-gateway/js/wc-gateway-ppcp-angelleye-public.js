@@ -41,7 +41,7 @@
             if ($(selector).children().length) {
                 return;
             }
-            if (typeof angelleye_ppcp_paypal_sdk === 'undefined') {
+            if (typeof angelleye_paypal_sdk === 'undefined') {
                 return;
             }
             var angelleye_ppcp_style = {
@@ -53,7 +53,7 @@
             if (angelleye_ppcp_manager.style_layout !== 'vertical') {
                 angelleye_ppcp_style['tagline'] = (angelleye_ppcp_manager.style_tagline === 'yes') ? true : false;
             }
-            angelleye_ppcp_paypal_sdk.Buttons({
+            angelleye_paypal_sdk.Buttons({
                 style: angelleye_ppcp_style,
                 createOrder: function (data, actions) {
                     var data;
@@ -158,11 +158,11 @@
             if ($('form.checkout').is('.HostedFields')) {
                 return false;
             }
-            if (typeof angelleye_ppcp_paypal_sdk === 'undefined') {
+            if (typeof angelleye_paypal_sdk === 'undefined') {
                 return;
             }
             $('form.checkout').addClass('HostedFields');
-            angelleye_ppcp_paypal_sdk.HostedFields.render({
+            angelleye_paypal_sdk.HostedFields.render({
                 createOrder: function () {
                     if ($('form.checkout').is('.createOrder') === false) {
                         $('form.checkout').addClass('createOrder');
@@ -346,13 +346,13 @@
         function is_hosted_field_eligible() {
             if (is_from_checkout) {
                 if (angelleye_ppcp_manager.advanced_card_payments === 'yes') {
-                    if (typeof angelleye_ppcp_paypal_sdk === 'undefined') {
+                    if (typeof angelleye_paypal_sdk === 'undefined') {
                         return false;
                     }
-                    if (angelleye_ppcp_paypal_sdk.HostedFields.isEligible() == true) {
+                    if (angelleye_paypal_sdk.HostedFields.isEligible() == true) {
                         return true;
                     } else {
-                        console.log("HostedFields isEligible : " + angelleye_ppcp_paypal_sdk.HostedFields.isEligible());
+                        console.log("HostedFields isEligible : " + angelleye_paypal_sdk.HostedFields.isEligible());
                     }
                 }
             }

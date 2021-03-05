@@ -18,8 +18,8 @@ jQuery(function ($) {
             payment_style_object['color'] = angelleye_pay_later_messaging.pay_later_messaging_payment_flex_layout_color;
             payment_style_object['ratio'] = angelleye_pay_later_messaging.pay_later_messaging_payment_flex_layout_ratio;
         }
-        if (typeof angelleye_ppcp_paypal_sdk !== 'undefined') {
-            angelleye_ppcp_paypal_sdk.Messages({
+        if (typeof angelleye_paypal_sdk !== 'undefined') {
+            angelleye_paypal_sdk.Messages({
                 amount: angelleye_pay_later_messaging.amount,
                 placement: 'payment',
                 style: payment_style_object
