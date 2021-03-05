@@ -216,7 +216,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('woocommerce_cart_shipping_packages', array($this, 'maybe_add_shipping_information'));
                 add_action('admin_notices', array($this, 'angelleye_billing_agreement_notice'));
                 add_action('wc_ajax_wc_angelleye_ppec_update_shipping_costs', array($this, 'wc_ajax_update_shipping_costs'));
-                add_filter('clean_url', array($this, 'angelleye_in_content_js'));
+                add_filter('script_loader_tag', array($this, 'angelleye_in_content_js'), 10, 2);
                 add_action('wc_ajax_angelleye_ajax_generate_cart', array($this, 'angelleye_ajax_generate_cart'));
                 if (AngellEYE_Utility::is_express_checkout_credentials_is_set()) {
                     if ($this->button_position == 'bottom' || $this->button_position == 'both') {
@@ -1877,11 +1877,11 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         return $str;
     }
     
-    public function angelleye_in_content_js($url) {
-        if (strpos($url, 'https://www.paypal.com/sdk/js') !== false) {
-            $url = "$url' data-namespace='paypal_sdk";
+    public function angelleye_in_content_js($tag, $handle) {
+        if ( 'angelleye-in-context-checkout-js' === $handle ) {
+                $tag = str_replace( ' src=', ' data-namespace="paypal_sdk" src=', $tag );
         }
-        return $url;
+        return $tag;
     }
     
     public function angelleye_exclude_javascript($excluded_handles) {
