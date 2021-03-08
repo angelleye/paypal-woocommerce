@@ -355,4 +355,44 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
         }
 
     }
+
+    if (function_exists('angelleye_ppcp_currency_has_decimals')) {
+
+        function angelleye_ppcp_currency_has_decimals($currency) {
+            if (in_array($currency, array('HUF', 'JPY', 'TWD'), true)) {
+                return false;
+            }
+
+            return true;
+        }
+
+    }
+
+    if (function_exists('angelleye_ppcp_round')) {
+
+        function angelleye_ppcp_round($price, $order) {
+            $precision = 2;
+
+            if (!$this->angelleye_ppcp_currency_has_decimals($order->get_currency())) {
+                $precision = 0;
+            }
+
+            return NumberUtil::round($price, $precision);
+        }
+
+    }
+
+    if (function_exists('angelleye_ppcp_number_format')) {
+
+        function angelleye_ppcp_number_format($price, $order) {
+            $decimals = 2;
+
+            if (!$this->angelleye_ppcp_currency_has_decimals($order->get_currency())) {
+                $decimals = 0;
+            }
+
+            return number_format($price, $decimals, '.', '');
+        }
+
+    }
 }

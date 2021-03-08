@@ -253,9 +253,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             $rounded_total = $this->angelleye_ppcp_get_rounded_total_in_cart();
             $discounts = WC()->cart->get_cart_discount_total();
             $details = array(
-                'total_item_amount' => round(WC()->cart->cart_contents_total, $decimals) + $discounts,
-                'order_tax' => round(WC()->cart->tax_total + WC()->cart->shipping_tax_total, $decimals),
-                'shipping' => round(WC()->cart->shipping_total, $decimals),
+                'total_item_amount' => angelleye_ppcp_round(WC()->cart->cart_contents_total, $decimals) + $discounts,
+                'order_tax' => angelleye_ppcp_round(WC()->cart->tax_total + WC()->cart->shipping_tax_total, $decimals),
+                'shipping' => angelleye_ppcp_round(WC()->cart->shipping_total, $decimals),
                 'items' => $this->angelleye_ppcp_get_paypal_line_items_from_cart(),
                 'shipping_address' => $this->angelleye_ppcp_get_address_from_customer(),
                 'email' => $old_wc ? WC()->customer->billing_email : WC()->customer->get_billing_email(),
@@ -290,8 +290,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $rounded_total = 0;
             foreach (WC()->cart->cart_contents as $cart_item_key => $values) {
-                $amount = round($values['line_subtotal'] / $values['quantity'], $decimals);
-                $rounded_total += round($amount * $values['quantity'], $decimals);
+                $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['quantity'], $decimals);
+                $rounded_total += angelleye_ppcp_round($amount * $values['quantity'], $decimals);
             }
             return $rounded_total;
         } catch (Exception $ex) {
@@ -306,7 +306,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $items = array();
             foreach (WC()->cart->cart_contents as $cart_item_key => $values) {
                 $desc = '';
-                $amount = round($values['line_subtotal'] / $values['quantity'], $decimals);
+                $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['quantity'], $decimals);
                 if (version_compare(WC_VERSION, '3.0', '<')) {
                     $product = $values['data'];
                     $name = $values['data']->post->post_title;
@@ -403,8 +403,8 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_get_details($details, $discounts, $rounded_total, $total) {
         try {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
-            $discounts = round($discounts, $decimals);
-            $details['order_total'] = round(
+            $discounts = angelleye_ppcp_round($discounts, $decimals);
+            $details['order_total'] = angelleye_ppcp_round(
                     $details['total_item_amount'] + $details['order_tax'] + $details['shipping'], $decimals
             );
             $diff = 0;
@@ -418,15 +418,15 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $details['discount'] = $discounts;
             $details['ship_discount_amount'] = 0;
-            $wc_order_total = round($total, $decimals);
+            $wc_order_total = angelleye_ppcp_round($total, $decimals);
             $discounted_total = $details['order_total'];
             if ($wc_order_total != $discounted_total) {
                 if ($discounted_total < $wc_order_total) {
                     $details['order_tax'] += $wc_order_total - $discounted_total;
-                    $details['order_tax'] = round($details['order_tax'], $decimals);
+                    $details['order_tax'] = angelleye_ppcp_round($details['order_tax'], $decimals);
                 } else {
                     $details['ship_discount_amount'] += $wc_order_total - $discounted_total;
-                    $details['ship_discount_amount'] = round($details['ship_discount_amount'], $decimals);
+                    $details['ship_discount_amount'] = angelleye_ppcp_round($details['ship_discount_amount'], $decimals);
                 }
                 $details['order_total'] = $wc_order_total;
             }
@@ -457,7 +457,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'name' => 'Line Item Amount Offset',
                 'description' => 'Adjust cart calculation discrepancy',
                 'quantity' => 1,
-                'amount' => round($amount, $decimals),
+                'amount' => angelleye_ppcp_round($amount, $decimals),
             );
         } catch (Exception $ex) {
             
@@ -849,9 +849,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_is_currency_supports_zero_decimal() ? 0 : 2;
             $rounded_total = $this->angelleye_ppcp_get_rounded_total_in_order($order);
             $details = array(
-                'total_item_amount' => round($order->get_subtotal(), $decimals),
-                'order_tax' => round($order->get_total_tax(), $decimals),
-                'shipping' => round(( version_compare(WC_VERSION, '3.0', '<') ? $order->get_total_shipping() : $order->get_shipping_total()), $decimals),
+                'total_item_amount' => angelleye_ppcp_round($order->get_subtotal(), $decimals),
+                'order_tax' => angelleye_ppcp_round($order->get_total_tax(), $decimals),
+                'shipping' => angelleye_ppcp_round(( version_compare(WC_VERSION, '3.0', '<') ? $order->get_total_shipping() : $order->get_shipping_total()), $decimals),
                 'items' => $this->angelleye_ppcp_get_paypal_line_items_from_order($order),
             );
             $details = $this->angelleye_ppcp_get_details($details, $order->get_total_discount(), $rounded_total, $order->get_total());
@@ -868,8 +868,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order = wc_get_order($order);
             $rounded_total = 0;
             foreach ($order->get_items() as $cart_item_key => $values) {
-                $amount = round($values['line_subtotal'] / $values['qty'], $decimals);
-                $rounded_total += round($amount * $values['qty'], $decimals);
+                $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['qty'], $decimals);
+                $rounded_total += angelleye_ppcp_round($amount * $values['qty'], $decimals);
             }
             return $rounded_total;
         } catch (Exception $ex) {
@@ -884,7 +884,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $items = array();
             foreach ($order->get_items() as $cart_item_key => $values) {
                 $desc = '';
-                $amount = round($values['line_subtotal'] / $values['qty'], $decimals);
+                $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['qty'], $decimals);
                 $product = version_compare(WC_VERSION, '3.0', '<') ? $order->get_product_from_item($values) : $values->get_product();
                 $name = $product->get_name();
                 $sku = $product->get_sku();
@@ -928,7 +928,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $body_request = array(
                     'amount' =>
                     array(
-                        'value' => round($amount, $decimals),
+                        'value' => angelleye_ppcp_round($amount, $decimals),
                         'currency_code' => $order->get_currency()
                     )
                 );
