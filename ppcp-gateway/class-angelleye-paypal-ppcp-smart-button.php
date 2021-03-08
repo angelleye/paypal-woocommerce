@@ -204,6 +204,21 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('sgo_js_async_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_action('woocommerce_pay_order_after_submit', array($this, 'angelleye_ppcp_add_order_id'));
         add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_ppcp_hide_show_gateway'),9999 );
+        add_action('http_api_debug', array($this, 'angelleye_ppcp_all_web_request'), 10, 5);
+    }
+    
+    /*
+     * 
+     * This function is for temp debug
+     */
+    
+    public function angelleye_ppcp_all_web_request($response, $response_text, $Requests_text, $parsed_args, $url) {
+        $this->api_log->log($url, 'error');
+        $this->api_log->log($Requests_text, 'error');
+        $this->api_log->log($parsed_args, 'error');
+        $this->api_log->log($response_text, 'error');
+        $this->api_log->log($response, 'error');
+            
     }
 
     public function enqueue_scripts() {
