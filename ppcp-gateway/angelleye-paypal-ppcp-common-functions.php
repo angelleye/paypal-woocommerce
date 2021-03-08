@@ -356,7 +356,7 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
 
     }
 
-    if (function_exists('angelleye_ppcp_currency_has_decimals')) {
+    if (!function_exists('angelleye_ppcp_currency_has_decimals')) {
 
         function angelleye_ppcp_currency_has_decimals($currency) {
             if (in_array($currency, array('HUF', 'JPY', 'TWD'), true)) {
@@ -368,17 +368,17 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
 
     }
 
-    if (function_exists('angelleye_ppcp_round')) {
+    if (!function_exists('angelleye_ppcp_round')) {
 
         function angelleye_ppcp_round($price, $precision) {
             $price_round = NumberUtil::round($price, $precision);
-            $price = number_format($price, $precision, '.', '');
+            $price = number_format($price_round, $precision, '.', '');
             return $price;
         }
 
     }
 
-    if (function_exists('angelleye_ppcp_number_format')) {
+    if (!function_exists('angelleye_ppcp_number_format')) {
 
         function angelleye_ppcp_number_format($price, $order) {
             $decimals = 2;
