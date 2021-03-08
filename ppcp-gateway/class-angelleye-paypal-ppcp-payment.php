@@ -253,7 +253,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $rounded_total = $this->angelleye_ppcp_get_rounded_total_in_cart();
             $discounts = WC()->cart->get_cart_discount_total();
             $details = array(
-                'total_item_amount' => angelleye_ppcp_round(WC()->cart->cart_contents_total, $decimals) + $discounts,
+                'total_item_amount' => angelleye_ppcp_round(WC()->cart->cart_contents_total + $discounts, $decimals),
                 'order_tax' => angelleye_ppcp_round(WC()->cart->tax_total + WC()->cart->shipping_tax_total, $decimals),
                 'shipping' => angelleye_ppcp_round(WC()->cart->shipping_total, $decimals),
                 'items' => $this->angelleye_ppcp_get_paypal_line_items_from_cart(),
