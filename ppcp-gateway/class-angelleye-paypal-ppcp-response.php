@@ -123,7 +123,6 @@ class AngellEYE_PayPal_PPCP_Response {
                     $request_param['correlation_id'] = '';
                     $request_param['transaction_id'] = $transaction_id;
                     $request_param['product_id'] = '1';
-                    $this->api_log->webhook_log('TPV Request: ' . wc_print_r($request_param, true));
                     $payment_logger->angelleye_tpv_request($request_param);
                 }
             }

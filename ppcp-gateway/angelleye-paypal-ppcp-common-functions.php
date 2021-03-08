@@ -371,8 +371,8 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
     if (!function_exists('angelleye_ppcp_round')) {
 
         function angelleye_ppcp_round($price, $precision) {
-            return round($price, $precision);
-            //return number_format($round_price, $precision, '.', '');
+            $round_price = round($price, $precision);
+            return number_format($round_price, $precision, '.', '');
         }
 
     }
