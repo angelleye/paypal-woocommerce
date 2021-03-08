@@ -213,11 +213,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
      */
     
     public function angelleye_ppcp_all_web_request($response, $response_text, $Requests_text, $parsed_args, $url) {
-        $this->api_log->temp_log($url, 'error');
-        $this->api_log->temp_log($Requests_text, 'error');
-        $this->api_log->temp_log($parsed_args, 'error');
-        $this->api_log->temp_log($response_text, 'error');
-        $this->api_log->temp_log($response, 'error');
+        $this->api_log->temp_log(wc_print_r($url, true), 'error');
+        $this->api_log->temp_log(wc_print_r($Requests_text, true), 'error');
+        $this->api_log->temp_log(wc_print_r($parsed_args, true), 'error');
+        $this->api_log->temp_log(wc_print_r($response_text, true), 'error');
+        $this->api_log->temp_log(wc_print_r($response, true), 'error');
             
     }
 

@@ -221,13 +221,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             $body_request = json_encode($body_request);
             $args = array(
                 'method' => 'POST',
-                'timeout' => 60,
-                'redirection' => 5,
-                'httpversion' => '1.1',
-                'blocking' => true,
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation", 'PayPal-Partner-Attribution-Id' => 'Angelleye-123', 'PayPal-Request-Id' => $this->generate_request_id()),
-                'body' => $body_request,
-                'cookies' => array()
+                'body' => $body_request
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api, $args, 'create_order');
             if (ob_get_length()) {
