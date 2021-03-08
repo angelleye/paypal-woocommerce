@@ -370,13 +370,7 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
 
     if (function_exists('angelleye_ppcp_round')) {
 
-        function angelleye_ppcp_round($price, $order) {
-            $precision = 2;
-
-            if (!$this->angelleye_ppcp_currency_has_decimals($order->get_currency())) {
-                $precision = 0;
-            }
-
+        function angelleye_ppcp_round($price, $precision) {
             return NumberUtil::round($price, $precision);
         }
 
