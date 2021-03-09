@@ -99,7 +99,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         if (!is_array($actions)) {
             $actions = array();
         }
-        if ('CREATED' !== $paypal_status && $payment_action === 'authorize') {
+        if ('CREATED' == $paypal_status && $payment_action === 'authorize') {
             $actions['angelleye_ppcp_capture_charge'] = esc_html__('Capture Charge', 'paypal-for-woocommerce');
         }
         return $actions;
