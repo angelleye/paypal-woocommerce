@@ -109,10 +109,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     
     public function is_available() {
         if ($this->is_enabled == true) {
-            if (!$this->client_id || !$this->secret_id) {
-                return false;
+            if ($this->is_credentials_set()) {
+                return true;
             }
-            return true;
+            return false;
         } else {
             return false;
         }
