@@ -125,7 +125,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
                     }
                     angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
-                    angelleye_ppcp_update_post_meta($order, 'enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+                    angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
                     WC()->cart->empty_cart();
                 } else {
                     $is_success = false;

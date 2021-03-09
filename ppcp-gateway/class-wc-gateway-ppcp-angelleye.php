@@ -388,7 +388,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                     $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($woo_order_id);
                 }
                 angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
-                angelleye_ppcp_update_post_meta($order, 'enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
                 WC()->cart->empty_cart();
                 if ($is_success) {
                     unset(WC()->session->angelleye_ppcp_session);
@@ -408,7 +408,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function get_transaction_url($order) {
-        $enviorment = angelleye_ppcp_get_post_meta($order, 'enviorment', true);
+        $enviorment = angelleye_ppcp_get_post_meta($order, '_enviorment', true);
         if ($enviorment === 'sandbox') {
             $this->view_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
         } else {
