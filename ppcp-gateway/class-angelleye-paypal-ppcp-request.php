@@ -59,7 +59,6 @@ class AngellEYE_PayPal_PPCP_Request {
 
     public function request($url, $args, $action_name = 'default') {
         try {
-            $this->api_log->log("Request Log: " . wc_print_r($args, true), 'error');
             $this->result = wp_remote_get($url, $args);
             return $this->api_response->parse_response($this->result, $url, $args, $action_name);
         } catch (Exception $ex) {

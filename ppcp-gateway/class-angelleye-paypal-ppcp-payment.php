@@ -442,7 +442,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (abs($lisum) > 0.000001 && 0.0 !== (float) $diff) {
                 $details['items'][] = $this->angelleye_ppcp_get_extra_offset_line_item($details['total_item_amount'] - $lisum);
             }
-            $this->api_log->log("Cart Calculation: " . wc_print_r($details, true));
             return $details;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
