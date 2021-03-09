@@ -225,6 +225,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                     )
             );
         }
+        wp_enqueue_script('wc-gateway-ppcp-angelleye-settings-list', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings-list.js', array('jquery'), time(), true);
     }
 
     public function generate_angelleye_ppcp_text_html($field_key, $data) {
