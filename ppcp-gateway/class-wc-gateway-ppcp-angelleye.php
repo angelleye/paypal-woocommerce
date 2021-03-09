@@ -104,6 +104,18 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $this->threed_secure_enabled = false;
         }
+        $this->is_enabled = 'yes' === $this->get_option('enabled', 'no');
+    }
+    
+    public function is_available() {
+        if ($this->is_enabled == true) {
+            if (!$this->client_id || !$this->secret_id) {
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function angelleye_defind_hooks() {
