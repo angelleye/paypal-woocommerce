@@ -591,6 +591,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function is_paypal_sdk_required() {
         global $post;
+        if ($this->function_helper->ec_is_express_checkout()) {
+            return false;
+        }
         if ($this->enabled_credit_messaging) {
             if (is_product_taxonomy() || is_product_category() || is_product_tag() || is_shop() || (is_home() || is_front_page() || is_product())) {
                 return true;
