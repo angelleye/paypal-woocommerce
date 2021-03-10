@@ -334,7 +334,7 @@
                     $('#wc-angelleye_ppcp-cc-form').show();
                     hosted_button_render();
                 } 
-            }, 2000);
+            }, 1000);
         });
         $('form.checkout').on('click', 'input[name="payment_method"]', function () {
             if (is_angelleye_ppcp_selected()) {
