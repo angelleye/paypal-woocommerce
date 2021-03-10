@@ -333,9 +333,7 @@
                     $('.checkout_cc_separator').show();
                     $('#wc-angelleye_ppcp-cc-form').show();
                     hosted_button_render();
-                } else {
-                    console.log("HostedFields isEligible : " + angelleye_paypal_sdk.HostedFields.isEligible());
-                }
+                } 
             }, 2000);
         });
         $('form.checkout').on('click', 'input[name="payment_method"]', function () {
