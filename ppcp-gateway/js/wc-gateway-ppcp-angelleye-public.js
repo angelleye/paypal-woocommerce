@@ -38,9 +38,11 @@
         var is_from_product = 'product' === angelleye_ppcp_manager.page;
         var is_sale = 'capture' === angelleye_ppcp_manager.paymentaction;
         var smart_button_render = function () {
-            if ($(selector).children().length) {
+            console.log('fired smart_button_render');
+            if (!$(selector).length || $(selector).children().length) {
                 return;
             }
+
             if (typeof angelleye_paypal_sdk === 'undefined') {
                 return;
             }
@@ -155,6 +157,7 @@
 
 
         var hosted_button_render = function () {
+            console.log('fired hosted_button_render');
             if ($('form.checkout').is('.HostedFields')) {
                 return false;
             }
@@ -334,7 +337,7 @@
                 } else {
                     console.log("HostedFields isEligible : " + angelleye_paypal_sdk.HostedFields.isEligible());
                 }
-            }, 1000);
+            }, 4000);
         });
         $('form.checkout').on('click', 'input[name="payment_method"]', function () {
             if (is_angelleye_ppcp_selected()) {

@@ -158,15 +158,17 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         if ($description) {
             echo wpautop(wptexturize($description));
         }
-        do_action('angelleye_ppcp_display_paypal_button_checkout_page');
-        if (is_checkout() && $this->advanced_card_payments) {
-            if (is_checkout_pay_page() === false) {
-                parent::payment_fields();
-                if ($this->threed_secure_enabled) {
-                    echo '<div id="payments-sdk__contingency-lightbox"></div>';
+        
+            do_action('angelleye_ppcp_display_paypal_button_checkout_page');
+            if (is_checkout() && $this->advanced_card_payments) {
+                if (is_checkout_pay_page() === false) {
+                    parent::payment_fields();
+                    if ($this->threed_secure_enabled) {
+                        echo '<div id="payments-sdk__contingency-lightbox"></div>';
+                    }
                 }
             }
-        }
+        
     }
 
     public function form() {
