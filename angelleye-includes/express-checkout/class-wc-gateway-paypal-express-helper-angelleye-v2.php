@@ -592,8 +592,11 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function is_angelleye_paypal_sdk_required() {
         global $post;
+        if ($this->function_helper->ec_is_express_checkout()) {
+            return false;
+        }
         if ($this->enabled_credit_messaging) {
-            if (is_product_taxonomy() || is_product_category() || is_product_tag() || is_shop() || (is_home() || is_front_page())) {
+            if (is_product_taxonomy() || is_product_category() || is_product_tag() || is_shop() || (is_home() || is_front_page() || is_product())) {
                 return true;
             }
             if (is_page() || (!empty($post->post_content) && strstr($post->post_content, '[aepfw_bnpl_message') )) {
@@ -678,7 +681,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             } else {
                 $pre_checkout_offer = "no";
             }
-            if ($this->angelleye_is_in_context_enable() == true) {
+            if ($this->angelleye_is_in_context_enable() == true || $this->is_paypal_sdk_required()) {
                 $cancel_url = !empty($this->cancel_page) ? get_permalink($this->cancel_page) : wc_get_cart_url();
                 $disallowed_funding_methods_json = json_encode($this->disallowed_funding_methods);
                 $mini_cart_disallowed_funding_methods_json = json_encode($this->mini_cart_disallowed_funding_methods);
@@ -765,15 +768,17 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         )
                 );
             }
-            if (is_checkout() || is_cart() || $this->is_angelleye_product_page()) {
-                wp_enqueue_script('angelleye-paypal-checkout-sdk');
-                wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
-                do_action('angelleye_fraudnet_hook', $this->setting);
-            }
-            if ($this->show_on_cart == 'yes' && $this->show_on_minicart == 'yes') {
-                wp_enqueue_script('angelleye-paypal-checkout-sdk');
-                wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
-                do_action('angelleye_fraudnet_hook', $this->setting);
+            if ($this->enable_in_context_checkout_flow === 'yes' && $this->enabled == 'yes') {
+                if (is_checkout() || is_cart() || $this->is_angelleye_product_page()) {
+                    wp_enqueue_script('angelleye-in-context-checkout-js');
+                    wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+                    do_action('angelleye_fraudnet_hook', $this->setting);
+                }
+                if ($this->show_on_cart == 'yes' && $this->show_on_minicart == 'yes') {
+                    wp_enqueue_script('angelleye-in-context-checkout-js');
+                    wp_enqueue_script('angelleye-in-context-checkout-js-frontend');
+                    do_action('angelleye_fraudnet_hook', $this->setting);
+                }
             }
             if (is_checkout()) {
                 $js_value['is_page_name'] = 'checkout_page';
@@ -1224,7 +1229,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if (!empty($post->post_content) && strstr($post->post_content, '[product_page')) {
                 return true;
             }
-
             if ($this->is_angelleye_paypal_sdk_required()) {
                 return true;
             }
