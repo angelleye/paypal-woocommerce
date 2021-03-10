@@ -321,16 +321,20 @@
         if (is_from_checkout === false) {
             smart_button_render();
         }
-        if(angelleye_ppcp_manager.is_pay_page === 'yes') {
+        if (angelleye_ppcp_manager.is_pay_page === 'yes') {
             smart_button_render();
         }
         $(document.body).on('updated_cart_totals updated_checkout', function () {
-            smart_button_render();
             setTimeout(function () {
+                smart_button_render();
                 if (is_hosted_field_eligible() === true) {
+                    $('.checkout_cc_separator').show();
+                    $('#wc-angelleye_ppcp-cc-form').show();
                     hosted_button_render();
+                } else {
+                    console.log("HostedFields isEligible : " + angelleye_paypal_sdk.HostedFields.isEligible());
                 }
-            }, 500);
+            }, 1000);
         });
         $('form.checkout').on('click', 'input[name="payment_method"]', function () {
             if (is_angelleye_ppcp_selected()) {
@@ -351,13 +355,9 @@
                     }
                     if (angelleye_paypal_sdk.HostedFields.isEligible() == true) {
                         return true;
-                    } else {
-                        console.log("HostedFields isEligible : " + angelleye_paypal_sdk.HostedFields.isEligible());
                     }
                 }
             }
-            $('#wc-angelleye_ppcp-cc-form').hide();
-            $('.checkout_cc_separator').hide();
             return false;
         }
         function is_angelleye_ppcp_selected() {
