@@ -2,9 +2,9 @@
 Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
-Requires at least: 5.3
-Tested up to: 5.6.1
-Stable tag: 2.5.1
+Requires at least: 5.4
+Tested up to: 5.7
+Stable tag: 2.5.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 2.5.2 - 03.10.2021 =
+* Fix - Adjust Buy Now Pay Later Messaging. ([PFW-767](https://github.com/angelleye/paypal-woocommerce/pull/1533))
 
 = 2.5.1 - 02.22.2021 =
 * Feature - Adds SiteGround SG Optimize compatibility. ([PFW-709](https://github.com/angelleye/paypal-woocommerce/pull/1529))
