@@ -133,9 +133,7 @@
                         window.location.href = window.location.href;
                     }
                 }
-            }).render(selector).catch(function (err) {
-                console.log('error: ', JSON.stringify(err));
-            });
+            }).render(selector);
 
         };
 
