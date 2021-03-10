@@ -29,5 +29,4 @@ jQuery(function ($) {
     $(document.body).on('updated_checkout', function () {
         front_end_payment_page_pay_later_messaging_preview();
     });
-    front_end_payment_page_pay_later_messaging_preview();
 });
