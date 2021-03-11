@@ -681,7 +681,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             } else {
                 $pre_checkout_offer = "no";
             }
-            if ($this->angelleye_is_in_context_enable() == true || $this->is_paypal_sdk_required()) {
+            if ($this->angelleye_is_in_context_enable() == true || $this->is_angelleye_paypal_sdk_required()) {
                 $cancel_url = !empty($this->cancel_page) ? get_permalink($this->cancel_page) : wc_get_cart_url();
                 $disallowed_funding_methods_json = json_encode($this->disallowed_funding_methods);
                 $mini_cart_disallowed_funding_methods_json = json_encode($this->mini_cart_disallowed_funding_methods);
