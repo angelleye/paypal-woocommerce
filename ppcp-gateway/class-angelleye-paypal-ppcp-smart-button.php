@@ -173,13 +173,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_add_hooks() {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 9);
         add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
-        if($this->enable_product_button) {
+        if ($this->enable_product_button) {
             add_action('woocommerce_after_add_to_cart_form', array($this, 'display_paypal_button_product_page'), 10);
         }
-        if($this->enable_cart_button) {
+        if ($this->enable_cart_button) {
             add_action('woocommerce_proceed_to_checkout', array($this, 'display_paypal_button_cart_page'), 11);
         }
-        if($this->enable_checkout_button) {
+        if ($this->enable_checkout_button) {
             add_action('angelleye_ppcp_display_paypal_button_checkout_page', array($this, 'display_paypal_button_checkout_page'));
         }
         add_action('init', array($this, 'init'));
@@ -203,22 +203,21 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('sgo_javascript_combine_excluded_inline_content', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_filter('sgo_js_async_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_action('woocommerce_pay_order_after_submit', array($this, 'angelleye_ppcp_add_order_id'));
-        add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_ppcp_hide_show_gateway'),9999 );
+        add_filter('woocommerce_payment_gateways', array($this, 'angelleye_ppcp_hide_show_gateway'), 9999);
         //add_action('http_api_debug', array($this, 'angelleye_ppcp_all_web_request'), 10, 5);
     }
-    
+
     /*
      * 
      * This function is for temp debug
      */
-    
+
     public function angelleye_ppcp_all_web_request($response, $response_text, $Requests_text, $parsed_args, $url) {
         $this->api_log->temp_log(wc_print_r($url, true), 'error');
         $this->api_log->temp_log(wc_print_r($Requests_text, true), 'error');
         $this->api_log->temp_log(wc_print_r($parsed_args, true), 'error');
         $this->api_log->temp_log(wc_print_r($response_text, true), 'error');
         $this->api_log->temp_log(wc_print_r($response, true), 'error');
-            
     }
 
     public function enqueue_scripts() {
@@ -585,8 +584,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_clean_url($tag, $handle) {
-        if ( 'angelleye-paypal-checkout-sdk' === $handle ) {
-                $tag = str_replace( ' src=', ' data-namespace="angelleye_paypal_sdk" data-partner-attribution-id="Angelleye-123" src=', $tag );
+        if ('angelleye-paypal-checkout-sdk' === $handle) {
+            $client_token = '';
+            if (is_checkout() && $this->advanced_card_payments) {
+                $client_token = "data-client-token='{$this->client_token}'";
+            }
+            $tag = str_replace(' src=', ' '.$client_token.' data-namespace="angelleye_paypal_sdk" data-partner-attribution-id="Angelleye-123" src=', $tag);
         }
         return $tag;
     }
@@ -703,10 +706,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         <input type="hidden" name="woo_order_id" value="<?php echo $order_id; ?>" />
         <?php
     }
-    
+
     public function angelleye_ppcp_hide_show_gateway($methods) {
-        if($this->enable_checkout_button === false && $this->advanced_card_payments === false && is_checkout()) {
-            foreach ($methods as $key=>$method){
+        if ($this->enable_checkout_button === false && $this->advanced_card_payments === false && is_checkout()) {
+            foreach ($methods as $key => $method) {
                 if ($method === 'WC_Gateway_PPCP_AngellEYE') {
                     unset($methods[$key]);
                     break;
