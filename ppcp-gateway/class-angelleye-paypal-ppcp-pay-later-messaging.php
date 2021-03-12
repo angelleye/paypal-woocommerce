@@ -168,6 +168,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (WC()->cart->is_empty()) {
             return false;
         }
+        if(angelleye_ppcp_has_active_session()) {
+            return false;
+        }
         if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
             return false;
         }
