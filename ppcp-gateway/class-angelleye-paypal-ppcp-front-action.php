@@ -23,6 +23,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
         $this->title = $this->settings->get('title', 'PayPal Complete Payments');
         $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
+        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         if ($this->dcc_applies->for_country_currency() === false) {
             $this->advanced_card_payments = false;
         }
