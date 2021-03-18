@@ -741,7 +741,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (empty($this->checkout_details)) {
                 $this->checkout_details = angelleye_ppcp_get_session('angelleye_ppcp_paypal_transaction_details', false);
             }
-            $checkout_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+            //$checkout_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
             if (!empty($this->checkout_details)) {
                 unset($fields['billing']['billing_company']);
                 unset($fields['billing']['billing_city']);
