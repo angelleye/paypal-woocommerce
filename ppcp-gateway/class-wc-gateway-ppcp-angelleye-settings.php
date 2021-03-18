@@ -28,7 +28,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             return $this->settings[$id];
         }
-        
+
         public function get_load() {
             return get_option($this->gateway_key, array());
         }
@@ -1130,6 +1130,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                             'If you enable this setting, PayPal will be instructed not to allow the buyer to use funding sources that take additional time to complete (for example, eChecks). Instead, the buyer will be required to use an instant funding source, such as an instant transfer, a credit/debit card, or PayPal Credit.', 'paypal-for-woocommerce'
                     ),
                     'label' => __('Require Instant Payment', 'paypal-for-woocommerce'),
+                ),
+                'set_billing_address' => array(
+                    'title' => __('Billing Address', 'paypal-for-woocommerce'),
+                    'label' => __('Set billing address in WooCommerce using the address returned by PayPal.', 'paypal-for-woocommerce'),
+                    'description' => __('PayPal only returns a shipping address back to the website.  Enable this option if you would like to use this address for both billing and shipping in WooCommerce.'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                    'desc_tip' => true,
                 ),
                 'enable_advanced_card_payments' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
