@@ -375,8 +375,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
             $checkout_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
             echo WC()->countries->get_formatted_address($checkout_details);
-            echo !empty($checkout_details['email']) ? '<p class="angelleye-woocommerce-customer-details-email">' . $checkout_details['email'] . '</p>' : '';
-            echo !empty($checkout_details['phone']) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $checkout_details['phone'] . '</p>' : '';
+            echo!empty($checkout_details['email']) ? '<p class="angelleye-woocommerce-customer-details-email">' . $checkout_details['email'] . '</p>' : '';
+            echo!empty($checkout_details['phone']) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $checkout_details['phone'] . '</p>' : '';
             ?>
         </div>
         <?php
@@ -741,6 +741,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (empty($this->checkout_details)) {
                 $this->checkout_details = angelleye_ppcp_get_session('angelleye_ppcp_paypal_transaction_details', false);
             }
+            $checkout_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
             if (!empty($this->checkout_details)) {
                 unset($fields['billing']['billing_company']);
                 unset($fields['billing']['billing_city']);
@@ -750,6 +751,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 unset($fields['billing']['billing_address_1']);
                 unset($fields['billing']['billing_address_2']);
             }
+            /*if (!empty($checkout_details)) {
+                foreach ($checkout_details as $key => $value) {
+                    if (!empty($value) && $fields['billing']['billing_' . $key]) {
+                        $fields['billing']['billing_' . $key]['class'][] = 'ppcp-provided';
+                    }
+                }
+            }*/
         }
         return $fields;
     }
