@@ -129,6 +129,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         delete_transient('angelleye_ppcp_live_access_token');
         delete_transient('angelleye_ppcp_sandbox_client_token');
         delete_transient('angelleye_ppcp_live_client_token');
+        delete_option('angelleye_ppcp_snadbox_webhook_id');
+        delete_option('angelleye_ppcp_live_webhook_id');
         if (function_exists('angelleye_ppcp_may_register_webhook')) {
             angelleye_ppcp_may_register_webhook();
         }

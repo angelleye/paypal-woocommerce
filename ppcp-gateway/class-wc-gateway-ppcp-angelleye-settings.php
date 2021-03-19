@@ -141,16 +141,16 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'class' => '',
                 ),
                 'live_email_address' => array(
-                    'title' => __('Live Email address', 'paypal-for-woocommerce'),
-                    'type' => 'text',
-                    'description' => __('The email address of your PayPal account.', 'paypal-for-woocommerce'),
+                    'title' => __('', 'paypal-for-woocommerce'),
+                    'type' => 'hidden',
+                    'description' => '',
                     'default' => '',
                     'desc_tip' => true
                 ),
                 'live_merchant_id' => array(
-                    'title' => __('Live Merchant Id', 'paypal-for-woocommerce'),
-                    'type' => 'text',
-                    'description' => __('Enter your PayPal Secret.', 'paypal-for-woocommerce'),
+                    'title' => '',
+                    'type' => 'hidden',
+                    'description' => '',
                     'default' => '',
                     'desc_tip' => true
                 ),
@@ -174,16 +174,16 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => 'Your account setting is set to sandbox, no real charging takes place. To accept live payments, switch your environment to live and connect your PayPal account.',
                 ),
                 'sandbox_email_address' => array(
-                    'title' => __('Sandbox Email address', 'paypal-for-woocommerce'),
-                    'type' => 'text',
-                    'description' => __('The email address of your PayPal account.', 'paypal-for-woocommerce'),
+                    'title' => '',
+                    'type' => 'hidden',
+                    'description' => '',
                     'default' => '',
                     'desc_tip' => true
                 ),
                 'sandbox_merchant_id' => array(
-                    'title' => __('Sandbox Merchant Id', 'paypal-for-woocommerce'),
-                    'type' => 'text',
-                    'description' => __('Enter your PayPal Secret.', 'paypal-for-woocommerce'),
+                    'title' => '',
+                    'type' => 'hidden',
+                    'description' => '',
                     'default' => '',
                     'desc_tip' => true
                 ),
