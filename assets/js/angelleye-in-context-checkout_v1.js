@@ -480,7 +480,6 @@ jQuery(function ($) {
                             disallowed: disallowed_funding_methods_var
                         },
                         payment: function () {
-                            $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                             var data = $( selector ).closest( 'form' )
 						.add( $( '<input type="hidden" name="request_from" /> ' )
 							.attr( 'value', 'JSv4' )
