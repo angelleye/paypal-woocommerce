@@ -1923,14 +1923,13 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public function angelleye_ec_woocommerce_checkout_fields($fields) {
         if ($this->billing_address === false) {
             if ($this->function_helper->ec_is_express_checkout()) {
-                unset($fields['billing']['billing_company']);
-                unset($fields['billing']['billing_city']);
-                unset($fields['billing']['billing_postcode']);
-                unset($fields['billing']['billing_country']);
-                unset($fields['billing']['billing_state']);
-                unset($fields['billing']['billing_address_1']);
-                unset($fields['billing']['billing_address_2']);
-                unset($fields['billing']['billing_phone']);
+                if( !empty($fields['billing'])) {
+                    foreach ($fields['billing'] as $key => $value) {
+                        if(!in_array($key, apply_filters('angelleye_required_billing_fields', array('billing_first_name', 'billing_last_name', 'billing_email')))) {
+                            unset($fields['billing'][$key]);
+                        }
+                    }
+                }
             }
         }
         return $fields;
