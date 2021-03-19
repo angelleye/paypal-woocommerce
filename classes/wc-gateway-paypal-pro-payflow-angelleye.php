@@ -1304,7 +1304,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
             $this->add_log('PayFlow Request: ' . print_r($log, true));
-            $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
+            $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData, $order_id));
             /**
              *  cURL Error Handling #146
              *  @since    1.1.8
@@ -1627,7 +1627,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'AMT' => $amount,
             'CURRENCY' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()
         );
-        $PayPalResult = $this->PayPal->ProcessTransaction($PayPalRequestData);
+        $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData, $order_id));
 
         $PayPalRequest = isset($PayPalResult['RAWREQUEST']) ? $PayPalResult['RAWREQUEST'] : '';
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
@@ -1993,7 +1993,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $token = WC_Payment_Tokens::get($payment_token);
             }
             $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
-            $PayPalResult = $this->PayPal->ProcessTransaction($PayPalRequestData);
+            $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData, $order_id));
 
             $this->add_log('PayFlow Endpoint: ' . $this->PayPal->APIEndPoint);
             $this->add_log('PayFlow Response: ' . print_r($PayPalResult, true));
