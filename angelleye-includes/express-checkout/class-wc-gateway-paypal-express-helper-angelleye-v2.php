@@ -255,6 +255,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_filter( 'sgo_javascript_combine_exclude', array($this, 'angelleye_exclude_javascript'), 999);
                 add_filter( 'sgo_javascript_combine_excluded_inline_content', array($this, 'angelleye_exclude_javascript'), 999);
                 add_filter( 'sgo_js_async_exclude', array($this, 'angelleye_exclude_javascript'), 999);
+                add_filter('woocommerce_checkout_fields', array($this, 'angelleye_ec_woocommerce_checkout_fields'), 999);
                 if ($this->enabled_credit_messaging) {
                     if ($this->is_paypal_credit_messaging_enable_for_page($page = 'home') && $this->credit_messaging_home_shortcode === false) {
                         add_filter('the_content', array($this, 'angelleye_display_credit_messaging_home_page_content'), 10);
@@ -401,11 +402,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                             $_POST['shipping_' . $field] = '';
                         }
                     } else {
-                        if ($this->angelleye_is_need_to_set_billing_address() == true) {
-                            $_POST['billing_' . $field] = wc_clean(stripslashes($value));
-                        } elseif (empty($post_data)) {
-                            $_POST['billing_' . $field] = '';
-                        }
+                        $_POST['billing_' . $field] = wc_clean(stripslashes($value));
                         $_POST['shipping_' . $field] = wc_clean(stripslashes($value));
                     }
                 }
@@ -453,23 +450,33 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             if (!$this->is_order_completed) {
                 return;
             }
+            
+            if ($this->billing_address === false) {
+                $address = array(
+                    'first_name' => WC()->checkout->get_value($type . '_first_name'),
+                    'last_name' => WC()->checkout->get_value($type . '_last_name'),
+                    'company' => WC()->checkout->get_value($type . '_company')
+                );
+               $edit_link = ''; 
+           } else {
+               $edit_link = "<a href='#' class='ex-show-address-fields' data-type='" . esc_attr('billing') ."'> " . __('Edit', 'paypal-for-woocommerce') ."</a>";
+               $address = array(
+                   'first_name' => WC()->checkout->get_value($type . '_first_name'),
+                   'last_name' => WC()->checkout->get_value($type . '_last_name'),
+                   'company' => WC()->checkout->get_value($type . '_company'),
+                   'address_1' => WC()->checkout->get_value($type . '_address_1'),
+                   'address_2' => WC()->checkout->get_value($type . '_address_2'),
+                   'city' => WC()->checkout->get_value($type . '_city'),
+                   'state' => WC()->checkout->get_value($type . '_state'),
+                   'postcode' => WC()->checkout->get_value($type . '_postcode'),
+                   'country' => WC()->checkout->get_value($type . '_country'),
+               );
+           }
             ?>
             <div class="express-provided-address">
-                <a href="#" class="ex-show-address-fields" data-type="<?php echo esc_attr('billing'); ?>"><?php esc_html_e('Edit', 'paypal-for-woocommerce'); ?></a>
+                <?php echo $edit_link; ?>
                 <address>
                     <?php
-                    $address = array(
-                        'first_name' => WC()->checkout->get_value($type . '_first_name'),
-                        'last_name' => WC()->checkout->get_value($type . '_last_name'),
-                        'company' => WC()->checkout->get_value($type . '_company'),
-                        'address_1' => WC()->checkout->get_value($type . '_address_1'),
-                        'address_2' => WC()->checkout->get_value($type . '_address_2'),
-                        'city' => WC()->checkout->get_value($type . '_city'),
-                        'state' => WC()->checkout->get_value($type . '_state'),
-                        'postcode' => WC()->checkout->get_value($type . '_postcode'),
-                        'country' => WC()->checkout->get_value($type . '_country'),
-                    );
-
                     $shipping_details = $this->ec_get_session_data('shipping_details');
                     $email = WC()->checkout->get_value($type . '_email');
                     if (empty($email)) {
@@ -1912,4 +1919,20 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         return $components;
         
     }
+    
+    public function angelleye_ec_woocommerce_checkout_fields($fields) {
+        if ($this->billing_address === false) {
+            if ($this->function_helper->ec_is_express_checkout()) {
+                unset($fields['billing']['billing_company']);
+                unset($fields['billing']['billing_city']);
+                unset($fields['billing']['billing_postcode']);
+                unset($fields['billing']['billing_country']);
+                unset($fields['billing']['billing_state']);
+                unset($fields['billing']['billing_address_1']);
+                unset($fields['billing']['billing_address_2']);
+                unset($fields['billing']['billing_phone']);
+            }
+        }
+        return $fields;
+    } 
 }
