@@ -139,17 +139,19 @@ class AngellEYE_Utility {
         add_action('woocommerce_admin_order_data_after_shipping_address', array($this, 'angelleye_paypal_for_woocommerce_billing_agreement_details'), 10, 1);
     }
 
-    public function angelleye_woocommerce_order_actions($order_actions = array()) {
-        global $post, $thepostid, $theorder;
-        if ( ! is_int( $thepostid ) ) {
-            $thepostid = $post->ID;
+    public function angelleye_woocommerce_order_actions($order) {
+        global $post, $theorder;
+        $order_actions = array();
+        if ( ! is_object( $order ) ) {
+            if ( ! is_object( $theorder ) ) {
+                $order = wc_get_order( $post->ID );
+            } else {
+                $order = $theorder;
+            }
         }
-
-        if ( ! is_object( $theorder ) ) {
-          $theorder = wc_get_order( $thepostid );
+        if ( ! is_object( $order ) ) {
+            return $order_actions;
         }
-
-        $order = $theorder;
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $this->order_id = $order_id;
         $paypal_payment_action = array();
@@ -333,11 +335,13 @@ class AngellEYE_Utility {
     public static function angelleye_add_order_meta($order_id, $payment_order_meta) {
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $order = wc_get_order($order_id);
-        foreach ($payment_order_meta as $key => $value) {
-            if ($old_wc) {
-                update_post_meta($order_id, $key, $value);
-            } else {
-                update_post_meta($order->get_id(), $key, $value);
+        if( !empty($payment_order_meta)) {
+            foreach ($payment_order_meta as $key => $value) {
+                if ($old_wc) {
+                    update_post_meta($order_id, $key, $value);
+                } else {
+                    update_post_meta($order->get_id(), $key, $value);
+                }
             }
         }
         if ($old_wc) {
@@ -1030,6 +1034,7 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_paypal_for_woocommerce_order_action_callback($post) {
+        global $theorder;
         $args = array(
             'post_type' => 'paypal_transaction',
             'posts_per_page' => -1,
@@ -1038,7 +1043,10 @@ class AngellEYE_Utility {
             'order' => 'ASC',
             'post_status' => 'any'
         );
-        $order = wc_get_order($post->ID);
+        if ( ! is_object( $theorder ) ) {
+                $theorder = wc_get_order( $post->ID );
+        }
+        $order = $theorder;
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         $payment_action = get_post_meta($post->ID, '_payment_action', true);
@@ -1046,7 +1054,7 @@ class AngellEYE_Utility {
         $transaction_id = $this->angelleye_get_order_transaction_id($post);
         $posts_array = get_posts($args);
         if (empty($this->angelleye_woocommerce_order_actions)) {
-            $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions();
+            $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions($order);
         }
         if( $payment_method != 'braintree') {
             foreach ($posts_array as $post_data):
@@ -1322,7 +1330,7 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_paypal_for_woocommerce_order_status_handler($order) {
-        $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions();
+        $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions($order);
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
