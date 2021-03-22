@@ -68,6 +68,19 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
         public function angelleye_ppcp_setting_fields() {
+            $skip_final_review_option_not_allowed_guest_checkout = '';
+            $skip_final_review_option_not_allowed_terms = '';
+            $skip_final_review_option_not_allowed_tokenized_payments = '';
+            $woocommerce_enable_guest_checkout = get_option('woocommerce_enable_guest_checkout');
+            if ('yes' === get_option('woocommerce_registration_generate_username') && 'yes' === get_option('woocommerce_registration_generate_password')) {
+                $woocommerce_enable_guest_checkout = 'yes';
+            }
+            if (isset($woocommerce_enable_guest_checkout) && ( $woocommerce_enable_guest_checkout === "no" )) {
+                $skip_final_review_option_not_allowed_guest_checkout = ' (The WooCommerce guest checkout option is disabled.  Therefore, the review page is required for login / account creation, and this option will be overridden.)';
+            }
+            if ( apply_filters( 'woocommerce_checkout_show_terms', true ) && function_exists( 'wc_terms_and_conditions_checkbox_enabled' ) && wc_terms_and_conditions_checkbox_enabled()) {
+                $skip_final_review_option_not_allowed_terms = ' (You currently have a Terms &amp; Conditions page set, which requires the review page, and will override this option.)';
+            }
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -1103,6 +1116,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'WC-PPCP',
                     'desc_tip' => true,
                 ),
+                'skip_final_review' => array(
+                    'title' => __('Skip Final Review', 'paypal-for-woocommerce'),
+                    'label' => __('Enables the option to skip the final review page.', 'paypal-for-woocommerce'),
+                    'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.') . '<br /><b class="final_review_notice"><span class="guest_checkout_notice">' . $skip_final_review_option_not_allowed_guest_checkout . '</span></b>' . '<b class="final_review_notice"><span class="terms_notice">' . $skip_final_review_option_not_allowed_terms . '</span></b>' . '<b class="final_review_notice"><span class="tokenized_payments_notice">' . $skip_final_review_option_not_allowed_tokenized_payments . '</span></b>',
+                    'type' => 'checkbox',
+                    'default' => 'no'
+                ),
+                'disable_term' => array(
+                    'title' => __('Disable Terms and Conditions', 'paypal-for-woocommerce'),
+                    'label' => __('Disable Terms and Conditions for Express Checkout orders.', 'paypal-for-woocommerce'),
+                    'description' => __('By default, if a Terms and Conditions page is set in WooCommerce, this would require the review page and would override the Skip Final Review option.  Check this option to disable Terms and Conditions for Express Checkout orders only so that you can use the Skip Final Review option.'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                    'class' => 'disable_term',
+                ),
                 'brand_name' => array(
                     'title' => __('Brand Name', 'paypal-for-woocommerce'),
                     'type' => 'text',
@@ -1176,6 +1204,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             if (wc_coupons_enabled() === false) {
                 unset($this->angelleye_ppcp_gateway_setting['order_review_page_enable_coupons']);
+            }
+            if ( (apply_filters( 'woocommerce_checkout_show_terms', true ) && function_exists( 'wc_terms_and_conditions_checkbox_enabled' ) && wc_terms_and_conditions_checkbox_enabled()) === false) {
+                //disable_term
+                unset($this->angelleye_ppcp_gateway_setting['disable_term']);
             }
             return $this->angelleye_ppcp_gateway_setting;
         }

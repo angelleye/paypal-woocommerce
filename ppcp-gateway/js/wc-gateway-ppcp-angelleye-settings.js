@@ -23,6 +23,30 @@ jQuery(function ($) {
     } else {
         psb_available.hide();
     }
+    if (ppcp_angelleye_param.woocommerce_enable_guest_checkout === 'no') {
+        jQuery("#woocommerce_angelleye_ppcp_skip_final_review").prop("checked", false);
+        jQuery("#woocommerce_angelleye_ppcp_skip_final_review").attr("disabled", true);
+    }
+    jQuery('#woocommerce_angelleye_ppcp_skip_final_review').change(function () {
+        disable_term = jQuery('#woocommerce_angelleye_ppcp_disable_term').closest('tr');
+        if (jQuery(this).is(':checked')) {
+            if (ppcp_angelleye_param.disable_terms === 'yes') {
+                disable_term.show();
+            } else {
+                disable_term.hide();
+            }
+        } else {
+            disable_term.hide();
+        }
+    }).change();
+    jQuery('#woocommerce_angelleye_ppcp_disable_term').change(function () {
+        term_notice = jQuery('.terms_notice');
+        if (jQuery(this).is(':checked')) {
+            term_notice.hide();
+        } else {
+            term_notice.show();
+        }
+    }).change();
     $('#woocommerce_angelleye_ppcp_enable_advanced_card_payments').change(function () {
         if ($(this).is(':checked')) {
             $('#woocommerce_angelleye_ppcp_threed_secure_enabled').closest('tr').show();
