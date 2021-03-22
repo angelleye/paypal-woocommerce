@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.4
 Tested up to: 5.7
-Stable tag: 2.5.3
+Stable tag: 2.5.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 2.5.4 - 03.22.2021 =
+* Fix - Resolves Products with no shipping cost issue. ([PFW-770](https://github.com/angelleye/paypal-woocommerce/pull/1534))
+* Fix - Resolves a PHP error, call to a member function get(). ([PFW-771](https://github.com/angelleye/paypal-woocommerce/pull/1538))
 
 = 2.5.3 - 03.19.2021 =
 * Fix - Resolves PayPal Smart Buttons - Guest Checkout spinner issue. ([PFW-783](https://github.com/angelleye/paypal-woocommerce/pull/1537))
