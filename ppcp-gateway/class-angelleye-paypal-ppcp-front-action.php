@@ -164,6 +164,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             if (empty($order_id)) {
                 $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
             }
+            if(empty($order_id)) {
+                
+            }
             $order = wc_get_order($order_id);
             $this->payment_request->angelleye_ppcp_update_woo_order_data($_GET['paypal_order_id']);
             WC()->cart->empty_cart();
