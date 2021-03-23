@@ -282,7 +282,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'paymentaction' => $this->paymentaction,
             'advanced_card_payments' => ($this->advanced_card_payments === true) ? 'yes' : 'no',
             'threed_secure_enabled' => ($this->threed_secure_enabled === true) ? 'yes' : 'no',
-            'woocommerce_process_checkout' => wp_create_nonce('woocommerce-process_checkout')
+            'woocommerce_process_checkout' => wp_create_nonce('woocommerce-process_checkout'),
+            'is_skip_final_review' => 'yes',
+            'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1', 'XDEBUG_SESSION_START' => 'netbeans-xdebug'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))
                 )
         );
         if (is_checkout() && empty($this->checkout_details)) {
@@ -752,6 +754,52 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         return $fields;
+    }
+
+    public function angelleye_ppcp_prepare_order_data() {
+        if (empty($this->checkout_details)) {
+            $this->checkout_details = angelleye_ppcp_get_session('angelleye_ppcp_paypal_transaction_details', false);
+            if (empty($this->checkout_details)) {
+                $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
+                if (!empty($angelleye_ppcp_paypal_order_id)) {
+                    $this->checkout_details = $this->payment_request->angelleye_ppcp_get_checkout_details($angelleye_ppcp_paypal_order_id);
+                }
+            }
+            if (empty($this->checkout_details)) {
+                return;
+            }
+            angelleye_ppcp_set_session('angelleye_ppcp_paypal_transaction_details', $this->checkout_details);
+        }
+        $shipping_address = angelleye_ppcp_get_mapped_shipping_address($this->checkout_details);
+        $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+        $order_data['terms'] = 1;
+        $order_data['createaccount'] = 0;
+        $order_data['payment_method'] = 'angelleye_ppcp';
+        $order_data['ship_to_different_address'] = false;
+        $order_data['order_comments'] = '';
+        $order_data['billing_first_name'] = $billing_address['first_name'];
+        $order_data['billing_last_name'] = $billing_address['last_name'];
+        $order_data['billing_email'] = $billing_address['email'];
+        $order_data['billing_company'] = isset($billing_address['company']) ? $billing_address['company'] : '';
+        if ($this->set_billing_address) {
+            $order_data['billing_country'] = $billing_address['country'];
+            $order_data['billing_address_1'] = $billing_address['address_1'];
+            $order_data['billing_address_2'] = $billing_address['address_2'];
+            $order_data['billing_city'] = $billing_address['city'];
+            $order_data['billing_state'] = $billing_address['state'];
+            $order_data['billing_postcode'] = $billing_address['postcode'];
+            $order_data['billing_phone'] = $billing_address['phone'];
+        }
+        $order_data['shipping_first_name'] = $shipping_address['first_name'];
+        $order_data['shipping_last_name'] = $shipping_address['last_name'];
+        $order_data['shipping_company'] = isset($shipping_address['company']) ? $shipping_address['company'] : '';
+        $order_data['shipping_country'] = $shipping_address['country'];
+        $order_data['shipping_address_1'] = $shipping_address['address_1'];
+        $order_data['shipping_address_2'] = $shipping_address['address_2'];
+        $order_data['shipping_city'] = $shipping_address['city'];
+        $order_data['shipping_state'] = $shipping_address['state'];
+        $order_data['shipping_postcode'] = $shipping_address['postcode'];
+        return $order_data;
     }
 
 }

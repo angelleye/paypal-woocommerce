@@ -105,6 +105,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', wc_clean($_GET['paypal_order_id']));
                     $this->angelleye_ppcp_cc_capture();
                     break;
+
+                case "direct_capture":
+                    angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', wc_clean($_GET['paypal_order_id']));
+                    $this->angelleye_ppcp_direct_capture();
+                    break;
             }
         }
     }
@@ -164,8 +169,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             if (empty($order_id)) {
                 $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
             }
-            if(empty($order_id)) {
-                
+            if (angelleye_ppcp_is_valid_order($order_id) || empty($order_id)) {
+                wp_redirect(wc_get_cart_url());
+                exit();
             }
             $order = wc_get_order($order_id);
             $this->payment_request->angelleye_ppcp_update_woo_order_data($_GET['paypal_order_id']);
@@ -305,6 +311,18 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             }
         }
         return false;
+    }
+
+    public function angelleye_ppcp_create_woo_order() {
+        if (!class_exists('AngellEYE_PayPal_PPCP_Checkout')) {
+            include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php';
+        }
+        $ppcp_checkout = AngellEYE_PayPal_PPCP_Checkout::instance();
+        return $ppcp_checkout->process_checkout();
+    }
+
+    public function angelleye_ppcp_direct_capture() {
+        $this->angelleye_ppcp_create_woo_order();
     }
 
 }

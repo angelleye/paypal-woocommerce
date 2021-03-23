@@ -391,4 +391,16 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
         }
 
     }
+
+    if (!function_exists('angelleye_ppcp_is_valid_order')) {
+
+        function angelleye_ppcp_is_valid_order($order_id) {
+            $order = $order_id ? wc_get_order($order_id) : null;
+            if ($order) {
+                return true;
+            }
+            return false;
+        }
+
+    }
 }

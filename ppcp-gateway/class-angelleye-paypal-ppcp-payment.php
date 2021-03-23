@@ -1233,5 +1233,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order->add_order_note(__('Payment authorized. Change order status to processing or complete for capture funds.', 'paypal-for-woocommerce'));
         }
     }
+    
+    
 
 }

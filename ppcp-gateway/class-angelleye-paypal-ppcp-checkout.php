@@ -21,7 +21,9 @@ if (class_exists('WC_Checkout')) {
                 }
                 do_action('woocommerce_checkout_process');
                 $errors = new WP_Error();
-                $posted_data = $this->get_posted_data();
+                //$posted_data = $this->get_posted_data();
+                $smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
+                $posted_data = $smart_button->angelleye_ppcp_prepare_order_data();
                 $this->update_session($posted_data);
                 $this->process_customer($posted_data);
                 $order_id = $this->create_order($posted_data);
@@ -33,7 +35,11 @@ if (class_exists('WC_Checkout')) {
                     throw new Exception(__('Unable to create order.', 'woocommerce'));
                 }
                 do_action('woocommerce_checkout_order_processed', $order_id, $posted_data, $order);
-                $this->process_order_payment($order_id, $posted_data['payment_method']);
+                if (apply_filters('woocommerce_cart_needs_payment', $order->needs_payment(), WC()->cart)) {
+                    $this->process_order_payment($order_id, 'angelleye_ppcp');
+                } else {
+                    $this->process_order_without_payment($order_id);
+                }
             } catch (Exception $e) {
                 wc_add_notice($e->getMessage(), 'error');
             }
