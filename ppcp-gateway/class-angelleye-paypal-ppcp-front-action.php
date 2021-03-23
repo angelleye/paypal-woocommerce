@@ -169,7 +169,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             if (empty($order_id)) {
                 $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
             }
-            if (angelleye_ppcp_is_valid_order($order_id) || empty($order_id)) {
+            if (angelleye_ppcp_is_valid_order($order_id) === false || empty($order_id)) {
                 wp_redirect(wc_get_cart_url());
                 exit();
             }
