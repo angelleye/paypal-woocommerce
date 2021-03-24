@@ -380,6 +380,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     public function process_payment($woo_order_id) {
         $is_success = false;
         if (isset($_GET['from']) && 'checkout' === $_GET['from']) {
+            angelleye_ppcp_set_session('angelleye_ppcp_checkout_post', isset($_POST) ? wc_clean($_POST) : false);
             angelleye_ppcp_set_session('angelleye_ppcp_woo_order_id', $woo_order_id);
             $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
             exit();

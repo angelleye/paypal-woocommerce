@@ -85,6 +85,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->enabled_pay_later_messaging = 'yes' === $this->settings->get('enabled_pay_later_messaging', 'no');
         $this->pay_later_messaging_page_type = $this->settings->get('pay_later_messaging_page_type', array('home', 'category', 'product', 'cart', 'payment'));
         $this->set_billing_address = 'yes' === $this->settings->get('set_billing_address', 'no');
+        $this->disable_term = 'yes' === $this->settings->get('disable_term', 'no');
+        $this->skip_final_review = 'yes' === $this->settings->get('skip_final_review', 'no');
         if (empty($this->pay_later_messaging_page_type)) {
             $this->enabled_pay_later_messaging = false;
         }
@@ -250,7 +252,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $page = 'checkout';
             $is_pay_page = 'yes';
         }
-        $smart_js_arg['commit'] = ( $page === 'checkout' ) ? 'true' : 'false';
+        $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
         $smart_js_arg['intent'] = ( $this->paymentaction === 'capture' ) ? 'capture' : 'authorize';
         $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
         $components = array("buttons");
@@ -283,8 +285,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'advanced_card_payments' => ($this->advanced_card_payments === true) ? 'yes' : 'no',
             'threed_secure_enabled' => ($this->threed_secure_enabled === true) ? 'yes' : 'no',
             'woocommerce_process_checkout' => wp_create_nonce('woocommerce-process_checkout'),
-            'is_skip_final_review' => 'yes',
-            'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1', 'XDEBUG_SESSION_START' => 'netbeans-xdebug'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))
+            'is_skip_final_review' => $this->angelleye_ppcp_is_skip_final_review() ? 'yes' : 'no',
+            'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))
                 )
         );
         if (is_checkout() && empty($this->checkout_details)) {
@@ -777,6 +779,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $order_data['payment_method'] = 'angelleye_ppcp';
         $order_data['ship_to_different_address'] = false;
         $order_data['order_comments'] = '';
+        $order_data['shipping_method'] = '';
         $order_data['billing_first_name'] = $billing_address['first_name'];
         $order_data['billing_last_name'] = $billing_address['last_name'];
         $order_data['billing_email'] = $billing_address['email'];
@@ -800,6 +803,30 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $order_data['shipping_state'] = $shipping_address['state'];
         $order_data['shipping_postcode'] = $shipping_address['postcode'];
         return $order_data;
+    }
+
+    public function angelleye_ppcp_is_skip_final_review() {
+        $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;
+        $this->must_create_account = $this->enable_guest_checkout || is_user_logged_in() ? false : true;
+        $force_to_skip_final_review = true;
+        if ($this->skip_final_review === false) {
+            return apply_filters('angelleye_ppcp_skip_final_review', false);
+        }
+        if ($this->must_create_account === true) {
+            return apply_filters('angelleye_ppcp_skip_final_review', false);
+        }
+        $angelleye_ppcp_checkout_post = angelleye_get_session('angelleye_ppcp_checkout_post');
+        if ( apply_filters( 'woocommerce_checkout_show_terms', true ) && function_exists( 'wc_terms_and_conditions_checkbox_enabled' ) && wc_terms_and_conditions_checkbox_enabled()) {
+            if ($this->disable_term) {
+                return apply_filters('angelleye_ppcp_skip_final_review', true);
+            } elseif ((isset($angelleye_ppcp_checkout_post['terms']) || isset($angelleye_ppcp_checkout_post['legal'])) && $angelleye_ppcp_checkout_post['terms'] == 'on') {
+                return apply_filters('angelleye_ppcp_skip_final_review', true);
+            }
+        }
+        if ($this->skip_final_review == 'yes') {
+            return apply_filters('angelleye_ppcp_skip_final_review', true);
+        }
+        return apply_filters('angelleye_ppcp_skip_final_review', $force_to_skip_final_review);
     }
 
 }

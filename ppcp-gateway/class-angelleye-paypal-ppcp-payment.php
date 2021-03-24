@@ -464,12 +464,13 @@ class AngellEYE_PayPal_PPCP_Payment {
     }
 
     public function angelleye_ppcp_application_context() {
+        $smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
         return array(
             'brand_name' => $this->brand_name,
             'locale' => 'en-US',
             'landing_page' => $this->landing_page,
             'shipping_preference' => $this->angelleye_ppcp_shipping_preference(),
-            'user_action' => is_checkout() ? 'PAY_NOW' : 'CONTINUE',
+            'user_action' => $smart_button->angelleye_ppcp_is_skip_final_review() ? 'PAY_NOW' : 'CONTINUE',
             'return_url' => '',
             'cancel_url' => ''
         );
