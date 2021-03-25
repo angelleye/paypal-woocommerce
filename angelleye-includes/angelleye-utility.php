@@ -1960,6 +1960,11 @@ class AngellEYE_Utility {
     }
     
     public static function angelleye_express_checkout_validate_shipping_address($paypal_request) {
+        if(isset($_REQUEST['from_checkout']) && 'yes' === wc_clean($_REQUEST['from_checkout']) && (is_checkout() || is_checkout_pay_page())) {
+            $paypal_request['SECFields']['addroverride'] = 1;
+        } else {
+            unset($paypal_request['SECFields']['addroverride']);
+        }
         if( !empty($paypal_request['SECFields']['addroverride']) && $paypal_request['SECFields']['addroverride'] == 1 ) {
             $address_required_field = array('shiptoname', 'shiptostreet', 'shiptocity', 'shiptostate', 'shiptozip', 'shiptocountrycode');
             foreach ($address_required_field as $key => $value) {
