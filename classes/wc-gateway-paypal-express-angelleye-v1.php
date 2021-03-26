@@ -158,6 +158,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->page_style = $this->get_option('page_style', '');
         $this->review_button_label = $this->get_option('review_button_label', __('Place Order', 'paypal-for-woocommerce'));
         $this->checkout_button_label = $this->get_option('checkout_button_label', __('Proceed to PayPal', 'paypal-for-woocommerce'));
+        $this->checkout_page_disallowed_funding_methods = $this->get_option('checkout_page_disallowed_funding_methods', array());
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'), 999);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
         if (!has_action('woocommerce_api_' . strtolower('WC_Gateway_PayPal_Express_AngellEYE'))) {
@@ -747,6 +748,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @return string
      */
     public function get_icon() {
+        if (in_array('credit', $this->checkout_page_disallowed_funding_methods)) {
+            $this->show_paypal_credit = 'no';
+        }
         $image_path = plugins_url('/assets/images/paypal.png', plugin_basename(dirname(__FILE__)));
         if( $this->paypal_account_optional == 'no' && $this->show_paypal_credit == 'no' ) {
             $image_path = plugins_url('/assets/images/paypal.png', plugin_basename(dirname(__FILE__)));
