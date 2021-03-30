@@ -555,6 +555,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
        function angelleye_product_type_options_own($product_type){
+
+            global $pp_settings, $pagenow;
+
             if( isset($product_type) && !empty($product_type) ) {
                 $product_type['no_shipping_required'] = array(
                         'id'            => '_no_shipping_required',
@@ -577,12 +580,20 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         'description'   => __( 'If this product is included in the cart the order will be processed in the PayPal sandbox for testing purposes.', 'paypal-for-woocommerce' ),
                         'default'       => 'no'
                 );
+
+                $default_ec_button = 'no';
+                if (( $pagenow == 'post-new.php' ) && ( get_post_type() == 'product' )) {
+                    if(!empty($pp_settings['show_on_product_page']) && $pp_settings['show_on_product_page'] == 'yes' && !empty($pp_settings['enable_newly_products']) && $pp_settings['enable_newly_products'] == 'yes' ) {
+                        $default_ec_button = 'yes';
+                    }
+                }
+                
                 $product_type['enable_ec_button'] = array(
                         'id'            => '_enable_ec_button',
                         'wrapper_class' => '',
                         'label'         => __( 'Enable Express Checkout Button', 'paypal-for-woocommerce' ),
                         'description'   => __( 'Adds the PayPal Express Checkout button to the product page allowing buyers to checkout directly from the product page.', 'paypal-for-woocommerce' ),
-                        'default'       => 'no'
+                        'default'       => $default_ec_button
                 );
                 return $product_type;
             } else {
