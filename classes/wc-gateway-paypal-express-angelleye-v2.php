@@ -1327,6 +1327,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'description' => sprintf(__('Allows customers to checkout using PayPal directly from a product page. Do not forget to enable Express Checkout on product details page.  You can use the <a href="%s" target="_blank">Bulk Update Tool</a> to Enable Express Checkout on multiple products at once.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce&tab=tools')),
                 'desc_tip' => false,
+                'class' => 'show-on-product-page'
+            ),
+            'enable_newly_products' => array(
+                'title' => '',
+                'type' => 'checkbox',
+                'label' => __('Enable by default on all new products.', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'description' => '',
+                'desc_tip' => false,
+                'class' => 'enable-newly-products-bydefault'
             ),
             'show_paypal_credit' => array(
                 'title' => __('Enable PayPal Credit', 'paypal-for-woocommerce'),

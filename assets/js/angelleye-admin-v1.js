@@ -500,5 +500,13 @@ jQuery(document).ready(function ($) {
         };
     }
     
+    jQuery('.show-on-product-page').change(function () {
+        var express_default_enable = jQuery('.enable-newly-products-bydefault').closest('tr');
+        if (jQuery(this).is(':checked')) {
+            express_default_enable.show();
+        } else {
+            express_default_enable.hide();
+        }
+    }).change();
     
 });
