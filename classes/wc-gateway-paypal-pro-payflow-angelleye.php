@@ -2059,6 +2059,20 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     } else {
                         $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
                     }
+		    if( $this->pending_authorization_order_status == 'Processing' ) {
+                        $order->payment_complete($PayPalResult['PNREF']);
+                    } else {
+                        $order->update_status('on-hold');
+                        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                        if ($old_wc) {
+                            if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
+                                $order->reduce_order_stock();
+                            }
+                        } else {
+                            wc_maybe_reduce_stock_levels($order_id);
+                        }
+                    }
                     if ($old_wc) {
                         update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
                     } else {
