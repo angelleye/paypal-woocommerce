@@ -734,9 +734,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
             if (empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
                 if(is_angelleye_multi_account_active() === false) {
-                    $SECFields['returnurl'] = 'https://www.paypal.com/checkoutnow/error';
-                    $SECFields['cancelurl'] = 'https://www.paypal.com/checkoutnow/error';
+                   // $SECFields['returnurl'] = 'https://www.paypal.com/checkoutnow/error';
+                   // $SECFields['cancelurl'] = 'https://www.paypal.com/checkoutnow/error';
                 }
+                $SECFields['returnurl'] = 'https://www.paypal.com/checkoutnow/error';
+                    $SECFields['cancelurl'] = 'https://www.paypal.com/checkoutnow/error';
             }
 
             $usePayPalCredit = (!empty($_GET['use_paypal_credit']) && $_GET['use_paypal_credit'] == true) ? true : false;
