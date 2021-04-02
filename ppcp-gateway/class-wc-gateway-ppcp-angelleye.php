@@ -122,7 +122,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('woocommerce_admin_order_totals_after_total', array($this, 'angelleye_ppcp_display_order_fee'));
-        add_action('admin_notices', array($this, 'angelleye_ppcp_admin_notices'));
+        
     }
 
     public function process_admin_options() {
@@ -139,6 +139,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function admin_options() {
+        $this->angelleye_ppcp_admin_notices();
         //wp_enqueue_script('woocommerce_admin');
         wp_enqueue_script('wc-clipboard');
         echo '<div id="angelleye_paypal_marketing_table">';
