@@ -157,6 +157,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->page_style = $this->get_option('page_style', '');
         $this->review_button_label = $this->get_option('review_button_label', __('Place Order', 'paypal-for-woocommerce'));
         $this->checkout_button_label = $this->get_option('checkout_button_label', __('Proceed to PayPal', 'paypal-for-woocommerce'));
+        $this->checkout_page_disallowed_funding_methods = $this->get_option('checkout_page_disallowed_funding_methods', array());
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'), 999);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
         if (!has_action('woocommerce_api_' . strtolower('WC_Gateway_PayPal_Express_AngellEYE'))) {
@@ -1020,6 +1021,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
      * @return string
      */
     public function get_icon() {
+        if (in_array('credit', $this->checkout_page_disallowed_funding_methods)) {
+            $this->show_paypal_credit = 'no';
+        }
         $image_path = plugins_url('/assets/images/paypal.png', plugin_basename(dirname(__FILE__)));
         if ($this->paypal_account_optional == 'no' && $this->show_paypal_credit == 'no') {
             $image_path = plugins_url('/assets/images/paypal.png', plugin_basename(dirname(__FILE__)));
@@ -1333,6 +1337,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'default' => 'no',
                 'description' => sprintf(__('Allows customers to checkout using PayPal directly from a product page. Do not forget to enable Express Checkout on product details page.  You can use the <a href="%s" target="_blank">Bulk Update Tool</a> to Enable Express Checkout on multiple products at once.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce&tab=tools')),
                 'desc_tip' => false,
+                'class' => 'show-on-product-page'
+            ),
+            'enable_newly_products' => array(
+                'title' => '',
+                'type' => 'checkbox',
+                'label' => __('Enable by default on all new products.', 'paypal-for-woocommerce'),
+                'default' => 'no',
+                'description' => '',
+                'desc_tip' => false,
+                'class' => 'enable-newly-products-bydefault'
             ),
             'show_paypal_credit' => array(
                 'title' => __('Enable PayPal Credit', 'paypal-for-woocommerce'),
