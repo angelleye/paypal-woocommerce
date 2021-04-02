@@ -50,6 +50,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->enable_tokenized_payments = !empty($this->setting['enable_tokenized_payments']) ? $this->setting['enable_tokenized_payments'] : 'no';
                 if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
                     $this->enable_tokenized_payments = 'no';
+                    $this->is_multi_account_active = 'yes';
+                } else {
+                    $this->is_multi_account_active = 'no';
                 }
                 $this->checkout_with_pp_button_type = !empty($this->setting['checkout_with_pp_button_type']) ? $this->setting['checkout_with_pp_button_type'] : 'paypalimage';
                 $this->pp_button_type_text_button = !empty($this->setting['pp_button_type_text_button']) ? $this->setting['pp_button_type_text_button'] : 'Proceed to Checkout';
@@ -174,6 +177,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $this->enabled_credit_messaging_value = 'no';
                 }
                 $this->enabled_credit_messaging = 'yes' === $this->enabled_credit_messaging_value;
+                if( $this->is_multi_account_active === 'yes' ) {
+                    $this->enabled_credit_messaging = false;
+                }
                 if ($this->enabled_credit_messaging) {
                     $this->credit_messaging_home_shortcode_value = isset($this->setting['credit_messaging_home_shortcode']) ? $this->setting['credit_messaging_home_shortcode'] : 'no';
                     $this->credit_messaging_home_shortcode = 'yes' === $this->credit_messaging_home_shortcode_value;

@@ -997,7 +997,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         <?php
         if (!empty($this->is_multi_account_active == 'yes')) {
             ?> jQuery('#woocommerce_paypal_express_enable_tokenized_payments').prop("disabled", true);
-                jQuery('#woocommerce_paypal_express_enable_tokenized_payments').prop('checked', false);
+               jQuery('#woocommerce_paypal_express_enable_tokenized_payments').prop('checked', false);
+               jQuery('#woocommerce_paypal_express_enabled_credit_messaging').prop("disabled", true);
+               jQuery('#woocommerce_paypal_express_enabled_credit_messaging').prop('checked', false);
         <?php }
         ?>
         </script>
@@ -1076,6 +1078,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->is_multi_account_active = 'yes';
         } else {
             $this->is_multi_account_active = 'no';
+        }
+        $credit_messaging_text = '';
+        if($this->is_multi_account_active == 'yes') {
+            $credit_messaging_text = __('PayPal Pay Later Messaging - Buy Now Pay Later is not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
         }
         if ($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
             $enable_tokenized_payments_text = __('Payment tokenization is not available when using the PayPal Multi-Account add-on, and it has been disabled.', 'paypal-for-woocommerce');
@@ -2124,25 +2130,34 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
         }
         
-            $this->form_fields['credit_messaging'] = array(
-                'title' => __('', 'paypal-for-woocommerce'),
-                'type' => 'title',
-                'description' => '<div id="pms-muse-container">
+        if($this->is_multi_account_active != 'yes') {
+            $credit_messaging_description = '<div id="pms-muse-container">
                                 <div class="pms-muse-left-container">
                                         <div class="pms-muse-description">
                                                 <h2>PayPal Pay Later Messaging</h2>
                                                 <h3>Offer &#8220;Buy Now Pay Later&#8221; to Buyers</h3>
                                                 <p>PayPal Credit is a revolving line of credit that gives your customers the flexibility to buy now and pay over time, while you receive full payment immediately.</p>
                                                 <p>Buyer-facing messaging allows you to present this option to your buyers, increasing conversion rates and average order total.</p>
-                                        </div>'
+                                        </div>';
+        } else {
+            $credit_messaging_description = __('To add PayPal Pay Later Messaging - Buy Now Pay Later to your site.', 'paypal-for-woocommerce');
+        }
+            $this->form_fields['credit_messaging'] = array(
+                'title' => __('PayPal Pay Later Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
+                'type' => 'title',
+                'description' => $credit_messaging_description
             );
+            if($this->is_multi_account_active != 'yes') {
+                $credit_messaging_text = '<div style="font-size: smaller">Displays Pay Later messaging for available offers. Restrictions apply. <a target="_blank" href="https://developer.paypal.com/docs/business/pay-later/commerce-platforms/angelleye/">See terms and learn more</a></div>';
+            }
             $this->form_fields['enabled_credit_messaging'] = array(
                 'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                 'label' => __('Enable PayPal Pay Later Messaging - Buy Now Pay Later', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'description' => '<div style="font-size: smaller">Displays Pay Later messaging for available offers. Restrictions apply. <a target="_blank" href="https://developer.paypal.com/docs/business/pay-later/commerce-platforms/angelleye/">See terms and learn more</a></div>',
+                'description' => $credit_messaging_text,
                 'default' => 'no'
             );
+            if($this->is_multi_account_active != 'yes') {
             $this->form_fields['credit_messaging_page_type'] = array(
                 'title' => __('Page Type', 'paypal-for-woocommerce'),
                 'type' => 'multiselect',
@@ -2646,6 +2661,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 'custom_attributes' => array('readonly' => 'readonly'),
                 'default' => '[aepfw_bnpl_message placement="payment"]'
             );
+            }
         
         $this->form_fields = apply_filters('angelleye_ec_form_fields', $this->form_fields);
     }
