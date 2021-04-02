@@ -476,7 +476,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $message = sprintf(
                 __(
                         'PayPal Complete Payments is almost ready. To get started, <a href="%1$s">connect your account</a>.', 'paypal-for-woocommerce'
-                ), admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp')
+                ), admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp#woocommerce_angelleye_ppcp_enabled')
         );
         ?>
         <div class="notice notice-warning is-dismissible">
