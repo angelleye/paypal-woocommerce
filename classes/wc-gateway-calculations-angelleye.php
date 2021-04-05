@@ -154,7 +154,6 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                 if ($this->discount_amount > 0) {
                     $discLineItem = array(
                         'name' => 'Discount',
-                        'desc' => 'Discount Amount',
                         'qty' => 1,
                         'number' => '',
                         'amt' => '-' . AngellEYE_Gateway_Paypal::number_format($this->discount_amount)
@@ -287,7 +286,6 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
                     if ($this->discount_amount > 0) {
                         $discLineItem = array(
                             'name' => 'Discount',
-                            'desc' => 'Discount Amount',
                             'number' => '',
                             'qty' => 1,
                             'amt' => '-' . AngellEYE_Gateway_Paypal::number_format($this->discount_amount, $order)
