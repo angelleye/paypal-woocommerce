@@ -1170,9 +1170,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'enable_advanced_card_payments' => array(
                     'title' => __('Advanced Credit Cards', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'label' => __('Enable advanced credit and debit card payments', 'paypal-for-woocommerce'),
-                    'default' => 'no',
-                    'description' => 'Currently PayPal support Unbranded payments in US, AU, UK, FR, IT and ES only. <br> <br>Advanced credit and debit cards requires that your business account be evaluated and approved by PayPal. <br><br><span class="ppcp_sandbox"><a target="_blank" href="https://www.sandbox.paypal.com/bizsignup/entry/product/ppcp">Enable Advanced Credit Cards</a></span><span class="ppcp_live"><a target="_blank" href="https://www.paypal.com/bizsignup/entry/product/ppcp">Enable Advanced Credit Cards</a></span>',
+                    'label' => __('Enable advanced credit and debit card payments.', 'paypal-for-woocommerce'),
+                    'default' => 'yes',
+                    'description' => 'PayPal currently supports direct credit card processing for US, AU, UK, FR, IT and ES. <br> <br>If you have not already been approved for Advanced Credit Cards, please use the link below to apply. <br><br><span class="ppcp_sandbox"><a target="_blank" href="https://www.sandbox.paypal.com/bizsignup/entry/product/ppcp">Apply for Advanced Credit Cards</a></span><span class="ppcp_live"><a target="_blank" href="https://www.paypal.com/bizsignup/entry/product/ppcp">Apply for Advanced Credit Cards</a></span>',
                 ),
                 'threed_secure_enabled' => array(
                     'title' => __('3D Secure', 'paypal-for-woocommerce'),
