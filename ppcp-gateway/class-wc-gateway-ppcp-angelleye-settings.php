@@ -1124,9 +1124,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'no'
                 ),
                 'order_review_page_enable_coupons' => array(
-                    'title' => __('Enable/Disable Coupon', 'paypal-for-woocommerce'),
+                    'title' => __('Coupon Codes', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'label' => __('Coupon Codes - Enable the use of coupon codes on the final review page.', 'paypal-for-woocommerce'),
+                    'label' => __('Enable the use of coupon codes on the final review page.', 'paypal-for-woocommerce'),
                     'description' => '',
                     'default' => 'yes',
                 ),
