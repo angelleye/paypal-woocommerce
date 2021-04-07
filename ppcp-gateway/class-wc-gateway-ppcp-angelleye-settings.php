@@ -1161,7 +1161,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'set_billing_address' => array(
                     'title' => __('Billing Address', 'paypal-for-woocommerce'),
-                    'label' => __('Set billing address in WooCommerce using the address returned by PayPal.', 'paypal-for-woocommerce'),
+                    'label' => __('Set billing address in WooCommerce using the address returned by PayPal. (This does not apply for logged in users with a billing address in their profile.)', 'paypal-for-woocommerce'),
                     'description' => __('PayPal only returns a shipping address back to the website.  Enable this option if you would like to use this address for both billing and shipping in WooCommerce.'),
                     'type' => 'checkbox',
                     'default' => 'no',
