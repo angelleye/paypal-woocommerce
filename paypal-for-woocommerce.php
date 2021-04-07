@@ -613,6 +613,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
        function angelleye_product_type_options_own($product_type){
 
             global $pp_settings, $pagenow;
+            
+            if(empty($pp_settings['enabled']) || $pp_settings['enabled'] != 'yes') {
+                return $product_type;
+            }
 
             if( isset($product_type) && !empty($product_type) ) {
                 $product_type['no_shipping_required'] = array(
@@ -1226,7 +1230,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woo_woocommerce_product_data_tabs($product_data_tabs) {
-            global $woocommerce;
+            global $woocommerce, $pp_settings;
+            if(empty($pp_settings['enabled']) || $pp_settings['enabled'] != 'yes') {
+                return $product_data_tabs;
+            }
             $gateways = $woocommerce->payment_gateways->payment_gateways();
             if( !empty($gateways) ) {
                 $product_data_tabs['angelleye_paypal_for_woo_payment_action'] = array(
@@ -1239,8 +1246,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woo_product_date_panels() {
-            global $woocommerce, $post;
-            
+            global $woocommerce, $post, $pp_settings;
+            if(empty($pp_settings['enabled']) || $pp_settings['enabled'] != 'yes') {
+                return false;
+            }
             ?>
             <div id="angelleye_paypal_for_woo_payment_action" class="panel woocommerce_options_panel">
                 <?php
