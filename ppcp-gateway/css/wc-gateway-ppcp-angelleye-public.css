@@ -42,6 +42,7 @@
 .button.alt.angelleye_ppcp_cancel {
     clear: both;
     margin-bottom: 20px;
+    text-align: center;
 }
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree, .woocommerce #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree {
     height:2em;padding:7px;border:1px solid #ccc;border-radius:3px;transition:border-color .16s;-webkit-transition:border-color .16s;background-color:#fff;
