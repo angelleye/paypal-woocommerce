@@ -1168,7 +1168,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                 ),
                 'enable_advanced_card_payments' => array(
-                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                    'title' => __('Advanced credit and debit card payments', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
                     'label' => __('Enable advanced credit and debit card payments', 'paypal-for-woocommerce'),
                     'default' => 'no',
