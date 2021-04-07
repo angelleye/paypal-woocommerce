@@ -1172,7 +1172,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'checkbox',
                     'label' => __('Enable advanced credit and debit card payments', 'paypal-for-woocommerce'),
                     'default' => 'no',
-                    'description' => 'Currently PayPal support Unbranded payments in US, AU, UK, FR, IT and ES only. <br> <br>Advanced credit and debit cards requires that your business account be evaluated and approved by PayPal. <br><br><a target="_blank" href="https://www.sandbox.paypal.com/bizsignup/entry/product/ppcp">Enable for Sandbox Account</a> <span> | </span> <a target="_blank" href="https://www.paypal.com/bizsignup/entry/product/ppcp">Enable for Live Account</a><br>',
+                    'description' => 'Currently PayPal support Unbranded payments in US, AU, UK, FR, IT and ES only. <br> <br>Advanced credit and debit cards requires that your business account be evaluated and approved by PayPal. <span class="ppcp_sandbox"><a target="_blank" href="https://www.sandbox.paypal.com/bizsignup/entry/product/ppcp">Enable Advanced Credit Cards</a></span><span class="ppcp_live"><a target="_blank" href="https://www.paypal.com/bizsignup/entry/product/ppcp">Enable Advanced Credit Cards</a></span>',
                 ),
                 'threed_secure_enabled' => array(
                     'title' => __('3D Secure', 'paypal-for-woocommerce'),
