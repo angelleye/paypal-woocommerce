@@ -168,7 +168,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true
                 ),
                 'live_client_id' => array(
-                    'title' => __('Live Client Id', 'paypal-for-woocommerce'),
+                    'title' => __('Live Client ID', 'paypal-for-woocommerce'),
                     'type' => 'password',
                     'description' => __('Enter your PayPal Client ID.', 'paypal-for-woocommerce'),
                     'default' => '',
@@ -201,7 +201,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true
                 ),
                 'sandbox_client_id' => array(
-                    'title' => __('Sandbox Client Id', 'paypal-for-woocommerce'),
+                    'title' => __('Sandbox Client ID', 'paypal-for-woocommerce'),
                     'type' => 'password',
                     'description' => __('Enter your PayPal Sandbox Client ID.', 'paypal-for-woocommerce'),
                     'default' => '',
