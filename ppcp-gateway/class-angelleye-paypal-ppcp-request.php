@@ -123,7 +123,7 @@ class AngellEYE_PayPal_PPCP_Request {
         return $this->access_token;
     }
 
-    public function angelleye_ppcp_get_genrate_token() {
+    public function angelleye_ppcp_get_generate_token() {
         try {
             if ($this->access_token) {
                 $args = array(

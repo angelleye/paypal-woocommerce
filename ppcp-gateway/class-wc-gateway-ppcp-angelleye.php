@@ -361,7 +361,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         try {
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php');
             $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
-            $seller_onboarding_result = $this->seller_onboarding->angelleye_genrate_signup_link($testmode);
+            $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode);
             if (isset($seller_onboarding_result['result']) && 'success' === $seller_onboarding_result['result'] && !empty($seller_onboarding_result['body'])) {
                 $json = json_decode($seller_onboarding_result['body']);
                 if (isset($json->links)) {

@@ -229,7 +229,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (!isset($_GET['paypal_order_id']) && !isset($_GET['key'])) {
                 delete_transient('angelleye_ppcp_sandbox_client_token');
                 delete_transient('angelleye_ppcp_client_token');
-                $this->client_token = $this->api_request->angelleye_ppcp_get_genrate_token();
+                $this->client_token = $this->api_request->angelleye_ppcp_get_generate_token();
             }
         }
 

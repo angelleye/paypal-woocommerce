@@ -73,7 +73,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return $data;
     }
 
-    public function angelleye_genrate_signup_link($testmode) {
+    public function angelleye_generate_signup_link($testmode) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
         if ($this->is_sandbox) {
             $host_url = $this->on_board_sandbox_host;
@@ -85,7 +85,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'body' => $this->data(),
             'headers' => array(),
         );
-        return $this->api_request->request($host_url, $args, 'genrate_signup_link');
+        return $this->api_request->request($host_url, $args, 'generate_signup_link');
     }
 
     private function default_data() {
