@@ -18,7 +18,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             $this->angelleye_get_settings();
             $this->angelleye_defind_hooks();
             if (angelleye_ppcp_has_active_session()) {
-                $this->order_button_text = apply_filters('angelleye_ppcp_order_review_page_place_order_button_text', __('Confirm your PayPal order', 'paypal-for-woocommerce'));
+                $this->order_button_text = apply_filters('angelleye_ppcp_order_review_page_place_order_button_text', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
