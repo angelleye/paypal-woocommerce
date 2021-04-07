@@ -63,10 +63,11 @@ jQuery(function ($) {
         var ppcp_production_onboarding_disconnect_fields = $('#woocommerce_angelleye_ppcp_live_disconnect').closest('tr').hide();
         var ppcp_sandbox_onboarding_disconnect_fields = $('#woocommerce_angelleye_ppcp_sandbox_disconnect').closest('tr').show();
         if ($(this).is(':checked')) {
+            $('.ppcp_live').hide();
+            $('.ppcp_sandbox').show();
             ppcp_production_fields.hide();
             ppcp_production_onboarding_connect_fields.hide();
             ppcp_production_onboarding_disconnect_fields.hide();
-            $('.ppcp_live').hide();
             $('#woocommerce_angelleye_ppcp_api_credentials, #woocommerce_angelleye_ppcp_api_credentials + p').hide();
             if (ppcp_angelleye_param.is_sandbox_seller_onboarding_done === 'yes') {
                 $('#woocommerce_angelleye_ppcp_sandbox_api_credentials, #woocommerce_angelleye_ppcp_sandbox_api_credentials + p').show();
@@ -88,7 +89,8 @@ jQuery(function ($) {
 
             }
         } else {
-            $('.ppcp_sandbx').hide();
+            $('.ppcp_live').show();
+            $('.ppcp_sandbox').hide();
             ppcp_sandbox_fields.hide();
             ppcp_sandbox_onboarding_connect_fields.hide();
             ppcp_sandbox_onboarding_disconnect_fields.hide();
