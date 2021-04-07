@@ -109,9 +109,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'class' => 'ppcp_separator_heading',
                 ),
                 'testmode' => array(
-                    'title' => __('PayPal sandbox', 'paypal-for-woocommerce'),
+                    'title' => __('PayPal Sandbox', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'label' => __('Enable PayPal sandbox', 'paypal-for-woocommerce'),
+                    'label' => __('Enable PayPal Sandbox', 'paypal-for-woocommerce'),
                     'default' => 'no',
                     'description' => __('Check this box to enable test mode so that all transactions will hit PayPal’s sandbox server instead of the live server. This should only be used during development as no real transactions will occur when this is enabled.', 'paypal-for-woocommerce'),
                     'desc_tip' => true
@@ -232,7 +232,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'class' => '',
                     'type' => 'checkbox',
-                    'label' => __('Enable PayPal Smart Button on the Product pages.', 'paypal-for-woocommerce'),
+                    'label' => __('Enable PayPal Smart Button on the Product Pages.', 'paypal-for-woocommerce'),
                     'default' => 'yes',
                     'desc_tip' => true,
                     'description' => __('', 'paypal-for-woocommerce'),
@@ -659,7 +659,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'pay_later_messaging_home_page_settings' => array(
                     'title' => __('Home Page', 'paypal-for-woocommerce'),
                     'class' => '',
-                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later messages</a> on Home page to promote special financing offers, which help increase sales.', 'paypal-for-woocommerce'),
+                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Home page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'pay_later_messaging_field',
                 ),
@@ -746,7 +746,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'pay_later_messaging_category_page_settings' => array(
                     'title' => __('Category Page', 'paypal-for-woocommerce'),
                     'class' => '',
-                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later messages</a> on Category page to promote special financing offers, which help increase sales.', 'paypal-for-woocommerce'),
+                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Category page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'pay_later_messaging_field',
                 ),
@@ -833,7 +833,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'pay_later_messaging_product_page_settings' => array(
                     'title' => __('Product Page', 'paypal-for-woocommerce'),
                     'class' => '',
-                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later messages</a> on Product page to promote special financing offers, which help increase sales.', 'paypal-for-woocommerce'),
+                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Product page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'pay_later_messaging_field',
                 ),
@@ -920,7 +920,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'pay_later_messaging_cart_page_settings' => array(
                     'title' => __('Cart Page', 'paypal-for-woocommerce'),
                     'class' => '',
-                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later messages</a> on Cart page to promote special financing offers, which help increase sales.', 'paypal-for-woocommerce'),
+                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Cart page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'pay_later_messaging_field',
                 ),
@@ -1007,7 +1007,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'pay_later_messaging_payment_page_settings' => array(
                     'title' => __('Payment Page', 'paypal-for-woocommerce'),
                     'class' => '',
-                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later messages</a> on Payment page to promote special financing offers, which help increase sales.', 'paypal-for-woocommerce'),
+                    'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Payment page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'pay_later_messaging_field',
                 ),
@@ -1098,7 +1098,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'class' => 'ppcp_separator_heading',
                 ),
                 'paymentaction' => array(
-                    'title' => __('Payment action', 'paypal-for-woocommerce'),
+                    'title' => __('Payment Action', 'paypal-for-woocommerce'),
                     'type' => 'select',
                     'class' => 'wc-enhanced-select',
                     'description' => __('Choose whether you wish to capture funds immediately or authorize payment only.', 'paypal-for-woocommerce'),
@@ -1110,7 +1110,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     ),
                 ),
                 'invoice_prefix' => array(
-                    'title' => __('Invoice prefix', 'paypal-for-woocommerce'),
+                    'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
                     'type' => 'text',
                     'description' => __('Please enter a prefix for your invoice numbers. If you use your PayPal account for multiple stores ensure this prefix is unique as PayPal will not allow orders with the same invoice number.', 'paypal-for-woocommerce'),
                     'default' => 'WC-PPCP',
