@@ -1123,6 +1123,13 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'checkbox',
                     'default' => 'no'
                 ),
+                'order_review_page_enable_coupons' => array(
+                    'title' => __('Enable/Disable coupons', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('Enable the use of coupon codes', 'paypal-for-woocommerce'),
+                    'description' => __('Coupons can be applied from the order review.', 'paypal-for-woocommerce'),
+                    'default' => 'yes',
+                ),
                 'disable_term' => array(
                     'title' => __('Disable Terms and Conditions', 'paypal-for-woocommerce'),
                     'label' => __('Disable Terms and Conditions for Express Checkout orders.', 'paypal-for-woocommerce'),
@@ -1181,13 +1188,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('Enable 3D Secure for additional security on direct credit card checkouts. In Europe this is required.', 'paypal-for-woocommerce'),
                     'default' => 'no',
                 ),
-                'order_review_page_enable_coupons' => array(
-                    'title' => __('Enable/Disable coupons', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('Enable the use of coupon codes', 'paypal-for-woocommerce'),
-                    'description' => __('Coupons can be applied from the order review.', 'paypal-for-woocommerce'),
-                    'default' => 'yes',
-                ),
+                
                 'debug' => array(
                     'title' => __('Debug log', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',

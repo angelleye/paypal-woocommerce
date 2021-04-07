@@ -30,12 +30,14 @@ jQuery(function ($) {
     jQuery('#woocommerce_angelleye_ppcp_skip_final_review').change(function () {
         disable_term = jQuery('#woocommerce_angelleye_ppcp_disable_term').closest('tr');
         if (jQuery(this).is(':checked')) {
+            $('#woocommerce_angelleye_ppcp_order_review_page_enable_coupons').closest('tr').show();
             if (ppcp_angelleye_param.disable_terms === 'yes') {
                 disable_term.show();
             } else {
                 disable_term.hide();
             }
         } else {
+            $('#woocommerce_angelleye_ppcp_order_review_page_enable_coupons').closest('tr').hide();
             disable_term.hide();
         }
     }).change();
