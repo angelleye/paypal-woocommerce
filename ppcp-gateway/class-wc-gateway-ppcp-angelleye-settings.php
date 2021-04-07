@@ -1178,7 +1178,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('3D Secure', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
                     'label' => __('Enable 3D Secure', 'paypal-for-woocommerce'),
-                    'description' => __('If you are based in Europe, you are subjected to PSD2. PayPal recommends this option', 'paypal-for-woocommerce'),
+                    'description' => __('Enable 3D Secure for additional security on direct credit card checkouts. In Europe this is required.', 'paypal-for-woocommerce'),
                     'default' => 'no',
                 ),
                 'order_review_page_enable_coupons' => array(
