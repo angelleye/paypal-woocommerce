@@ -31,4 +31,7 @@ jQuery(function ($) {
         }
     };
     front_end_cart_page_credit_messaging_preview();
+    $(document.body).on('updated_cart_totals updated_checkout', function () {
+        front_end_cart_page_credit_messaging_preview();
+    });
 });

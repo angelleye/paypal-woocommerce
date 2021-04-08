@@ -29,8 +29,7 @@ jQuery(function ($) {
             }).render('.angelleye_pp_message_payment');
         }
     };
-    $(document.body).on('updated_shipping_method wc_fragments_refreshed updated_checkout', function (event) {
+    $(document.body).on('updated_checkout', function () {
         front_end_payment_page_credit_messaging_preview();
     });
-    front_end_payment_page_credit_messaging_preview();
 });
