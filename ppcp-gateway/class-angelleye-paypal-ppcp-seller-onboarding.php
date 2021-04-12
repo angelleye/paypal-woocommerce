@@ -142,7 +142,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 } else {
                     set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
                 }
-
                 if (function_exists('angelleye_ppcp_may_register_webhook')) {
                     angelleye_ppcp_may_register_webhook();
                 }
@@ -174,6 +173,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 return $this->result['access_token'];
             }
         } catch (Exception $ex) {
+            if ($this->is_sandbox) {
+                set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_failed', 'yes', 29000);
+            } else {
+                set_transient('angelleye_ppcp_live_seller_onboarding_process_failed', 'yes', 29000);
+            }
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
             return false;

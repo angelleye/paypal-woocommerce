@@ -253,7 +253,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                             ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                              ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <button type="button" class="button angelleye-ppcp-disconnect"><?php echo __('Disconnect', ''); ?></button>
@@ -278,7 +278,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                             ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                              ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
@@ -341,12 +341,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.               ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.               ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
                     <?php echo $this->get_description_html($data); // WPCS: XSS ok.    ?>
                 </fieldset>
@@ -470,6 +470,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_ppcp_admin_notices() {
         $is_saller_onboarding_done = false;
+        $is_saller_onboarding_failed = false;
         if (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done')) {
             $is_saller_onboarding_done = true;
             delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done');
@@ -486,11 +487,24 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             . '<h3>PayPal onboarding process successfully completed.s</h3>'
             . '</div>'
             . '</div>';
+        } else {
+            if (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_failed')) {
+                $is_saller_onboarding_failed = true;
+                delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_failed');
+            } elseif (false !== get_transient('angelleye_ppcp_live_seller_onboarding_process_failed')) {
+                $is_saller_onboarding_failed = true;
+                delete_transient('angelleye_ppcp_live_seller_onboarding_process_failed');
+            }
+            if ($is_saller_onboarding_failed) {
+                echo '<div class="notice notice-error is-dismissible">'
+                . '<p>We could not properly connect to PayPal. Please reload the page to continue.</p>'
+                . '</div>';
+            }
         }
         if ($this->is_live_seller_onboarding_done === 'yes' || $this->is_sandbox_seller_onboarding_done === 'yes') {
             return false;
         }
-        
+
         $message = sprintf(
                 __(
                         'PayPal Complete Payments is almost ready. To get started, <a href="%1$s">connect your account</a>.', 'paypal-for-woocommerce'
