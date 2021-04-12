@@ -484,7 +484,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             . '<div class="ppcp_success_logo"><img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark.png" width="65" height="65"></div>'
             . '</div>'
             . '<div class="angelleye-notice-message">'
-            . '<h3>PayPal onboarding process successfully completed.s</h3>'
+            . '<h3>PayPal onboarding process successfully completed.</h3>'
             . '</div>'
             . '</div>';
         } else {
