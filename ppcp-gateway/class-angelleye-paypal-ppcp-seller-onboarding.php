@@ -124,20 +124,28 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->settings->persist();
             $token = $this->angelleye_ppcp_get_access_token($data);
             $credentials = $this->angelleye_ppcp_get_seller_rest_api_credentials($token);
-            if ($this->is_sandbox) {
-                $this->settings->set('sandbox_secret_key', $credentials['client_secret']);
-                $this->settings->set('sandbox_client_id', $credentials['client_id']);
-                delete_transient('angelleye_ppcp_sandbox_access_token');
-                delete_transient('angelleye_ppcp_sandbox_client_token');
-            } else {
-                $this->settings->set('live_secret_key', $credentials['client_secret']);
-                $this->settings->set('live_client_id', $credentials['client_id']);
-                delete_transient('angelleye_ppcp_live_access_token');
-                delete_transient('angelleye_ppcp_live_client_token');
-            }
-            $this->settings->persist();
-            if (function_exists('angelleye_ppcp_may_register_webhook')) {
-                angelleye_ppcp_may_register_webhook();
+            if (!empty($credentials['client_secret']) && !empty($credentials['client_id'])) {
+                if ($this->is_sandbox) {
+                    $this->settings->set('sandbox_secret_key', $credentials['client_secret']);
+                    $this->settings->set('sandbox_client_id', $credentials['client_id']);
+                    delete_transient('angelleye_ppcp_sandbox_access_token');
+                    delete_transient('angelleye_ppcp_sandbox_client_token');
+                } else {
+                    $this->settings->set('live_secret_key', $credentials['client_secret']);
+                    $this->settings->set('live_client_id', $credentials['client_id']);
+                    delete_transient('angelleye_ppcp_live_access_token');
+                    delete_transient('angelleye_ppcp_live_client_token');
+                }
+                $this->settings->persist();
+                if ($this->is_sandbox) {
+                    set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
+                } else {
+                    set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
+                }
+
+                if (function_exists('angelleye_ppcp_may_register_webhook')) {
+                    angelleye_ppcp_may_register_webhook();
+                }
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');

@@ -23,6 +23,9 @@ jQuery(function ($) {
     } else {
         psb_available.hide();
     }
+    if ($('#ppcp_success_notice_onboarding').length > 0) {
+        $('#ppcp_success_notice_onboarding').show(1000);
+    }
     if (ppcp_angelleye_param.woocommerce_enable_guest_checkout === 'no') {
         jQuery("#woocommerce_angelleye_ppcp_skip_final_review").prop("checked", false);
         jQuery("#woocommerce_angelleye_ppcp_skip_final_review").attr("disabled", true);

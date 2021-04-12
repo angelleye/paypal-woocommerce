@@ -21,4 +21,7 @@
     font-size: 1.3em;
     margin: 32px 0px 5px 0px;
 }
-
+div.ppcp_success_logo {
+    display: block;
+    margin: 10px 10px 5px 10px;
+}
