@@ -160,6 +160,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_email_classes', array($this, 'angelleye_woocommerce_email_classes'), 10, 1);
             add_filter( 'wc_get_template', array($this, 'own_angelleye_wc_get_template'), 10, 5);
             add_filter( 'woocommerce_email_actions', array($this, 'own_angelleye_woocommerce_email_actions'), 10);
+            add_action( 'wcv_save_product', array($this,'angelleye_wcv_save_product'));
             $this->customer_id;
         }
 
@@ -1445,6 +1446,22 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $actions[] = 'woocommerce_order_status_processing_to_partial-payment';
             return $actions;
         }
-    } 
+
+        /**
+         * Enable express checkout button while vendors create a new products.
+         *
+         * @param int $product_id Product id.
+         */
+        public function angelleye_wcv_save_product( $product_id ) {
+
+	        $pp_settings = get_option( 'woocommerce_paypal_express_settings' );
+            
+            if(!empty($pp_settings['show_on_product_page']) && $pp_settings['show_on_product_page'] == 'yes' && !empty($pp_settings['enable_newly_products']) && $pp_settings['enable_newly_products'] == 'yes' ) {
+                update_post_meta( $product_id, '_enable_ec_button', 'yes');
+            }
+
+        }
+
+    }
 }
 new AngellEYE_Gateway_Paypal();
