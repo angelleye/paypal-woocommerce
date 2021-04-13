@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           2.5.6
+ * Version:           2.5.7
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '2.5.6');
+    define('VERSION_PFW', '2.5.7');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -175,6 +175,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'wc_get_template', array($this, 'own_angelleye_wc_get_template'), 10, 5);
             add_filter( 'woocommerce_email_actions', array($this, 'own_angelleye_woocommerce_email_actions'), 10);
             add_action( 'angelleye_classic_gateway_sub_menu', array($this, 'angelleye_classic_gateway_sub_menu'));
+            add_action( 'wcv_save_product', array($this,'angelleye_wcv_save_product'));
             $this->customer_id;
         }
 
@@ -1521,6 +1522,20 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
             echo '</ul><br class="clear" />';
         }
-    } 
+     
+
+        /**
+         * Enable express checkout button while vendors create a new products.
+         *
+         * @param int $product_id Product id.
+         */
+        public function angelleye_wcv_save_product( $product_id ) {
+            global $pp_settings;
+            $pp_settings = get_option( 'woocommerce_paypal_express_settings' );
+            if(!empty($pp_settings['show_on_product_page']) && $pp_settings['show_on_product_page'] == 'yes' && !empty($pp_settings['enable_newly_products']) && $pp_settings['enable_newly_products'] == 'yes' ) {
+                update_post_meta( $product_id, '_enable_ec_button', 'yes');
+            }
+        }
+    }
 }
 new AngellEYE_Gateway_Paypal();
