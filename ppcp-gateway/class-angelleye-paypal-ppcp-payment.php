@@ -82,7 +82,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             } else {
                 $cart = $this->angelleye_ppcp_get_details_from_order($woo_order_id);
             }
-            
+
             $reference_id = wc_generate_order_key();
             angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $reference_id);
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
@@ -478,15 +478,27 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_shipping_preference() {
         $shipping_preference = 'GET_FROM_FILE';
-        $is_cart = is_cart() && !WC()->cart->is_empty();
-        $is_checkout = is_checkout();
-        $page = $is_cart ? 'cart' : ( $is_checkout ? 'checkout' : null );
+        $page = null;
+        if (is_cart() && !WC()->cart->is_empty()) {
+            $page = 'cart';
+        } elseif (is_checkout()) {
+            $page = 'checkout';
+        } elseif (is_product()) {
+            $page = 'product';
+        } elseif (isset($_GET) && !empty($_GET['from'])) {
+            $page = $_GET['from'];
+        }
+        if ($page === null) {
+            return $shipping_preference = WC()->cart->needs_shipping() ? 'GET_FROM_FILE' : 'NO_SHIPPING';
+        }
         switch ($page) {
+            case 'product':
+                $shipping_preference = WC()->cart->needs_shipping() ? 'GET_FROM_FILE' : 'NO_SHIPPING';
             case 'cart':
-                $shipping_preference = WC()->cart->needs_shipping_address() ? 'GET_FROM_FILE' : 'NO_SHIPPING';
+                $shipping_preference = WC()->cart->needs_shipping() ? 'GET_FROM_FILE' : 'NO_SHIPPING';
                 break;
             case 'checkout':
-                $shipping_preference = WC()->cart->needs_shipping_address() ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING';
+                $shipping_preference = WC()->cart->needs_shipping() ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING';
                 break;
         }
         return $shipping_preference;
@@ -616,10 +628,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                     break;
             }
         }
-        /*if (!empty($message)) {
-            return $message;
-        } else */
-            
+        /* if (!empty($message)) {
+          return $message;
+          } else */
+
         if (!empty($error['message'])) {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
@@ -1234,7 +1246,5 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order->add_order_note(__('Payment authorized. Change order status to processing or complete for capture funds.', 'paypal-for-woocommerce'));
         }
     }
-    
-    
 
 }
