@@ -66,6 +66,7 @@ class AngellEYE_PayPal_PPCP_Response {
             $this->api_log->log('PFW Version: ' . VERSION_PFW);
             $this->api_log->log('Action: ' . $action_name);
             $this->api_log->log('Request URL: ' . $url);
+            $this->api_log->log('PayPal Debug ID: ' . wp_remote_retrieve_header($response, 'paypal-debug-id'));
             if (!empty($request['body']) && is_array($request['body'])) {
                 $this->api_log->log('Request Body: ' . wc_print_r($request['body'], true));
             } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {

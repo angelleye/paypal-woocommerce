@@ -678,14 +678,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 foreach ($billing_address as $field => $value) {
                     if (!empty($value)) {
                         if ('state' == $field) {
-                            if ($this->validate_checkout($shipping_address['country'], $value, 'shipping')) {
-                                $_POST['billing_' . $field] = $this->validate_checkout($shipping_address['country'], $value, 'shipping');
-                            } else {
-                                if (isset($shipping_address['country']) && isset($states_list[$shipping_address['country']])) {
-                                    $state_key = array_search($value, $states_list[$shipping_address['country']]);
-                                    $_POST['billing_' . $field] = $state_key;
+                            if(!empty($shipping_address['country'])) {
+                                if ($this->validate_checkout($shipping_address['country'], $value, 'shipping')) {
+                                    $_POST['billing_' . $field] = $this->validate_checkout($shipping_address['country'], $value, 'shipping');
                                 } else {
-                                    $_POST['billing_' . $field] = '';
+                                    if (isset($shipping_address['country']) && isset($states_list[$shipping_address['country']])) {
+                                        $state_key = array_search($value, $states_list[$shipping_address['country']]);
+                                        $_POST['billing_' . $field] = $state_key;
+                                    } else {
+                                        $_POST['billing_' . $field] = '';
+                                    }
                                 }
                             }
                         } else {
