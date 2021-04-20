@@ -815,11 +815,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'breakdown' => $update_amount_request
                 ),
             );
-            $patch_request[] = array(
-                'op' => 'replace',
-                'path' => "/purchase_units/@reference_id=='$reference_id'/shipping/address",
-                'value' => $shipping_address_request
-            );
+            if(!empty($shipping_address_request['address_line_1']) && !empty($shipping_address_request['country_code'])) {
+                $patch_request[] = array(
+                    'op' => 'replace',
+                    'path' => "/purchase_units/@reference_id=='$reference_id'/shipping/address",
+                    'value' => $shipping_address_request
+                );
+            }
 
             $patch_request[] = array(
                 'op' => 'replace',
