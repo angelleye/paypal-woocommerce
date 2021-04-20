@@ -158,10 +158,12 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
             return false;
         }
-        wp_enqueue_script('angelleye-paypal-checkout-sdk');
-        wp_enqueue_script('angelleye-pay-later-messaging-cart', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/cart.js', array('jquery'), VERSION_PFW, true);
-        $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'cart');
-        echo '<div class="angelleye_ppcp_message_cart"></div>';
+        if (WC()->cart->needs_payment()) {
+            wp_enqueue_script('angelleye-paypal-checkout-sdk');
+            wp_enqueue_script('angelleye-pay-later-messaging-cart', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/cart.js', array('jquery'), VERSION_PFW, true);
+            $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'cart');
+            echo '<div class="angelleye_ppcp_message_cart"></div>';
+        }
     }
 
     public function angelleye_ppcp_pay_later_messaging_payment_page() {

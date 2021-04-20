@@ -308,9 +308,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_cart_page() {
-        wp_enqueue_script('angelleye-paypal-checkout-sdk');
-        wp_enqueue_script($this->angelleye_ppcp_plugin_name);
-        echo '<div class="angelleye_ppcp-button-container"><div id="angelleye_ppcp_cart"></div><div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</div></div>';
+        if (WC()->cart->needs_payment()) {
+            wp_enqueue_script('angelleye-paypal-checkout-sdk');
+            wp_enqueue_script($this->angelleye_ppcp_plugin_name);
+            echo '<div class="angelleye_ppcp-button-container"><div id="angelleye_ppcp_cart"></div><div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</div></div>';
+        }
     }
 
     public function display_paypal_button_product_page() {
@@ -678,7 +680,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 foreach ($billing_address as $field => $value) {
                     if (!empty($value)) {
                         if ('state' == $field) {
-                            if(!empty($shipping_address['country'])) {
+                            if (!empty($shipping_address['country'])) {
                                 if ($this->validate_checkout($shipping_address['country'], $value, 'shipping')) {
                                     $_POST['billing_' . $field] = $this->validate_checkout($shipping_address['country'], $value, 'shipping');
                                 } else {
@@ -818,7 +820,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             return apply_filters('angelleye_ppcp_skip_final_review', false);
         }
         $angelleye_ppcp_checkout_post = angelleye_get_session('angelleye_ppcp_checkout_post');
-        if ( apply_filters( 'woocommerce_checkout_show_terms', true ) && function_exists( 'wc_terms_and_conditions_checkbox_enabled' ) && wc_terms_and_conditions_checkbox_enabled()) {
+        if (apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
             if ($this->disable_term) {
                 return apply_filters('angelleye_ppcp_skip_final_review', true);
             } elseif ((isset($angelleye_ppcp_checkout_post['terms']) || isset($angelleye_ppcp_checkout_post['legal'])) && $angelleye_ppcp_checkout_post['terms'] == 'on') {
