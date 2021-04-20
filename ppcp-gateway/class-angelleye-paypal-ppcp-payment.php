@@ -97,7 +97,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         'reference_id' => $reference_id,
                         'amount' =>
                         array(
-                            'currency_code' => get_woocommerce_currency(),
+                            'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
                             'value' => $cart['order_total'],
                             'breakdown' => array()
                         )
@@ -124,25 +124,25 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                 $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
-                    'currency_code' => get_woocommerce_currency(),
+                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
                     'value' => $cart['total_item_amount'],
                 );
             }
             if (isset($cart['shipping']) && $cart['shipping'] > 0) {
                 $body_request['purchase_units'][0]['amount']['breakdown']['shipping'] = array(
-                    'currency_code' => get_woocommerce_currency(),
+                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
                     'value' => $cart['shipping'],
                 );
             }
             if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
                 $body_request['purchase_units'][0]['amount']['breakdown']['tax_total'] = array(
-                    'currency_code' => get_woocommerce_currency(),
+                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
                     'value' => $cart['order_tax'],
                 );
             }
             if (isset($cart['discount']) && $cart['discount'] > 0) {
                 $body_request['purchase_units'][0]['amount']['breakdown']['discount'] = array(
-                    'currency_code' => get_woocommerce_currency(),
+                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
                     'value' => $cart['discount'],
                 );
             }
@@ -160,7 +160,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         'quantity' => $order_items['quantity'],
                         'unit_amount' =>
                         array(
-                            'currency_code' => get_woocommerce_currency(),
+                            'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
                             'value' => $order_items['amount'],
                         ),
                     );
@@ -782,25 +782,25 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                 $update_amount_request['item_total'] = array(
-                    'currency_code' => get_woocommerce_currency(),
+                    'currency_code' => angelleye_ppcp_get_currency($order_id),
                     'value' => $cart['total_item_amount'],
                 );
             }
             if (isset($cart['discount']) && $cart['discount'] > 0) {
                 $update_amount_request['discount'] = array(
-                    'currency_code' => get_woocommerce_currency(),
+                    'currency_code' => angelleye_ppcp_get_currency($order_id),
                     'value' => $cart['discount'],
                 );
             }
             if (isset($cart['shipping']) && $cart['shipping'] > 0) {
                 $update_amount_request['shipping'] = array(
-                    'currency_code' => get_woocommerce_currency(),
+                    'currency_code' => angelleye_ppcp_get_currency($order_id),
                     'value' => $cart['shipping'],
                 );
             }
             if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
                 $update_amount_request['tax_total'] = array(
-                    'currency_code' => get_woocommerce_currency(),
+                    'currency_code' => angelleye_ppcp_get_currency($order_id),
                     'value' => $cart['order_tax'],
                 );
             }

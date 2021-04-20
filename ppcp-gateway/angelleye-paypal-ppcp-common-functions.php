@@ -419,4 +419,18 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
         }
 
     }
+
+    if (!function_exists('angelleye_ppcp_get_currency')) {
+
+        function angelleye_ppcp_get_currency($woo_order_id = null) {
+
+            if ($woo_order_id != null) {
+                $order = wc_get_order($woo_order_id);
+                return version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+            }
+
+            return get_woocommerce_currency();
+        }
+
+    }
 }
