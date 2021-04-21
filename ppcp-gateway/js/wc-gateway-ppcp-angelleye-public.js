@@ -319,6 +319,7 @@
             smart_button_render();
         }
         $(document.body).on('updated_cart_totals updated_checkout', function () {
+            hide_show_place_order_button();
             setTimeout(function () {
                 smart_button_render();
                 if (is_hosted_field_eligible() === true) {
@@ -328,7 +329,12 @@
                 }
             }, 300);
         });
+
         $('form.checkout').on('click', 'input[name="payment_method"]', function () {
+            hide_show_place_order_button();
+        });
+
+        var hide_show_place_order_button = function () {
             if (is_angelleye_ppcp_selected()) {
                 var isPPEC = true;
                 var togglePPEC = isPPEC ? 'show' : 'hide';
@@ -338,7 +344,7 @@
                     $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
                 }
             }
-        });
+        };
         function is_hosted_field_eligible() {
             if (is_from_checkout) {
                 if (angelleye_ppcp_manager.advanced_card_payments === 'yes') {

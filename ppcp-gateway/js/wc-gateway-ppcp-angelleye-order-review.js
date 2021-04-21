@@ -6,9 +6,9 @@
             var togglePPEC = isPPEC ? 'show' : 'hide';
             var toggleSubmit = isPPEC ? 'hide' : 'show';
             $('#paypal-button-container').animate({opacity: togglePPEC, height: togglePPEC, padding: togglePPEC}, 230);
-            // $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
         });
-        
-
+        $(document.body).on('removed_coupon_in_checkout', function () {
+            window.location.href = window.location.href;
+        });
     });
 })(jQuery);
