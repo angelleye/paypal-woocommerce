@@ -95,31 +95,33 @@
                 },
                 onApprove: function (data, actions) {
                     $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
-                    if (angelleye_ppcp_manager.is_skip_final_review === 'yes') {
-                        if (is_from_checkout) {
-                            if (is_sale) {
-                                actions.order.capture().then(function (details) {
-                                    if (details.error === 'INSTRUMENT_DECLINED') {
-                                        return actions.restart();
-                                    } else {
-                                        actions.redirect(angelleye_ppcp_manager.display_order_page + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&paypal_payment_id=' + details.id + '&from=' + angelleye_ppcp_manager.page);
-                                    }
-                                });
-                            } else {
-                                actions.order.authorize().then(function (authorization) {
-                                    if (authorization.error === 'INSTRUMENT_DECLINED') {
-                                        return actions.restart();
-                                    } else {
-                                        var authorizationID = authorization.purchase_units[0].payments.authorizations[0].id;
-                                        actions.redirect(angelleye_ppcp_manager.display_order_page + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&paypal_payment_id=' + authorizationID + '&from=' + angelleye_ppcp_manager.page);
-                                    }
-                                });
-                            }
+
+
+                    if (is_from_checkout) {
+                        if (is_sale) {
+                            actions.order.capture().then(function (details) {
+                                if (details.error === 'INSTRUMENT_DECLINED') {
+                                    return actions.restart();
+                                } else {
+                                    actions.redirect(angelleye_ppcp_manager.display_order_page + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&paypal_payment_id=' + details.id + '&from=' + angelleye_ppcp_manager.page);
+                                }
+                            });
                         } else {
-                            actions.redirect(angelleye_ppcp_manager.direct_capture + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&from=' + angelleye_ppcp_manager.page);
+                            actions.order.authorize().then(function (authorization) {
+                                if (authorization.error === 'INSTRUMENT_DECLINED') {
+                                    return actions.restart();
+                                } else {
+                                    var authorizationID = authorization.purchase_units[0].payments.authorizations[0].id;
+                                    actions.redirect(angelleye_ppcp_manager.display_order_page + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&paypal_payment_id=' + authorizationID + '&from=' + angelleye_ppcp_manager.page);
+                                }
+                            });
                         }
                     } else {
-                        actions.redirect(angelleye_ppcp_manager.checkout_url + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&from=' + angelleye_ppcp_manager.page);
+                        if (angelleye_ppcp_manager.is_skip_final_review === 'yes') {
+                            actions.redirect(angelleye_ppcp_manager.direct_capture + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&from=' + angelleye_ppcp_manager.page);
+                        } else {
+                            actions.redirect(angelleye_ppcp_manager.checkout_url + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&from=' + angelleye_ppcp_manager.page);
+                        }
                     }
                 },
                 onCancel: function (data, actions) {
