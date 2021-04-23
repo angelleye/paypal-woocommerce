@@ -115,7 +115,7 @@ class AngellEYE_PayPal_PPCP_Response {
                     }
                     $opt_in = get_option('angelleye_send_opt_in_logging_details', 'no');
                     $payment_logger = AngellEYE_PFW_Payment_Logger::instance();
-                    $request_param['type'] = $action_name;
+                    $request_param['type'] = 'ppcp_' . $action_name;
                     $request_param['amount'] = $amount;
                     $request_param['status'] = 'Success';
                     $request_param['site_url'] = get_bloginfo('url');
