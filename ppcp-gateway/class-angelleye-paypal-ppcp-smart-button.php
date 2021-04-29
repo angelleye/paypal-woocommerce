@@ -612,7 +612,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (is_checkout() && $this->advanced_card_payments) {
                 $client_token = "data-client-token='{$this->client_token}'";
             }
-            $tag = str_replace(' src=', ' ' . $client_token . ' data-namespace="angelleye_paypal_sdk" data-partner-attribution-id="Angelleye-123" src=', $tag);
+            $tag = str_replace(' src=', ' ' . $client_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
         }
         return $tag;
     }

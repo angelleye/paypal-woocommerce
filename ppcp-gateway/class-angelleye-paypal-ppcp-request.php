@@ -99,7 +99,7 @@ class AngellEYE_PayPal_PPCP_Request {
                         'redirection' => 5,
                         'httpversion' => '1.1',
                         'blocking' => true,
-                        'headers' => array('Accept' => 'application/json', 'Authorization' => "Basic " . $this->basicAuth, 'PayPal-Partner-Attribution-Id' => 'Angelleye-123'),
+                        'headers' => array('Accept' => 'application/json', 'Authorization' => "Basic " . $this->basicAuth),
                         'body' => array('grant_type' => 'client_credentials'),
                         'cookies' => array()
                     );

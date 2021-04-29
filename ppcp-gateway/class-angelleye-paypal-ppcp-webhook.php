@@ -48,7 +48,7 @@ class AngellEYE_PayPal_PPCP_Webhook {
         if ($this->access_token == false) {
             $this->access_token = $this->api_request->angelleye_ppcp_get_access_token();
         }
-        $this->request_header_default = array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation", 'PayPal-Partner-Attribution-Id' => 'Angelleye-123', 'PayPal-Request-Id' => $this->generate_request_id());
+        $this->request_header_default = array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id());
         $this->request_default_args = array('method' => 'POST', 'timeout' => 60, 'redirection' => 5, 'httpversion' => '1.1', 'blocking' => true, 'headers' => $this->request_header_default, 'body' => array(), 'cookies' => array());
     }
 
