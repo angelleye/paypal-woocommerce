@@ -212,7 +212,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     /*
-     * 
+     *
      * This function is for temp debug
      */
 
@@ -809,7 +809,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_is_skip_final_review() {
-        if(is_checkout()) {
+        if (is_checkout()) {
             return apply_filters('angelleye_ppcp_skip_final_review', true);
         }
         $this->enable_guest_checkout = get_option('woocommerce_enable_guest_checkout') == 'yes' ? true : false;

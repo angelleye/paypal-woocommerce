@@ -121,7 +121,6 @@ jQuery(function ($) {
             }
         }
     }).change();
-
     jQuery("#woocommerce_angelleye_ppcp_product_button_layout").change(function () {
         var angelleye_ppcp_product_tagline = jQuery("#woocommerce_angelleye_ppcp_product_button_tagline").closest('tr');
         if (this.value === 'vertical') {
@@ -174,7 +173,6 @@ jQuery(function ($) {
         }
         $('.woocommerce-save-button').click();
     });
-
     $('#woocommerce_angelleye_ppcp_enable_product_button').change(function () {
         if ($(this).is(':checked')) {
             $('.angelleye_ppcp_product_button_settings').closest('tr').show();
@@ -203,8 +201,6 @@ jQuery(function ($) {
             $('.angelleye_ppcp_mini_cart_button_settings').closest('tr').hide();
         }
     }).change();
-
-
     var home_page_pay_later_messaging_preview = function () {
         var home_style_object = {};
         home_style_object['layout'] = jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_home_layout_type').val();
@@ -229,9 +225,7 @@ jQuery(function ($) {
             }).render('.pp_message_home');
         }
     };
-
     var hide_show_home_shortcode = function () {
-
         jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_home_shortcode').change(function () {
             var home_preview_shortcode = jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_home_preview_shortcode').closest('tr');
             if (jQuery(this).is(':checked')) {
@@ -242,11 +236,8 @@ jQuery(function ($) {
                 home_preview_shortcode.hide();
             }
         }).change();
-
     };
-
     var hide_show_category_shortcode = function () {
-
         jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_category_shortcode').change(function () {
             var category_preview_shortcode = jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_category_preview_shortcode').closest('tr');
             if (jQuery(this).is(':checked')) {
@@ -257,11 +248,7 @@ jQuery(function ($) {
                 category_preview_shortcode.hide();
             }
         }).change();
-
     };
-
-
-
     var ppcp_copy_text = function (css_class) {
         jQuery(document.body).on('click', css_class, function (evt) {
             evt.preventDefault();
@@ -277,9 +264,7 @@ jQuery(function ($) {
             }).focus();
         });
     };
-
     var hide_show_product_shortcode = function () {
-
         jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_product_shortcode').change(function () {
             var product_preview_shortcode = jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_product_preview_shortcode').closest('tr');
             if (jQuery(this).is(':checked')) {
@@ -290,12 +275,8 @@ jQuery(function ($) {
                 product_preview_shortcode.hide();
             }
         }).change();
-
     };
-
-
     var hide_show_cart_shortcode = function () {
-
         jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_cart_shortcode').change(function () {
             var cart_preview_shortcode = jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_cart_preview_shortcode').closest('tr');
             if (jQuery(this).is(':checked')) {
@@ -306,11 +287,8 @@ jQuery(function ($) {
                 cart_preview_shortcode.hide();
             }
         }).change();
-
     };
-
     var hide_show_payment_shortcode = function () {
-
         jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_payment_shortcode').change(function () {
             var payment_preview_shortcode = jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_payment_preview_shortcode').closest('tr');
             if (jQuery(this).is(':checked')) {
@@ -321,9 +299,7 @@ jQuery(function ($) {
                 payment_preview_shortcode.hide();
             }
         }).change();
-
     };
-
     var category_page_pay_later_messaging_preview = function () {
         var category_style_object = {};
         category_style_object['layout'] = jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_category_layout_type').val();
@@ -441,9 +417,6 @@ jQuery(function ($) {
         product_page_pay_later_messaging_preview();
         cart_page_pay_later_messaging_preview();
         payment_page_pay_later_messaging_preview();
-        //$('.preview_shortcode').after('<button type="button" class="button-secondary copy-shortcode" data-tip="Copied!">Copy</button>');
-
-
     });
     setTimeout(function () {
         jQuery('#woocommerce_angelleye_ppcp_enabled_pay_later_messaging').trigger('change');
@@ -667,7 +640,6 @@ jQuery(function ($) {
         pay_later_messaging_cart_page_hide_show();
         pay_later_messaging_payment_page_hide_show();
     }).change();
-
     jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_home_layout_type').change(function () {
         pay_later_messaging_home_text_layout_field_parent = jQuery('.pay_later_messaging_home_text_layout_field').closest('tr');
         pay_later_messaging_home_text_layout_field_p_tag = jQuery('.pay_later_messaging_home_text_layout_field').next("p");
@@ -744,7 +716,6 @@ jQuery(function ($) {
             pay_later_messaging_category_text_layout_logo_position.hide();
         }
     }).change();
-    // Product
     jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_product_layout_type').change(function () {
         pay_later_messaging_product_text_layout_field_parent = jQuery('.pay_later_messaging_product_text_layout_field').closest('tr');
         pay_later_messaging_product_text_layout_field_p_tag = jQuery('.pay_later_messaging_product_text_layout_field').next("p");
@@ -783,7 +754,6 @@ jQuery(function ($) {
             pay_later_messaging_product_text_layout_logo_position.hide();
         }
     }).change();
-    // Cart
     jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_cart_layout_type').change(function () {
         pay_later_messaging_cart_text_layout_field_parent = jQuery('.pay_later_messaging_cart_text_layout_field').closest('tr');
         pay_later_messaging_cart_text_layout_field_p_tag = jQuery('.pay_later_messaging_cart_text_layout_field').next("p");
@@ -822,7 +792,6 @@ jQuery(function ($) {
             pay_later_messaging_cart_text_layout_logo_position.hide();
         }
     }).change();
-    // Checkout
     jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_payment_layout_type').change(function () {
         pay_later_messaging_payment_text_layout_field_parent = jQuery('.pay_later_messaging_payment_text_layout_field').closest('tr');
         pay_later_messaging_payment_text_layout_field_p_tag = jQuery('.pay_later_messaging_payment_text_layout_field').next("p");
@@ -851,7 +820,6 @@ jQuery(function ($) {
         }
         jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_payment_text_layout_logo_type').trigger('change');
     }).change();
-
     jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_payment_text_layout_logo_type').change(function () {
         pay_later_messaging_payment_text_layout_logo_position = jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_payment_text_layout_logo_position').closest('tr');
         if (jQuery('#woocommerce_angelleye_ppcp_pay_later_messaging_payment_layout_type').val() === 'text' && (this.value === 'primary' || this.value === 'alternative')) {
@@ -862,7 +830,5 @@ jQuery(function ($) {
             pay_later_messaging_payment_text_layout_logo_position.hide();
         }
     }).change();
-
-
 });
    

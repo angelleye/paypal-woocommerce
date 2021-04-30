@@ -1188,7 +1188,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('Enable 3D Secure for additional security on direct credit card checkouts. In Europe this is required.', 'paypal-for-woocommerce'),
                     'default' => 'no',
                 ),
-                
                 'debug' => array(
                     'title' => __('Debug log', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',

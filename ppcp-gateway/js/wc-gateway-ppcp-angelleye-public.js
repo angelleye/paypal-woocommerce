@@ -4,7 +4,6 @@
         if (typeof angelleye_ppcp_manager === 'undefined') {
             return false;
         }
-
         var selector = '#angelleye_ppcp_' + angelleye_ppcp_manager.page;
         if ($('.variations_form').length) {
             $('.variations_form').on('show_variation', function () {
@@ -95,8 +94,6 @@
                 },
                 onApprove: function (data, actions) {
                     $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
-
-
                     if (is_from_checkout) {
                         if (is_sale) {
                             actions.order.capture().then(function (details) {
@@ -140,9 +137,7 @@
                     }
                 }
             }).render(selector);
-
         };
-
         $('form.checkout').on('checkout_place_order_angelleye_ppcp', function (event) {
             if (is_angelleye_ppcp_selected()) {
                 if (is_hosted_field_eligible() === true) {
@@ -158,8 +153,6 @@
             }
             return true;
         });
-
-
         var hosted_button_render = function () {
             if ($('form.checkout').is('.HostedFields')) {
                 return false;
@@ -280,10 +273,7 @@
                                     }
                                 }
                             }, function (error) {
-
-
                         $('form.checkout').removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
-
                         var error_message = '';
                         if (error.details[0]['description']) {
                             error_message = error.details[0]['description'];
@@ -304,7 +294,6 @@
                 console.log('error: ', JSON.stringify(err));
             });
         };
-
         function is_liability_shifted(payload) {
             if (typeof payload.liabilityShift === 'undefined') {
                 return false;
@@ -331,11 +320,9 @@
                 }
             }, 300);
         });
-
         $('form.checkout').on('click', 'input[name="payment_method"]', function () {
             hide_show_place_order_button();
         });
-
         var hide_show_place_order_button = function () {
             if (is_angelleye_ppcp_selected()) {
                 var isPPEC = true;

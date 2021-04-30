@@ -28,7 +28,7 @@ class AngellEYE_PayPal_PPCP_Log {
             $this->logger->log($level, $message, array('source' => 'angelleye_ppcp'));
         }
     }
-    
+
     public function webhook_log($message, $level = 'info') {
         if ($this->log_enabled) {
             if (empty($this->logger)) {
@@ -37,7 +37,7 @@ class AngellEYE_PayPal_PPCP_Log {
             $this->logger->log($level, $message, array('source' => 'angelleye_ppcp_webhook'));
         }
     }
-    
+
     public function temp_log($message, $level = 'info') {
         if ($this->log_enabled) {
             if (empty($this->logger)) {
@@ -56,7 +56,6 @@ class AngellEYE_PayPal_PPCP_Log {
         } catch (Exception $ex) {
             $this->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->log($ex->getMessage(), 'error');
-                    
         }
     }
 
