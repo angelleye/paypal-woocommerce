@@ -51,11 +51,7 @@ class AngellEYE_PayPal_PPCP_Response {
             $this->api_log->webhook_log('PFW Version: ' . VERSION_PFW);
             $this->api_log->webhook_log('Action: ' . $action_name);
             $this->api_log->webhook_log('Request URL: ' . $url);
-            if (!empty($request['body']) && is_array($request['body'])) {
-                $this->api_log->webhook_log('Request Body: ' . wc_print_r($request['body'], true));
-            } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
-                $this->api_log->webhook_log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
-            }
+            $this->api_log->webhook_log('Request: ' . wc_print_r($request, true));
             $this->api_log->webhook_log('Response Code: ' . wp_remote_retrieve_response_code($response));
             $this->api_log->webhook_log('Response Message: ' . wp_remote_retrieve_response_message($response));
             $this->api_log->webhook_log('Response Body: ' . wc_print_r(json_decode(wp_remote_retrieve_body($response), true), true));

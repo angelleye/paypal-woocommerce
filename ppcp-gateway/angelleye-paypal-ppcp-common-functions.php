@@ -229,7 +229,7 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
                     wp_unschedule_event($timestamp, 'angelleyel_ppcp_create_webhook');
                     wp_clear_scheduled_hook('angelleyel_ppcp_create_webhook');
                 }
-                wp_schedule_single_event(time() + 120, 'angelleyel_ppcp_create_webhook');
+                wp_schedule_single_event(time() + 20, 'angelleyel_ppcp_create_webhook');
             }
         }
 

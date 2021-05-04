@@ -125,12 +125,13 @@ class AngellEYE_PayPal_PPCP_Webhook {
 
     public function angelleye_ppcp_delete_existing_webhook() {
         try {
-            $this->response = $this->api_request->request($this->webhook, $this->request_header_default, 'get_webhook');
+            $this->request_default_args['body'] = array();
+            $this->request_default_args['method'] = 'GET';
+            $this->response = $this->api_request->request($this->webhook, $this->request_default_args, 'get_webhook');
             if (!empty($this->response['webhooks'])) {
                 foreach ($this->response['webhooks'] as $key => $webhooks) {
                     if (isset($webhooks['url']) && strpos($webhooks['url'], site_url()) !== false) {
                         $this->request_default_args['method'] = 'DELETE';
-                        $this->request_default_args['body'] = array();
                         $this->api_request->request($this->webhook . '/' . $webhooks['id'], $this->request_default_args, 'delete_webhook');
                     }
                 }
@@ -143,7 +144,9 @@ class AngellEYE_PayPal_PPCP_Webhook {
 
     public function angelleye_ppcp_delete_first_webhook() {
         try {
-            $this->response = $this->api_request->request($this->webhook, $this->request_header_default, 'get_webhook');
+            $this->request_default_args['body'] = array();
+            $this->request_default_args['method'] = 'GET';
+            $this->response = $this->api_request->request($this->webhook, $this->request_default_args, 'get_webhook');
             if (!empty($this->response['webhooks'])) {
                 foreach ($this->response['webhooks'] as $key => $webhooks) {
                     $this->request_default_args['method'] = 'DELETE';
