@@ -154,6 +154,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_ppcp_get_access_token($data) {
         try {
+            if(empty($data['authCode'])) {
+                return false;
+            }
             $authCode = $data['authCode'];
             $sharedId = $data['sharedId'];
             $url = trailingslashit($this->host) . 'v1/oauth2/token/';
@@ -221,9 +224,16 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (!isset($_GET['merchantIdInPayPal']) || !isset($_GET['merchantId'])) {
                 return;
             }
-            $merchant_id = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
-            $merchant_email = sanitize_text_field(wp_unslash($_GET['merchantId']));
             $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+            $merchant_id = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
+            $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+            $this->result = $this->angelleye_track_seller_onboarding_status($merchant_id);
+            if( $this->angelleye_is_acdc_payments_enable($this->result) ) {
+                $this->settings->set('enable_advanced_card_payments', 'yes');
+            } else {
+                $this->settings->set('enable_advanced_card_payments', 'no');
+            }
+            $merchant_email = sanitize_text_field(wp_unslash($_GET['merchantId']));
             if ($this->is_sandbox) {
                 $this->settings->set('sandbox_merchant_id', $merchant_id);
                 $this->settings->set('sandbox_email_address', $merchant_email);
@@ -241,6 +251,33 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         }
     }
 
+    public function angelleye_track_seller_onboarding_status($merchant_id) {
+        if ($this->is_sandbox) {
+            $partner_merchant_id = $this->sandbox_partner_merchant_id;
+        } else {
+            $partner_merchant_id = $this->partner_merchant_id;
+        }
+        try {
+            $access_token = $this->api_request->angelleye_ppcp_get_access_token();
+            $url = trailingslashit($this->host) .
+                    'v1/customer/partners/' . $partner_merchant_id .
+                    '/merchant-integrations/' . $merchant_id;
+            $args = array(
+                'method' => 'GET',
+                'headers' => array(
+                    'Authorization' => 'Bearer ' . $access_token,
+                    'Content-Type' => 'application/json',
+                ),
+            );
+            $this->result = $this->api_request->request($url, $args, 'seller_onboarding_status');
+            return $this->result;
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
+            return false;
+        }
+    }
+
     public function is_valid_site_request() {
         if (!isset($_REQUEST['section']) || !in_array(sanitize_text_field(wp_unslash($_REQUEST['section'])), array('angelleye_ppcp'), true)) {
             return false;
@@ -249,6 +286,21 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             return false;
         }
         return true;
+    }
+
+    public function angelleye_is_acdc_payments_enable($result) {
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('CUSTOM_CARD_PROCESSING', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $key => $capabilities) {
+                        if (isset($capabilities['name']) && 'CUSTOM_CARD_PROCESSING' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }
