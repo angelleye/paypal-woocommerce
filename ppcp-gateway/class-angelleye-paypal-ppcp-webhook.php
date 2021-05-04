@@ -125,6 +125,9 @@ class AngellEYE_PayPal_PPCP_Webhook {
 
     public function angelleye_ppcp_delete_existing_webhook() {
         try {
+            if (empty($this->access_token)) {
+                return false;
+            }
             $this->request_default_args['body'] = array();
             $this->request_default_args['method'] = 'GET';
             $this->response = $this->api_request->request($this->webhook, $this->request_default_args, 'get_webhook');
@@ -144,6 +147,9 @@ class AngellEYE_PayPal_PPCP_Webhook {
 
     public function angelleye_ppcp_delete_first_webhook() {
         try {
+            if (empty($this->access_token)) {
+                return false;
+            }
             $this->request_default_args['body'] = array();
             $this->request_default_args['method'] = 'GET';
             $this->response = $this->api_request->request($this->webhook, $this->request_default_args, 'get_webhook');
@@ -162,6 +168,9 @@ class AngellEYE_PayPal_PPCP_Webhook {
     }
 
     public function angelleye_ppcp_handle_webhook_request_handler() {
+        if (empty($this->access_token)) {
+            return false;
+        }
         $this->angelleye_ppcp_load_webhook_default_settings();
         try {
             $bool = false;
