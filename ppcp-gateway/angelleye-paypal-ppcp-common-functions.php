@@ -222,9 +222,7 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
     if (!function_exists('angelleye_ppcp_may_register_webhook')) {
 
         function angelleye_ppcp_may_register_webhook() {
-            if (!defined('ANGELLEYE_PPCP_WEBHOOK')) {
-                return false;
-            }
+
             if (angelleye_ppcp_is_local_server() === false) {
                 if (wp_next_scheduled('angelleyel_ppcp_create_webhook')) {
                     $timestamp = wp_next_scheduled('angelleyel_ppcp_create_webhook');

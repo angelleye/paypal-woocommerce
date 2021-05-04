@@ -15,6 +15,7 @@ class AngellEYE_PayPal_PPCP_Webhook {
     public $webhook;
     public $webhook_id;
     public $webhook_url;
+    public $seller_onboarding;
     protected static $_instance = null;
 
     public static function instance() {
@@ -63,9 +64,13 @@ class AngellEYE_PayPal_PPCP_Webhook {
             if (!class_exists('AngellEYE_PayPal_PPCP_Request')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php';
+            }
             $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
+            $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -83,15 +88,19 @@ class AngellEYE_PayPal_PPCP_Webhook {
             if ($this->access_token) {
                 $webhook_request = array();
                 $webhook_request['url'] = add_query_arg(array('angelleye_ppcp_action' => 'webhook_handler', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Webhook'));
-                $webhook_request['event_types'][] = array('name' => 'CHECKOUT.ORDER.APPROVED');
-                $webhook_request['event_types'][] = array('name' => 'PAYMENT.AUTHORIZATION.CREATED');
-                $webhook_request['event_types'][] = array('name' => 'PAYMENT.AUTHORIZATION.VOIDED');
-                $webhook_request['event_types'][] = array('name' => 'PAYMENT.CAPTURE.COMPLETED');
-                $webhook_request['event_types'][] = array('name' => 'PAYMENT.CAPTURE.DENIED');
-                $webhook_request['event_types'][] = array('name' => 'PAYMENT.CAPTURE.PENDING');
-                $webhook_request['event_types'][] = array('name' => 'PAYMENT.CAPTURE.REFUNDED');
-                $webhook_request['event_types'][] = array('name' => 'MERCHANT.ONBOARDING.COMPLETED');
-                $webhook_request['event_types'][] = array('name' => 'MERCHANT.PARTNER-CONSENT.REVOKED');
+                if (defined('ANGELLEYE_PPCP_WEBHOOK_ORDER_STATUS_UPDATE')) {
+                    $webhook_request['event_types'][] = array('name' => 'CHECKOUT.ORDER.APPROVED');
+                    $webhook_request['event_types'][] = array('name' => 'PAYMENT.AUTHORIZATION.CREATED');
+                    $webhook_request['event_types'][] = array('name' => 'PAYMENT.AUTHORIZATION.VOIDED');
+                    $webhook_request['event_types'][] = array('name' => 'PAYMENT.CAPTURE.COMPLETED');
+                    $webhook_request['event_types'][] = array('name' => 'PAYMENT.CAPTURE.DENIED');
+                    $webhook_request['event_types'][] = array('name' => 'PAYMENT.CAPTURE.PENDING');
+                    $webhook_request['event_types'][] = array('name' => 'PAYMENT.CAPTURE.REFUNDED');
+                    $webhook_request['event_types'][] = array('name' => 'MERCHANT.ONBOARDING.COMPLETED');
+                    $webhook_request['event_types'][] = array('name' => 'MERCHANT.PARTNER-CONSENT.REVOKED');
+                }
+                $webhook_request['event_types'][] = array('name' => 'CUSTOMER.MERCHANT-INTEGRATION.PRODUCT-SUBSCRIPTION-UPDATED');
+                $webhook_request['event_types'][] = array('name' => 'CUSTOMER.MERCHANT-INTEGRATION.CAPABILITY-UPDATED');
                 $webhook_request = angelleye_ppcp_remove_empty_key($webhook_request);
                 $webhook_request = json_encode($webhook_request);
                 $this->request_default_args['method'] = 'POST';
@@ -163,7 +172,9 @@ class AngellEYE_PayPal_PPCP_Webhook {
                 $posted = json_decode($posted_raw, true);
                 $bool = $this->angelleye_ppcp_validate_webhook_event($headers, $posted);
                 if ($bool) {
-                    $this->angelleye_ppcp_update_order_status($posted);
+                    if (defined('ANGELLEYE_PPCP_WEBHOOK_ORDER_STATUS_UPDATE')) {
+                        $this->angelleye_ppcp_update_order_status($posted);
+                    }
                 }
             }
         } catch (Exception $ex) {
@@ -269,6 +280,24 @@ class AngellEYE_PayPal_PPCP_Webhook {
                         break;
                 }
             }
+        }
+    }
+
+    public function angelleye_ppcp_update_settings($posted) {
+        try {
+            if (isset($posted['event_type']) && ('CUSTOMER.MERCHANT-INTEGRATION.PRODUCT-SUBSCRIPTION-UPDATED' === $posted['event_type'] || 'CUSTOMER.MERCHANT-INTEGRATION.CAPABILITY-UPDATED' === $posted['event_type'] )) {
+                if (!empty($posted['resource']['merchant_id'])) {
+                    $this->response = $this->seller_onboarding->angelleye_track_seller_onboarding_status($posted['resource']['merchant_id']);
+                    if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->response)) {
+                        $this->settings->set('enable_advanced_card_payments', 'yes');
+                    } else {
+                        $this->settings->set('enable_advanced_card_payments', 'no');
+                    }
+                    $this->settings->persist();
+                }
+            }
+        } catch (Exception $ex) {
+            
         }
     }
 
@@ -394,18 +423,11 @@ class AngellEYE_PayPal_PPCP_Webhook {
         if (!empty($_GET['angelleye_ppcp_action'])) {
             switch ($_GET['angelleye_ppcp_action']) {
                 case "webhook_handler":
-                    if (!defined('ANGELLEYE_PPCP_WEBHOOK')) {
-                        ob_clean();
-                        header('HTTP/1.1 200 OK');
-                        exit();
-                        break;
-                    } else {
-                        $this->angelleye_ppcp_handle_webhook_request_handler();
-                        ob_clean();
-                        header('HTTP/1.1 200 OK');
-                        exit();
-                        break;
-                    }
+                    $this->angelleye_ppcp_handle_webhook_request_handler();
+                    ob_clean();
+                    header('HTTP/1.1 200 OK');
+                    exit();
+                    break;
             }
         }
     }

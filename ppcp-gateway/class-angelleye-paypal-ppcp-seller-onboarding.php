@@ -252,6 +252,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     }
 
     public function angelleye_track_seller_onboarding_status($merchant_id) {
+        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         if ($this->is_sandbox) {
             $partner_merchant_id = $this->sandbox_partner_merchant_id;
         } else {
