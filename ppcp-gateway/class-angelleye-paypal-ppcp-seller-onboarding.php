@@ -126,11 +126,13 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $credentials = $this->angelleye_ppcp_get_seller_rest_api_credentials($token);
             if (!empty($credentials['client_secret']) && !empty($credentials['client_id'])) {
                 if ($this->is_sandbox) {
+                    $this->settings->set('enabled', 'yes');
                     $this->settings->set('sandbox_secret_key', $credentials['client_secret']);
                     $this->settings->set('sandbox_client_id', $credentials['client_id']);
                     delete_transient('angelleye_ppcp_sandbox_access_token');
                     delete_transient('angelleye_ppcp_sandbox_client_token');
                 } else {
+                    $this->settings->set('enabled', 'yes');
                     $this->settings->set('live_secret_key', $credentials['client_secret']);
                     $this->settings->set('live_client_id', $credentials['client_id']);
                     delete_transient('angelleye_ppcp_live_access_token');
@@ -237,9 +239,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if ($this->is_sandbox) {
                 $this->settings->set('sandbox_merchant_id', $merchant_id);
                 $this->settings->set('sandbox_email_address', $merchant_email);
+                $this->settings->set('enabled', 'yes');
             } else {
                 $this->settings->set('live_merchant_id', $merchant_id);
                 $this->settings->set('live_email_address', $merchant_email);
+                $this->settings->set('enabled', 'yes');
             }
             $this->settings->persist();
             $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
