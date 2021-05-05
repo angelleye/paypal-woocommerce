@@ -2209,7 +2209,7 @@ class AngellEYE_Utility {
         }
         
         public static function is_subs_change_payment() {
-		return ( isset( $_GET['pay_for_order'] ) && isset( $_GET['change_payment_method'] ) );
+		return ( isset( $_GET['pay_for_order'] ) && ( isset( $_GET['change_payment_method'] ) || isset($_GET['change_gateway_flag'])) );
 	}
 
         public static function angelleye_display_marketing_sidebar($id = null) {
