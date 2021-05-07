@@ -104,6 +104,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_ppcp_login_seller() {
         try {
+            
             $posted_raw = angelleye_ppcp_get_raw_data();
             if (empty($posted_raw)) {
                 return false;
@@ -122,6 +123,12 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
             $this->settings->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
             $this->settings->persist();
+            delete_transient('angelleye_ppcp_sandbox_access_token');
+            delete_transient('angelleye_ppcp_live_access_token');
+            delete_transient('angelleye_ppcp_sandbox_client_token');
+            delete_transient('angelleye_ppcp_live_client_token');
+            delete_option('angelleye_ppcp_snadbox_webhook_id');
+            delete_option('angelleye_ppcp_live_webhook_id');
             $token = $this->angelleye_ppcp_get_access_token($data);
             $credentials = $this->angelleye_ppcp_get_seller_rest_api_credentials($token);
             if (!empty($credentials['client_secret']) && !empty($credentials['client_id'])) {
