@@ -2350,7 +2350,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             } else {
                 $customer_id = get_current_user_id();
             }
-            $this->angelleye_load_paypal_payflow_class($this->gateway, $this, null);
+            $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
             $this->validate_fields();
             $card = $this->get_posted_card();
             $billtofirstname = (get_user_meta($customer_id, 'billing_first_name', true)) ? get_user_meta($customer_id, 'billing_first_name', true) : get_user_meta($customer_id, 'shipping_first_name', true);
