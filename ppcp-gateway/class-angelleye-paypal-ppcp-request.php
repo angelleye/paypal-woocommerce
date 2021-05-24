@@ -90,7 +90,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public function angelleye_ppcp_get_access_token() {
 
         $this->is_access_token_processing = true;
-        if (!$this->access_token) {
+        if (empty($this->access_token)) {
             if (!empty($this->client_id) && !empty($this->secret_key)) {
                 try {
                     $args = array(

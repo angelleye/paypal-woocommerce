@@ -474,9 +474,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         if (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done')) {
             $is_saller_onboarding_done = true;
             delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done');
-        } elseif (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done')) {
+        } elseif (false !== get_transient('angelleye_ppcp_live_seller_onboarding_process_done')) {
             $is_saller_onboarding_done = true;
-            delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done');
+            delete_transient('angelleye_ppcp_live_seller_onboarding_process_done');
         }
         if ($is_saller_onboarding_done) {
             echo '<div class="notice notice-success angelleye-notice is-dismissible" id="ppcp_success_notice_onboarding" style="display:none;">'

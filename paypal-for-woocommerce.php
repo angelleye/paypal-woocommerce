@@ -58,16 +58,16 @@ if (!defined('AEU_ZIP_URL')) {
 }
 
 if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID')) {
-    define('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID', 'B82TS7QWRJ6TS');
+    define('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID', 'LSLG4YR3NS6T4');
 }
 if (!defined('PAYPAL_PPCP_PARTNER_MERCHANT_ID')) {
     define('PAYPAL_PPCP_PARTNER_MERCHANT_ID', 'J9L24TCUDZ6ZS');
 }
 if (!defined('PAYPAL_SELLER_ONBOARDING_LIVE_URL')) {
-    define('PAYPAL_SELLER_ONBOARDING_LIVE_URL', 'https://www.angelleye.com/web-services/paypal-for-woocommerce/paypal-seller-onboarding/seller-onboarding.php');
+    define('PAYPAL_SELLER_ONBOARDING_LIVE_URL', 'https://www.angelleye.com/web-services/paypal-for-woocommerce/paypal-seller-onboarding/');
 }
 if (!defined('PAYPAL_SELLER_ONBOARDING_SANDBOX_URL')) {
-    define('PAYPAL_SELLER_ONBOARDING_SANDBOX_URL', 'https://www.angelleye.com/web-services/paypal-for-woocommerce/paypal-seller-onboarding/seller-onboarding.php');
+    define('PAYPAL_SELLER_ONBOARDING_SANDBOX_URL', 'https://www.angelleye.com/web-services/paypal-for-woocommerce/paypal-seller-onboarding/');
 }
 
 

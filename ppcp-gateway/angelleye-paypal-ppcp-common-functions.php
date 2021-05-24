@@ -431,4 +431,19 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
         }
 
     }
+
+    if (!function_exists('angelleye_key_generator')) {
+
+        function angelleye_key_generator() {
+            $key = md5(microtime());
+            $new_key = '';
+            for ($i = 1; $i <= 19; $i ++) {
+                $new_key .= $key[$i];
+                if ($i % 5 == 0 && $i != 19)
+                    $new_key .= '';
+            }
+            return strtoupper($new_key);
+        }
+
+    }
 }

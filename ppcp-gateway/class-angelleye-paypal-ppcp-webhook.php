@@ -82,6 +82,9 @@ class AngellEYE_PayPal_PPCP_Webhook {
     }
 
     public function angelleyel_ppcp_create_webhook() {
+        if (!defined('ANGELLEYE_PPCP_WEBHOOK_ORDER_STATUS_UPDATE')) {
+            return false;
+        }
         $this->angelleye_ppcp_load_webhook_default_settings();
         $this->angelleye_ppcp_delete_existing_webhook();
         try {
@@ -99,11 +102,11 @@ class AngellEYE_PayPal_PPCP_Webhook {
                     $webhook_request['event_types'][] = array('name' => 'MERCHANT.ONBOARDING.COMPLETED');
                     $webhook_request['event_types'][] = array('name' => 'MERCHANT.PARTNER-CONSENT.REVOKED');
                 }
-                $webhook_request['event_types'][] = array('name' => 'CUSTOMER.MERCHANT-INTEGRATION.PRODUCT-SUBSCRIPTION-UPDATED');
-                $webhook_request['event_types'][] = array('name' => 'CUSTOMER.MERCHANT-INTEGRATION.CAPABILITY-UPDATED');
-                $webhook_request['event_types'][] = array('name' => 'CUSTOMER.MERCHANT-INTEGRATION.SELLER-EMAIL-CONFIRMED');
-                $webhook_request['event_types'][] = array('name' => 'MERCHANT.ONBOARDING.COMPLETED');
-                $webhook_request = angelleye_ppcp_remove_empty_key($webhook_request);
+                /* $webhook_request['event_types'][] = array('name' => 'CUSTOMER.MERCHANT-INTEGRATION.PRODUCT-SUBSCRIPTION-UPDATED');
+                  $webhook_request['event_types'][] = array('name' => 'CUSTOMER.MERCHANT-INTEGRATION.CAPABILITY-UPDATED');
+                  $webhook_request['event_types'][] = array('name' => 'CUSTOMER.MERCHANT-INTEGRATION.SELLER-EMAIL-CONFIRMED');
+                  $webhook_request['event_types'][] = array('name' => 'MERCHANT.ONBOARDING.COMPLETED');
+                  $webhook_request = angelleye_ppcp_remove_empty_key($webhook_request); */
                 $webhook_request = json_encode($webhook_request);
                 $this->request_default_args['method'] = 'POST';
                 $this->request_default_args['body'] = $webhook_request;

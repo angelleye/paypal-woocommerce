@@ -167,9 +167,9 @@ jQuery(function ($) {
     });
     $(".angelleye-ppcp-disconnect").click(function () {
         if ($('#woocommerce_angelleye_ppcp_testmode').is(':checked')) {
-            $('#woocommerce_angelleye_ppcp_sandbox_client_id, #woocommerce_angelleye_ppcp_sandbox_secret_key').val('');
+            $('#woocommerce_angelleye_ppcp_sandbox_client_id, #woocommerce_angelleye_ppcp_sandbox_secret_key, #woocommerce_angelleye_ppcp_sandbox_email_address, #woocommerce_angelleye_ppcp_sandbox_merchant_id').val('');
         } else {
-            $('#woocommerce_angelleye_ppcp_live_client_id, #woocommerce_angelleye_ppcp_live_secret_key').val('');
+            $('#woocommerce_angelleye_ppcp_live_client_id, #woocommerce_angelleye_ppcp_live_secret_key, #woocommerce_angelleye_ppcp_live_email_address, #woocommerce_angelleye_ppcp_live_merchant_id').val('');
         }
         $('.woocommerce-save-button').click();
     });
