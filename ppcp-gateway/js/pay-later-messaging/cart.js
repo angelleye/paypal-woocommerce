@@ -31,5 +31,4 @@ jQuery(function ($) {
     $(document.body).on('updated_cart_totals updated_checkout', function () {
         front_end_cart_page_pay_later_messaging_preview();
     });
-
 });

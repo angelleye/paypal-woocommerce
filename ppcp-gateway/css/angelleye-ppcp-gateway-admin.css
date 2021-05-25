@@ -4,16 +4,13 @@
     font-weight: bold;
     font-size: 15px;
 }
-
 .angelleye_ppcp_gateway_manual_credential_input {
     outline: none;
     text-decoration: none;
 }
-
 #angelleye_paypal_marketing_table h3.wc-settings-sub-title {
     border-bottom: none;
 }
-
 #angelleye_paypal_marketing_table h3.wc-settings-sub-title.ppcp_separator_heading {
     border-bottom: 2px solid #000;
     font-weight: bold;
