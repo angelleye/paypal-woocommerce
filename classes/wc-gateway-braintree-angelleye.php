@@ -2238,7 +2238,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'website' => ''
         );
         if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
-            $create_customer_request['creditCard']['cardholderName'] = $firstName . $lastName;
+           // $create_customer_request['creditCard']['cardholderName'] = $firstName . $lastName;
         }
         $result = $this->braintree_gateway->customer()->create(apply_filters('angelleye_woocommerce_braintree_create_customer_request_args', $create_customer_request));
         if ($result->success == true) {
@@ -2802,7 +2802,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'website' => ''
         );
         if($this->enable_braintree_drop_in == false && $this->threed_secure_enabled === false) {
-            $create_customer_request['creditCard']['cardholderName'] = $firstName . $lastName;
+            //$create_customer_request['creditCard']['cardholderName'] = $firstName . $lastName;
         }
         $result = $this->braintree_gateway->customer()->create(apply_filters('angelleye_woocommerce_braintree_create_customer_request_args', $create_customer_request));
         if ($result->success == true) {
