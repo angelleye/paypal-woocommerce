@@ -2465,6 +2465,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_braintree_get_merchant_account_id($order_id = null) {
         try {
+            $this->merchant_account_id = '';
             $merchant_account_id = $this->get_option('merchant_account_id');
             $currencycode = '';
             if (is_null($order_id)) {
@@ -2478,23 +2479,25 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $currency = substr($key, -3);
                     if (strtoupper($currency) == strtoupper($currencycode)) {
                         $this->merchant_account_id = $value;
-                        return $this->merchant_account_id;
+                        break;
                     }
                 }
             }
             $this->angelleye_braintree_lib($order_id);
             try {
-                $merchantAccountIterator = $this->braintree_gateway->merchantAccount()->all();
-                foreach ($merchantAccountIterator as $merchantAccount) {
-                    if ($currencycode == $merchantAccount->currencyIsoCode) {
-                        $this->merchant_account_id = $merchantAccount->id;
-                        return $this->merchant_account_id;
+                if ( empty($this->merchant_account_id) ) {
+                    $merchantAccountIterator = $this->braintree_gateway->merchantAccount()->all();
+                    foreach ($merchantAccountIterator as $merchantAccount) {
+                        if ($currencycode == $merchantAccount->currencyIsoCode) {
+                            $this->merchant_account_id = $merchantAccount->id;
+                            break;
+                        }
                     }
-                }
-                foreach ($merchantAccountIterator as $merchantAccount) {
-                    if ($merchantAccount->default == true) {
-                        $this->merchant_account_id = $merchantAccount->id;
-                        return $this->merchant_account_id;
+                    foreach ($merchantAccountIterator as $merchantAccount) {
+                        if ($merchantAccount->default == true) {
+                            $this->merchant_account_id = $merchantAccount->id;
+                            break;
+                        }
                     }
                 }
             } catch (Braintree\Exception\NotFound $e) {
@@ -2506,6 +2509,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             } catch (Exception $e) {
                 return '';
             }
+            return apply_filters('angelleye_braintree_get_merchant_account_id', $this->merchant_account_id, $order_id);
         } catch (Exception $ex) {
             
         }
