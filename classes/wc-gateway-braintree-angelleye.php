@@ -976,7 +976,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 if ( $('.is_submit').length > 0) {
                                     return true;
                                 }
-                                if( $('.braintree-token').lenght > 0) {
+                                if( $('.braintree-token').length > 0) {
                                     return true;
                                 }
                                 event.preventDefault();
