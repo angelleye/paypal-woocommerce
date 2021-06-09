@@ -14,6 +14,7 @@ function onboardingCallback(authCode, sharedId) {
     });
 }
 jQuery(function ($) {
+    window.onbeforeunload = null;
     if (typeof ppcp_angelleye_param === 'undefined') {
         return false;
     }
