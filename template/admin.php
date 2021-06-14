@@ -28,7 +28,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                 <div id="angelleye_paypal_marketing_table">
                     <ul class="products">
                         <li class="product">
-                            <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'); ?>">
+                            <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>">
                                 <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/ppcp.png'; ?>">
                                 <p><?php echo wp_trim_words(__('PayPal Commerce Platform is a full-stack solution that offers marketplaces and other commerce platforms powerful and flexible payment processing capabilities.', 'paypal-for-woocommerce'), $num_words = 40); ?></p>
                             </a>
