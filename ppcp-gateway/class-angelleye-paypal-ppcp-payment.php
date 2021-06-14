@@ -134,6 +134,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'value' => $cart['shipping'],
                 );
             }
+            if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
+                $body_request['purchase_units'][0]['amount']['breakdown']['shipping_discount'] = array(
+                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                    'value' => $cart['ship_discount_amount'],
+                );
+            }
             if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
                 $body_request['purchase_units'][0]['amount']['breakdown']['tax_total'] = array(
                     'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
@@ -427,6 +433,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 } else {
                     $details['ship_discount_amount'] += $wc_order_total - $discounted_total;
                     $details['ship_discount_amount'] = angelleye_ppcp_round($details['ship_discount_amount'], $decimals);
+                    $details['ship_discount_amount'] = abs($details['ship_discount_amount']);
                 }
                 $details['order_total'] = $wc_order_total;
             }
@@ -796,6 +803,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $update_amount_request['shipping'] = array(
                     'currency_code' => angelleye_ppcp_get_currency($order_id),
                     'value' => $cart['shipping'],
+                );
+            }
+            if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
+                $update_amount_request['shipping_discount'] = array(
+                    'currency_code' => angelleye_ppcp_get_currency($order_id),
+                    'value' => $cart['ship_discount_amount'],
                 );
             }
             if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
