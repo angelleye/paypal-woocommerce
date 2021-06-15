@@ -897,9 +897,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             $this->paypal_request = $this->angelleye_add_billing_agreement_param($PayPalRequestData, $this->gateway->supports('tokenization'));
             $this->paypal_request = AngellEYE_Utility::angelleye_express_checkout_validate_shipping_address($this->paypal_request);
-
-            $this->paypal_response = $this->paypal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request, $this->gateway, $this, $order_id));
+            $this->paypal_request = apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request, $this->gateway, $this, $order_id, $is_force_validate = 'no');
+            $this->paypal_response = $this->paypal->SetExpressCheckout($this->paypal_request);
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'SetExpressCheckout');
+            if( $this->paypal_response['L_ERRORCODE0'] == '10002' ) {
+                $this->paypal_request = apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request, $this->gateway, $this, $order_id, $is_force_validate = 'yes');
+                $this->paypal_response = $this->paypal->SetExpressCheckout($this->paypal_request);
+            }
             return $this->paypal_response;
         } catch (Exception $ex) {
             
