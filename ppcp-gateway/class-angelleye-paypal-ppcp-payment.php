@@ -82,7 +82,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             } else {
                 $cart = $this->angelleye_ppcp_get_details_from_order($woo_order_id);
             }
-
+            $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reference_id = wc_generate_order_key();
             angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $reference_id);
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
@@ -137,7 +137,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
                 $body_request['purchase_units'][0]['amount']['breakdown']['shipping_discount'] = array(
                     'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => $cart['ship_discount_amount'],
+                    'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
                 );
             }
             if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
@@ -754,6 +754,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_update_order($order) {
         try {
+            $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $patch_request = array();
             $update_amount_request = array();
             $reference_id = angelleye_ppcp_get_session('angelleye_ppcp_reference_id');
@@ -808,7 +809,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
                 $update_amount_request['shipping_discount'] = array(
                     'currency_code' => angelleye_ppcp_get_currency($order_id),
-                    'value' => $cart['ship_discount_amount'],
+                    'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
                 );
             }
             if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
