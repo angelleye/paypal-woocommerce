@@ -952,12 +952,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
             if (!empty($amount) && $amount > 0) {
-                $body_request = array(
-                    'amount' =>
-                    array(
-                        'value' => angelleye_ppcp_round($amount, $decimals),
-                        'currency_code' => $order->get_currency()
-                    )
+                $body_request['amount'] = array(
+                    'value' => angelleye_ppcp_round($amount, $decimals),
+                    'currency_code' => $order->get_currency()
                 );
             }
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
