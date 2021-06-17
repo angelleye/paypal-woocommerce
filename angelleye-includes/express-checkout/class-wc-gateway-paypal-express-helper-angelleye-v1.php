@@ -1486,7 +1486,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function own_angelleye_fraudnet_script() {
-        if (WC()->cart->is_empty()) {
+        if ( !isset( WC()->cart ) || WC()->cart->is_empty()) {
             return false;
         }
         if($this->is_fraudnet_ready === false) {
