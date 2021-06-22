@@ -63,11 +63,17 @@ if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID')) {
 if (!defined('PAYPAL_PPCP_PARTNER_MERCHANT_ID')) {
     define('PAYPAL_PPCP_PARTNER_MERCHANT_ID', 'J9L24TCUDZ6ZS');
 }
+if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID')) {
+    define('PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID', 'AWZDKZJkjTiV_JsjxODtR0bseOY9yOgSGgpzxyVNCTwdW8xSQXKSFkJYLZ80JY2M4avl1uLnCpA9zAix');
+}
+if (!defined('PAYPAL_PPCP_PARTNER_CLIENT_ID')) {
+    define('PAYPAL_PPCP_PARTNER_CLIENT_ID', 'ATgw55qRjaDSlPur2FAkdAiB-QQuG5jlLsees-8dcxLiLla_nwbBSvSnCbUaGlmzxq9t2b8R9JGGSz1e');
+}
 if (!defined('PAYPAL_SELLER_ONBOARDING_LIVE_URL')) {
-    define('PAYPAL_SELLER_ONBOARDING_LIVE_URL', 'https://www.angelleye.com/web-services/paypal-for-woocommerce/paypal-seller-onboarding/');
+    define('PAYPAL_SELLER_ONBOARDING_LIVE_URL', 'http://kcppdevelopers.com/paypal-seller-onboarding/');
 }
 if (!defined('PAYPAL_SELLER_ONBOARDING_SANDBOX_URL')) {
-    define('PAYPAL_SELLER_ONBOARDING_SANDBOX_URL', 'https://www.angelleye.com/web-services/paypal-for-woocommerce/paypal-seller-onboarding/');
+    define('PAYPAL_SELLER_ONBOARDING_SANDBOX_URL', 'http://kcppdevelopers.com/paypal-seller-onboarding/');
 }
 
 
@@ -386,7 +392,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-pay-later-messaging.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-admin-action.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php');
-            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-webhook.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-payflow-angelleye.php' );
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-advanced-angelleye.php');
             if(is_angelleye_multi_account_active()) {
@@ -398,7 +403,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
             AngellEYE_PayPal_PPCP_Smart_Button::instance();
-            AngellEYE_PayPal_PPCP_Webhook::instance();
             Angelleye_PayPal_Express_Checkout_Helper::instance();
             AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
             AngellEYE_PayPal_PPCP_Pay_Later::instance();

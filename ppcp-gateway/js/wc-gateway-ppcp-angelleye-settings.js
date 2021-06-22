@@ -60,65 +60,45 @@ jQuery(function ($) {
             $('#woocommerce_angelleye_ppcp_threed_secure_enabled').closest('tr').hide();
         }
     }).change();
-    $('#woocommerce_angelleye_ppcp_live_email_address, #woocommerce_angelleye_ppcp_live_merchant_id, #woocommerce_angelleye_ppcp_sandbox_email_address, #woocommerce_angelleye_ppcp_sandbox_merchant_id').closest('tr').hide();
+    $('#woocommerce_angelleye_ppcp_sandbox_disconnect, #woocommerce_angelleye_ppcp_live_disconnect, #woocommerce_angelleye_ppcp_sandbox_onboarding, #woocommerce_angelleye_ppcp_live_onboarding, #woocommerce_angelleye_ppcp_live_merchant_id, #woocommerce_angelleye_ppcp_sandbox_merchant_id').closest('tr').hide();
     $('#woocommerce_angelleye_ppcp_testmode').change(function () {
-        var ppcp_production_fields = $('#woocommerce_angelleye_ppcp_live_client_id, #woocommerce_angelleye_ppcp_live_secret_key').closest('tr');
-        var ppcp_sandbox_fields = $('#woocommerce_angelleye_ppcp_sandbox_client_id, #woocommerce_angelleye_ppcp_sandbox_secret_key').closest('tr');
-        var ppcp_production_onboarding_connect_fields = $('#woocommerce_angelleye_ppcp_live_onboarding').closest('tr').hide();
-        var ppcp_sandbox_onboarding_connect_fields = $('#woocommerce_angelleye_ppcp_sandbox_onboarding').closest('tr').show();
-        var ppcp_production_onboarding_disconnect_fields = $('#woocommerce_angelleye_ppcp_live_disconnect').closest('tr').hide();
-        var ppcp_sandbox_onboarding_disconnect_fields = $('#woocommerce_angelleye_ppcp_sandbox_disconnect').closest('tr').show();
+        var ppcp_production_onboarding_connect_fields = $('#woocommerce_angelleye_ppcp_live_onboarding').closest('tr');
+        var ppcp_sandbox_onboarding_connect_fields = $('#woocommerce_angelleye_ppcp_sandbox_onboarding').closest('tr');
+        var ppcp_production_onboarding_disconnect_fields = $('#woocommerce_angelleye_ppcp_live_disconnect').closest('tr');
+        var ppcp_sandbox_onboarding_disconnect_fields = $('#woocommerce_angelleye_ppcp_sandbox_disconnect').closest('tr');
         if ($(this).is(':checked')) {
-            $('.ppcp_live').hide();
-            $('.ppcp_sandbox').show();
-            ppcp_production_fields.hide();
+            $('#woocommerce_angelleye_ppcp_live_merchant_id').closest('tr').hide();
             ppcp_production_onboarding_connect_fields.hide();
             ppcp_production_onboarding_disconnect_fields.hide();
-            $('#woocommerce_angelleye_ppcp_api_credentials, #woocommerce_angelleye_ppcp_api_credentials + p').hide();
             if (ppcp_angelleye_param.is_sandbox_seller_onboarding_done === 'yes') {
-                $('#woocommerce_angelleye_ppcp_sandbox_api_credentials, #woocommerce_angelleye_ppcp_sandbox_api_credentials + p').show();
-                ppcp_sandbox_fields.show();
                 ppcp_sandbox_onboarding_connect_fields.hide();
                 ppcp_sandbox_onboarding_disconnect_fields.show();
+                $('#woocommerce_angelleye_ppcp_sandbox_merchant_id').closest('tr').show();
             } else {
                 if (ppcp_angelleye_param.angelleye_ppcp_is_local_server === 'yes') {
-                    $('#woocommerce_angelleye_ppcp_sandbox_api_credentials, #woocommerce_angelleye_ppcp_sandbox_api_credentials + p').show();
-                    ppcp_sandbox_fields.show();
                     ppcp_sandbox_onboarding_connect_fields.hide();
                     ppcp_sandbox_onboarding_disconnect_fields.hide();
                 } else {
-                    $('#woocommerce_angelleye_ppcp_sandbox_api_credentials, #woocommerce_angelleye_ppcp_sandbox_api_credentials + p').hide();
-                    ppcp_sandbox_fields.hide();
                     ppcp_sandbox_onboarding_connect_fields.show();
                     ppcp_sandbox_onboarding_disconnect_fields.hide();
                 }
-
             }
         } else {
-            $('.ppcp_live').show();
-            $('.ppcp_sandbox').hide();
-            ppcp_sandbox_fields.hide();
+            $('#woocommerce_angelleye_ppcp_sandbox_merchant_id').closest('tr').hide();
             ppcp_sandbox_onboarding_connect_fields.hide();
             ppcp_sandbox_onboarding_disconnect_fields.hide();
-            $('#woocommerce_angelleye_ppcp_sandbox_api_credentials, #woocommerce_angelleye_ppcp_sandbox_api_credentials + p').hide();
             if (ppcp_angelleye_param.is_live_seller_onboarding_done === 'yes') {
-                $('#woocommerce_angelleye_ppcp_api_credentials, #woocommerce_angelleye_ppcp_api_credentials + p').show();
-                ppcp_production_fields.show();
+                $('#woocommerce_angelleye_ppcp_live_merchant_id').closest('tr').show();
                 ppcp_production_onboarding_connect_fields.hide();
                 ppcp_production_onboarding_disconnect_fields.show();
             } else {
                 if (ppcp_angelleye_param.angelleye_ppcp_is_local_server === 'yes') {
-                    $('#woocommerce_angelleye_ppcp_api_credentials, #woocommerce_angelleye_ppcp_api_credentials + p').show();
-                    ppcp_production_fields.show();
                     ppcp_production_onboarding_connect_fields.hide();
                     ppcp_production_onboarding_disconnect_fields.hide();
                 } else {
-                    $('#woocommerce_angelleye_ppcp_api_credentials, #woocommerce_angelleye_ppcp_api_credentials + p').hide();
-                    ppcp_production_fields.hide();
                     ppcp_production_onboarding_connect_fields.show();
                     ppcp_production_onboarding_disconnect_fields.hide();
                 }
-
             }
         }
     }).change();
@@ -154,23 +134,11 @@ jQuery(function ($) {
             angelleye_ppcp_mini_cart_tagline.show();
         }
     }).change();
-    $(".angelleye_ppcp_gateway_manual_credential_input").on('click', function (e) {
-        e.preventDefault();
-        var ppcp_production_fields = $('#woocommerce_angelleye_ppcp_live_client_id, #woocommerce_angelleye_ppcp_live_secret_key').closest('tr');
-        var ppcp_sandbox_fields = $('#woocommerce_angelleye_ppcp_sandbox_client_id, #woocommerce_angelleye_ppcp_sandbox_secret_key').closest('tr');
-        if ($('#woocommerce_angelleye_ppcp_testmode').is(':checked')) {
-            ppcp_sandbox_fields.toggle();
-            $('#woocommerce_angelleye_ppcp_sandbox_api_credentials, #woocommerce_angelleye_ppcp_sandbox_api_credentials + p').toggle();
-        } else {
-            ppcp_production_fields.toggle();
-            $('#woocommerce_angelleye_ppcp_api_credentials, #woocommerce_angelleye_ppcp_api_credentials + p').toggle();
-        }
-    });
     $(".angelleye-ppcp-disconnect").click(function () {
         if ($('#woocommerce_angelleye_ppcp_testmode').is(':checked')) {
-            $('#woocommerce_angelleye_ppcp_sandbox_client_id, #woocommerce_angelleye_ppcp_sandbox_secret_key, #woocommerce_angelleye_ppcp_sandbox_email_address, #woocommerce_angelleye_ppcp_sandbox_merchant_id').val('');
+            $('#woocommerce_angelleye_ppcp_sandbox_merchant_id').val('');
         } else {
-            $('#woocommerce_angelleye_ppcp_live_client_id, #woocommerce_angelleye_ppcp_live_secret_key, #woocommerce_angelleye_ppcp_live_email_address, #woocommerce_angelleye_ppcp_live_merchant_id').val('');
+            $('#woocommerce_angelleye_ppcp_live_merchant_id').val('');
         }
         $('.woocommerce-save-button').click();
     });

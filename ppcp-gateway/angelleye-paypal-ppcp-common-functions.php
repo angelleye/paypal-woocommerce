@@ -151,6 +151,7 @@ if (!function_exists('angelleye_ppcp_get_wpml_locale')) {
 if (!function_exists('angelleye_ppcp_is_local_server')) {
 
     function angelleye_ppcp_is_local_server() {
+        return false;
         if (!isset($_SERVER['HTTP_HOST'])) {
             return;
         }
@@ -215,22 +216,6 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
         function angelleye_ppcp_readable($tex) {
             $tex = ucwords(strtolower(str_replace('_', ' ', $tex)));
             return $tex;
-        }
-
-    }
-
-    if (!function_exists('angelleye_ppcp_may_register_webhook')) {
-
-        function angelleye_ppcp_may_register_webhook() {
-
-            if (angelleye_ppcp_is_local_server() === false) {
-                if (wp_next_scheduled('angelleyel_ppcp_create_webhook')) {
-                    $timestamp = wp_next_scheduled('angelleyel_ppcp_create_webhook');
-                    wp_unschedule_event($timestamp, 'angelleyel_ppcp_create_webhook');
-                    wp_clear_scheduled_hook('angelleyel_ppcp_create_webhook');
-                }
-                wp_schedule_single_event(time() + 20, 'angelleyel_ppcp_create_webhook');
-            }
         }
 
     }

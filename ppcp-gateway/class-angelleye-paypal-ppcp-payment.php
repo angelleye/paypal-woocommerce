@@ -8,7 +8,6 @@ class AngellEYE_PayPal_PPCP_Payment {
     protected static $_instance = null;
     public $api_request;
     public $api_response;
-    public $access_token;
     public $api_log;
     public $checkout_details;
 
@@ -28,19 +27,16 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->paypal_order_api = 'https://api-m.sandbox.paypal.com/v2/checkout/orders/';
             $this->paypal_refund_api = 'https://api-m.sandbox.paypal.com/v2/payments/captures/';
             $this->auth = 'https://api-m.sandbox.paypal.com/v2/payments/authorizations/';
-            $this->webhook = 'https://api-m.sandbox.paypal.com/v1/notifications/webhooks';
-            $this->webhook_url = 'https://api-m.sandbox.paypal.com/v1/notifications/verify-webhook-signature';
             $this->generate_token_url = 'https://api-m.sandbox.paypal.com/v1/identity/generate-token';
-            $this->access_token = get_transient('angelleye_ppcp_sandbox_access_token');
+            $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
         } else {
             $this->token_url = 'https://api-m.paypal.com/v1/oauth2/token';
             $this->order_url = 'https://api-m.paypal.com/v2/checkout/orders/';
             $this->paypal_order_api = 'https://api-m.paypal.com/v2/checkout/orders/';
             $this->paypal_refund_api = 'https://api-m.paypal.com/v2/payments/captures/';
             $this->auth = 'https://api-m.paypal.com/v2/payments/authorizations/';
-            $this->webhook = 'https://api-m.paypal.com/v1/notifications/webhooks';
             $this->generate_token_url = 'https://api-m.paypal.com/v1/identity/generate-token';
-            $this->access_token = get_transient('angelleye_ppcp_live_access_token');
+            $this->merchant_id = $this->settings->get('live_merchant_id', '');
         }
         $this->title = $this->settings->get('title', 'PayPal Complete Payments');
         $this->brand_name = $this->settings->get('brand_name', get_bloginfo('name'));
@@ -48,11 +44,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->landing_page = $this->settings->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->settings->get('payee_preferred', 'no');
         $this->invoice_prefix = $this->settings->get('invoice_prefix', 'WC-PPCP');
-        if (!$this->access_token) {
-            if (!empty($this->client_id) && !empty($this->secret_key)) {
-                $this->access_token = $this->angelleye_ppcp_get_access_token();
-            }
-        }
+        
     }
 
     public function angelleye_ppcp_load_class() {
@@ -152,6 +144,18 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'value' => $cart['discount'],
                 );
             }
+            $body_request['purchase_units'][0]['payee']['merchant_id'] = $this->merchant_id;
+            $body_request['purchase_units'][0]['payment_instruction'] = array(
+                "disbursement_mode" => "INSTANT",
+                "platform_fees" => array(
+                    array(
+                        "amount" => array(
+                            "currency_code" => "USD",
+                            "value" => "10.00"
+                        )
+                    )
+                )
+            );
             if (isset($cart['items']) && !empty($cart['items'])) {
                 foreach ($cart['items'] as $key => $order_items) {
                     $description = !empty($order_items['description']) ? $order_items['description'] : '';
@@ -227,7 +231,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $body_request = json_encode($body_request);
             $args = array(
                 'method' => 'POST',
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
                 'body' => $body_request
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api, $args, 'create_order');
@@ -656,7 +660,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'redirection' => 5,
                 'httpversion' => '1.1',
                 'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation"),
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation"),
                 'body' => array(),
                 'cookies' => array()
             );
@@ -684,7 +688,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'redirection' => 5,
                 'httpversion' => '1.1',
                 'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
+                'headers' => array('Content-Type' => 'application/json', '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/capture', $args, 'capture_order');
             if (isset($this->api_response['id']) && !empty($this->api_response['id'])) {
@@ -860,7 +864,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'timeout' => 70,
                 'method' => 'PATCH',
                 'httpversion' => '1.1',
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
                 'body' => $patch_request_json,
                 'user-agent' => 'PPCP/' . VERSION_PFW,
             );
@@ -966,7 +970,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'redirection' => 5,
                 'httpversion' => '1.1',
                 'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
                 'body' => $body_request,
                 'cookies' => array()
             );
@@ -1007,7 +1011,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'redirection' => 5,
                 'httpversion' => '1.1',
                 'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/authorize', $args, 'authorize_order');
             if (!empty($this->api_response['id'])) {
@@ -1047,7 +1051,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'redirection' => 5,
                 'httpversion' => '1.1',
                 'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation"),
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation"),
                 'body' => array(),
                 'cookies' => array()
             );
@@ -1069,7 +1073,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'redirection' => 5,
                 'httpversion' => '1.1',
                 'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation"),
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation"),
                 'body' => array(),
                 'cookies' => array()
             );
@@ -1106,7 +1110,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'redirection' => 5,
                 'httpversion' => '1.1',
                 'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Bearer " . $this->access_token, "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
                 'body' => $body_request,
                 'cookies' => array()
             );
