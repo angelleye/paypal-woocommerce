@@ -29,6 +29,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->auth = 'https://api-m.sandbox.paypal.com/v2/payments/authorizations/';
             $this->generate_token_url = 'https://api-m.sandbox.paypal.com/v1/identity/generate-token';
             $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
+            $this->partner_client_id = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
         } else {
             $this->token_url = 'https://api-m.paypal.com/v1/oauth2/token';
             $this->order_url = 'https://api-m.paypal.com/v2/checkout/orders/';
@@ -37,6 +38,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->auth = 'https://api-m.paypal.com/v2/payments/authorizations/';
             $this->generate_token_url = 'https://api-m.paypal.com/v1/identity/generate-token';
             $this->merchant_id = $this->settings->get('live_merchant_id', '');
+            $this->partner_client_id = PAYPAL_PPCP_PARTNER_CLIENT_ID;
         }
         $this->title = $this->settings->get('title', 'PayPal Complete Payments');
         $this->brand_name = $this->settings->get('brand_name', get_bloginfo('name'));
@@ -970,7 +972,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'redirection' => 5,
                 'httpversion' => '1.1',
                 'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                 'body' => $body_request,
                 'cookies' => array()
             );
@@ -1262,6 +1264,19 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order->update_status('on-hold');
             $order->add_order_note(__('Payment authorized. Change order status to processing or complete for capture funds.', 'paypal-for-woocommerce'));
         }
+    }
+    
+    public function angelleye_ppcp_paypalauthassertion() {
+        $temp = array(
+            "alg" => "none"
+        );
+        $returnData = base64_encode(json_encode($temp)) . '.';
+        $temp = array(
+            "iss" => $this->partner_client_id,
+            "payer_id" => $this->merchant_id
+        );
+        $returnData .= base64_encode(json_encode($temp)) . '.';
+        return $returnData;
     }
 
 }
