@@ -92,7 +92,6 @@ class AngellEYE_PayPal_PPCP_Request {
 
     public function angelleye_ppcp_get_generate_token() {
         try {
-
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -103,16 +102,9 @@ class AngellEYE_PayPal_PPCP_Request {
                 'cookies' => array(),
                 'body' => array(), //json_encode(array('customer_id' => 'customer_1234_wow'))
             );
-            $paypal_api_response = wp_remote_get($this->generate_token_url, $args);
-            $body = wp_remote_retrieve_body($paypal_api_response);
-            $api_response = !empty($body) ? json_decode($body, true) : '';
-            if (!empty($api_response['client_token'])) {
-                if ($this->is_sandbox) {
-                    set_transient('angelleye_ppcp_sandbox_client_token', $api_response['client_token'], 3000);
-                } else {
-                    set_transient('angelleye_ppcp_live_client_token', $api_response['client_token'], 3000);
-                }
-                $this->client_token = $api_response['client_token'];
+            $response = $this->request($this->generate_token_url, $args);
+            if (!empty($response['client_token'])) {
+                $this->client_token = $response['client_token'];
                 return $this->client_token;
             }
         } catch (Exception $ex) {
