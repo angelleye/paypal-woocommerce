@@ -42,12 +42,13 @@ class AngellEYE_PayPal_PPCP_Request {
         }
     }
 
-    public function angelleye_ppcp_remote_get($paypal_url, $args) {
+    public function angelleye_ppcp_remote_get($paypal_url, $args, $action_name) {
         $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
         $body['paypal_url'] = $paypal_url;
         $body['paypal_header'] = $args['headers'];
         $body['paypal_method'] = isset($args['method']) ? $args['method'] : 'GET';
         $body['paypal_body'] = isset($args['body']) ? $args['body'] : array();
+        $body['action_name'] = $action_name;
         $args['method'] = 'POST';
         $args['sslverify'] = 0;
         $args['body'] = $body;
@@ -59,7 +60,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public function request($url, $args, $action_name = 'default') {
         try {
             if (strpos($url, 'paypal.com') !== false) {
-                $this->result = $this->angelleye_ppcp_remote_get($url, $args);
+                $this->result = $this->angelleye_ppcp_remote_get($url, $args, $action_name);
             } else {
                 $this->result = wp_remote_get($url, $args);
             }
@@ -89,28 +90,4 @@ class AngellEYE_PayPal_PPCP_Request {
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
-
-    public function angelleye_ppcp_get_generate_token() {
-        try {
-            $args = array(
-                'method' => 'POST',
-                'timeout' => 60,
-                'redirection' => 5,
-                'httpversion' => '1.1',
-                'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Accept-Language' => 'en_US'),
-                'cookies' => array(),
-                'body' => array(), //json_encode(array('customer_id' => 'customer_1234_wow'))
-            );
-            $response = $this->request($this->generate_token_url, $args);
-            if (!empty($response['client_token'])) {
-                $this->client_token = $response['client_token'];
-                return $this->client_token;
-            }
-        } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
-        }
-    }
-
 }
