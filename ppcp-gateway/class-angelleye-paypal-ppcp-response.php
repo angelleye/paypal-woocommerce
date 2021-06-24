@@ -22,6 +22,7 @@ class AngellEYE_PayPal_PPCP_Response {
     }
 
     public function parse_response($paypal_api_response, $url, $request, $action_name) {
+        
         try {
             if (is_wp_error($paypal_api_response)) {
                 $response = array(
@@ -137,16 +138,18 @@ class AngellEYE_PayPal_PPCP_Response {
             if (empty($tempheader)) {
                 continue;
             }
-            list($key, $value) = explode(':', $tempheader, 2);
-            $key = strtolower($key);
-            $value = trim($value);
-            if (isset($newheaders[$key])) {
-                if (!is_array($newheaders[$key])) {
-                    $newheaders[$key] = array($newheaders[$key]);
+            if (strpos($tempheader, ':') !== false) {
+                list($key, $value) = explode(':', $tempheader, 2);
+                $key = strtolower($key);
+                $value = trim($value);
+                if (isset($newheaders[$key])) {
+                    if (!is_array($newheaders[$key])) {
+                        $newheaders[$key] = array($newheaders[$key]);
+                    }
+                    $newheaders[$key][] = $value;
+                } else {
+                    $newheaders[$key] = $value;
                 }
-                $newheaders[$key][] = $value;
-            } else {
-                $newheaders[$key] = $value;
             }
         }
         return isset($newheaders[$key_debug]) ? $newheaders[$key_debug] : '';

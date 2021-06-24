@@ -147,17 +147,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
             $body_request['purchase_units'][0]['payee']['merchant_id'] = $this->merchant_id;
-            $body_request['purchase_units'][0]['payment_instruction'] = array(
-                "disbursement_mode" => "INSTANT",
-                "platform_fees" => array(
-                    array(
-                        "amount" => array(
-                            "currency_code" => "USD",
-                            "value" => "10.00"
-                        )
-                    )
-                )
-            );
+            
             if (isset($cart['items']) && !empty($cart['items'])) {
                 foreach ($cart['items'] as $key => $order_items) {
                     $description = !empty($order_items['description']) ? $order_items['description'] : '';
