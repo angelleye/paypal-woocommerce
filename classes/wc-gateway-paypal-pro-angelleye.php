@@ -22,7 +22,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      */
     function __construct() {
         $this->id = 'paypal_pro';
-        $this->method_title = __('PayPal Website Payments Pro (DoDirectPayment) ', 'paypal-for-woocommerce');
+        $this->method_title = __('PayPal Website Payments Pro (DoDirectPayment)', 'paypal-for-woocommerce');
         $this->method_description = __('PayPal Website Payments Pro allows you to accept credit cards directly on your site without any redirection through PayPal.  You host the checkout form on your own web server, so you will need an SSL certificate to ensure your customer data is protected.', 'paypal-for-woocommerce');
         $this->has_fields = true;
         $this->liveurl = 'https://api-3t.paypal.com/nvp';
@@ -523,6 +523,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
 
     public function admin_options() {
+        do_action('angelleye_classic_gateway_sub_menu');
         $GLOBALS['hide_save_button'] = true;
         echo '<h2>' . esc_html( $this->get_method_title() ) . '</h2>';
         echo wp_kses_post( wpautop( $this->get_method_description() ) );

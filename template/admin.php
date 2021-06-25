@@ -28,6 +28,12 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                 <div id="angelleye_paypal_marketing_table">
                     <ul class="products">
                         <li class="product">
+                            <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>">
+                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/ppcp.png'; ?>">
+                                <p><?php echo wp_trim_words(__('PayPal Commerce Platform is a full-stack solution that offers marketplaces and other commerce platforms powerful and flexible payment processing capabilities.', 'paypal-for-woocommerce'), $num_words = 40); ?></p>
+                            </a>
+                        </li>
+                        <li class="product">
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'); ?>">
                                 <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/paypal-express-checkout-logo.png'; ?>">
                                 <p><?php echo wp_trim_words(__('PayPal Express Checkout is a more advanced version of the standard PayPal payment option that is included with WooCommerce. It has more features included with it and allows us to more tightly integrate PayPal into WooCommerce. It is the recommended method of enabling PayPal payments in WooCommerce.', 'paypal-for-woocommerce'), $num_words = 40); ?></p>
@@ -68,8 +74,6 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                                 <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/paypal-plus-logo.png'; ?>">
                                 <p>
                                     <?php echo __('PayPal Plus is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame.', 'paypal-for-woocommerce'); ?><br/><br/>
-                                    <?php echo __('PayPal Plus is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame.', 'paypal-for-woocommerce'); ?><br/><br/>
-                                    <?php echo __('PayPal Plus is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame.', 'paypal-for-woocommerce'); ?>
                                 </p>
                             </a>
                         </li>

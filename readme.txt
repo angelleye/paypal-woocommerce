@@ -78,7 +78,7 @@ Developers can contribute to the source code on the [PayPal for WooCommerce GitH
 
 Automatic installation is the easiest option as WordPress handles the file transfers itself and you don't need to leave your web browser. To do an automatic install of PayPal for WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
 
-In the search field type PayPal for WooCommerce and click Search Plugins. Once you've found our plugin you can view details about it such as the the rating and description. Most importantly, of course, you can install it by simply clicking Install Now�?.
+In the search field type PayPal for WooCommerce and click Search Plugins. Once you've found our plugin you can view details about it such as the the rating and description. Most importantly, of course, you can install it by simply clicking Install Now�?.
 
 = Manual Installation =
 
@@ -295,7 +295,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 2.1.15 - 03.27.2020 =
 * Tweak - Adds required hooks for our PayPal Shipment tracking. ([PFW-563](https://github.com/angelleye/paypal-woocommerce/pull/1423))
-* Tweak – Adjustments “Thank you�? page message. ([PFW-566](https://github.com/angelleye/paypal-woocommerce/pull/1425))
+* Tweak – Adjustments “Thank you�? page message. ([PFW-566](https://github.com/angelleye/paypal-woocommerce/pull/1425))
 * Fix - Resolves jQuery conflict. ([PFW-565](https://github.com/angelleye/paypal-woocommerce/pull/1424))
 * Fix - Correct year format as per cardinal commerce docs. ([#1430](https://github.com/angelleye/paypal-woocommerce/pull/1430))
 * Fix - "WooCommerce Booster Currency Switcher" plugin compatibility. ([PFW-571](https://github.com/angelleye/paypal-woocommerce/pull/1429))
@@ -307,7 +307,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 2.1.13 - 01.29.2020 =
 * Feature - Adds WooCommerce 3.8.0 Compatibility. ([PFW-554](https://github.com/angelleye/paypal-woocommerce/pull/1416)) ([PFW-553](https://github.com/angelleye/paypal-woocommerce/pull/1418))
-* Tweak – Adjustments “Thank you�? page message to comply with PayPal Guidelines. ([PFW-552](https://github.com/angelleye/paypal-woocommerce/pull/1414))
+* Tweak – Adjustments “Thank you�? page message to comply with PayPal Guidelines. ([PFW-552](https://github.com/angelleye/paypal-woocommerce/pull/1414))
 * Tweak - Adjustments to admin notice display. ([PFW-531](https://github.com/angelleye/paypal-woocommerce/pull/1417))
 * Fix - Resolves some PHP notices. ([PFW-66](https://github.com/angelleye/paypal-woocommerce/pull/1409)) ([PFW-163](https://github.com/angelleye/paypal-woocommerce/pull/1410))
 * Fix - Resolves an issue with Woo Subscriptions - Refund. ([PFW-550](https://github.com/angelleye/paypal-woocommerce/pull/1411))

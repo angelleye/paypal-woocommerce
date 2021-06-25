@@ -1,5 +1,5 @@
 jQuery(function ($) {
-    if (typeof paypal_sdk === 'undefined') {
+    if (typeof angelleye_paypal_sdk === 'undefined') {
         return false;
     }
     if (typeof angelleye_credit_messaging === 'undefined') {
@@ -22,8 +22,8 @@ jQuery(function ($) {
             cart_style_object['ratio'] = angelleye_credit_messaging.credit_messaging_cart_flex_layout_ratio;
         }
         $('.angelleye_pp_message_cart').addClass('angelleye_' + angelleye_credit_messaging.credit_messaging_cart_layout_type);
-        if (typeof paypal_sdk !== 'undefined') {
-            paypal_sdk.Messages({
+        if (typeof angelleye_paypal_sdk !== 'undefined') {
+            angelleye_paypal_sdk.Messages({
                 amount: angelleye_credit_messaging.amount,
                 placement: 'cart',
                 style: cart_style_object

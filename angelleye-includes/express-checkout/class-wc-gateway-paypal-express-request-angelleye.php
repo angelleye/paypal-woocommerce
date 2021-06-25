@@ -627,7 +627,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         );
         try {
             if (!class_exists('Angelleye_PayPal_WC')) {
-                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php';
             }
             $this->paypal = new Angelleye_PayPal_WC($this->credentials);
         } catch (Exception $ex) {

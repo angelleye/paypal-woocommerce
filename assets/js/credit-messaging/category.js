@@ -1,5 +1,5 @@
 jQuery(function ($) {
-    if (typeof paypal_sdk === 'undefined') {
+    if (typeof angelleye_paypal_sdk === 'undefined') {
         return false;
     }
     if (typeof angelleye_credit_messaging === 'undefined') {
@@ -21,8 +21,8 @@ jQuery(function ($) {
             category_style_object['color'] = angelleye_credit_messaging.credit_messaging_category_flex_layout_color;
             category_style_object['ratio'] = angelleye_credit_messaging.credit_messaging_category_flex_layout_ratio;
         }
-        if (typeof paypal_sdk !== 'undefined') {
-            paypal_sdk.Messages({
+        if (typeof angelleye_paypal_sdk !== 'undefined') {
+            angelleye_paypal_sdk.Messages({
                 placement: 'category',
                 style: category_style_object
             }).render('.angelleye_pp_message_category');
