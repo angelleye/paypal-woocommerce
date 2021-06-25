@@ -52,7 +52,7 @@ class AngellEYE_PayPal_PPCP_Response {
         $this->api_log->log('WordPress Version: ' . $wp_version);
         $this->api_log->log('WooCommerce Version: ' . WC()->version);
         $this->api_log->log('PFW Version: ' . VERSION_PFW);
-        $this->api_log->log('Action: ' . $action_name);
+        $this->api_log->log('Action: ' . ucwords(str_replace('_', ' ', $action_name)));
         $this->api_log->log('Request URL: ' . $url);
         $response_body = isset($response['body']) ? json_decode($response['body'], true) : $response;
         $this->api_log->log('PayPal Debug ID: ' . $this->angelleye_ppcp_parse_headers($response_body['headers'], 'paypal-debug-id'));

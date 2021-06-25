@@ -1162,7 +1162,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return true;
             } else {
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response);
-                wc_add_notice($error_message, 'error');
+                if(function_exists('wc_add_notice')) {
+                    wc_add_notice($error_message, 'error');
+                }
                 return false;
             }
         } catch (Exception $ex) {
