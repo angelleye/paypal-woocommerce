@@ -1,9 +1,10 @@
 <?php
+
 namespace Braintree;
 
 /**
- * Braintree AmexExpressCheckoutCard module
- * Creates and manages Braintree Amex Express Checkout cards
+ * Braintree GooglePayCard module
+ * Creates and manages Braintree Google Pay cards
  *
  * <b>== More information ==</b>
  *
@@ -13,21 +14,26 @@ namespace Braintree;
  * @category   Resources
  *
  * @property-read string $bin
- * @property-read string $cardMemberExpiryDate
- * @property-read string $cardMemberNumber
  * @property-read string $cardType
  * @property-read \DateTime $createdAt
  * @property-read string $customerId
  * @property-read boolean $default
  * @property-read string $expirationMonth
  * @property-read string $expirationYear
+ * @property-read string $googleTransactionId
  * @property-read string $imageUrl
- * @property-read string $token
+ * @property-read boolean $isNetworkTokenized
+ * @property-read string $last4
+ * @property-read string $sourceCardLast4
+ * @property-read string $sourceCardType
  * @property-read string $sourceDescription
  * @property-read \Braintree\Subscription[] $subscriptions
+ * @property-read string $token
  * @property-read \DateTime $updatedAt
+ * @property-read string $virtualCardLast4
+ * @property-read string $virtualCardType
  */
-class AmexExpressCheckoutCard extends Base
+class GooglePayCard extends Base
 {
     /* instance methods */
     /**
@@ -41,17 +47,23 @@ class AmexExpressCheckoutCard extends Base
     }
 
     /**
-     *  factory method: returns an instance of AmexExpressCheckoutCard
+     *  factory method: returns an instance of GooglePayCard
      *  to the requesting method, with populated properties
      *
      * @ignore
-     * @return AmexExpressCheckoutCard
+     * @return GooglePayCard
      */
     public static function factory($attributes)
     {
+        $defaultAttributes = [
+            'expirationMonth'    => '',
+            'expirationYear'    => '',
+            'last4'  => $attributes['virtualCardLast4'],
+            'cardType'  => $attributes['virtualCardType'],
+        ];
 
         $instance = new self();
-        $instance->_initialize($attributes);
+        $instance->_initialize(array_merge($defaultAttributes, $attributes));
         return $instance;
     }
 
@@ -59,17 +71,17 @@ class AmexExpressCheckoutCard extends Base
      * sets instance properties from an array of values
      *
      * @access protected
-     * @param array $amexExpressCheckoutCardAttribs array of Amex Express Checkout card properties
+     * @param array $googlePayCardAttribs array of Google Pay card properties
      * @return void
      */
-    protected function _initialize($amexExpressCheckoutCardAttribs)
+    protected function _initialize($googlePayCardAttribs)
     {
         // set the attributes
-        $this->_attributes = $amexExpressCheckoutCardAttribs;
+        $this->_attributes = $googlePayCardAttribs;
 
         $subscriptionArray = [];
-        if (isset($amexExpressCheckoutCardAttribs['subscriptions'])) {
-            foreach ($amexExpressCheckoutCardAttribs['subscriptions'] AS $subscription) {
+        if (isset($googlePayCardAttribs['subscriptions'])) {
+            foreach ($googlePayCardAttribs['subscriptions'] as $subscription) {
                 $subscriptionArray[] = Subscription::factory($subscription);
             }
         }

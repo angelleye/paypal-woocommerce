@@ -1,4 +1,5 @@
 <?php
+
 namespace Braintree;
 
 use InvalidArgumentException;
@@ -67,7 +68,7 @@ class PaymentMethodGateway
         return $this->_doUpdate('/payment_methods/any/' . $token, ['payment_method' => $attribs]);
     }
 
-    public function delete($token, $options=[])
+    public function delete($token, $options = [])
     {
         Util::verifyKeys(self::deleteSignature(), $options);
         $this->_validateId($token);
@@ -78,7 +79,7 @@ class PaymentMethodGateway
         return $this->_doDelete('/payment_methods/any/' . $token  . $queryString);
     }
 
-    public function grant($sharedPaymentMethodToken, $attribs=[])
+    public function grant($sharedPaymentMethodToken, $attribs = [])
     {
         if (is_bool($attribs) === true) {
             $attribs = ['allow_vaulting' => $attribs];
@@ -111,11 +112,12 @@ class PaymentMethodGateway
         $optionsSignature = [
             'failOnDuplicatePaymentMethod',
             'makeDefault',
-            'verificationMerchantAccountId',
-            'verifyCard',
+            'skipAdvancedFraudChecking',
+            'usBankAccountVerificationMethod',
             'verificationAccountType',
             'verificationAmount',
-            'usBankAccountVerificationMethod',
+            'verificationMerchantAccountId',
+            'verifyCard',
             ['paypal' => [
                 'payee_email',
                 'payeeEmail',
@@ -155,6 +157,7 @@ class PaymentMethodGateway
         $signature = array_merge(self::baseSignature(), [
             'customerId',
             'paypalRefreshToken',
+            CreditCardGateway::threeDSecurePassThruSignature()
         ]);
         return $signature;
     }
@@ -178,9 +181,7 @@ class PaymentMethodGateway
             'xid'
         ];
         $signature = array_merge(self::baseSignature(), [
-            'deviceSessionId',
             'venmoSdkPaymentMethodCode',
-            'fraudMerchantId',
             ['billingAddress' => $billingAddressSignature],
             ['threeDSecurePassThru' => $threeDSPassThruSignature]
         ]);
@@ -272,22 +273,23 @@ class PaymentMethodGateway
     {
         if (isset($response['apiErrorResponse'])) {
             return new Result\Error($response['apiErrorResponse']);
-        } else if (($response)) {
+        } elseif (($response)) {
             return new Result\Successful(
                 PaymentMethodParser::parsePaymentMethod($response),
                 'paymentMethod'
             );
         } else {
             throw new Exception\Unexpected(
-            'Expected payment method or apiErrorResponse'
+                'Expected payment method or apiErrorResponse'
             );
         }
     }
 
-    private function _verifyGrantResponse($response) {
+    private function _verifyGrantResponse($response)
+    {
         if (isset($response['apiErrorResponse'])) {
             return new Result\Error($response['apiErrorResponse']);
-        } else if (isset($response['paymentMethodNonce'])) {
+        } elseif (isset($response['paymentMethodNonce'])) {
             return new Result\Successful(
                 PaymentMethodNonce::factory($response['paymentMethodNonce']),
                 'paymentMethodNonce'
@@ -299,10 +301,11 @@ class PaymentMethodGateway
         }
     }
 
-    private function _verifyRevokeResponse($response) {
+    private function _verifyRevokeResponse($response)
+    {
         if (isset($response['apiErrorResponse'])) {
             return new Result\Error($response['apiErrorResponse']);
-        } else if (isset($response['success'])) {
+        } elseif (isset($response['success'])) {
             return new Result\Successful();
         } else {
             throw new Exception\Unexpected(
@@ -321,14 +324,14 @@ class PaymentMethodGateway
     private function _validateId($identifier = null, $identifierType = 'token')
     {
         if (empty($identifier)) {
-           throw new InvalidArgumentException(
-                   'expected payment method id to be set'
-                   );
+            throw new InvalidArgumentException(
+                'expected payment method id to be set'
+            );
         }
         if (!preg_match('/^[0-9A-Za-z_-]+$/', $identifier)) {
             throw new InvalidArgumentException(
-                    $identifier . ' is an invalid payment method ' . $identifierType . '.'
-                    );
+                $identifier . ' is an invalid payment method ' . $identifierType . '.'
+            );
         }
     }
 }
