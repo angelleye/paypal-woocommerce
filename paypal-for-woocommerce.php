@@ -552,6 +552,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     } else {
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v2.php');
                     }
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-express-subscriptions-angelleye.php');
                     $methods[] = 'WC_Gateway_Braintree_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
                 }
