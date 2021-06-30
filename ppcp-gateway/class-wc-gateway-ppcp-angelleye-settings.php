@@ -151,6 +151,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'text',
                     'description' => '',
                     'default' => '',
+                    'custom_attributes' => array('readonly' => 'readonly'),
                     'desc_tip' => true
                 ),
                 'sandbox_merchant_id' => array(
@@ -158,6 +159,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'text',
                     'description' => '',
                     'default' => '',
+                    'custom_attributes' => array('readonly' => 'readonly'),
                     'desc_tip' => true
                 ),
                 'smart_button_header' => array(
