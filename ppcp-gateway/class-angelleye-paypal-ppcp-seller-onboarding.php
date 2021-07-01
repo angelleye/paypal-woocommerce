@@ -112,6 +112,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     public function angelleye_ppcp_login_seller() {
         try {
             $posted_raw = angelleye_ppcp_get_raw_data();
+            $this->api_log->log('angelleye_ppcp_login_seller', 'error');
+            $this->api_log->log(print_r($posted_raw, true), 'error');
             if (empty($posted_raw)) {
                 return false;
             }
@@ -140,7 +142,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             } else {
                 set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
             }
-            $this->angelleye_get_seller_onboarding_status();
+            
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -165,12 +167,15 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
             if ($this->is_sandbox) {
                 $this->settings->set('sandbox_merchant_id', $merchant_id);
+                set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
                 $this->settings->set('enabled', 'yes');
             } else {
                 $this->settings->set('live_merchant_id', $merchant_id);
+                set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
                 $this->settings->set('enabled', 'yes');
             }
             $this->settings->persist();
+            $this->angelleye_get_seller_onboarding_status();
             $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
             wp_safe_redirect($redirect_url, 302);
             exit;
@@ -234,14 +239,13 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         }
         try {
             $this->api_request = new AngellEYE_PayPal_PPCP_Request();
-            $access_token = $this->api_request->angelleye_ppcp_get_access_token();
             $url = trailingslashit($this->host) .
                     'v1/customer/partners/' . $partner_merchant_id .
                     '/merchant-integrations/' . $merchant_id;
             $args = array(
                 'method' => 'GET',
                 'headers' => array(
-                    'Authorization' => 'Bearer ' . $access_token,
+                    'Authorization' => '',
                     'Content-Type' => 'application/json',
                 ),
             );
