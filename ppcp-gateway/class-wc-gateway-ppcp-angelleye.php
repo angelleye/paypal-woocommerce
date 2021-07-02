@@ -125,7 +125,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function admin_options() {
         $this->angelleye_ppcp_admin_notices();
-        //wp_enqueue_script('woocommerce_admin');
+        wp_deregister_script('woocommerce_settings');
         wp_enqueue_script('wc-clipboard');
         echo '<div id="angelleye_paypal_marketing_table">';
         parent::admin_options();
