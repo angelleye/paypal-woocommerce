@@ -32,7 +32,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->on_board_sandbox_host = PAYPAL_SELLER_ONBOARDING_SANDBOX_URL;
             $this->partner_merchant_id = PAYPAL_PPCP_PARTNER_MERCHANT_ID;
             $this->on_board_host = PAYPAL_SELLER_ONBOARDING_LIVE_URL;
-            add_action('wc_ajax_ppcp_login_seller', array($this, 'angelleye_ppcp_login_seller'));
+            //add_action('wc_ajax_ppcp_login_seller', array($this, 'angelleye_ppcp_login_seller'));
             add_action('admin_init', array($this, 'angelleye_ppcp_listen_for_merchant_id'));
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -96,10 +96,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     }
 
     private function default_data() {
+        $testmode = ($this->is_sandbox) ? 'yes' : 'no';
         return array(
-            'testmode' => ($this->is_sandbox) ? 'yes' : 'no',
+            'testmode' => $testmode,
             'return_url' => admin_url(
-                    'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'
+                    'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
             ),
             'return_url_description' => __(
                     'Return to your shop.', 'paypal-for-woocommerce'
@@ -142,7 +143,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             } else {
                 set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
             }
-            
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -151,15 +151,23 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_ppcp_listen_for_merchant_id() {
         try {
+            $this->is_sandbox = false;
             if (!$this->is_valid_site_request()) {
                 return;
             }
             if (!isset($_GET['merchantIdInPayPal'])) {
                 return;
             }
-            $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
-            $merchant_id = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
+            if (!isset($_GET['testmode'])) {
+                return;
+            }
+            if (isset($_GET['testmode']) && 'yes' === $_GET['testmode']) {
+                $this->is_sandbox = true;
+            }
+            $this->settings->set('enabled', 'yes');
+            $this->settings->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
             $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+            $merchant_id = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
             if (isset($_GET['merchantId'])) {
                 $merchant_email = sanitize_text_field(wp_unslash($_GET['merchantId']));
             } else {
