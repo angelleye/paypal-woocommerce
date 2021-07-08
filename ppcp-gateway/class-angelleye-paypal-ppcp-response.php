@@ -22,23 +22,23 @@ class AngellEYE_PayPal_PPCP_Response {
     }
 
     public function parse_response($paypal_api_response, $url, $request, $action_name) {
-        
+
         try {
             if (is_wp_error($paypal_api_response)) {
                 $response = array(
-                    'result' => 'faild',
+                    'status' => 'faild',
                     'body' => array('error_message' => $paypal_api_response->get_error_message(), 'error_code' => $paypal_api_response->get_error_code())
                 );
             } else {
                 $body = wp_remote_retrieve_body($paypal_api_response);
                 $response = !empty($body) ? json_decode($body, true) : '';
+                $response = isset($response['body']) ? $response['body'] : $response;
+                $this->angelleye_ppcp_write_log($url, $request, $paypal_api_response, $action_name);
                 if (strpos($url, 'paypal.com') !== false) {
-                    $response = isset($response['body']) ? json_decode($response['body'], true) : $response;
+                    do_action('angelleye_ppcp_request_respose_data', $request, $response, $action_name);
                 }
+                return $response;
             }
-            do_action('angelleye_ppcp_request_respose_data', $request, $response, $action_name);
-            $this->angelleye_ppcp_write_log($url, $request, $paypal_api_response, $action_name);
-            return $response;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -63,7 +63,13 @@ class AngellEYE_PayPal_PPCP_Response {
         }
         $this->api_log->log('Response Code: ' . wp_remote_retrieve_response_code($response));
         $this->api_log->log('Response Message: ' . wp_remote_retrieve_response_message($response));
-        $this->api_log->log('Response Body: ' . wc_print_r(json_decode(wp_remote_retrieve_body($response_body), true), true));
+        if (is_array($response_body['body'])) {
+            $this->api_log->log('Response Body: ' . wc_print_r($response_body['body'], true));
+        } elseif (is_array($response_body)) {
+            $this->api_log->log('Response Body: ' . wc_print_r($response_body, true));
+        } else {
+            $this->api_log->log('Response Body: ' . wc_print_r(json_decode(wp_remote_retrieve_body($response_body), true), true));
+        }
     }
 
     public function angelleye_ppcp_load_class() {
@@ -122,37 +128,43 @@ class AngellEYE_PayPal_PPCP_Response {
     }
 
     public function angelleye_ppcp_parse_headers($headers, $key_debug) {
+        if (isset($headers[$key_debug])) {
+            return $headers[$key_debug];
+        }
         if (is_string($headers)) {
             $headers = str_replace("\r\n", "\n", $headers);
             $headers = preg_replace('/\n[ \t]/', ' ', $headers);
             $headers = explode("\n", $headers);
         }
-        for ($i = count($headers) - 1; $i >= 0; $i--) {
-            if (!empty($headers[$i]) && false === strpos($headers[$i], ':')) {
-                $headers = array_splice($headers, $i);
-                break;
-            }
-        }
-        $newheaders = array();
-        foreach ((array) $headers as $tempheader) {
-            if (empty($tempheader)) {
-                continue;
-            }
-            if (strpos($tempheader, ':') !== false) {
-                list($key, $value) = explode(':', $tempheader, 2);
-                $key = strtolower($key);
-                $value = trim($value);
-                if (isset($newheaders[$key])) {
-                    if (!is_array($newheaders[$key])) {
-                        $newheaders[$key] = array($newheaders[$key]);
-                    }
-                    $newheaders[$key][] = $value;
-                } else {
-                    $newheaders[$key] = $value;
+        if (isset($headers) && is_array($headers)) {
+            for ($i = count($headers) - 1; $i >= 0; $i--) {
+                if (!empty($headers[$i]) && false === strpos($headers[$i], ':')) {
+                    $headers = array_splice($headers, $i);
+                    break;
                 }
             }
+            $newheaders = array();
+            foreach ((array) $headers as $tempheader) {
+                if (empty($tempheader)) {
+                    continue;
+                }
+                if (strpos($tempheader, ':') !== false) {
+                    list($key, $value) = explode(':', $tempheader, 2);
+                    $key = strtolower($key);
+                    $value = trim($value);
+                    if (isset($newheaders[$key])) {
+                        if (!is_array($newheaders[$key])) {
+                            $newheaders[$key] = array($newheaders[$key]);
+                        }
+                        $newheaders[$key][] = $value;
+                    } else {
+                        $newheaders[$key] = $value;
+                    }
+                }
+            }
+            return isset($newheaders[$key_debug]) ? $newheaders[$key_debug] : '';
         }
-        return isset($newheaders[$key_debug]) ? $newheaders[$key_debug] : '';
+        return '';
     }
 
 }

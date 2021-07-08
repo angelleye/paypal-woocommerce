@@ -5,8 +5,7 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public $dcc_applies;
-    public $on_board_host;
-    public $on_board_sandbox_host;
+    public $ppcp_host;
     public $testmode;
     public $settings;
     public $host;
@@ -29,9 +28,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         try {
             $this->angelleye_ppcp_load_class();
             $this->sandbox_partner_merchant_id = PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID;
-            $this->on_board_sandbox_host = PAYPAL_SELLER_ONBOARDING_SANDBOX_URL;
             $this->partner_merchant_id = PAYPAL_PPCP_PARTNER_MERCHANT_ID;
-            $this->on_board_host = PAYPAL_SELLER_ONBOARDING_LIVE_URL;
+            $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_WEB_SERVICE;
             //add_action('wc_ajax_ppcp_login_seller', array($this, 'angelleye_ppcp_login_seller'));
             add_action('admin_init', array($this, 'angelleye_ppcp_listen_for_merchant_id'));
         } catch (Exception $ex) {
@@ -75,22 +73,21 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_generate_signup_link($testmode) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
+        $host_url = $this->ppcp_host . 'generate-signup-link';
         $body = $this->data();
         if ($this->is_sandbox) {
-            $host_url = $this->on_board_sandbox_host . 'seller-onboarding.php';
             $tracking_id = angelleye_key_generator();
             $body['tracking_id'] = $tracking_id;
             update_option('angelleye_ppcp_sandbox_tracking_id', $tracking_id);
         } else {
-            $host_url = $this->on_board_host . 'seller-onboarding.php';
             $tracking_id = angelleye_key_generator();
             $body['tracking_id'] = $tracking_id;
             update_option('angelleye_ppcp_live_tracking_id', $tracking_id);
         }
         $args = array(
             'method' => 'POST',
-            'body' => $body,
-            'headers' => array(),
+            'body' => wp_json_encode($body),
+            'headers' => array('Content-Type' => 'application/json'),
         );
         return $this->api_request->request($host_url, $args, 'generate_signup_link');
     }
@@ -195,24 +192,23 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_get_seller_onboarding_status() {
         try {
+            $host_url = $this->ppcp_host . 'get-tracking-status';
             if ($this->is_sandbox) {
-                $host_url = $this->on_board_sandbox_host . 'merchant-integrations.php';
                 $tracking_id = get_option('angelleye_ppcp_sandbox_tracking_id', '');
                 $body['tracking_id'] = $tracking_id;
                 $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
             } else {
-                $host_url = $this->on_board_host . 'merchant-integrations.php';
                 $tracking_id = get_option('angelleye_ppcp_live_tracking_id', '');
                 $body['tracking_id'] = $tracking_id;
                 $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
             }
             $args = array(
                 'method' => 'POST',
-                'body' => $body,
-                'headers' => array(),
+                'body' => wp_json_encode($body),
+                'headers' => array('Content-Type' => 'application/json'),
             );
             $seller_onboarding_status = $this->api_request->request($host_url, $args, 'get_tracking_status');
-            if (isset($seller_onboarding_status['result']) && 'success' === $seller_onboarding_status['result'] && !empty($seller_onboarding_status['body'])) {
+            if (isset($seller_onboarding_status['status']) && 'true' === $seller_onboarding_status['status'] && !empty($seller_onboarding_status['body'])) {
                 $json = json_decode($seller_onboarding_status['body']);
                 if (!empty($json->merchant_id)) {
                     if ($this->is_sandbox) {

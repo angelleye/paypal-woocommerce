@@ -29,13 +29,12 @@ class AngellEYE_PayPal_PPCP_Request {
         $this->angelleye_ppcp_load_class();
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
+        $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_WEB_SERVICE;
         if ($this->is_sandbox) {
             $this->token_url = 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
             $this->paypal_oauth_api = 'https://api-m.sandbox.paypal.com/v1/oauth2/token/';
             $this->generate_token_url = 'https://api-m.sandbox.paypal.com/v1/identity/generate-token';
-            $this->ppcp_host = PAYPAL_SELLER_ONBOARDING_SANDBOX_URL;
         } else {
-            $this->ppcp_host = PAYPAL_SELLER_ONBOARDING_LIVE_URL;
             $this->token_url = 'https://api-m.paypal.com/v1/oauth2/token';
             $this->paypal_oauth_api = 'https://api-m.paypal.com/v1/oauth2/token/';
             $this->generate_token_url = 'https://api-m.paypal.com/v1/identity/generate-token';
@@ -47,13 +46,17 @@ class AngellEYE_PayPal_PPCP_Request {
         $body['paypal_url'] = $paypal_url;
         $body['paypal_header'] = $args['headers'];
         $body['paypal_method'] = isset($args['method']) ? $args['method'] : 'GET';
-        $body['paypal_body'] = isset($args['body']) ? $args['body'] : array();
+        if (isset($args['body']) && is_array($args['body'])) {
+            $body['paypal_body'] = $args['body'];
+        } else {
+            $body['paypal_body'] = json_decode(array());
+        }
         $body['action_name'] = $action_name;
         $args['method'] = 'POST';
-        $args['sslverify'] = 0;
-        $args['body'] = $body;
-        $args['headers'] = array();
-        $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request.php', $args);
+        $args['body'] = json_encode($body);
+        $args['timeout'] = 70;
+        $args['headers'] = array('Content-Type' => 'application/json');
+        $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request', $args);
         return $this->result;
     }
 
@@ -90,4 +93,5 @@ class AngellEYE_PayPal_PPCP_Request {
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
+
 }
