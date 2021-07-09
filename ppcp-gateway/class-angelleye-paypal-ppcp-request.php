@@ -56,7 +56,8 @@ class AngellEYE_PayPal_PPCP_Request {
         $args['method'] = 'POST';
         $args['body'] = json_encode($body);
         $args['timeout'] = 70;
-        $args['headers'] = array('Content-Type' => 'application/json', 'user-agent'  => 'PFW_PPCP');
+        $args['user-agent'] = 'PFW_PPCP';
+        $args['headers'] = array('Content-Type' => 'application/json');
         $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request', $args);
         return $this->result;
     }
@@ -66,6 +67,7 @@ class AngellEYE_PayPal_PPCP_Request {
             if (strpos($url, 'paypal.com') !== false) {
                 $this->result = $this->angelleye_ppcp_remote_get($url, $args, $action_name);
             } else {
+                $args['user-agent'] = 'PFW_PPCP';
                 $this->result = wp_remote_get($url, $args);
             }
             return $this->api_response->parse_response($this->result, $url, $args, $action_name);
