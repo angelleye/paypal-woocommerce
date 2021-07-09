@@ -1447,7 +1447,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function is_angelleye_product_page() {
         global $post;
-        if (is_product() || (!empty($post->post_content) && strstr($post->post_content, '[product_page') )) {
+        if ( is_product() || ( isset($post->post_content) && ! empty( $post->post_content ) && strstr( $post->post_content, '[product_page' ) ) ) {
             return true;
         }
 
