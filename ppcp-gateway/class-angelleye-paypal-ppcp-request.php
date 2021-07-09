@@ -55,7 +55,7 @@ class AngellEYE_PayPal_PPCP_Request {
         $args['method'] = 'POST';
         $args['body'] = json_encode($body);
         $args['timeout'] = 70;
-        $args['headers'] = array('Content-Type' => 'application/json');
+        $args['headers'] = array('Content-Type' => 'application/json', 'user-agent'  => 'PFW_PPCP');
         $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request', $args);
         return $this->result;
     }
