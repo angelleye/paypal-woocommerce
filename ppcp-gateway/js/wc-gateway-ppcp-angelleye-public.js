@@ -324,14 +324,12 @@
             hide_show_place_order_button();
         });
         var hide_show_place_order_button = function () {
-            if (is_angelleye_ppcp_selected()) {
-                var isPPEC = true;
-                var togglePPEC = isPPEC ? 'show' : 'hide';
-                var toggleSubmit = isPPEC ? 'hide' : 'show';
-                if (is_hosted_field_eligible() === false) {
-                    $('.angelleye_ppcp-button-container').animate({opacity: togglePPEC, height: togglePPEC, padding: togglePPEC}, 230);
-                    $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
-                }
+            var isPPEC = is_angelleye_ppcp_selected();
+            var togglePPEC = isPPEC ? 'show' : 'hide';
+            var toggleSubmit = isPPEC ? 'hide' : 'show';
+            if (is_hosted_field_eligible() === false) {
+                $('.angelleye_ppcp-button-container').animate({opacity: togglePPEC, height: togglePPEC, padding: togglePPEC}, 230);
+                $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
             }
         };
         function is_hosted_field_eligible() {
