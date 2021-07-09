@@ -29,7 +29,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->angelleye_ppcp_load_class();
             $this->sandbox_partner_merchant_id = PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID;
             $this->partner_merchant_id = PAYPAL_PPCP_PARTNER_MERCHANT_ID;
-            $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_WEB_SERVICE;
             //add_action('wc_ajax_ppcp_login_seller', array($this, 'angelleye_ppcp_login_seller'));
             add_action('admin_init', array($this, 'angelleye_ppcp_listen_for_merchant_id'));
         } catch (Exception $ex) {
@@ -73,17 +72,19 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_generate_signup_link($testmode) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
-        $host_url = $this->ppcp_host . 'generate-signup-link';
         $body = $this->data();
         if ($this->is_sandbox) {
+            $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_SANDBOX_WEB_SERVICE;
             $tracking_id = angelleye_key_generator();
             $body['tracking_id'] = $tracking_id;
             update_option('angelleye_ppcp_sandbox_tracking_id', $tracking_id);
         } else {
+            $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_LIVE_WEB_SERVICE;
             $tracking_id = angelleye_key_generator();
             $body['tracking_id'] = $tracking_id;
             update_option('angelleye_ppcp_live_tracking_id', $tracking_id);
         }
+        $host_url = $this->ppcp_host . 'generate-signup-link';
         $args = array(
             'method' => 'POST',
             'body' => wp_json_encode($body),
@@ -192,12 +193,13 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_get_seller_onboarding_status() {
         try {
-            $host_url = $this->ppcp_host . 'get-tracking-status';
             if ($this->is_sandbox) {
+                $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_SANDBOX_WEB_SERVICE;
                 $tracking_id = get_option('angelleye_ppcp_sandbox_tracking_id', '');
                 $body['tracking_id'] = $tracking_id;
                 $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
             } else {
+                $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_LIVE_WEB_SERVICE;
                 $tracking_id = get_option('angelleye_ppcp_live_tracking_id', '');
                 $body['tracking_id'] = $tracking_id;
                 $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
@@ -207,6 +209,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 'body' => wp_json_encode($body),
                 'headers' => array('Content-Type' => 'application/json'),
             );
+            $host_url = $this->ppcp_host . 'get-tracking-status';
             $seller_onboarding_status = $this->api_request->request($host_url, $args, 'get_tracking_status');
             if (isset($seller_onboarding_status['status']) && 'true' === $seller_onboarding_status['status'] && !empty($seller_onboarding_status['body'])) {
                 $json = json_decode($seller_onboarding_status['body']);

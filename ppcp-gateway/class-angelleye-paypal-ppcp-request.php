@@ -29,12 +29,13 @@ class AngellEYE_PayPal_PPCP_Request {
         $this->angelleye_ppcp_load_class();
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
-        $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_WEB_SERVICE;
         if ($this->is_sandbox) {
+            $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_SANDBOX_WEB_SERVICE;
             $this->token_url = 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
             $this->paypal_oauth_api = 'https://api-m.sandbox.paypal.com/v1/oauth2/token/';
             $this->generate_token_url = 'https://api-m.sandbox.paypal.com/v1/identity/generate-token';
         } else {
+            $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_LIVE_WEB_SERVICE;
             $this->token_url = 'https://api-m.paypal.com/v1/oauth2/token';
             $this->paypal_oauth_api = 'https://api-m.paypal.com/v1/oauth2/token/';
             $this->generate_token_url = 'https://api-m.paypal.com/v1/identity/generate-token';
