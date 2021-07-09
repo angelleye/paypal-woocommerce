@@ -49,7 +49,7 @@ class AngellEYE_PayPal_PPCP_Request {
         if (isset($args['body']) && is_array($args['body'])) {
             $body['paypal_body'] = $args['body'];
         } else {
-            $body['paypal_body'] = json_decode(array());
+            $body['paypal_body'] = null;
         }
         $body['action_name'] = $action_name;
         $args['method'] = 'POST';
