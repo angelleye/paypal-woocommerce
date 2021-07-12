@@ -1,6 +1,8 @@
 <?php
+
 namespace Braintree;
 
+// phpcs:disable Generic.Files.LineLength
 /**
  * Braintree Transaction processor
  * Creates and manages transactions
@@ -141,11 +143,10 @@ namespace Braintree;
  * @category   Resources
  *
  *
- * @property-read \Braintree\AddOn[] $addons
+ * @property-read \Braintree\AddOn[] $addOns
  * @property-read string $additionalProcessorResponse raw response from processor
  * @property-read string $amount transaction amount
- * @property-read \Braintree\Transaction\AmexExpressCheckoutCardDetails $amexExpressCheckoutCardDetails transaction Amex Express Checkout card info
- * @property-read \Braintree\Transaction\AndroidPayCardDetails $androidPayCardDetails transaction Android Pay card info
+ * @property-read \Braintree\Transaction\GooglePayCardDetails $googlePayCardDetails transaction Google Pay card info
  * @property-read \Braintree\Transaction\ApplePayCardDetails $applePayCardDetails transaction Apple Pay card info
  * @property-read \Braintree\AuthorizationAdjustment[] $authorizationAdjustments populated when a transaction has authorization adjustments created when submitted for settlement
  * @property-read \DateTime $authorizationExpiresAt DateTime authorization will expire
@@ -172,27 +173,31 @@ namespace Braintree;
  * @property-read string $graphQLId transaction graphQLId
  * @property-read string $id transaction id
  * @property-read \Braintree\TransactionLineItem[] $lineItems
- * @property-read \Braintree\Transaction\MasterpassCardDetails $masterpassCardDetails transaction Masterpass card info
  * @property-read string $merchantAccountId
  * @property-read string $networkTransactionId
  * @property-read string $orderId
+ * @property-read string $acquirerReferenceNumber
  * @property-read string $paymentInstrumentType
  * @property-read \Braintree\Transaction\PayPalDetails $paypalDetails transaction paypal account info
- * @property-read \Braintree\Transaction\PayPalHereDetails $paypalHereDetails 
+ * @property-read \Braintree\Transaction\PayPalHereDetails $paypalHereDetails
  * @property-read \Braintree\Transaction\LocalPaymentDetails $localPaymentDetails transaction local payment info
  * @property-read string $planId
+ * @property-read string $processedWithNetworkToken
  * @property-read string $processorAuthorizationCode
  * @property-read string $processorResponseCode gateway response code
  * @property-read string $processorResponseText
  * @property-read string $processorResponseType
  * @property-read string $processorSettlementResponseCode
  * @property-read string $processorSettlementResponseText
+ * @property-read string $productSku
  * @property-read string $purchaseOrderNumber
  * @property-read mixed $reccuring
  * @property-read mixed $refundIds
  * @property-read string $refundedTransactionId
+ * @property-read string $retrievalReferenceNumber
  * @property-read \Braintree\RiskData $riskData
  * @property-read \Braintree\Transaction\SamsungPayCardDetails $samsungPayCardDetails transaction Samsung Pay card info
+ * @property-read string $scaExemptionRequested
  * @property-read string $serviceFeeAmount
  * @property-read string $settlementBatchId
  * @property-read string $shippingAmount
@@ -211,6 +216,7 @@ namespace Braintree;
  * @property-read string $voiceReferralName
  *
  */
+// phpcs:enable Generic.Files.LineLength
 
 class Transaction extends Base
 {
@@ -256,6 +262,7 @@ class Transaction extends Base
     const CVV            = 'cvv';
     const DUPLICATE      = 'duplicate';
     const FRAUD          = 'fraud';
+    const RISK_THRESHOLD = 'risk_threshold';
     const THREE_D_SECURE = 'three_d_secure';
     const TOKEN_ISSUANCE = 'token_issuance';
     const APPLICATION_INCOMPLETE = 'application_incomplete';
@@ -286,31 +293,27 @@ class Transaction extends Base
         $this->_attributes = $transactionAttribs;
 
         if (isset($transactionAttribs['applePay'])) {
-            $this->_set('applePayCardDetails',
+            $this->_set(
+                'applePayCardDetails',
                 new Transaction\ApplePayCardDetails(
                     $transactionAttribs['applePay']
                 )
             );
         }
 
+        // Rename androidPayCard from API responses to GooglePayCard
         if (isset($transactionAttribs['androidPayCard'])) {
-            $this->_set('androidPayCardDetails',
-                new Transaction\AndroidPayCardDetails(
+            $this->_set(
+                'googlePayCardDetails',
+                new Transaction\GooglePayCardDetails(
                     $transactionAttribs['androidPayCard']
                 )
             );
         }
 
-        if (isset($transactionAttribs['masterpassCard'])) {
-            $this->_set('masterpassCardDetails',
-                new Transaction\MasterpassCardDetails(
-                    $transactionAttribs['masterpassCard']
-                )
-            );
-        }
-
         if (isset($transactionAttribs['visaCheckoutCard'])) {
-            $this->_set('visaCheckoutCardDetails',
+            $this->_set(
+                'visaCheckoutCardDetails',
                 new Transaction\VisaCheckoutCardDetails(
                     $transactionAttribs['visaCheckoutCard']
                 )
@@ -318,23 +321,17 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['samsungPayCard'])) {
-            $this->_set('samsungPayCardDetails',
+            $this->_set(
+                'samsungPayCardDetails',
                 new Transaction\SamsungPayCardDetails(
                     $transactionAttribs['samsungPayCard']
                 )
             );
         }
 
-        if (isset($transactionAttribs['amexExpressCheckoutCard'])) {
-            $this->_set('amexExpressCheckoutCardDetails',
-                new Transaction\AmexExpressCheckoutCardDetails(
-                    $transactionAttribs['amexExpressCheckoutCard']
-                )
-            );
-        }
-
         if (isset($transactionAttribs['venmoAccount'])) {
-            $this->_set('venmoAccountDetails',
+            $this->_set(
+                'venmoAccountDetails',
                 new Transaction\VenmoAccountDetails(
                     $transactionAttribs['venmoAccount']
                 )
@@ -342,7 +339,8 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['creditCard'])) {
-            $this->_set('creditCardDetails',
+            $this->_set(
+                'creditCardDetails',
                 new Transaction\CreditCardDetails(
                     $transactionAttribs['creditCard']
                 )
@@ -350,7 +348,8 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['usBankAccount'])) {
-            $this->_set('usBankAccount',
+            $this->_set(
+                'usBankAccount',
                 new Transaction\UsBankAccountDetails(
                     $transactionAttribs['usBankAccount']
                 )
@@ -358,7 +357,8 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['paypal'])) {
-            $this->_set('paypalDetails',
+            $this->_set(
+                'paypalDetails',
                 new Transaction\PayPalDetails(
                     $transactionAttribs['paypal']
                 )
@@ -366,7 +366,8 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['paypalHere'])) {
-            $this->_set('paypalHereDetails',
+            $this->_set(
+                'paypalHereDetails',
                 new Transaction\PayPalHereDetails(
                     $transactionAttribs['paypalHere']
                 )
@@ -374,7 +375,8 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['localPayment'])) {
-            $this->_set('localPaymentDetails',
+            $this->_set(
+                'localPaymentDetails',
                 new Transaction\LocalPaymentDetails(
                     $transactionAttribs['localPayment']
                 )
@@ -382,7 +384,8 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['customer'])) {
-            $this->_set('customerDetails',
+            $this->_set(
+                'customerDetails',
                 new Transaction\CustomerDetails(
                     $transactionAttribs['customer']
                 )
@@ -390,7 +393,8 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['billing'])) {
-            $this->_set('billingDetails',
+            $this->_set(
+                'billingDetails',
                 new Transaction\AddressDetails(
                     $transactionAttribs['billing']
                 )
@@ -398,7 +402,8 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['shipping'])) {
-            $this->_set('shippingDetails',
+            $this->_set(
+                'shippingDetails',
                 new Transaction\AddressDetails(
                     $transactionAttribs['shipping']
                 )
@@ -406,7 +411,8 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['subscription'])) {
-            $this->_set('subscriptionDetails',
+            $this->_set(
+                'subscriptionDetails',
                 new Transaction\SubscriptionDetails(
                     $transactionAttribs['subscription']
                 )
@@ -414,7 +420,8 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['descriptor'])) {
-            $this->_set('descriptor',
+            $this->_set(
+                'descriptor',
                 new Descriptor(
                     $transactionAttribs['descriptor']
                 )
@@ -422,14 +429,15 @@ class Transaction extends Base
         }
 
         if (isset($transactionAttribs['disbursementDetails'])) {
-            $this->_set('disbursementDetails',
+            $this->_set(
+                'disbursementDetails',
                 new DisbursementDetails($transactionAttribs['disbursementDetails'])
             );
         }
 
         $disputes = [];
         if (isset($transactionAttribs['disputes'])) {
-            foreach ($transactionAttribs['disputes'] AS $dispute) {
+            foreach ($transactionAttribs['disputes'] as $dispute) {
                 $disputes[] = Dispute::factory($dispute);
             }
         }
@@ -438,7 +446,7 @@ class Transaction extends Base
 
         $statusHistory = [];
         if (isset($transactionAttribs['statusHistory'])) {
-            foreach ($transactionAttribs['statusHistory'] AS $history) {
+            foreach ($transactionAttribs['statusHistory'] as $history) {
                 $statusHistory[] = new Transaction\StatusDetails($history);
             }
         }
@@ -447,7 +455,7 @@ class Transaction extends Base
 
         $addOnArray = [];
         if (isset($transactionAttribs['addOns'])) {
-            foreach ($transactionAttribs['addOns'] AS $addOn) {
+            foreach ($transactionAttribs['addOns'] as $addOn) {
                 $addOnArray[] = AddOn::factory($addOn);
             }
         }
@@ -455,7 +463,7 @@ class Transaction extends Base
 
         $discountArray = [];
         if (isset($transactionAttribs['discounts'])) {
-            foreach ($transactionAttribs['discounts'] AS $discount) {
+            foreach ($transactionAttribs['discounts'] as $discount) {
                 $discountArray[] = Discount::factory($discount);
             }
         }
@@ -463,23 +471,23 @@ class Transaction extends Base
 
         $authorizationAdjustments = [];
         if (isset($transactionAttribs['authorizationAdjustments'])) {
-            foreach ($transactionAttribs['authorizationAdjustments'] AS $authorizationAdjustment) {
+            foreach ($transactionAttribs['authorizationAdjustments'] as $authorizationAdjustment) {
                 $authorizationAdjustments[] = AuthorizationAdjustment::factory($authorizationAdjustment);
             }
         }
 
         $this->_set('authorizationAdjustments', $authorizationAdjustments);
 
-        if(isset($transactionAttribs['riskData'])) {
+        if (isset($transactionAttribs['riskData'])) {
             $this->_set('riskData', RiskData::factory($transactionAttribs['riskData']));
         }
-        if(isset($transactionAttribs['threeDSecureInfo'])) {
+        if (isset($transactionAttribs['threeDSecureInfo'])) {
             $this->_set('threeDSecureInfo', ThreeDSecureInfo::factory($transactionAttribs['threeDSecureInfo']));
         }
-        if(isset($transactionAttribs['facilitatedDetails'])) {
+        if (isset($transactionAttribs['facilitatedDetails'])) {
             $this->_set('facilitatedDetails', FacilitatedDetails::factory($transactionAttribs['facilitatedDetails']));
         }
-        if(isset($transactionAttribs['facilitatorDetails'])) {
+        if (isset($transactionAttribs['facilitatorDetails'])) {
             $this->_set('facilitatorDetails', FacilitatorDetails::factory($transactionAttribs['facilitatorDetails']));
         }
     }
@@ -488,7 +496,7 @@ class Transaction extends Base
      * returns a string representation of the transaction
      * @return string
      */
-    public function  __toString()
+    public function __toString()
     {
         // array of attributes to print
         $display = [
@@ -497,11 +505,11 @@ class Transaction extends Base
             ];
 
         $displayAttributes = [];
-        foreach ($display AS $attrib) {
+        foreach ($display as $attrib) {
             $displayAttributes[$attrib] = $this->$attrib;
         }
         return __CLASS__ . '[' .
-                Util::attributesToString($displayAttributes) .']';
+                Util::attributesToString($displayAttributes) . ']';
     }
 
     public function isEqual($otherTx)
@@ -514,31 +522,31 @@ class Transaction extends Base
         $token = $this->creditCardDetails->token;
         if (empty($token)) {
             return null;
-        }
-        else {
+        } else {
             return CreditCard::find($token);
         }
     }
 
-    /** @return void|Braintree\Customer */
+    /** @return null|\Braintree\Customer */
     public function vaultCustomer()
     {
         $customerId = $this->customerDetails->id;
         if (empty($customerId)) {
             return null;
-        }
-        else {
+        } else {
             return Customer::find($customerId);
         }
     }
 
     /** @return boolean */
-    public function isDisbursed() {
+    public function isDisbursed()
+    {
         return $this->disbursementDetails->isValid();
     }
 
     /** @return line items */
-    public function lineItems() {
+    public function lineItems()
+    {
         return Configuration::gateway()->transactionLineItem()->findAll($this->id);
     }
 
@@ -556,6 +564,17 @@ class Transaction extends Base
         return $instance;
     }
 
+    /**
+     * adjustAuthorization: It is a static method to invoke
+     * method in the TransactionGateway
+     *
+     * @param string transactionId
+     * @param string amount
+     */
+    public static function adjustAuthorization($transactionId, $amount)
+    {
+        return Configuration::gateway()->transaction()->adjustAuthorization($transactionId, $amount);
+    }
 
     // static methods redirecting to gateway
 
@@ -621,6 +640,7 @@ class Transaction extends Base
 
     public static function submitForSettlementNoValidate($transactionId, $amount = null, $attribs = [])
     {
+        // phpcs:ignore Generic.Files.LineLength
         return Configuration::gateway()->transaction()->submitForSettlementNoValidate($transactionId, $amount, $attribs);
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace Braintree;
 
 /**
@@ -9,7 +10,7 @@ namespace Braintree;
  */
 
 /**
- * Manages Braintree LocalPaymentCompleted 
+ * Manages Braintree LocalPaymentCompleted
  *
  * <b>== More information ==</b>
  *
@@ -25,11 +26,11 @@ namespace Braintree;
 class LocalPaymentCompleted extends Base
 {
     /**
-     *  factory method: returns an instance of GrantedPaymentInstrumentUpdate
+     *  factory method: returns an instance of LocalPaymentCompleted
      *  to the requesting method, with populated properties
      *
      * @ignore
-     * @return LocalPaymentCompleted 
+     * @return LocalPaymentCompleted
      */
     public static function factory($attributes)
     {
@@ -53,7 +54,8 @@ class LocalPaymentCompleted extends Base
         $this->_attributes = $localPaymentCompletedAttribs;
 
         if (isset($transactionAttribs['transaction'])) {
-            $this->_set('transaction',
+            $this->_set(
+                'transaction',
                 new Transaction(
                     $transactionAttribs['transaction']
                 )
@@ -66,7 +68,7 @@ class LocalPaymentCompleted extends Base
      * ClassName[property=value, property=value]
      * @return string
      */
-    public function  __toString()
+    public function __toString()
     {
         return __CLASS__ . '[' .
                 Util::attributesToString($this->_attributes) . ']';

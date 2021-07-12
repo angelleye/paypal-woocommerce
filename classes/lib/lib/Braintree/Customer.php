@@ -1,4 +1,5 @@
 <?php
+
 namespace Braintree;
 
 /**
@@ -7,14 +8,14 @@ namespace Braintree;
  *
  * <b>== More information ==</b>
  *
+ * // phpcs:ignore Generic.Files.LineLength
  * For more detailed information on Customers, see {@link https://developers.braintreepayments.com/reference/response/customer/php https://developers.braintreepayments.com/reference/response/customer/php}
  *
  * @package    Braintree
  * @category   Resources
  *
  * @property-read \Braintree\Address[] $addresses
- * @property-read \Braintree\AndroidPayCard[] $androidPayCards
- * @property-read \Braintree\AmexExpressCheckoutCard[] $amexExpressCheckoutCards
+ * @property-read \Braintree\GooglePayCard[] $googlePayCards
  * @property-read \Braintree\ApplePayCard[] $applePayCards
  * @property-read string $company
  * @property-read \DateTime $createdAt
@@ -26,7 +27,6 @@ namespace Braintree;
  * @property-read string $graphQLId
  * @property-read string $id
  * @property-read string $lastName
- * @property-read \Braintree\MasterpassCard[] $masterpassCards
  * @property-read \Braintree\PaymentMethod[] $paymentMethods
  * @property-read \Braintree\PayPalAccount[] $paypalAccounts
  * @property-read string $phone
@@ -196,8 +196,7 @@ class Customer extends Base
 
         $addressArray = [];
         if (isset($customerAttribs['addresses'])) {
-
-            foreach ($customerAttribs['addresses'] AS $address) {
+            foreach ($customerAttribs['addresses'] as $address) {
                 $addressArray[] = Address::factory($address);
             }
         }
@@ -205,7 +204,7 @@ class Customer extends Base
 
         $creditCardArray = [];
         if (isset($customerAttribs['creditCards'])) {
-            foreach ($customerAttribs['creditCards'] AS $creditCard) {
+            foreach ($customerAttribs['creditCards'] as $creditCard) {
                 $creditCardArray[] = CreditCard::factory($creditCard);
             }
         }
@@ -213,7 +212,7 @@ class Customer extends Base
 
         $paypalAccountArray = [];
         if (isset($customerAttribs['paypalAccounts'])) {
-            foreach ($customerAttribs['paypalAccounts'] AS $paypalAccount) {
+            foreach ($customerAttribs['paypalAccounts'] as $paypalAccount) {
                 $paypalAccountArray[] = PayPalAccount::factory($paypalAccount);
             }
         }
@@ -221,31 +220,23 @@ class Customer extends Base
 
         $applePayCardArray = [];
         if (isset($customerAttribs['applePayCards'])) {
-            foreach ($customerAttribs['applePayCards'] AS $applePayCard) {
+            foreach ($customerAttribs['applePayCards'] as $applePayCard) {
                 $applePayCardArray[] = ApplePayCard::factory($applePayCard);
             }
         }
         $this->_set('applePayCards', $applePayCardArray);
 
-        $androidPayCardArray = [];
+        $googlePayCardArray = [];
         if (isset($customerAttribs['androidPayCards'])) {
-            foreach ($customerAttribs['androidPayCards'] AS $androidPayCard) {
-                $androidPayCardArray[] = AndroidPayCard::factory($androidPayCard);
+            foreach ($customerAttribs['androidPayCards'] as $googlePayCard) {
+                $googlePayCardArray[] = GooglePayCard::factory($googlePayCard);
             }
         }
-        $this->_set('androidPayCards', $androidPayCardArray);
-
-        $amexExpressCheckoutCardArray = [];
-        if (isset($customerAttribs['amexExpressCheckoutCards'])) {
-            foreach ($customerAttribs['amexExpressCheckoutCards'] AS $amexExpressCheckoutCard) {
-                $amexExpressCheckoutCardArray[] = AmexExpressCheckoutCard::factory($amexExpressCheckoutCard);
-            }
-        }
-        $this->_set('amexExpressCheckoutCards', $amexExpressCheckoutCardArray);
+        $this->_set('googlePayCards', $googlePayCardArray);
 
         $venmoAccountArray = array();
         if (isset($customerAttribs['venmoAccounts'])) {
-            foreach ($customerAttribs['venmoAccounts'] AS $venmoAccount) {
+            foreach ($customerAttribs['venmoAccounts'] as $venmoAccount) {
                 $venmoAccountArray[] = VenmoAccount::factory($venmoAccount);
             }
         }
@@ -253,23 +244,15 @@ class Customer extends Base
 
         $visaCheckoutCardArray = [];
         if (isset($customerAttribs['visaCheckoutCards'])) {
-            foreach ($customerAttribs['visaCheckoutCards'] AS $visaCheckoutCard) {
+            foreach ($customerAttribs['visaCheckoutCards'] as $visaCheckoutCard) {
                 $visaCheckoutCardArray[] = VisaCheckoutCard::factory($visaCheckoutCard);
             }
         }
         $this->_set('visaCheckoutCards', $visaCheckoutCardArray);
 
-        $masterpassCardArray = [];
-        if (isset($customerAttribs['masterpassCards'])) {
-            foreach ($customerAttribs['masterpassCards'] AS $masterpassCard) {
-                $masterpassCardArray[] = MasterpassCard::factory($masterpassCard);
-            }
-        }
-        $this->_set('masterpassCards', $masterpassCardArray);
-
         $samsungPayCardArray = [];
         if (isset($customerAttribs['samsungPayCards'])) {
-            foreach ($customerAttribs['samsungPayCards'] AS $samsungPayCard) {
+            foreach ($customerAttribs['samsungPayCards'] as $samsungPayCard) {
                 $samsungPayCardArray[] = SamsungPayCard::factory($samsungPayCard);
             }
         }
@@ -277,7 +260,7 @@ class Customer extends Base
 
         $usBankAccountArray = array();
         if (isset($customerAttribs['usBankAccounts'])) {
-            foreach ($customerAttribs['usBankAccounts'] AS $usBankAccount) {
+            foreach ($customerAttribs['usBankAccounts'] as $usBankAccount) {
                 $usBankAccountArray[] = UsBankAccount::factory($usBankAccount);
             }
         }
@@ -287,11 +270,9 @@ class Customer extends Base
             $this->creditCards,
             $this->paypalAccounts,
             $this->applePayCards,
-            $this->androidPayCards,
-            $this->amexExpressCheckoutCards,
+            $this->googlePayCards,
             $this->venmoAccounts,
             $this->visaCheckoutCards,
-            $this->masterpassCards,
             $this->samsungPayCards,
             $this->usBankAccounts
         ));
@@ -307,10 +288,10 @@ class Customer extends Base
      * returns a string representation of the customer
      * @return string
      */
-    public function  __toString()
+    public function __toString()
     {
         return __CLASS__ . '[' .
-                Util::attributesToString($this->_attributes) .']';
+                Util::attributesToString($this->_attributes) . ']';
     }
 
     /**
@@ -348,18 +329,19 @@ class Customer extends Base
      * @var array registry of customer data
      */
     protected $_attributes = [
-        'addresses'   => '',
-        'company'     => '',
-        'creditCards' => '',
-        'email'       => '',
-        'fax'         => '',
-        'firstName'   => '',
-        'id'          => '',
-        'lastName'    => '',
-        'phone'       => '',
-        'createdAt'   => '',
-        'updatedAt'   => '',
-        'website'     => '',
+        'addresses'      => '',
+        'company'        => '',
+        'creditCards'    => '',
+        'email'          => '',
+        'fax'            => '',
+        'firstName'      => '',
+        'id'             => '',
+        'lastName'       => '',
+        'phone'          => '',
+        'taxIdentifiers' => '',
+        'createdAt'      => '',
+        'updatedAt'      => '',
+        'website'        => '',
         ];
 
     /**
