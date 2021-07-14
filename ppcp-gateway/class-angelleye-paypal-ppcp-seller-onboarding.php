@@ -26,6 +26,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function __construct() {
         try {
+            if(is_angelleye_aws_down() == false) {
+                $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE;
+            } else {
+                $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE;
+            }
             $this->angelleye_ppcp_load_class();
             $this->sandbox_partner_merchant_id = PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID;
             $this->partner_merchant_id = PAYPAL_PPCP_PARTNER_MERCHANT_ID;
@@ -74,12 +79,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
         $body = $this->data();
         if ($this->is_sandbox) {
-            $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_SANDBOX_WEB_SERVICE;
             $tracking_id = angelleye_key_generator();
             $body['tracking_id'] = $tracking_id;
             update_option('angelleye_ppcp_sandbox_tracking_id', $tracking_id);
         } else {
-            $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_LIVE_WEB_SERVICE;
             $tracking_id = angelleye_key_generator();
             $body['tracking_id'] = $tracking_id;
             update_option('angelleye_ppcp_live_tracking_id', $tracking_id);
@@ -194,12 +197,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     public function angelleye_get_seller_onboarding_status() {
         try {
             if ($this->is_sandbox) {
-                $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_SANDBOX_WEB_SERVICE;
                 $tracking_id = get_option('angelleye_ppcp_sandbox_tracking_id', '');
                 $body['tracking_id'] = $tracking_id;
                 $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
             } else {
-                $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_LIVE_WEB_SERVICE;
                 $tracking_id = get_option('angelleye_ppcp_live_tracking_id', '');
                 $body['tracking_id'] = $tracking_id;
                 $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';

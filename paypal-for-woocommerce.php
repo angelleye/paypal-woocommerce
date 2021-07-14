@@ -69,11 +69,11 @@ if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID')) {
 if (!defined('PAYPAL_PPCP_PARTNER_CLIENT_ID')) {
     define('PAYPAL_PPCP_PARTNER_CLIENT_ID', 'ATgw55qRjaDSlPur2FAkdAiB-QQuG5jlLsees-8dcxLiLla_nwbBSvSnCbUaGlmzxq9t2b8R9JGGSz1e');
 }
-if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_SANDBOX_WEB_SERVICE')) {
-    define('PAYPAL_FOR_WOOCOMMERCE_PPCP_SANDBOX_WEB_SERVICE', 'https://zpyql2kd39.execute-api.us-east-2.amazonaws.com/production/PayPalMerchantIntegration/');
+if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE')) {
+    define('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE', 'https://zpyql2kd39.execute-api.us-east-2.amazonaws.com/production/PayPalMerchantIntegration/');
 }
-if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_LIVE_WEB_SERVICE')) {
-    define('PAYPAL_FOR_WOOCOMMERCE_PPCP_LIVE_WEB_SERVICE', 'https://zpyql2kd39.execute-api.us-east-2.amazonaws.com/production/PayPalMerchantIntegration/');
+if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE')) {
+    define('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE', 'https://ppcp.angelleye.com/production/PayPalMerchantIntegration/');
 }
 
 

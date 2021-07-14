@@ -25,12 +25,17 @@ class AngellEYE_PayPal_PPCP_Response {
 
         try {
             if (is_wp_error($paypal_api_response)) {
+                delete_transient('is_angelleye_aws_down');
                 $response = array(
                     'status' => 'faild',
                     'body' => array('error_message' => $paypal_api_response->get_error_message(), 'error_code' => $paypal_api_response->get_error_code())
                 );
             } else {
                 $body = wp_remote_retrieve_body($paypal_api_response);
+                $status_code = (int) wp_remote_retrieve_response_code($paypal_api_response);
+                if (201 < $status_code) {
+                    delete_transient('is_angelleye_aws_down');
+                }
                 $response = !empty($body) ? json_decode($body, true) : '';
                 $response = isset($response['body']) ? $response['body'] : $response;
                 $this->angelleye_ppcp_write_log($url, $request, $paypal_api_response, $action_name);

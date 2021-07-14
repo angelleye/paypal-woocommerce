@@ -430,4 +430,30 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
         }
 
     }
+
+    if (!function_exists('is_angelleye_aws_down')) {
+
+        function is_angelleye_aws_down() {
+            if (false === ( $status = get_transient('is_angelleye_aws_down') )) {
+                $args['method'] = 'POST';
+                $args['timeout'] = 10;
+                $args['user-agent'] = 'PFW_PPCP';
+                $response = wp_remote_get(PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE . 'ppcp-request', $args);
+                $status_code = (int) wp_remote_retrieve_response_code($response);
+                if (200 < $status_code) {
+                    $status = 'yes';
+                    $time = 2;
+                } else {
+                    $status = 'no';
+                    $time = 24;
+                }
+                set_transient('is_angelleye_aws_down', $status, $time * HOUR_IN_SECONDS);
+            }
+            if ($status === 'yes') {
+                return true;
+            }
+            return false;
+        }
+
+    }
 }
