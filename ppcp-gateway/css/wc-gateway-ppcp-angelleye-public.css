@@ -121,3 +121,7 @@
     line-height: 1.75;
     position: absolute;
 }
+
+.woocommerce div.product form.cart {
+    margin-bottom: 2em;
+}
