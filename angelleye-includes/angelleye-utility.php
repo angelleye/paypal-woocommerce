@@ -439,7 +439,7 @@ class AngellEYE_Utility {
         $payment_gateway = wc_get_payment_gateway_by_order( $order );
         if ( $payment_gateway && isset( $payment_gateway->invoice_id_prefix ) ) {
             $invnum = $payment_gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number());
-            $DataArray['INVNUM'] = $invnum;
+            $DataArray['INVNUM'] = apply_filters( 'paypal_for_woocommerce_order_invoice_id', $invnum, $order_id, $order );
         }
 
         $PayPalRequest = array(
