@@ -1,4 +1,5 @@
 <?php
+
 namespace Braintree;
 
 /**
@@ -20,6 +21,7 @@ namespace Braintree;
  * @property-read string $id
  * @property-read string $lastName
  * @property-read string $locality
+ * @property-read string $phoneNumber
  * @property-read string $postalCode
  * @property-read string $region
  * @property-read string $streetAddress
@@ -47,7 +49,7 @@ class Address extends Base
      * @ignore
      * @return string
      */
-    public function  __toString()
+    public function __toString()
     {
         return __CLASS__ . '[' .
                 Util::attributesToString($this->_attributes) . ']';
@@ -78,7 +80,6 @@ class Address extends Base
         $instance = new self();
         $instance->_initialize($attributes);
         return $instance;
-
     }
 
 

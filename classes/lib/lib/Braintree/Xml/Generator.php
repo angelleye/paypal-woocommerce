@@ -1,4 +1,5 @@
 <?php
+
 namespace Braintree\Xml;
 
 use DateTime;
@@ -62,21 +63,20 @@ class Generator
             } else {
                 $writer->text($aData);
             }
-          return;
+            return;
         }
-        foreach ($aData AS $elementName => $element) {
+        foreach ($aData as $elementName => $element) {
             // handle child elements
             $writer->startElement($elementName);
             if (is_array($element)) {
                 if (array_key_exists(0, $element) || empty($element)) {
                     $writer->writeAttribute('type', 'array');
-                    foreach ($element AS $ignored => $itemInArray) {
+                    foreach ($element as $ignored => $itemInArray) {
                         $writer->startElement('item');
                         self::_createElementsFromArray($writer, $itemInArray);
                         $writer->endElement();
                     }
-                }
-                else {
+                } else {
                     self::_createElementsFromArray($writer, $element);
                 }
             } else {
@@ -101,8 +101,8 @@ class Generator
      */
     private static function _generateXmlAttribute($value)
     {
-        if ($value instanceof DateTime) {
-            return ['type', 'datetime', self::_dateTimeToXmlTimestamp($value)];
+        if ($value instanceof DateTime || is_a($value, 'DateTimeImmutable')) {
+            return ['type', 'datetime', self::_convertDateTimeObjectToXmlTimestamp($value)];
         }
         if (is_int($value)) {
             return ['type', 'integer', $value];
@@ -110,7 +110,7 @@ class Generator
         if (is_bool($value)) {
             return ['type', 'boolean', ($value ? 'true' : 'false')];
         }
-        if ($value === NULL) {
+        if ($value === null) {
             return ['nil', 'true', $value];
         }
     }
@@ -120,9 +120,13 @@ class Generator
      * @param object $dateTime
      * @return string XML schema formatted timestamp
      */
-    private static function _dateTimeToXmlTimestamp($dateTime)
+    private static function _convertDateTimeObjectToXmlTimestamp($dateTime)
     {
-        $dateTimeForUTC = clone $dateTime;
+        if (is_a($dateTime, 'DateTimeImmutable')) {
+            $dateTimeForUTC = DateTime::createFromImmutable($dateTime);
+        } else {
+            $dateTimeForUTC = clone $dateTime;
+        }
 
         $dateTimeForUTC->setTimeZone(new DateTimeZone('UTC'));
         return ($dateTimeForUTC->format('Y-m-d\TH:i:s') . 'Z');
@@ -132,10 +136,10 @@ class Generator
     {
         try {
             if (empty($string)) {
-               return false;
+                return false;
             }
             $dateTime = new DateTime($string);
-            return self::_dateTimeToXmlTimestamp($dateTime);
+            return self::_convertDateTimeObjectToXmlTimestamp($dateTime);
         } catch (Exception $e) {
             // not a datetime
             return false;
