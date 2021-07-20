@@ -6,6 +6,7 @@ class AngellEYE_PayPal_PPCP_Response {
 
     public $api_log;
     public $settings;
+    public $generate_signup_link_default_request_param;
     protected static $_instance = null;
 
     public static function instance() {
@@ -17,6 +18,43 @@ class AngellEYE_PayPal_PPCP_Response {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
+        $this->generate_signup_link_default_request_param = array(
+            'tracking_id' => '',
+            'partner_config_override' => array(
+                'partner_logo_url' => 'https://www.angelleye.com/wp-content/uploads/2015/06/angelleye-logo-159x43.png',
+                'return_url' => '',
+                'return_url_description' => '',
+                'show_add_credit_card' => true,
+            ),
+            'products' => '',
+            'legal_consents' => array(
+                array(
+                    'type' => 'SHARE_DATA_CONSENT',
+                    'granted' => true,
+                ),
+            ),
+            'operations' => array(
+                array(
+                    'operation' => 'API_INTEGRATION',
+                    'api_integration_preference' => array(
+                        'rest_api_integration' => array(
+                            'integration_method' => 'PAYPAL',
+                            'integration_type' => 'THIRD_PARTY',
+                            'third_party_details' => array(
+                                'features' => array(
+                                    'PAYMENT',
+                                    'FUTURE_PAYMENT',
+                                    'REFUND',
+                                    'ADVANCED_TRANSACTIONS_SEARCH',
+                                    'ACCESS_MERCHANT_INFORMATION',
+                                    'VAULT'
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        );
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         add_action('angelleye_ppcp_request_respose_data', array($this, 'angelleye_ppcp_tpv_tracking'), 10, 3);
     }
@@ -61,7 +99,9 @@ class AngellEYE_PayPal_PPCP_Response {
         $this->api_log->log('Request URL: ' . $url);
         $response_body = isset($response['body']) ? json_decode($response['body'], true) : $response;
         $this->api_log->log('PayPal Debug ID: ' . $this->angelleye_ppcp_parse_headers($response_body['headers'], 'paypal-debug-id'));
-        if (!empty($request['body']) && is_array($request['body'])) {
+        if ($action_name === 'generate_signup_link') {
+            $this->angelleye_ppcp_signup_link_write_log($request);
+        } elseif (!empty($request['body']) && is_array($request['body'])) {
             $this->api_log->log('Request Body: ' . wc_print_r($request['body'], true));
         } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
             $this->api_log->log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
@@ -170,6 +210,25 @@ class AngellEYE_PayPal_PPCP_Response {
             return isset($newheaders[$key_debug]) ? $newheaders[$key_debug] : '';
         }
         return '';
+    }
+
+    public function angelleye_ppcp_signup_link_write_log($request) {
+        if (isset($request['body'])) {
+            $data = json_decode($request['body'], true);
+            if (isset($data['tracking_id'])) {
+                $this->generate_signup_link_default_request_param['tracking_id'] = $data['tracking_id'];
+            }
+            if (isset($data['return_url'])) {
+                $this->generate_signup_link_default_request_param['partner_config_override']['return_url'] = $data['return_url'];
+            }
+            if (isset($data['return_url'])) {
+                $this->generate_signup_link_default_request_param['partner_config_override']['return_url_description'] = $data['return_url_description'];
+            }
+            if (isset($data['products'])) {
+                $this->generate_signup_link_default_request_param['products'] = $data['products'];
+            }
+            $this->api_log->log('Request Body: ' . wc_print_r($this->generate_signup_link_default_request_param, true));
+        }
     }
 
 }

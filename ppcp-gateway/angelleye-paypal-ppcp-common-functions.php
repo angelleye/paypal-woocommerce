@@ -151,6 +151,7 @@ if (!function_exists('angelleye_ppcp_get_wpml_locale')) {
 if (!function_exists('angelleye_ppcp_is_local_server')) {
 
     function angelleye_ppcp_is_local_server() {
+        return false;
         if (!isset($_SERVER['HTTP_HOST'])) {
             return;
         }
