@@ -188,6 +188,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                     $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                 }
+                angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
                 $body_request['purchase_units'][0]['shipping']['address'] = array(
                     'address_line_1' => $shipping_address_1,
                     'address_line_2' => $shipping_address_2,
@@ -210,6 +211,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                             'postal_code' => $cart['shipping_address']['postcode'],
                             'country_code' => $cart['shipping_address']['country'],
                         );
+                        angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
                     }
                 }
             }
@@ -647,7 +649,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'httpversion' => '1.1',
                 'blocking' => true,
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                'body' => array(),
+                //'body' => array(),
                 'cookies' => array()
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id, $args, 'get_order');
@@ -819,8 +821,14 @@ class AngellEYE_PayPal_PPCP_Payment {
                 ),
             );
             if (!empty($shipping_address_request['address_line_1']) && !empty($shipping_address_request['country_code'])) {
+                $angelleye_ppcp_is_shipping_added = angelleye_ppcp_get_session('angelleye_ppcp_is_shipping_added', false);
+                if($angelleye_ppcp_is_shipping_added === 'yes') {
+                    $replace = 'replace';
+                } else {
+                    $replace = 'add';
+                }
                 $patch_request[] = array(
-                    'op' => 'replace',
+                    'op' => $replace,
                     'path' => "/purchase_units/@reference_id=='$reference_id'/shipping/address",
                     'value' => $shipping_address_request
                 );
@@ -1032,7 +1040,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'httpversion' => '1.1',
                 'blocking' => true,
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                'body' => array(),
+                //'body' => array(),
                 'cookies' => array()
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id, $args, 'get_authorized');
@@ -1054,7 +1062,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'httpversion' => '1.1',
                 'blocking' => true,
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                'body' => array(),
+                //'body' => array(),
                 'cookies' => array()
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/void', $args, 'void_authorized');
@@ -1268,7 +1276,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'blocking' => true,
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                 'cookies' => array(),
-                'body' => array(), //json_encode(array('customer_id' => 'customer_1234_wow'))
+                //'body' => array(), //json_encode(array('customer_id' => 'customer_1234_wow'))
             );
             $response = $this->api_request->request($this->generate_token_url, $args, 'get client token');
             if (!empty($response['client_token'])) {

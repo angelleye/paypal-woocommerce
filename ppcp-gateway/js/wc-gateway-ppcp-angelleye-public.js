@@ -310,8 +310,10 @@
             smart_button_render();
         }
         $(document.body).on('updated_cart_totals updated_checkout', function () {
+            
             hide_show_place_order_button();
             setTimeout(function () {
+                
                 smart_button_render();
                 if (is_hosted_field_eligible() === true) {
                     $('.checkout_cc_separator').show();
@@ -325,10 +327,8 @@
         });
         var hide_show_place_order_button = function () {
             var isPPEC = is_angelleye_ppcp_selected();
-            var togglePPEC = isPPEC ? 'show' : 'hide';
             var toggleSubmit = isPPEC ? 'hide' : 'show';
             if (is_hosted_field_eligible() === false) {
-                $('.angelleye_ppcp-button-container').animate({opacity: togglePPEC, height: togglePPEC, padding: togglePPEC}, 230);
                 $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
             }
         };
