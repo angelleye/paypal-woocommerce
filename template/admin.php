@@ -30,7 +30,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                         <li class="product">
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>">
                                 <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/ppcp.png'; ?>">
-                                <p><?php echo wp_trim_words(__('PayPal Commerce Platform is a full-stack solution that offers marketplaces and other commerce platforms powerful and flexible payment processing capabilities.', 'paypal-for-woocommerce'), $num_words = 40); ?></p>
+                                <p><?php echo wp_trim_words(__('PayPal Complete Payments is the Angell EYE integration of PayPal\'s new Commerce Platform APIs. This includes PayPal Checkout and Direct Credit Card options. Also, it gives us the power of a hosted solution while still being able to distribute the plugin to be installed directly on your site', 'paypal-for-woocommerce'), $num_words = 48); ?></p>
                             </a>
                         </li>
                         <li class="product">
