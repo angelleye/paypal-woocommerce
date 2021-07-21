@@ -606,10 +606,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_home_page_settings' => array(
                     'title' => __('Home Page', 'paypal-for-woocommerce'),
-                    'class' => '',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_home_field',
                     'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Home page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => 'pay_later_messaging_field',
                 ),
                 'pay_later_messaging_home_layout_type' => array(
                     'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -693,10 +692,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_category_page_settings' => array(
                     'title' => __('Category Page', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Category page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => 'pay_later_messaging_field',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_category_field',
                 ),
                 'pay_later_messaging_category_layout_type' => array(
                     'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -780,10 +778,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_product_page_settings' => array(
                     'title' => __('Product Page', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Product page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => 'pay_later_messaging_field',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_product_field',
                 ),
                 'pay_later_messaging_product_layout_type' => array(
                     'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -867,10 +864,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_cart_page_settings' => array(
                     'title' => __('Cart Page', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Cart page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => 'pay_later_messaging_field',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_cart_field',
                 ),
                 'pay_later_messaging_cart_layout_type' => array(
                     'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -954,10 +950,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_payment_page_settings' => array(
                     'title' => __('Payment Page', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Payment page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => 'pay_later_messaging_field',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_payment_field',
                 ),
                 'pay_later_messaging_payment_layout_type' => array(
                     'title' => __('Layout Type', 'paypal-for-woocommerce'),
