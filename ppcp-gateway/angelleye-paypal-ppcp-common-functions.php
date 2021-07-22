@@ -441,14 +441,13 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
                 $args['user-agent'] = 'PFW_PPCP';
                 $response = wp_remote_get(PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE . 'ppcp-request', $args);
                 $status_code = (int) wp_remote_retrieve_response_code($response);
-                if (200 < $status_code) {
+                if (200 < $status_code || empty($response)) {
                     $status = 'yes';
-                    $time = 2;
+                    set_transient('is_angelleye_aws_down', $status, 15 * MINUTE_IN_SECONDS);
                 } else {
                     $status = 'no';
-                    $time = 24;
+                    set_transient('is_angelleye_aws_down', $status, 24 * HOUR_IN_SECONDS);
                 }
-                set_transient('is_angelleye_aws_down', $status, $time * HOUR_IN_SECONDS);
             }
             if ($status === 'yes') {
                 return true;
