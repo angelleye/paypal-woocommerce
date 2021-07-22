@@ -47,7 +47,8 @@ class AngellEYE_PayPal_PPCP_Response {
                                     'REFUND',
                                     'ADVANCED_TRANSACTIONS_SEARCH',
                                     'ACCESS_MERCHANT_INFORMATION',
-                                    'VAULT'
+                                    'VAULT',
+                                    'PARTNER_FEE'
                                 ),
                             ),
                         ),
