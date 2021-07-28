@@ -1,4 +1,5 @@
 <?php
+
 namespace Braintree;
 
 use JsonSerializable;
@@ -46,8 +47,7 @@ abstract class Base implements JsonSerializable
         }
         if (array_key_exists($name, $this->_attributes)) {
             return $this->_attributes[$name];
-        }
-        else {
+        } else {
             trigger_error('Undefined property on ' . get_class($this) . ': ' . $name, E_USER_NOTICE);
             return null;
         }
@@ -62,7 +62,7 @@ abstract class Base implements JsonSerializable
      */
     public function __isset($name)
     {
-        return array_key_exists($name, $this->_attributes);
+        return isset($this->_attributes[$name]);
     }
 
     /**
@@ -76,15 +76,32 @@ abstract class Base implements JsonSerializable
     {
         $this->_attributes[$key] = $value;
     }
-    
+
     /**
-     * Implementation of JsonSerializable 
-     * 
+     * Implementation of JsonSerializable
+     *
      * @ignore
      * @return array
      */
     public function jsonSerialize()
     {
-	return $this->_attributes;
+        return $this->_attributes;
+    }
+
+    /**
+     * Implementation of to an Array
+     *
+     * @ignore
+     * @return array
+     */
+    public function toArray()
+    {
+        return array_map(function ($value) {
+            if (!is_array($value)) {
+                return method_exists($value, 'toArray') ? $value->toArray() : $value;
+            } else {
+                return $value;
+            }
+        }, $this->_attributes);
     }
 }

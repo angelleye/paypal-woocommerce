@@ -2942,7 +2942,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             }
 
                             $validate_data = angelleye_get_session('validate_data');
-
+                            WC()->cart->calculate_totals();
                             if (!empty($validate_data)) {
                                 $order_id = WC()->checkout()->create_order($validate_data);
                             } else {
@@ -3002,7 +3002,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             }
 
                             $validate_data = angelleye_get_session('validate_data');
-
+                            WC()->cart->calculate_totals();
                             if (!empty($validate_data)) {
                                 $order_id = WC()->checkout()->create_order($validate_data);
                             } else {
