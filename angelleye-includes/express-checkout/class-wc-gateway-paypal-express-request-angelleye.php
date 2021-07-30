@@ -592,9 +592,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'DECPFields' => $DECPFields,
                 'Payments' => $Payments
             );
-
             $this->paypal_response = $this->paypal->DoExpressCheckoutPayment(apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request, $this->gateway, $this, $this->confirm_order_id));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'DoExpressCheckoutPayment');
+            if( $this->paypal_response['L_ERRORCODE0'] == '10002' ) {
+                $this->paypal_request = apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request, $this->gateway, $this, $this->confirm_order_id, $is_force_validate = 'yes');
+                $this->paypal_response = $this->paypal->DoExpressCheckoutPayment($this->paypal_request);
+            }
+            return $this->paypal_response;
         } catch (Exception $ex) {
             
         }
