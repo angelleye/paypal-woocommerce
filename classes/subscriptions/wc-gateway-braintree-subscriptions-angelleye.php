@@ -70,6 +70,8 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
             $subscriptions = wcs_get_subscriptions_for_order($order_id);
         } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order_id)) {
             $subscriptions = wcs_get_subscriptions_for_renewal_order($order_id);
+        } elseif (function_exists('wcs_is_subscription') && wcs_is_subscription($order_id)) {
+            $subscriptions = array(0=>$order);
         } else {
             $subscriptions = array();
         }
