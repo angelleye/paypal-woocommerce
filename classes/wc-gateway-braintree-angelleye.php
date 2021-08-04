@@ -1086,7 +1086,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $order = wc_get_order($order_id);
         if( $this->enable_braintree_ach && isset($_POST['braintree_ach_token'] )) {
             $braintree_customer_id = $this->angelleye_braintree_ach_create_customer_id($order);
-            $payment_method_token = $this->braintree_ach_create_payment_method($braintree_customer_id);
+            $result = $this->braintree_ach_create_payment_method($braintree_customer_id);
+            $payment_method_token = $result->paymentMethod->token;
             if($payment_method_token) {
                 $success = $this->angelleye_ach_process_payment($order, $payment_method_token);
             }
