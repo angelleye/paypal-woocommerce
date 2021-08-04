@@ -48,6 +48,10 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
                 '_payment_tokens_id' => array(
                     'value' => get_post_meta($subscription_id, '_payment_tokens_id', true),
                     'label' => 'Payment Tokens ID',
+                ),
+                '_payment_method_type' => array(
+                    'value' => get_post_meta($subscription_id, '_payment_method_type', true),
+                    'label' => 'Payment Method Type',
                 )
             )
         );
@@ -70,8 +74,6 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
             $subscriptions = wcs_get_subscriptions_for_order($order_id);
         } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order_id)) {
             $subscriptions = wcs_get_subscriptions_for_renewal_order($order_id);
-        } elseif (function_exists('wcs_is_subscription') && wcs_is_subscription($order_id)) {
-            $subscriptions = array(0=>$order);
         } else {
             $subscriptions = array();
         }
