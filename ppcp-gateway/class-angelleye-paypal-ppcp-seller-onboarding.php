@@ -212,25 +212,23 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             );
             $host_url = $this->ppcp_host . 'get-tracking-status';
             $seller_onboarding_status = $this->api_request->request($host_url, $args, 'get_tracking_status');
-            if (isset($seller_onboarding_status['status']) && 'true' === $seller_onboarding_status['status'] && !empty($seller_onboarding_status['body'])) {
-                $json = json_decode($seller_onboarding_status['body']);
-                if (!empty($json->merchant_id)) {
-                    if ($this->is_sandbox) {
-                        $this->settings->set('sandbox_merchant_id', $json->merchant_id);
-                        $this->settings->set('enabled', 'yes');
-                    } else {
-                        $this->settings->set('live_merchant_id', $json->merchant_id);
-                        $this->settings->set('enabled', 'yes');
-                    }
-                    $this->settings->persist();
-                    $this->result = $this->angelleye_track_seller_onboarding_status($json->merchant_id);
-                    if ($this->angelleye_is_acdc_payments_enable($this->result)) {
-                        $this->settings->set('enable_advanced_card_payments', 'yes');
-                    } else {
-                        $this->settings->set('enable_advanced_card_payments', 'no');
-                    }
+            if (!empty($seller_onboarding_status['merchant_id'])) {
+                if ($this->is_sandbox) {
+                    $this->settings->set('sandbox_merchant_id', $seller_onboarding_status['merchant_id']);
+                    $this->settings->set('enabled', 'yes');
+                } else {
+                    $this->settings->set('live_merchant_id', $seller_onboarding_status['merchant_id']);
+                    $this->settings->set('enabled', 'yes');
+                }
+                $this->settings->persist();
+                $this->result = $this->angelleye_track_seller_onboarding_status($seller_onboarding_status['merchant_id']);
+                if ($this->angelleye_is_acdc_payments_enable($this->result)) {
+                    $this->settings->set('enable_advanced_card_payments', 'yes');
+                } else {
+                    $this->settings->set('enable_advanced_card_payments', 'no');
                 }
             }
+            
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
