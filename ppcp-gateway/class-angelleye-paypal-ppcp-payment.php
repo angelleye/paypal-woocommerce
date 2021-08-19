@@ -185,33 +185,37 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
                     $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
                 }
-                if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
-                    $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
-                }
-                angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
-                $body_request['purchase_units'][0]['shipping']['address'] = array(
-                    'address_line_1' => $shipping_address_1,
-                    'address_line_2' => $shipping_address_2,
-                    'admin_area_2' => $shipping_city,
-                    'admin_area_1' => $shipping_state,
-                    'postal_code' => $shipping_postcode,
-                    'country_code' => $shipping_country,
-                );
-            } else {
-                if (is_user_logged_in()) {
-                    if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
-                        $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
+                if ( $order->needs_shipping_address() ) {
+                    if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
+                        $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
-                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['state']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
-                        $body_request['purchase_units'][0]['shipping']['address'] = array(
-                            'address_line_1' => $cart['shipping_address']['address_1'],
-                            'address_line_2' => $cart['shipping_address']['address_2'],
-                            'admin_area_2' => $cart['shipping_address']['city'],
-                            'admin_area_1' => $cart['shipping_address']['state'],
-                            'postal_code' => $cart['shipping_address']['postcode'],
-                            'country_code' => $cart['shipping_address']['country'],
-                        );
-                        angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                    angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                    $body_request['purchase_units'][0]['shipping']['address'] = array(
+                        'address_line_1' => $shipping_address_1,
+                        'address_line_2' => $shipping_address_2,
+                        'admin_area_2' => $shipping_city,
+                        'admin_area_1' => $shipping_state,
+                        'postal_code' => $shipping_postcode,
+                        'country_code' => $shipping_country,
+                    );
+                }
+            } else {
+                if (true === WC()->cart->needs_shipping_address()) {
+                    if (is_user_logged_in()) {
+                        if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
+                            $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
+                        }
+                        if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['state']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
+                            $body_request['purchase_units'][0]['shipping']['address'] = array(
+                                'address_line_1' => $cart['shipping_address']['address_1'],
+                                'address_line_2' => $cart['shipping_address']['address_2'],
+                                'admin_area_2' => $cart['shipping_address']['city'],
+                                'admin_area_1' => $cart['shipping_address']['state'],
+                                'postal_code' => $cart['shipping_address']['postcode'],
+                                'country_code' => $cart['shipping_address']['country'],
+                            );
+                            angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                        }
                     }
                 }
             }
