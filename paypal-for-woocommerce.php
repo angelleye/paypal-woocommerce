@@ -422,7 +422,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     if ($disallowed_funding_methods !== false && count($disallowed_funding_methods) > 0) {
                         $smart_js_arg['disable-funding'] = implode(',', $disallowed_funding_methods);
                     }
-                    if ($pp_settings['testmode']=='yes') {
+                    if (isset($pp_settings['testmode']) && $pp_settings['testmode']=='yes') {
                         $smart_js_arg['buyer-country'] = WC()->countries->get_base_country();
                         $smart_js_arg['client-id'] = 'sb';
                     } else {
