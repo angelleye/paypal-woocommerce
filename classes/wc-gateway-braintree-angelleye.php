@@ -579,10 +579,16 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'check_number_missing'           => esc_html__( 'Check Number is missing', 'paypal-for-woocommerce' )
 
         );
+        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+        if ($old_wc) {
+            $is_registration_required = get_option( 'woocommerce_enable_guest_checkout' ) !== 'yes' ? true : false;
+        } else {
+            $is_registration_required = WC()->checkout()->is_registration_required();
+        }
         ?>
         <script type="text/javascript">
             var js_variable = <?php echo json_encode($js_variable); ?>;
-            var is_registration_required = "<?php echo WC()->checkout()->is_registration_required(); ?>";
+            var is_registration_required = "<?php echo  $is_registration_required; ?>";
 	    var is_logged_in = "<?php echo is_user_logged_in(); ?>";
         </script>
          <?php
