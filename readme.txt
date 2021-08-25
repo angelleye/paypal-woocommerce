@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 5.8
-Stable tag: 2.5.13
+Stable tag: 2.5.14
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,8 +127,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 2.5.14 - 08.20.2021 =
+* Tweak - Adjusts CSS for Cancel Order button on Express Checkout review page. ([PFW-841](https://github.com/angelleye/paypal-woocommerce/pull/1567))
+* Fix - Resolves Payment Gateway Sorting issue. ([PFW-840](https://github.com/angelleye/paypal-woocommerce/pull/1566))
+
 = 2.5.13 - 08.20.2021 =
-* Fix - Resolves Braintree Compatibility with WooCommerce 2.6.2 issue. ([PFW-842](https://github.com/angelleye/paypal-woocommerce/issues/1568))
+* Fix - Resolves Braintree Compatibility with WooCommerce 2.6.2 issue. ([PFW-842](https://github.com/angelleye/paypal-woocommerce/pull/1568))
 
 = 2.5.12 - 07.19.2021 =
 * Fix - Resolves an issue with CartFlow with subscription. ([PFW-820](https://github.com/angelleye/paypal-woocommerce/pull/1562))
