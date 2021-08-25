@@ -505,21 +505,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         unset($gateways[$id]);
                     }
                 }
-            } else {
-                if ($this->enable_in_context_checkout_flow == 'yes' && $this->checkout_page_disable_smart_button == false) {
-                    foreach ($gateways as $id => $gateway) {
-                        if ($id !== 'paypal_express') {
-                            $new_sorted_gateways[$id] = $gateway;
-                        }
-                    }
-                    foreach ($gateways as $id => $gateway) {
-                        if ($id == 'paypal_express') {
-                            $new_sorted_gateways[$id] = $gateway;
-                        }
-                    }
-                    return $new_sorted_gateways;
-                }
-            }
+            } 
             if (is_cart() || ( is_checkout() && !is_checkout_pay_page() )) {
                 if (isset($gateways['paypal_express']) && (!isset(WC()->cart) || WC()->cart->needs_payment() == false )) {
                     unset($gateways['paypal_express']);
