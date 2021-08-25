@@ -2221,8 +2221,15 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
                             /** Creating Order Object for fresh created order */
                             $order = wc_get_order($order_id);
+                            
+                            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                            if ($old_wc) {
+                                $is_registration_required = get_option( 'woocommerce_enable_guest_checkout' ) !== 'yes' ? true : false;
+                            } else {
+                                $is_registration_required = WC()->checkout()->is_registration_required();
+                            }
 
-                            if ( ! is_user_logged_in() && WC()->checkout->is_registration_required($order_id) ) {
+                            if ( ! is_user_logged_in() && $is_registration_required ) {
                                 $paypal_express_request->angelleye_process_customer($order_id);
                             }
                             do_action('woocommerce_checkout_order_processed', $order_id, $this->posted, $order);
@@ -2282,7 +2289,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             /** Creating Order Object for fresh created order */
                             $order = wc_get_order($order_id);
 
-                            if ( ! is_user_logged_in() && WC()->checkout->is_registration_required() ) {
+                            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                            if ($old_wc) {
+                                $is_registration_required = get_option( 'woocommerce_enable_guest_checkout' ) !== 'yes' ? true : false;
+                            } else {
+                                $is_registration_required = WC()->checkout()->is_registration_required();
+                            }
+                            
+                            if ( ! is_user_logged_in() && $is_registration_required ) {
                                 $paypal_express_request->angelleye_process_customer($order_id);
                             }
                             do_action('woocommerce_checkout_order_processed', $order_id, $this->posted, $order);

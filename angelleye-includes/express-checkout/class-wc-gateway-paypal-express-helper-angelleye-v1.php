@@ -511,21 +511,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         unset($gateways[$id]);
                     }
                 }
-            } else {
-                if ($this->enable_in_context_checkout_flow == 'yes' && $this->checkout_page_disable_smart_button == false) {
-                    foreach ($gateways as $id => $gateway) {
-                        if ($id !== 'paypal_express') {
-                            $new_sorted_gateways[$id] = $gateway;
-                        }
-                    }
-                    foreach ($gateways as $id => $gateway) {
-                        if ($id == 'paypal_express') {
-                            $new_sorted_gateways[$id] = $gateway;
-                        }
-                    }
-                    return $new_sorted_gateways;
-                }
-            }
+            } 
             if ( is_cart() || ( is_checkout() && ! is_checkout_pay_page() ) ) {
                 if ( isset( $gateways['paypal_express'] ) &&  ( ! isset( WC()->cart )  ||  WC()->cart->needs_payment() == false ) ) {
                         unset( $gateways['paypal_express'] );
@@ -1011,7 +997,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if ($this->function_helper->ec_is_express_checkout()) {
             $order_button_text = __('Cancel order', 'paypal-for-woocommerce');
             $cancel_order_url = add_query_arg('pp_action', 'cancel_order', untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Express_AngellEYE')));
-            $order_button_hrml = apply_filters('angelleye_review_order_cance_button_html', '<a class="button alt angelleye_cancel" name="woocommerce_checkout_place_order" href="' . esc_attr($cancel_order_url) . '" >' . $order_button_text . '</a>' . $order_button_hrml);
+            $order_button_hrml = apply_filters('angelleye_review_order_cance_button_html', '<a class="button alt angelleye_cancel" name="woocommerce_checkout_place_order" href="' . esc_attr($cancel_order_url) . '" >' . $order_button_text . '</a>&nbsp&nbsp&nbsp' . $order_button_hrml);
         }
         return $order_button_hrml;
     }
