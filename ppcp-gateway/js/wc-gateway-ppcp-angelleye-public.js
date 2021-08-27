@@ -233,7 +233,7 @@
                     var state = hf.getState();
                     var contingencies = [];
                     if (angelleye_ppcp_manager.threed_secure_enabled === 'yes') {
-                        contingencies = ['3D_SECURE'];
+                        contingencies = ['SCA_WHEN_REQUIRED'];
                     }
                     $('form.checkout').addClass('processing').block({
                         message: null,
