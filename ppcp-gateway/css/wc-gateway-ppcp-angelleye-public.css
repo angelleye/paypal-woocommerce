@@ -125,3 +125,6 @@
 .woocommerce div.product form.cart {
     margin-bottom: 2em;
 }
+.cfw-customer-info-address-container.cfw-parsley-shipping-details.woocommerce-shipping-fields.woocommerce-shipping-fields__field-wrapper {
+    display: block;
+}
