@@ -229,8 +229,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
             $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
         }
-        if ($this->is_sandbox) {
-            $smart_js_arg['buyer-country'] = WC()->countries->get_base_country();
+        if ($this->is_sandbox ) {
+            if(is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen( WC()->customer->get_billing_country() )) {
+                $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
+            }
             $smart_js_arg['client-id'] = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
         } else {
             $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
