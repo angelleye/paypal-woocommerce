@@ -761,14 +761,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     if(err) {
                                         $('.woocommerce-error').remove();
                                         console.log(err.message);
-                                        unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err.message + '</li></ul>');
-                                        $('.braintree-device-data', ccForm).remove();
-                                        $('.braintree-token', ccForm).remove();
-                                        var scrollElement           = $( '.woocommerce-error' );
-                                        if ( ! scrollElement.length ) {
-                                           scrollElement = $( '.form.checkout' );
-                                        }
-                                        $.scroll_to_notices( scrollElement );
                                         $('.is_submit').remove();
                                         $form.unblock();
                                         return false;
