@@ -79,7 +79,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->enable_braintree_ach = 'yes' === $this->get_option('enable_braintree_ach', 'no');
         $this->ach_tokenization_key = $this->get_option('ach_tokenization_key', '');
         $this->ach_business_name = $this->get_option('ach_business_name', '');
-        $this->paypal_flow_type = $this->get_option('paypal_flow_type', 'checkout');
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
         $this->response = '';
@@ -176,13 +175,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 }).change();
                 jQuery('select#wc_braintree_merchant_account_id_currency').change(function () {
                     jQuery('.js-add-merchant-account-id').text('<?php esc_html_e('Add merchant account ID for ', 'paypal-for-woocommerce'); ?>' + jQuery(this).val())
-                });
-                jQuery('#woocommerce_braintree_enable_braintree_drop_in').change(function () {
-                    if (jQuery(this).is(':checked')) {
-                        jQuery('#woocommerce_braintree_paypal_flow_type').closest('tr').show();
-                    } else {
-                        jQuery('#woocommerce_braintree_paypal_flow_type').closest('tr').hide();
-                    }
                 });
             </script>
         </table> 
@@ -295,19 +287,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'checkbox',
                 'description' => __('Rather than showing a credit card form on your checkout, this shows the form on it\'s own page, thus making the process more secure and more PCI friendly.', 'paypal-for-woocommerce'),
                 'default' => 'yes'
-            ),
-            'paypal_flow_type' => array(
-                'title' => __('PayPal Flow Type', 'paypal-for-woocommerce'),
-                'label' => __('Whether to process as a Vault or Checkout.', 'paypal-for-woocommerce'),
-                'description' => __('Vault will save PayPal details when the order is placed.'),
-                'type' => 'select',
-                'css'      => 'max-width:150px;',
-                'class'    => 'wc-enhanced-select',
-                'options' => array(
-                    'checkout' => 'Checkout',
-                    'vault' => 'Vault',
-                ),
-                'default' => 'checkout'
             ),
             'sandbox' => array(
                 'title' => __('Sandbox', 'paypal-for-woocommerce'),
@@ -675,17 +654,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 $form.unblock();
                             }
                         });
-                        <?php if($this->paypal_flow_type === 'vault') { ?>
-                        var paypal_option = {
-                            flow: 'vault'
-                        }
-                        <?php } else { ?>
                         var paypal_option = {
                             flow: 'checkout',
                             amount: '<?php echo $order_total; ?>',
                             currency: '<?php echo get_woocommerce_currency(); ?>'
                           }
-                        <?php } ?>    
                         var button = document.querySelector('#place_order');
                         var $form = $( 'form.checkout, form#order_review, form#add_payment_method' );
                         var checkout_form = document.querySelector('form.checkout, form#order_review, form#add_payment_method')
