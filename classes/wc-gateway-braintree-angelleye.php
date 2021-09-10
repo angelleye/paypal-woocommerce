@@ -723,15 +723,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             checkout_form.addEventListener('submit', function (event) {
                             if(is_angelleye_braintree_selected()) {
                                 dropinInstance.requestPaymentMethod( function (err, payload) {
-                                    if(err) {
-                                        $('.woocommerce-error').remove();
-                                        $('.braintree-device-data', ccForm).remove();
-                                        $('.braintree-token', ccForm).remove();
-                                        $('.woocommerce-error').remove();
-                                        $('.is_submit').remove();
-                                        $form.unblock();
-                                        return false;
-                                    }
                                     <?php if($this->threed_secure_enabled === true) { ?>
                                     if (!payload.liabilityShifted && payload.type == 'CreditCard') {
                                         if( typeof dropinInstance !== 'undefined') {
@@ -761,6 +752,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         $form.submit();
                                         $('form.checkout').triggerHandler("checkout_place_order");
                                     } 
+                                    if(err) {
+                                        $('.woocommerce-error').remove();
+                                        $('.braintree-device-data', ccForm).remove();
+                                        $('.braintree-token', ccForm).remove();
+                                        $('.woocommerce-error').remove();
+                                        $('.is_submit').remove();
+                                        $form.unblock();
+                                        return false;
+                                    }
                                 });
                             }
                             });
