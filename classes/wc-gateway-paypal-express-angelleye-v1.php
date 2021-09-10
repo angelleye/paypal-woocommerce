@@ -15,7 +15,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public function __construct() {
         $this->id = 'paypal_express';
         $this->home_url = is_ssl() ? home_url('/', 'https') : home_url('/'); 
-        if ((isset($_GET['tab']) && isset($_GET['section'])) || !isset($_GET['tab'])) {
+        if ((isset($_GET['tab']) && 'checkout' !== $_GET['tab']) || !isset($_GET['tab'])) {
             $this->method_title = __('PayPal Express Checkout', 'paypal-for-woocommerce');
             $this->method_description = __('PayPal Express Checkout is designed to make the checkout experience for buyers using PayPal much more quick and easy than filling out billing and shipping forms.  Customers will be taken directly to PayPal to sign in and authorize the payment, and are then returned back to your store to choose a shipping method, review the final order total, and complete the payment.', 'paypal-for-woocommerce');
         } else {
@@ -85,7 +85,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $this->supports = array_merge($this->supports, array('add_payment_method','tokenization'));
         }
         $this->enabled = $this->get_option('enabled');
-        if ((isset($_GET['tab']) && isset($_GET['section'])) || !isset($_GET['tab'])) {
+        if ((isset($_GET['tab']) && 'checkout' !== $_GET['tab']) || !isset($_GET['tab'])) {
             $this->title = $this->get_option('title');
         } else {
             $this->title = 'PayPal Classic Payment Gateway';

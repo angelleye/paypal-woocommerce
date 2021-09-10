@@ -531,7 +531,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
             }
             if( $this->subscription_support_enabled ) {
-                if ((isset($_GET['tab']) && isset($_GET['section'])) || !isset($_GET['tab'])) {
+                if ((isset($_GET['tab']) && 'checkout' !== $_GET['tab']) || !isset($_GET['tab'])) {
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-pro-payflow-subscriptions-angelleye.php' );
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-advanced-subscriptions-angelleye.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-express-subscriptions-angelleye.php');
@@ -557,7 +557,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
                 }
             } else {
-                if ((isset($_GET['tab']) && isset($_GET['section'])) || !isset($_GET['tab'])) {
+                if ((isset($_GET['tab']) && 'checkout' !== $_GET['tab']) || !isset($_GET['tab'])) {
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
                     $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
