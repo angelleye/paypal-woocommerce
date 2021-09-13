@@ -664,7 +664,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             authorization: clientToken,
                             container: "#braintree-payment-form",
                             <?php if($this->threed_secure_enabled === true) { ?>
-                               threeDSecure: <?php echo $order_total; ?>,     
+                               threeDSecure: true,     
                             <?php } ?>
                             locale: '<?php echo AngellEYE_Utility::get_button_locale_code(); ?>',
                             paypal: {
@@ -719,12 +719,25 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                             checkout_form.addEventListener('submit', function (event) {
                             if(is_angelleye_braintree_selected()) {
-                                dropinInstance.requestPaymentMethod( function (err, payload) {
+                                 dropinInstance.requestPaymentMethod({
+                                    <?php if($this->threed_secure_enabled === true) { ?> 
+                                    threeDSecure: {
+                                            amount: '<?php echo $order_total; ?>',
+                                    },
+                                    <?php } ?>
+                                  }, function (err, payload) {
+                                
                                     if(err) {
                                         $('.woocommerce-error').remove();
+                                        console.log(err.message);
+                                        unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err.message + '</li></ul>');
                                         $('.braintree-device-data', ccForm).remove();
                                         $('.braintree-token', ccForm).remove();
-                                        $('.woocommerce-error').remove();
+                                        var scrollElement           = $( '.woocommerce-error' );
+                                        if ( ! scrollElement.length ) {
+                                           scrollElement = $( '.form.checkout' );
+                                        }
+                                        $.scroll_to_notices( scrollElement );
                                         $('.is_submit').remove();
                                         $form.unblock();
                                         return false;
@@ -1935,7 +1948,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             return;
         }
         if ($this->enable_braintree_drop_in) {
-            wp_enqueue_script('braintree-gateway', 'https://js.braintreegateway.com/web/dropin/1.25.0/js/dropin.min.js', array('jquery'), null, false);
+            wp_enqueue_script('braintree-gateway-dropin', 'https://js.braintreegateway.com/web/dropin/1.31.2/js/dropin.min.js', array('jquery'), null, false);
             if($this->enable_braintree_ach) {
                 wp_enqueue_script('braintree-gateway-client', 'https://js.braintreegateway.com/web/3.61.0/js/client.min.js', array('jquery'), null, true);
                 wp_enqueue_script('braintree-us-bank-account', 'https://js.braintreegateway.com/web/3.61.0/js/us-bank-account.min.js', array('jquery'), null, true);
