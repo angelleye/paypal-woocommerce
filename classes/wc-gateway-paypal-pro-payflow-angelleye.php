@@ -1642,7 +1642,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
          */
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
 
-        add_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
+        do_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
         if (isset($PayPalResult['RESULT']) && $PayPalResult['RESULT'] == 0) {
             update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['PNREF']);
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);
