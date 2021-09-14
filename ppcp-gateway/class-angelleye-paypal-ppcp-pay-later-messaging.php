@@ -45,15 +45,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $this->enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         if ($this->is_sandbox) {
-            $this->client_id = $this->setting_obj->get('sandbox_client_id');
-            $this->secret = $this->setting_obj->get('sandbox_secret_key');
-            $this->access_token = get_transient('angelleye_ppcp_sandbox_access_token');
-            $this->client_token = get_transient('angelleye_ppcp_sandbox_client_token');
+            $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
         } else {
-            $this->client_id = $this->setting_obj->get('live_client_id');
-            $this->secret = $this->setting_obj->get('live_secret_key');
-            $this->access_token = get_transient('angelleye_ppcp_access_token');
-            $this->client_token = get_transient('angelleye_ppcp_client_token');
+            $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
         }
         $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'no');
         $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('home', 'category', 'product', 'cart', 'payment'));
@@ -97,7 +91,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function is_valid_for_use() {
-        if (!empty($this->client_id) && !empty($this->secret) && $this->enabled) {
+        if (!empty($this->merchant_id) && $this->enabled) {
             return true;
         }
         return false;

@@ -116,6 +116,24 @@ class AngellEYE_PayPal_PPCP_DCC_Validate {
             'JPY',
             'USD',
         ),
+        'CA' => array(
+            'AUD',
+            'CAD',
+            'CHF',
+            'CZK',
+            'DKK',
+            'EUR',
+            'GBP',
+            'HKD',
+            'HUF',
+            'JPY',
+            'NOK',
+            'NZD',
+            'PLN',
+            'SEK',
+            'SGD',
+            'USD',
+        ),
     );
 
     /**
@@ -151,6 +169,12 @@ class AngellEYE_PayPal_PPCP_DCC_Validate {
             'visa' => array(),
             'amex' => array('USD'),
             'discover' => array('USD'),
+        ),
+        'CA' => array(
+            'mastercard' => array(),
+            'visa' => array(),
+            'amex' => array('CAD'),
+            'jcb' => array('CAD'),
         ),
     );
 

@@ -219,22 +219,6 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
 
     }
 
-    if (!function_exists('angelleye_ppcp_may_register_webhook')) {
-
-        function angelleye_ppcp_may_register_webhook() {
-
-            if (angelleye_ppcp_is_local_server() === false) {
-                if (wp_next_scheduled('angelleyel_ppcp_create_webhook')) {
-                    $timestamp = wp_next_scheduled('angelleyel_ppcp_create_webhook');
-                    wp_unschedule_event($timestamp, 'angelleyel_ppcp_create_webhook');
-                    wp_clear_scheduled_hook('angelleyel_ppcp_create_webhook');
-                }
-                wp_schedule_single_event(time() + 20, 'angelleyel_ppcp_create_webhook');
-            }
-        }
-
-    }
-
     if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
 
         function angelleye_ppcp_get_mapped_billing_address($checkout_details, $is_name_only = false) {
@@ -443,6 +427,31 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
                     $new_key .= '';
             }
             return strtoupper($new_key);
+        }
+
+    }
+
+    if (!function_exists('is_angelleye_aws_down')) {
+
+        function is_angelleye_aws_down() {
+            if (false === ( $status = get_transient('is_angelleye_aws_down') )) {
+                $args['method'] = 'POST';
+                $args['timeout'] = 10;
+                $args['user-agent'] = 'PFW_PPCP';
+                $response = wp_remote_get(PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE . 'ppcp-request', $args);
+                $status_code = (int) wp_remote_retrieve_response_code($response);
+                if (200 < $status_code || empty($response)) {
+                    $status = 'yes';
+                    set_transient('is_angelleye_aws_down', $status, 15 * MINUTE_IN_SECONDS);
+                } else {
+                    $status = 'no';
+                    set_transient('is_angelleye_aws_down', $status, 24 * HOUR_IN_SECONDS);
+                }
+            }
+            if ($status === 'yes') {
+                return true;
+            }
+            return false;
         }
 
     }

@@ -146,72 +146,20 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('Click to reset current credentials and use another account.', 'paypal-for-woocommerce'),
                     'desc_tip' => ''
                 ),
-                'api_credentials' => array(
-                    'title' => __('API Credentials', 'paypal-for-woocommerce'),
-                    'class' => '',
-                    'description' => __('', 'paypal-for-woocommerce'),
-                    'type' => 'title',
-                    'class' => '',
-                ),
-                'live_email_address' => array(
-                    'title' => __('', 'paypal-for-woocommerce'),
-                    'type' => 'hidden',
-                    'description' => '',
-                    'default' => '',
-                    'desc_tip' => true
-                ),
                 'live_merchant_id' => array(
-                    'title' => '',
-                    'type' => 'hidden',
+                    'title' => __('Live Merchant ID', 'paypal-for-woocommerce'),
+                    'type' => 'text',
                     'description' => '',
                     'default' => '',
-                    'desc_tip' => true
-                ),
-                'live_client_id' => array(
-                    'title' => __('Live Client ID', 'paypal-for-woocommerce'),
-                    'type' => 'password',
-                    'description' => __('Enter your PayPal Client ID.', 'paypal-for-woocommerce'),
-                    'default' => '',
-                    'desc_tip' => true
-                ),
-                'live_secret_key' => array(
-                    'title' => __('Live Secret Key', 'paypal-for-woocommerce'),
-                    'type' => 'password',
-                    'description' => __('Enter your PayPal Secret.', 'paypal-for-woocommerce'),
-                    'default' => '',
-                    'desc_tip' => true
-                ),
-                'sandbox_api_credentials' => array(
-                    'title' => __('Sandbox API Credentials', 'paypal-for-woocommerce'),
-                    'type' => 'title',
-                    'description' => 'Your account setting is set to sandbox, no real charging takes place. To accept live payments, switch your environment to live and connect your PayPal account.',
-                ),
-                'sandbox_email_address' => array(
-                    'title' => '',
-                    'type' => 'hidden',
-                    'description' => '',
-                    'default' => '',
+                    'custom_attributes' => array('readonly' => 'readonly'),
                     'desc_tip' => true
                 ),
                 'sandbox_merchant_id' => array(
-                    'title' => '',
-                    'type' => 'hidden',
+                    'title' => __('Sandbox Merchant ID', 'paypal-for-woocommerce'),
+                    'type' => 'text',
                     'description' => '',
                     'default' => '',
-                    'desc_tip' => true
-                ),
-                'sandbox_client_id' => array(
-                    'title' => __('Sandbox Client ID', 'paypal-for-woocommerce'),
-                    'type' => 'password',
-                    'description' => __('Enter your PayPal Sandbox Client ID.', 'paypal-for-woocommerce'),
-                    'default' => '',
-                    'desc_tip' => true
-                ),
-                'sandbox_secret_key' => array(
-                    'title' => __('Sandbox Secret Key', 'paypal-for-woocommerce'),
-                    'type' => 'password',
-                    'description' => __('Enter your PayPal Sandbox Secret.', 'paypal-for-woocommerce'),
-                    'default' => '',
+                    'custom_attributes' => array('readonly' => 'readonly'),
                     'desc_tip' => true
                 ),
                 'smart_button_header' => array(
@@ -658,10 +606,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_home_page_settings' => array(
                     'title' => __('Home Page', 'paypal-for-woocommerce'),
-                    'class' => '',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_home_field',
                     'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Home page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => 'pay_later_messaging_field',
                 ),
                 'pay_later_messaging_home_layout_type' => array(
                     'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -745,10 +692,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_category_page_settings' => array(
                     'title' => __('Category Page', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Category page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => 'pay_later_messaging_field',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_category_field',
                 ),
                 'pay_later_messaging_category_layout_type' => array(
                     'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -832,10 +778,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_product_page_settings' => array(
                     'title' => __('Product Page', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Product page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => 'pay_later_messaging_field',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_product_field',
                 ),
                 'pay_later_messaging_product_layout_type' => array(
                     'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -919,10 +864,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_cart_page_settings' => array(
                     'title' => __('Cart Page', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Cart page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => 'pay_later_messaging_field',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_cart_field',
                 ),
                 'pay_later_messaging_cart_layout_type' => array(
                     'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -1006,10 +950,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_payment_page_settings' => array(
                     'title' => __('Payment Page', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Customize the appearance of <a target="_blank" href="https://www.paypal.com/us/business/buy-now-pay-later">Pay Later Messaging</a> on the Payment page to promote special financing offers which help increase sales.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => 'pay_later_messaging_field',
+                    'class' => 'pay_later_messaging_field pay_later_messaging_payment_field',
                 ),
                 'pay_later_messaging_payment_layout_type' => array(
                     'title' => __('Layout Type', 'paypal-for-woocommerce'),
@@ -1193,7 +1136,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'checkbox',
                     'label' => __('Enable logging', 'paypal-for-woocommerce'),
                     'default' => 'yes',
-                    'description' => sprintf(__('Log PayPal events, such as Webhook, Payment, Refund inside %s Note: this may log personal information. We recommend using this for debugging purposes only and deleting the logs when finished.', 'paypal-for-woocommerce'), '<code>' . WC_Log_Handler_File::get_log_file_path('angelleye_ppcp') . '</code>'),
+                    'description' => sprintf(__('Log PayPal events, such as Payment, Refund inside %s Note: this may log personal information. We recommend using this for debugging purposes only and deleting the logs when finished.', 'paypal-for-woocommerce'), '<code>' . WC_Log_Handler_File::get_log_file_path('angelleye_ppcp') . '</code>'),
                 ),
             );
             if (angelleye_ppcp_is_local_server()) {

@@ -72,28 +72,23 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $this->description = $this->get_option('description');
         $this->enabled = $this->get_option('enabled', 'no');
         $this->sandbox = 'yes' === $this->get_option('testmode', 'no');
-        $this->sandbox_client_id = $this->get_option('sandbox_client_id', '');
-        $this->sandbox_secret_key = $this->get_option('sandbox_secret_key', '');
-        $this->live_client_id = $this->get_option('live_client_id', '');
-        $this->live_secret_key = $this->get_option('live_secret_key', '');
-        if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_key)) {
+        $this->sandbox_merchant_id = $this->get_option('sandbox_merchant_id', '');
+        $this->live_merchant_id = $this->get_option('live_merchant_id', '');
+        if (!empty($this->sandbox_merchant_id)) {
             $this->is_sandbox_seller_onboarding_done = 'yes';
         } else {
             $this->is_sandbox_seller_onboarding_done = 'no';
         }
-        if (!empty($this->live_client_id) && !empty($this->live_secret_key)) {
+        if (!empty($this->live_merchant_id)) {
             $this->is_live_seller_onboarding_done = 'yes';
         } else {
             $this->is_live_seller_onboarding_done = 'no';
         }
         if ($this->sandbox) {
-            $this->client_id = $this->sandbox_client_id;
-            $this->secret_id = $this->sandbox_secret_key;
+            $this->merchant_id = $this->get_option('sandbox_merchant_id', '');
         } else {
-            $this->client_id = $this->live_client_id;
-            $this->secret_id = $this->live_secret_key;
+            $this->merchant_id = $this->get_option('live_merchant_id', '');
         }
-
         $this->paymentaction = $this->get_option('paymentaction', 'capture');
         $this->advanced_card_payments = 'yes' === $this->get_option('enable_advanced_card_payments', 'no');
         if ($this->dcc_applies->for_country_currency() === false) {
@@ -125,21 +120,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function process_admin_options() {
-        delete_transient('angelleye_ppcp_sandbox_access_token');
-        delete_transient('angelleye_ppcp_live_access_token');
-        delete_transient('angelleye_ppcp_sandbox_client_token');
-        delete_transient('angelleye_ppcp_live_client_token');
-        delete_option('angelleye_ppcp_snadbox_webhook_id');
-        delete_option('angelleye_ppcp_live_webhook_id');
-        if (function_exists('angelleye_ppcp_may_register_webhook')) {
-            angelleye_ppcp_may_register_webhook();
-        }
         parent::process_admin_options();
     }
 
     public function admin_options() {
         $this->angelleye_ppcp_admin_notices();
-        //wp_enqueue_script('woocommerce_admin');
+        wp_deregister_script('woocommerce_settings');
         wp_enqueue_script('wc-clipboard');
         echo '<div id="angelleye_paypal_marketing_table">';
         parent::admin_options();
@@ -220,7 +206,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function is_credentials_set() {
-        if (!empty($this->client_id) && !empty($this->secret_id)) {
+        if (!empty($this->merchant_id)) {
             return true;
         } else {
             return false;
@@ -253,7 +239,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                 ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                     ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <button type="button" class="button angelleye-ppcp-disconnect"><?php echo __('Disconnect', ''); ?></button>
@@ -278,7 +264,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                 ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                     ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
@@ -301,9 +287,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                             <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
                         } else {
                             echo __('We could not properly connect to PayPal', '');
-                            ?>
-                            <a href="#" class="angelleye_ppcp_gateway_manual_credential_input"><?php echo __('Toggle to manual credential input', ''); ?></a>
-                            <?php
                         }
                     }
                     ?>
@@ -316,8 +299,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_display_paypal_signup_button($url, $id, $label) {
         ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a>
-        <span class="angelleye_ppcp_gateway_setting_sepraer"><?php echo __('OR', ''); ?></span>
-        <a href="#" class="angelleye_ppcp_gateway_manual_credential_input"><?php echo __('Toggle to manual credential input', ''); ?></a>
         <?php
     }
 
@@ -341,12 +322,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                   ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                       ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                   ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                       ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
                     <?php echo $this->get_description_html($data); // WPCS: XSS ok.    ?>
                 </fieldset>
@@ -361,17 +342,14 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php');
             $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
             $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode);
-            if (isset($seller_onboarding_result['result']) && 'success' === $seller_onboarding_result['result'] && !empty($seller_onboarding_result['body'])) {
-                $json = json_decode($seller_onboarding_result['body']);
-                if (isset($json->links)) {
-                    foreach ($json->links as $link) {
-                        if ('action_url' === $link->rel) {
-                            return (string) $link->href;
-                        }
+            if (isset($seller_onboarding_result['links'])) {
+                foreach ($seller_onboarding_result['links'] as $link) {
+                    if (isset($link['rel']) && 'action_url' === $link['rel']) {
+                        return isset($link['href']) ? $link['href'] : false;
                     }
-                } else {
-                    return false;
                 }
+            } else {
+                return false;
             }
         } catch (Exception $ex) {
             
@@ -426,7 +404,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function can_refund_order($order) {
         $has_api_creds = false;
-        if (!empty($this->client_id) && !empty($this->secret_id)) {
+        if (!empty($this->merchant_id)) {
             $has_api_creds = true;
         }
         return $order && $order->get_transaction_id() && $has_api_creds;

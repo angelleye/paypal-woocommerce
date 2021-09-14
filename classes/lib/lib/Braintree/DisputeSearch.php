@@ -1,9 +1,11 @@
 <?php
+
 namespace Braintree;
 
 class DisputeSearch
 {
-    public static function amountDisputed() {
+    public static function amountDisputed()
+    {
         return new RangeNode("amount_disputed");
     }
 
@@ -75,6 +77,11 @@ class DisputeSearch
     public static function status()
     {
         return new MultipleValueNode("status");
+    }
+
+    public static function chargebackProtectionLevel()
+    {
+        return new MultipleValueNode("chargeback_protection_level", Dispute::allChargebackProtectionLevelTypes());
     }
 
     public static function transactionId()

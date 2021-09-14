@@ -250,7 +250,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
         wcf()->logger->log('Refund Request: ' . print_r($PayPalRequestData, true));
         wcf()->logger->log('Refund Response: ' . print_r($gateway->PayPal->NVPToArray($gateway->PayPal->MaskAPIResult($PayPalResponse)), true));
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
-        add_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
+        do_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
         if (isset($PayPalResult['RESULT']) && $PayPalResult['RESULT'] == 0) {
             update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['PNREF']);
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);

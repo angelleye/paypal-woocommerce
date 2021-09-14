@@ -29,22 +29,11 @@ class AngellEYE_PayPal_PPCP_Log {
         }
     }
 
-    public function webhook_log($message, $level = 'info') {
-        if ($this->log_enabled) {
-            if (empty($this->logger)) {
-                $this->logger = wc_get_logger();
-            }
-            $this->logger->log($level, $message, array('source' => 'angelleye_ppcp_webhook'));
-        }
-    }
-
     public function temp_log($message, $level = 'info') {
-        if ($this->log_enabled) {
-            if (empty($this->logger)) {
-                $this->logger = wc_get_logger();
-            }
-            $this->logger->log($level, $message, array('source' => 'angelleye_ppcp_temp'));
+        if (empty($this->logger)) {
+            $this->logger = wc_get_logger();
         }
+        $this->logger->log($level, $message, array('source' => 'angelleye_ppcp_temp'));
     }
 
     public function angelleye_ppcp_load_class() {

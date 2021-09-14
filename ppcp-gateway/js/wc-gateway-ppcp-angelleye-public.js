@@ -233,7 +233,7 @@
                     var state = hf.getState();
                     var contingencies = [];
                     if (angelleye_ppcp_manager.threed_secure_enabled === 'yes') {
-                        contingencies = ['3D_SECURE'];
+                        contingencies = ['SCA_WHEN_REQUIRED'];
                     }
                     $('form.checkout').addClass('processing').block({
                         message: null,
@@ -310,8 +310,10 @@
             smart_button_render();
         }
         $(document.body).on('updated_cart_totals updated_checkout', function () {
+            
             hide_show_place_order_button();
             setTimeout(function () {
+                
                 smart_button_render();
                 if (is_hosted_field_eligible() === true) {
                     $('.checkout_cc_separator').show();
@@ -324,14 +326,10 @@
             hide_show_place_order_button();
         });
         var hide_show_place_order_button = function () {
-            if (is_angelleye_ppcp_selected()) {
-                var isPPEC = true;
-                var togglePPEC = isPPEC ? 'show' : 'hide';
-                var toggleSubmit = isPPEC ? 'hide' : 'show';
-                if (is_hosted_field_eligible() === false) {
-                    $('.angelleye_ppcp-button-container').animate({opacity: togglePPEC, height: togglePPEC, padding: togglePPEC}, 230);
-                    $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
-                }
+            var isPPEC = is_angelleye_ppcp_selected();
+            var toggleSubmit = isPPEC ? 'hide' : 'show';
+            if (is_hosted_field_eligible() === false) {
+                $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
             }
         };
         function is_hosted_field_eligible() {

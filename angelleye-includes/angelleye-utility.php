@@ -2141,6 +2141,7 @@ class AngellEYE_Utility {
         }
         
         public function angelleye_wc_braintree_docapture($order) {
+            $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $gateway_obj = new WC_Gateway_Braintree_AngellEYE();
             $request_data = array();
             if (!is_object($order)) {
@@ -2176,7 +2177,11 @@ class AngellEYE_Utility {
                     update_post_meta($order_id, 'is_sandbox', $gateway_obj->sandbox);
                     $order->payment_complete($result->transaction->id);
                     $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $gateway_obj->title, $result->transaction->id));
-                    $order->set_transaction_id($result->transaction->id);
+                    if(!$old_wc) {
+                        $order->set_transaction_id($result->transaction->id);
+                    } else {
+                        update_post_meta( $order_id, '_transaction_id', $result->transaction->id );
+                    }
                     $insert_paypal_transaction = array(
                         'ID' => '',
                         'post_type' => 'paypal_transaction',

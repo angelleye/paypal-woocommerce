@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           2.5.9
+ * Version:           2.5.15
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,9 +13,9 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.5
- * Tested up to: 5.7.2
+ * Tested up to: 5.8.1
  * WC requires at least: 3.0.0
- * WC tested up to: 5.3.0
+ * WC tested up to: 5.6.0
  *
  *************
  * Attribution
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '2.5.9');
+    define('VERSION_PFW', '2.5.15');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -63,11 +63,17 @@ if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID')) {
 if (!defined('PAYPAL_PPCP_PARTNER_MERCHANT_ID')) {
     define('PAYPAL_PPCP_PARTNER_MERCHANT_ID', 'J9L24TCUDZ6ZS');
 }
-if (!defined('PAYPAL_SELLER_ONBOARDING_LIVE_URL')) {
-    define('PAYPAL_SELLER_ONBOARDING_LIVE_URL', 'https://www.angelleye.com/web-services/paypal-for-woocommerce/paypal-seller-onboarding/');
+if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID')) {
+    define('PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID', 'AWZDKZJkjTiV_JsjxODtR0bseOY9yOgSGgpzxyVNCTwdW8xSQXKSFkJYLZ80JY2M4avl1uLnCpA9zAix');
 }
-if (!defined('PAYPAL_SELLER_ONBOARDING_SANDBOX_URL')) {
-    define('PAYPAL_SELLER_ONBOARDING_SANDBOX_URL', 'https://www.angelleye.com/web-services/paypal-for-woocommerce/paypal-seller-onboarding/');
+if (!defined('PAYPAL_PPCP_PARTNER_CLIENT_ID')) {
+    define('PAYPAL_PPCP_PARTNER_CLIENT_ID', 'ATgw55qRjaDSlPur2FAkdAiB-QQuG5jlLsees-8dcxLiLla_nwbBSvSnCbUaGlmzxq9t2b8R9JGGSz1e');
+}
+if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE')) {
+    define('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE', 'https://zpyql2kd39.execute-api.us-east-2.amazonaws.com/production/PayPalMerchantIntegration/');
+}
+if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE')) {
+    define('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE', 'https://ppcp.angelleye.com/production/PayPalMerchantIntegration/');
 }
 
 
@@ -126,6 +132,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
             
             add_action( 'admin_notices', array($this, 'admin_notices') );
+            add_action('admin_notices', array($this, 'angelleye_latest_version_announcement'));
             add_action( 'admin_init', array($this, 'set_ignore_tag'));
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
            
@@ -222,7 +229,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         {
             $custom_actions = array(
                 //'configure' => sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wc-settings&tab=checkout' ), __( 'Configure', 'paypal-for-woocommerce' ) ),
-                'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/category/docs/paypal-for-woocommerce/?utm_source=paypal_for_woocommerce&utm_medium=docs_link&utm_campaign=paypal_for_woocommerce', __( 'Docs', 'paypal-for-woocommerce' ) ),
+                'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/paypal-for-woocommerce-documentation/?utm_source=paypal_for_woocommerce&utm_medium=docs_link&utm_campaign=paypal_for_woocommerce', __( 'Docs', 'paypal-for-woocommerce' ) ),
                 'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/support', __( 'Support', 'paypal-for-woocommerce' ) ),
                 'review'    => sprintf( '<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/product/woocommerce-paypal-plugin?utm_source=pfw&utm_medium=support_link#tab-reviews', __( 'Write a Review', 'paypal-for-woocommerce' ) ),
             );
@@ -388,7 +395,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-pay-later-messaging.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-admin-action.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php');
-            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-webhook.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-payflow-angelleye.php' );
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-advanced-angelleye.php');
             if(is_angelleye_multi_account_active()) {
@@ -400,7 +406,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
             AngellEYE_PayPal_PPCP_Smart_Button::instance();
-            AngellEYE_PayPal_PPCP_Webhook::instance();
             Angelleye_PayPal_Express_Checkout_Helper::instance();
             AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
             AngellEYE_PayPal_PPCP_Pay_Later::instance();
@@ -529,7 +534,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 }
             }
             if( $this->subscription_support_enabled ) {
-                if ((isset($_GET['tab']) && isset($_GET['section'])) || !isset($_GET['tab'])) {
+                if ((isset($_GET['tab']) && 'checkout' !== $_GET['tab']) || !isset($_GET['tab'])) {
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-pro-payflow-subscriptions-angelleye.php' );
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-advanced-subscriptions-angelleye.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-express-subscriptions-angelleye.php');
@@ -550,11 +555,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     } else {
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v2.php');
                     }
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-express-subscriptions-angelleye.php');
                     $methods[] = 'WC_Gateway_Braintree_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
                 }
             } else {
-                if ((isset($_GET['tab']) && isset($_GET['section'])) || !isset($_GET['tab'])) {
+                if ((isset($_GET['tab']) && 'checkout' !== $_GET['tab']) || !isset($_GET['tab'])) {
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
                     $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
@@ -1537,6 +1543,32 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $pp_settings = get_option( 'woocommerce_paypal_express_settings' );
             if(!empty($pp_settings['show_on_product_page']) && $pp_settings['show_on_product_page'] == 'yes' && !empty($pp_settings['enable_newly_products']) && $pp_settings['enable_newly_products'] == 'yes' ) {
                 update_post_meta( $product_id, '_enable_ec_button', 'yes');
+            }
+        }
+        
+        public function angelleye_latest_version_announcement() {
+            global $current_user;
+            $user_id = $current_user->ID;
+            if(!get_user_meta($user_id, 'angelleye_notification_3_0_0')) {
+                $admin_notice_latest_version = '<div class="notice notice-success angelleye-notice" id="angelleye_notification_3_0_0">'
+                    . '<div class="angelleye-notice-logo-push">'
+                    . '<span> <img src="https://www.angelleye.com/wp-content/uploads/2019/12/angelleye-icon-25x25.png"> </span>'
+                    . '</div>'
+                    . '<div class="angelleye-notice-message">'
+                    . '<h3>PayPal for WooCommerce v3.0 Important Information!</h3>'
+                    . '<div class="angelleye-notice-message-inner">'
+                    . '<p>This update adds PayPal\'s new "Complete Payments" gateway.  We also still support the "Classic" payment gateways. It is recommended that you use Complete Payments where possible, but some limitations may apply.</p>'
+                    . '<div class="angelleye-notice-action">'
+                    . '<a target="_blank" href="https://www.angelleye.com/paypal-complete-payments/?utm_source=paypal_for_woocommerce&utm_medium=docs_link&utm_campaign=paypal_for_woocommerce" class="button button-primary">More Info</a>'
+                    . '&nbsp&nbsp&nbsp<a target="_blank" href="https://www.angelleye.com/paypal-complete-payments/?utm_source=paypal_for_woocommerce&utm_medium=docs_link&utm_campaign=paypal_for_woocommerce#switchfrompaypalclassic2" class="button button-primary">Switching from Classic Express Checkout?</a>'
+                    . '</div>'
+                    . '</div>'
+                    . '</div>'
+                    . '<div class="angelleye-notice-cta">'
+                    . '<button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="angelleye_notification_3_0_0">Dismiss</button>'
+                    . '</div>'
+                    . '</div>';
+                echo $admin_notice_latest_version;
             }
         }
     }

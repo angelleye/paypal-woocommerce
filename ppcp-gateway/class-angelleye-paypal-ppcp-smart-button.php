@@ -11,6 +11,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $api_log;
     public $dcc_applies;
     public $payment_request;
+    public $client_token;
     protected static $_instance = null;
 
     public static function instance() {
@@ -48,9 +49,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
             }
-            if (!class_exists('AngellEYE_PayPal_PPCP_Webhook')) {
-                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-webhook.php');
-            }
             $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
@@ -66,17 +64,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->title = $this->settings->get('title', 'PayPal Complete Payments');
         $this->enabled = 'yes' === $this->settings->get('enabled', 'no');
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
-        if ($this->is_sandbox) {
-            $this->client_id = $this->settings->get('sandbox_client_id');
-            $this->secret = $this->settings->get('sandbox_secret_key');
-            $this->access_token = get_transient('angelleye_ppcp_sandbox_access_token');
-            $this->client_token = get_transient('angelleye_ppcp_sandbox_client_token');
-        } else {
-            $this->client_id = $this->settings->get('live_client_id');
-            $this->secret = $this->settings->get('live_secret_key');
-            $this->access_token = get_transient('angelleye_ppcp_access_token');
-            $this->client_token = get_transient('angelleye_ppcp_client_token');
-        }
         $this->order_review_page_enable_coupons = 'yes' === $this->settings->get('order_review_page_enable_coupons', 'yes');
         $this->order_review_page_title = apply_filters('angelleye_ppcp_order_review_page_title', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
         $this->order_review_page_description = apply_filters('angelleye_ppcp_order_review_page_description', __("<strong>You're almost done!</strong><br>Review your information before you place your order.", 'paypal-for-woocommerce'));
@@ -87,6 +74,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->set_billing_address = 'yes' === $this->settings->get('set_billing_address', 'no');
         $this->disable_term = 'yes' === $this->settings->get('disable_term', 'no');
         $this->skip_final_review = 'yes' === $this->settings->get('skip_final_review', 'no');
+        if ($this->is_sandbox) {
+            $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
+        } else {
+            $this->merchant_id = $this->settings->get('live_merchant_id', '');
+        }
         if (empty($this->pay_later_messaging_page_type)) {
             $this->enabled_pay_later_messaging = false;
         }
@@ -227,22 +219,25 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function enqueue_scripts() {
         if (is_checkout() && $this->advanced_card_payments) {
             if (!isset($_GET['paypal_order_id']) && !isset($_GET['key'])) {
-                delete_transient('angelleye_ppcp_sandbox_client_token');
-                delete_transient('angelleye_ppcp_client_token');
-                $this->client_token = $this->api_request->angelleye_ppcp_get_generate_token();
+                $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
             }
         }
 
         $this->angelleye_ppcp_smart_button_style_properties();
         $smart_js_arg = array();
-        $smart_js_arg['client-id'] = $this->client_id;
         $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
         if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
             $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
         }
-        if ($this->is_sandbox) {
-            $smart_js_arg['buyer-country'] = WC()->countries->get_base_country();
+        if ($this->is_sandbox ) {
+            if(is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen( WC()->customer->get_billing_country() )) {
+                $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
+            }
+            $smart_js_arg['client-id'] = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
+        } else {
+            $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
         }
+        $smart_js_arg['merchant-id'] = $this->merchant_id;
         $is_cart = is_cart() && !WC()->cart->is_empty();
         $is_product = is_product();
         $is_checkout = is_checkout();
@@ -301,7 +296,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function is_valid_for_use() {
-        if (!empty($this->client_id) && !empty($this->secret) && $this->enabled) {
+        if (!empty($this->merchant_id) && $this->enabled) {
             return true;
         }
         return false;
