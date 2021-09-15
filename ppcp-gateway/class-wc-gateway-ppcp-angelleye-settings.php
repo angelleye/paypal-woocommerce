@@ -1133,11 +1133,16 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'debug' => array(
                     'title' => __('Debug log', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('Enable logging', 'paypal-for-woocommerce'),
-                    'default' => 'yes',
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
                     'description' => sprintf(__('Log PayPal events, such as Payment, Refund inside %s Note: this may log personal information. We recommend using this for debugging purposes only and deleting the logs when finished.', 'paypal-for-woocommerce'), '<code>' . WC_Log_Handler_File::get_log_file_path('angelleye_ppcp') . '</code>'),
-                ),
+                    'options' => array(
+                        'everything' => __('Everything', 'paypal-for-woocommerce'),
+                        'errors_warnings_only' => __('Errors and Warnings Only', 'paypal-for-woocommerce'),
+                        'disabled' => __('Disabled', 'paypal-for-woocommerce')
+                    ),
+                    'default' => 'everything'
+                )
             );
             if (angelleye_ppcp_is_local_server()) {
                 unset($this->angelleye_ppcp_gateway_setting['live_onboarding']);
