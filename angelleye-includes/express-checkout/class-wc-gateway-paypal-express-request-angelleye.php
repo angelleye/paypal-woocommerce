@@ -732,7 +732,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'taxid' => ''
             );
 
-            if (empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
+            if (isset($_REQUEST['request_from']) && !empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
                 if(is_angelleye_multi_account_active() === false) {
                     $SECFields['returnurl'] = 'https://www.paypal.com/checkoutnow/error';
                     $SECFields['cancelurl'] = 'https://www.paypal.com/checkoutnow/error';
