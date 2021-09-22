@@ -14,8 +14,8 @@ if (!class_exists('WC_Email_Partially_Paid_Order', false)) :
 
             $this->title = __('Partially Paid order - Customer', 'paypal-for-woocommerce');
             $this->description = __('This is an order notification sent to customers containing order details after partially paid.', 'paypal-for-woocommerce');
-            $this->template_html = 'angelleye-customer-partial-paid-order.php';
-            $this->template_plain = 'plain/angelleye-customer-partial-paid-order.php';
+            $this->template_html = 'emails/angelleye-customer-partial-paid-order.php';
+            $this->template_plain = 'emails/plain/angelleye-customer-partial-paid-order.php';
             $this->placeholders = array(
                 '{order_date}' => '',
                 '{order_number}' => '',
@@ -31,7 +31,7 @@ if (!class_exists('WC_Email_Partially_Paid_Order', false)) :
             // Call parent constructor.
             parent::__construct();
             
-            $this->template_base = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/emails';
+            $this->template_base = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/';
         }
 
         public function get_default_subject() {

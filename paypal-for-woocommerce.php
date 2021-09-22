@@ -158,7 +158,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'wc_order_statuses', array($this, 'angelleye_wc_order_statuses'), 10, 1);
             add_action( 'init', array( $this, 'angelleye_register_post_status' ), 99 );
             add_filter( 'woocommerce_email_classes', array($this, 'angelleye_woocommerce_email_classes'), 10, 1);
-            add_filter( 'wc_get_template', array($this, 'own_angelleye_wc_get_template'), 10, 5);
             add_filter( 'woocommerce_email_actions', array($this, 'own_angelleye_woocommerce_email_actions'), 10);
             add_action( 'wcv_save_product', array($this,'angelleye_wcv_save_product'));
             $this->customer_id;
@@ -1429,13 +1428,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $emails['WC_Email_Partially_Paid_Order'] = include PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/classes/wc-email-customer-partial-paid-order.php';
             $emails['WC_Email_Admin_Partially_Paid_Order'] = include PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/classes/wc-email-new-partial-paid-order.php';
             return $emails;
-        }
-        
-        public function own_angelleye_wc_get_template($template, $template_name, $args, $template_path, $default_path) {
-            if(!empty($template) && ($template_name === 'angelleye-customer-partial-paid-order.php' || $template_name === 'plain/angelleye-customer-partial-paid-order.php' || $template_name === 'plain/angelleye-admin-new-partial-paid-order.php' || $template_name === 'angelleye-admin-new-partial-paid-order.php')) {
-                $template = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/emails/' . $template_name;
-            }
-            return $template;
         }
         
         public function own_angelleye_woocommerce_email_actions($actions) {
