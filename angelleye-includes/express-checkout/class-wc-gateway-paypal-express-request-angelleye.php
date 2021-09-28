@@ -220,8 +220,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
     public function angelleye_get_express_checkout_details() {
         try {
-            // @note make sure token matches set express checkout response token - Skylar L
-            if (!isset($_GET['token']) || null === ($paypalSession = angelleye_get_session('paypal_express_checkout')) || empty($paypalSession['token']) || $paypalSession['token'] != $_GET['token']) {
+            if (!isset($_GET['token'])) {
                 $this->function_helper->ec_clear_session_data();
                 wc_clear_notices();
                 wc_add_notice(__('Your PayPal session has expired', 'paypal-for-woocommerce'), 'error');
