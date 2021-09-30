@@ -93,6 +93,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             add_action('angelleye_braintree_payment_fields', array($this, 'angelleye_braintree_payment_fields'), 10);
         }
         $this->storeInVaultOnSuccess = false;
+        
     }
 
     /**
@@ -175,7 +176,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 jQuery('select#wc_braintree_merchant_account_id_currency').change(function () {
                     jQuery('.js-add-merchant-account-id').text('<?php esc_html_e('Add merchant account ID for ', 'paypal-for-woocommerce'); ?>' + jQuery(this).val())
                 });
-
             </script>
         </table> 
         <p class="submit">
@@ -654,6 +654,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 $form.unblock();
                             }
                         });
+                        var paypal_option = {
+                            flow: 'checkout',
+                            amount: '<?php echo $order_total; ?>',
+                            currency: '<?php echo get_woocommerce_currency(); ?>'
+                          }
                         var button = document.querySelector('#place_order');
                         var $form = $( 'form.checkout, form#order_review, form#add_payment_method' );
                         var checkout_form = document.querySelector('form.checkout, form#order_review, form#add_payment_method')
@@ -667,9 +672,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                threeDSecure: true,     
                             <?php } ?>
                             locale: '<?php echo AngellEYE_Utility::get_button_locale_code(); ?>',
-                            paypal: {
-                                flow: 'vault'
-                            },
+                            paypal: paypal_option,
                             <?php if($this->enable_google_pay == 'yes') { ?>
                             googlePay: {
                                 <?php if($this->environment == 'production') { ?>
@@ -726,22 +729,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     },
                                     <?php } ?>
                                   }, function (err, payload) {
-                                
-                                    if(err) {
-                                        $('.woocommerce-error').remove();
-                                        console.log(err.message);
-                                        unique_form_for_validation.prepend('<ul class="woocommerce-error"><li>' + err.message + '</li></ul>');
-                                        $('.braintree-device-data', ccForm).remove();
-                                        $('.braintree-token', ccForm).remove();
-                                        var scrollElement           = $( '.woocommerce-error' );
-                                        if ( ! scrollElement.length ) {
-                                           scrollElement = $( '.form.checkout' );
-                                        }
-                                        $.scroll_to_notices( scrollElement );
-                                        $('.is_submit').remove();
-                                        $form.unblock();
-                                        return false;
-                                    }
                                     <?php if($this->threed_secure_enabled === true) { ?>
                                     if (!payload.liabilityShifted && payload.type == 'CreditCard') {
                                         if( typeof dropinInstance !== 'undefined') {
@@ -771,6 +758,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         $form.submit();
                                         $('form.checkout').triggerHandler("checkout_place_order");
                                     } 
+                                    if(err) {
+                                        $('.woocommerce-error').remove();
+                                        console.log(err.message);
+                                        $('.is_submit').remove();
+                                        $form.unblock();
+                                        return false;
+                                    }
                                 });
                             }
                             });
