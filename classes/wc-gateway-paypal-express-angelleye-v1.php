@@ -1970,7 +1970,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $ErrorCode = urldecode(!empty($result["L_ERRORCODE0"]) ? $result["L_ERRORCODE0"] : '');
                 $ErrorLongMsg = urldecode(!empty($result["L_LONGMESSAGE0"]) ? $result["L_LONGMESSAGE0"] : '');
                 $order->add_order_note($ErrorCode . ' - ' . $ErrorLongMsg);
-                $this->paypal_express_checkout_error_handler($request_name = 'DoReferenceTransaction', '', $result);
+                $this->paypal_express_checkout_error_handler($result, $request_name = 'DoReferenceTransaction', '');
             }
         }
     }
@@ -1996,7 +1996,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     );
                 } else {
                     $redirect_url = wc_get_cart_url();
-                    $this->paypal_express_checkout_error_handler($request_name = 'DoReferenceTransaction', $redirect_url, $result);
+                    $this->paypal_express_checkout_error_handler($result, $request_name = 'DoReferenceTransaction', $redirect_url);
                     if (!is_ajax()) {
                         wp_redirect($redirect_url);
                         exit;
@@ -2418,7 +2418,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             );
         } else {
             $redirect_url = wc_get_account_endpoint_url('add-payment-method');
-            $this->paypal_express_checkout_error_handler($request_name = 'SetExpressCheckout', $redirect_url, $result);
+            $this->paypal_express_checkout_error_handler($result, $request_name = 'SetExpressCheckout', $redirect_url);
         }
     }
 
@@ -2475,13 +2475,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                 } else {
                     $redirect_url = wc_get_account_endpoint_url('add-payment-method');
-                    $this->paypal_express_checkout_error_handler($request_name = 'GetExpressCheckoutDetails', $redirect_url, $PayPalResult);
+                    $this->paypal_express_checkout_error_handler($PayPalResult, $request_name = 'GetExpressCheckoutDetails', $redirect_url);
                 }
             }
         }
     }
 
-    public function paypal_express_checkout_error_handler($request_name = '', $redirect_url = '', $result) {
+    public function paypal_express_checkout_error_handler($result, $request_name = '', $redirect_url = '') {
         $ErrorCode = urldecode($result["L_ERRORCODE0"]);
         $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
         $ErrorLongMsg = urldecode($result["L_LONGMESSAGE0"]);
@@ -2800,7 +2800,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     }
                 } else {
                     $redirect_url = wc_get_account_endpoint_url('add-payment-method');
-                    $this->paypal_express_checkout_error_handler($request_name = 'GetExpressCheckoutDetails', $redirect_url, $PayPalResult);
+                    $this->paypal_express_checkout_error_handler($PayPalResult, $request_name = 'GetExpressCheckoutDetails', $redirect_url);
                 }
             }
         }

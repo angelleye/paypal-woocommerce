@@ -2166,7 +2166,7 @@ class AngellEYE_Utility {
             $request_data['amount'] = $AMT;
             $request_data['options'] = array('submitForSettlement' => true);
             
-            $result = $gateway_obj->pfw_braintree_do_capture($request_data, $order);
+            $result = $gateway_obj->pfw_braintree_do_capture($order, $request_data);
             if( $result != false ) {
                 $maybe_settled_later = array(
                     'settling',
