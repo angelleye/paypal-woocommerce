@@ -3022,7 +3022,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
     
-    public function pfw_braintree_do_capture($request_data = array(), $order) {
+    public function pfw_braintree_do_capture($order, $request_data = array()) {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $this->merchant_account_id = $this->angelleye_braintree_get_merchant_account_id($order_id);
         if (isset($this->merchant_account_id) && !empty($this->merchant_account_id)) {

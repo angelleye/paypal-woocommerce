@@ -465,7 +465,6 @@ class AngellEYE_Utility {
                 }
             }
             $order->set_transaction_id($do_capture_result['TRANSACTIONID']);
-            self::angelleye_add_order_meta($order_id, $payment_order_meta);
             self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_capture_result, $order, 'DoCapture');
             $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
         } else {
@@ -2166,7 +2165,7 @@ class AngellEYE_Utility {
             $request_data['amount'] = $AMT;
             $request_data['options'] = array('submitForSettlement' => true);
             
-            $result = $gateway_obj->pfw_braintree_do_capture($request_data, $order);
+            $result = $gateway_obj->pfw_braintree_do_capture($order, $request_data);
             if( $result != false ) {
                 $maybe_settled_later = array(
                     'settling',
