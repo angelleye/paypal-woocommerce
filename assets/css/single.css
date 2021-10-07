@@ -72,6 +72,7 @@ input.single_add_to_cart_button.paypal_checkout_button {
 .angelleye_button_single {
     min-width: 150px;
     max-width: 500px;
+    overflow: visible;
 }
 @media screen and (max-width: 400px) {
     .angelleye_button_single {
