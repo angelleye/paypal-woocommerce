@@ -1459,7 +1459,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             try {
                 global $post;
                 if(!isset($post->post_type)) {
-                    return false;
+                    return $classes;
                 }
                 if ( 'shop_order' !== $post->post_type ) {
                     return $classes;
