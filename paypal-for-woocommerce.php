@@ -735,7 +735,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                     }                        
                 } catch (\Exception $e) {
                     if (!empty($e)) {
-                        throw new Exception(__( $e->getMessage(), 'paypal-for-woocommerce'));
+                        throw new \Exception(__( $e->getMessage(), 'paypal-for-woocommerce'));
                     }
                 }
             }
