@@ -55,7 +55,14 @@ jQuery(function ($) {
     $('#woocommerce_angelleye_ppcp_enable_advanced_card_payments').change(function () {
         if ($(this).is(':checked')) {
             $('#woocommerce_angelleye_ppcp_threed_secure_enabled').closest('tr').show();
+            if( jQuery("#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option[value='card']").length !== 0) {
+                jQuery('#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option[value="card"]').remove();
+                
+            }
         } else {
+            if( jQuery("#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option[value='card']").length === 0) {
+                jQuery('#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option:eq(0)').before(jQuery("<option></option>").attr("value","card").text("Credit or Debit Card")); 
+            }
             $('#woocommerce_angelleye_ppcp_threed_secure_enabled').closest('tr').hide();
         }
     }).change();
