@@ -733,7 +733,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                     } else {
                         wp_send_json_error(array('error' => $display_error));
                     }                        
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     if (!empty($e)) {
                         throw new Exception(__( $e->getMessage(), 'paypal-for-woocommerce'));
                     }
@@ -1546,7 +1546,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                         $gateways['braintree']->add_log("Braintree_Exception_ServerError" . $e->getMessage());
                     } catch (\Braintree\Exception\SSLCertificate $e) {
                         $gateways['braintree']->add_log("Braintree_Exception_SSLCertificate" . $e->getMessage());
-                    } catch (Exception $ex) {
+                    } catch (\Exception $ex) {
                         $gateways['braintree']->add_log("Exception" . $ex->getMessage());
                     }
                 } 
@@ -1584,13 +1584,13 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
 		                    $gateways['braintree']->add_log("Braintree_Exception_ServerError" . $e->getMessage());
 	                    } catch (\Braintree\Exception\SSLCertificate $e) {
 		                    $gateways['braintree']->add_log("Braintree_Exception_SSLCertificate" . $e->getMessage());
-	                    } catch (Exception $ex) {
+	                    } catch (\Exception $ex) {
 		                    $gateways['braintree']->add_log("Exception" . $ex->getMessage());
 	                    }
                         }
                     }                    
                 }
-            } catch (Exception $ex) {
+            } catch (\Exception $ex) {
 	        
             }
 		
@@ -1669,7 +1669,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 }
 		    
                 return $classes;
-            } catch (Exception $ex) {
+            } catch (\Exception $ex) {
                 return $classes;
             }
         }
