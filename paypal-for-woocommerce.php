@@ -194,7 +194,6 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 echo chr(10) . chr(13);
             }
 	}
-
 	    
         /*
          * Adds class name to HTML body to enable easy conditional CSS styling
@@ -211,7 +210,6 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
 
           return $classes;
         }
-
 
         /**
          * Return the plugin action links.  This will only be called if the plugin
@@ -409,7 +407,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             }
         }
 
-        //init function
+        // init function
         public function init() {
             if (!class_exists('WC_Payment_Gateway')) {
 	        return;
@@ -1700,5 +1698,5 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
     }
 }
 
-// Calling the above class.
+// Initiating AngellEYE_Gateway_Paypal() class
 new AngellEYE_Gateway_Paypal();
