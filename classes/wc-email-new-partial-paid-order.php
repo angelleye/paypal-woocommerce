@@ -13,8 +13,8 @@ if (!class_exists('WC_Email_Admin_Partially_Paid_Order', false)) :
        
             $this->title = __('Partially Paid order - Admin', 'paypal-for-woocommerce');
             $this->description = __('New order emails are sent to chosen recipient(s) when a new order is received.', 'paypal-for-woocommerce');
-            $this->template_html = 'angelleye-admin-new-partial-paid-order.php';
-            $this->template_plain = 'plain/angelleye-admin-new-partial-paid-order.php';
+            $this->template_html = 'emails/angelleye-admin-new-partial-paid-order.php';
+            $this->template_plain = 'emails/plain/angelleye-admin-new-partial-paid-order.php';
             $this->placeholders = array(
                 '{order_date}' => '',
                 '{order_number}' => '',
@@ -33,7 +33,7 @@ if (!class_exists('WC_Email_Admin_Partially_Paid_Order', false)) :
             
             $this->recipient = $this->get_option( 'recipient', get_option( 'admin_email' ) );
 
-            $this->template_base = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/emails';
+            $this->template_base = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/';
         }
 
         public function get_default_subject() {

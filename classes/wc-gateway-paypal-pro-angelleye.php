@@ -1664,7 +1664,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         return parent::get_transaction_url($order);
     }
 
-    public function paypal_pro_error_handler($request_name = '', $redirect_url = '', $result) {
+    public function paypal_pro_error_handler($result, $request_name = '', $redirect_url = '') {
         $ErrorCode = urldecode($result["L_ERRORCODE0"]);
         $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
         $ErrorLongMsg = urldecode($result["L_LONGMESSAGE0"]);
@@ -1763,7 +1763,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
         } else {
             $redirect_url = wc_get_account_endpoint_url('payment-methods');
-            $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
+            $this->paypal_pro_error_handler($result, $request_name = 'DoDirectPayment', $redirect_url);
         }
     }
 
@@ -2329,7 +2329,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             } else {
                 $redirect_url = wc_get_account_endpoint_url('payment-methods');
-                $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
+                $this->paypal_pro_error_handler($result, $request_name = 'DoDirectPayment', $redirect_url);
             }
         }
     }

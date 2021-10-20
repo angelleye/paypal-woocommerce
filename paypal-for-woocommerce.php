@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           2.5.15
+ * Version:           2.5.19
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -15,7 +15,7 @@
  * Requires at least: 5.5
  * Tested up to: 5.8.1
  * WC requires at least: 3.0.0
- * WC tested up to: 5.6.0
+ * WC tested up to: 5.7.1
  *
  *************
  * Attribution
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '2.5.15');
+    define('VERSION_PFW', '2.5.19');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -179,10 +179,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'wc_order_statuses', array($this, 'angelleye_wc_order_statuses'), 10, 1);
             add_action( 'init', array( $this, 'angelleye_register_post_status' ), 99 );
             add_filter( 'woocommerce_email_classes', array($this, 'angelleye_woocommerce_email_classes'), 10, 1);
-            add_filter( 'wc_get_template', array($this, 'own_angelleye_wc_get_template'), 10, 5);
             add_filter( 'woocommerce_email_actions', array($this, 'own_angelleye_woocommerce_email_actions'), 10);
             add_action( 'angelleye_classic_gateway_sub_menu', array($this, 'angelleye_classic_gateway_sub_menu'));
             add_action( 'wcv_save_product', array($this,'angelleye_wcv_save_product'));
+            add_filter( 'admin_body_class', array( $this, 'angelleye_include_admin_body_class' ), 9999 );
             $this->customer_id;
         }
 
@@ -1502,13 +1502,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             return $emails;
         }
         
-        public function own_angelleye_wc_get_template($template, $template_name, $args, $template_path, $default_path) {
-            if(!empty($template) && ($template_name === 'angelleye-customer-partial-paid-order.php' || $template_name === 'plain/angelleye-customer-partial-paid-order.php' || $template_name === 'plain/angelleye-admin-new-partial-paid-order.php' || $template_name === 'angelleye-admin-new-partial-paid-order.php')) {
-                $template = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/emails/' . $template_name;
-            }
-            return $template;
-        }
-        
         public function own_angelleye_woocommerce_email_actions($actions) {
             $actions[] = 'woocommerce_order_status_cancelled_to_partial-payment';
             $actions[] = 'woocommerce_order_status_failed_to_partial-payment';
@@ -1566,6 +1559,26 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     . '</div>'
                     . '</div>';
                 echo $admin_notice_latest_version;
+            }
+        }
+        
+        public function angelleye_include_admin_body_class($classes) {
+            try {
+                global $post;
+                if(!isset($post->post_type)) {
+                    return $classes;
+                }
+                if ( 'shop_order' !== $post->post_type ) {
+                    return $classes;
+                }
+                $order = wc_get_order( absint( $post->ID ) );
+                $payment_method = $order->get_payment_method();
+                if ( !empty($payment_method) ) {
+                    $classes .= ' angelleye_'. $payment_method;
+                }
+                return $classes;
+            } catch (Exception $ex) {
+                return $classes;
             }
         }
     }

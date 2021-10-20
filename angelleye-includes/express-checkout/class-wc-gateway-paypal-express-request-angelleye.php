@@ -220,8 +220,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
     public function angelleye_get_express_checkout_details() {
         try {
-            // @note make sure token matches set express checkout response token - Skylar L
-            if (!isset($_GET['token']) || null === ($paypalSession = angelleye_get_session('paypal_express_checkout')) || empty($paypalSession['token']) || $paypalSession['token'] != $_GET['token']) {
+            if (!isset($_GET['token'])) {
                 $this->function_helper->ec_clear_session_data();
                 wc_clear_notices();
                 wc_add_notice(__('Your PayPal session has expired', 'paypal-for-woocommerce'), 'error');
@@ -592,9 +591,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'DECPFields' => $DECPFields,
                 'Payments' => $Payments
             );
-
-            $this->paypal_response = $this->paypal->DoExpressCheckoutPayment(apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request, $this->gateway, $this, $this->confirm_order_id));
+            $this->paypal_response = $this->paypal->DoExpressCheckoutPayment(apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request, $this->gateway, $this, $this->confirm_order_id, $is_force_validate = 'no'));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'DoExpressCheckoutPayment');
+            if( $this->paypal_response['L_ERRORCODE0'] == '10002' ) {
+                $this->paypal_request = apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request, $this->gateway, $this, $this->confirm_order_id, $is_force_validate = 'yes');
+                $this->paypal_response = $this->paypal->DoExpressCheckoutPayment($this->paypal_request);
+            }
+            return $this->paypal_response;
         } catch (Exception $ex) {
             
         }
@@ -732,7 +735,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'taxid' => ''
             );
 
-            if (empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
+            if (isset($_REQUEST['request_from']) && !empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
                 if(is_angelleye_multi_account_active() === false) {
                     $SECFields['returnurl'] = 'https://www.paypal.com/checkoutnow/error';
                     $SECFields['cancelurl'] = 'https://www.paypal.com/checkoutnow/error';
@@ -897,9 +900,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             $this->paypal_request = $this->angelleye_add_billing_agreement_param($PayPalRequestData, $this->gateway->supports('tokenization'));
             $this->paypal_request = AngellEYE_Utility::angelleye_express_checkout_validate_shipping_address($this->paypal_request);
-
-            $this->paypal_response = $this->paypal->SetExpressCheckout(apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request, $this->gateway, $this, $order_id));
+            $this->paypal_request = apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request, $this->gateway, $this, $order_id, $is_force_validate = 'no');
+            $this->paypal_response = $this->paypal->SetExpressCheckout($this->paypal_request);
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'SetExpressCheckout');
+            if( $this->paypal_response['L_ERRORCODE0'] == '10002' ) {
+                $this->paypal_request = apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request, $this->gateway, $this, $order_id, $is_force_validate = 'yes');
+                $this->paypal_response = $this->paypal->SetExpressCheckout($this->paypal_request);
+            }
             return $this->paypal_response;
         } catch (Exception $ex) {
             

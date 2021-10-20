@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 5.8.1
-Stable tag: 2.5.15
+Stable tag: 2.5.19
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,24 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 2.5.19- 18.10.2021 =
+* Feature - Re-Added required hooks for our PayPal for WooCommerce Multi-Account extension. ([PFW-813](https://github.com/angelleye/paypal-woocommerce/pull/1557))
+* Tweak - Adjustments for PHP 8.0 compatibility. ([PFW-863](https://github.com/angelleye/paypal-woocommerce/pull/1583))
+* Fix - Resolves Conflict with All Import Pro plugin. ([PFW-866](https://github.com/angelleye/paypal-woocommerce/pull/1586))
+* Fix - Resolves an issue with Express Checkout when Sending invoice from admin. ([PFW-853](https://github.com/angelleye/paypal-woocommerce/issues/1580))
+
+
+= 2.5.18- 10.07.2021 =
+* Tweak - Updates Partially Paid Email template Override. ([PFW-858](https://github.com/angelleye/paypal-woocommerce/pull/1579))
+* Fix - Resolves CSS Conflict. ([PFW-864](https://github.com/angelleye/paypal-woocommerce/pull/1581))
+
+= 2.5.17 - 09.30.2021 =
+* Tweak - Updates Braintree PayPal checkout type. ([PFW-494](https://github.com/angelleye/paypal-woocommerce/pull/1575))
+* Feature - Adds custom class at order page. ([PFW-152](https://github.com/angelleye/paypal-woocommerce/pull/1578))
+
+= 2.5.16 - 09.16.2021 =
+* Fix - Resolves PHP notice related to checkout page. ([PFW-856](https://github.com/angelleye/paypal-woocommerce/pull/1577))
 
 = 2.5.15 - 09.13.2021 =
 * Tweak - Upgrades Braintree Drop-in JS ([PFW-847](https://github.com/angelleye/paypal-woocommerce/pull/1573))

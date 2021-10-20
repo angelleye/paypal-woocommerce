@@ -264,7 +264,7 @@ and (max-device-width: 1080px) {
     display: block;
     margin: 15px 0px 15px 0px;
     position: relative;
-    z-index: 99999;
+    z-index: 1002;
 }
 .wc-proceed-to-checkout .angelleye_pp_message_cart.angelleye_flex {
     display: flex;
