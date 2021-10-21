@@ -67,13 +67,13 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-response-angelleye.php' );
             }
             
-            $this->response_helper = new WC_Gateway_PayPal_Express_Response_AngellEYE();
+            $this->response_helper = new \WC_Gateway_PayPal_Express_Response_AngellEYE();
             
             if (!class_exists('WC_Gateway_PayPal_Express_Function_AngellEYE')) {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-function-angelleye.php' );
             }
             
-            $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
+            $this->function_helper = new \WC_Gateway_PayPal_Express_Function_AngellEYE();
             
             add_action('angelleye_save_angelleye_fraudnet', [$this, 'angelleye_save_angelleye_fraudnet']);
         } catch (Exception $ex) {
@@ -814,7 +814,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
             }
             
-            $this->paypal = new Angelleye_PayPal_WC($this->credentials);
+            $this->paypal = new \Angelleye_PayPal_WC($this->credentials);
         } catch (Exception $ex) {
             
         }
@@ -1614,7 +1614,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             
             $billing_agreement_id = $this->paypal_response['BILLINGAGREEMENTID'];
             
-            $token = new WC_Payment_Token_CC();
+            $token = new \WC_Payment_Token_CC();
             $token->set_token($billing_agreement_id);
             $token->set_gateway_id($this->gateway->id);
             $token->set_card_type('PayPal Billing Agreement');
@@ -1642,7 +1642,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $order->add_payment_token($token);
                 }
             } else {
-                throw new Exception(__('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
+                throw new \Exception(__('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
             }
         }
         
