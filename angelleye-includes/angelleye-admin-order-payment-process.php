@@ -765,7 +765,7 @@ class AngellEYE_Admin_Order_Payment_Process {
                 $PaymentDetails['shippingamt'] = $PaymentDetails['shippingamt'];
             } else {
                 $PaymentDetails['shippingamt'] = 0.00;
-            }		
+            }
         } else {
             $Payment['order_items'] = [];
         }
