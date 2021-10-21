@@ -130,7 +130,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 
                 $_no_shipping_required = get_post_meta($product_id, '_no_shipping_required', true);
                 
-                if($_no_shipping_required == 'yes') {
+                if ($_no_shipping_required == 'yes') {
                     $is_not_required = $is_not_required + 1;
                 } else {
                     $is_required = $is_required + 1;
@@ -138,7 +138,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
             }
         }
         
-        if( $is_required > 0) {
+        if ($is_required > 0) {
             return $SECFields;
         } elseif ($is_not_required > 0) {
             $SECFields['noshipping'] = 1;
