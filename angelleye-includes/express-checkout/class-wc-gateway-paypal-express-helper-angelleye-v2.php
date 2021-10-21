@@ -866,7 +866,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 
                 $is_checkout = is_checkout();
                 
-                $page = $is_cart ? 'cart' : ( $is_product ? 'product' : ( $is_checkout ? 'checkout' : null ) );
+                $page = $is_cart ? 'cart' : ($is_product ? 'product' : ($is_checkout ? 'checkout' : null));
                 
                 $smart_js_arg['commit'] = $this->angelleye_ec_force_to_display_checkout_page_js() == true ? 'false' : 'true';
                 
@@ -1397,7 +1397,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public function validate_checkout($country, $state, $sec) {
         $state_value = '';
         
-        $valid_states = WC()->countries->get_states(isset($country) ? $country : ( 'billing' === $sec ? WC()->customer->get_country() : WC()->customer->get_shipping_country() ));
+        $valid_states = WC()->countries->get_states(isset($country) ? $country : ('billing' === $sec ? WC()->customer->get_country() : WC()->customer->get_shipping_country()));
         
         if (!empty($valid_states) && is_array($valid_states)) {
             $valid_state_values = array_flip(array_map('strtolower', $valid_states));
@@ -1480,7 +1480,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             
             if (is_checkout()) {
-                if ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both' || ( $this->show_on_checkout == 'regular' && $this->checkout_page_disable_smart_button == false)) {
+                if ($this->show_on_checkout == 'top' || $this->show_on_checkout == 'both' || ($this->show_on_checkout == 'regular' && $this->checkout_page_disable_smart_button == false)) {
                     return true;
                 }
             }
@@ -2251,7 +2251,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             return false;
         }
         
-        if($this->is_fraudnet_ready === false) {
+        if ($this->is_fraudnet_ready === false) {
             return false;
         }
         
