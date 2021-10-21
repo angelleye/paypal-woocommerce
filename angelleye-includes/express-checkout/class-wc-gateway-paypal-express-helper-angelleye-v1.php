@@ -622,9 +622,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             } 
 		
-            if (is_cart() || ( is_checkout() && ! is_checkout_pay_page())) {
-                if (isset( $gateways['paypal_express'] ) &&  ( ! isset( WC()->cart )  ||  WC()->cart->needs_payment() == false)) {
-                    unset( $gateways['paypal_express'] );
+            if (is_cart() || (is_checkout() && !is_checkout_pay_page())) {
+                if (isset($gateways['paypal_express']) && (! isset(WC()->cart) || WC()->cart->needs_payment() == false)) {
+                    unset($gateways['paypal_express']);
                 }
             }
 		
@@ -1520,7 +1520,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 return true;
             }
 		
-            if (!empty( $post->post_content ) && strstr( $post->post_content, '[product_page')) {
+            if (!empty($post->post_content) && strstr($post->post_content, '[product_page')) {
                 return true;
             }
         } else {
@@ -1578,7 +1578,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $_enable_ec_button = get_post_meta($post->ID, '_enable_ec_button', true);
             }
 		
-            if (!empty($post->post_content) && strstr( $post->post_content, '[product_page')) {
+            if (!empty($post->post_content) && strstr($post->post_content, '[product_page')) {
                 $_enable_ec_button = 'yes';
             }
 		
