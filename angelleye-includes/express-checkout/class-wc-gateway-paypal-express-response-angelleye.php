@@ -24,9 +24,9 @@ class WC_Gateway_PayPal_Express_Response_AngellEYE {
                 
                 $phone = '';
                 
-                if( !empty($response['SHIPTOPHONENUM']) ) {
+                if (!empty($response['SHIPTOPHONENUM']) ) {
                     $phone = $response['SHIPTOPHONENUM'];
-                } elseif( !empty($response['PHONENUM']) ) {
+                } elseif (!empty($response['PHONENUM']) ) {
                     $phone = $response['PHONENUM'];
                 }
                 
