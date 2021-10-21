@@ -159,7 +159,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                 if (isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
                     $order->add_order_note(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                     
-                    throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
+                    throw new \Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                 }
                 
                 if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
