@@ -14,7 +14,7 @@ if (!function_exists('angelleye_queue_update')) {
             $angelleye_queued_updates = [];
         }
 
-        $plugin = new stdClass();
+        $plugin = new \stdClass();
         $plugin->file = $file;
         $plugin->file_id = $file_id;
         $plugin->product_id = $product_id;
