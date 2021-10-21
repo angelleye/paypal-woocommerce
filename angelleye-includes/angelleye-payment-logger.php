@@ -164,7 +164,7 @@ class AngellEYE_PFW_Payment_Logger {
                     
                 } elseif ($request['METHOD'] == 'PayPal Credit Card (REST)') {
                     if (isset($result->id)) {
-                        $request_param['status'] = 'Success';                        
+                        $request_param['status'] = 'Success';
                         $request_param['transaction_id'] = isset($result->id) ? $result->id : '';
                     } else {
                         $request_param['status'] = 'Failure';
