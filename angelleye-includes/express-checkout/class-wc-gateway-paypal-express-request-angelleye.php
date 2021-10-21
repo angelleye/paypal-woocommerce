@@ -1849,7 +1849,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $PaymentDetails['shippingamt'] = $PaymentDetails['shippingamt'];
             } else {
                 $PaymentDetails['shippingamt'] = 0.00;
-            }            
+            }
         } else {
             $Payment['order_items'] = [];
         }
@@ -1943,7 +1943,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             case 'no_seller_protection':
                 if ($txn_protection_eligibility_response != 'Eligible' && $txn_protection_eligibility_response != 'PartiallyEligible') {
                     WC_Gateway_PayPal_Express_AngellEYE::log('Transaction ' . $txn_id . ' is BAD. Setting: no_seller_protection, Response: ' . $txn_protection_eligibility_response);
-                    return true;                    
+                    return true;
                 }
                 
                 WC_Gateway_PayPal_Express_AngellEYE::log('Transaction ' . $txn_id . ' is OK. Setting: no_seller_protection, Response: ' . $txn_protection_eligibility_response);
