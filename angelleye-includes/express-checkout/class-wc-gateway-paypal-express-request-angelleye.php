@@ -657,7 +657,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             
             $DECPFields = [
                 'token'                 => $paypal_express_checkout['token'],
-                'payerid'               => (!empty($paypal_express_checkout['payer_id']) ) ? $paypal_express_checkout['payer_id'] : null,
+                'payerid'               => !empty($paypal_express_checkout['payer_id']) ? $paypal_express_checkout['payer_id'] : null,
                 'returnfmfdetails'      => 1,
                 'buyermarketingemail'   => '',
                 'allowedpaymentmethod'  => ''
@@ -2197,7 +2197,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public function angelleye_save_angelleye_fraudnet($order_id) {
         $angelleye_fraudnet_f = angelleye_get_session('angelleye_fraudnet_f');
         
-        if( !empty($angelleye_fraudnet_f)) {
+        if (!empty($angelleye_fraudnet_f)) {
             update_post_meta($order_id, 'angelleye_fraudnet_f', $angelleye_fraudnet_f);
         }
     }
