@@ -217,6 +217,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function enqueue_scripts() {
+        global $post;
         if (is_checkout() && $this->advanced_card_payments) {
             if (!isset($_GET['paypal_order_id']) && !isset($_GET['key'])) {
                 $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
@@ -260,6 +261,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($components)) {
             $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
         }
+        if( isset($post->ID) && 'yes' == get_post_meta( $post->ID, 'wcf-pre-checkout-offer', true ) ) {
+            $pre_checkout_offer = "yes";
+        } else {
+            $pre_checkout_offer = "no";
+        }
         $js_url = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
         wp_register_script('angelleye-paypal-checkout-sdk', $js_url, array(), null, false);
         wp_register_script($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-public.js', array('jquery', 'angelleye-paypal-checkout-sdk'), VERSION_PFW, false);
@@ -270,6 +276,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'style_layout' => $this->style_layout,
             'style_tagline' => $this->style_tagline,
             'page' => $page,
+            'is_pre_checkout_offer' => $pre_checkout_offer,
             'is_pay_page' => $is_pay_page,
             'checkout_url' => add_query_arg(array('utm_nooverride' => '1'), wc_get_checkout_url()),
             'display_order_page' => add_query_arg(array('angelleye_ppcp_action' => 'display_order_page', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),
@@ -281,7 +288,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'threed_secure_enabled' => ($this->threed_secure_enabled === true) ? 'yes' : 'no',
             'woocommerce_process_checkout' => wp_create_nonce('woocommerce-process_checkout'),
             'is_skip_final_review' => $this->angelleye_ppcp_is_skip_final_review() ? 'yes' : 'no',
-            'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))
+            'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),
+            
                 )
         );
         if (is_checkout() && empty($this->checkout_details)) {
