@@ -143,18 +143,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
                 'payment_method' => array(
                     'payee_preferred' => 'UNRESTRICTED',
                     'payer_selected' => 'PAYPAL',
-                ),
-                'payment_instruction' => array(
-                    'disbursement_mode' => 'INSTANT',
-                    'platform_fees' => array(
-                        array(
-                            'amount' => array(
-                                'currency_code' => $order->get_currency(),
-                                'value' => $offer_product['unit_price_tax'],
-                            ),
-                        ),
-                    ),
-                ),
+                )
             );
             $arguments = array(
                 'method' => 'POST',
@@ -165,24 +154,21 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
                 'body' => $data,
             );
             $url = 'https://api-m.' . $args['ppcp_data']['environment'] . '.paypal.com/v2/checkout/orders';
-            //$ppcp_resp = wp_remote_get($url, $arguments);
-            $ppcp_resp = $this->api_request->request($url, $arguments, 'create_order');
-            if (is_wp_error($ppcp_resp)) {
+            $response = $this->api_request->request($url, $arguments, 'create_order');
+            if (is_wp_error($response)) {
                 $json_response = array(
                     'status' => false,
-                    'message' => $ppcp_resp->get_error_message(),
+                    'message' => $response->get_error_message(),
                     'paypal_order_id' => '',
                     'redirect_url' => '',
-                    'response' => $ppcp_resp,
+                    'response' => $response,
                 );
                 wcf()->logger->log(
                         "PayPal order is not created. Order: {$order_id}, Error: " .
-                        wp_json_encode($ppcp_resp->get_error_message())
+                        wp_json_encode($response->get_error_message())
                 );
                 return wp_send_json($json_response);
             } else {
-                $retrived_body = wp_remote_retrieve_body($ppcp_resp);
-                $response = json_decode($retrived_body);
                 $json_response = array(
                     'result' => false,
                     'message' => __('PayPal order is not created', 'paypal-for-woocommerce'),
@@ -190,9 +176,9 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
                     'redirect_url' => '',
                     'response' => $response,
                 );
-                if ('CREATED' === $response->status) {
-                    $approve_link = $response->links[1]->href;
-                    $order->update_meta_data('cartflows_paypal_order_id_' . $order->get_id(), $response->id);
+                if (isset($response['status']) && 'CREATED' === $response['status']) {
+                    $approve_link = $response['links'][1]['href'];
+                    $order->update_meta_data('cartflows_paypal_order_id_' . $order->get_id(), $response['id']);
                     $order->save();
                     wcf()->logger->log(
                             "Order Created for WC-Order: {$order_id}"
@@ -200,7 +186,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
                     $json_response = array(
                         'status' => 'success',
                         'message' => __('Order created successfully', 'paypal-for-woocommerce'),
-                        'paypal_order_id' => $response->id,
+                        'paypal_order_id' => $response['id'],
                         'redirect' => $approve_link,
                         'response' => $response,
                     );
@@ -214,7 +200,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
         $order_id = isset($_POST['order_id']) ? sanitize_text_field(wp_unslash($_POST['order_id'])) : 0;
         $order = wc_get_order($order_id);
         $paypal_order_id = $order->get_meta('cartflows_paypal_order_id_' . $order->get_id());
-        $environment = $order->get_meta('_ppcp_paypal_payment_mode');
+        $environment = ($this->is_sandbox) ? 'sandbox' : '';
         $capture_args = array(
             'method' => 'POST',
             'headers' => array(
@@ -224,22 +210,20 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
             ),
         );
         $capture_url = 'https://api-m.' . $environment . '.paypal.com/v2/checkout/orders/' . $paypal_order_id . '/capture';
-        $captured_resp = wp_remote_get($capture_url, $capture_args);
-        if (is_wp_error($captured_resp)) {
+        $resp_body = $this->api_request->request($capture_url, $capture_args, 'capture_order');
+        if (is_wp_error($resp_body)) {
             $json_response = array(
                 'status' => false,
-                'message' => $captured_resp->get_error_message(),
+                'message' => $resp_body->get_error_message(),
                 'paypal_order_id' => '',
                 'redirect_url' => '',
-                'response' => $captured_resp,
+                'response' => $resp_body,
             );
             wcf()->logger->log(
                     "Order Created but not captured. For WC-Order: {$order_id}, Error: " .
-                    wp_json_encode($captured_resp->get_error_message())
+                    wp_json_encode($resp_body->get_error_message())
             );
         } else {
-            $retrived_body = wp_remote_retrieve_body($captured_resp);
-            $resp_body = json_decode($retrived_body);
             $json_response = array(
                 'result' => false,
                 'message' => __('PayPal order is not created', 'paypal-for-woocommerce'),
@@ -247,8 +231,8 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
                 'redirect_url' => '',
                 'response' => $resp_body,
             );
-            if ('COMPLETED' === $resp_body->status) {
-                $txn_id = $resp_body->purchase_units[0]->payments->captures[0]->id;
+            if (isset($resp_body['status']) && 'COMPLETED' === $resp_body['status']) {
+                $txn_id = $resp_body['purchase_units']['0']['payments']['captures']['0']['id'];
                 $order->update_meta_data('cartflows_offer_paypal_txn_id_' . $order->get_id(), $txn_id);
                 $order->save();
                 wcf()->logger->log(
@@ -257,7 +241,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
                 $json_response = array(
                     'status' => 'success',
                     'message' => __('Order Captured successfully', 'paypal-for-woocommerce'),
-                    'paypal_order_id' => $resp_body->id,
+                    'paypal_order_id' => $resp_body['id'],
                     'response' => $resp_body,
                 );
             }
@@ -308,6 +292,10 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
     }
 
     public function add_offer_item_data($order, $offer_product) {
+        $description = wp_strip_all_tags($offer_product['desc']);
+        if (strlen($description) > 127) {
+            $description = substr($description, 0, 124) . '...';
+        }
         $offer_items = array(
             'name' => $offer_product['name'],
             'unit_amount' => array(
@@ -315,7 +303,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
                 'value' => $offer_product['unit_price_tax'],
             ),
             'quantity' => $offer_product['qty'],
-            'description' => wp_strip_all_tags($offer_product['desc']),
+            'description' => $description,
         );
         return $offer_items;
     }
@@ -397,7 +385,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
             $child_order->save();
         }
     }
-    
+
     public function angelleye_ppcp_cartflows_offer_supported_payment_gateway_slugs($gateways) {
         $gateways[] = 'angelleye_ppcp';
         return $gateways;

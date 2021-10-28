@@ -12,7 +12,7 @@
                     window.location.href = response.redirect;
                 } else {
                     ajax_data.action = 'wcf_' + ajax_data.offer_type + '_accepted';
-                    wcf_process_offer(ajax_data);
+                    angelleye_ppcp_wcf_process_offer(ajax_data);
                 }
             }
         });
@@ -49,10 +49,10 @@
                                 stripe_intent_id: '',
                                 _nonce: ppcp_nonce
                             };
-                            wcf_process_offer(ajax_data);
+                            angelleye_ppcp_wcf_process_offer(ajax_data);
                         } else {
                             ajax_data.action = 'wcf_' + ajax_data.offer_type + '_accepted';
-                            wcf_process_offer(ajax_data);
+                            angelleye_ppcp_wcf_process_offer(ajax_data);
                         }
                     }
                 });
@@ -174,6 +174,24 @@
             return false;
         }
         );
+    };
+
+    var angelleye_ppcp_wcf_process_offer = function (ajax_data) {
+        ajax_data._nonce = cartflows_offer[ ajax_data.action + '_nonce' ];
+        $.ajax({
+            url: cartflows.ajax_url,
+            data: ajax_data,
+            dataType: 'json',
+            type: 'POST',
+            success: function (data) {
+                var msg = data.message;
+                var msg_class = 'wcf-payment-' + data.status;
+                $('body').trigger('wcf-update-msg', [msg, msg_class]);
+                setTimeout(function () {
+                    window.location.href = data.redirect;
+                }, 500);
+            }
+        });
     };
 
     $(function ($) {
