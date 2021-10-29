@@ -7,7 +7,6 @@
             dataType: 'json',
             type: 'POST',
             success: function (response) {
-                console.log(response);
                 if ('success' === response.status) {
                     window.location.href = response.redirect;
                 } else {
@@ -61,7 +60,6 @@
     };
 
     var angelleye_ppcp_wcf_offer_button_action = function () {
-        console.log('64');
         $('a[href*="wcf-up-offer-yes"]').each(function (e) {
             var $this = $(this);
             if (e === 0) {
@@ -107,9 +105,7 @@
                     offer_action = 'no';
                 }
             }
-            console.log('110');
             if ('yes' === offer_action) {
-                console.log('112');
                 var variation_wrapper = $('.wcf-offer-product-variation');
                 if (variation_wrapper.length > 0) {
                     var variation_form = variation_wrapper.find('.variations_form'), variation_input = variation_form.find('input.variation_id');
@@ -131,10 +127,6 @@
                         return false;
                     }
                 }
-            }
-            if ('yes' === cartflows_offer.skip_offer && 'yes' === offer_action) {
-                console.log('136');
-                // return;
             }
             $('body').trigger('wcf-show-loader', offer_action);
             if ('yes' === offer_action) {
@@ -165,7 +157,6 @@
                 stripe_intent_id: '',
                 _nonce: ''
             };
-            console.log('168');
             if ('yes' === offer_action) {
                 if ('angelleye_ppcp' === cartflows_offer.payment_method) {
                     wcf_init_create_paypal_ppcp_angelleye_payments_order(ajax_data, cartflows_offer.payment_method);

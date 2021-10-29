@@ -33,6 +33,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
         }
         $this->invoice_prefix = $this->settings->get('invoice_prefix', 'WC-PPCP');
         add_filter('cartflows_offer_supported_payment_gateway_slugs', array($this, 'angelleye_ppcp_cartflows_offer_supported_payment_gateway_slugs'));
+        add_filter('cartflows_offer_js_localize', array($this, 'angelleye_ppcp_cartflows_offer_js_localize'));
         add_action('wp_enqueue_scripts', array($this, 'angelleye_ppcp_frontend_scripts'));
         add_filter('woocommerce_paypal_refund_request', array($this, 'angelleye_ppcp_offer_refund_request_data'), 10, 4);
         //add_action('cartflows_offer_subscription_created', array($this, 'add_subscription_payment_meta_for_paypal'), 10, 3);
@@ -389,6 +390,13 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
     public function angelleye_ppcp_cartflows_offer_supported_payment_gateway_slugs($gateways) {
         $gateways[] = 'angelleye_ppcp';
         return $gateways;
+    }
+
+    public function angelleye_ppcp_cartflows_offer_js_localize($localize) {
+        if (!empty($localize) && $localize['payment_method'] === 'angelleye_ppcp') {
+            $localize['skip_offer'] = 'yes';
+        }
+        return $localize;
     }
 
 }

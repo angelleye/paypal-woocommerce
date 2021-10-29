@@ -4,7 +4,6 @@
         if (typeof angelleye_ppcp_manager === 'undefined') {
             return false;
         }
-        console.log(angelleye_ppcp_manager);
         var selector = '#angelleye_ppcp_' + angelleye_ppcp_manager.page;
         if ($('.variations_form').length) {
             $('.variations_form').on('show_variation', function () {
@@ -96,7 +95,6 @@
                 },
                 onApprove: function (data, actions) {
                     $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
-                    console.log(angelleye_ppcp_manager);
                     if (is_from_checkout) {
                         if (angelleye_ppcp_manager.is_pre_checkout_offer === "yes") {
                             $('.woocommerce').unblock();
