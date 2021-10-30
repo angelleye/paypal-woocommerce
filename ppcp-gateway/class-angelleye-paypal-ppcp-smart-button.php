@@ -69,8 +69,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->order_review_page_description = apply_filters('angelleye_ppcp_order_review_page_description', __("<strong>You're almost done!</strong><br>Review your information before you place your order.", 'paypal-for-woocommerce'));
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
         $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
-        $this->enabled_pay_later_messaging = 'yes' === $this->settings->get('enabled_pay_later_messaging', 'no');
-        $this->pay_later_messaging_page_type = $this->settings->get('pay_later_messaging_page_type', array('home', 'category', 'product', 'cart', 'payment'));
+        $this->enabled_pay_later_messaging = 'yes' === $this->settings->get('enabled_pay_later_messaging', 'yes');
+        $this->pay_later_messaging_page_type = $this->settings->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
         $this->set_billing_address = 'yes' === $this->settings->get('set_billing_address', 'no');
         $this->disable_term = 'yes' === $this->settings->get('disable_term', 'no');
         $this->skip_final_review = 'yes' === $this->settings->get('skip_final_review', 'no');

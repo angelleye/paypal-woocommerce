@@ -593,14 +593,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'label' => __('Enable Pay Later Messaging', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
                     'description' => '<div style="font-size: smaller">Displays Pay Later messaging for available offers. Restrictions apply. <a target="_blank" href="https://developer.paypal.com/docs/business/pay-later/commerce-platforms/angelleye/">See terms and learn more</a></div>',
-                    'default' => 'no'
+                    'default' => 'yes'
                 ),
                 'pay_later_messaging_page_type' => array(
                     'title' => __('Page Type', 'paypal-for-woocommerce'),
                     'type' => 'multiselect',
                     'css' => 'width: 100%;',
                     'class' => 'wc-enhanced-select pay_later_messaging_field',
-                    'default' => array('home', 'category', 'product', 'cart', 'payment'),
+                    'default' => array('product', 'cart', 'payment'),
                     'options' => array('home' => __('Home', 'paypal-for-woocommerce'), 'category' => __('Category', 'paypal-for-woocommerce'), 'product' => __('Product', 'paypal-for-woocommerce'), 'cart' => __('Cart', 'paypal-for-woocommerce'), 'payment' => __('Payment', 'paypal-for-woocommerce')),
                     'description' => '<div style="font-size: smaller;">Set the page(s) you want to display messaging on, and then adjust that page\'s display option below.</div>',
                 ),
