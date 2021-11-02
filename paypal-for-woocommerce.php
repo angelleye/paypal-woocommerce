@@ -3,7 +3,7 @@
  * @wordpress-plugin
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
- * Description:       Easily enable PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
+ * Description:       Easily enable PayPal Complete Payments, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
  * Version:           3.0.0
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
@@ -228,7 +228,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public function plugin_action_links($actions, $plugin_file, $plugin_data, $context)
         {
             $custom_actions = array(
-                //'configure' => sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wc-settings&tab=checkout' ), __( 'Configure', 'paypal-for-woocommerce' ) ),
+                'configure' => sprintf( '<a href="%s">%s</a>', admin_url( 'options-general.php?page=paypal-for-woocommerce' ), __( 'Configure', 'paypal-for-woocommerce' ) ),
                 'docs'      => sprintf( '<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/paypal-for-woocommerce-documentation/?utm_source=paypal_for_woocommerce&utm_medium=docs_link&utm_campaign=paypal_for_woocommerce', __( 'Docs', 'paypal-for-woocommerce' ) ),
                 'support'   => sprintf( '<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/support', __( 'Support', 'paypal-for-woocommerce' ) ),
                 'review'    => sprintf( '<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/product/woocommerce-paypal-plugin?utm_source=pfw&utm_medium=support_link#tab-reviews', __( 'Write a Review', 'paypal-for-woocommerce' ) ),
