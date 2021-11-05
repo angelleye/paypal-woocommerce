@@ -528,10 +528,15 @@ class AngellEYE_Admin_Order_Payment_Process {
                     $payment_order_meta = array('_payment_action' => $this->gateway_settings['payment_action'], '_first_transaction_id' => $result['TRANSACTIONID']);
                     AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 }
-                AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($result, $order, $this->gateway_settings['payment_action']);
-                $order->payment_complete($result['TRANSACTIONID']);
-                update_post_meta($order_id, '_first_transaction_id', $result['TRANSACTIONID']);
-                $order->add_order_note(sprintf(__('%s payment Transaction ID: %s', 'paypal-for-woocommerce'), $this->payment_method, $result['TRANSACTIONID']));
+                // @note Andrea Pallotta check for duplicate order
+		if ($result['ACK'] == 'SuccessWithWarning' && !empty($result['L_ERRORCODE0']) && '11607' == $result['L_ERRORCODE0']) {
+			$order->update_status('on-hold', empty($result['L_LONGMESSAGE0']) ? $result['L_SHORTMESSAGE0'] : $result['L_LONGMESSAGE0']);
+		} else {
+			AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($result, $order, $this->gateway_settings['payment_action']);
+			$order->payment_complete($result['TRANSACTIONID']);
+			update_post_meta($order_id, '_first_transaction_id', $result['TRANSACTIONID']);
+			$order->add_order_note(sprintf(__('%s payment Transaction ID: %s', 'paypal-for-woocommerce'), $this->payment_method, $result['TRANSACTIONID']));
+		}
             } else {
                 if (!empty($result['L_ERRORCODE0'])) {
                     $ErrorCode = urldecode($result['L_ERRORCODE0']);
