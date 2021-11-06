@@ -416,7 +416,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 } else {
                     update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
                 }
-                if ($this->is_angelleye_baid_required() == true) {
+                // Andrea Pallotta - Check for duplicated orders
+                if (!empty($this->paypal_response['L_ERRORCODE0']) && '11607' == $this->paypal_response['L_ERRORCODE0']) {
+					$order->update_status('on-hold', empty($this->paypal_response['L_LONGMESSAGE0']) ? $this->paypal_response['L_SHORTMESSAGE0'] : $this->paypal_response['L_LONGMESSAGE0']);
+				} elseif ($this->is_angelleye_baid_required() == true) {
                     if (empty($this->paypal_response['BILLINGAGREEMENTID'])) {
                         $order->update_status('on-hold', __('Billing Agreement required for tokenized payments', 'paypal-for-woocommerce'));
                     } else {
