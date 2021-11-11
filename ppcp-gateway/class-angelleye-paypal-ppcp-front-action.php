@@ -138,7 +138,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
         }
         angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
-        angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+        angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
         WC()->cart->empty_cart();
         unset(WC()->session->angelleye_ppcp_session);
         if ($is_success) {
@@ -147,19 +147,18 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         } else {
             wp_redirect(wc_get_checkout_url());
             exit();
-            
         }
     }
-    
-    public function angelleye_ppcp_get_return_url( $order = null ) {
-		if ( $order ) {
-			$return_url = $order->get_checkout_order_received_url();
-		} else {
-			$return_url = wc_get_endpoint_url( 'order-received', '', wc_get_checkout_url() );
-		}
 
-		return apply_filters( 'woocommerce_get_return_url', $return_url, $order );
-	}
+    public function angelleye_ppcp_get_return_url($order = null) {
+        if ($order) {
+            $return_url = $order->get_checkout_order_received_url();
+        } else {
+            $return_url = wc_get_endpoint_url('order-received', '', wc_get_checkout_url());
+        }
+
+        return apply_filters('woocommerce_get_return_url', $return_url, $order);
+    }
 
     public function angelleye_ppcp_cc_capture() {
         try {

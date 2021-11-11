@@ -230,8 +230,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
             $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
         }
-        if ($this->is_sandbox ) {
-            if(is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen( WC()->customer->get_billing_country() )) {
+        if ($this->is_sandbox) {
+            if (is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen(WC()->customer->get_billing_country())) {
                 $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
             }
             $smart_js_arg['client-id'] = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
@@ -261,7 +261,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($components)) {
             $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
         }
-        if( isset($post->ID) && 'yes' == get_post_meta( $post->ID, 'wcf-pre-checkout-offer', true ) ) {
+        if (isset($post->ID) && 'yes' == get_post_meta($post->ID, 'wcf-pre-checkout-offer', true)) {
             $pre_checkout_offer = "yes";
         } else {
             $pre_checkout_offer = "no";
@@ -289,7 +289,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'woocommerce_process_checkout' => wp_create_nonce('woocommerce-process_checkout'),
             'is_skip_final_review' => $this->angelleye_ppcp_is_skip_final_review() ? 'yes' : 'no',
             'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),
-            
                 )
         );
         if (is_checkout() && empty($this->checkout_details)) {
