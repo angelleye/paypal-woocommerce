@@ -46,6 +46,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->landing_page = $this->settings->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->settings->get('payee_preferred', 'no');
         $this->invoice_prefix = $this->settings->get('invoice_prefix', 'WC-PPCP');
+        $this->soft_descriptor = $this->settings->get('soft_descriptor', '');
     }
 
     public function angelleye_ppcp_load_class() {
@@ -111,6 +112,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'order_key' => $reference_id,
                 ));
             }
+            $body_request['purchase_units'][0]['soft_descriptor'] = $this->soft_descriptor;
             if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                 $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
                     'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
