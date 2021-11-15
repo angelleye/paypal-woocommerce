@@ -227,6 +227,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->angelleye_ppcp_smart_button_style_properties();
         $smart_js_arg = array();
         $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
+        if(!isset($this->disable_funding['venmo'])) {
+            $smart_js_arg['enable-funding'] = 'venmo';
+        }
         if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
             $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
         }
