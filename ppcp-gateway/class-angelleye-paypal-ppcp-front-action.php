@@ -110,8 +110,54 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', wc_clean($_GET['paypal_order_id']));
                     $this->angelleye_ppcp_direct_capture();
                     break;
+                case "regular_capture":
+                    $this->angelleye_ppcp_regular_capture();
+                    break;
+                case "regular_cancel":
+                    unset(WC()->session->angelleye_ppcp_session);
+                    wp_redirect(wc_get_checkout_url());
+                    exit();
+                    break;
             }
         }
+    }
+
+    public function angelleye_ppcp_regular_capture() {
+        $order_id = absint(angelleye_ppcp_get_session('order_awaiting_payment'));
+        if (empty($order_id)) {
+            $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
+        }
+        if (angelleye_ppcp_is_valid_order($order_id) === false || empty($order_id)) {
+            wp_redirect(wc_get_checkout_url());
+            exit();
+        }
+        $order = wc_get_order($order_id);
+        if ($this->paymentaction === 'capture') {
+            $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($order_id, $need_to_update_order = false);
+        } else {
+            $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
+        }
+        angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
+        angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+        WC()->cart->empty_cart();
+        unset(WC()->session->angelleye_ppcp_session);
+        if ($is_success) {
+            wp_redirect($this->angelleye_ppcp_get_return_url($order));
+            exit();
+        } else {
+            wp_redirect(wc_get_checkout_url());
+            exit();
+        }
+    }
+
+    public function angelleye_ppcp_get_return_url($order = null) {
+        if ($order) {
+            $return_url = $order->get_checkout_order_received_url();
+        } else {
+            $return_url = wc_get_endpoint_url('order-received', '', wc_get_checkout_url());
+        }
+
+        return apply_filters('woocommerce_get_return_url', $return_url, $order);
     }
 
     public function angelleye_ppcp_cc_capture() {
