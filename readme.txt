@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
-Tested up to: 5.8.1
-Stable tag: 3.0.1
+Tested up to: 5.8.2
+Stable tag: 3.0.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,16 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.2 - 11.15.2021 =
+* Feature - Adds Soft Descriptor setting to credit card gateways so you can set what shows on customer credit card statements. ([PFW-910](https://github.com/angelleye/paypal-woocommerce/issues/1612))
+* Feature - Adds Venmo Checkout Integration. ([PFW-885](https://github.com/angelleye/paypal-woocommerce/pull/1609))
+* Tweak - Adjustments to avoid errors when item calculations from Woo are not accurate. ([PFW-904](https://github.com/angelleye/paypal-woocommerce/pull/1612))
+* Tweak - Updates logic for Enable/Disable Advanced Credit Cards based on API response. ([PFW-894](https://github.com/angelleye/paypal-woocommerce/pull/1610))
+* Tweak - Updates logic for Display Payment gateways when smart buttons are disabled. ([PFW-897](https://github.com/angelleye/paypal-woocommerce/pull/1613))
+* Fix - Resolves an issue with Seller created Woo orders are not working properly. ([PFW-895](https://github.com/angelleye/paypal-woocommerce/pull/1611))
+* Fix - Resolves an issue with PPCP to Unable hide debit/credit cards on the cart page. ([PFW-905](https://github.com/angelleye/paypal-woocommerce/pull/1614))
+* Fix - Resolved shorting issue with payment gateways. ([PFW-896](https://github.com/angelleye/paypal-woocommerce/pull/1608))
 
 = 3.0.1 - 11.02.2021 =
 * Tweak - Adds Configure URL and Update plugin details. ([PFW-892](https://github.com/angelleye/paypal-woocommerce/pull/1605))
