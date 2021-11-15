@@ -407,9 +407,21 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $discounts = angelleye_ppcp_round($discounts, $decimals);
             $details['order_total'] = angelleye_ppcp_round(
-                    $details['total_item_amount'] + $details['order_tax'] + $details['shipping'], $decimals
+                    $details['total_item_amount'] + $details['order_tax'] + $details['shipping'] - $discounts, $decimals
             );
             $diff = 0;
+            if ($details['total_item_amount'] != $rounded_total) {
+                $diff = round($details['total_item_amount'] + $discounts - $rounded_total, $decimals);
+                if (abs($diff) > 0.000001 && 0.0 !== (float) $diff) {
+                    $extra_line_item = $this->angelleye_ppcp_get_extra_offset_line_item($diff);
+                    $details['items'][] = $extra_line_item;
+                    $details['total_item_amount'] += $extra_line_item['amount'];
+                    $details['order_total'] += $extra_line_item['amount'];
+                }
+            }
+            if (0 == $details['total_item_amount']) {
+                unset($details['items']);
+            }
             if ($details['total_item_amount'] != $rounded_total) {
                 unset($details['items']);
             }
@@ -421,7 +433,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $details['discount'] = $discounts;
             $details['ship_discount_amount'] = 0;
             $wc_order_total = angelleye_ppcp_round($total, $decimals);
-            $discounted_total = $details['order_total'];
+            $discounted_total = angelleye_ppcp_round($details['order_total'], $decimals);
             if ($wc_order_total != $discounted_total) {
                 if ($discounted_total < $wc_order_total) {
                     $details['order_tax'] += $wc_order_total - $discounted_total;
