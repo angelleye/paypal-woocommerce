@@ -100,7 +100,7 @@ class AngellEYE_PayPal_PPCP_Response {
         $response_body = isset($response['body']) ? json_decode($response['body'], true) : $response;
         $this->api_log->log('PayPal Debug ID: ' . $this->angelleye_ppcp_parse_headers($response_body['headers'], 'paypal-debug-id'));
         if ($action_name === 'generate_signup_link') {
-            $this->angelleye_ppcp_signup_link_write_log($request);
+            //$this->angelleye_ppcp_signup_link_write_log($request);
         } elseif (!empty($request['body']) && is_array($request['body'])) {
             $this->api_log->log('Request Body: ' . wc_print_r($request['body'], true));
         } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {

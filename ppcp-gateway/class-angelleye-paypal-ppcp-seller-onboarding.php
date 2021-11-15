@@ -224,8 +224,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->result = $this->angelleye_track_seller_onboarding_status($seller_onboarding_status['merchant_id']);
                 if ($this->angelleye_is_acdc_payments_enable($this->result)) {
                     $this->settings->set('enable_advanced_card_payments', 'yes');
+                    $this->settings->persist();
                 } else {
                     $this->settings->set('enable_advanced_card_payments', 'no');
+                    $this->settings->persist();
                 }
             }
             
