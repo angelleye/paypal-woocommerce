@@ -32,6 +32,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
             $this->merchant_id = $this->settings->get('live_merchant_id', '');
         }
         $this->invoice_prefix = $this->settings->get('invoice_prefix', 'WC-PPCP');
+        $this->soft_descriptor = $this->settings->get('soft_descriptor', '');
         add_filter('cartflows_offer_supported_payment_gateway_slugs', array($this, 'angelleye_ppcp_cartflows_offer_supported_payment_gateway_slugs'));
         add_filter('cartflows_offer_js_localize', array($this, 'angelleye_ppcp_cartflows_offer_js_localize'));
         add_action('wp_enqueue_scripts', array($this, 'angelleye_ppcp_frontend_scripts'));
@@ -273,6 +274,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
             ),
             'custom_id' => $invoice_id,
             'invoice_id' => $invoice_id,
+            'soft_descriptor' => $this->soft_descriptor
         );
         return array($purchase_unit);
     }
