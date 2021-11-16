@@ -1137,7 +1137,15 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('The value entered here will be displayed on the buyer\'s credit card statement.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true,
-                    'custom_attributes' => array( 'maxlength' => '22'),
+                    'custom_attributes' => array('maxlength' => '22'),
+                ),
+                'error_email_notification' => array(
+                    'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
+                    'default' => 'yes',
+                    'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true
                 ),
                 'debug' => array(
                     'title' => __('Debug log', 'paypal-for-woocommerce'),
