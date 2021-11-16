@@ -103,16 +103,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($woo_order_id != null) {
                 $order = wc_get_order($woo_order_id);
                 $body_request['purchase_units'][0]['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
-                $body_request['purchase_units'][0]['custom_id'] = wp_json_encode(array(
-                    'order_id' => $order->get_id(),
-                    'order_key' => $order->get_order_key(),
-                ));
+                $body_request['purchase_units'][0]['custom_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
             } else {
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
-                $body_request['purchase_units'][0]['custom_id'] = wp_json_encode(array(
-                    'order_id' => $reference_id,
-                    'order_key' => $reference_id,
-                ));
+                $body_request['purchase_units'][0]['custom_id'] = $reference_id;
             }
             $body_request['purchase_units'][0]['soft_descriptor'] = $this->soft_descriptor;
             if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
@@ -867,15 +861,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'path' => "/purchase_units/@reference_id=='$reference_id'/invoice_id",
                 'value' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number())
             );
-            $update_custom_id = wp_json_encode(array(
-                'order_id' => $order->get_id(),
-                'order_key' => $order->get_order_key(),
-            ));
-
             $patch_request[] = array(
                 'op' => 'replace',
                 'path' => "/purchase_units/@reference_id=='$reference_id'/custom_id",
-                'value' => $update_custom_id
+                'value' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number())
             );
             $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
             $args = array(
@@ -1349,16 +1338,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($woo_order_id != null) {
                 $order = wc_get_order($woo_order_id);
                 $body_request['purchase_units'][0]['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
-                $body_request['purchase_units'][0]['custom_id'] = wp_json_encode(array(
-                    'order_id' => $order->get_id(),
-                    'order_key' => $order->get_order_key(),
-                ));
+                $body_request['purchase_units'][0]['custom_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
             } else {
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
-                $body_request['purchase_units'][0]['custom_id'] = wp_json_encode(array(
-                    'order_id' => $reference_id,
-                    'order_key' => $reference_id,
-                ));
+                $body_request['purchase_units'][0]['custom_id'] = $reference_id;
             }
             if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                 $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
