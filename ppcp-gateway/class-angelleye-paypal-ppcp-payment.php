@@ -49,6 +49,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->soft_descriptor = $this->settings->get('soft_descriptor', '');
         $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
         $this->enable_checkout_button = 'yes' === $this->settings->get('enable_checkout_button', 'yes');
+        $this->error_email_notification = 'yes' === $this->settings->get('error_email_notification', 'yes');
     }
 
     public function angelleye_ppcp_load_class() {
@@ -236,7 +237,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 wp_send_json($return_response, 200);
                 exit();
             } else {
-                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response);
+                $error_email_notification_param = array(
+                    'request' => 'create_order',
+                    'order_id' => $woo_order_id
+                );
+                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
                 wp_send_json_error($error_message);
             }
@@ -472,7 +477,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'amount' => angelleye_ppcp_round($amount, $decimals),
             );
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -619,7 +624,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         return $addr . $pid . $_SERVER['REQUEST_TIME'] . mt_rand(0, 0xffff);
     }
 
-    public function angelleye_ppcp_get_readable_message($error) {
+    public function angelleye_ppcp_get_readable_message($error, $error_email_notification_param = array()) {
         $message = '';
         if (isset($error['name'])) {
             switch ($error['name']) {
@@ -647,16 +652,15 @@ class AngellEYE_PayPal_PPCP_Payment {
                     break;
             }
         }
-        /* if (!empty($message)) {
-          return $message;
-          } else */
-
         if (!empty($error['message'])) {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
             $message = $error['error_description'];
         } else {
             $message = $error;
+        }
+        if ($this->error_email_notification) {
+            $this->angelleye_ppcp_error_email_notification($error_email_notification_param, $message);
         }
         return $message;
     }
@@ -754,7 +758,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
                 return true;
             } else {
-                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response);
+                $error_email_notification_param = array(
+                    'request' => 'capture_order',
+                    'order_id' => $woo_order_id
+                );
+                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
                 return false;
             }
@@ -1039,7 +1047,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 WC()->cart->empty_cart();
                 return true;
             } else {
-                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response);
+                $error_email_notification_param = array(
+                    'request' => 'authorize_order',
+                    'order_id' => $woo_order_id
+                );
+                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
                 return false;
             }
@@ -1174,7 +1186,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 angelleye_ppcp_update_post_meta($order, '_transaction_id', $transaction_id);
                 return true;
             } else {
-                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response);
+                $error_email_notification_param = array(
+                    'request' => 'capture_authorized',
+                    'order_id' => $woo_order_id
+                );
+                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 if (function_exists('wc_add_notice')) {
                     wc_add_notice($error_message, 'error');
                 }
@@ -1484,6 +1500,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'redirect' => ''
                 );
             } else {
+                $error_email_notification_param = array(
+                    'request' => 'create_order',
+                    'order_id' => $woo_order_id
+                );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response);
                 wc_add_notice($error_message, 'error');
                 return array(
@@ -1494,6 +1514,37 @@ class AngellEYE_PayPal_PPCP_Payment {
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
+        }
+    }
+
+    public function angelleye_ppcp_error_email_notification($error_email_notification_param, $error_message) {
+        if (function_exists('WC')) {
+            try {
+                $mailer = WC()->mailer();
+                $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'PayPal Complete Payments Error Notification');
+                $message = '';
+                if (!empty($error_email_notification_param['request'])) {
+                    $message .= sprintf("<strong>" . __('Action: ', 'paypal-for-woocommerce') . "</strong>" . ucwords(str_replace('_', ' ', $error_email_notification_param['request'])) . PHP_EOL);
+                }
+                if (!empty($error_message)) {
+                    $message .= sprintf("<strong>" . __('Error: ', 'paypal-for-woocommerce') . "</strong>" . $error_message . PHP_EOL);
+                }
+                if (!empty($error_email_notification_param['order_id'])) {
+                    $message .= sprintf("<strong>" . __('Order ID: ', 'paypal-for-woocommerce') . "</strong>" . $error_email_notification_param['order_id'] . PHP_EOL);
+                }
+                if (is_user_logged_in()) {
+                    $userLogined = wp_get_current_user();
+                    $message .= sprintf("<strong>" . __('User ID: ', 'paypal-for-woocommerce') . "</strong>" . $userLogined->ID . PHP_EOL);
+                    $message .= sprintf("<strong>" . __('User Email: ', 'paypal-for-woocommerce') . "</strong>" . $userLogined->user_email . PHP_EOL);
+                }
+                $message .= sprintf("<strong>" . __('User IP: ', 'paypal-for-woocommerce') . "</strong>" . WC_Geolocation::get_ip_address() . PHP_EOL);
+                $message = apply_filters('ae_ppec_error_email_message', $message);
+                $message = $mailer->wrap_message($error_email_notify_subject, $message);
+                $mailer->send(get_option('admin_email'), strip_tags($error_email_notify_subject), $message);
+            } catch (Exception $ex) {
+                $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+                $this->api_log->log($ex->getMessage(), 'error');
+            }
         }
     }
 
