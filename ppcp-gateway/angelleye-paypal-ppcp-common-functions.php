@@ -172,11 +172,6 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
         if (in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) {
             return true;
         }
-        $fragments = explode('.', site_url());
-        if (in_array(end($fragments), array('dev', 'local', 'localhost', 'test'))) {
-            return true;
-        }
-        return false;
     }
 
     if (!function_exists('angelleye_ppcp_get_raw_data')) {
