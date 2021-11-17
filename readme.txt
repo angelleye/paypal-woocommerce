@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 5.8.2
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.3 - 11.17.2021 =
+* Feature - Adds an option to enable/disable an admin email notification when PayPal errors occur. ([PFW-911](https://github.com/angelleye/paypal-woocommerce/issues/1618))
+* Tweak - Adjustments to PayPal sdk function to avoid time error. ([PFW-917](https://github.com/angelleye/paypal-woocommerce/pull/1616))
+* Tweak - Updates logic for localhost detection function. ([PFW-920](https://github.com/angelleye/paypal-woocommerce/pull/1619))
+* Fix - Resolves an issue with PPCP custom_id value. ([PFW-913](https://github.com/angelleye/paypal-woocommerce/pull/1617))
 
 = 3.0.2 - 11.15.2021 =
 * Feature - Adds Soft Descriptor setting to credit card gateways so you can set what shows on customer credit card statements. ([PFW-910](https://github.com/angelleye/paypal-woocommerce/issues/1612))
