@@ -85,11 +85,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->dcc_applies->for_country_currency() === false) {
             $this->advanced_card_payments = false;
         }
-        if ($this->advanced_card_payments) {
-            $this->threed_secure_enabled = 'yes' === $this->settings->get('threed_secure_enabled', 'no');
-        } else {
-            $this->threed_secure_enabled = false;
-        }
+        $this->three_d_secure_contingency = $this->settings->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
     }
 
     public function angelleye_ppcp_default_set_properties() {
@@ -227,7 +223,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->angelleye_ppcp_smart_button_style_properties();
         $smart_js_arg = array();
         $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
-        if(!isset($this->disable_funding['venmo'])) {
+        if (!isset($this->disable_funding['venmo'])) {
             $smart_js_arg['enable-funding'] = 'venmo';
         }
         if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
@@ -288,7 +284,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'cart_total' => WC()->cart->total,
             'paymentaction' => $this->paymentaction,
             'advanced_card_payments' => ($this->advanced_card_payments === true) ? 'yes' : 'no',
-            'threed_secure_enabled' => ($this->threed_secure_enabled === true) ? 'yes' : 'no',
+            'three_d_secure_contingency' => $this->three_d_secure_contingency,
             'woocommerce_process_checkout' => wp_create_nonce('woocommerce-process_checkout'),
             'is_skip_final_review' => $this->angelleye_ppcp_is_skip_final_review() ? 'yes' : 'no',
             'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),

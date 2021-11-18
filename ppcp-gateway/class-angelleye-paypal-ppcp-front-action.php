@@ -27,11 +27,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         if ($this->dcc_applies->for_country_currency() === false) {
             $this->advanced_card_payments = false;
         }
-        if ($this->advanced_card_payments) {
-            $this->threed_secure_enabled = 'yes' === $this->settings->get('threed_secure_enabled', 'no');
-        } else {
-            $this->threed_secure_enabled = false;
-        }
+        $this->three_d_secure_contingency = $this->settings->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
         if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
@@ -324,9 +320,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     }
 
     public function angelleye_ppcp_liability_shift($order, $response_object) {
-        if ($this->threed_secure_enabled === false) {
-            return true;
-        }
         if (!empty($response_object)) {
             $response = json_decode(json_encode($response_object), true);
             if (!empty($response['payment_source']['card']['authentication_result']['liability_shift'])) {
