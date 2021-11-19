@@ -2690,6 +2690,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             try {
                 angelleye_set_session('post_data', wp_slash($_POST));
                 angelleye_set_session('validate_data', $data);
+                $this->angelleye_wc_process_customer();
                 if ( isset( $_POST['from_checkout'] ) && 'yes' === $_POST['from_checkout'] ) {
                     if ((isset($_POST['wc-paypal_express-new-payment-method']) && $_POST['wc-paypal_express-new-payment-method'] == 'true') || ( isset($_GET['ec_save_to_account']) && $_GET['ec_save_to_account'] == true)) {
                         angelleye_set_session( 'ec_save_to_account', 'on' );
@@ -2837,5 +2838,37 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $token->get_last4()
         );
         return $display;
+    }
+    
+    public function angelleye_wc_process_customer() {
+        try {
+            $data = wc_clean($_POST);
+            $customer_id = apply_filters( 'woocommerce_checkout_customer_id', get_current_user_id() );
+            if ( ! is_user_logged_in() && ( WC()->checkout()->is_registration_required() || ! empty( $data['createaccount'] ) ) ) {
+                $username    = ! empty( $data['account_username'] ) ? $data['account_username'] : '';
+                $password    = ! empty( $data['account_password'] ) ? $data['account_password'] : '';
+                $customer_id = wc_create_new_customer(
+                        $data['billing_email'],
+                        $username,
+                        $password,
+                        array(
+                                'first_name' => ! empty( $data['billing_first_name'] ) ? $data['billing_first_name'] : '',
+                                'last_name'  => ! empty( $data['billing_last_name'] ) ? $data['billing_last_name'] : '',
+                        )
+                );
+                if ( is_wp_error( $customer_id ) ) {
+                    throw new Exception( $customer_id->get_error_message() );
+                }
+                wc_set_customer_auth_cookie( $customer_id );
+                WC()->session->set( 'reload_checkout', true );
+                WC()->cart->calculate_totals();
+            }
+            if ( $customer_id && is_multisite() && is_user_logged_in() && ! is_user_member_of_blog() ) {
+                    add_user_to_blog( get_current_blog_id(), $customer_id, 'customer' );
+            }
+        } catch (Exception $ex) {
+
+        }
+        
     }
 }
