@@ -17,5 +17,8 @@ if (is_set_class) {
     jQuery('.woocommerce-message').hide();
     jQuery('#checkout_paypal_message').hide();
     jQuery('.express-checkout.express-hide-terms .wc-terms-and-conditions input[type="checkbox"]').prop('checked', true);
+    if($("#createaccount").length !== 0) {
+        jQuery('.express-checkout #createaccount').trigger('click');
+    }
 }
 });
