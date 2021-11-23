@@ -593,7 +593,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             );
             $this->paypal_response = $this->paypal->DoExpressCheckoutPayment(apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request, $this->gateway, $this, $this->confirm_order_id, $is_force_validate = 'no'));
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'DoExpressCheckoutPayment');
-            if( $this->paypal_response['L_ERRORCODE0'] == '10002' ) {
+            if( isset($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '10002' ) {
                 $this->paypal_request = apply_filters('angelleye_woocommerce_express_checkout_do_express_checkout_payment_request_args', $this->paypal_request, $this->gateway, $this, $this->confirm_order_id, $is_force_validate = 'yes');
                 $this->paypal_response = $this->paypal->DoExpressCheckoutPayment($this->paypal_request);
             }
@@ -903,7 +903,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->paypal_request = apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request, $this->gateway, $this, $order_id, $is_force_validate = 'no');
             $this->paypal_response = $this->paypal->SetExpressCheckout($this->paypal_request);
             $this->angelleye_write_paypal_request_log($paypal_action_name = 'SetExpressCheckout');
-            if( $this->paypal_response['L_ERRORCODE0'] == '10002' ) {
+            if( isset($this->paypal_response['L_ERRORCODE0']) && $this->paypal_response['L_ERRORCODE0'] == '10002' ) {
                 $this->paypal_request = apply_filters('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', $this->paypal_request, $this->gateway, $this, $order_id, $is_force_validate = 'yes');
                 $this->paypal_response = $this->paypal->SetExpressCheckout($this->paypal_request);
             }
