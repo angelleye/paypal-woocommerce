@@ -1124,12 +1124,17 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'no',
                     'description' => 'PayPal currently supports direct credit card processing for US, AU, UK, FR, IT, CA and ES. <br> <br>If you have not already been approved for Advanced Credit Cards, please use the link below to apply. <br><br><span><a target="_blank" href="https://www.angelleye.com/advanced-credit-card-setup-for-paypal/">Apply for Advanced Credit Cards</a>',
                 ),
-                'threed_secure_enabled' => array(
-                    'title' => __('3D Secure', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('Enable 3D Secure', 'paypal-for-woocommerce'),
-                    'description' => __('Enable 3D Secure for additional security on direct credit card checkouts. In Europe this is required.', 'paypal-for-woocommerce'),
-                    'default' => 'no',
+                '3d_secure_contingency' => array(
+                    'title' => __('Contingency for 3D Secure', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'options' => array(
+                        'SCA_WHEN_REQUIRED' => __('3D Secure when required', 'paypal-for-woocommerce'),
+                        'SCA_ALWAYS' => __('Always trigger 3D Secure', 'paypal-for-woocommerce'),
+                    ),
+                    'default' => 'SCA_WHEN_REQUIRED',
+                    'desc_tip' => true,
+                    'description' => __('3D Secure benefits cardholders and merchants by providing an additional layer of verification using Verified by Visa, MasterCard SecureCode and American Express SafeKey.', 'paypal-for-woocommerce'),
                 ),
                 'soft_descriptor' => array(
                     'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),

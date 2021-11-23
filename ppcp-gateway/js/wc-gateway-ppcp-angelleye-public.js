@@ -66,6 +66,8 @@
                             value: add_to_cart
                         }).appendTo('form.cart');
                         data = $('form.cart').serialize();
+                    } else {
+                        data = $('form.woocommerce-cart-form').serialize();
                     }
                     return fetch(angelleye_ppcp_manager.create_order_url, {
                         method: 'POST',
@@ -124,6 +126,24 @@
                     if (is_from_checkout === false) {
                         window.location.href = window.location.href;
                     }
+                }, onClick: function (data, actions) {
+                    var payment_method_element_selector;
+                    if (angelleye_ppcp_manager.page === 'product') {
+                        payment_method_element_selector = 'form.cart';
+                    } else if (angelleye_ppcp_manager.page === 'cart') {
+                        payment_method_element_selector = 'form.woocommerce-cart-form';
+                    } else if (angelleye_ppcp_manager.page === 'checkout') {
+                        payment_method_element_selector = 'form.checkout';
+                    }
+                    if ($('#angelleye_ppcp_payment_method_title').length > 0) {
+                        $('#angelleye_ppcp_payment_method_title').empty();
+                    }
+                    $('<input>', {
+                        type: 'hidden',
+                        id: 'angelleye_ppcp_payment_method_title',
+                        name: 'angelleye_ppcp_payment_method_title',
+                        value: data.fundingSource
+                    }).appendTo(payment_method_element_selector);
                 },
                 onError: function (err) {
                     console.log(err);
@@ -229,9 +249,7 @@
                     event.preventDefault();
                     var state = hf.getState();
                     var contingencies = [];
-                    if (angelleye_ppcp_manager.threed_secure_enabled === 'yes') {
-                        contingencies = ['SCA_WHEN_REQUIRED'];
-                    }
+                    contingencies = [angelleye_ppcp_manager.three_d_secure_contingency];
                     $('form.checkout').addClass('processing').block({
                         message: null,
                         overlayCSS: {
@@ -254,7 +272,7 @@
                     }).then(
                             function (payload) {
                                 if (payload.orderId) {
-                                    if (angelleye_ppcp_manager.threed_secure_enabled === 'yes') {
+                                    if (angelleye_ppcp_manager.three_d_secure_contingency === 'yes') {
                                         if (is_liability_shifted(payload) === true) {
                                             $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
                                                 window.location.href = data.data.redirect;
@@ -270,6 +288,7 @@
                                     }
                                 }
                             }, function (error) {
+                                console.log(error);
                         $('form.checkout').removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
                         var error_message = '';
                         if (error.details[0]['description']) {

@@ -151,6 +151,7 @@ if (!function_exists('angelleye_ppcp_get_wpml_locale')) {
 if (!function_exists('angelleye_ppcp_is_local_server')) {
 
     function angelleye_ppcp_is_local_server() {
+        return false;
         if (!isset($_SERVER['HTTP_HOST'])) {
             return;
         }
@@ -597,3 +598,37 @@ if (!function_exists('angelleye_ppcp_processor_response_code')) {
     }
 
 }
+
+if (!function_exists('angelleye_ppcp_payment_method_title_list')) {
+
+    function angelleye_ppcp_get_payment_method_title($payment_name = '') {
+        $final_payment_method_name = '';
+        $list_payment_method = array(
+            'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
+            'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+            'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
+            'blik' => __('BLIK', 'paypal-for-woocommerce'),
+            'eps' => __('eps', 'paypal-for-woocommerce'),
+            'giropay' => __('giropay', 'paypal-for-woocommerce'),
+            'ideal' => __('iDEAL', 'paypal-for-woocommerce'),
+            'mercadopago' => __('Mercado Pago', 'paypal-for-woocommerce'),
+            'mybank' => __('MyBank', 'paypal-for-woocommerce'),
+            'p24' => __('Przelewy24', 'paypal-for-woocommerce'),
+            'sepa' => __('SEPA-Lastschrift', 'paypal-for-woocommerce'),
+            'sofort' => __('Sofort', 'paypal-for-woocommerce'),
+            'venmo' => __('PayPal Venmo', 'paypal-for-woocommerce'),
+            'paylater' => __('PayPal Pay Later', 'paypal-for-woocommerce'),
+            'paypal' => __('PayPal Checkout', 'paypal-for-woocommerce'),
+        );
+        if (!empty($payment_name)) {
+            if (isset($list_payment_method[$payment_name])) {
+                $final_payment_method_name = $list_payment_method[$payment_name];
+            } else {
+                $final_payment_method_name = $payment_name;
+            }
+        }
+        return apply_filters('angelleye_ppcp_get_payment_method_title', $final_payment_method_name, $payment_name, $list_payment_method);
+    }
+
+}
+
