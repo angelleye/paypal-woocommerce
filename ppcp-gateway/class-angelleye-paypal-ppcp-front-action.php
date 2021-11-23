@@ -139,9 +139,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         }
         angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
         angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
-        WC()->cart->empty_cart();
         unset(WC()->session->angelleye_ppcp_session);
         if ($is_success) {
+            WC()->cart->empty_cart();
             wp_redirect($this->angelleye_ppcp_get_return_url($order));
             exit();
         } else {
@@ -178,12 +178,12 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     }
                     angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
                     angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
-                    WC()->cart->empty_cart();
                 } else {
                     $is_success = false;
                     wc_add_notice(__('We cannot process your order with the payment information that you provided. Please use an alternate payment method.', 'paypal-for-woocommerce'), 'error');
                 }
                 if ($is_success) {
+                    WC()->cart->empty_cart();
                     unset(WC()->session->angelleye_ppcp_session);
                     if (ob_get_length())
                         ob_end_clean();

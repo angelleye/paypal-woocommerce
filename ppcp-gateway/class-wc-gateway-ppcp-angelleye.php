@@ -382,8 +382,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             }
             angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
             angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
-            WC()->cart->empty_cart();
             if ($is_success) {
+                WC()->cart->empty_cart();
                 unset(WC()->session->angelleye_ppcp_session);
                 return array(
                     'result' => 'success',
