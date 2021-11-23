@@ -9,6 +9,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     public $payment_request;
     public $settings;
     protected static $_instance = null;
+    public $procceed = 1;
+    public $reject = 2;
+    public $retry = 3;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -27,11 +30,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         if ($this->dcc_applies->for_country_currency() === false) {
             $this->advanced_card_payments = false;
         }
-        if ($this->advanced_card_payments) {
-            $this->threed_secure_enabled = 'yes' === $this->settings->get('threed_secure_enabled', 'no');
-        } else {
-            $this->threed_secure_enabled = false;
-        }
+        $this->three_d_secure_contingency = $this->settings->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
         if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
@@ -170,7 +169,8 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
                 }
                 $order = wc_get_order($order_id);
-                if ($this->angelleye_ppcp_liability_shift($order, $api_response)) {
+                $liability_shift_result = $this->angelleye_ppcp_liability_shift($order, $api_response);
+                if ($liability_shift_result === 1) {
                     if ($this->paymentaction === 'capture') {
                         $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($order_id, false);
                     } else {
@@ -179,9 +179,12 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
                     angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
                     WC()->cart->empty_cart();
-                } else {
+                } elseif ($liability_shift_result === 2) {
                     $is_success = false;
                     wc_add_notice(__('We cannot process your order with the payment information that you provided. Please use an alternate payment method.', 'paypal-for-woocommerce'), 'error');
+                } elseif ($liability_shift_result === 3) {
+                    $is_success = false;
+                    wc_add_notice(__('Something went wrong. Please try again.', 'paypal-for-woocommerce'), 'error');
                 }
                 if ($is_success) {
                     unset(WC()->session->angelleye_ppcp_session);
@@ -324,15 +327,12 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     }
 
     public function angelleye_ppcp_liability_shift($order, $response_object) {
-        if ($this->threed_secure_enabled === false) {
-            return true;
-        }
         if (!empty($response_object)) {
             $response = json_decode(json_encode($response_object), true);
             if (!empty($response['payment_source']['card']['authentication_result']['liability_shift'])) {
-                $LiabilityShift = $response['payment_source']['card']['authentication_result']['liability_shift'];
-                $EnrollmentStatus = isset($response['payment_source']['card']['authentication_result']['three_d_secure']['enrollment_status']) ? $response['payment_source']['card']['authentication_result']['three_d_secure']['enrollment_status'] : '';
-                $AuthenticationResult = isset($response['payment_source']['card']['authentication_result']['three_d_secure']['authentication_status']) ? $response['payment_source']['card']['authentication_result']['three_d_secure']['authentication_status'] : '';
+                $LiabilityShift = isset($response['payment_source']['card']['authentication_result']['liability_shift']) ? strtoupper($response['payment_source']['card']['authentication_result']['liability_shift']) : '';
+                $EnrollmentStatus = isset($response['payment_source']['card']['authentication_result']['three_d_secure']['enrollment_status']) ? strtoupper($response['payment_source']['card']['authentication_result']['three_d_secure']['enrollment_status']) : '';
+                $AuthenticationResult = isset($response['payment_source']['card']['authentication_result']['three_d_secure']['authentication_status']) ? strtoupper($response['payment_source']['card']['authentication_result']['three_d_secure']['authentication_status']) : '';
                 $liability_shift_order_note = __('3D Secure response', 'paypal-for-woocommerce');
                 $liability_shift_order_note .= "\n";
                 $liability_shift_order_note .= 'Liability Shift : ' . angelleye_ppcp_readable($LiabilityShift);
@@ -343,20 +343,42 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 if ($order) {
                     $order->add_order_note($liability_shift_order_note);
                 }
-                if ($EnrollmentStatus === 'Y' && $AuthenticationResult === 'Y' && $LiabilityShift === 'POSSIBLE') {
-                    return true;
-                } elseif ($EnrollmentStatus === 'Y' && $AuthenticationResult === 'A' && $LiabilityShift === 'POSSIBLE') {
-                    return true;
-                } elseif ($EnrollmentStatus === 'N' && $LiabilityShift === 'No') {
-                    return true;
-                } elseif ($EnrollmentStatus === 'U' && $LiabilityShift === 'No') {
-                    return true;
-                } elseif ($EnrollmentStatus === 'B' && $LiabilityShift === 'No') {
-                    return true;
+                if ($LiabilityShift === 'POSSIBLE') {
+                    return $this->procceed;
                 }
+                if ($LiabilityShift === 'UNKNOWN') {
+                    return $this->retry;
+                }
+                if ($LiabilityShift === 'NO') {
+                    if ($EnrollmentStatus === 'B' && empty($AuthenticationResult)) {
+                        return $this->procceed;
+                    }
+                    if ($EnrollmentStatus === 'U' && empty($AuthenticationResult)) {
+                        return $this->procceed;
+                    }
+                    if ($EnrollmentStatus === 'N' && empty($AuthenticationResult)) {
+                        return $this->procceed;
+                    }
+                    if ($AuthenticationResult === 'R') {
+                        return $this->reject;
+                    }
+                    if ($AuthenticationResult === 'N') {
+                        return $this->reject;
+                    }
+                    if ($AuthenticationResult === 'U') {
+                        return $this->retry;
+                    }
+                    if (!$AuthenticationResult) {
+                        return $this->retry;
+                    }
+                    return $this->procceed;
+                }
+                return $this->procceed;
+            } else {
+                return $this->procceed;
             }
         }
-        return false;
+        return $this->retry;
     }
 
     public function angelleye_ppcp_create_woo_order() {
@@ -369,6 +391,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     public function angelleye_ppcp_direct_capture() {
         $this->angelleye_ppcp_create_woo_order();
+    }
+
+    private function no_liability_shift(AuthResult $result): int {
+        
     }
 
 }
