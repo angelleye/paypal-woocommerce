@@ -468,7 +468,7 @@ if (!function_exists('angelleye_ppcp_is_local_server')) {
                 'p24' => __('Przelewy24', 'paypal-for-woocommerce'),
                 'sepa' => __('SEPA-Lastschrift', 'paypal-for-woocommerce'),
                 'sofort' => __('Sofort', 'paypal-for-woocommerce'),
-                'venmo' => __('Venmo', 'paypal-for-woocommerce'),
+                'venmo' => __('PayPal Venmo', 'paypal-for-woocommerce'),
                 'paylater' => __('PayPal Pay Later', 'paypal-for-woocommerce'),
                 'paypal' => __('PayPal Checkout', 'paypal-for-woocommerce'),
             );
