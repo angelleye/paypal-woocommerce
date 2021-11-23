@@ -99,33 +99,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->enable_cart_button = 'yes' === $this->settings->get('enable_cart_button', 'yes');
         $this->enable_checkout_button = 'yes' === $this->settings->get('enable_checkout_button', 'yes');
         $this->enable_mini_cart_button = 'yes' === $this->settings->get('enable_mini_cart_button', 'yes');
-        $this->AVSCodes = array("A" => "Address Matches Only (No ZIP)",
-            "B" => "Address Matches Only (No ZIP)",
-            "C" => "This tranaction was declined.",
-            "D" => "Address and Postal Code Match",
-            "E" => "This transaction was declined.",
-            "F" => "Address and Postal Code Match",
-            "G" => "Global Unavailable - N/A",
-            "I" => "International Unavailable - N/A",
-            "N" => "None - Transaction was declined.",
-            "P" => "Postal Code Match Only (No Address)",
-            "R" => "Retry - N/A",
-            "S" => "Service not supported - N/A",
-            "U" => "Unavailable - N/A",
-            "W" => "Nine-Digit ZIP Code Match (No Address)",
-            "X" => "Exact Match - Address and Nine-Digit ZIP",
-            "Y" => "Address and five-digit Zip match",
-            "Z" => "Five-Digit ZIP Matches (No Address)");
-
-        $this->CVV2Codes = array(
-            "E" => "N/A",
-            "M" => "Match",
-            "N" => "No Match",
-            "P" => "Not Processed - N/A",
-            "S" => "Service Not Supported - N/A",
-            "U" => "Service Unavailable - N/A",
-            "X" => "No Response - N/A"
-        );
     }
 
     public function angelleye_ppcp_smart_button_style_properties() {
@@ -227,7 +200,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->angelleye_ppcp_smart_button_style_properties();
         $smart_js_arg = array();
         $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
-        if(!isset($this->disable_funding['venmo'])) {
+        if (!isset($this->disable_funding['venmo'])) {
             $smart_js_arg['enable-funding'] = 'venmo';
         }
         if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
