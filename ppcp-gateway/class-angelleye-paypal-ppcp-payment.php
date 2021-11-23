@@ -679,7 +679,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     break;
             }
         }
-        if (!empty($error['message'])) {
+        if (!empty($message)) {
+            
+        } else if (!empty($error['message'])) {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
             $message = $error['error_description'];
