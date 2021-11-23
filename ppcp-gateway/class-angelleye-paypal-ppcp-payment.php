@@ -83,8 +83,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reference_id = wc_generate_order_key();
             angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $reference_id);
-            $payment_method_title = angelleye_ppcp_get_payment_method_title(wc_clean($_POST['angelleye_ppcp_payment_method_title']));
-            angelleye_ppcp_set_session('angelleye_ppcp_payment_method_title', $payment_method_title);
+            if(!empty($_POST['angelleye_ppcp_payment_method_title'])) {
+                $payment_method_title = angelleye_ppcp_get_payment_method_title(wc_clean($_POST['angelleye_ppcp_payment_method_title']));
+                angelleye_ppcp_set_session('angelleye_ppcp_payment_method_title', $payment_method_title);
+            }
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
             $body_request = array(
                 'intent' => $intent,
