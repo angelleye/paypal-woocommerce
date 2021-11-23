@@ -74,6 +74,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
         try {
+
             if ($woo_order_id == null) {
                 $cart = $this->angelleye_ppcp_get_details_from_cart();
             } else {
@@ -82,6 +83,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reference_id = wc_generate_order_key();
             angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $reference_id);
+            if(!empty($_POST['angelleye_ppcp_payment_method_title'])) {
+                $payment_method_title = angelleye_ppcp_get_payment_method_title(wc_clean($_POST['angelleye_ppcp_payment_method_title']));
+                angelleye_ppcp_set_session('angelleye_ppcp_payment_method_title', $payment_method_title);
+            }
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
             $body_request = array(
                 'intent' => $intent,
@@ -702,6 +707,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'blocking' => true,
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
             );
+
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/capture', $args, 'capture_order');
             if (isset($this->api_response['id']) && !empty($this->api_response['id'])) {
                 $return_response['paypal_order_id'] = $this->api_response['id'];
@@ -755,6 +761,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                     angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
                     $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
+                }
+                $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+                if (!empty($angelleye_ppcp_payment_method_title)) {
+                    update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
                 }
                 return true;
             } else {
@@ -1043,6 +1053,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                     $order->update_status('on-hold');
                     $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'smart-paypal-checkout-for-woocommerce'));
+                }
+                $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+                if (!empty($angelleye_ppcp_payment_method_title)) {
+                    update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
                 }
                 WC()->cart->empty_cart();
                 return true;
