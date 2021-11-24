@@ -462,6 +462,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             $is_saller_onboarding_done = true;
             delete_transient('angelleye_ppcp_live_seller_onboarding_process_done');
         }
+        if ( class_exists( 'WC_Subscriptions_Order' ) && function_exists( 'wcs_create_renewal_order' ) ) {
+            echo '<div class="error notice-warning"><p>';
+            echo __("PayPal Complete Payments is not yet compatible with Woo Subscriptions. You will need to use <a target='_blank' href='".admin_url( "admin.php?page=wc-settings&tab=checkout&section=paypal_express" )."'>Classic Express Checkout</a> for now, and make sure you have <a target='_blank' href='https://www.angelleye.com/how-to-enable-paypal-billing-agreements-for-reference-transactions/'>Billing Agreements enabled on your account</a> in order to use this with Woo Subscriptions.", '');
+            echo '</p></div>';
+        }
+        
         if ($is_saller_onboarding_done) {
             echo '<div class="notice notice-success angelleye-notice is-dismissible" id="ppcp_success_notice_onboarding" style="display:none;">'
             . '<div class="angelleye-notice-logo-original">'
