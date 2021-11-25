@@ -521,7 +521,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          *
          */
         public function angelleye_add_paypal_pro_gateway( $methods ) {
-            if ( class_exists( 'WC_Subscriptions_Order' ) && function_exists( 'wcs_create_renewal_order' ) ) {
+            if ( class_exists( 'WC_Subscriptions' ) && function_exists( 'wcs_create_renewal_order' ) ) {
                 $this->subscription_support_enabled = true;
             }
             foreach ($methods as $key=>$method){
