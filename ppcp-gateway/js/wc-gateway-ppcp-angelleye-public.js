@@ -59,7 +59,7 @@
                     if (is_from_checkout) {
                         data = $(selector).closest('form').serialize();
                     } else if (is_from_product) {
-                        var add_to_cart = $("button[name='add-to-cart']").val();
+                        var add_to_cart = $("[name='add-to-cart']").val();
                         $('<input>', {
                             type: 'hidden',
                             name: 'angelleye_ppcp-add-to-cart',
