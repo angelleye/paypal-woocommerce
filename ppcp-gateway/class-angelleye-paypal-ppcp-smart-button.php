@@ -284,6 +284,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_cart_page() {
+        if(class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
+            return false;
+        }
         wp_enqueue_script($this->angelleye_ppcp_plugin_name);
         if (WC()->cart->needs_payment()) {
             wp_enqueue_script('angelleye-paypal-checkout-sdk');
@@ -293,7 +296,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function display_paypal_button_product_page() {
         global $product;
-        if (!is_product() || !$product->is_in_stock() || $product->is_type('external')) {
+        if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription')) {
             return;
         }
         wp_enqueue_script('angelleye-paypal-checkout-sdk');
