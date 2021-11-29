@@ -340,7 +340,15 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if ($this->gateway->payment_action != 'Sale') {
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($this->paypal_response, $order, $this->gateway->payment_action);
             }
-            $payment_meta = array('Payment type' => !empty($this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE']) ? $this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE'] : '', 'PayPal Transaction Fee' => !empty($this->paypal_response['PAYMENTINFO_0_FEEAMT']) ? $this->paypal_response['PAYMENTINFO_0_FEEAMT'] : '');
+            $payment_meta = array();
+            if(!empty($this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE'])) {
+                $payment_meta['Payment type'] = $this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE'];
+            }
+            if(!empty($this->paypal_response['PAYMENTINFO_0_FEEAMT'])) {
+                $payment_meta['PayPal Transaction Fee'] = $this->paypal_response['PAYMENTINFO_0_FEEAMT'];
+                update_post_meta($order_id, '_paypal_fee', $this->paypal_response['PAYMENTINFO_0_FEEAMT']);
+                update_post_meta($order_id, '_paypal_fee_currency_code', $this->paypal_response['PAYMENTINFO_0_CURRENCYCODE']);
+            }
             AngellEYE_Utility::angelleye_add_paypal_payment_meta($order_id, $payment_meta);
             if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
                 $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
