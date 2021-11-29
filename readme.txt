@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 5.8.2
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.6 - 11.29.2021 =
+* Tweak - Adjustments to Prevent duplicate PayPal order payment. ([PFW-900](https://github.com/angelleye/paypal-woocommerce/pull/1627))
+* Tweak - Adjustments to code to display PayPal Fee in order details page in admin side. ([PFW-907](https://github.com/angelleye/paypal-woocommerce/pull/1628))
 
 = 3.0.5 - 11.27.2021 =
 * Fix - Resolves an issue with Variable Products Not Opening PayPal Window. ([PFW-928](https://github.com/angelleye/paypal-woocommerce/pull/1626))
