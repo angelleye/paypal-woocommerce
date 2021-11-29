@@ -464,6 +464,11 @@ class AngellEYE_Utility {
                     update_post_meta($AUTHORIZATIONID, 'PAYMENTSTATUS', $do_capture_result['PAYMENTSTATUS']);
                 }
             }
+            if(isset($do_capture_result['FEEAMT'])) {
+                update_post_meta($order_id, '_paypal_fee', $do_capture_result['FEEAMT']);
+                update_post_meta($order_id, '_paypal_fee_currency_code', $do_capture_result['CURRENCYCODE']);
+                update_post_meta($order_id, 'PayPal Transaction Fee', $do_capture_result['FEEAMT']);
+            }
             $order->set_transaction_id($do_capture_result['TRANSACTIONID']);
             self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_capture_result, $order, 'DoCapture');
             $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
