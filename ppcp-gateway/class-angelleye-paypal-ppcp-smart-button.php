@@ -722,8 +722,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->enable_separate_payment_method) {
             foreach ($methods as $key => $method) {
                 if ($method === 'WC_Gateway_PPCP_AngellEYE') {
-                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
-                    $methods[] = 'WC_Gateway_CC_AngellEYE';
+                    if ((isset($_GET['page']) && 'wc-settings' === $_GET['page'])) {
+                    } else {
+                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
+                        $methods[] = 'WC_Gateway_CC_AngellEYE';
+                    }
                     break;
                 }
             }
