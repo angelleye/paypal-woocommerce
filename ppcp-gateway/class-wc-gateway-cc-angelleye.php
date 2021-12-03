@@ -13,6 +13,11 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->method_description = __('Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce');
             $this->title = __('Credit card', 'paypal-for-woocommerce');
             $this->has_fields = true;
+            $this->supports = array(
+                'products',
+                'refunds',
+                'pay_button'
+            );
             $this->angelleye_ppcp_load_class();
             $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
             if ($this->advanced_card_payments) {
@@ -122,72 +127,72 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->cc_id));
             ?>
             <fieldset id="wc-<?php echo esc_attr($this->cc_id); ?>-cc-form" class='wc-credit-card-form wc-payment-form' style="display:none;">
-            <?php do_action('woocommerce_credit_card_form_start', $this->cc_id); ?>
-            <?php
-            foreach ($fields as $field) {
-                echo $field;
-            }
-            ?>
+                <?php do_action('woocommerce_credit_card_form_start', $this->cc_id); ?>
+                <?php
+                foreach ($fields as $field) {
+                    echo $field;
+                }
+                ?>
                 <?php do_action('woocommerce_credit_card_form_end', $this->cc_id); ?>
                 <div class="clear"></div>
             </fieldset>
-                <?php
-                if ($this->supports('credit_card_form_cvc_on_saved_method')) {
-                    echo '<fieldset>' . $cvc_field . '</fieldset>';
-                }
-            } catch (Exception $ex) {
-                
+            <?php
+            if ($this->supports('credit_card_form_cvc_on_saved_method')) {
+                echo '<fieldset>' . $cvc_field . '</fieldset>';
             }
-        }
-
-        public function angelleye_ppcp_load_class() {
-            try {
-                if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
-                    include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
-                }
-                if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
-                    include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
-                }
-                if (!class_exists('AngellEYE_PayPal_PPCP_Request')) {
-                    include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
-                }
-                if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
-                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
-                }
-                if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
-                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
-                }
-                $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
-                $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
-                $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
-                $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
-                $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
-            } catch (Exception $ex) {
-                $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
-                $this->api_log->log($ex->getMessage(), 'error');
-            }
-        }
-
-        public function can_refund_order($order) {
-            try {
-                return $order && $order->get_transaction_id();
-            } catch (Exception $ex) {
-                
-            }
-        }
-
-        public function process_refund($order_id, $amount = null, $reason = '') {
-            try {
-                $order = wc_get_order($order_id);
-                if (!$this->can_refund_order($order)) {
-                    return new WP_Error('error', __('Refund failed.', 'paypal-for-woocommerce'));
-                }
-                $transaction_id = $order->get_transaction_id();
-                $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
-                return $bool;
-            } catch (Exception $ex) {
-                
-            }
+        } catch (Exception $ex) {
+            
         }
     }
-    
+
+    public function angelleye_ppcp_load_class() {
+        try {
+            if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
+            }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
+            }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Request')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
+            }
+            if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
+            }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
+            }
+            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
+            $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
+            $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
+            $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
+        }
+    }
+
+    public function can_refund_order($order) {
+        try {
+            return $order && $order->get_transaction_id();
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function process_refund($order_id, $amount = null, $reason = '') {
+        try {
+            $order = wc_get_order($order_id);
+            if (!$this->can_refund_order($order)) {
+                return new WP_Error('error', __('Refund failed.', 'paypal-for-woocommerce'));
+            }
+            $transaction_id = $order->get_transaction_id();
+            $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
+            return $bool;
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+}
