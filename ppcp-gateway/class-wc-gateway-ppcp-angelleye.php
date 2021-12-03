@@ -94,8 +94,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->paymentaction = $this->get_option('paymentaction', 'capture');
         $this->advanced_card_payments = 'yes' === $this->get_option('enable_advanced_card_payments', 'no');
-        if ($this->dcc_applies->for_country_currency() === false) {
-            $this->advanced_card_payments = false;
+        if($this->advanced_card_payments) {
+            $this->enable_separate_payment_method = 'yes' === $this->get_option('enable_separate_payment_method', 'no');
+        } else {
+            $this->enable_separate_payment_method = false;
         }
         $this->three_d_secure_contingency = $this->get_option('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
         $this->is_enabled = 'yes' === $this->get_option('enabled', 'no');
@@ -149,12 +151,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enable_checkout_button) {
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
         } else {
-            if (is_checkout() && $this->advanced_card_payments && angelleye_ppcp_has_active_session() === false) {
+            if (is_checkout() && $this->enable_separate_payment_method === false && angelleye_ppcp_has_active_session() === false) {
                 wp_enqueue_script('angelleye-paypal-checkout-sdk');
                 wp_enqueue_script($this->id);
             }
         }
-        if (is_checkout() && $this->advanced_card_payments) {
+        if (is_checkout() && $this->enable_separate_payment_method === false) {
             if (is_checkout_pay_page() === false) {
                 parent::payment_fields();
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
