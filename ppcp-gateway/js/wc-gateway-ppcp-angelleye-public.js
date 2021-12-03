@@ -318,7 +318,8 @@
             var toggleSubmit = isPPEC ? 'hide' : 'show';
             if (is_hosted_field_eligible() === false) {
                 $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
-            }
+                $('.payment_method_angelleye_ppcp_cc').hide();
+            } 
         };
         function is_hosted_field_eligible() {
             if (is_from_checkout) {
