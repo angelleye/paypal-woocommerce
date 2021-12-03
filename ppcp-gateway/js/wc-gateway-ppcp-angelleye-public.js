@@ -101,16 +101,9 @@
                             $('.woocommerce').unblock();
                             $('form.checkout').triggerHandler("checkout_place_order");
                         } else {
-                            if (is_sale) {
-                                $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + data.orderID + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
-                                    window.location.href = data.data.redirect;
-                                });
-
-                            } else {
-                                $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + data.orderID + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
-                                    window.location.href = data.data.redirect;
-                                });
-                            }
+                            $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + data.orderID + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
+                                window.location.href = data.data.redirect;
+                            });
                         }
                     } else {
                         if (angelleye_ppcp_manager.is_skip_final_review === 'yes') {
@@ -155,7 +148,7 @@
                 }
             }).render(selector);
         };
-        $('form.checkout').on('checkout_place_order_angelleye_ppcp', function (event) {
+        $('form.checkout').on('checkout_place_order_' + angelleye_ppcp_manager.prefix_cc_field, function (event) {
             if (is_angelleye_ppcp_selected()) {
                 if (is_hosted_field_eligible() === true) {
                     event.preventDefault();
@@ -272,23 +265,12 @@
                     }).then(
                             function (payload) {
                                 if (payload.orderId) {
-                                    if (angelleye_ppcp_manager.three_d_secure_contingency === 'yes') {
-                                        if (is_liability_shifted(payload) === true) {
-                                            $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
-                                                window.location.href = data.data.redirect;
-                                            });
-                                        } else {
-                                            $('form.checkout').removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
-                                            showError('<ul class="woocommerce-error" role="alert">' + 'We cannot process your order with the payment information that you provided. Please use an alternate payment method.' + '</ul>', $('form'));
-                                        }
-                                    } else {
-                                        $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
-                                            window.location.href = data.data.redirect;
-                                        });
-                                    }
+                                    $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
+                                        window.location.href = data.data.redirect;
+                                    });
                                 }
                             }, function (error) {
-                                console.log(error);
+                        console.log(error);
                         $('form.checkout').removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
                         var error_message = '';
                         if (error.details[0]['description']) {
@@ -310,15 +292,6 @@
                 console.log('error: ', JSON.stringify(err));
             });
         };
-        function is_liability_shifted(payload) {
-            if (typeof payload.liabilityShift === 'undefined') {
-                return false;
-            }
-            if (payload.liabilityShift.toUpperCase() === 'POSSIBLE') {
-                return true;
-            }
-            return false;
-        }
         if (is_from_checkout === false) {
             smart_button_render();
         }
@@ -361,7 +334,7 @@
             return false;
         }
         function is_angelleye_ppcp_selected() {
-            if ($('#payment_method_angelleye_ppcp').is(':checked')) {
+            if ($('#payment_method_angelleye_ppcp').is(':checked') || $('#payment_method_angelleye_ppcp_cc').is(':checked')) {
                 return true;
             } else {
                 return false;
