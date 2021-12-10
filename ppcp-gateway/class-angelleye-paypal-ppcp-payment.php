@@ -451,7 +451,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $extra_line_item = $this->angelleye_ppcp_get_extra_offset_line_item($diff);
                     $details['items'][] = $extra_line_item;
                     $details['total_item_amount'] += $extra_line_item['amount'];
+                    $details['total_item_amount'] = angelleye_ppcp_round($details['total_item_amount'], $decimals);
                     $details['order_total'] += $extra_line_item['amount'];
+                    $details['order_total'] = angelleye_ppcp_round($details['order_total'], $decimals);
                 }
             }
             if (0 == $details['total_item_amount']) {
