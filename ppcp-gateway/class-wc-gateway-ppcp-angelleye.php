@@ -3,6 +3,7 @@
 class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public $settings;
+    public $settings_fields;
     public $api_log;
     public $dcc_applies;
     public $api_request;
@@ -46,6 +47,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
             }
             $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->settings_fields = $this->settings->angelleye_ppcp_setting_fields();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
@@ -136,7 +138,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function init_form_fields() {
         try {
-            $this->form_fields = $this->settings->angelleye_ppcp_setting_fields();
+            $this->form_fields = $this->settings_fields;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
