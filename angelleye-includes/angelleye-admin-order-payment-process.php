@@ -525,6 +525,7 @@ class AngellEYE_Admin_Order_Payment_Process {
                 $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
                 if ($this->gateway_settings['payment_action'] != 'Sale') {
                     $order->set_transaction_id($result['TRANSACTIONID']);
+                    $order->save();
                     $payment_order_meta = array('_payment_action' => $this->gateway_settings['payment_action'], '_first_transaction_id' => $result['TRANSACTIONID']);
                     AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 }

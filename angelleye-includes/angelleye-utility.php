@@ -470,6 +470,7 @@ class AngellEYE_Utility {
                 update_post_meta($order_id, 'PayPal Transaction Fee', $do_capture_result['FEEAMT']);
             }
             $order->set_transaction_id($do_capture_result['TRANSACTIONID']);
+            $order->save();
             self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_capture_result, $order, 'DoCapture');
             $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
         } else {
@@ -561,6 +562,7 @@ class AngellEYE_Utility {
                 $this->angelleye_get_transactionDetails($do_void_result['AUTHORIZATIONID']);
                 $order->set_transaction_id($do_void_result['AUTHORIZATIONID']);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_void_result, $order, 'DoVoid');
+                $order->save();
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
                 $ErrorCode = urldecode($do_void_result["L_ERRORCODE0"]);
@@ -628,6 +630,7 @@ class AngellEYE_Utility {
                         ' DoReauthorization AUTHORIZATIONID: ' . $do_reauthorization_result['AUTHORIZATIONID'] . ' )'
                 );
                 $order->set_transaction_id($do_reauthorization_result['AUTHORIZATIONID']);
+                $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_reauthorization_result, $order, 'DoReauthorization');
             } else {
                 $ErrorCode = urldecode($do_reauthorization_result["L_ERRORCODE0"]);
@@ -717,6 +720,7 @@ class AngellEYE_Utility {
                         ' DoAuthorization AUTHORIZATIONID: ' . $do_authorization_result['TRANSACTIONID'] . ' )'
                 );
                 $order->set_transaction_id($do_authorization_result['TRANSACTIONID']);
+                $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_authorization_result, $order, 'DoAuthorization');
             } else {
                 $ErrorCode = urldecode($do_authorization_result["L_ERRORCODE0"]);
@@ -1827,6 +1831,7 @@ class AngellEYE_Utility {
                     );
                 }
                 $order->set_transaction_id($do_delayed_capture_result['PNREF']);
+                $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_delayed_capture_result, $order, 'DoCapture');
                 $this->angelleye_get_transactionDetails($do_delayed_capture_result['PNREF']);
                 $this->angelleye_get_transactionDetails($transaction_id);
@@ -1884,6 +1889,7 @@ class AngellEYE_Utility {
                 );
                 $this->angelleye_get_transactionDetails($transaction_id);
                 $order->set_transaction_id($transaction_id);
+                $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_void_result, $order, 'DoVoid');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
@@ -1946,6 +1952,7 @@ class AngellEYE_Utility {
                 update_post_meta($order_id, '_first_transaction_id', $do_authorization_result['PNREF']);
                 update_post_meta($order_id, '_trans_date', current_time('mysql'));
                 $order->set_transaction_id($transaction_id);
+                $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_authorization_result, $order, 'DoAuthorization');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
@@ -2186,6 +2193,7 @@ class AngellEYE_Utility {
                     } else {
                         update_post_meta( $order_id, '_transaction_id', $result->transaction->id );
                     }
+                    $order->save();
                     $insert_paypal_transaction = array(
                         'ID' => '',
                         'post_type' => 'paypal_transaction',

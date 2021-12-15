@@ -2842,6 +2842,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             update_post_meta($order_id, '_first_transaction_id', $payment_method_nonce);
             if(!$old_wc) {
                 $order->set_transaction_id($payment_method_nonce);
+                $order->save();
             } else {
                 update_post_meta( $order_id, '_transaction_id', $payment_method_nonce );
             }
@@ -2995,6 +2996,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             update_post_meta($order_id, '_first_transaction_id', $payment_method_token);
             if(!$old_wc) {
                 $order->set_transaction_id($payment_method_token);
+                $order->save();
             } else {
                 update_post_meta( $order_id, '_transaction_id', $payment_method_token );
             }
