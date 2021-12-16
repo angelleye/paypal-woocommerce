@@ -335,9 +335,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (empty($this->checkout_details)) {
             return;
         }
-        if ($this->set_billing_address === false) {
-            //remove_action('woocommerce_checkout_billing', array($checkout, 'checkout_form_billing'));
-        }
         add_action('woocommerce_checkout_billing', array($this, 'paypal_billing_details'), 9);
         if (true === WC()->cart->needs_shipping_address()) {
             add_action('woocommerce_checkout_shipping', array($this, 'paypal_shipping_details'), 9);
@@ -361,7 +358,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                         echo $billing_edit_link;
                     }
                     ?>
-
                 </h3>
                 <?php
             }
