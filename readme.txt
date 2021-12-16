@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 5.8.2
-Stable tag: 3.0.8
+Stable tag: 3.0.9
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,7 +127,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 3.0.7 - 12.13.2021 =
+= 3.0.9 - 12.16.2021 =
+* Fix - Resolves a problem processing refunds through WooCommerce with PayPal Express Checkout. ([PFW-940](https://github.com/angelleye/paypal-woocommerce/pull/1633))
+* Fix - Resolves a issue with Force shipping to the customer billing address" option enable. ([PFW-942](https://github.com/angelleye/paypal-woocommerce/pull/1632))
+* Fix - Resolves a issue with shipping address whrn local pickup shipping method used in PPCP payment method. ([PFW-941](https://github.com/angelleye/paypal-woocommerce/pull/1634))
+
+= 3.0.8 - 12.13.2021 =
 * Fix - Resolves decimal precision issue. ([PFW-938](https://github.com/angelleye/paypal-woocommerce/pull/1630))
 * Fix - Resolves fatal error with WP REST API V3. ([PFW-939](https://github.com/angelleye/paypal-woocommerce/pull/1631))
 
