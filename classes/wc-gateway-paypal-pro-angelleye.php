@@ -1284,6 +1284,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
         if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
+            $order->save();
             // Add order note
             $order->add_order_note(sprintf(__('PayPal Pro (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             //$order->add_order_note("PayPal Results: ".print_r($PayPalResult,true));
@@ -1965,6 +1966,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
+            $order->save();
             $order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             $avs_response_code = isset($PayPalResult['AVSCODE']) ? $PayPalResult['AVSCODE'] : '';
             $avs_response_message = $this->PayPal->GetAVSCodeMessage($avs_response_code);
@@ -2339,6 +2341,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
         } else {
             $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
+            $order->save();
             $order->update_status('on-hold');
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
