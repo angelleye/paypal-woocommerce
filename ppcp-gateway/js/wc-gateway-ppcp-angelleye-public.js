@@ -317,7 +317,9 @@
             var isPPEC = is_angelleye_ppcp_selected();
             var toggleSubmit = isPPEC ? 'hide' : 'show';
             if (is_hosted_field_eligible() === false) {
-                $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
+                if( angelleye_ppcp_manager.is_enable_checkout_button === 'yes' ) {
+                    $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
+                }
                 $('.payment_method_angelleye_ppcp_cc').hide();
             } 
         };

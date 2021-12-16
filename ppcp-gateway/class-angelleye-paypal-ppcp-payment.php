@@ -216,7 +216,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
                     $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
                 }
-                if ($order->needs_shipping_address()) {
+                if ($order->needs_shipping_address() || WC()->cart->needs_shipping_address()) {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
@@ -558,6 +558,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             case 'checkout':
                 $shipping_preference = WC()->cart->needs_shipping() ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING';
                 break;
+            case 'pay_page' :
+                $shipping_preference = WC()->cart->needs_shipping() ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING';
+                break;
         }
         return $shipping_preference;
     }
@@ -871,7 +874,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'breakdown' => $update_amount_request
                 ),
             );
-            if ($order->needs_shipping_address()) {
+            if ($order->needs_shipping_address() || WC()->cart->needs_shipping_address()) {
                 if (( $old_wc && ( $order->shipping_address_1 || $order->shipping_address_2 ) ) || (!$old_wc && $order->has_shipping_address() )) {
                     $shipping_first_name = $old_wc ? $order->shipping_first_name : $order->get_shipping_first_name();
                     $shipping_last_name = $old_wc ? $order->shipping_last_name : $order->get_shipping_last_name();
@@ -1502,7 +1505,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
                     $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
                 }
-                if ($order->needs_shipping_address()) {
+                if ($order->needs_shipping_address() || WC()->cart->needs_shipping_address()) {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
