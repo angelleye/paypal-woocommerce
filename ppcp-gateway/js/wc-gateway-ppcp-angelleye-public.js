@@ -317,11 +317,11 @@
             var isPPEC = is_angelleye_ppcp_selected();
             var toggleSubmit = isPPEC ? 'hide' : 'show';
             if (is_hosted_field_eligible() === false) {
-                if( angelleye_ppcp_manager.is_enable_checkout_button === 'yes' ) {
-                    $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
-                }
                 $('.payment_method_angelleye_ppcp_cc').hide();
             } 
+            if( angelleye_ppcp_manager.is_enable_checkout_button === 'yes' ) {
+               $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
+           }
         };
         function is_hosted_field_eligible() {
             if (is_from_checkout) {
@@ -337,7 +337,7 @@
             return false;
         }
         function is_angelleye_ppcp_selected() {
-            if ($('#payment_method_angelleye_ppcp').is(':checked') || $('#payment_method_angelleye_ppcp_cc').is(':checked')) {
+            if ($('#payment_method_angelleye_ppcp').is(':checked')) {
                 return true;
             } else {
                 return false;
