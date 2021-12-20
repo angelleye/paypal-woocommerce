@@ -314,14 +314,30 @@
             hide_show_place_order_button();
         });
         var hide_show_place_order_button = function () {
-            var isPPEC = is_angelleye_ppcp_selected();
-            var toggleSubmit = isPPEC ? 'hide' : 'show';
             if (is_hosted_field_eligible() === false) {
                 $('.payment_method_angelleye_ppcp_cc').hide();
-            } 
-            if( angelleye_ppcp_manager.is_enable_checkout_button === 'yes' ) {
-               $('#place_order').animate({opacity: toggleSubmit, height: toggleSubmit, padding: toggleSubmit}, 230);
-           }
+            }
+            if (angelleye_ppcp_manager.advanced_card_payments === 'yes') {
+                if (angelleye_ppcp_manager.enable_separate_payment_method === 'no') {
+                    if (is_hosted_field_eligible() === true) {
+                        $('#place_order').show();
+                    } else {
+                        $('#place_order').hide();
+                    }
+                } else if (angelleye_ppcp_manager.enable_separate_payment_method === 'yes') {
+                    if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_enable_checkout_button === 'yes') {
+                        $('#place_order').hide();
+                    } else {
+                        $('#place_order').show();
+                    }
+                }
+            } else {
+                if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_enable_checkout_button === 'yes') {
+                    $('#place_order').hide();
+                } else {
+                    $('#place_order').show();
+                }
+            }
         };
         function is_hosted_field_eligible() {
             if (is_from_checkout) {
