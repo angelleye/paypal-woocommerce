@@ -149,17 +149,15 @@
             }).render(selector);
         };
         $('form.checkout').on('checkout_place_order_' + angelleye_ppcp_manager.prefix_cc_field, function (event) {
-            if (is_angelleye_ppcp_selected()) {
-                if (is_hosted_field_eligible() === true) {
-                    event.preventDefault();
-                    if ($('form.checkout').is('.paypal_cc_submiting')) {
-                        return false;
-                    } else {
-                        $('form.checkout').addClass('paypal_cc_submiting');
-                        $(document.body).trigger('submit_paypal_cc_form');
-                    }
+            if (is_hosted_field_eligible() === true) {
+                event.preventDefault();
+                if ($('form.checkout').is('.paypal_cc_submiting')) {
                     return false;
+                } else {
+                    $('form.checkout').addClass('paypal_cc_submiting');
+                    $(document.body).trigger('submit_paypal_cc_form');
                 }
+                return false;
             }
             return true;
         });
