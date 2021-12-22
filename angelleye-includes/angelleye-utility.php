@@ -466,6 +466,7 @@ class AngellEYE_Utility {
             }
             if(isset($do_capture_result['FEEAMT'])) {
                 update_post_meta($order_id, '_paypal_fee', $do_capture_result['FEEAMT']);
+                update_post_meta($order_id, '_paypal_transaction_fee', $do_capture_result['FEEAMT']);
                 update_post_meta($order_id, '_paypal_fee_currency_code', $do_capture_result['CURRENCYCODE']);
                 update_post_meta($order_id, 'PayPal Transaction Fee', $do_capture_result['FEEAMT']);
             }

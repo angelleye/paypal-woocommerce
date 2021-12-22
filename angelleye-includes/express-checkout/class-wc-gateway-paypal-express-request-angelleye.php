@@ -347,6 +347,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if(!empty($this->paypal_response['PAYMENTINFO_0_FEEAMT'])) {
                 $payment_meta['PayPal Transaction Fee'] = $this->paypal_response['PAYMENTINFO_0_FEEAMT'];
                 update_post_meta($order_id, '_paypal_fee', $this->paypal_response['PAYMENTINFO_0_FEEAMT']);
+                update_post_meta($order_id, '_paypal_transaction_fee', $this->paypal_response['PAYMENTINFO_0_FEEAMT']);
                 update_post_meta($order_id, '_paypal_fee_currency_code', $this->paypal_response['PAYMENTINFO_0_CURRENCYCODE']);
             }
             AngellEYE_Utility::angelleye_add_paypal_payment_meta($order_id, $payment_meta);
