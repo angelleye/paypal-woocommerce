@@ -789,6 +789,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $currency_code = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
                     $value = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value'] : '';
                     angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
+                    angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
                     angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
                     $transaction_id = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['id']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['id'] : '';
                     $seller_protection = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['seller_protection']['status']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['seller_protection']['status'] : '';
@@ -1231,11 +1232,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $currency_code = isset($this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
                 $value = isset($this->api_response['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['seller_receivable_breakdown']['paypal_fee']['value'] : '';
                 angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
+                angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
                 angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
                 $transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
                 $seller_protection = isset($this->api_response['seller_protection']['status']) ? $this->api_response['seller_protection']['status'] : '';
                 $payment_status = isset($this->api_response['status']) ? $this->api_response['status'] : '';
-                angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
                 angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
                 $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'smart-paypal-checkout-for-woocommerce'), $order->get_payment_method_title(), $transaction_id));
                 $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
@@ -1328,6 +1329,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $currency_code = isset($this->checkout_details->purchase_units[0]->payments->captures[0]->seller_receivable_breakdown->paypal_fee->currency_code) ? $this->checkout_details->purchase_units[0]->payments->captures[0]->seller_receivable_breakdown->paypal_fee->currency_code : '';
             $value = isset($this->checkout_details->purchase_units[0]->payments->captures[0]->seller_receivable_breakdown->paypal_fee->value) ? $this->checkout_details->purchase_units[0]->payments->captures[0]->seller_receivable_breakdown->paypal_fee->value : '';
             angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
+            angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
             angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
             $payment_status = isset($this->checkout_details->purchase_units[0]->payments->captures[0]->status) ? $this->checkout_details->purchase_units[0]->payments->captures[0]->status : '';
             if ($payment_status == 'COMPLETED') {
