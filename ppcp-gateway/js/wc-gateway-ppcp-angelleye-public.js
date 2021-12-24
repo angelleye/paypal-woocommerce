@@ -299,9 +299,11 @@
         $(document.body).on('updated_cart_totals updated_checkout', function () {
             hide_show_place_order_button();
             setTimeout(function () {
-
                 smart_button_render();
                 if (is_hosted_field_eligible() === true) {
+                    if ($('#angelleye_ppcp-card-number iframe').length === 0) {
+                        $('form.checkout').removeClass('HostedFields');
+                    }
                     $('.checkout_cc_separator').show();
                     $('#wc-angelleye_ppcp-cc-form').show();
                     hosted_button_render();
