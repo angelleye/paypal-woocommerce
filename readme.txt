@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 5.8.2
-Stable tag: 3.0.11
+Stable tag: 3.0.12
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.12 - 12.27.2021 =
+* Feature - Adds Gateway title and shorting functionality for Advanced Credit Cards. ([PFW-949](https://github.com/angelleye/paypal-woocommerce/pull/1640))
+* Tweak - Resolves Advanced Credit Cards fields loading issue. ([PFW-935](https://github.com/angelleye/paypal-woocommerce/pull/1639))
+* Fix - Resolves a issue with WooCommerce Bookings plugin. ([PFW-948](https://github.com/angelleye/paypal-woocommerce/pull/1638))
 
 = 3.0.11 - 12.22.2021 =
 * Feature - Adds Myworks.software compatibility. ([PFW-945](https://github.com/angelleye/paypal-woocommerce/pull/1637))
