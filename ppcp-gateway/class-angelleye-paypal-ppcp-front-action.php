@@ -47,14 +47,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
             }
-            if (!class_exists('AngellEYE_PayPal_PPCP_Product')) {
-                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-product.php');
-            }
             if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
             }
             $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
-            $this->product = AngellEYE_PayPal_PPCP_Product::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
@@ -84,6 +80,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         WC()->checkout->process_checkout();
                     } elseif (isset($_GET['from']) && 'product' === $_GET['from']) {
                         try {
+                            if (!class_exists('AngellEYE_PayPal_PPCP_Product')) {
+                                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-product.php');
+                            }
+                            $this->product = AngellEYE_PayPal_PPCP_Product::instance();
                             $this->product::angelleye_ppcp_add_to_cart_action();
                             $this->payment_request->angelleye_ppcp_create_order_request();
                             exit();
