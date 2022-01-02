@@ -67,27 +67,13 @@ jQuery(function ($) {
             if ($("#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option[value='card']").length !== 0) {
                 $('#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option[value="card"]').remove();
             }
-            if ($('#woocommerce_angelleye_ppcp_enable_separate_payment_method').is(':checked') && $('#woocommerce_angelleye_ppcp_enable_separate_payment_method').is(":visible")) {
-                $('#woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').show();
-            } else {
-                $('#woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').hide();
-            }
         } else {
             if ($("#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option[value='card']").length === 0) {
                 $('#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option:eq(0)').before(jQuery("<option></option>").attr("value", "card").text("Credit or Debit Card"));
             }
-            $('#woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_enable_separate_payment_method, #woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').hide();
+            $('#woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_enable_separate_payment_method').closest('tr').hide();
         }
     }).change();
-
-    $('#woocommerce_angelleye_ppcp_enable_separate_payment_method').change(function () {
-        if ($(this).is(':checked') && $(this).is(":visible")) {
-            $('#woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').show();
-        } else {
-            $('#woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').hide();
-        }
-    });
-
     $('#woocommerce_angelleye_ppcp_sandbox_disconnect, #woocommerce_angelleye_ppcp_live_disconnect, #woocommerce_angelleye_ppcp_sandbox_onboarding, #woocommerce_angelleye_ppcp_live_onboarding, #woocommerce_angelleye_ppcp_live_merchant_id, #woocommerce_angelleye_ppcp_sandbox_merchant_id').closest('tr').hide();
     $('#woocommerce_angelleye_ppcp_testmode').change(function () {
         var ppcp_production_onboarding_connect_fields = $('#woocommerce_angelleye_ppcp_live_onboarding').closest('tr');

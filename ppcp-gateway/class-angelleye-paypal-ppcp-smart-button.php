@@ -13,7 +13,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $payment_request;
     public $client_token;
     protected static $_instance = null;
-    public $advanced_card_payments_display_position;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -64,16 +63,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_get_properties() {
         $this->title = $this->settings->get('title', 'PayPal Complete Payments');
         $this->enabled = 'yes' === $this->settings->get('enabled', 'no');
-
+        
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         $this->order_review_page_enable_coupons = 'yes' === $this->settings->get('order_review_page_enable_coupons', 'yes');
         $this->order_review_page_title = apply_filters('angelleye_ppcp_order_review_page_title', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
         $this->order_review_page_description = apply_filters('angelleye_ppcp_order_review_page_description', __("<strong>You're almost done!</strong><br>Review your information before you place your order.", 'paypal-for-woocommerce'));
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
         $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
-        if ($this->advanced_card_payments) {
+        if($this->advanced_card_payments) {
             $this->enable_separate_payment_method = 'yes' === $this->settings->get('enable_separate_payment_method', 'no');
-            $this->advanced_card_payments_display_position = $this->settings->get('advanced_card_payments_display_position', 'after');
         } else {
             $this->enable_separate_payment_method = false;
         }
@@ -176,8 +174,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('sgo_js_async_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_action('woocommerce_pay_order_after_submit', array($this, 'angelleye_ppcp_add_order_id'));
         add_filter('woocommerce_payment_gateways', array($this, 'angelleye_ppcp_hide_show_gateway'), 9999);
-        add_filter('woocommerce_available_payment_gateways', array($this, 'angelleye_ppcp_short_gateway'), 9999);
-
         add_filter('woocommerce_checkout_fields', array($this, 'angelleye_ppcp_woocommerce_checkout_fields'), 999);
         //add_action('http_api_debug', array($this, 'angelleye_ppcp_all_web_request'), 10, 5);
         add_action('woocommerce_review_order_before_order_total', array($this, 'angelleye_ppcp_display_payment_method_title_review_page'));
@@ -297,7 +293,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_cart_page() {
-        if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
+        if(class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
             return false;
         }
         wp_enqueue_script($this->angelleye_ppcp_plugin_name);
@@ -722,38 +718,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_hide_show_gateway($methods) {
         if ($this->enable_separate_payment_method) {
-            if ((isset($_GET['page']) && 'wc-settings' === $_GET['page'])) {
-                
-            } else {
-                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
-                $methods[] = 'WC_Gateway_CC_AngellEYE';
-            }
-        }
-        return $methods;
-    }
-
-    public function angelleye_ppcp_short_gateway($methods) {
-        $new_method = array();
-        $angelleye_ppcp_cc = array();
-        if ($this->enable_separate_payment_method) {
-            if (isset($methods['angelleye_ppcp_cc'])) {
-                $angelleye_ppcp_cc = $methods['angelleye_ppcp_cc'];
-                unset($methods['angelleye_ppcp_cc']);
-            }
             foreach ($methods as $key => $method) {
-                if ($key === 'angelleye_ppcp') {
-                    if ($this->advanced_card_payments_display_position === 'after') {
-                        $new_method ['angelleye_ppcp'] = $methods['angelleye_ppcp'];
-                        $new_method ['angelleye_ppcp_cc'] = $angelleye_ppcp_cc;
+                if ($method === 'WC_Gateway_PPCP_AngellEYE') {
+                    if ((isset($_GET['page']) && 'wc-settings' === $_GET['page'])) {
                     } else {
-                        $new_method ['angelleye_ppcp_cc'] = $angelleye_ppcp_cc;
-                        $new_method ['angelleye_ppcp'] = $methods['angelleye_ppcp'];
+                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
+                        $methods[] = 'WC_Gateway_CC_AngellEYE';
                     }
-                } else {
-                    $new_method [$key] = $method;
+                    break;
                 }
             }
-            return $new_method;
         }
         return $methods;
     }

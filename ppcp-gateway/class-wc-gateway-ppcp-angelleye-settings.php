@@ -1144,25 +1144,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'description' => __('Enable this option if you would like to use separate payment method as Advanced Credit Cards in WooCommerce checkout page.', 'paypal-for-woocommerce'),
                 ),
-                'advanced_card_payments_title' => array(
-                    'title' => __('Advanced Credit Cards Title', 'paypal-for-woocommerce'),
-                    'type' => 'text',
-                    'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
-                    'default' => __('Credit card', 'paypal-for-woocommerce'),
-                    'desc_tip' => true,
-                ),
-                'advanced_card_payments_display_position' => array(
-                    'title' => __('Advanced Credit Cards Position', 'paypal-for-woocommerce'),
-                    'type' => 'select',
-                    'class' => 'wc-enhanced-select',
-                    'options' => array(
-                        'before' => __('Before PayPal Smart Button', 'paypal-for-woocommerce'),
-                        'after' => __('After PayPal Smart Button', 'paypal-for-woocommerce'),
-                    ),
-                    'default' => 'after',
-                    'desc_tip' => true,
-                    'description' => __('This controls the gateway position which the user sees during checkout.', 'paypal-for-woocommerce'),
-                ),
                 'soft_descriptor' => array(
                     'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
                     'type' => 'text',
