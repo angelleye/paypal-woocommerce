@@ -70,6 +70,7 @@ class AngellEYE_PayPal_PPCP_Request {
             if (strpos($url, 'paypal.com') !== false) {
                 $this->result = $this->angelleye_ppcp_remote_get($url, $args, $action_name);
             } else {
+                $args['timeout'] = '60';
                 $args['user-agent'] = 'PFW_PPCP';
                 $this->result = wp_remote_get($url, $args);
             }

@@ -81,6 +81,40 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             if (apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
                 $skip_final_review_option_not_allowed_terms = ' (You currently have a Terms &amp; Conditions page set, which requires the review page, and will override this option.)';
             }
+            $button_height = array(
+                '' => __('Default Height (Recommended)', 'paypal-for-woocommerce'),
+                25 => __('25 px', 'paypal-for-woocommerce'),
+                26 => __('26 px', 'paypal-for-woocommerce'),
+                27 => __('27 px', 'paypal-for-woocommerce'),
+                28 => __('28 px', 'paypal-for-woocommerce'),
+                29 => __('29 px', 'paypal-for-woocommerce'),
+                30 => __('30 px', 'paypal-for-woocommerce'),
+                31 => __('31 px', 'paypal-for-woocommerce'),
+                32 => __('32 px', 'paypal-for-woocommerce'),
+                33 => __('33 px', 'paypal-for-woocommerce'),
+                34 => __('34 px', 'paypal-for-woocommerce'),
+                35 => __('35 px', 'paypal-for-woocommerce'),
+                36 => __('36 px', 'paypal-for-woocommerce'),
+                37 => __('37 px', 'paypal-for-woocommerce'),
+                38 => __('38 px', 'paypal-for-woocommerce'),
+                39 => __('39 px', 'paypal-for-woocommerce'),
+                40 => __('40 px', 'paypal-for-woocommerce'),
+                41 => __('41 px', 'paypal-for-woocommerce'),
+                42 => __('42 px', 'paypal-for-woocommerce'),
+                43 => __('43 px', 'paypal-for-woocommerce'),
+                44 => __('44 px', 'paypal-for-woocommerce'),
+                45 => __('45 px', 'paypal-for-woocommerce'),
+                46 => __('46 px', 'paypal-for-woocommerce'),
+                47 => __('47 px', 'paypal-for-woocommerce'),
+                48 => __('48 px', 'paypal-for-woocommerce'),
+                49 => __('49 px', 'paypal-for-woocommerce'),
+                50 => __('50 px', 'paypal-for-woocommerce'),
+                51 => __('51 px', 'paypal-for-woocommerce'),
+                52 => __('52 px', 'paypal-for-woocommerce'),
+                53 => __('53 px', 'paypal-for-woocommerce'),
+                54 => __('51 px', 'paypal-for-woocommerce'),
+                55 => __('55 px', 'paypal-for-woocommerce')
+            );
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -247,6 +281,29 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'pill' => __('Pill', 'paypal-for-woocommerce')
                     ),
                 ),
+                'product_button_size' => array(
+                    'title' => __('Button Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                    'default' => 'responsive',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'small' => __('Small', 'paypal-for-woocommerce'),
+                        'medium' => __('Medium', 'paypal-for-woocommerce'),
+                        'large' => __('Large', 'paypal-for-woocommerce'),
+                        'responsive' => __('Responsive (Recommended)', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'product_button_height' => array(
+                    'title' => __('Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => '',
+                    'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
+                ),
                 'product_button_label' => array(
                     'title' => __('Button Label', 'paypal-for-woocommerce'),
                     'type' => 'select',
@@ -349,6 +406,29 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'rect' => __('Rect (Recommended)', 'paypal-for-woocommerce'),
                         'pill' => __('Pill', 'paypal-for-woocommerce')
                     ),
+                ),
+                'cart_button_size' => array(
+                    'title' => __('Button Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                    'default' => 'responsive',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'small' => __('Small', 'paypal-for-woocommerce'),
+                        'medium' => __('Medium', 'paypal-for-woocommerce'),
+                        'large' => __('Large', 'paypal-for-woocommerce'),
+                        'responsive' => __('Responsive (Recommended)', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'cart_button_height' => array(
+                    'title' => __('Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => '',
+                    'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
                 ),
                 'cart_button_label' => array(
                     'title' => __('Button Label', 'paypal-for-woocommerce'),
@@ -453,6 +533,29 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'pill' => __('Pill', 'paypal-for-woocommerce')
                     ),
                 ),
+                'checkout_button_size' => array(
+                    'title' => __('Button Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                    'default' => 'responsive',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'small' => __('Small', 'paypal-for-woocommerce'),
+                        'medium' => __('Medium', 'paypal-for-woocommerce'),
+                        'large' => __('Large', 'paypal-for-woocommerce'),
+                        'responsive' => __('Responsive (Recommended)', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'checkout_button_height' => array(
+                    'title' => __('Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => '',
+                    'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
+                ),
                 'checkout_button_label' => array(
                     'title' => __('Button Label', 'paypal-for-woocommerce'),
                     'type' => 'select',
@@ -555,6 +658,29 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'rect' => __('Rect (Recommended)', 'paypal-for-woocommerce'),
                         'pill' => __('Pill', 'paypal-for-woocommerce')
                     ),
+                ),
+                'mini_cart_button_size' => array(
+                    'title' => __('Button Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                    'default' => 'responsive',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'small' => __('Small', 'paypal-for-woocommerce'),
+                        'medium' => __('Medium', 'paypal-for-woocommerce'),
+                        'large' => __('Large', 'paypal-for-woocommerce'),
+                        'responsive' => __('Responsive (Recommended)', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'mini_cart_button_height' => array(
+                    'title' => __('Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => '',
+                    'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
                 ),
                 'mini_cart_button_label' => array(
                     'title' => __('Button Label', 'paypal-for-woocommerce'),

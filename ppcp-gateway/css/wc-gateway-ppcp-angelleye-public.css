@@ -128,3 +128,28 @@
 .cfw-customer-info-address-container.cfw-parsley-shipping-details.woocommerce-shipping-fields.woocommerce-shipping-fields__field-wrapper {
     display: block;
 }
+
+.angelleye_ppcp_vertical_small {
+    width: 150px;
+}
+.angelleye_ppcp_vertical_medium {
+    width: 250px;
+}
+.angelleye_ppcp_vertical_large {
+    width: 350px;
+}
+.angelleye_ppcp_horizontal_small {
+    width: 300px;
+}
+.angelleye_ppcp_horizontal_medium {
+    width: 400px;
+}
+.angelleye_ppcp_horizontal_large {
+    width: 500px;
+}
+@media screen and (max-width: 400px) {
+    .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large{
+        width: 100%;
+        margin: 0 auto;
+    }
+}

@@ -49,6 +49,9 @@
                 shape: angelleye_ppcp_manager.style_shape,
                 label: angelleye_ppcp_manager.style_label
             };
+            if (angelleye_ppcp_manager.style_height !== '') {
+                angelleye_ppcp_style['height'] = parseInt(angelleye_ppcp_manager.style_height);
+            }
             if (angelleye_ppcp_manager.style_layout !== 'vertical') {
                 angelleye_ppcp_style['tagline'] = (angelleye_ppcp_manager.style_tagline === 'yes') ? true : false;
             }
