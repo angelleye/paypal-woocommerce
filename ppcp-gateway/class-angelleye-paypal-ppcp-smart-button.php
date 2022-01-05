@@ -330,6 +330,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function display_paypal_button_checkout_page() {
         if (angelleye_ppcp_has_active_session() === false) {
+            $this->angelleye_ppcp_smart_button_style_properties();
             wp_enqueue_script('angelleye-paypal-checkout-sdk');
             wp_enqueue_script($this->angelleye_ppcp_plugin_name);
             $separator = '';
