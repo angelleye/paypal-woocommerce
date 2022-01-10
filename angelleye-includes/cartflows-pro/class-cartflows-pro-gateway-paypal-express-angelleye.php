@@ -6,7 +6,7 @@
  */
 
 /**
- * Class Cartflows_Pro_Gateway_Paypal_Express.
+ * Class Cartflows_Pro_Gateway_Paypal_Express_Angelleye.
  */
 class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypal_Gateway_helper {
 
@@ -42,7 +42,6 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'), 20);
         add_filter('angelleye_woocommerce_express_checkout_set_express_checkout_request_args', array($this, 'modify_paypal_arguments'), 999);
         add_filter('angelleye_woocommerce_express_checkout_do_reference_transaction_request_args', array($this, 'modify_do_reference_transaction_request_paypal_arguments'), 999);
-
         add_action('cartflows_offer_subscription_created', array($this, 'add_subscription_payment_meta_for_paypal_express'), 10, 3);
     }
 
@@ -287,34 +286,34 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
             $response = $this->initiate_express_checkout_request(
                     array(
-                'currency' => $order ? $order->get_currency() : get_woocommerce_currency(),
-                'return_url' => $this->get_callback_url(
-                        array(
-                            'action' => 'cartflows_paypal_return',
-                            'step_id' => $step_id,
-                            'order_id' => $order_id,
-                            'order_key' => $order_key,
-                            'session_key' => $session_key,
-                            'variation_id' => $variation_id,
-                            'input_qty' => $input_qty,
-                        )
-                ),
-                'cancel_url' => $this->get_callback_url(
-                        array(
-                            'action' => 'cartflows_paypal_cancel',
-                            'step_id' => $step_id,
-                            'order_id' => $order_id,
-                            'order_key' => $order_key,
-                            'session_key' => $session_key,
-                            'variation_id' => $variation_id,
-                            'input_qty' => $input_qty,
-                        )
-                ),
-                'notify_url' => $this->get_callback_url('notify_url'),
-                'order' => $order,
-                'step_id' => $step_id,
-                'variation_id' => $variation_id,
-                'input_qty' => $input_qty,
+                        'currency' => $order ? $order->get_currency() : get_woocommerce_currency(),
+                        'return_url' => $this->get_callback_url(
+                                array(
+                                    'action' => 'cartflows_paypal_return',
+                                    'step_id' => $step_id,
+                                    'order_id' => $order_id,
+                                    'order_key' => $order_key,
+                                    'session_key' => $session_key,
+                                    'variation_id' => $variation_id,
+                                    'input_qty' => $input_qty,
+                                )
+                        ),
+                        'cancel_url' => $this->get_callback_url(
+                                array(
+                                    'action' => 'cartflows_paypal_cancel',
+                                    'step_id' => $step_id,
+                                    'order_id' => $order_id,
+                                    'order_key' => $order_key,
+                                    'session_key' => $session_key,
+                                    'variation_id' => $variation_id,
+                                    'input_qty' => $input_qty,
+                                )
+                        ),
+                        'notify_url' => $this->get_callback_url('notify_url'),
+                        'order' => $order,
+                        'step_id' => $step_id,
+                        'variation_id' => $variation_id,
+                        'input_qty' => $input_qty,
                     ), true
             );
 
@@ -550,8 +549,6 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
             $description = sprintf(_x('Orders with %s', 'data sent to PayPal', 'paypal-for-woocommerce'), get_bloginfo('name'));
 
             $description = html_entity_decode($description, ENT_NOQUOTES, 'UTF-8');
-
-
 
             if ($data && isset($data['METHOD']) && 'DoReferenceTransaction' == $data['METHOD']) {
 
@@ -1266,7 +1263,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 }
 
 /**
- *  Prepare if class 'Cartflows_Pro_Gateway_Paypal_Express' exist.
+ *  Prepare if class 'Cartflows_Pro_Gateway_Paypal_Express_Angelleye' exist.
  *  Kicking this off by calling 'get_instance()' method
  */
-Cartflows_Pro_Gateway_Paypal_Express::get_instance();
+Cartflows_Pro_Gateway_Paypal_Express_Angelleye::get_instance();

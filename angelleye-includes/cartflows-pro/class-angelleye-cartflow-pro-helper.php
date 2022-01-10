@@ -38,7 +38,7 @@ class Angelleye_Cartflows_Pro_Helper {
     }
 
     /**
-     * 
+     *
      * @param type $supported_gateways
      */
     public function own_cartflows_offer_supported_payment_gateways($supported_gateways) {
