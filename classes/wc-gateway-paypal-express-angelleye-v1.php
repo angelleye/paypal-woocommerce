@@ -40,9 +40,18 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->is_paypal_credit_enable = true;
         if( $this->is_paypal_credit_enable ) {
             $this->disallowed_funding_methods_array = array(
-                'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
                 'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
-                'elv' => __('ELV', 'paypal-for-woocommerce')
+                'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
+                'blik' => __('BLIK', 'paypal-for-woocommerce'),
+                'eps' => __('eps', 'paypal-for-woocommerce'),
+                'giropay' => __('giropay', 'paypal-for-woocommerce'),
+                'ideal' => __('iDEAL', 'paypal-for-woocommerce'),
+                'mercadopago' => __('Mercado Pago', 'paypal-for-woocommerce'),
+                'mybank' => __('MyBank', 'paypal-for-woocommerce'),
+                'p24' => __('Przelewy24', 'paypal-for-woocommerce'),
+                'sofort' => __('Sofort', 'paypal-for-woocommerce'),
+                'venmo' => __('Venmo', 'paypal-for-woocommerce')
             );
             $this->button_label_array = array(
                 'checkout' => __('Checkout', 'paypal-for-woocommerce'),
@@ -54,7 +63,16 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             $this->disallowed_funding_methods_array = array(
                 'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
-                'elv' => __('ELV', 'paypal-for-woocommerce')
+                'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
+                'blik' => __('BLIK', 'paypal-for-woocommerce'),
+                'eps' => __('eps', 'paypal-for-woocommerce'),
+                'giropay' => __('giropay', 'paypal-for-woocommerce'),
+                'ideal' => __('iDEAL', 'paypal-for-woocommerce'),
+                'mercadopago' => __('Mercado Pago', 'paypal-for-woocommerce'),
+                'mybank' => __('MyBank', 'paypal-for-woocommerce'),
+                'p24' => __('Przelewy24', 'paypal-for-woocommerce'),
+                'sofort' => __('Sofort', 'paypal-for-woocommerce'),
+                'venmo' => __('Venmo', 'paypal-for-woocommerce')
             );
             $this->button_label_array = array(
                 'checkout' => __('Checkout', 'paypal-for-woocommerce'),
