@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
-Tested up to: 5.8.2
-Stable tag: 3.0.12
+Tested up to: 5.8.3
+Stable tag: 3.0.13
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.13 - 01.10.2021 =
+* Feature - Adds new funding methods list. ([PFW-950](https://github.com/angelleye/paypal-woocommerce/pull/1641))
+* Feature - Adds PPCP - Smart Button Size and Height. ([PFW-912](https://github.com/angelleye/paypal-woocommerce/pull/1643))
+* Fix - Resolves order status not updating after Capturing funds. ([PFW-955](https://github.com/angelleye/paypal-woocommerce/pull/1644))
+* Fix - Resolves PayFlow conflict with WooCommerce Zapier plugin. ([PFW-867](https://github.com/angelleye/paypal-woocommerce/pull/1585))
+* Fix - Resolves Compatibility issue with WPML plugin. ([PFW-958](https://github.com/angelleye/paypal-woocommerce/pull/1645))
 
 = 3.0.12 - 12.27.2021 =
 * Feature - Adds Gateway title and shorting functionality for Advanced Credit Cards. ([PFW-949](https://github.com/angelleye/paypal-woocommerce/pull/1640))
