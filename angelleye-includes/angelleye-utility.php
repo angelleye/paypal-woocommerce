@@ -1066,15 +1066,16 @@ class AngellEYE_Utility {
             $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions($order);
         }
         if( $payment_method != 'braintree') {
-            foreach ($posts_array as $post_data):
+            foreach ($posts_array as $post_data) {
                 $payment_status = get_post_meta($post_data->ID, 'PAYMENTSTATUS', true);
-                //$payment_status = get_post_meta($post->ID, 'post_status', true);
                 if (isset($post->post_title) && !empty($post_data->post_title) && $payment_status != 'Completed') {
                     $this->angelleye_get_transactionDetails($post_data->post_title);
+                } 
+                if ( $order->has_status( array( 'on-hold', 'pending', 'failed', 'cancelled' )) ) {
+                    $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
                 }
-            endforeach;
+            }
             if (empty($this->angelleye_woocommerce_order_actions)) {
-
                 $this->angelleye_display_user_instruction_for_payment_action($payment_action, $this->angelleye_woocommerce_order_actions);
             }
         }
