@@ -1472,6 +1472,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     }
                     if ($this->default_order_status == 'Completed' && apply_filters('angelleye_paypal_payflow_allow_default_order_status', true)) {
                         $order->update_status('completed');
+                        do_action( 'woocommerce_payment_complete', $order_id );
                     } else {
                         $order->payment_complete($PayPalResult['PNREF']);
                     }
