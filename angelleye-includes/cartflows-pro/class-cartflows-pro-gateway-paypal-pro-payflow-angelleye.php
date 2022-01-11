@@ -40,7 +40,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
      * Constructor
      */
     public function __construct() {
-        
+
     }
 
     /**
