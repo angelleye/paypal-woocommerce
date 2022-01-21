@@ -647,7 +647,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         static $addr = -1;
 
         if ($pid == -1) {
-            $pid = getmypid();
+            $pid = uniqid( 'angelleye-pfw', true );
         }
 
         if ($addr == -1) {

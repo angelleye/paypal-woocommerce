@@ -1861,7 +1861,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         static $pid = -1;
         static $addr = -1;
         if ($pid == -1) {
-            $pid = getmypid();
+            $pid = uniqid( 'angelleye-pfw', true );
         }
         if ($addr == -1) {
             if (array_key_exists('SERVER_ADDR', $_SERVER)) {
