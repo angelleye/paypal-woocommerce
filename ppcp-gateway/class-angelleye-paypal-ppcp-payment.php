@@ -577,6 +577,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $body_request['payer']['email_address'] = $billing_email;
             }
             if (!empty($billing_phone)) {
+                $body_request['payer']['phone']['phone_type'] = 'HOME';
                 $body_request['payer']['phone']['phone_number']['national_number'] = preg_replace('/[^0-9]/', '', $billing_phone);
             }
             if (!empty($first_name)) {
@@ -625,6 +626,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $body_request['payer']['email_address'] = $email_address;
                 }
                 if (!empty($billing_phone)) {
+                    $body_request['payer']['phone']['phone_type'] = 'HOME';
                     $body_request['payer']['phone']['phone_number']['national_number'] = preg_replace('/[^0-9]/', '', $billing_phone);
                 }
                 if (!empty($address_1) && !empty($city) && !empty($state) && !empty($postcode) && !empty($country)) {
