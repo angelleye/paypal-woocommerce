@@ -1630,6 +1630,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order = wc_get_order($orderid);
             switch (strtolower($payment_status)) :
                 case 'DECLINED' :
+                    $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $order->get_payment_method_title()));
                 case 'PENDING' :
                     switch (strtoupper($pending_reason)) {
                         case 'BUYER_COMPLAINT':
