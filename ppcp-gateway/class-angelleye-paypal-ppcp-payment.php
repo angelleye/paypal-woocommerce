@@ -110,7 +110,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reference_id = wc_generate_order_key();
             angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $reference_id);
-            if(!empty($_POST['angelleye_ppcp_payment_method_title'])) {
+            if (!empty($_POST['angelleye_ppcp_payment_method_title'])) {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title(wc_clean($_POST['angelleye_ppcp_payment_method_title']));
                 angelleye_ppcp_set_session('angelleye_ppcp_payment_method_title', $payment_method_title);
             }
@@ -409,15 +409,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $shipping_state = $customer->get_shipping_state();
                 $shipping_postcode = $customer->get_shipping_postcode();
                 $shipping_country = $customer->get_shipping_country();
-            } else {
-                $shipping_first_name = $old_wc ? $customer->billing_first_name : $customer->get_billing_first_name();
-                $shipping_last_name = $old_wc ? $customer->billing_last_name : $customer->get_billing_last_name();
-                $shipping_address_1 = $old_wc ? $customer->get_address() : $customer->get_billing_address_1();
-                $shipping_address_2 = $old_wc ? $customer->get_address_2() : $customer->get_billing_address_2();
-                $shipping_city = $old_wc ? $customer->get_city() : $customer->get_billing_city();
-                $shipping_state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
-                $shipping_postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
-                $shipping_country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
             }
             return array(
                 'first_name' => $shipping_first_name,
@@ -577,6 +568,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $body_request['payer']['email_address'] = $billing_email;
             }
             if (!empty($billing_phone)) {
+                $body_request['payer']['phone']['phone_type'] = 'HOME';
                 $body_request['payer']['phone']['phone_number']['national_number'] = preg_replace('/[^0-9]/', '', $billing_phone);
             }
             if (!empty($first_name)) {
@@ -625,6 +617,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $body_request['payer']['email_address'] = $email_address;
                 }
                 if (!empty($billing_phone)) {
+                    $body_request['payer']['phone']['phone_type'] = 'HOME';
                     $body_request['payer']['phone']['phone_number']['national_number'] = preg_replace('/[^0-9]/', '', $billing_phone);
                 }
                 if (!empty($address_1) && !empty($city) && !empty($state) && !empty($postcode) && !empty($country)) {
