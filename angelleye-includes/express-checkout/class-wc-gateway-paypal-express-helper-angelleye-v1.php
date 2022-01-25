@@ -151,6 +151,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
                 $this->wsc_cart_disable_smart_button = !empty($this->setting['wsc_cart_disable_smart_button']) ? $this->setting['wsc_cart_disable_smart_button'] : 'no';
                 $this->billing_address = 'yes' === $this->billing_address_value;
+                if (wc_ship_to_billing_address_only()) {
+                    $this->billing_address = true;
+                }
                 $this->cancel_page = !empty($this->setting['cancel_page']) ? $this->setting['cancel_page'] : '';
                 $this->order_review_page_custom_message = !empty($this->setting['order_review_page_custom_message']) ? $this->setting['order_review_page_custom_message'] : '';
                 $this->use_wp_locale_code = !empty($this->setting['use_wp_locale_code']) ? $this->setting['use_wp_locale_code'] : 'yes';
