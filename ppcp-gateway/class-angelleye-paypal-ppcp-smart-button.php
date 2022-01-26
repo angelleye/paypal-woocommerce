@@ -79,7 +79,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $this->enabled_pay_later_messaging = 'yes' === $this->settings->get('enabled_pay_later_messaging', 'yes');
         $this->pay_later_messaging_page_type = $this->settings->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
-        $this->set_billing_address = 'yes' === $this->settings->get('set_billing_address', 'no');
+        if (wc_ship_to_billing_address_only()) {
+            $this->set_billing_address = true;
+        } else {
+            $this->set_billing_address = 'yes' === $this->settings->get('set_billing_address', 'no');
+        }
         $this->disable_term = 'yes' === $this->settings->get('disable_term', 'no');
         $this->skip_final_review = 'yes' === $this->settings->get('skip_final_review', 'no');
         if ($this->is_sandbox) {
@@ -287,6 +291,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'is_enable_checkout_button' => ($this->enable_checkout_button) ? 'yes' : 'no',
             'enable_separate_payment_method' => ($this->enable_separate_payment_method === true) ? 'yes' : 'no',
             'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),
+            'cardholder_name_required' => __('Cardholder\'s first and last name are required, please fill the checkout form required fields.', 'paypal-for-woocommerce'),
                 )
         );
         if (is_checkout() && empty($this->checkout_details)) {

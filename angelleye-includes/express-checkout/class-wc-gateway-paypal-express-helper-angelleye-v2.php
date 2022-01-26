@@ -692,7 +692,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $smart_js_arg['disable-funding'] = implode(',', $this->disallowed_funding_methods);
                 }
                 if ($this->testmode) {
-                    $smart_js_arg['buyer-country'] = WC()->countries->get_base_country();
+                    if(is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen( WC()->customer->get_billing_country() )) {
+                       $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
+                    }
                 }
                 $merchant_id_array = get_option('angelleye_express_checkout_default_pal');
                 if (!empty($merchant_id_array) && !empty($merchant_id_array['PAL'])) {
@@ -716,7 +718,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 } else {
                     $sdk_intend = 'order';
                 }
-                $smart_js_arg['intent'] = $sdk_intend;
+                $smart_js_arg['intent'] = apply_filters('woocommerce_paypal_express_checkout_intent_payment_action', $sdk_intend, $this);
                 $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
                 wp_register_script('angelleye-paypal-checkout-sdk', add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'), array(), null, true);
                 wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout.min-v2.js', array('jquery', 'angelleye-paypal-checkout-sdk'), time(), true);
@@ -1864,7 +1866,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         static $pid = -1;
         static $addr = -1;
         if ($pid == -1) {
-            $pid = getmypid();
+            $pid = uniqid( 'angelleye-pfw', true );
         }
         if ($addr == -1) {
             if (array_key_exists('SERVER_ADDR', $_SERVER)) {

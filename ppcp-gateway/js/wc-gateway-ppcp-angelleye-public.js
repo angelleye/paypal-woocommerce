@@ -252,17 +252,16 @@
                         }
                     });
                     $.angelleye_ppcp_scroll_to_notices($('#order_review'));
+                    const firstName = document.getElementById('billing_first_name') ? document.getElementById('billing_first_name').value : '';
+                    const lastName = document.getElementById('billing_last_name') ? document.getElementById('billing_last_name').value : '';
+                    if (!firstName || !lastName) {
+                        showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.cardholder_name_required + '</ul>', $('form'));
+                        $('form.checkout').removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
+                        return;
+                    }
                     hf.submit({
                         contingencies: contingencies,
-                        cardholderName: document.getElementById('billing_first_name').value,
-                        billingAddress: {
-                            streetAddress: document.getElementById('billing_address_1').value,
-                            extendedAddress: document.getElementById('billing_address_2').value,
-                            region: document.getElementById('billing_state').value,
-                            locality: document.getElementById('billing_city').value,
-                            postalCode: document.getElementById('billing_postcode').value,
-                            countryCodeAlpha2: document.getElementById('billing_country').value
-                        }
+                        cardholderName: firstName + ' ' + lastName
                     }).then(
                             function (payload) {
                                 if (payload.orderId) {
