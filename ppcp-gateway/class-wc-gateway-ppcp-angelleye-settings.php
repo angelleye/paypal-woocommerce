@@ -1318,6 +1318,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'everything'
                 )
             );
+            if(wc_ship_to_billing_address_only() === true) {
+                unset($this->angelleye_ppcp_gateway_setting['set_billing_address']);
+            }
             if (angelleye_ppcp_is_local_server()) {
                 unset($this->angelleye_ppcp_gateway_setting['live_onboarding']);
                 unset($this->angelleye_ppcp_gateway_setting['live_disconnect']);
