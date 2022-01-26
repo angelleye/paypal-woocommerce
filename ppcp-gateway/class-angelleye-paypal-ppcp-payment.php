@@ -409,19 +409,21 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $shipping_state = $customer->get_shipping_state();
                 $shipping_postcode = $customer->get_shipping_postcode();
                 $shipping_country = $customer->get_shipping_country();
+                return array(
+                    'first_name' => $shipping_first_name,
+                    'last_name' => $shipping_last_name,
+                    'company' => '',
+                    'address_1' => $shipping_address_1,
+                    'address_2' => $shipping_address_2,
+                    'city' => $shipping_city,
+                    'state' => $shipping_state,
+                    'postcode' => $shipping_postcode,
+                    'country' => $shipping_country,
+                    'phone' => $old_wc ? $customer->billing_phone : $customer->get_billing_phone(),
+                );
+            } else {
+                return array();
             }
-            return array(
-                'first_name' => $shipping_first_name,
-                'last_name' => $shipping_last_name,
-                'company' => '',
-                'address_1' => $shipping_address_1,
-                'address_2' => $shipping_address_2,
-                'city' => $shipping_city,
-                'state' => $shipping_state,
-                'postcode' => $shipping_postcode,
-                'country' => $shipping_country,
-                'phone' => $old_wc ? $customer->billing_phone : $customer->get_billing_phone(),
-            );
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -640,7 +642,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         static $addr = -1;
 
         if ($pid == -1) {
-            $pid = uniqid( 'angelleye-pfw', true );
+            $pid = uniqid('angelleye-pfw', true);
         }
 
         if ($addr == -1) {
