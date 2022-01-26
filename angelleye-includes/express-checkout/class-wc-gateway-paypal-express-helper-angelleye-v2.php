@@ -689,7 +689,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     $smart_js_arg['disable-funding'] = implode(',', $this->disallowed_funding_methods);
                 }
                 if ($this->testmode) {
-                    $smart_js_arg['buyer-country'] = WC()->countries->get_base_country();
+                    if(is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen( WC()->customer->get_billing_country() )) {
+                       $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
+                    }
                 } 
                 $merchant_id_array = get_option('angelleye_express_checkout_default_pal');
                 if (!empty($merchant_id_array) && !empty($merchant_id_array['PAL'])) {
