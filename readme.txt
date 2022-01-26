@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
-Tested up to: 5.8.3
-Stable tag: 3.0.14
+Tested up to: 5.9
+Stable tag: 3.0.15
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,10 +127,19 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 3.0.14 - 01.11.2021 =
-* Feature - Adds CartFlows Pro Pro 1.8.0 compatibility. ([PFW-956](https://github.com/angelleye/paypal-woocommerce/pull/1646))
+= 3.0.15 - 01.26.2022 =
+* Feature - Add filter for intent. ([PFW-829](https://github.com/angelleye/paypal-woocommerce/pull/1649))
+* Tweak - Hide Billing Address option when Force shipping to the customer billing address is enable. ([PFW-963](https://github.com/angelleye/paypal-woocommerce/pull/1648))
+* Tweak - Updates PPCP - ACC - Field Labels. ([PFW-966](https://github.com/angelleye/paypal-woocommerce/pull/1651))
+* Fix - Resolves a issue with PayPal payment status. ([PFW-970](https://github.com/angelleye/paypal-woocommerce/pull/1652))
+* Fix - Resolves a issue with PPCP - Different names in PayPal and Woo Billing/Shipping. ([PFW-968](https://github.com/angelleye/paypal-woocommerce/pull/1653))
+* Fix - Resolves address not appearing issue at checkout. ([PFW-914](https://github.com/angelleye/paypal-woocommerce/pull/1654))
+* Fix - Resolves a issue when getmypid() has been disabled for security reasons. ([PFW-965](https://github.com/angelleye/paypal-woocommerce/pull/1650))
 
-= 3.0.13 - 01.10.2021 =
+= 3.0.14 - 01.11.2022 =
+* Feature - Adds CartFlows Pro Pro 1.8.0 compatibility. 
+
+= 3.0.13 - 01.10.2022 =
 * Feature - Adds new funding methods list. ([PFW-950](https://github.com/angelleye/paypal-woocommerce/pull/1641))
 * Feature - Adds PPCP - Smart Button Size and Height. ([PFW-912](https://github.com/angelleye/paypal-woocommerce/pull/1643))
 * Fix - Resolves order status not updating after Capturing funds. ([PFW-955](https://github.com/angelleye/paypal-woocommerce/pull/1644))
