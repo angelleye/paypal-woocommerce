@@ -25,6 +25,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->gateway = $gateway;
             $this->skip_final_review = $this->gateway->get_option('skip_final_review', 'no');
             $this->billing_address = 'yes' === $this->gateway->get_option('billing_address', 'no');
+            if (wc_ship_to_billing_address_only()) {
+                $this->billing_address = true;
+            }
             $this->disable_term = 'yes' === $this->gateway->get_option('disable_term', 'no');
             $this->softdescriptor = $this->gateway->get_option('softdescriptor', '');
             $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'yes');
@@ -341,10 +344,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($this->paypal_response, $order, $this->gateway->payment_action);
             }
             $payment_meta = array();
-            if(!empty($this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE'])) {
+            if (!empty($this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE'])) {
                 $payment_meta['Payment type'] = $this->paypal_response['PAYMENTINFO_0_PAYMENTTYPE'];
             }
-            if(!empty($this->paypal_response['PAYMENTINFO_0_FEEAMT'])) {
+            if (!empty($this->paypal_response['PAYMENTINFO_0_FEEAMT'])) {
                 $payment_meta['PayPal Transaction Fee'] = $this->paypal_response['PAYMENTINFO_0_FEEAMT'];
                 update_post_meta($order_id, '_paypal_fee', $this->paypal_response['PAYMENTINFO_0_FEEAMT']);
                 update_post_meta($order_id, '_paypal_transaction_fee', $this->paypal_response['PAYMENTINFO_0_FEEAMT']);
