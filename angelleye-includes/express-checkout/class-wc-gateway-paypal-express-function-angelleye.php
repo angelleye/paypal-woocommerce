@@ -62,7 +62,7 @@ class WC_Gateway_PayPal_Express_Function_AngellEYE {
                 if ((isset($_POST['terms']) || isset($_POST['legal'])) && wc_get_page_id('terms') > 0) {
                     angelleye_set_session( 'paypal_express_terms', 1);
                 }
-                if (is_ajax()) {
+                if (wp_doing_ajax()) {
                     if ($this->ec_is_version_gte_2_4()) {
                         wp_send_json($args);
                     } else {

@@ -2750,7 +2750,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 } else {
                     $redirect_url = wc_get_cart_url();
                     $this->paypal_express_checkout_error_handler($result, $request_name = 'DoReferenceTransaction', $redirect_url);
-                    if (!is_ajax()) {
+                    if (!wp_doing_ajax()) {
                         wp_redirect($redirect_url);
                         exit;
                     } else {
@@ -2787,7 +2787,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 if (isset($_POST['terms']) && wc_get_page_id('terms') > 0) {
                     angelleye_set_session('paypal_express_terms', true);
                 }
-                if (is_ajax()) {
+                if (wp_doing_ajax()) {
                     if ($this->function_helper->ec_is_version_gte_2_4()) {
                         wp_send_json($args);
                     } else {
@@ -3272,7 +3272,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (is_admin()) {
                 return false;
             }
-            if (!is_ajax()) {
+            if (!wp_doing_ajax()) {
                 wp_redirect($redirect_url);
                 exit;
             } else {
@@ -3481,7 +3481,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
         } else {
             $result = $this->add_payment_method($order_id);
-            if (!is_ajax()) {
+            if (!wp_doing_ajax()) {
                 wp_redirect($result['redirect']);
                 exit;
             } else {
@@ -3539,7 +3539,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                     add_metadata('payment_token', $save_result, '_multi_account_api_username', $_multi_account_api_username);
                                 }
                                 wc_add_notice(__('Payment method updated.', 'paypal-for-woocommerce'), 'success');
-                                if (!is_ajax()) {
+                                if (!wp_doing_ajax()) {
                                     wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                                     exit;
                                 } else {

@@ -1014,7 +1014,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function maybe_add_shipping_information($packages) {
-        if (!is_ajax()) {
+        if (!wp_doing_ajax()) {
             if ($this->function_helper->ec_is_express_checkout() || $this->ec_get_session_data('shipping_details')) {
                 $destination = $this->ec_get_session_data('shipping_details');
                 if (!empty($destination['country'])) {

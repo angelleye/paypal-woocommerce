@@ -600,7 +600,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     <div id="braintree-payment-form"></div>
                 </fieldset>
             </div>
-            <?php if (is_checkout() || is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) { ?>
+            <?php if (is_checkout() || wp_doing_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) { ?>
                 <script type="text/javascript">
                     var angelleye_dropinInstance;
                     
@@ -790,7 +790,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     </div>
                 </div>
                 <?php 
-            if (is_checkout() || is_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) {
+            if (is_checkout() || wp_doing_ajax() || is_checkout_pay_page() || is_add_payment_method_page()) {
 
                 ?>
                 <script type="text/javascript">
@@ -2282,7 +2282,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     'result' => 'success',
                     'redirect' => $this->get_return_url($order)
                 );
-                if (is_ajax()) {
+                if (wp_doing_ajax()) {
                     wp_send_json($result);
                 } else {
                     wp_redirect($result['redirect']);
@@ -2301,7 +2301,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     'result' => 'success',
                     'redirect' => $this->get_return_url($order)
                 );
-                if (is_ajax()) {
+                if (wp_doing_ajax()) {
                     wp_send_json($result);
                 } else {
                     wp_redirect($result['redirect']);
@@ -3138,7 +3138,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             <div class="clear"></div>
         </fieldset>
         </div>
-        <?php if (( is_checkout() || is_checkout_pay_page() || is_add_payment_method_page()) && is_ajax()) { ?>
+        <?php if (( is_checkout() || is_checkout_pay_page() || is_add_payment_method_page()) && wp_doing_ajax()) { ?>
         <script type="text/javascript">
                 var angelleye_dropinInstance;
                     (function ($) {

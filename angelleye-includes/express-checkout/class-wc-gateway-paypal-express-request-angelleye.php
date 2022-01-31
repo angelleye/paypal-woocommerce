@@ -105,7 +105,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
         }
         $this->function_helper->ec_clear_session_data();
-        if (!is_ajax()) {
+        if (!wp_doing_ajax()) {
             if (!empty($_REQUEST['request_from']) && $_REQUEST['request_from'] == 'JSv4') {
                 if (ob_get_length()) {
                     ob_end_clean();
@@ -175,7 +175,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
 
 
-            if (!is_ajax()) {
+            if (!wp_doing_ajax()) {
                 wp_redirect($url);
                 exit;
             } else {
