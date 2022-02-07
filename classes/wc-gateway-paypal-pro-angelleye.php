@@ -1697,7 +1697,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $error_display_type_message = apply_filters('ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg);
         wc_add_notice($error_display_type_message, 'error');
-        if (!is_ajax()) {
+        if (!wp_doing_ajax()) {
             wp_redirect($redirect_url);
             exit;
         } else {

@@ -722,7 +722,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         }
                         $display_error = 'There was a problem connecting to the payment gateway.';
                         wc_add_notice($display_error, 'error');
-                        if (!is_ajax()) {
+                        if (!wp_doing_ajax()) {
                             if($redirect_url == null) {
                                 wp_redirect(wc_get_cart_url());
                             } else {

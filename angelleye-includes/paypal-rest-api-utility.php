@@ -179,7 +179,7 @@ class PayPal_Rest_API_Utility {
                 }
                 WC()->cart->empty_cart();
                 $return_url = $order->get_checkout_order_received_url();
-                if (is_ajax()) {
+                if (wp_doing_ajax()) {
                     wp_send_json(array(
                         'result' => 'success',
                         'redirect' => apply_filters('woocommerce_checkout_no_payment_needed_redirect', $return_url, $order)
@@ -783,7 +783,7 @@ class PayPal_Rest_API_Utility {
             }
             WC()->cart->empty_cart();
             $return_url = $order->get_checkout_order_received_url();
-            if (is_ajax()) {
+            if (wp_doing_ajax()) {
                 wp_send_json(array(
                     'result' => 'success',
                     'redirect' => apply_filters('woocommerce_checkout_no_payment_needed_redirect', $return_url, $order)
