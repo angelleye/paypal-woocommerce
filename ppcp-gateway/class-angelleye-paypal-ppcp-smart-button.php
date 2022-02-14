@@ -236,7 +236,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } else {
             $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
         }
-        $smart_js_arg['merchant-id'] = $this->merchant_id;
+        $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
         $is_cart = is_cart() && !WC()->cart->is_empty();
         $is_product = is_product();
         $is_checkout = is_checkout();
