@@ -585,6 +585,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $is_registration_required = WC()->checkout()->is_registration_required();
         }
+
+        $paypal_flow = apply_filters('angelleye_braintree_modify_paypal_flow', 'checkout') ?: 'checkout';
         ?>
         <script type="text/javascript">
             var js_variable = <?php echo json_encode($js_variable); ?>;
@@ -655,7 +657,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                         });
                         var paypal_option = {
-                            flow: 'checkout',
+                            flow: '<?php echo $paypal_flow; ?>',
                             amount: '<?php echo $order_total; ?>',
                             currency: '<?php echo get_woocommerce_currency(); ?>'
                           }
