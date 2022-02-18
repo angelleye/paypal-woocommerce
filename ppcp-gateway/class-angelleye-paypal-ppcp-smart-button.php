@@ -98,6 +98,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->advanced_card_payments = false;
         }
         $this->three_d_secure_contingency = $this->settings->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
+        $this->disable_cards = $this->settings->get('disable_cards', array());
     }
 
     public function angelleye_ppcp_default_set_properties() {
@@ -292,7 +293,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'enable_separate_payment_method' => ($this->enable_separate_payment_method === true) ? 'yes' : 'no',
             'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),
             'cardholder_name_required' => __('Cardholder\'s first and last name are required, please fill the checkout form required fields.', 'paypal-for-woocommerce'),
-                )
+            'card_not_supported' => __('Unfortunately, we do not support your credit card.', 'paypal-for-woocommerce'),
+            'fields_not_valid' => __('Unfortunately, your credit card details are not valid.', 'paypal-for-woocommerce'),
+            'disable_cards' => $this->disable_cards,
+                ),
         );
         if (is_checkout() && empty($this->checkout_details)) {
             wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-review', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-review.js', array('jquery'), $this->version, false);

@@ -1289,6 +1289,27 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'description' => __('This controls the gateway position which the user sees during checkout.', 'paypal-for-woocommerce'),
                 ),
+                'disable_cards' => array(
+                    'title' => __('Disable specific credit cards', 'woocommerce-paypal-payments'),
+                    'type' => 'multiselect',
+                    'css' => 'width: 100%;',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field',
+                    'default' => array(),
+                    'desc_tip' => true,
+                    'description' => __(
+                            'By default all possible credit cards will be accepted. You can disable some cards, if you wish.',
+                            'woocommerce-paypal-payments'
+                    ),
+                    'options' => array(
+                        'visa' => _x('Visa', 'Name of credit card', 'woocommerce-paypal-payments'),
+                        'mastercard' => _x('Mastercard', 'Name of credit card', 'woocommerce-paypal-payments'),
+                        'amex' => _x('American Express', 'Name of credit card', 'woocommerce-paypal-payments'),
+                        'discover' => _x('Discover', 'Name of credit card', 'woocommerce-paypal-payments'),
+                        'jcb' => _x('JCB', 'Name of credit card', 'woocommerce-paypal-payments'),
+                        'elo' => _x('Elo', 'Name of credit card', 'woocommerce-paypal-payments'),
+                        'hiper' => _x('Hiper', 'Name of credit card', 'woocommerce-paypal-payments'),
+                    ),
+                ),
                 'soft_descriptor' => array(
                     'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
                     'type' => 'text',
@@ -1318,7 +1339,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'everything'
                 )
             );
-            if(wc_ship_to_billing_address_only() === true) {
+            if (wc_ship_to_billing_address_only() === true) {
                 unset($this->angelleye_ppcp_gateway_setting['set_billing_address']);
             }
             if (angelleye_ppcp_is_local_server()) {
