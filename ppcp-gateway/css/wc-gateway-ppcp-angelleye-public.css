@@ -147,6 +147,10 @@
 .angelleye_ppcp_horizontal_large {
     width: 500px;
 }
+.et_pb_module #wcf-embed-checkout-form .woocommerce #order_review .payment_method_angelleye_ppcp_cc .input-text.hosted-field-braintree {
+    padding: 7px;
+    font-size: 1.5em;
+}
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large{
         width: 100%;
