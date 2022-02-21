@@ -9,6 +9,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $angelleye_ppcp_gateway_setting;
         public $gateway_key;
         public $settings = array();
+        public $dcc_applies;
         protected static $_instance = null;
 
         public static function instance() {
@@ -20,6 +21,18 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 
         public function __construct() {
             $this->gateway_key = 'woocommerce_angelleye_ppcp_settings';
+            $this->angelleye_ppcp_load_class();
+        }
+
+        public function angelleye_ppcp_load_class() {
+            try {
+                if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
+                }
+                $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
+            } catch (Exception $ex) {
+                
+            }
         }
 
         public function get($id, $default = false) {
@@ -68,6 +81,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
         public function angelleye_ppcp_setting_fields() {
+            $cards_list = array(
+                'visa' => _x('Visa', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'mastercard' => _x('Mastercard', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'amex' => _x('American Express', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'discover' => _x('Discover', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'jcb' => _x('JCB', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'elo' => _x('Elo', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'hiper' => _x('Hiper', 'Name of credit card', 'woocommerce-paypal-payments'),
+            );
+            foreach ($cards_list as $card_key => $card_value) {
+                if ($this->dcc_applies->can_process_card($card_key)) {
+                    continue;
+                }
+                unset($cards_list[$card_key]);
+            }
             $skip_final_review_option_not_allowed_guest_checkout = '';
             $skip_final_review_option_not_allowed_terms = '';
             $skip_final_review_option_not_allowed_tokenized_payments = '';
@@ -1292,7 +1320,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'disable_cards' => array(
                     'title' => __('Disable specific credit cards', 'woocommerce-paypal-payments'),
                     'type' => 'multiselect',
-                    'css' => 'width: 100%;',
                     'class' => 'wc-enhanced-select pay_later_messaging_field',
                     'default' => array(),
                     'desc_tip' => true,
@@ -1300,15 +1327,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                             'By default all possible credit cards will be accepted. You can disable some cards, if you wish.',
                             'woocommerce-paypal-payments'
                     ),
-                    'options' => array(
-                        'visa' => _x('Visa', 'Name of credit card', 'woocommerce-paypal-payments'),
-                        'mastercard' => _x('Mastercard', 'Name of credit card', 'woocommerce-paypal-payments'),
-                        'amex' => _x('American Express', 'Name of credit card', 'woocommerce-paypal-payments'),
-                        'discover' => _x('Discover', 'Name of credit card', 'woocommerce-paypal-payments'),
-                        'jcb' => _x('JCB', 'Name of credit card', 'woocommerce-paypal-payments'),
-                        'elo' => _x('Elo', 'Name of credit card', 'woocommerce-paypal-payments'),
-                        'hiper' => _x('Hiper', 'Name of credit card', 'woocommerce-paypal-payments'),
-                    ),
+                    'options' => $cards_list,
                 ),
                 'soft_descriptor' => array(
                     'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
