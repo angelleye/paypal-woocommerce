@@ -158,7 +158,7 @@
                 _nonce: ''
             };
             if ('yes' === offer_action) {
-                if ('angelleye_ppcp' === cartflows_offer.payment_method) {
+                if ('angelleye_ppcp' === cartflows_offer.payment_method || 'angelleye_ppcp_cc' === cartflows_offer.payment_method) {
                     wcf_init_create_paypal_ppcp_angelleye_payments_order(ajax_data, cartflows_offer.payment_method);
                 }
             }
