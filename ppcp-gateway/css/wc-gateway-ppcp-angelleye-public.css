@@ -147,6 +147,15 @@
 .angelleye_ppcp_horizontal_large {
     width: 500px;
 }
+
+.woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.ppcp-invalid-cart, .woocommerce #payment div.payment_box .wc-credit-card-form div.ppcp-invalid-cart {
+     border-color: red;
+}
+#payment ul.payment_methods li img.ppcp-card-icon {
+  padding: 0 0 3px 3px;
+  max-height: 25px;
+  display: inline-block;
+}
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large{
         width: 100%;
