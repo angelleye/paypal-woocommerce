@@ -197,6 +197,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         //add_action('http_api_debug', array($this, 'angelleye_ppcp_all_web_request'), 10, 5);
         add_action('woocommerce_review_order_before_order_total', array($this, 'angelleye_ppcp_display_payment_method_title_review_page'));
         add_action('wp_loaded', array($this, 'angelleye_ppcp_prevent_add_to_cart_woo_action'), 1);
+        add_action('init', array($this, 'angelleye_ppcp_woocommerce_before_checkout_process'), 0);
     }
 
     /*
@@ -888,6 +889,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 unset($_REQUEST['add-to-cart']);
                 unset($_POST['add-to-cart']);
             }
+        }
+    }
+
+    public function angelleye_ppcp_woocommerce_before_checkout_process() {
+        if (isset($_POST['_wcf_checkout_id']) && isset($_POST['_wcf_flow_id'])) {
+            $_GET['wc-ajax'] = 'checkout';
+            $_GET['wcf_checkout_id'] = $_POST['_wcf_checkout_id'];
+            wc_maybe_define_constant('DOING_AJAX', true);
+            wc_maybe_define_constant('WC_DOING_AJAX', true);
         }
     }
 

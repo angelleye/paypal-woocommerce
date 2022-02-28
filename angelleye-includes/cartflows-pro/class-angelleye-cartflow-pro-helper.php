@@ -67,6 +67,11 @@ class Angelleye_Cartflows_Pro_Helper {
             'class' => 'Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE',
             'path' => PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/cartflow/class-cartflows-pro-gateway-paypal-ppcp-angelleye.php'
         );
+        $supported_gateways['angelleye_ppcp_cc'] = array(
+            'file' => 'paypal-ppcp-cc-angelleye.php',
+            'class' => 'Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE',
+            'path' => PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/cartflow/class-cartflows-pro-gateway-paypal-ppcp-angelleye-cc.php'
+        );
         return $supported_gateways;
     }
 
