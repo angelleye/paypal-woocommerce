@@ -693,6 +693,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         'description'   => __( 'Adds the PayPal Express Checkout button to the product page allowing buyers to checkout directly from the product page.', 'paypal-for-woocommerce' ),
                         'default'       => $default_ec_button
                 );
+                if(is_angelleye_multi_account_active()) {
+                    unset($product_type['paypal_billing_agreement']);
+                }
                 return $product_type;
             } else {
                     return $product_type;
