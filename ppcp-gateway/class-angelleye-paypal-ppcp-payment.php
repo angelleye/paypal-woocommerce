@@ -180,8 +180,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (strlen($description) > 127) {
                         $description = substr($description, 0, 124) . '...';
                     }
+                    $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
+                    if (strlen($product_name) > 127) {
+                        $product_name = substr($product_name, 0, 124) . '...';
+                    }
                     $body_request['purchase_units'][0]['items'][$key] = array(
-                        'name' => $order_items['name'],
+                        'name' => $product_name,
                         'description' => html_entity_decode($description, ENT_NOQUOTES, 'UTF-8'),
                         'sku' => $order_items['sku'],
                         'category' => $order_items['category'],
@@ -379,9 +383,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                     }
                 }
+                $product_name = !empty($name) ? $name : '';
+                if (strlen($product_name) > 127) {
+                    $product_name = substr($product_name, 0, 124) . '...';
+                }
+                $product_desc = !empty($desc) ? $desc : '';
+                if (strlen($product_desc) > 127) {
+                    $product_desc = substr($product_desc, 0, 124) . '...';
+                }
                 $item = array(
-                    'name' => $name,
-                    'description' => $desc,
+                    'name' => $product_name,
+                    'description' => $product_desc,
                     'sku' => $sku,
                     'category' => $category,
                     'quantity' => $values['quantity'],
@@ -995,9 +1007,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                     }
                 }
+                $product_name = !empty($name) ? $name : '';
+                if (strlen($product_name) > 127) {
+                    $product_name = substr($product_name, 0, 124) . '...';
+                }
+                $product_desc = !empty($desc) ? $desc : '';
+                if (strlen($product_desc) > 127) {
+                    $product_desc = substr($product_desc, 0, 124) . '...';
+                }
                 $item = array(
-                    'name' => $name,
-                    'description' => $desc,
+                    'name' => $product_name,
+                    'description' => $product_desc,
                     'sku' => $sku,
                     'category' => $category,
                     'quantity' => $values['quantity'],
@@ -1466,8 +1486,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (strlen($description) > 127) {
                         $description = substr($description, 0, 124) . '...';
                     }
+                    $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
+                    if (strlen($product_name) > 127) {
+                        $product_name = substr($product_name, 0, 124) . '...';
+                    }
+
                     $body_request['purchase_units'][0]['items'][$key] = array(
-                        'name' => $order_items['name'],
+                        'name' => $product_name,
                         'description' => html_entity_decode($description, ENT_NOQUOTES, 'UTF-8'),
                         'sku' => $order_items['sku'],
                         'category' => $order_items['category'],

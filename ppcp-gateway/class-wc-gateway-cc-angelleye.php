@@ -30,6 +30,67 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
+    public function get_icon() {
+        $icon = parent::get_icon();
+        $icons = $this->settings->get('disable_cards', array());
+        if (empty($icons)) {
+            return $icon;
+        }
+        $title_options = $this->card_labels();
+        foreach ($title_options as $icon_key => $icon_value) {
+            if (!in_array($icon_key, $icons)) {
+                if ($this->dcc_applies->can_process_card($icon_key)) {
+                    $images[] = '<img
+                 title="' . esc_attr($title_options[$icon_key]) . '"
+                 src="' . esc_url(PAYPAL_FOR_WOOCOMMERCE_ASSET_URL) . 'ppcp-gateway/images/' . esc_attr($icon_key) . '.svg"
+                 class="ppcp-card-icon"
+                > ';
+                }
+            }
+        }
+        return implode('', $images);
+    }
+
+    private function card_labels(): array {
+        return array(
+            'visa' => _x(
+                    'Visa',
+                    'Name of credit card',
+                    'paypal-for-woocommerce'
+            ),
+            'mastercard' => _x(
+                    'Mastercard',
+                    'Name of credit card',
+                    'paypal-for-woocommerce'
+            ),
+            'amex' => _x(
+                    'American Express',
+                    'Name of credit card',
+                    'paypal-for-woocommerce'
+            ),
+            'discover' => _x(
+                    'Discover',
+                    'Name of credit card',
+                    'paypal-for-woocommerce'
+            ),
+            'jcb' => _x(
+                    'JCB',
+                    'Name of credit card',
+                    'paypal-for-woocommerce'
+            ),
+            'elo' => _x(
+                    'Elo',
+                    'Name of credit card',
+                    'paypal-for-woocommerce'
+            ),
+            'hiper' => _x(
+                    'Hiper',
+                    'Name of credit card',
+                    'paypal-for-woocommerce'
+            ),
+        );
+    }
+
     public function process_payment($woo_order_id) {
         try {
             $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
@@ -127,7 +188,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->cc_id));
             ?>
             <fieldset id="wc-<?php echo esc_attr($this->cc_id); ?>-cc-form" class='wc-credit-card-form wc-payment-form' style="display:none;">
-                <?php do_action('woocommerce_credit_card_form_start', $this->cc_id); ?>
+            <?php do_action('woocommerce_credit_card_form_start', $this->cc_id); ?>
                 <?php
                 foreach ($fields as $field) {
                     echo $field;

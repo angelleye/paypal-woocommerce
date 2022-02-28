@@ -7,10 +7,10 @@ if (!defined('ABSPATH')) {
 /**
  * Class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE.
  */
-class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_Gateway_helper {
+class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypal_Gateway_helper {
 
     private static $instance;
-    public $key = 'angelleye_ppcp';
+    public $key = 'angelleye_ppcp_cc';
     public $is_api_refund = true;
     public $is_sandbox;
     public $paymentaction;
@@ -373,7 +373,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
     }
 
     public function add_subscription_payment_meta_for_paypal($subscription, $order, $offer_product) {
-        if ('angelleye_ppcp' === $order->get_payment_method()) {
+        if ('angelleye_ppcp_cc' === $order->get_payment_method()) {
             $subscription_id = $subscription->get_id();
             update_post_meta($subscription_id, '_ppcp_paypal_order_id', $order->get_meta('_ppcp_paypal_order_id', true));
             update_post_meta($subscription_id, 'payment_token_id', $order->get_meta('payment_token_id', true));
@@ -390,7 +390,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
     }
 
     public function angelleye_ppcp_cartflows_offer_supported_payment_gateway_slugs($gateways) {
-        $gateways[] = 'angelleye_ppcp';
+        $gateways[] = 'angelleye_ppcp_cc';
         return $gateways;
     }
 

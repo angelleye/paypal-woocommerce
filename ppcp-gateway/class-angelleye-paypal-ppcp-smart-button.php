@@ -98,6 +98,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->advanced_card_payments = false;
         }
         $this->three_d_secure_contingency = $this->settings->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
+        $this->disable_cards = $this->settings->get('disable_cards', array());
     }
 
     public function angelleye_ppcp_default_set_properties() {
@@ -196,6 +197,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         //add_action('http_api_debug', array($this, 'angelleye_ppcp_all_web_request'), 10, 5);
         add_action('woocommerce_review_order_before_order_total', array($this, 'angelleye_ppcp_display_payment_method_title_review_page'));
         add_action('wp_loaded', array($this, 'angelleye_ppcp_prevent_add_to_cart_woo_action'), 1);
+        add_action('init', array($this, 'angelleye_ppcp_woocommerce_before_checkout_process'), 0);
     }
 
     /*
@@ -236,7 +238,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } else {
             $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
         }
-        $smart_js_arg['merchant-id'] = $this->merchant_id;
+        $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
         $is_cart = is_cart() && !WC()->cart->is_empty();
         $is_product = is_product();
         $is_checkout = is_checkout();
@@ -292,7 +294,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'enable_separate_payment_method' => ($this->enable_separate_payment_method === true) ? 'yes' : 'no',
             'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),
             'cardholder_name_required' => __('Cardholder\'s first and last name are required, please fill the checkout form required fields.', 'paypal-for-woocommerce'),
-                )
+            'card_not_supported' => __('Unfortunately, we do not support your credit card.', 'paypal-for-woocommerce'),
+            'fields_not_valid' => __('Unfortunately, your credit card details are not valid.', 'paypal-for-woocommerce'),
+            'disable_cards' => $this->disable_cards,
+                ),
         );
         if (is_checkout() && empty($this->checkout_details)) {
             wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-review', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-review.js', array('jquery'), $this->version, false);
@@ -884,6 +889,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 unset($_REQUEST['add-to-cart']);
                 unset($_POST['add-to-cart']);
             }
+        }
+    }
+
+    public function angelleye_ppcp_woocommerce_before_checkout_process() {
+        if (isset($_POST['_wcf_checkout_id']) && isset($_POST['_wcf_flow_id'])) {
+            $_GET['wc-ajax'] = 'checkout';
+            $_GET['wcf_checkout_id'] = $_POST['_wcf_checkout_id'];
+            wc_maybe_define_constant('DOING_AJAX', true);
+            wc_maybe_define_constant('WC_DOING_AJAX', true);
         }
     }
 

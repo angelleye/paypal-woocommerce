@@ -226,7 +226,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $this->payment_request->angelleye_ppcp_update_woo_order_data($_GET['paypal_order_id']);
             WC()->cart->empty_cart();
             unset(WC()->session->angelleye_ppcp_session);
-            wp_safe_redirect($order->get_checkout_order_received_url());
+            wp_safe_redirect(apply_filters('woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order));
             exit();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
