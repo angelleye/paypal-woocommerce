@@ -151,6 +151,10 @@
     padding: 7px;
     font-size: 1.5em;
 }
+.et_pb_module #wcf-embed-checkout-form .woocommerce #order_review .payment_method_angelleye_ppcp .input-text.hosted-field-braintree {
+    padding: 7px;
+    font-size: 1.5em;
+}
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.ppcp-invalid-cart, .woocommerce #payment div.payment_box .wc-credit-card-form div.ppcp-invalid-cart {
      border-color: red;
 }
