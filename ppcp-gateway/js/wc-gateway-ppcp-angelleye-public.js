@@ -100,14 +100,9 @@
                 onApprove: function (data, actions) {
                     $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                     if (is_from_checkout) {
-                        if (angelleye_ppcp_manager.is_pre_checkout_offer === "yes") {
-                            $('.woocommerce').unblock();
-                            $('form.checkout').triggerHandler("checkout_place_order");
-                        } else {
-                            $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + data.orderID + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
-                                window.location.href = data.data.redirect;
-                            });
-                        }
+                        $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + data.orderID + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
+                            window.location.href = data.data.redirect;
+                        });
                     } else {
                         if (angelleye_ppcp_manager.is_skip_final_review === 'yes') {
                             actions.redirect(angelleye_ppcp_manager.direct_capture + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&from=' + angelleye_ppcp_manager.page);
@@ -349,6 +344,9 @@
             hide_show_place_order_button();
         });
         var hide_show_place_order_button = function () {
+            if (is_angelleye_ppcp_selected() === true) {
+                $('.wcf-pre-checkout-offer-action').val('');
+            }
             if (is_hosted_field_eligible() === false) {
                 $('.payment_method_angelleye_ppcp_cc').hide();
             }
