@@ -361,11 +361,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                             }
                             $desc = trim($desc);
                         }
-                    } else {
-                        $desc = wp_strip_all_tags($product->get_description());
-                        if (empty($desc)) {
-                            $desc = wp_strip_all_tags($product->get_short_description());
-                        }
                     }
                 }
                 if (!empty($values['addons'])) {
@@ -381,6 +376,14 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                     }
                 }
+
+                if (empty($desc)) {
+                    $desc = wp_strip_all_tags($product->get_description());
+                    if (empty($desc)) {
+                        $desc = wp_strip_all_tags($product->get_short_description());
+                    }
+                }
+
                 $desc = !empty($desc) ? $desc : '';
                 if (strlen($desc) > 127) {
                     $desc = substr($desc, 0, 124) . '...';
@@ -1005,11 +1008,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                             }
                             $desc = trim($desc);
                         }
-                    } else {
-                        $desc = wp_strip_all_tags($product->get_description());
-                        if (empty($desc)) {
-                            $desc = wp_strip_all_tags($product->get_short_description());
-                        }
+                    }
+                }
+                if (empty($desc)) {
+                    $desc = wp_strip_all_tags($product->get_description());
+                    if (empty($desc)) {
+                        $desc = wp_strip_all_tags($product->get_short_description());
                     }
                 }
                 if (strlen($desc) > 127) {
