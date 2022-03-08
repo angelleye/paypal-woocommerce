@@ -361,11 +361,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                             }
                             $desc = trim($desc);
                         }
-                    } else {
-                        $desc = substr(wp_strip_all_tags($product->get_description()), 0, 127);
-                        if (empty($desc)) {
-                            $desc = substr(wp_strip_all_tags($product->get_short_description()), 0, 127);
-                        }
                     }
                 }
                 if (!empty($values['addons'])) {
@@ -380,10 +375,18 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $desc .= ': ' . $value['value'];
                         }
                     }
-                    $desc = !empty($desc) ? $desc : '';
-                    if (strlen($desc) > 127) {
-                        $desc = substr($desc, 0, 124) . '...';
+                }
+
+                if (empty($desc)) {
+                    $desc = wp_strip_all_tags($product->get_description());
+                    if (empty($desc)) {
+                        $desc = wp_strip_all_tags($product->get_short_description());
                     }
+                }
+
+                $desc = !empty($desc) ? $desc : '';
+                if (strlen($desc) > 127) {
+                    $desc = substr($desc, 0, 124) . '...';
                 }
                 $product_name = !empty($name) ? $name : '';
                 $product_name = apply_filters('angelleye_ppcp_product_name', $product_name, $product);
@@ -1004,16 +1007,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                                 $desc .= ' ' . ucwords($key) . ': ' . $value;
                             }
                             $desc = trim($desc);
-                            if (strlen($desc) > 127) {
-                                $desc = substr($desc, 0, 124) . '...';
-                            }
-                        }
-                    } else {
-                        $desc = substr(wp_strip_all_tags($product->get_description()), 0, 127);
-                        if (empty($desc)) {
-                            $desc = substr(wp_strip_all_tags($product->get_short_description()), 0, 127);
                         }
                     }
+                }
+                if (empty($desc)) {
+                    $desc = wp_strip_all_tags($product->get_description());
+                    if (empty($desc)) {
+                        $desc = wp_strip_all_tags($product->get_short_description());
+                    }
+                }
+                if (strlen($desc) > 127) {
+                    $desc = substr($desc, 0, 124) . '...';
                 }
                 $product_name = !empty($name) ? $name : '';
                 $product_name = apply_filters('angelleye_ppcp_product_name', $product_name, $product);
