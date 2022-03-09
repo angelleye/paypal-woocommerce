@@ -1070,7 +1070,15 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $gross_amount = isset($this->api_response['seller_payable_breakdown']['gross_amount']['value']) ? $this->api_response['seller_payable_breakdown']['gross_amount']['value'] : '';
                 $refund_transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
                 $order->add_order_note(
-                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'smart-paypal-checkout-for-woocommerce'), $gross_amount, $refund_transaction_id)
+                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
+                );
+            } else if (isset($$this->api_response['status']) && $$this->api_response['status'] == "PENDING") {
+                $gross_amount = isset($$this->api_response['seller_payable_breakdown']['gross_amount']['value']) ? $$this->api_response['seller_payable_breakdown']['gross_amount']['value'] : '';
+                $refund_transaction_id = isset($$this->api_response['id']) ? $$this->api_response['id'] : '';
+                $pending_reason_text = isset($$this->api_response['status_details']['reason']) ? $$this->api_response['status_details']['reason'] : '';
+                $order->add_order_note(sprintf(__('Payment via %s Pending. Pending reason: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $pending_reason_text));
+                $order->add_order_note(
+                        sprintf(__('Refund Amount %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
                 );
             } else {
                 if ($this->paymentaction === 'authorize' && !empty($this->api_response['details'][0]['issue']) && 'INVALID_RESOURCE_ID' === $this->api_response['details'][0]['issue']) {
@@ -1117,10 +1125,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                     angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
                     angelleye_ppcp_update_post_meta($order, '_auth_transaction_id', $transaction_id);
                     angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
-                    $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'smart-paypal-checkout-for-woocommerce'), $order->get_payment_method_title(), $transaction_id));
+                    $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                     $order->update_status('on-hold');
-                    $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'smart-paypal-checkout-for-woocommerce'));
+                    $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                 }
                 $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
                 if (!empty($angelleye_ppcp_payment_method_title)) {
@@ -1217,7 +1225,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
                 $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
                 if (!empty($payment_source['card'])) {
-                    $card_response_order_note = __('Card Details', 'smart-paypal-checkout-for-woocommerce');
+                    $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
                     $card_response_order_note .= "\n";
                     $card_response_order_note .= 'Last digits : ' . $payment_source['card']['last_digits'];
                     $card_response_order_note .= "\n";
@@ -1228,7 +1236,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
                 $processor_response = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response'] : '';
                 if (!empty($processor_response['avs_code'])) {
-                    $avs_response_order_note = __('Address Verification Result', 'smart-paypal-checkout-for-woocommerce');
+                    $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
                     $avs_response_order_note .= "\n";
                     $avs_response_order_note .= $processor_response['avs_code'];
                     if (isset($this->AVSCodes[$processor_response['avs_code']])) {
@@ -1237,7 +1245,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->add_order_note($avs_response_order_note);
                 }
                 if (!empty($processor_response['cvv_code'])) {
-                    $cvv2_response_code = __('Card Security Code Result', 'smart-paypal-checkout-for-woocommerce');
+                    $cvv2_response_code = __('Card Security Code Result', 'paypal-for-woocommerce');
                     $cvv2_response_code .= "\n";
                     $cvv2_response_code .= $processor_response['cvv_code'];
                     if (isset($this->CVV2Codes[$processor_response['cvv_code']])) {
@@ -1263,11 +1271,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $seller_protection = isset($this->api_response['seller_protection']['status']) ? $this->api_response['seller_protection']['status'] : '';
                 $payment_status = isset($this->api_response['status']) ? $this->api_response['status'] : '';
                 angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
-                $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'smart-paypal-checkout-for-woocommerce'), $order->get_payment_method_title(), $transaction_id));
+                $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $transaction_id));
                 $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                 if ($payment_status === 'COMPLETED') {
                     $order->payment_complete($transaction_id);
-                    $order->add_order_note(sprintf(__('Payment via %s: %s.', 'smart-paypal-checkout-for-woocommerce'), $order->get_payment_method_title(), ucfirst(strtolower($payment_status))));
+                    $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), ucfirst(strtolower($payment_status))));
                 } else {
                     $payment_status_reason = isset($this->api_response['status_details']['reason']) ? $this->api_response['status_details']['reason'] : '';
                     $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
