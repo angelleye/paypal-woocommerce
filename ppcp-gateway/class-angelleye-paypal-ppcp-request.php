@@ -29,7 +29,51 @@ class AngellEYE_PayPal_PPCP_Request {
         $this->angelleye_ppcp_load_class();
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
-        if(is_angelleye_aws_down() == false) {
+        $this->sandbox_client_id = $this->settings->get('sandbox_client_id', '');
+        $this->sandbox_secret_id = $this->settings->get('sandbox_api_secret', '');
+        $this->live_client_id = $this->settings->get('api_client_id', '');
+        $this->live_secret_id = $this->settings->get('api_secret', '');
+        if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_id)) {
+            $this->is_sandbox_first_party_used = 'yes';
+            $this->is_sandbox_third_party_used = 'no';
+        } else if (empty($this->sandbox_client_id) && empty($this->sandbox_secret_id) && !empty($this->sandbox_merchant_id)) {
+            $this->is_sandbox_third_party_used = 'yes';
+            $this->is_sandbox_first_party_used = 'no';
+        } else {
+            $this->is_sandbox_third_party_used = 'no';
+            $this->is_sandbox_first_party_used = 'no';
+        }
+        if (!empty($this->live_client_id) && !empty($this->live_secret_id)) {
+            $this->is_live_first_party_used = 'yes';
+            $this->is_live_third_party_used = 'no';
+        } else if (empty($this->live_client_id) && empty($this->live_secret_id) && !empty($this->live_merchant_id)) {
+            $this->is_live_third_party_used = 'yes';
+            $this->is_live_first_party_used = 'no';
+        } else {
+            $this->is_live_third_party_used = 'no';
+            $this->is_live_first_party_used = 'no';
+        }
+        if ($this->is_sandbox) {
+            $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
+            $this->client_id = $this->sandbox_client_id;
+            $this->secret_id = $this->sandbox_secret_id;
+            if ($this->is_sandbox_first_party_used === 'yes') {
+                $this->is_first_party_used = 'yes';
+            } else {
+                $this->is_first_party_used = 'no';
+            }
+        } else {
+            $this->merchant_id = $this->settings->get('live_merchant_id', '');
+            $this->client_id = $this->live_client_id;
+            $this->secret_id = $this->live_secret_id;
+            if ($this->is_live_first_party_used === 'yes') {
+                $this->is_first_party_used = 'yes';
+            } else {
+                $this->is_first_party_used = 'no';
+            }
+        }
+        $this->basicAuth = base64_encode($this->client_id . ":" . $this->secret_id);
+        if (is_angelleye_aws_down() == false) {
             $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE;
         } else {
             $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE;
@@ -67,12 +111,21 @@ class AngellEYE_PayPal_PPCP_Request {
 
     public function request($url, $args, $action_name = 'default') {
         try {
-            if (strpos($url, 'paypal.com') !== false) {
-                $this->result = $this->angelleye_ppcp_remote_get($url, $args, $action_name);
-            } else {
-                $args['timeout'] = '60';
-                $args['user-agent'] = 'PFW_PPCP';
+            if ($this->is_first_party_used === 'yes') {
+                unset($args['headers']['Paypal-Auth-Assertion']);
+                $args['headers']['Authorization'] = "Basic " . $this->basicAuth;
+                if (isset($args['body']) && is_array($args['body'])) {
+                    $args['body'] = json_encode($args['body']);
+                }
                 $this->result = wp_remote_get($url, $args);
+            } else {
+                if (strpos($url, 'paypal.com') !== false) {
+                    $this->result = $this->angelleye_ppcp_remote_get($url, $args, $action_name);
+                } else {
+                    $args['timeout'] = '60';
+                    $args['user-agent'] = 'PFW_PPCP';
+                    $this->result = wp_remote_get($url, $args);
+                }
             }
             return $this->api_response->parse_response($this->result, $url, $args, $action_name);
         } catch (Exception $ex) {
