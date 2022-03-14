@@ -27,6 +27,10 @@ class AngellEYE_PayPal_PPCP_Request {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
+        $this->angelleye_get_settings();
+    }
+
+    public function angelleye_get_settings() {
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
         $this->sandbox_client_id = $this->settings->get('sandbox_client_id', '');
@@ -111,22 +115,26 @@ class AngellEYE_PayPal_PPCP_Request {
 
     public function request($url, $args, $action_name = 'default') {
         try {
-            if ($this->is_first_party_used === 'yes') {
+            $this->angelleye_get_settings();
+            if (strpos($url, 'paypal.com') === false) {
+                $args['timeout'] = '60';
+                $args['user-agent'] = 'PFW_PPCP';
+                $this->result = wp_remote_get($url, $args);
+            } else if ($this->is_first_party_used === 'yes') {
                 unset($args['headers']['Paypal-Auth-Assertion']);
                 $args['headers']['Authorization'] = "Basic " . $this->basicAuth;
                 if (isset($args['body']) && is_array($args['body'])) {
                     $args['body'] = json_encode($args['body']);
                 }
+                $args['timeout'] = '60';
+                $args['user-agent'] = 'PFW_PPCP';
                 $this->result = wp_remote_get($url, $args);
             } else {
-                if (strpos($url, 'paypal.com') !== false) {
-                    $this->result = $this->angelleye_ppcp_remote_get($url, $args, $action_name);
-                } else {
-                    $args['timeout'] = '60';
-                    $args['user-agent'] = 'PFW_PPCP';
-                    $this->result = wp_remote_get($url, $args);
-                }
+                $args['timeout'] = '60';
+                $args['user-agent'] = 'PFW_PPCP';
+                $this->result = $this->angelleye_ppcp_remote_get($url, $args, $action_name);
             }
+
             return $this->api_response->parse_response($this->result, $url, $args, $action_name);
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');

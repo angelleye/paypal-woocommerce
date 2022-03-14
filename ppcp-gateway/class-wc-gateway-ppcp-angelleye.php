@@ -437,7 +437,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function can_refund_order($order) {
         $has_api_creds = false;
-        if (!empty($this->merchant_id)) {
+        if ($this->is_credentials_set()) {
             $has_api_creds = true;
         }
         return $order && $order->get_transaction_id() && $has_api_creds;
