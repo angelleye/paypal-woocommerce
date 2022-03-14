@@ -1138,6 +1138,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $request_data['deviceData'] = $device_data;
             }
             $request_data['options']['submitForSettlement'] = true;
+            if (!empty($this->softdescriptor)) {
+                $request_data['descriptor'] = array('name' => $this->softdescriptor);
+            }
             try {
                 $this->response = $this->braintree_gateway->transaction()->sale(apply_filters('angelleye_woocommerce_braintree_sale_request_args', $request_data));
                 do_action('angelleye_paypal_response_data', $this->response, $request_data, '1', $this->sandbox, false, 'braintree');
