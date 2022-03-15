@@ -177,6 +177,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if ($this->is_sandbox) {
                 $this->settings->set('sandbox_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
+                $this->api_log->log("sandbox_merchant_id: " . $merchant_id, 'error');
                 $this->settings->set('enabled', 'yes');
             } else {
                 $this->settings->set('live_merchant_id', $merchant_id);

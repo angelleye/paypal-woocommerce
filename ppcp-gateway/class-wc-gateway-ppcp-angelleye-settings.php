@@ -61,7 +61,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
         public function load() {
-            $this->settings = array();
+            if ($this->settings) {
+                return false;
+            }
             $this->settings = get_option($this->gateway_key, array());
             $defaults = array(
                 'title' => __('PayPal Complete Payments', 'paypal-for-woocommerce'),
