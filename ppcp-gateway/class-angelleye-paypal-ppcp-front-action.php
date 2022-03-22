@@ -122,6 +122,12 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     }
 
     public function angelleye_ppcp_regular_capture() {
+        if( isset($_GET['token']) && !empty($_GET['token'])) {
+            angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', wc_clean($_GET['token']));
+        } else {
+            wp_redirect(wc_get_checkout_url());
+            exit();
+        }
         $order_id = absint(angelleye_ppcp_get_session('order_awaiting_payment'));
         if (empty($order_id)) {
             $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');

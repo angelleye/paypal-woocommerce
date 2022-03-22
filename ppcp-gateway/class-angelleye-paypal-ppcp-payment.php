@@ -1586,7 +1586,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $return_response['orderID'] = $this->api_response['id'];
                 if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
                     angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
-                    angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', $this->api_response['id']);
+                    //angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', $this->api_response['id']);
                 }
                 if (!empty($this->api_response['links'])) {
                     foreach ($this->api_response['links'] as $key => $link_result) {
