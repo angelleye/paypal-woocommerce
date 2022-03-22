@@ -86,10 +86,48 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $this->disable_term = 'yes' === $this->settings->get('disable_term', 'no');
         $this->skip_final_review = 'yes' === $this->settings->get('skip_final_review', 'no');
+        $this->sandbox_client_id = $this->settings->get('sandbox_client_id', '');
+        $this->sandbox_secret_id = $this->settings->get('sandbox_api_secret', '');
+        $this->live_client_id = $this->settings->get('api_client_id', '');
+        $this->live_secret_id = $this->settings->get('api_secret', '');
+        if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_id)) {
+            $this->is_sandbox_first_party_used = 'yes';
+            $this->is_sandbox_third_party_used = 'no';
+        } else if (empty($this->sandbox_client_id) && empty($this->sandbox_secret_id) && !empty($this->sandbox_merchant_id)) {
+            $this->is_sandbox_third_party_used = 'yes';
+            $this->is_sandbox_first_party_used = 'no';
+        } else {
+            $this->is_sandbox_third_party_used = 'no';
+            $this->is_sandbox_first_party_used = 'no';
+        }
+        if (!empty($this->live_client_id) && !empty($this->live_secret_id)) {
+            $this->is_live_first_party_used = 'yes';
+            $this->is_live_third_party_used = 'no';
+        } else if (empty($this->live_client_id) && empty($this->live_secret_id) && !empty($this->live_merchant_id)) {
+            $this->is_live_third_party_used = 'yes';
+            $this->is_live_first_party_used = 'no';
+        } else {
+            $this->is_live_third_party_used = 'no';
+            $this->is_live_first_party_used = 'no';
+        }
         if ($this->is_sandbox) {
             $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
+            $this->client_id = $this->sandbox_client_id;
+            $this->secret_id = $this->sandbox_secret_id;
+            if( $this->is_sandbox_first_party_used === 'yes' ) {
+                $this->is_first_party_used = 'yes';
+            } else {
+                $this->is_first_party_used = 'no';
+            }
         } else {
             $this->merchant_id = $this->settings->get('live_merchant_id', '');
+            $this->client_id = $this->live_client_id;
+            $this->secret_id = $this->live_secret_id;
+            if( $this->is_live_first_party_used === 'yes' ) {
+                $this->is_first_party_used = 'yes';
+            } else {
+                $this->is_first_party_used = 'no';
+            }
         }
         if (empty($this->pay_later_messaging_page_type)) {
             $this->enabled_pay_later_messaging = false;
@@ -231,14 +269,22 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
         }
         if ($this->is_sandbox) {
-            if (is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen(WC()->customer->get_billing_country())) {
-                $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
+            if($this->is_first_party_used === 'yes') {
+                $smart_js_arg['client-id'] = $this->client_id;
+            } else {
+                $smart_js_arg['client-id'] = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
+                $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
             }
-            $smart_js_arg['client-id'] = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
         } else {
-            $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
+            if($this->is_first_party_used === 'yes') {
+                $smart_js_arg['client-id'] = $this->client_id;
+            } else {
+                $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
+                $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
+            }
+            
         }
-        $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
+        
         $is_cart = is_cart() && !WC()->cart->is_empty();
         $is_product = is_product();
         $is_checkout = is_checkout();
@@ -311,7 +357,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function is_valid_for_use() {
-        if (!empty($this->merchant_id) && $this->enabled) {
+        if($this->enabled === false) {
+            return false;
+        }
+        if (!empty($this->merchant_id) || (!empty($this->client_id) && !empty($this->secret_id))) {
             return true;
         }
         return false;

@@ -208,12 +208,40 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('Click to reset current credentials and use another account.', 'paypal-for-woocommerce'),
                     'desc_tip' => ''
                 ),
+                'api_client_id' => array(
+                    'title' => __('PayPal Client ID', 'smart-paypal-checkout-for-woocommerce'),
+                    'type' => 'password',
+                    'description' => __('Enter your PayPal Client ID.', 'smart-paypal-checkout-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true
+                ),
+                'api_secret' => array(
+                    'title' => __('PayPal Secret', 'smart-paypal-checkout-for-woocommerce'),
+                    'type' => 'password',
+                    'description' => __('Enter your PayPal Secret.', 'smart-paypal-checkout-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true
+                ),
                 'live_merchant_id' => array(
                     'title' => __('Live Merchant ID', 'paypal-for-woocommerce'),
                     'type' => 'text',
                     'description' => '',
                     'default' => '',
                     'custom_attributes' => array('readonly' => 'readonly'),
+                    'desc_tip' => true
+                ),
+                'sandbox_client_id' => array(
+                    'title' => __('Sandbox Client ID', 'smart-paypal-checkout-for-woocommerce'),
+                    'type' => 'password',
+                    'description' => __('Enter your PayPal Sandbox Client ID.', 'smart-paypal-checkout-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true
+                ),
+                'sandbox_api_secret' => array(
+                    'title' => __('Sandbox Secret', 'smart-paypal-checkout-for-woocommerce'),
+                    'type' => 'password',
+                    'description' => __('Enter your PayPal Sandbox Secret.', 'smart-paypal-checkout-for-woocommerce'),
+                    'default' => '',
                     'desc_tip' => true
                 ),
                 'sandbox_merchant_id' => array(
