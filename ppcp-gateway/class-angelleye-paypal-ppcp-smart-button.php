@@ -342,8 +342,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'cardholder_name_required' => __('Cardholder\'s first and last name are required, please fill the checkout form required fields.', 'paypal-for-woocommerce'),
             'card_not_supported' => __('Unfortunately, we do not support your credit card.', 'paypal-for-woocommerce'),
             'fields_not_valid' => __('Unfortunately, your credit card details are not valid.', 'paypal-for-woocommerce'),
-            'disable_cards' => $this->disable_cards,
-                ),
+            'disable_cards' => $this->disable_cards
+                )
         );
         if (is_checkout() && empty($this->checkout_details)) {
             wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-review', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-review.js', array('jquery'), $this->version, false);
