@@ -124,7 +124,7 @@ class AngellEYE_PayPal_PPCP_Request {
                 unset($args['headers']['Paypal-Auth-Assertion']);
                 $args['headers']['Authorization'] = "Basic " . $this->basicAuth;
                 if (isset($args['body']) && is_array($args['body'])) {
-                    $args['body'] = json_encode($args['body']);
+                    $args['body'] = wp_json_encode($args['body']);
                 }
                 $args['timeout'] = '60';
                 $args['user-agent'] = 'PFW_PPCP';
