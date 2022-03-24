@@ -105,7 +105,7 @@ class AngellEYE_PayPal_PPCP_Request {
         }
         $body['action_name'] = $action_name;
         $args['method'] = 'POST';
-        $args['body'] = json_encode($body);
+        $args['body'] = wp_json_encode($body);
         $args['timeout'] = 70;
         $args['user-agent'] = 'PFW_PPCP';
         $args['headers'] = array('Content-Type' => 'application/json');
