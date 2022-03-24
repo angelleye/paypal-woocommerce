@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 5.9.1
-Stable tag: 3.0.20
+Stable tag: 3.0.21
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.21 - 03.24.2022 =
+* Feature - Adds PPCP - First Party Integration. ([PFW-986](https://github.com/angelleye/paypal-woocommerce/pull/1671))
+* Fix - Resolves PPCP - Order Errors. ([PFW-992](https://github.com/angelleye/paypal-woocommerce/pull/1672))
+* Fix - Resolves a issue with extra comma. ([PFW-1007](https://github.com/angelleye/paypal-woocommerce/pull/1673))
+* Fix - Resolves PPCP - Method not supported or body is not present issue. ([PFW-1009](https://github.com/angelleye/paypal-woocommerce/pull/1675))
 
 = 3.0.20 - 03.14.2022 =
 * Fix - Resolves a issue with Refund order status when Multi-currency plugin active. ([PFW-996](https://github.com/angelleye/paypal-woocommerce/pull/1670))
