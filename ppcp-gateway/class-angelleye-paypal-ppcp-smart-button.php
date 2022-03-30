@@ -285,12 +285,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($merchant_id)) {
             $smart_js_arg['merchant-id'] = $merchant_id;
         }
-        $is_cart = is_cart() && !WC()->cart->is_empty();
-        $is_product = is_product();
-        $is_checkout = is_checkout();
-        $page = $is_cart ? 'cart' : ( $is_product ? 'product' : ( $is_checkout ? 'checkout' : null ) );
         $is_pay_page = 'no';
-        if (is_checkout_pay_page()) {
+        if (is_product()) {
+            $page = 'product';
+        } elseif (is_cart() && !WC()->cart->is_empty()) {
+            $page = 'cart';
+        } elseif (is_checkout()) {
+            $page = 'checkout';
+        } elseif (is_checkout_pay_page()) {
             $page = 'checkout';
             $is_pay_page = 'yes';
         }
