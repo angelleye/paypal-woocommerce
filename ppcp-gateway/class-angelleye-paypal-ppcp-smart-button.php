@@ -14,6 +14,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $client_token;
     protected static $_instance = null;
     public $advanced_card_payments_display_position;
+    public $sdk_merchant_id;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -281,17 +282,21 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
             }
         }
-        $merchant_id = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
-        if (!empty($merchant_id)) {
-            $smart_js_arg['merchant-id'] = $merchant_id;
+        $this->sdk_merchant_id = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
+        if (!empty($this->sdk_merchant_id)) {
+            if (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) > 1) {
+                $smart_js_arg['merchant-id'] = '*';
+            } else {
+                $smart_js_arg['merchant-id'] = implode(', ', $this->sdk_merchant_id);
+            }
         }
         $is_pay_page = 'no';
         if (is_product()) {
             $page = 'product';
-        } elseif (is_cart() && !WC()->cart->is_empty()) {
-            $page = 'cart';
         } elseif (is_checkout()) {
             $page = 'checkout';
+        } elseif (is_cart() && !WC()->cart->is_empty()) {
+            $page = 'cart';
         } elseif (is_checkout_pay_page()) {
             $page = 'checkout';
             $is_pay_page = 'yes';
@@ -669,11 +674,18 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_clean_url($tag, $handle) {
         if ('angelleye-paypal-checkout-sdk' === $handle) {
+            $data_merchant_id = '';
+            if (!empty($this->sdk_merchant_id)) {
+                if (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) > 0) {
+                    $sdk_merchant_id_string = implode(', ', $this->sdk_merchant_id);
+                    $data_merchant_id = " data-merchant-id='{$sdk_merchant_id_string}' ";
+                }
+            }
             $client_token = '';
             if (is_checkout() && $this->advanced_card_payments) {
                 $client_token = "data-client-token='{$this->client_token}'";
             }
-            $tag = str_replace(' src=', ' ' . $client_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
+            $tag = str_replace(' src=', ' ' . $client_token . $data_merchant_id. ' data-namespace="angelleye_paypal_sdk" src=', $tag);
         }
         return $tag;
     }
