@@ -845,7 +845,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             $reference_id = angelleye_ppcp_get_session('angelleye_ppcp_reference_id');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);
-
             if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                 $update_amount_request['item_total'] = array(
                     'currency_code' => angelleye_ppcp_get_currency($order_id),
@@ -939,6 +938,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'value' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number())
             );
             $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
+            $patch_request = apply_filters('angelleye_ppcp_request_args', $patch_request, 'update_order', $order_id);
             $args = array(
                 'timeout' => 70,
                 'method' => 'PATCH',
@@ -947,6 +947,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'body' => $patch_request,
                 'user-agent' => 'PPCP/' . VERSION_PFW,
             );
+            
             $this->api_request->request($this->paypal_order_api . $paypal_order_id, $args, 'update_order');
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
