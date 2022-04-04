@@ -677,7 +677,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $data_merchant_id = '';
             if (!empty($this->sdk_merchant_id)) {
                 if (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) > 0) {
-                    $sdk_merchant_id_string = implode(', ', $this->sdk_merchant_id);
+                    $sdk_merchant_id_string = implode(',', $this->sdk_merchant_id);
                     $data_merchant_id = " data-merchant-id='{$sdk_merchant_id_string}' ";
                 }
             }
