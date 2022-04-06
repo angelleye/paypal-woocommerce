@@ -823,10 +823,20 @@ class AngellEYE_PayPal_PPCP_Payment {
                         angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $this->paypal_transaction);
                         angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
                     }
-                    if ($this->payment_complete === count($this->api_response['purchase_units'])) {
-                        $order->payment_complete($transaction_id);
+                    if (count($this->api_response['purchase_units']) === 1) {
+                        if ($payment_status == 'COMPLETED') {
+                            $order->payment_complete($transaction_id);
+                            $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), ucfirst(strtolower($payment_status))));
+                        } else {
+                            $payment_status_reason = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['status_details']['reason']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['status_details']['reason'] : '';
+                            $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
+                        }
                     } else {
-                        $order->update_status('on-hold');
+                        if ($this->payment_complete === count($this->api_response['purchase_units'])) {
+                            $order->payment_complete($transaction_id);
+                        } else {
+                            $order->update_status('on-hold');
+                        }
                     }
                 }
                 $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
