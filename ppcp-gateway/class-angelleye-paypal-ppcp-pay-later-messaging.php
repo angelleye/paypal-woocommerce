@@ -44,9 +44,17 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $this->title = $this->setting_obj->get('title', 'PayPal Complete Payments');
         $this->enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
+        $this->sandbox_client_id = $this->setting_obj->get('sandbox_client_id', '');
+        $this->sandbox_secret_id = $this->setting_obj->get('sandbox_api_secret', '');
+        $this->live_client_id = $this->setting_obj->get('api_client_id', '');
+        $this->live_secret_id = $this->setting_obj->get('api_secret', '');
         if ($this->is_sandbox) {
+            $this->client_id = $this->sandbox_client_id;
+            $this->secret_id = $this->sandbox_secret_id;
             $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
         } else {
+            $this->client_id = $this->live_client_id;
+            $this->secret_id = $this->live_secret_id;
             $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
         }
         $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');
@@ -91,7 +99,10 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function is_valid_for_use() {
-        if (!empty($this->merchant_id) && $this->enabled) {
+        if ($this->enabled === false) {
+            return false;
+        }
+        if (!empty($this->merchant_id) || (!empty($this->client_id) && !empty($this->secret_id))) {
             return true;
         }
         return false;
