@@ -291,6 +291,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         $is_pay_page = 'no';
+        $page = '';
         if (is_product()) {
             $page = 'product';
         } elseif (is_checkout()) {
