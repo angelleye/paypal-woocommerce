@@ -632,3 +632,27 @@ if (!function_exists('angelleye_ppcp_payment_method_title_list')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_get_paypal_user_info')) {
+
+    function angelleye_ppcp_get_paypal_user_info($is_sandbox, $client_id, $secret_id) {
+        if ($is_sandbox) {
+            $url = 'https://api-m.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1';
+        } else {
+            $url = 'https://api-m.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1';
+        }
+        $basicAuth = base64_encode($client_id . ":" . $secret_id);
+        $args = array(
+            'timeout' => 60,
+            'redirection' => 5,
+            'httpversion' => '1.1',
+            'blocking' => true,
+            'headers' => array('Content-Type' => 'application/json', "prefer" => "return=representation", 'PayPal-Request-Id' => time()),
+            'cookies' => array()
+        );
+        $args['headers']['Authorization'] = "Basic " . $basicAuth;
+        $result = wp_remote_get($url, $args);
+        return $result;
+    }
+
+}
+
