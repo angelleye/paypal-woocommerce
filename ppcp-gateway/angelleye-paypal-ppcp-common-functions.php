@@ -657,6 +657,5 @@ if (!function_exists('angelleye_ppcp_get_paypal_user_info')) {
             return $response['emails'][0]['value'];
         }
     }
-
 }
 
