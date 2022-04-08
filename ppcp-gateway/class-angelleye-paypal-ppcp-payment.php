@@ -756,6 +756,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
 
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/capture', $args, 'capture_order');
+            do_action('angelleye_ppcp_order_data', $this->api_response, $woo_order_id);
             if (isset($this->api_response['id']) && !empty($this->api_response['id'])) {
                 $return_response['paypal_order_id'] = $this->api_response['id'];
                 angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
