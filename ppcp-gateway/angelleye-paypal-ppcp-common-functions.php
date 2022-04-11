@@ -657,5 +657,63 @@ if (!function_exists('angelleye_ppcp_get_paypal_user_info')) {
             return $response['emails'][0]['value'];
         }
     }
+
 }
 
+
+if (!function_exists('angelleye_ppcp_account_ready_to_paid')) {
+
+    function angelleye_ppcp_account_ready_to_paid($is_sandbox, $client_id, $secret_id, $email) {
+        if ($is_sandbox) {
+            $paypal_order_api = 'https://api-m.sandbox.paypal.com/v2/checkout/orders/';
+        } else {
+            $paypal_order_api = 'https://api-m.paypal.com/v2/checkout/orders/';
+        }
+        $basicAuth = base64_encode($client_id . ":" . $secret_id);
+        $data = array(
+            'intent' => 'CAPTURE',
+            'purchase_units' =>
+            array(
+                0 =>
+                array(
+                    'reference_id' => time(),
+                    'amount' =>
+                    array(
+                        'currency_code' => angelleye_ppcp_get_currency(),
+                        'value' => '10.00'
+                    ),
+                    'payee' => array(
+                        'email_address' => $email,
+                    )
+                ),
+            ),
+            'application_context' => array(
+                'user_action' => 'CONTINUE',
+                'landing_page' => 'LOGIN',
+                'brand_name' => html_entity_decode(get_bloginfo('name'), ENT_NOQUOTES, 'UTF-8')
+            ),
+            'payment_method' => array(
+                'payee_preferred' => 'IMMEDIATE_PAYMENT_REQUIRED'
+            )
+        );
+        $args = array(
+            'timeout' => 60,
+            'redirection' => 5,
+            'httpversion' => '1.1',
+            'blocking' => true,
+            'headers' => array('Content-Type' => 'application/json', "prefer" => "return=representation", 'PayPal-Request-Id' => time()),
+            'cookies' => array(),
+            'body' => wp_json_encode($data)
+        );
+        $args['headers']['Authorization'] = "Basic " . $basicAuth;
+        $result = wp_remote_post($paypal_order_api, $args);
+        $body = wp_remote_retrieve_body($result);
+        $response = !empty($body) ? json_decode($body, true) : '';
+        if (!empty($response['status']) && 'CREATED' === $response['status']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+}
