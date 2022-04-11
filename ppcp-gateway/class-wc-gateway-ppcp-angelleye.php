@@ -436,6 +436,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function can_refund_order($order) {
+        $parent_return = parent::can_refund_order($order);
+        if($parent_return === false) {
+            return false;
+        }
         $has_api_creds = false;
         if ($this->is_credentials_set()) {
             $has_api_creds = true;

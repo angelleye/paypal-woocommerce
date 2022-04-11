@@ -807,6 +807,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $this->paypal_transaction = $this->paypal_transaction + $value;
                         }
                         $transaction_id = isset($this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['id']) ? $this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['id'] : '';
+                        update_post_meta( $order->get_id(), '_transaction_id', wc_clean( $transaction_id ) );
                         $seller_protection = isset($this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['seller_protection']['status']) ? $this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['seller_protection']['status'] : '';
                         $payment_status = isset($this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['status']) ? $this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['status'] : '';
                         angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
@@ -837,6 +838,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $order->payment_complete($transaction_id);
                         } else {
                             $order->update_status('on-hold');
+                            
                         }
                     }
                 }
@@ -1816,6 +1818,55 @@ class AngellEYE_PayPal_PPCP_Payment {
             return;
         } catch (Exception $ex) {
             
+        }
+    }
+    
+    public function angelleye_ppcp_multi_account_refund_order($order_id, $transaction_id, $testmode, $client_id, $secret_id) {
+        try {
+            $order = wc_get_order($order_id);
+            $reason = !empty($reason) ? $reason : 'Refund';
+            $body_request['note_to_payer'] = $reason;
+            $args = array(
+                'method' => 'POST',
+                'timeout' => 60,
+                'redirection' => 5,
+                'httpversion' => '1.1',
+                'blocking' => true,
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id()),
+                'body' => wp_json_encode($body_request),
+                'cookies' => array()
+            );
+            $this->api_response = $this->api_request->multi_account_request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
+            if (isset($this->api_response['status']) && $this->api_response['status'] == "COMPLETED") {
+                $gross_amount = isset($this->api_response['seller_payable_breakdown']['gross_amount']['value']) ? $this->api_response['seller_payable_breakdown']['gross_amount']['value'] : '';
+                $refund_transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
+                $order->add_order_note(
+                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
+                );
+            } else if (isset($$this->api_response['status']) && $$this->api_response['status'] == "PENDING") {
+                $gross_amount = isset($$this->api_response['seller_payable_breakdown']['gross_amount']['value']) ? $$this->api_response['seller_payable_breakdown']['gross_amount']['value'] : '';
+                $refund_transaction_id = isset($$this->api_response['id']) ? $$this->api_response['id'] : '';
+                $pending_reason_text = isset($$this->api_response['status_details']['reason']) ? $$this->api_response['status_details']['reason'] : '';
+                $order->add_order_note(sprintf(__('Payment via %s Pending. Pending reason: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $pending_reason_text));
+                $order->add_order_note(
+                        sprintf(__('Refund Amount %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
+                );
+            } else {
+                if ($this->paymentaction === 'authorize' && !empty($this->api_response['details'][0]['issue']) && 'INVALID_RESOURCE_ID' === $this->api_response['details'][0]['issue']) {
+                    $this->angelleye_ppcp_void_authorized_payment($transaction_id);
+                    return true;
+                }
+                if (!empty($this->api_response['details'][0]['description'])) {
+                    $order->add_order_note('Error Message : ' . wc_print_r($this->api_response['details'][0]['description'], true));
+                    throw new Exception($this->api_response['details'][0]['description']);
+                }
+                return false;
+            }
+            return true;
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
+            return new WP_Error('error', $ex->getMessage());
         }
     }
 
