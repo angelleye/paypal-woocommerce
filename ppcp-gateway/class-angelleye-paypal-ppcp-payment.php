@@ -1875,4 +1875,32 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
+    public function angelleye_ppcp_get_paypal_user_info($is_sandbox, $client_id = '', $secret_id = '', $merchant_id = '') {
+        if ($is_sandbox) {
+            $url = 'https://api-m.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1';
+        } else {
+            $url = 'https://api-m.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1';
+        }
+        if (empty($client_id) && empty($secret_id) && !empty($merchant_id)) {
+            return $merchant_id;
+        } else {
+            $basicAuth = base64_encode($client_id . ":" . $secret_id);
+            $args = array(
+                'timeout' => 60,
+                'redirection' => 5,
+                'httpversion' => '1.1',
+                'blocking' => true,
+                'headers' => array('Content-Type' => 'application/json', "prefer" => "return=representation", 'PayPal-Request-Id' => time()),
+                'cookies' => array()
+            );
+            $args['headers']['Authorization'] = "Basic " . $basicAuth;
+            $result = wp_remote_get($url, $args);
+            $body = wp_remote_retrieve_body($result);
+            $response = !empty($body) ? json_decode($body, true) : '';
+            if (!empty($response['emails'][0]['value'])) {
+                return $response['emails'][0]['value'];
+            }
+        }
+    }
+
 }
