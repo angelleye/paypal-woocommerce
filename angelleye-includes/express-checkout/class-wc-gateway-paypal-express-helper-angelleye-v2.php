@@ -776,6 +776,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             if (is_checkout()) {
                 $js_value['is_page_name'] = 'checkout_page';
+                $js_value['post_data'] = angelleye_get_session('post_data');
                 wp_enqueue_script('angelleye-express-checkout-js', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-express-checkout.js', array(), $this->version, true);
                 wp_localize_script('angelleye-express-checkout-js', 'angelleye_js_value', $js_value);
             }
