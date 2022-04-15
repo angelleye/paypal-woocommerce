@@ -239,8 +239,8 @@ if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
             $billing_address['email'] = !empty($angelleye_ppcp_checkout_post['billing_email']) ? $angelleye_ppcp_checkout_post['billing_email'] : '';
         } else {
             $phone = '';
-            if (!empty($checkout_details->payer->phone_number)) {
-                $phone = $checkout_details->payer->phone_number;
+            if (!empty($checkout_details->payer->phone->phone_number->national_number)) {
+                $phone = $checkout_details->payer->phone->phone_number->national_number;
             } elseif (!empty($_POST['billing_phone'])) {
                 $phone = wc_clean($_POST['billing_phone']);
             }
