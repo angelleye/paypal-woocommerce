@@ -667,6 +667,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
             $enable_funding = array();
+
             $js_value = array('is_page_name' => '', 'enable_in_context_checkout_flow' => ( $this->enable_in_context_checkout_flow == 'yes' ? 'yes' : 'no'));
             if (isset($post->ID) && 'checkout' === get_post_meta($post->ID, 'wcf-step-type', true)) {
                 $is_cartflow = "yes";
@@ -700,6 +701,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 if (!isset($this->disallowed_funding_methods['venmo'])) {
                     array_push($enable_funding, 'venmo');
                 }
+                if (!isset($this->disallowed_funding_methods['paylater'])) {
+                    array_push($enable_funding, 'paylater');
+                }
                 $is_cart = is_cart() && !WC()->cart->is_empty();
                 $is_product = is_product();
                 $is_checkout = is_checkout();
@@ -707,9 +711,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $smart_js_arg['commit'] = $this->angelleye_ec_force_to_display_checkout_page_js() == true ? 'false' : 'true';
                 if ($this->enabled_credit_messaging) {
                     $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', 'buttons,messages');
-                    if (!isset($this->disallowed_funding_methods['paylater'])) {
-                        array_push($enable_funding, 'paylater');
-                    }
                 } else {
                     $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', 'buttons');
                 }

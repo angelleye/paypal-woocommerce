@@ -265,6 +265,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!isset($this->disable_funding['venmo'])) {
             array_push($enable_funding, 'venmo');
         }
+        if (!isset($this->disable_funding['paylater'])) {
+            array_push($enable_funding, 'paylater');
+        }
         if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
             $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
         }
@@ -306,9 +309,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         if ($this->enabled_pay_later_messaging) {
             array_push($components, 'messages');
-            if (!isset($this->disable_funding['paylater'])) {
-                array_push($enable_funding, 'paylater');
-            }
         }
         if (!empty($components)) {
             $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
