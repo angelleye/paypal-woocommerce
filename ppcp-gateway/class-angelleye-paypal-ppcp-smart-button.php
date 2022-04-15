@@ -114,7 +114,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
             $this->client_id = $this->sandbox_client_id;
             $this->secret_id = $this->sandbox_secret_id;
-            if( $this->is_sandbox_first_party_used === 'yes' ) {
+            if ($this->is_sandbox_first_party_used === 'yes') {
                 $this->is_first_party_used = 'yes';
             } else {
                 $this->is_first_party_used = 'no';
@@ -123,7 +123,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->merchant_id = $this->settings->get('live_merchant_id', '');
             $this->client_id = $this->live_client_id;
             $this->secret_id = $this->live_secret_id;
-            if( $this->is_live_first_party_used === 'yes' ) {
+            if ($this->is_live_first_party_used === 'yes') {
                 $this->is_first_party_used = 'yes';
             } else {
                 $this->is_first_party_used = 'no';
@@ -258,33 +258,36 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
             }
         }
-
         $this->angelleye_ppcp_smart_button_style_properties();
         $smart_js_arg = array();
+        $enable_funding = array();
         $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
         if (!isset($this->disable_funding['venmo'])) {
-            $smart_js_arg['enable-funding'] = 'venmo';
+            array_push($enable_funding, 'venmo');
         }
         if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
             $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
         }
         if ($this->is_sandbox) {
-            if($this->is_first_party_used === 'yes') {
+            if ($this->is_first_party_used === 'yes') {
                 $smart_js_arg['client-id'] = $this->client_id;
             } else {
                 $smart_js_arg['client-id'] = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
                 $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
             }
         } else {
-            if($this->is_first_party_used === 'yes') {
+            if ($this->is_first_party_used === 'yes') {
                 $smart_js_arg['client-id'] = $this->client_id;
             } else {
                 $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
                 $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
             }
-            
         }
-        
+        if ($this->is_sandbox) {
+            if (is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen(WC()->customer->get_billing_country())) {
+                $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
+            }
+        }
         $is_cart = is_cart() && !WC()->cart->is_empty();
         $is_product = is_product();
         $is_checkout = is_checkout();
@@ -303,9 +306,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         if ($this->enabled_pay_later_messaging) {
             array_push($components, 'messages');
+            if (!isset($this->disable_funding['paylater'])) {
+                array_push($enable_funding, 'paylater');
+            }
         }
         if (!empty($components)) {
             $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
+        }
+        if (!empty($enable_funding) && count($enable_funding) > 0) {
+            $smart_js_arg['enable-funding'] = implode(',', $enable_funding);
         }
         if (isset($post->ID) && 'yes' == get_post_meta($post->ID, 'wcf-pre-checkout-offer', true)) {
             $pre_checkout_offer = "yes";
@@ -357,7 +366,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function is_valid_for_use() {
-        if($this->enabled === false) {
+        if ($this->enabled === false) {
             return false;
         }
         if (!empty($this->merchant_id) || (!empty($this->client_id) && !empty($this->secret_id))) {

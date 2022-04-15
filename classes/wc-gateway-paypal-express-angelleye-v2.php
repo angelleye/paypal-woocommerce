@@ -43,6 +43,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->disallowed_funding_methods_array = array(
             'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
             'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
+            'paylater' => __('Pay Later', 'paypal-for-woocommerce'),
             'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
             'blik' => __('BLIK', 'paypal-for-woocommerce'),
             'eps' => __('eps', 'paypal-for-woocommerce'),
