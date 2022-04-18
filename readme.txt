@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 3.0.22 - 04.18.2022 =
+= 3.0.23 - 04.18.2022 =
 * Feature - PPCP By Default enable Pay Later button. ([PFW-1005](https://github.com/angelleye/paypal-woocommerce/pull/1680))
 * Fix - Resolves PPCP - Billing Address / Phone Number Return. ([PFW-1016](https://github.com/angelleye/paypal-woocommerce/pull/1681))
 * Fix - Resolves PPCP - PayPal Smart button not displaying when cart is not empty. ([PFW-1010](https://github.com/angelleye/paypal-woocommerce/pull/1677))
