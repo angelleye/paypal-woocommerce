@@ -358,7 +358,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 $order->save();
                 do_action('ae_add_custom_order_note', $order, $card = null, $token = null, $this->paypal_response);
-                apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);
                 do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
@@ -416,7 +415,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 $order->save();
                 do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
-                apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
                 if ($order->get_total() > 0) {
@@ -472,7 +470,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 $order->save();
                 do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
-                apply_filters('woocommerce_payment_successful_result', array('result' => 'success'), $order_id);
                 do_action('woocommerce_before_pay_action', $order);
                 update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 $order->update_status('wc-partial-payment');
