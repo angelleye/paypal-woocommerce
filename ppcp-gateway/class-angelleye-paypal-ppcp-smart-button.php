@@ -258,12 +258,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
             }
         }
-
         $this->angelleye_ppcp_smart_button_style_properties();
         $smart_js_arg = array();
+        $enable_funding = array();
         $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
         if (!isset($this->disable_funding['venmo'])) {
-            $smart_js_arg['enable-funding'] = 'venmo';
+            array_push($enable_funding, 'venmo');
+        }
+        if (!isset($this->disable_funding['paylater'])) {
+            array_push($enable_funding, 'paylater');
         }
         if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
             $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
@@ -283,7 +286,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
             }
         }
-
+        if ($this->is_sandbox) {
+            if (is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen(WC()->customer->get_billing_country())) {
+                $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
+            }
+        }
+        $is_cart = is_cart() && !WC()->cart->is_empty();
+        $is_product = is_product();
+        $is_checkout = is_checkout();
+        $page = $is_cart ? 'cart' : ( $is_product ? 'product' : ( $is_checkout ? 'checkout' : null ) );
         $is_pay_page = 'no';
         if (is_product()) {
             $page = 'product';
@@ -307,6 +318,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         if (!empty($components)) {
             $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
+        }
+        if (!empty($enable_funding) && count($enable_funding) > 0) {
+            $smart_js_arg['enable-funding'] = implode(',', $enable_funding);
         }
         if (isset($post->ID) && 'yes' == get_post_meta($post->ID, 'wcf-pre-checkout-offer', true)) {
             $pre_checkout_offer = "yes";
