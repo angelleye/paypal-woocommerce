@@ -439,7 +439,7 @@ class AngellEYE_Utility {
         $payment_gateway = wc_get_payment_gateway_by_order( $order );
         if ( $payment_gateway && isset( $payment_gateway->invoice_id_prefix ) ) {
             $invnum = $payment_gateway->invoice_id_prefix . str_replace("#", "", $order->get_order_number());
-            $DataArray['INVNUM'] = $invnum;
+            $DataArray['INVNUM'] = apply_filters( 'paypal_for_woocommerce_order_invoice_id', $invnum, $order_id, $order );
         }
 
         $PayPalRequest = array(
@@ -464,8 +464,14 @@ class AngellEYE_Utility {
                     update_post_meta($AUTHORIZATIONID, 'PAYMENTSTATUS', $do_capture_result['PAYMENTSTATUS']);
                 }
             }
+            if(isset($do_capture_result['FEEAMT'])) {
+                update_post_meta($order_id, '_paypal_fee', $do_capture_result['FEEAMT']);
+                update_post_meta($order_id, '_paypal_transaction_fee', $do_capture_result['FEEAMT']);
+                update_post_meta($order_id, '_paypal_fee_currency_code', $do_capture_result['CURRENCYCODE']);
+                update_post_meta($order_id, 'PayPal Transaction Fee', $do_capture_result['FEEAMT']);
+            }
             $order->set_transaction_id($do_capture_result['TRANSACTIONID']);
-            self::angelleye_add_order_meta($order_id, $payment_order_meta);
+            $order->save();
             self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_capture_result, $order, 'DoCapture');
             $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
         } else {
@@ -557,6 +563,7 @@ class AngellEYE_Utility {
                 $this->angelleye_get_transactionDetails($do_void_result['AUTHORIZATIONID']);
                 $order->set_transaction_id($do_void_result['AUTHORIZATIONID']);
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_void_result, $order, 'DoVoid');
+                $order->save();
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
                 $ErrorCode = urldecode($do_void_result["L_ERRORCODE0"]);
@@ -624,6 +631,7 @@ class AngellEYE_Utility {
                         ' DoReauthorization AUTHORIZATIONID: ' . $do_reauthorization_result['AUTHORIZATIONID'] . ' )'
                 );
                 $order->set_transaction_id($do_reauthorization_result['AUTHORIZATIONID']);
+                $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_reauthorization_result, $order, 'DoReauthorization');
             } else {
                 $ErrorCode = urldecode($do_reauthorization_result["L_ERRORCODE0"]);
@@ -713,6 +721,7 @@ class AngellEYE_Utility {
                         ' DoAuthorization AUTHORIZATIONID: ' . $do_authorization_result['TRANSACTIONID'] . ' )'
                 );
                 $order->set_transaction_id($do_authorization_result['TRANSACTIONID']);
+                $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_authorization_result, $order, 'DoAuthorization');
             } else {
                 $ErrorCode = urldecode($do_authorization_result["L_ERRORCODE0"]);
@@ -1057,15 +1066,16 @@ class AngellEYE_Utility {
             $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions($order);
         }
         if( $payment_method != 'braintree') {
-            foreach ($posts_array as $post_data):
+            foreach ($posts_array as $post_data) {
                 $payment_status = get_post_meta($post_data->ID, 'PAYMENTSTATUS', true);
-                //$payment_status = get_post_meta($post->ID, 'post_status', true);
                 if (isset($post->post_title) && !empty($post_data->post_title) && $payment_status != 'Completed') {
                     $this->angelleye_get_transactionDetails($post_data->post_title);
+                } 
+                if ( $order->has_status( array( 'on-hold', 'pending', 'failed', 'cancelled' )) ) {
+                    $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
                 }
-            endforeach;
+            }
             if (empty($this->angelleye_woocommerce_order_actions)) {
-
                 $this->angelleye_display_user_instruction_for_payment_action($payment_action, $this->angelleye_woocommerce_order_actions);
             }
         }
@@ -1823,6 +1833,7 @@ class AngellEYE_Utility {
                     );
                 }
                 $order->set_transaction_id($do_delayed_capture_result['PNREF']);
+                $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_delayed_capture_result, $order, 'DoCapture');
                 $this->angelleye_get_transactionDetails($do_delayed_capture_result['PNREF']);
                 $this->angelleye_get_transactionDetails($transaction_id);
@@ -1880,6 +1891,7 @@ class AngellEYE_Utility {
                 );
                 $this->angelleye_get_transactionDetails($transaction_id);
                 $order->set_transaction_id($transaction_id);
+                $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_void_result, $order, 'DoVoid');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
@@ -1942,6 +1954,7 @@ class AngellEYE_Utility {
                 update_post_meta($order_id, '_first_transaction_id', $do_authorization_result['PNREF']);
                 update_post_meta($order_id, '_trans_date', current_time('mysql'));
                 $order->set_transaction_id($transaction_id);
+                $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_authorization_result, $order, 'DoAuthorization');
                 $this->angelleye_paypal_for_woocommerce_order_status_handler($order);
             } else {
@@ -2166,7 +2179,7 @@ class AngellEYE_Utility {
             $request_data['amount'] = $AMT;
             $request_data['options'] = array('submitForSettlement' => true);
             
-            $result = $gateway_obj->pfw_braintree_do_capture($request_data, $order);
+            $result = $gateway_obj->pfw_braintree_do_capture($order, $request_data);
             if( $result != false ) {
                 $maybe_settled_later = array(
                     'settling',
@@ -2182,6 +2195,7 @@ class AngellEYE_Utility {
                     } else {
                         update_post_meta( $order_id, '_transaction_id', $result->transaction->id );
                     }
+                    $order->save();
                     $insert_paypal_transaction = array(
                         'ID' => '',
                         'post_type' => 'paypal_transaction',

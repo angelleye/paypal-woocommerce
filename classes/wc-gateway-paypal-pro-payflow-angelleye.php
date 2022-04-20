@@ -1330,6 +1330,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
              */
             if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_warning_codes))) {
                 $order->set_transaction_id($PayPalResult['PNREF']);
+                $order->save();
                 if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
                     $order->add_order_note('Card : ' . $PayPalResult['RESPMSG']);
                     add_post_meta($order_id, 'payment_action_authorization', $this->payment_action_authorization);
@@ -1471,6 +1472,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     }
                     if ($this->default_order_status == 'Completed' && apply_filters('angelleye_paypal_payflow_allow_default_order_status', true)) {
                         $order->update_status('completed');
+                        do_action( 'woocommerce_payment_complete', $order_id );
                     } else {
                         $order->payment_complete($PayPalResult['PNREF']);
                     }
@@ -2005,6 +2007,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_warning_codes))) {
                 $order->set_transaction_id($PayPalResult['PNREF']);
+                $order->save();
                 if (isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
                     $order->update_status('failed', __('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                     throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));

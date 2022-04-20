@@ -4,7 +4,7 @@ defined('ABSPATH') || exit;
 
 class AngellEYE_PayPal_PPCP_Log {
 
-    public $log_enabled = true;
+    public $log_option;
     public $logger = false;
     protected static $_instance = null;
 
@@ -17,11 +17,11 @@ class AngellEYE_PayPal_PPCP_Log {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
-        $this->log_enabled = 'yes' === $this->settings->get('debug', 'yes');
+        $this->log_option = $this->settings->get('debug', 'everything');
     }
 
     public function log($message, $level = 'info') {
-        if ($this->log_enabled) {
+        if ($this->log_option == 'everything' || ( $level == 'error' && $this->log_option == 'errors_warnings_only')) {
             if (empty($this->logger)) {
                 $this->logger = wc_get_logger();
             }

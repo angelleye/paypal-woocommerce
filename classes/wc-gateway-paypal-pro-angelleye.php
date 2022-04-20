@@ -1284,6 +1284,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
         if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
+            $order->save();
             // Add order note
             $order->add_order_note(sprintf(__('PayPal Pro (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             //$order->add_order_note("PayPal Results: ".print_r($PayPalResult,true));
@@ -1664,7 +1665,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         return parent::get_transaction_url($order);
     }
 
-    public function paypal_pro_error_handler($request_name = '', $redirect_url = '', $result) {
+    public function paypal_pro_error_handler($result, $request_name = '', $redirect_url = '') {
         $ErrorCode = urldecode($result["L_ERRORCODE0"]);
         $ErrorShortMsg = urldecode($result["L_SHORTMESSAGE0"]);
         $ErrorLongMsg = urldecode($result["L_LONGMESSAGE0"]);
@@ -1696,7 +1697,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $error_display_type_message = apply_filters('ae_ppec_error_user_display_message', $error_display_type_message, $ErrorCode, $ErrorLongMsg);
         wc_add_notice($error_display_type_message, 'error');
-        if (!is_ajax()) {
+        if (!wp_doing_ajax()) {
             wp_redirect($redirect_url);
             exit;
         } else {
@@ -1763,7 +1764,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
         } else {
             $redirect_url = wc_get_account_endpoint_url('payment-methods');
-            $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
+            $this->paypal_pro_error_handler($result, $request_name = 'DoDirectPayment', $redirect_url);
         }
     }
 
@@ -1965,6 +1966,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
+            $order->save();
             $order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             $avs_response_code = isset($PayPalResult['AVSCODE']) ? $PayPalResult['AVSCODE'] : '';
             $avs_response_message = $this->PayPal->GetAVSCodeMessage($avs_response_code);
@@ -2329,7 +2331,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             } else {
                 $redirect_url = wc_get_account_endpoint_url('payment-methods');
-                $this->paypal_pro_error_handler($request_name = 'DoDirectPayment', $redirect_url, $result);
+                $this->paypal_pro_error_handler($result, $request_name = 'DoDirectPayment', $redirect_url);
             }
         }
     }
@@ -2339,6 +2341,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
         } else {
             $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
+            $order->save();
             $order->update_status('on-hold');
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();

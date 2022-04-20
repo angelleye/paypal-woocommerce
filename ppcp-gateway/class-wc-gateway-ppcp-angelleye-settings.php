@@ -9,6 +9,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $angelleye_ppcp_gateway_setting;
         public $gateway_key;
         public $settings = array();
+        public $dcc_applies;
         protected static $_instance = null;
 
         public static function instance() {
@@ -20,6 +21,18 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 
         public function __construct() {
             $this->gateway_key = 'woocommerce_angelleye_ppcp_settings';
+            $this->angelleye_ppcp_load_class();
+        }
+
+        public function angelleye_ppcp_load_class() {
+            try {
+                if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
+                }
+                $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
+            } catch (Exception $ex) {
+                
+            }
         }
 
         public function get($id, $default = false) {
@@ -68,6 +81,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
         public function angelleye_ppcp_setting_fields() {
+            $cards_list = array(
+                'visa' => _x('Visa', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'mastercard' => _x('Mastercard', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'amex' => _x('American Express', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'discover' => _x('Discover', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'jcb' => _x('JCB', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'elo' => _x('Elo', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'hiper' => _x('Hiper', 'Name of credit card', 'woocommerce-paypal-payments'),
+            );
+            foreach ($cards_list as $card_key => $card_value) {
+                if ($this->dcc_applies->can_process_card($card_key)) {
+                    continue;
+                }
+                unset($cards_list[$card_key]);
+            }
             $skip_final_review_option_not_allowed_guest_checkout = '';
             $skip_final_review_option_not_allowed_terms = '';
             $skip_final_review_option_not_allowed_tokenized_payments = '';
@@ -81,6 +109,40 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             if (apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
                 $skip_final_review_option_not_allowed_terms = ' (You currently have a Terms &amp; Conditions page set, which requires the review page, and will override this option.)';
             }
+            $button_height = array(
+                '' => __('Default Height (Recommended)', 'paypal-for-woocommerce'),
+                25 => __('25 px', 'paypal-for-woocommerce'),
+                26 => __('26 px', 'paypal-for-woocommerce'),
+                27 => __('27 px', 'paypal-for-woocommerce'),
+                28 => __('28 px', 'paypal-for-woocommerce'),
+                29 => __('29 px', 'paypal-for-woocommerce'),
+                30 => __('30 px', 'paypal-for-woocommerce'),
+                31 => __('31 px', 'paypal-for-woocommerce'),
+                32 => __('32 px', 'paypal-for-woocommerce'),
+                33 => __('33 px', 'paypal-for-woocommerce'),
+                34 => __('34 px', 'paypal-for-woocommerce'),
+                35 => __('35 px', 'paypal-for-woocommerce'),
+                36 => __('36 px', 'paypal-for-woocommerce'),
+                37 => __('37 px', 'paypal-for-woocommerce'),
+                38 => __('38 px', 'paypal-for-woocommerce'),
+                39 => __('39 px', 'paypal-for-woocommerce'),
+                40 => __('40 px', 'paypal-for-woocommerce'),
+                41 => __('41 px', 'paypal-for-woocommerce'),
+                42 => __('42 px', 'paypal-for-woocommerce'),
+                43 => __('43 px', 'paypal-for-woocommerce'),
+                44 => __('44 px', 'paypal-for-woocommerce'),
+                45 => __('45 px', 'paypal-for-woocommerce'),
+                46 => __('46 px', 'paypal-for-woocommerce'),
+                47 => __('47 px', 'paypal-for-woocommerce'),
+                48 => __('48 px', 'paypal-for-woocommerce'),
+                49 => __('49 px', 'paypal-for-woocommerce'),
+                50 => __('50 px', 'paypal-for-woocommerce'),
+                51 => __('51 px', 'paypal-for-woocommerce'),
+                52 => __('52 px', 'paypal-for-woocommerce'),
+                53 => __('53 px', 'paypal-for-woocommerce'),
+                54 => __('51 px', 'paypal-for-woocommerce'),
+                55 => __('55 px', 'paypal-for-woocommerce')
+            );
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -146,12 +208,40 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('Click to reset current credentials and use another account.', 'paypal-for-woocommerce'),
                     'desc_tip' => ''
                 ),
+                'api_client_id' => array(
+                    'title' => __('PayPal Client ID', 'smart-paypal-checkout-for-woocommerce'),
+                    'type' => 'password',
+                    'description' => __('Enter your PayPal Client ID.', 'smart-paypal-checkout-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true
+                ),
+                'api_secret' => array(
+                    'title' => __('PayPal Secret', 'smart-paypal-checkout-for-woocommerce'),
+                    'type' => 'password',
+                    'description' => __('Enter your PayPal Secret.', 'smart-paypal-checkout-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true
+                ),
                 'live_merchant_id' => array(
                     'title' => __('Live Merchant ID', 'paypal-for-woocommerce'),
                     'type' => 'text',
                     'description' => '',
                     'default' => '',
                     'custom_attributes' => array('readonly' => 'readonly'),
+                    'desc_tip' => true
+                ),
+                'sandbox_client_id' => array(
+                    'title' => __('Sandbox Client ID', 'smart-paypal-checkout-for-woocommerce'),
+                    'type' => 'password',
+                    'description' => __('Enter your PayPal Sandbox Client ID.', 'smart-paypal-checkout-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true
+                ),
+                'sandbox_api_secret' => array(
+                    'title' => __('Sandbox Secret', 'smart-paypal-checkout-for-woocommerce'),
+                    'type' => 'password',
+                    'description' => __('Enter your PayPal Sandbox Secret.', 'smart-paypal-checkout-for-woocommerce'),
+                    'default' => '',
                     'desc_tip' => true
                 ),
                 'sandbox_merchant_id' => array(
@@ -195,6 +285,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                         'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                        'paylater' => __('Pay Later', 'paypal-for-woocommerce'),
                         'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
                         'blik' => __('BLIK', 'paypal-for-woocommerce'),
                         'eps' => __('eps', 'paypal-for-woocommerce'),
@@ -247,6 +338,29 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'pill' => __('Pill', 'paypal-for-woocommerce')
                     ),
                 ),
+                'product_button_size' => array(
+                    'title' => __('Button Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                    'default' => 'responsive',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'small' => __('Small', 'paypal-for-woocommerce'),
+                        'medium' => __('Medium', 'paypal-for-woocommerce'),
+                        'large' => __('Large', 'paypal-for-woocommerce'),
+                        'responsive' => __('Responsive (Recommended)', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'product_button_height' => array(
+                    'title' => __('Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => '',
+                    'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
+                ),
                 'product_button_label' => array(
                     'title' => __('Button Label', 'paypal-for-woocommerce'),
                     'type' => 'select',
@@ -298,6 +412,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                         'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                        'paylater' => __('Pay Later', 'paypal-for-woocommerce'),
                         'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
                         'blik' => __('BLIK', 'paypal-for-woocommerce'),
                         'eps' => __('eps', 'paypal-for-woocommerce'),
@@ -350,6 +465,29 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'pill' => __('Pill', 'paypal-for-woocommerce')
                     ),
                 ),
+                'cart_button_size' => array(
+                    'title' => __('Button Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                    'default' => 'responsive',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'small' => __('Small', 'paypal-for-woocommerce'),
+                        'medium' => __('Medium', 'paypal-for-woocommerce'),
+                        'large' => __('Large', 'paypal-for-woocommerce'),
+                        'responsive' => __('Responsive (Recommended)', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'cart_button_height' => array(
+                    'title' => __('Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => '',
+                    'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
+                ),
                 'cart_button_label' => array(
                     'title' => __('Button Label', 'paypal-for-woocommerce'),
                     'type' => 'select',
@@ -401,6 +539,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                         'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                        'paylater' => __('Pay Later', 'paypal-for-woocommerce'),
                         'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
                         'blik' => __('BLIK', 'paypal-for-woocommerce'),
                         'eps' => __('eps', 'paypal-for-woocommerce'),
@@ -453,6 +592,29 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'pill' => __('Pill', 'paypal-for-woocommerce')
                     ),
                 ),
+                'checkout_button_size' => array(
+                    'title' => __('Button Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                    'default' => 'responsive',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'small' => __('Small', 'paypal-for-woocommerce'),
+                        'medium' => __('Medium', 'paypal-for-woocommerce'),
+                        'large' => __('Large', 'paypal-for-woocommerce'),
+                        'responsive' => __('Responsive (Recommended)', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'checkout_button_height' => array(
+                    'title' => __('Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => '',
+                    'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
+                ),
                 'checkout_button_label' => array(
                     'title' => __('Button Label', 'paypal-for-woocommerce'),
                     'type' => 'select',
@@ -504,6 +666,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                         'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                        'paylater' => __('Pay Later', 'paypal-for-woocommerce'),
                         'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
                         'blik' => __('BLIK', 'paypal-for-woocommerce'),
                         'eps' => __('eps', 'paypal-for-woocommerce'),
@@ -556,6 +719,29 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'pill' => __('Pill', 'paypal-for-woocommerce')
                     ),
                 ),
+                'mini_cart_button_size' => array(
+                    'title' => __('Button Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
+                    'default' => 'responsive',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'small' => __('Small', 'paypal-for-woocommerce'),
+                        'medium' => __('Medium', 'paypal-for-woocommerce'),
+                        'large' => __('Large', 'paypal-for-woocommerce'),
+                        'responsive' => __('Responsive (Recommended)', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'mini_cart_button_height' => array(
+                    'title' => __('Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => '',
+                    'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
+                ),
                 'mini_cart_button_label' => array(
                     'title' => __('Button Label', 'paypal-for-woocommerce'),
                     'type' => 'select',
@@ -593,14 +779,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'label' => __('Enable Pay Later Messaging', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
                     'description' => '<div style="font-size: smaller">Displays Pay Later messaging for available offers. Restrictions apply. <a target="_blank" href="https://developer.paypal.com/docs/business/pay-later/commerce-platforms/angelleye/">See terms and learn more</a></div>',
-                    'default' => 'no'
+                    'default' => 'yes'
                 ),
                 'pay_later_messaging_page_type' => array(
                     'title' => __('Page Type', 'paypal-for-woocommerce'),
                     'type' => 'multiselect',
                     'css' => 'width: 100%;',
                     'class' => 'wc-enhanced-select pay_later_messaging_field',
-                    'default' => array('home', 'category', 'product', 'cart', 'payment'),
+                    'default' => array('product', 'cart', 'payment'),
                     'options' => array('home' => __('Home', 'paypal-for-woocommerce'), 'category' => __('Category', 'paypal-for-woocommerce'), 'product' => __('Product', 'paypal-for-woocommerce'), 'cart' => __('Cart', 'paypal-for-woocommerce'), 'payment' => __('Payment', 'paypal-for-woocommerce')),
                     'description' => '<div style="font-size: smaller;">Set the page(s) you want to display messaging on, and then adjust that page\'s display option below.</div>',
                 ),
@@ -1121,24 +1307,92 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('Advanced Credit Cards', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
                     'label' => __('Enable advanced credit and debit card payments.', 'paypal-for-woocommerce'),
-                    'default' => 'yes',
-                    'description' => 'PayPal currently supports direct credit card processing for US, AU, UK, FR, IT and ES. <br> <br>If you have not already been approved for Advanced Credit Cards, please use the link below to apply. <br><br><span class="ppcp_sandbox"><a target="_blank" href="https://www.sandbox.paypal.com/bizsignup/entry/product/ppcp">Apply for Advanced Credit Cards</a></span><span class="ppcp_live"><a target="_blank" href="https://www.paypal.com/bizsignup/entry/product/ppcp">Apply for Advanced Credit Cards</a></span>',
-                ),
-                'threed_secure_enabled' => array(
-                    'title' => __('3D Secure', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('Enable 3D Secure', 'paypal-for-woocommerce'),
-                    'description' => __('Enable 3D Secure for additional security on direct credit card checkouts. In Europe this is required.', 'paypal-for-woocommerce'),
                     'default' => 'no',
+                    'description' => 'PayPal currently supports direct credit card processing for US, AU, UK, FR, IT, CA and ES. <br> <br>If you have not already been approved for Advanced Credit Cards, please use the link below to apply. <br><br><span><a target="_blank" href="https://www.angelleye.com/advanced-credit-card-setup-for-paypal/">Apply for Advanced Credit Cards</a>',
+                ),
+                '3d_secure_contingency' => array(
+                    'title' => __('Contingency for 3D Secure', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'options' => array(
+                        'SCA_WHEN_REQUIRED' => __('3D Secure when required', 'paypal-for-woocommerce'),
+                        'SCA_ALWAYS' => __('Always trigger 3D Secure', 'paypal-for-woocommerce'),
+                    ),
+                    'default' => 'SCA_WHEN_REQUIRED',
+                    'desc_tip' => true,
+                    'description' => __('3D Secure benefits cardholders and merchants by providing an additional layer of verification using Verified by Visa, MasterCard SecureCode and American Express SafeKey.', 'paypal-for-woocommerce'),
+                ),
+                'enable_separate_payment_method' => array(
+                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('Enable separate payment method as Advanced Credit Cards.', 'paypal-for-woocommerce'),
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'description' => __('Enable this option if you would like to use separate payment method as Advanced Credit Cards in WooCommerce checkout page.', 'paypal-for-woocommerce'),
+                ),
+                'advanced_card_payments_title' => array(
+                    'title' => __('Advanced Credit Cards Title', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
+                    'default' => __('Credit card', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'advanced_card_payments_display_position' => array(
+                    'title' => __('Advanced Credit Cards Position', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'options' => array(
+                        'before' => __('Before PayPal Smart Button', 'paypal-for-woocommerce'),
+                        'after' => __('After PayPal Smart Button', 'paypal-for-woocommerce'),
+                    ),
+                    'default' => 'after',
+                    'desc_tip' => true,
+                    'description' => __('This controls the gateway position which the user sees during checkout.', 'paypal-for-woocommerce'),
+                ),
+                'disable_cards' => array(
+                    'title' => __('Disable specific credit cards', 'woocommerce-paypal-payments'),
+                    'type' => 'multiselect',
+                    'class' => 'wc-enhanced-select pay_later_messaging_field',
+                    'default' => array(),
+                    'desc_tip' => true,
+                    'description' => __(
+                            'By default all possible credit cards will be accepted. You can disable some cards, if you wish.',
+                            'woocommerce-paypal-payments'
+                    ),
+                    'options' => $cards_list,
+                ),
+                'soft_descriptor' => array(
+                    'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('The value entered here will be displayed on the buyer\'s credit card statement.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'custom_attributes' => array('maxlength' => '22'),
+                ),
+                'error_email_notification' => array(
+                    'title' => __('Error Email Notifications', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
+                    'default' => 'yes',
+                    'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true
                 ),
                 'debug' => array(
                     'title' => __('Debug log', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('Enable logging', 'paypal-for-woocommerce'),
-                    'default' => 'yes',
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
                     'description' => sprintf(__('Log PayPal events, such as Payment, Refund inside %s Note: this may log personal information. We recommend using this for debugging purposes only and deleting the logs when finished.', 'paypal-for-woocommerce'), '<code>' . WC_Log_Handler_File::get_log_file_path('angelleye_ppcp') . '</code>'),
-                ),
+                    'options' => array(
+                        'everything' => __('Everything', 'paypal-for-woocommerce'),
+                        'errors_warnings_only' => __('Errors and Warnings Only', 'paypal-for-woocommerce'),
+                        'disabled' => __('Disabled', 'paypal-for-woocommerce')
+                    ),
+                    'default' => 'everything'
+                )
             );
+            if (wc_ship_to_billing_address_only() === true) {
+                unset($this->angelleye_ppcp_gateway_setting['set_billing_address']);
+            }
             if (angelleye_ppcp_is_local_server()) {
                 unset($this->angelleye_ppcp_gateway_setting['live_onboarding']);
                 unset($this->angelleye_ppcp_gateway_setting['live_disconnect']);

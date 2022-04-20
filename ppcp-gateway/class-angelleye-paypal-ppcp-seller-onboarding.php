@@ -177,6 +177,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if ($this->is_sandbox) {
                 $this->settings->set('sandbox_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
+                $this->api_log->log("sandbox_merchant_id: " . $merchant_id, 'error');
                 $this->settings->set('enabled', 'yes');
             } else {
                 $this->settings->set('live_merchant_id', $merchant_id);
@@ -224,8 +225,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->result = $this->angelleye_track_seller_onboarding_status($seller_onboarding_status['merchant_id']);
                 if ($this->angelleye_is_acdc_payments_enable($this->result)) {
                     $this->settings->set('enable_advanced_card_payments', 'yes');
+                    $this->settings->persist();
                 } else {
                     $this->settings->set('enable_advanced_card_payments', 'no');
+                    $this->settings->persist();
                 }
             }
             

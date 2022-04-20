@@ -49,8 +49,8 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         } else {
             $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
         }
-        $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'no');
-        $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('home', 'category', 'product', 'cart', 'payment'));
+        $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');
+        $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
         if (empty($this->pay_later_messaging_page_type)) {
             $this->enabled_pay_later_messaging = false;
         }

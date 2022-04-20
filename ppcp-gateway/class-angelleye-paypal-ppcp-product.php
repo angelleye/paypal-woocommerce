@@ -33,13 +33,13 @@ class AngellEYE_PayPal_PPCP_Product extends WC_Form_Handler {
             }
             $add_to_cart_handler = apply_filters('woocommerce_add_to_cart_handler', $adding_to_cart->get_type(), $adding_to_cart);
             if ('variable' === $add_to_cart_handler || 'variation' === $add_to_cart_handler) {
-                $was_added_to_cart = self::add_to_cart_handler_variable($product_id);
+                $was_added_to_cart = self::angelleye_ppcp_add_to_cart_handler_variable($product_id);
             } elseif ('grouped' === $add_to_cart_handler) {
-                $was_added_to_cart = self::add_to_cart_handler_grouped($product_id);
+                $was_added_to_cart = self::angelleye_ppcp_add_to_cart_handler_grouped($product_id);
             } elseif (has_action('woocommerce_add_to_cart_handler_' . $add_to_cart_handler)) {
                 do_action('woocommerce_add_to_cart_handler_' . $add_to_cart_handler, $url);
             } else {
-                $was_added_to_cart = self::add_to_cart_handler_simple($product_id);
+                $was_added_to_cart = self::angelleye_ppcp_add_to_cart_handler_simple($product_id);
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -47,7 +47,7 @@ class AngellEYE_PayPal_PPCP_Product extends WC_Form_Handler {
         }
     }
 
-    private static function add_to_cart_handler_simple($product_id) {
+    private static function angelleye_ppcp_add_to_cart_handler_simple($product_id) {
         try {
             $quantity = empty($_REQUEST['quantity']) ? 1 : wc_stock_amount(wp_unslash($_REQUEST['quantity']));
             $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
@@ -63,7 +63,7 @@ class AngellEYE_PayPal_PPCP_Product extends WC_Form_Handler {
         }
     }
 
-    private static function add_to_cart_handler_grouped($product_id) {
+    private static function angelleye_ppcp_add_to_cart_handler_grouped($product_id) {
         try {
             $was_added_to_cart = false;
             $added_to_cart = array();
@@ -100,7 +100,7 @@ class AngellEYE_PayPal_PPCP_Product extends WC_Form_Handler {
         }
     }
 
-    private static function add_to_cart_handler_variable($product_id) {
+    private static function angelleye_ppcp_add_to_cart_handler_variable($product_id) {
         try {
             $variation_id = empty($_REQUEST['variation_id']) ? '' : absint(wp_unslash($_REQUEST['variation_id']));
             $quantity = empty($_REQUEST['quantity']) ? 1 : wc_stock_amount(wp_unslash($_REQUEST['quantity']));

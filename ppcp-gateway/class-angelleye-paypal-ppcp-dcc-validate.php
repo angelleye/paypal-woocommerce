@@ -143,6 +143,7 @@ class AngellEYE_PayPal_PPCP_DCC_Validate {
         'AU' => array(
             'mastercard' => array(),
             'visa' => array(),
+            'amex' => array('AUD'),
         ),
         'ES' => array(
             'mastercard' => array(),
@@ -182,60 +183,76 @@ class AngellEYE_PayPal_PPCP_DCC_Validate {
      * Returns whether DCC can be used in the current country and the current currency used.
      */
     public function for_country_currency() {
-        $country = $this->country();
-        $currency = get_woocommerce_currency();
-        if (!in_array($country, array_keys($this->allowed_country_currency_matrix), true)) {
-            return false;
+        try {
+            $country = $this->country();
+            $currency = get_woocommerce_currency();
+            if (!in_array($country, array_keys($this->allowed_country_currency_matrix), true)) {
+                return false;
+            }
+            $applies = in_array($currency, $this->allowed_country_currency_matrix[$country], true);
+            return $applies;
+        } catch (Exception $ex) {
+            
         }
-        $applies = in_array($currency, $this->allowed_country_currency_matrix[$country], true);
-        return $applies;
     }
 
     /**
      * Returns credit cards, which can be used.
      */
     public function valid_cards() {
-        $country = $this->country();
-        $cards = array();
-        if (!isset($this->country_card_matrix[$country])) {
-            return $cards;
-        }
-
-        $supported_currencies = $this->country_card_matrix[$country];
-        foreach ($supported_currencies as $card => $currencies) {
-            if ($this->can_process_card($card)) {
-                $cards[] = $card;
+        try {
+            $this->country = $this->country();
+            $cards = array();
+            if (!isset($this->country_card_matrix[$this->country])) {
+                return $cards;
             }
+
+            $supported_currencies = $this->country_card_matrix[$this->country];
+            foreach ($supported_currencies as $card => $currencies) {
+                if ($this->can_process_card($card)) {
+                    $cards[] = $card;
+                }
+            }
+            if (in_array('amex', $cards, true)) {
+                $cards[] = 'american-express';
+            }
+            if (in_array('mastercard', $cards, true)) {
+                $cards[] = 'master-card';
+            }
+            return $cards;
+        } catch (Exception $ex) {
+            
         }
-        if (in_array('amex', $cards, true)) {
-            $cards[] = 'american-express';
-        }
-        if (in_array('mastercard', $cards, true)) {
-            $cards[] = 'master-card';
-        }
-        return $cards;
     }
 
     /**
      * Whether a card can be used or not.
      */
     public function can_process_card($card) {
-        $country = $this->country();
-        if (!isset($this->country_card_matrix[$country])) {
-            return false;
+        try {
+            $this->country = $this->country();
+            if (!isset($this->country_card_matrix[$this->country])) {
+                return false;
+            }
+            if (!isset($this->country_card_matrix[$this->country][$card])) {
+                return false;
+            }
+            $supported_currencies = $this->country_card_matrix[$this->country][$card];
+            $currency = get_woocommerce_currency();
+            return empty($supported_currencies) || in_array($currency, $supported_currencies, true);
+        } catch (Exception $ex) {
+            
         }
-        if (!isset($this->country_card_matrix[$country][$card])) {
-            return false;
-        }
-        $supported_currencies = $this->country_card_matrix[$country][$card];
-        $currency = get_woocommerce_currency();
-        return empty($supported_currencies) || in_array($currency, $supported_currencies, true);
     }
 
     private function country() {
-        $region = wc_get_base_location();
-        $country = $region['country'];
-        return $country;
+        try {
+            $region = wc_get_base_location();
+            $country = $region['country'];
+            return $country;
+        } catch (Exception $ex) {
+            
+        }
     }
 
 }
