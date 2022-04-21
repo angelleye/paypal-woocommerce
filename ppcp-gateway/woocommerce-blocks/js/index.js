@@ -1,3 +1,5 @@
+console.log(angelleye_ppcp_manager_block);
+
 ! function(e) {
     var t = {};
     function n(o) {
@@ -68,7 +70,7 @@
                 src: "https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png",
                 alt: Object(a.decodeEntities)(l.title || Object(i.__)("PayPal", "woo-gutenberg-products-block"))
             }),
-            placeOrderButtonLabel: Object(i.__)("Proceed to PayPal", "woo-gutenberg-products-block"),
+            placeOrderButtonLabel: Object(i.__)(angelleye_ppcp_manager_block.placeOrderButtonLabel),
             content: Object(r.createElement)(p, null),
             edit: Object(r.createElement)(p, null),
             canMakePayment: () => !0,
