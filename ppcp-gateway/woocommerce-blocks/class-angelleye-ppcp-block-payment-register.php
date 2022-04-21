@@ -11,11 +11,11 @@ function angelleye_ppcp_woocommerce_blocks_support() {
                 'woocommerce_blocks_payment_method_type_registration',
                 function (Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry) {
                     $container = Automattic\WooCommerce\Blocks\Package::container();
-                    
+
                     $container->register(
                             Automattic\WooCommerce\Blocks\Payments\Integrations\Angelleye_PPCP_Block_Support::class,
                             function ($container) {
-                                $asset_api = $container->get( AssetApi::class );
+                                $asset_api = $container->get(AssetApi::class);
                                 return new Automattic\WooCommerce\Blocks\Payments\Integrations\Angelleye_PPCP_Block_Support($asset_api);
                             }
                     );

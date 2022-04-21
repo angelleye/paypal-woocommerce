@@ -1,1 +1,1 @@
-export const PAYMENT_METHOD_NAME = 'bacs';
+export const PAYMENT_METHOD_NAME = 'angelleye_ppcp';
