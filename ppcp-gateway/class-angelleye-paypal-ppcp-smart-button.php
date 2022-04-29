@@ -93,7 +93,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_id)) {
             $this->is_sandbox_first_party_used = 'yes';
             $this->is_sandbox_third_party_used = 'no';
-        } else if (empty($this->sandbox_client_id) && empty($this->sandbox_secret_id) && !empty($this->sandbox_merchant_id)) {
+        } else if (!empty($this->sandbox_merchant_id)) {
             $this->is_sandbox_third_party_used = 'yes';
             $this->is_sandbox_first_party_used = 'no';
         } else {
@@ -103,7 +103,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($this->live_client_id) && !empty($this->live_secret_id)) {
             $this->is_live_first_party_used = 'yes';
             $this->is_live_third_party_used = 'no';
-        } else if (empty($this->live_client_id) && empty($this->live_secret_id) && !empty($this->live_merchant_id)) {
+        } else if (!empty($this->live_merchant_id)) {
             $this->is_live_third_party_used = 'yes';
             $this->is_live_first_party_used = 'no';
         } else {
@@ -385,6 +385,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
             return false;
         }
+        $this->angelleye_ppcp_smart_button_style_properties();
         wp_enqueue_script($this->angelleye_ppcp_plugin_name);
         if (WC()->cart->needs_payment()) {
             wp_enqueue_script('angelleye-paypal-checkout-sdk');
@@ -394,7 +395,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function display_paypal_button_product_page() {
         global $product;
-        if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription')) {
+        $this->angelleye_ppcp_smart_button_style_properties();
+        if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription') || $product->is_purchasable() === false || $product->get_price() == 0) {
             return;
         }
         wp_enqueue_script('angelleye-paypal-checkout-sdk');
@@ -940,7 +942,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($angelleye_ppcp_payment_method_title)) {
             ?>
             <tr>
-                <th><?php esc_html_e('Payment method:', 'woocommerce'); ?></th>
+                <th><?php esc_html_e('Payment method:', 'paypal-for-woocommerce'); ?></th>
                 <td><strong><?php echo wp_kses_post($angelleye_ppcp_payment_method_title); ?></strong></td>
             </tr>
             <?php

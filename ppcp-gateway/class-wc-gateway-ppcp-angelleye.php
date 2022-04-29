@@ -86,7 +86,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_id)) {
             $this->is_sandbox_first_party_used = 'yes';
             $this->is_sandbox_third_party_used = 'no';
-        } else if (empty($this->sandbox_client_id) && empty($this->sandbox_secret_id) && !empty($this->sandbox_merchant_id)) {
+        } else if (!empty($this->sandbox_merchant_id)) {
             $this->is_sandbox_third_party_used = 'yes';
             $this->is_sandbox_first_party_used = 'no';
         } else {
@@ -96,7 +96,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         if (!empty($this->live_client_id) && !empty($this->live_secret_id)) {
             $this->is_live_first_party_used = 'yes';
             $this->is_live_third_party_used = 'no';
-        } else if (empty($this->live_client_id) && empty($this->live_secret_id) && !empty($this->live_merchant_id)) {
+        } else if (!empty($this->live_merchant_id)) {
             $this->is_live_third_party_used = 'yes';
             $this->is_live_first_party_used = 'no';
         } else {
