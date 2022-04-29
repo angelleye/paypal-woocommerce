@@ -3,10 +3,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PayPal for WooCommerce 3.0.23\n"
+"Project-Id-Version: PayPal for WooCommerce 3.0.24\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/paypal-for-"
 "woocommerce\n"
-"POT-Creation-Date: 2022-04-28 16:51+0530\n"
+"POT-Creation-Date: 2022-04-29 15:45+0530\n"
 "PO-Revision-Date: 2022-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -496,8 +496,8 @@ msgstr ""
 #: angelleye-includes/angelleye-utility.php:1011
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:462
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:465
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:440
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:471
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:442
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:473
 msgid "Edit"
 msgstr ""
 
@@ -885,15 +885,15 @@ msgstr ""
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:830
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:856
 #: classes/wc-gateway-braintree-angelleye.php:3111
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:391
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:412
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:392
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:414
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:330
 msgid "OR"
 msgstr ""
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:1001
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:1028
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:780
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:782
 msgid "Cancel order"
 msgstr ""
 
@@ -914,7 +914,7 @@ msgstr ""
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:1185
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:1205
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:471
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:473
 msgid "Shipping details"
 msgstr ""
 
@@ -5814,25 +5814,25 @@ msgstr ""
 msgid "Unfortunately, your credit card details are not valid."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:444
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:446
 msgid "Billing &amp; Shipping"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:448
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:450
 msgid "Billing details"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:483
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:485
 msgid "Create an account?"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:490
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:492
 msgid ""
 "Create an account by entering the information below. If you are a returning "
 "customer please login at the top of the page."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:943
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:945
 msgid "Payment method:"
 msgstr ""
 
