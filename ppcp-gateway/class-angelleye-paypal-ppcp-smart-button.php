@@ -940,7 +940,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($angelleye_ppcp_payment_method_title)) {
             ?>
             <tr>
-                <th><?php esc_html_e('Payment method:', 'woocommerce'); ?></th>
+                <th><?php esc_html_e('Payment method:', 'paypal-for-woocommerce'); ?></th>
                 <td><strong><?php echo wp_kses_post($angelleye_ppcp_payment_method_title); ?></strong></td>
             </tr>
             <?php
