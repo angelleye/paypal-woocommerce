@@ -1533,6 +1533,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public function angelleye_woocommerce_email_classes($emails) {
             $emails['WC_Email_Partially_Paid_Order'] = include PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/classes/wc-email-customer-partial-paid-order.php';
             $emails['WC_Email_Admin_Partially_Paid_Order'] = include PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/classes/wc-email-new-partial-paid-order.php';
+            $emails['WC_Email_PayPal_Onboard_Seller_Invitation'] = include PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/ppcp-gateway/wc-email-paypal -seller-onboard-invitation.php';
             return $emails;
         }
         
