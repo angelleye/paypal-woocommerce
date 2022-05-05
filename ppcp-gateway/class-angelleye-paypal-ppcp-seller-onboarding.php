@@ -98,7 +98,12 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_ppcp_multi_account_generate_signup_link($post_id) {
         try {
-            $testmode = ($this->is_sandbox) ? 'yes' : 'no';
+            $microprocessing_array = get_post_meta($post_id);
+            if (!empty($microprocessing_array['woocommerce_angelleye_ppcp_testmode']) && $microprocessing_array['woocommerce_angelleye_ppcp_testmode'][0] == 'on') {
+                $testmode = 'yes';
+            } else {
+                $testmode = 'no';
+            }
             $body = array(
                 'testmode' => $testmode,
                 'return_url' => admin_url(
@@ -116,7 +121,22 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 'body' => wp_json_encode($body),
                 'headers' => array('Content-Type' => 'application/json'),
             );
-            return $this->api_request->request($host_url, $args, 'generate_signup_link');
+            $seller_onboarding_result = $this->api_request->request($host_url, $args, 'generate_signup_link');
+            if (isset($seller_onboarding_result['links'])) {
+                foreach ($seller_onboarding_result['links'] as $link) {
+                    if (isset($link['rel']) && 'action_url' === $link['rel']) {
+                        $signup_link = isset($link['href']) ? $link['href'] : false;
+                        if ($signup_link) {
+                            $url = add_query_arg($args, $signup_link);
+                            $this->angelleye_display_paypal_signup_button($url, 'paypal_onbard', 'Get Start');
+                        } else {
+                            echo __('We could not properly connect to PayPal', '');
+                        }
+                    }
+                }
+            } else {
+                return false;
+            }
         } catch (Exception $ex) {
             
         }
@@ -315,6 +335,13 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
         }
         return false;
+    }
+    
+    public function angelleye_display_paypal_signup_button($url, $id, $label) {
+        ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a>
+        
+        
+        <?php
     }
 
 }
