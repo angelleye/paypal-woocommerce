@@ -26,7 +26,7 @@ final class Angelleye_PPCP_Block_Support extends AbstractPaymentMethodType {
     }
 
     public function get_payment_method_script_handles() {
-        wp_register_script('wc-payment-method-angelleye_ppcp', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/woocommerce-blocks/js/index.js', array('jquery', 'react', 'wc-blocks-registry', 'wc-settings', 'wp-element', 'wp-i18n', 'wp-polyfill'), VERSION_PFW, true);
+        wp_register_script('wc-payment-method-angelleye_ppcp', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/woocommerce-blocks/js/index.js', array('jquery', 'react', 'wc-blocks-registry', 'wc-settings', 'wp-element', 'wp-i18n', 'wp-polyfill', 'wp-element', 'wp-plugins'), VERSION_PFW, true);
         if (angelleye_ppcp_has_active_session()) {
             $order_button_text = apply_filters('angelleye_ppcp_order_review_page_place_order_button_text', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
         } else {

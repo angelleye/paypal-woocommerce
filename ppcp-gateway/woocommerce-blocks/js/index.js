@@ -1,6 +1,42 @@
-console.log(angelleye_ppcp_manager_block);
+
+
+
+
+
+
+
+
+const el = wp.element.createElement;
+const registerPlugin = wp.plugins.registerPlugin;
+
+
+const myRender = () => {
+	return (
+		<ExperimentalOrderMeta>
+			<div className="block-div-class">This is my other export</div>
+		</ExperimentalOrderMeta>
+	);
+};
+
+registerPlugin( 'woocommerce-two-three', {
+	render: myRender,
+        scope: 'woocommerce-checkout',
+} );
+
+
+
+
+
+
+
+
+
+
 
 !function (e) {
+    
+
+
     var t = {};
     function n(o) {
         if (t[o])
