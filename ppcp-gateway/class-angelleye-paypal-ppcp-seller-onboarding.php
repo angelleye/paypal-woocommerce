@@ -26,7 +26,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function __construct() {
         try {
-            if(is_angelleye_aws_down() == false) {
+            if (is_angelleye_aws_down() == false) {
                 $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE;
             } else {
                 $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE;
@@ -94,6 +94,32 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'headers' => array('Content-Type' => 'application/json'),
         );
         return $this->api_request->request($host_url, $args, 'generate_signup_link');
+    }
+
+    public function angelleye_ppcp_multi_account_generate_signup_link($post_id) {
+        try {
+            $testmode = ($this->is_sandbox) ? 'yes' : 'no';
+            $body = array(
+                'testmode' => $testmode,
+                'return_url' => admin_url(
+                        'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
+                ),
+                'return_url_description' => __(
+                        'Return to your shop.', 'paypal-for-woocommerce'
+                ),
+                'products' => array(
+                    $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
+            ));
+            $host_url = $this->ppcp_host . 'generate-signup-link';
+            $args = array(
+                'method' => 'POST',
+                'body' => wp_json_encode($body),
+                'headers' => array('Content-Type' => 'application/json'),
+            );
+            return $this->api_request->request($host_url, $args, 'generate_signup_link');
+        } catch (Exception $ex) {
+            
+        }
     }
 
     private function default_data() {
@@ -231,7 +257,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     $this->settings->persist();
                 }
             }
-            
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');

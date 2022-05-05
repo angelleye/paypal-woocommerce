@@ -14,9 +14,7 @@ do_action('woocommerce_email_header', $email_heading, $email);
 
 <?php
 
-echo $post_id;
 do_action('angelleye_pppc_seller_onboard_html', $post_id);
-
 
 
 if ($additional_content) {
