@@ -1,5 +1,4 @@
 <?php
-
 defined('ABSPATH') || exit;
 
 class AngellEYE_PayPal_PPCP_Seller_Onboarding {
@@ -36,6 +35,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->partner_merchant_id = PAYPAL_PPCP_PARTNER_MERCHANT_ID;
             //add_action('wc_ajax_ppcp_login_seller', array($this, 'angelleye_ppcp_login_seller'));
             add_action('admin_init', array($this, 'angelleye_ppcp_listen_for_merchant_id'));
+            if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Seller_Onboarding'))) {
+                add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Seller_Onboarding'), array($this, 'angelleye_ppcp_listen_for_merchant_id_multi_account'));
+            }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -106,9 +108,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
             $body = array(
                 'testmode' => $testmode,
-                'return_url' => admin_url(
-                        'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
-                ),
+                'return_url' => add_query_arg(array('testmode' => $testmode, 'post_id' => $post_id), WC()->api_request_url('AngellEYE_PayPal_PPCP_Seller_Onboarding')),
                 'return_url_description' => __(
                         'Return to your shop.', 'paypal-for-woocommerce'
                 ),
@@ -208,6 +208,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (!isset($_GET['testmode'])) {
                 return;
             }
+            if (isset($_GET['post_id'])) {
+                return;
+            }
             if (isset($_GET['testmode']) && 'yes' === $_GET['testmode']) {
                 $this->is_sandbox = true;
             }
@@ -234,6 +237,53 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->angelleye_get_seller_onboarding_status();
             $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
             wp_safe_redirect($redirect_url, 302);
+            exit;
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
+        }
+    }
+
+    public function angelleye_ppcp_listen_for_merchant_id_multi_account() {
+        try {
+            $this->is_sandbox = false;
+
+            if (!isset($_GET['merchantIdInPayPal'])) {
+                return;
+            }
+            if (!isset($_GET['testmode'])) {
+                return;
+            }
+            if (!isset($_GET['post_id'])) {
+                return;
+            }
+            $post_id = $_GET['post_id'];
+            if (isset($_GET['testmode']) && 'yes' === $_GET['testmode']) {
+                $this->is_sandbox = true;
+            }
+            $this->settings->set('enabled', 'yes');
+            $this->settings->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
+            $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+            $merchant_id = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
+            if (isset($_GET['merchantId'])) {
+                $merchant_email = sanitize_text_field(wp_unslash($_GET['merchantId']));
+            } else {
+                $merchant_email = '';
+            }
+            if ($this->is_sandbox) {
+                update_post_meta($post_id, 'woocommerce_angelleye_ppcp_sandbox_merchant_id', $merchant_id);
+                update_post_meta($post_id, 'woocommerce_angelleye_ppcp_testmode', 'on');
+                update_post_meta($post_id, 'woocommerce_angelleye_ppcp_enable', 'on');
+            } else {
+                update_post_meta($post_id, 'woocommerce_angelleye_ppcp_sandbox_merchant_id', $merchant_id);
+                update_post_meta($post_id, 'woocommerce_angelleye_ppcp_testmode', 'on');
+                update_post_meta($post_id, 'woocommerce_angelleye_ppcp_enable', 'on');
+            }
+            //$this->angelleye_get_seller_onboarding_status();
+            if (function_exists('wc_add_notice')) {
+                wc_add_notice(__("PayPal onboarding process successfully completed.", 'paypal-for-woocommerce'), 'success');
+            }
+            wp_safe_redirect(wc_get_cart_url(), 302);
             exit;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -336,11 +386,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         }
         return false;
     }
-    
+
     public function angelleye_display_paypal_signup_button($url, $id, $label) {
         ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a>
-        
-        
+
+
         <?php
     }
 
