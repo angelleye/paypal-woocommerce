@@ -35,6 +35,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->partner_merchant_id = PAYPAL_PPCP_PARTNER_MERCHANT_ID;
             //add_action('wc_ajax_ppcp_login_seller', array($this, 'angelleye_ppcp_login_seller'));
             add_action('admin_init', array($this, 'angelleye_ppcp_listen_for_merchant_id'));
+            add_action('woocommerce_before_customer_login_form', array($this, 'angelleye_ppcp_display_seller_onboard_notice'));
             if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Seller_Onboarding'))) {
                 add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Seller_Onboarding'), array($this, 'angelleye_ppcp_listen_for_merchant_id_multi_account'));
             }
@@ -283,7 +284,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (function_exists('wc_add_notice')) {
                 wc_add_notice(__("PayPal onboarding process successfully completed.", 'paypal-for-woocommerce'), 'success');
             }
-            wp_safe_redirect(wc_get_cart_url(), 302);
+            wp_safe_redirect(get_permalink( wc_get_page_id( 'myaccount' ) ), 302);
             exit;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -392,6 +393,12 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
 
         <?php
+    }
+    
+    public function angelleye_ppcp_display_seller_onboard_notice() {
+        if(function_exists('woocommerce_output_all_notices')) {
+            woocommerce_output_all_notices();
+        }
     }
 
 }
