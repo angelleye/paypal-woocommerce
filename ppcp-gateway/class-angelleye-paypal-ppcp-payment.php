@@ -1951,8 +1951,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             $result = wp_remote_get($url, $args);
             $body = wp_remote_retrieve_body($result);
             $response = !empty($body) ? json_decode($body, true) : '';
-            if (!empty($response['emails'][0]['value'])) {
-                return $response['emails'][0]['value'];
+            if (!empty($response['payer_id'])) {
+                return $response['payer_id'];
             }
         }
     }
