@@ -1654,7 +1654,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_update_woo_order_status($orderid, $payment_status, $pending_reason) {
         try {
-            if (empty($payment_status_reason)) {
+            if (empty($pending_reason)) {
                 $pending_reason = $payment_status;
             }
             $order = wc_get_order($orderid);
