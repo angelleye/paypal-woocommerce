@@ -74,13 +74,14 @@ if (!function_exists('angelleye_ppcp_update_post_meta')) {
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         if ($old_wc) {
             update_post_meta($order->id, $key, $value);
         } else {
             $order->update_meta_data($key, $value);
-        }
-        if (!$old_wc) {
             $order->save_meta_data();
         }
     }
