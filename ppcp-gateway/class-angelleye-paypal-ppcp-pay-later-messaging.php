@@ -362,7 +362,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $total = 0;
         $order_id = absint(get_query_var('order-pay'));
         if (is_product()) {
-            $total = $product->get_price();
+            $total = ( is_a( $product, \WC_Product::class ) ) ? wc_get_price_including_tax( $product ) : 0;
         } elseif (0 < $order_id) {
             $order = wc_get_order($order_id);
             $total = (float) $order->get_total();
