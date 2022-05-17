@@ -394,14 +394,20 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_product_page() {
-        global $product;
-        $this->angelleye_ppcp_smart_button_style_properties();
-        if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription') || $product->is_purchasable() === false || $product->get_price() == 0) {
-            return;
+        try {
+            global $product;
+            $this->angelleye_ppcp_smart_button_style_properties();
+            if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+                return false;
+            }
+            if (angelleye_ppcp_is_product_purchasable($product) === true) {
+                wp_enqueue_script('angelleye-paypal-checkout-sdk');
+                wp_enqueue_script($this->angelleye_ppcp_plugin_name);
+                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_product"></div></div>';
+            }
+        } catch (Exception $ex) {
+            
         }
-        wp_enqueue_script('angelleye-paypal-checkout-sdk');
-        wp_enqueue_script($this->angelleye_ppcp_plugin_name);
-        echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_product"></div></div>';
     }
 
     public function display_paypal_button_checkout_page() {
