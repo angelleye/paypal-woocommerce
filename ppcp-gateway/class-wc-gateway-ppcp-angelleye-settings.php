@@ -82,13 +82,13 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 
         public function angelleye_ppcp_setting_fields() {
             $cards_list = array(
-                'visa' => _x('Visa', 'Name of credit card', 'woocommerce-paypal-payments'),
-                'mastercard' => _x('Mastercard', 'Name of credit card', 'woocommerce-paypal-payments'),
-                'amex' => _x('American Express', 'Name of credit card', 'woocommerce-paypal-payments'),
-                'discover' => _x('Discover', 'Name of credit card', 'woocommerce-paypal-payments'),
-                'jcb' => _x('JCB', 'Name of credit card', 'woocommerce-paypal-payments'),
-                'elo' => _x('Elo', 'Name of credit card', 'woocommerce-paypal-payments'),
-                'hiper' => _x('Hiper', 'Name of credit card', 'woocommerce-paypal-payments'),
+                'visa' => _x('Visa', 'Name of credit card', 'paypal-for-woocommerce'),
+                'mastercard' => _x('Mastercard', 'Name of credit card', 'paypal-for-woocommerce'),
+                'amex' => _x('American Express', 'Name of credit card', 'paypal-for-woocommerce'),
+                'discover' => _x('Discover', 'Name of credit card', 'paypal-for-woocommerce'),
+                'jcb' => _x('JCB', 'Name of credit card', 'paypal-for-woocommerce'),
+                'elo' => _x('Elo', 'Name of credit card', 'paypal-for-woocommerce'),
+                'hiper' => _x('Hiper', 'Name of credit card', 'paypal-for-woocommerce'),
             );
             foreach ($cards_list as $card_key => $card_value) {
                 if ($this->dcc_applies->can_process_card($card_key)) {
@@ -209,16 +209,16 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => ''
                 ),
                 'api_client_id' => array(
-                    'title' => __('PayPal Client ID', 'smart-paypal-checkout-for-woocommerce'),
+                    'title' => __('PayPal Client ID', 'paypal-for-woocommerce'),
                     'type' => 'password',
-                    'description' => __('Enter your PayPal Client ID.', 'smart-paypal-checkout-for-woocommerce'),
+                    'description' => __('Enter your PayPal Client ID.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true
                 ),
                 'api_secret' => array(
-                    'title' => __('PayPal Secret', 'smart-paypal-checkout-for-woocommerce'),
+                    'title' => __('PayPal Secret', 'paypal-for-woocommerce'),
                     'type' => 'password',
-                    'description' => __('Enter your PayPal Secret.', 'smart-paypal-checkout-for-woocommerce'),
+                    'description' => __('Enter your PayPal Secret.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true
                 ),
@@ -231,16 +231,16 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true
                 ),
                 'sandbox_client_id' => array(
-                    'title' => __('Sandbox Client ID', 'smart-paypal-checkout-for-woocommerce'),
+                    'title' => __('Sandbox Client ID', 'paypal-for-woocommerce'),
                     'type' => 'password',
-                    'description' => __('Enter your PayPal Sandbox Client ID.', 'smart-paypal-checkout-for-woocommerce'),
+                    'description' => __('Enter your PayPal Sandbox Client ID.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true
                 ),
                 'sandbox_api_secret' => array(
-                    'title' => __('Sandbox Secret', 'smart-paypal-checkout-for-woocommerce'),
+                    'title' => __('Sandbox Secret', 'paypal-for-woocommerce'),
                     'type' => 'password',
-                    'description' => __('Enter your PayPal Sandbox Secret.', 'smart-paypal-checkout-for-woocommerce'),
+                    'description' => __('Enter your PayPal Sandbox Secret.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true
                 ),
@@ -285,6 +285,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                         'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                        'paylater' => __('Pay Later', 'paypal-for-woocommerce'),
                         'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
                         'blik' => __('BLIK', 'paypal-for-woocommerce'),
                         'eps' => __('eps', 'paypal-for-woocommerce'),
@@ -411,6 +412,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                         'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                        'paylater' => __('Pay Later', 'paypal-for-woocommerce'),
                         'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
                         'blik' => __('BLIK', 'paypal-for-woocommerce'),
                         'eps' => __('eps', 'paypal-for-woocommerce'),
@@ -537,6 +539,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                         'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                        'paylater' => __('Pay Later', 'paypal-for-woocommerce'),
                         'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
                         'blik' => __('BLIK', 'paypal-for-woocommerce'),
                         'eps' => __('eps', 'paypal-for-woocommerce'),
@@ -663,6 +666,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
                         'credit' => __('PayPal Credit', 'paypal-for-woocommerce'),
+                        'paylater' => __('Pay Later', 'paypal-for-woocommerce'),
                         'bancontact' => __('Bancontact', 'paypal-for-woocommerce'),
                         'blik' => __('BLIK', 'paypal-for-woocommerce'),
                         'eps' => __('eps', 'paypal-for-woocommerce'),
@@ -1346,14 +1350,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('This controls the gateway position which the user sees during checkout.', 'paypal-for-woocommerce'),
                 ),
                 'disable_cards' => array(
-                    'title' => __('Disable specific credit cards', 'woocommerce-paypal-payments'),
+                    'title' => __('Disable specific credit cards', 'paypal-for-woocommerce'),
                     'type' => 'multiselect',
                     'class' => 'wc-enhanced-select pay_later_messaging_field',
                     'default' => array(),
                     'desc_tip' => true,
                     'description' => __(
                             'By default all possible credit cards will be accepted. You can disable some cards, if you wish.',
-                            'woocommerce-paypal-payments'
+                            'paypal-for-woocommerce'
                     ),
                     'options' => $cards_list,
                 ),
