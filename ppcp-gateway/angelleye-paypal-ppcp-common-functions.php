@@ -701,4 +701,38 @@ if (!function_exists('angelleye_ppcp_account_ready_to_paid')) {
         }
     }
 
+    if (!function_exists('angelleye_is_ppcp_third_party_enable')) {
+
+
+        function angelleye_is_ppcp_third_party_enable($sandbox) {
+            if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
+            }
+            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            if ($sandbox) {
+                $this->sandbox_client_id = $this->settings->get('sandbox_client_id', '');
+                $this->sandbox_secret_id = $this->settings->get('sandbox_api_secret', '');
+                $this->sandbox_merchant_id = $this->settings->get('sandbox_merchant_id', '');
+                if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_id)) {
+                    return false;
+                } else if (!empty($this->sandbox_merchant_id)) {
+                    return true;
+                } else {
+                    return '';
+                }
+            } else {
+                $this->live_client_id = $this->settings->get('api_client_id', '');
+                $this->live_secret_id = $this->settings->get('api_secret', '');
+                $this->live_merchant_id = $this->settings->get('merchant_id', '');
+                if (!empty($this->live_client_id) && !empty($this->live_secret_id)) {
+                    return false;
+                } else if (!empty($this->live_merchant_id)) {
+                    return true;
+                } else {
+                    return '';
+                }
+            }
+        }
+
+    }
 }
