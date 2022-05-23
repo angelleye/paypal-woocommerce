@@ -78,7 +78,7 @@ if (!class_exists('WC_Email_PayPal_Onboard_Seller_Invitation', false)) :
         }
 
         public function get_default_additional_content() {
-            return __('If you haven\’t linked your account within a few hours, the invitation link will be expired.', 'paypal-for-woocommerce');
+            return __('If you haven’t linked your account within a few hours, the invitation link will be expired.', 'paypal-for-woocommerce');
         }
 
         /**
