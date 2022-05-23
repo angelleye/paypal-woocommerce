@@ -380,7 +380,7 @@ if (!function_exists('angelleye_ppcp_number_format')) {
     function angelleye_ppcp_number_format($price, $order) {
         $decimals = 2;
 
-        if (!$this->angelleye_ppcp_currency_has_decimals($order->get_currency())) {
+        if (!angelleye_ppcp_currency_has_decimals($order->get_currency())) {
             $decimals = 0;
         }
 
@@ -708,25 +708,25 @@ if (!function_exists('angelleye_ppcp_account_ready_to_paid')) {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             if ($sandbox) {
-                $this->sandbox_client_id = $this->settings->get('sandbox_client_id', '');
-                $this->sandbox_secret_id = $this->settings->get('sandbox_api_secret', '');
-                $this->sandbox_merchant_id = $this->settings->get('sandbox_merchant_id', '');
-                if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_id)) {
+                $sandbox_client_id = $settings->get('sandbox_client_id', '');
+                $sandbox_secret_id = $settings->get('sandbox_api_secret', '');
+                $sandbox_merchant_id = $settings->get('sandbox_merchant_id', '');
+                if (!empty($sandbox_client_id) && !empty($sandbox_secret_id)) {
                     return false;
-                } else if (!empty($this->sandbox_merchant_id)) {
+                } else if (!empty($sandbox_merchant_id)) {
                     return true;
                 } else {
                     return '';
                 }
             } else {
-                $this->live_client_id = $this->settings->get('api_client_id', '');
-                $this->live_secret_id = $this->settings->get('api_secret', '');
-                $this->live_merchant_id = $this->settings->get('merchant_id', '');
-                if (!empty($this->live_client_id) && !empty($this->live_secret_id)) {
+                $live_client_id = $settings->get('api_client_id', '');
+                $live_secret_id = $settings->get('api_secret', '');
+                $live_merchant_id = $settings->get('merchant_id', '');
+                if (!empty($live_client_id) && !empty($live_secret_id)) {
                     return false;
-                } else if (!empty($this->live_merchant_id)) {
+                } else if (!empty($live_merchant_id)) {
                     return true;
                 } else {
                     return '';
