@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 5.9.3
-Stable tag: 3.0.24
+Stable tag: 3.0.25
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.25 - 05.17.2022 =
+* Tweak - Updates hook/filter to pass product name with product variation attribute. ([PFW-1026](https://github.com/angelleye/paypal-woocommerce/pull/1687))
+* Tweak - Updates Forcefully show save button. ([PFW-1029](https://github.com/angelleye/paypal-woocommerce/pull/1688))
+* Fix - Resolves PPCP - Buttons displaying on product page when they should not be. ([PFW-1032](https://github.com/angelleye/paypal-woocommerce/pull/1689))
+* Fix - Resolves PHP error. ([PFW-1020](https://github.com/angelleye/paypal-woocommerce/pull/1690))
+* Fix - Resolves PPCP - Pay Later Messaging - Use including tax price. ([PFW-1027](https://github.com/angelleye/paypal-woocommerce/pull/1686))
 
 = 3.0.24 - 04.29.2022 =
 * Tweak - Update .pot file. ([PFW-1019](https://github.com/angelleye/paypal-woocommerce/pull/1682))

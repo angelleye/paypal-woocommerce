@@ -74,13 +74,14 @@ if (!function_exists('angelleye_ppcp_update_post_meta')) {
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         if ($old_wc) {
             update_post_meta($order->id, $key, $value);
         } else {
             $order->update_meta_data($key, $value);
-        }
-        if (!$old_wc) {
             $order->save_meta_data();
         }
     }
@@ -630,5 +631,18 @@ if (!function_exists('angelleye_ppcp_payment_method_title_list')) {
         return apply_filters('angelleye_ppcp_get_payment_method_title', $final_payment_method_name, $payment_name, $list_payment_method);
     }
 
+    if (!function_exists('angelleye_ppcp_is_product_purchasable')) {
+
+        function angelleye_ppcp_is_product_purchasable($product) {
+            if (is_a($product, 'WC_Product') === false) {
+                return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
+            }
+            if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription') || $product->is_purchasable() === false || $product->get_price() == 0) {
+                return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
+            }
+            return apply_filters('angelleye_ppcp_is_product_purchasable', true, $product);
+        }
+
+    }
 }
 

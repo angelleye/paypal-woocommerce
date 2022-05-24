@@ -44,10 +44,18 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $this->title = $this->setting_obj->get('title', 'PayPal Complete Payments');
         $this->enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
+        $this->sandbox_client_id = $this->setting_obj->get('sandbox_client_id', '');
+        $this->sandbox_secret_id = $this->setting_obj->get('sandbox_api_secret', '');
+        $this->live_client_id = $this->setting_obj->get('api_client_id', '');
+        $this->live_secret_id = $this->setting_obj->get('api_secret', '');
         if ($this->is_sandbox) {
             $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
+            $this->client_id = $this->sandbox_client_id;
+            $this->secret_id = $this->sandbox_secret_id;
         } else {
             $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
+            $this->client_id = $this->live_client_id;
+            $this->secret_id = $this->live_secret_id;
         }
         $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');
         $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
@@ -91,7 +99,10 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function is_valid_for_use() {
-        if (!empty($this->merchant_id) && $this->enabled) {
+        if ($this->enabled === false) {
+            return false;
+        }
+        if (!empty($this->merchant_id) || (!empty($this->client_id) && !empty($this->secret_id))) {
             return true;
         }
         return false;
@@ -136,13 +147,20 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_pay_later_messaging_product_page() {
-        if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
-            return false;
+        try {
+            global $product;
+            if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+                return false;
+            }
+            if (angelleye_ppcp_is_product_purchasable($product) === true) {
+                wp_enqueue_script('angelleye-paypal-checkout-sdk');
+                wp_enqueue_script('angelleye-pay-later-messaging-product', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/product.js', array('jquery'), VERSION_PFW, true);
+                $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'product');
+                echo '<div class="angelleye_ppcp_message_product"></div>';
+            }
+        } catch (Exception $ex) {
+            
         }
-        wp_enqueue_script('angelleye-paypal-checkout-sdk');
-        wp_enqueue_script('angelleye-pay-later-messaging-product', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/product.js', array('jquery'), VERSION_PFW, true);
-        $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'product');
-        echo '<div class="angelleye_ppcp_message_product"></div>';
     }
 
     public function angelleye_ppcp_pay_later_messaging_cart_page() {
@@ -362,7 +380,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $total = 0;
         $order_id = absint(get_query_var('order-pay'));
         if (is_product()) {
-            $total = $product->get_price();
+            $total = ( is_a( $product, \WC_Product::class ) ) ? wc_get_price_including_tax( $product ) : 0;
         } elseif (0 < $order_id) {
             $order = wc_get_order($order_id);
             $total = (float) $order->get_total();
