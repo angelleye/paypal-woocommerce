@@ -1,42 +1,7 @@
-
-
-
-
-
-
-
-
 const el = wp.element.createElement;
 const registerPlugin = wp.plugins.registerPlugin;
-
-
-const myRender = () => {
-	return (
-		<ExperimentalOrderMeta>
-			<div className="block-div-class">This is my other export</div>
-		</ExperimentalOrderMeta>
-	);
-};
-
-registerPlugin( 'woocommerce-two-three', {
-	render: myRender,
-        scope: 'woocommerce-checkout',
-} );
-
-
-
-
-
-
-
-
-
-
-
+const {ExperimentalOrderMeta} = wc.blocksCheckout;
 !function (e) {
-    
-
-
     var t = {};
     function n(o) {
         if (t[o])
@@ -111,7 +76,7 @@ registerPlugin( 'woocommerce-two-three', {
                         alt: Object(a.decodeEntities)(l.title || Object(i.__)("PayPal", "woo-gutenberg-products-block"))
                     }),
                     placeOrderButtonLabel: Object(i.__)(angelleye_ppcp_manager_block.placeOrderButtonLabel),
-                    content: Object(r.createElement)("div", {id: "angelleye_ppcp_checkout"}),
+                    content: Object(r.createElement)("div", {id: "angelleye_ppcp_checkout"}, "wow"),
                     edit: Object(r.createElement)(p, null),
                     canMakePayment: () => !0,
                     ariaLabel: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
@@ -120,4 +85,11 @@ registerPlugin( 'woocommerce-two-three', {
                     }
                 };
         Object(c.registerPaymentMethod)(s)
+        const myRender = () => {
+            return Object(r.createElement)(ExperimentalOrderMeta, null, Object(r.createElement)("div", {id: "angelleye_ppcp_cart"}, null, null));
+        };
+        registerPlugin('woocommerce-two-three', {
+            render: myRender,
+            scope: 'woocommerce-checkout',
+        });
     }]);
