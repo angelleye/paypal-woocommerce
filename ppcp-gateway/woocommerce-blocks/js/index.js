@@ -85,10 +85,11 @@ const {ExperimentalOrderMeta} = wc.blocksCheckout;
                     }
                 };
         Object(c.registerPaymentMethod)(s)
+        
         const myRender = () => {
-            return Object(r.createElement)(ExperimentalOrderMeta, null, Object(r.createElement)("div", {id: "angelleye_ppcp_cart"}, null, null));
+            return Object(r.createElement)(ExperimentalOrderMeta, null, Object(r.createElement)("div", {id: "angelleye_ppcp_cart"}, null), Object(r.createElement)("span", {class: "angelleye_ppcp-proceed-to-checkout-button-separator"}, "OR"));
         };
-        registerPlugin('woocommerce-two-three', {
+        registerPlugin('angelleye-pfw-ppcp-cart', {
             render: myRender,
             scope: 'woocommerce-checkout',
         });
