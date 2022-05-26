@@ -76,7 +76,7 @@ const {ExperimentalOrderMeta} = wc.blocksCheckout;
                         alt: Object(a.decodeEntities)(l.title || Object(i.__)("PayPal", "woo-gutenberg-products-block"))
                     }),
                     placeOrderButtonLabel: Object(i.__)(angelleye_ppcp_manager_block.placeOrderButtonLabel),
-                    content: Object(r.createElement)("div", {id: "angelleye_ppcp_checkout"}, "wow"),
+                    content: Object(r.createElement)("div", {id: "angelleye_ppcp_checkout"}),
                     edit: Object(r.createElement)(p, null),
                     canMakePayment: () => !0,
                     ariaLabel: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
@@ -87,7 +87,7 @@ const {ExperimentalOrderMeta} = wc.blocksCheckout;
         Object(c.registerPaymentMethod)(s)
         
         const myRender = () => {
-            return Object(r.createElement)(ExperimentalOrderMeta, null, Object(r.createElement)("div", {id: "angelleye_ppcp_cart"}, null), Object(r.createElement)("span", {class: "angelleye_ppcp-proceed-to-checkout-button-separator"}, "OR"));
+            return Object(r.createElement)(ExperimentalOrderMeta, null, Object(r.createElement)("div", {class: "angelleye_ppcp_message_cart"}, null) , Object(r.createElement)("div", {id: "angelleye_ppcp_cart"}, null), Object(r.createElement)("span", {class: "angelleye_ppcp-proceed-to-checkout-button-separator"}, "— OR —"));
         };
         registerPlugin('angelleye-pfw-ppcp-cart', {
             render: myRender,

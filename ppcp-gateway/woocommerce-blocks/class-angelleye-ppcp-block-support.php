@@ -38,6 +38,7 @@ final class Angelleye_PPCP_Block_Support extends AbstractPaymentMethodType {
         ));
         wp_set_script_translations('wc-payment-method-angelleye_ppcp', 'woocommerce-square');
         wp_enqueue_script('angelleye_ppcp');
+        do_action('angelleye_ppcp_woo_cart_block_pay_later_message');
         return ['wc-payment-method-angelleye_ppcp'];
     }
 

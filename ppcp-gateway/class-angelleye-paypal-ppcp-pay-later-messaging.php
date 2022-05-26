@@ -89,6 +89,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
             if ($this->is_paypal_pay_later_messaging_enable_for_page($page = 'cart') && $this->pay_later_messaging_cart_shortcode === false) {
                 add_action('woocommerce_before_cart_table', array($this, 'angelleye_ppcp_pay_later_messaging_cart_page'), 9);
                 add_action('woocommerce_proceed_to_checkout', array($this, 'angelleye_ppcp_pay_later_messaging_cart_page'), 10);
+                add_action('angelleye_ppcp_woo_cart_block_pay_later_message', array($this, 'angelleye_ppcp_pay_later_messaging_cart_page_block'), 10);
             }
             if ($this->is_paypal_pay_later_messaging_enable_for_page($page = 'payment') && $this->pay_later_messaging_payment_shortcode === false) {
                 add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_pay_later_messaging_payment_page'), 4);
@@ -175,6 +176,27 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (WC()->cart->needs_payment()) {
             $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'cart');
             echo '<div class="angelleye_ppcp_message_cart"></div>';
+        }
+    }
+
+    public function angelleye_ppcp_pay_later_messaging_cart_page_block() {
+        if (did_action('wp_loaded')) {
+            if (!isset(WC()->cart)) {
+                return false;
+            }
+            if(WC()->cart == null) {
+                return false;
+            }
+            if(WC()->cart->is_empty()) {
+                return false;
+            }
+            if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+                return false;
+            }
+            wp_enqueue_script('angelleye-pay-later-messaging-cart', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/cart.js', array('jquery'), VERSION_PFW, true);
+            if (WC()->cart->needs_payment()) {
+                $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'cart');
+            }
         }
     }
 
@@ -380,7 +402,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $total = 0;
         $order_id = absint(get_query_var('order-pay'));
         if (is_product()) {
-            $total = ( is_a( $product, \WC_Product::class ) ) ? wc_get_price_including_tax( $product ) : 0;
+            $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 0;
         } elseif (0 < $order_id) {
             $order = wc_get_order($order_id);
             $total = (float) $order->get_total();

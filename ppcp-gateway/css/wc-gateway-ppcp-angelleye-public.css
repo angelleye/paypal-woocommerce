@@ -6,7 +6,24 @@
     opacity: .8;
     margin: 0 0 1em;
     text-align: center;
+
 }
+.wc-block-components-totals-wrapper.slot-wrapper .angelleye_ppcp_message_cart {
+    position: relative;
+    padding: 30px 0px 0px 0px;
+}
+.wc-block-components-totals-wrapper.slot-wrapper #angelleye_ppcp_cart {
+      padding: 0px 0px 0px 0px;
+}
+.wc-block-components-totals-wrapper.slot-wrapper .angelleye_ppcp-proceed-to-checkout-button-separator {
+    display:block;
+    opacity: .8;
+    margin: 0 0 1em;
+    text-align: center;
+    position: relative;
+    padding: 0px 0px 0px 0px;
+}
+
 .angelleye_ppcp-order-review .woocommerce-checkout #payment ul.payment_methods {
     display: none;
 }
@@ -156,12 +173,18 @@
     font-size: 1.5em;
 }
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.ppcp-invalid-cart, .woocommerce #payment div.payment_box .wc-credit-card-form div.ppcp-invalid-cart {
-     border-color: red;
+    border-color: red;
 }
 #payment ul.payment_methods li img.ppcp-card-icon {
-  padding: 0 0 3px 3px;
-  max-height: 25px;
-  display: inline-block;
+    padding: 0 0 3px 3px;
+    max-height: 25px;
+    display: inline-block;
+}
+#angelleye_ppcp_cart::after {
+    border: none;
+}
+.angelleye_ppcp_message_cart::after {
+    border: none !important;
 }
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large{
