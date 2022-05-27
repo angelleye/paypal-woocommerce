@@ -216,7 +216,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_action('woocommerce_available_payment_gateways', array($this, 'maybe_disable_other_gateways'));
         add_filter('woocommerce_default_address_fields', array($this, 'filter_default_address_fields'));
         add_filter('woocommerce_billing_fields', array($this, 'filter_billing_fields'));
-        add_action('woocommerce_checkout_process', array($this, 'copy_checkout_details_to_post'));
+        add_action('woocommerce_checkout_init', array($this, 'copy_checkout_details_to_post'));
         add_action('woocommerce_cart_shipping_packages', array($this, 'maybe_add_shipping_information'));
         add_filter('body_class', array($this, 'angelleye_ppcp_add_class_order_review_page'));
         add_filter('woocommerce_coupons_enabled', array($this, 'angelleye_ppcp_woocommerce_coupons_enabled'), 999, 1);
@@ -570,7 +570,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
             angelleye_ppcp_set_session('angelleye_ppcp_paypal_transaction_details', $this->checkout_details);
         }
-        if (!isset($_POST['payment_method']) || ( 'angelleye_ppcp' !== $_POST['payment_method'] ) || empty($this->checkout_details)) {
+        if (empty($this->checkout_details) || empty($_GET['paypal_order_id'])) {
             return;
         }
         $shipping_details = angelleye_ppcp_get_mapped_shipping_address($this->checkout_details);
