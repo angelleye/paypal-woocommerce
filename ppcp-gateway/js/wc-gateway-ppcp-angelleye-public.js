@@ -239,6 +239,23 @@
                             $('#angelleye_ppcp-card-number').removeClass().addClass(cardname);
                             $('#angelleye_ppcp-card-number').addClass("input-text wc-credit-card-form-card-number hosted-field-braintree braintree-hosted-fields-valid");
                         }
+                        var payment_method_element_selector;
+                        if (angelleye_ppcp_manager.page === 'product') {
+                            payment_method_element_selector = 'form.cart';
+                        } else if (angelleye_ppcp_manager.page === 'cart') {
+                            payment_method_element_selector = 'form.woocommerce-cart-form';
+                        } else if (angelleye_ppcp_manager.page === 'checkout') {
+                            payment_method_element_selector = 'form.checkout';
+                        }
+                        if ($('#angelleye_ppcp_payment_method_title').length > 0) {
+                            $('#angelleye_ppcp_payment_method_title').empty();
+                        }
+                        $('<input>', {
+                            type: 'hidden',
+                            id: 'angelleye_ppcp_payment_method_title',
+                            name: 'angelleye_ppcp_payment_method_title',
+                            value: 'Advanced Credit Cards'
+                        }).appendTo(payment_method_element_selector);
                     }
                 });
 
