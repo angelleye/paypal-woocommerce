@@ -1519,9 +1519,10 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
     public function payment_fields() {
         do_action('angelleye_before_fc_payment_fields', $this);
-        if ($this->description) {
-            echo '<p>' . wp_kses_post($this->description);
-        }
+        $description = $this->get_description();
+        if ( $description ) {
+            echo wpautop( wp_kses_post( $description ) );
+        }        
         if ($this->testmode == true) {
             echo '<p>';
             _e('NOTICE: SANDBOX (TEST) MODE ENABLED.', 'paypal-for-woocommerce');

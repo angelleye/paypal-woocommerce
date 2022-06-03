@@ -473,15 +473,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function payment_fields() {
         global $woocommerce;
-        if ($this->description) {
-            echo wpautop(wptexturize($this->description));
+        $description = $this->get_description();
+        if ($description) {
+            echo wpautop(wptexturize($description));
         }
         if ( $this->supports( 'tokenization' ) ) {
             $this->tokenization_script();
         }
-        
         $this->angelleye_braintree_lib();
-        
         try {
             if (is_user_logged_in() && $this->enable_tokenized_payments == 'yes') {
                 $customer_id = get_current_user_id();
