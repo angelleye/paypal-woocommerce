@@ -625,9 +625,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      */
     public function payment_fields() {
         do_action('before_angelleye_pc_payment_fields', $this);
-        
-        if ($this->description) {
-            echo '<p>' . wp_kses_post($this->description);
+        $description = $this->get_description();
+        if ( $description ) {
+            echo wpautop( wp_kses_post( $description ) );
         }
         if ($this->testmode == true) {
             echo '<p>';

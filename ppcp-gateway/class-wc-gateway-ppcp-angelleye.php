@@ -166,9 +166,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function payment_fields() {
         $description = $this->get_description();
-        if ($description) {
-            echo wpautop(wptexturize($description));
-        }
+        if ( $description ) {
+            echo wpautop( wp_kses_post( $description ) );
+        }  
         if ($this->enable_checkout_button) {
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
         } else {

@@ -806,7 +806,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $payment_status = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['status']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['status'] : '';
                     if ($payment_status == 'COMPLETED') {
                         $order->payment_complete($transaction_id);
-                        $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), ucfirst(strtolower($payment_status))));
+                        $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $this->title, ucfirst(strtolower($payment_status))));
                     } else {
                         $payment_status_reason = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['status_details']['reason']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['status_details']['reason'] : '';
                         $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
@@ -818,6 +818,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
                 if (!empty($angelleye_ppcp_payment_method_title)) {
                     update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                    update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
                 }
                 return true;
             } else {
@@ -1076,7 +1077,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $gross_amount = isset($$this->api_response['seller_payable_breakdown']['gross_amount']['value']) ? $$this->api_response['seller_payable_breakdown']['gross_amount']['value'] : '';
                 $refund_transaction_id = isset($$this->api_response['id']) ? $$this->api_response['id'] : '';
                 $pending_reason_text = isset($$this->api_response['status_details']['reason']) ? $$this->api_response['status_details']['reason'] : '';
-                $order->add_order_note(sprintf(__('Payment via %s Pending. Pending reason: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $pending_reason_text));
+                $order->add_order_note(sprintf(__('Payment via %s Pending. Pending reason: %s.', 'paypal-for-woocommerce'), $this->title, $pending_reason_text));
                 $order->add_order_note(
                         sprintf(__('Refund Amount %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
                 );
@@ -1125,7 +1126,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
                     angelleye_ppcp_update_post_meta($order, '_auth_transaction_id', $transaction_id);
                     angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
-                    $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $transaction_id));
+                    $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                     $order->update_status('on-hold');
                     $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
@@ -1133,6 +1134,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
                 if (!empty($angelleye_ppcp_payment_method_title)) {
                     update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                    update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
                 }
                 WC()->cart->empty_cart();
                 return true;
@@ -1271,11 +1273,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $seller_protection = isset($this->api_response['seller_protection']['status']) ? $this->api_response['seller_protection']['status'] : '';
                 $payment_status = isset($this->api_response['status']) ? $this->api_response['status'] : '';
                 angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
-                $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $transaction_id));
+                $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $transaction_id));
                 $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                 if ($payment_status === 'COMPLETED') {
                     $order->payment_complete($transaction_id);
-                    $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), ucfirst(strtolower($payment_status))));
+                    $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $this->title, ucfirst(strtolower($payment_status))));
                 } else {
                     $payment_status_reason = isset($this->api_response['status_details']['reason']) ? $this->api_response['status_details']['reason'] : '';
                     $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
@@ -1660,7 +1662,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order = wc_get_order($orderid);
             switch (strtoupper($payment_status)) :
                 case 'DECLINED' :
-                    $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $order->get_payment_method_title()));
+                    $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $this->title));
                 case 'PENDING' :
                     switch (strtoupper($pending_reason)) {
                         case 'BUYER_COMPLAINT':
@@ -1702,20 +1704,20 @@ class AngellEYE_PayPal_PPCP_Payment {
                             break;
                     }
                     if ($payment_status === 'PENDING') {
-                        $order->update_status('on-hold', sprintf(__('Payment via %s Pending. PayPal Pending reason: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $pending_reason_text));
+                        $order->update_status('on-hold', sprintf(__('Payment via %s Pending. PayPal Pending reason: %s.', 'paypal-for-woocommerce'), $this->title, $pending_reason_text));
                     }
                     if ($payment_status === 'DECLINED') {
-                        $order->update_status('failed', sprintf(__('Payment via %s declined. PayPal declined reason: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $pending_reason_text));
+                        $order->update_status('failed', sprintf(__('Payment via %s declined. PayPal declined reason: %s.', 'paypal-for-woocommerce'), $this->title, $pending_reason_text));
                     }
                     break;
                 case 'PARTIALLY_REFUNDED' :
                     $order->update_status('on-hold');
-                    $order->add_order_note(sprintf(__('Payment via %s partially refunded. PayPal reason: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $pending_reason));
+                    $order->add_order_note(sprintf(__('Payment via %s partially refunded. PayPal reason: %s.', 'paypal-for-woocommerce'), $this->title, $pending_reason));
                 case 'REFUNDED' :
                     $order->update_status('refunded');
-                    $order->add_order_note(sprintf(__('Payment via %s refunded. PayPal reason: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $pending_reason));
+                    $order->add_order_note(sprintf(__('Payment via %s refunded. PayPal reason: %s.', 'paypal-for-woocommerce'), $this->title, $pending_reason));
                 case 'FAILED' :
-                    $order->update_status('failed', sprintf(__('Payment via %s failed. PayPal reason: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $pending_reason));
+                    $order->update_status('failed', sprintf(__('Payment via %s failed. PayPal reason: %s.', 'paypal-for-woocommerce'), $this->title, $pending_reason));
                     break;
                 default:
                     break;
