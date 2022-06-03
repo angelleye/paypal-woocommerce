@@ -1947,8 +1947,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function payment_fields() {
-        if ($description = $this->get_description()) {
-            echo wpautop(wptexturize($description));
+        $description = $this->get_description();
+        if ( $description ) {
+            echo wpautop( wp_kses_post( $description ) );
         }
         if ($this->function_helper->ec_is_express_checkout() == false) {
             if ($this->supports('tokenization') && is_checkout()) {
