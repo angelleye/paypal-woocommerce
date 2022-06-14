@@ -377,7 +377,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
                 $product_name = !empty($name) ? $name : '';
-                $product_name = apply_filters('angelleye_ppcp_product_name', $product_name, $product, $desc);
+                $product_name = apply_filters('angelleye_ppcp_product_name', $product_name, $product, $desc, $values);
                 $product_name = wp_strip_all_tags($product_name);
                 if (strlen($product_name) > 127) {
                     $product_name = substr($product_name, 0, 124) . '...';
@@ -1012,7 +1012,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
                 $product_name = !empty($name) ? $name : '';
-                $product_name = apply_filters('angelleye_ppcp_product_name', $product_name, $product, $desc);
+                $product_name = apply_filters('angelleye_ppcp_product_name', $product_name, $product, $desc, $values);
                 $product_name = wp_strip_all_tags($product_name);
                 if (strlen($product_name) > 127) {
                     $product_name = substr($product_name, 0, 124) . '...';
