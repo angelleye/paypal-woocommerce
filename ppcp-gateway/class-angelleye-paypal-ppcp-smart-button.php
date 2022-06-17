@@ -236,6 +236,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_action('woocommerce_review_order_before_order_total', array($this, 'angelleye_ppcp_display_payment_method_title_review_page'));
         add_action('wp_loaded', array($this, 'angelleye_ppcp_prevent_add_to_cart_woo_action'), 1);
         add_action('init', array($this, 'angelleye_ppcp_woocommerce_before_checkout_process'), 0);
+        add_filter('woocommerce_pay_order_button_html', array($this, 'angelleye_ppcp_woocommerce_pay_order_button_html'), 10, 1);
     }
 
     /*
@@ -252,7 +253,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function enqueue_scripts() {
-        global $post;
+        global $post, $wp;
         if ((is_checkout() || is_checkout_pay_page() ) && $this->advanced_card_payments) {
             if (!isset($_GET['paypal_order_id'])) {
                 $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
@@ -293,6 +294,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $page = '';
         $is_pay_page = 'no';
+        $first_name = '';
+        $last_name = '';
         if (is_product()) {
             $page = 'product';
         } elseif (is_cart() && !WC()->cart->is_empty()) {
@@ -302,13 +305,21 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $is_pay_page = 'yes';
         } elseif (is_checkout()) {
             $page = 'checkout';
-        } 
+        }
         $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
         $smart_js_arg['intent'] = ( $this->paymentaction === 'capture' ) ? 'capture' : 'authorize';
         $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
         $components = array("buttons");
         if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
             array_push($components, "hosted-fields");
+            if (is_checkout_pay_page()) {
+                $order_id = $wp->query_vars['order-pay'];
+                $order_id = absint($order_id);
+                $order = wc_get_order($order_id);
+                $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                $first_name = $old_wc ? $order->billing_first_name : $order->get_billing_first_name();
+                $last_name = $old_wc ? $order->billing_last_name : $order->get_billing_last_name();
+            }
         }
         if ($this->enabled_pay_later_messaging) {
             array_push($components, 'messages');
@@ -354,7 +365,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'cardholder_name_required' => __('Cardholder\'s first and last name are required, please fill the checkout form required fields.', 'paypal-for-woocommerce'),
             'card_not_supported' => __('Unfortunately, we do not support your credit card.', 'paypal-for-woocommerce'),
             'fields_not_valid' => __('Unfortunately, your credit card details are not valid.', 'paypal-for-woocommerce'),
-            'disable_cards' => $this->disable_cards
+            'disable_cards' => $this->disable_cards,
+            'first_name' => $first_name,
+            'last_name' => $last_name
                 )
         );
         if ((is_checkout() || is_checkout_pay_page()) && empty($this->checkout_details)) {
@@ -968,6 +981,17 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             wc_maybe_define_constant('DOING_AJAX', true);
             wc_maybe_define_constant('WC_DOING_AJAX', true);
         }
+    }
+
+    public function angelleye_ppcp_woocommerce_pay_order_button_html($submit_button_html) {
+        global $wp;
+        if (is_checkout_pay_page()) {
+            $order_id = $wp->query_vars['order-pay'];
+            $order_id = absint($order_id);
+            $order = wc_get_order($order_id);
+        }
+
+        return $submit_button_html;
     }
 
 }

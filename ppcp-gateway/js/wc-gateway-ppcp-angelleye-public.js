@@ -4,7 +4,6 @@
         if (typeof angelleye_ppcp_manager === 'undefined') {
             return false;
         }
-        console.log(angelleye_ppcp_manager);
         var checkout_selector = '';
         if (angelleye_ppcp_manager.page === 'checkout') {
             if (angelleye_ppcp_manager.is_pay_page === 'yes') {
@@ -32,6 +31,7 @@
                 if (angelleye_ppcp_manager.enable_separate_payment_method === 'no') {
                     if (is_hosted_field_eligible() === true) {
                         $('#place_order').show();
+
                     } else {
                         $('#place_order').hide();
                     }
@@ -185,10 +185,24 @@
             }).render(selector);
         };
 
+        if ($(document.body).hasClass('woocommerce-order-pay')) {
+            $('#order_review').on('submit', function (event) {
+                if (is_hosted_field_eligible() === true) {
+                    event.preventDefault();
+                    if ($(checkout_selector).is('.paypal_cc_submiting')) {
+                        return false;
+                    } else {
+                        $(checkout_selector).addClass('paypal_cc_submiting');
+                        $(document.body).trigger('submit_paypal_cc_form');
+                    }
+                    return false;
+                }
+                return true;
+            });
+        }
         $(checkout_selector).on('checkout_place_order_' + angelleye_ppcp_manager.prefix_cc_field, function (event) {
             if (is_hosted_field_eligible() === true) {
                 event.preventDefault();
-                console.log("dkjsjdjskjd");
                 if ($(checkout_selector).is('.paypal_cc_submiting')) {
                     return false;
                 } else {
@@ -200,7 +214,6 @@
             return true;
         });
         var hosted_button_render = function () {
-            console.log(checkout_selector);
             if ($(checkout_selector).is('.HostedFields')) {
                 return false;
             }
@@ -272,7 +285,6 @@
                 hf.on('cardTypeChange', function (event) {
                     if (event.cards.length > 0) {
                         var cardname = event.cards[0].type.replace("master-card", "mastercard").replace("american-express", "amex").replace("diners-club", "dinersclub").replace("-", "");
-                        console.log(cardname);
                         if (jQuery.inArray(cardname, angelleye_ppcp_manager.disable_cards) !== -1) {
                             $('#angelleye_ppcp-card-number').addClass('ppcp-invalid-cart');
                             showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.card_not_supported + '</ul>', $('form'));
@@ -342,8 +354,15 @@
                         }
                     });
                     $.angelleye_ppcp_scroll_to_notices($('#order_review'));
-                    const firstName = document.getElementById('billing_first_name') ? document.getElementById('billing_first_name').value : '';
-                    const lastName = document.getElementById('billing_last_name') ? document.getElementById('billing_last_name').value : '';
+                    var firstName;
+                    var lastName;
+                    if (angelleye_ppcp_manager.is_pay_page === 'yes') {
+                        firstName = angelleye_ppcp_manager.first_name;
+                        lastName = angelleye_ppcp_manager.last_name;
+                    } else {
+                        firstName = document.getElementById('billing_first_name') ? document.getElementById('billing_first_name').value : '';
+                        lastName = document.getElementById('billing_last_name') ? document.getElementById('billing_last_name').value : '';
+                    }
                     if (!firstName || !lastName) {
                         showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.cardholder_name_required + '</ul>', $('form'));
                         $(checkout_selector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
@@ -386,7 +405,6 @@
             smart_button_render();
         }
         if (angelleye_ppcp_manager.is_pay_page === 'yes') {
-            console.log(angelleye_paypal_sdk.HostedFields.isEligible());
             hide_show_place_order_button();
             setTimeout(function () {
                 smart_button_render();
