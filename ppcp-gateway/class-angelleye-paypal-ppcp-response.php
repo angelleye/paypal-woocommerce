@@ -98,7 +98,7 @@ class AngellEYE_PayPal_PPCP_Response {
         $this->api_log->log('Action: ' . ucwords(str_replace('_', ' ', $action_name)));
         $this->api_log->log('Request URL: ' . $url);
         $response_body = isset($response['body']) ? json_decode($response['body'], true) : $response;
-        if(!empty($response_body['headers'])) {
+        if (!empty($response_body['headers'])) {
             $this->api_log->log('PayPal Debug ID: ' . $this->angelleye_ppcp_parse_headers($response_body['headers'], 'paypal-debug-id'));
         }
         if ($action_name === 'generate_signup_link') {
