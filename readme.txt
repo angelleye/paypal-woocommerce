@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 6.0
-Stable tag: 3.0.27
+Stable tag: 3.0.28
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,7 +127,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 3.0.26 - 06.09.2022 =
+= 3.0.28 - 06.17.2022 =
+* Fix - Resolves PPCP - Order Item Total Mismatch. ([PFW-1054](https://github.com/angelleye/paypal-woocommerce/pull/1697))
+
+= 3.0.27 - 06.09.2022 =
 * Feature -  WooCommerce TM Extra Product Options with PayPal Express. ([PFW-1025](https://github.com/angelleye/paypal-woocommerce/pull/1694))
 
 = 3.0.26 - 06.03.2022 =
