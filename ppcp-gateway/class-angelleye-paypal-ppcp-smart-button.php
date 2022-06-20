@@ -236,7 +236,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_action('woocommerce_review_order_before_order_total', array($this, 'angelleye_ppcp_display_payment_method_title_review_page'));
         add_action('wp_loaded', array($this, 'angelleye_ppcp_prevent_add_to_cart_woo_action'), 1);
         add_action('init', array($this, 'angelleye_ppcp_woocommerce_before_checkout_process'), 0);
-        add_filter('woocommerce_pay_order_button_html', array($this, 'angelleye_ppcp_woocommerce_pay_order_button_html'), 10, 1);
     }
 
     /*
@@ -982,16 +981,4 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             wc_maybe_define_constant('WC_DOING_AJAX', true);
         }
     }
-
-    public function angelleye_ppcp_woocommerce_pay_order_button_html($submit_button_html) {
-        global $wp;
-        if (is_checkout_pay_page()) {
-            $order_id = $wp->query_vars['order-pay'];
-            $order_id = absint($order_id);
-            $order = wc_get_order($order_id);
-        }
-
-        return $submit_button_html;
-    }
-
 }

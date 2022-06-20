@@ -180,11 +180,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         }
         if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false) {
             parent::payment_fields();
-            if(is_checkout_pay_page()) {
-                
-                $label = __('Pay for order', 'woocommerce');
-                printf('<div id="ppcp-hosted-fields" style="display:none;"><button type="submit" class="button alt ppcp-dcc-order-button" style="display: none;">%1$s</button></div>', esc_html($label));
-            }
             echo '<div id="payments-sdk__contingency-lightbox"></div>';
         }
     }
