@@ -519,7 +519,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'amount' => angelleye_ppcp_round($amount, $decimals),
             );
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -700,7 +700,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
         }
         if (!empty($message)) {
-
+            
         } else if (!empty($error['message'])) {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
@@ -1006,11 +1006,23 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $sku = $product->get_sku();
                 $category = $product->needs_shipping() ? 'PHYSICAL_GOODS' : 'DIGITAL_GOODS';
                 if (is_object($product)) {
-                    if ($product->is_type('variation')) {
-                        if (!empty($values['variation']) && is_array($values['variation'])) {
-                            foreach ($values['variation'] as $key => $value) {
-                                $key = str_replace(array('attribute_pa_', 'attribute_', 'Pa_', 'pa_'), '', $key);
-                                $desc .= ' ' . ucwords($key) . ': ' . $value;
+                    if ($product->is_type('variation') && is_a($product, 'WC_Product_Variation')) {
+                        $desc = '';
+                        if (version_compare(WC_VERSION, '3.0', '<')) {
+                            $attributes = $product->get_variation_attributes();
+                            if (!empty($attributes) && is_array($attributes)) {
+                                foreach ($attributes as $key => $value) {
+                                    $key = str_replace(array('attribute_pa_', 'attribute_'), '', $key);
+                                    $desc .= ' ' . ucwords(str_replace('pa_', '', $key)) . ': ' . $value;
+                                }
+                                $desc = trim($desc);
+                            }
+                        } else {
+                            $attributes = $product->get_attributes();
+                            if (!empty($attributes) && is_array($attributes)) {
+                                foreach ($attributes as $key => $value) {
+                                    $desc .= ' ' . ucwords(str_replace('pa_', '', $key)) . ': ' . $value;
+                                }
                             }
                             $desc = trim($desc);
                         }
@@ -1729,7 +1741,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             endswitch;
             return;
         } catch (Exception $ex) {
-
+            
         }
     }
 
