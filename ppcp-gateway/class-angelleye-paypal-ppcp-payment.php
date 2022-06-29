@@ -547,7 +547,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $page = null;
         if (is_cart() && !WC()->cart->is_empty()) {
             $page = 'cart';
-        } elseif (is_checkout()) {
+        } elseif (is_checkout() || is_checkout_pay_page()) {
             $page = 'checkout';
         } elseif (is_product()) {
             $page = 'product';

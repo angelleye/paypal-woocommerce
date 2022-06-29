@@ -147,16 +147,15 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function payment_fields() {
         try {
-            if (is_checkout() && $this->enable_separate_payment_method === true && angelleye_ppcp_has_active_session() === false) {
+            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_has_active_session() === false) {
                 wp_enqueue_script('angelleye-paypal-checkout-sdk');
                 wp_enqueue_script('angelleye_ppcp');
             }
 
-            if (is_checkout() && $this->enable_separate_payment_method === true) {
-                if (is_checkout_pay_page() === false) {
-                    parent::payment_fields();
-                    echo '<div id="payments-sdk__contingency-lightbox"></div>';
-                }
+            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true) {
+
+                parent::payment_fields();
+                echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
         } catch (Exception $ex) {
             
@@ -188,7 +187,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->cc_id));
             ?>
             <fieldset id="wc-<?php echo esc_attr($this->cc_id); ?>-cc-form" class='wc-credit-card-form wc-payment-form' style="display:none;">
-            <?php do_action('woocommerce_credit_card_form_start', $this->cc_id); ?>
+                <?php do_action('woocommerce_credit_card_form_start', $this->cc_id); ?>
                 <?php
                 foreach ($fields as $field) {
                     echo $field;

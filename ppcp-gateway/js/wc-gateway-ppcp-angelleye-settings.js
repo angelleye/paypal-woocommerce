@@ -87,7 +87,6 @@ jQuery(function ($) {
             $('#woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').hide();
         }
     });
-    console.log(ppcp_angelleye_param);
     $('#woocommerce_angelleye_ppcp_sandbox_disconnect, #woocommerce_angelleye_ppcp_live_disconnect, #woocommerce_angelleye_ppcp_sandbox_onboarding, #woocommerce_angelleye_ppcp_live_onboarding, #woocommerce_angelleye_ppcp_live_merchant_id, #woocommerce_angelleye_ppcp_sandbox_merchant_id, #woocommerce_angelleye_ppcp_api_client_id, #woocommerce_angelleye_ppcp_api_secret, #woocommerce_angelleye_ppcp_sandbox_client_id, #woocommerce_angelleye_ppcp_sandbox_api_secret').closest('tr').hide();
     $('#woocommerce_angelleye_ppcp_testmode').change(function () {
         var ppcp_production_fields = $('#woocommerce_angelleye_ppcp_api_client_id, #woocommerce_angelleye_ppcp_api_secret').closest('tr');
