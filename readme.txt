@@ -1,10 +1,10 @@
-﻿=== PayPal for WooCommerce ===
+=== PayPal for WooCommerce ===
 Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
-Tested up to: 5.7.2
-Stable tag: 2.5.8
+Tested up to: 6.0
+Stable tag: 3.0.28
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -15,7 +15,7 @@ One plugin for all things PayPal!  Express Checkout with Smart Payment Buttons, 
 = Introduction =
 
 Easily add PayPal payment options to your WordPress / WooCommerce website.
-
+ * PayPal Complete Payments
  * PayPal Express Checkout / PayPal Smart Payment Buttons
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayPal Manager / PayFlow Gateway)
@@ -78,7 +78,7 @@ Developers can contribute to the source code on the [PayPal for WooCommerce GitH
 
 Automatic installation is the easiest option as WordPress handles the file transfers itself and you don't need to leave your web browser. To do an automatic install of PayPal for WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
 
-In the search field type PayPal for WooCommerce and click Search Plugins. Once you've found our plugin you can view details about it such as the the rating and description. Most importantly, of course, you can install it by simply clicking Install Now.
+In the search field type PayPal for WooCommerce and click Search Plugins. Once you've found our plugin you can view details about it such as the the rating and description. Most importantly, of course, you can install it by simply clicking Install Now�?.
 
 = Manual Installation =
 
@@ -126,6 +126,188 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.28 - 06.17.2022 =
+* Fix - Resolves PPCP - Order Item Total Mismatch. ([PFW-1054](https://github.com/angelleye/paypal-woocommerce/pull/1697))
+
+= 3.0.27 - 06.09.2022 =
+* Feature -  WooCommerce TM Extra Product Options with PayPal Express. ([PFW-1025](https://github.com/angelleye/paypal-woocommerce/pull/1694))
+
+= 3.0.26 - 06.03.2022 =
+* Feature - Adds Payment Method on PPCP Review/Thank You page. ([PFW-1039](https://github.com/angelleye/paypal-woocommerce/pull/1691))
+* Tweak - Use inbuilt function for payment description. ([PFW-1043](https://github.com/angelleye/paypal-woocommerce/pull/1692))
+
+= 3.0.25 - 05.17.2022 =
+* Tweak - Updates hook/filter to pass product name with product variation attribute. ([PFW-1026](https://github.com/angelleye/paypal-woocommerce/pull/1687))
+* Tweak - Updates Forcefully show save button. ([PFW-1029](https://github.com/angelleye/paypal-woocommerce/pull/1688))
+* Fix - Resolves PPCP - Buttons displaying on product page when they should not be. ([PFW-1032](https://github.com/angelleye/paypal-woocommerce/pull/1689))
+* Fix - Resolves PHP error. ([PFW-1020](https://github.com/angelleye/paypal-woocommerce/pull/1690))
+* Fix - Resolves PPCP - Pay Later Messaging - Use including tax price. ([PFW-1027](https://github.com/angelleye/paypal-woocommerce/pull/1686))
+
+= 3.0.24 - 04.29.2022 =
+* Tweak - Update .pot file. ([PFW-1019](https://github.com/angelleye/paypal-woocommerce/pull/1682))
+* Tweak - Updates Partially Paid Email template Override. ([PFW-1021](https://github.com/angelleye/paypal-woocommerce/pull/1685))
+* Fix - Resolves PPCP - Hide PayPal Button for Free product. ([PFW-1018](https://github.com/angelleye/paypal-woocommerce/pull/1683))
+* Fix - Resolves PPCP - Hide/Show Setting fields. ([PFW-1017](https://github.com/angelleye/paypal-woocommerce/pull/1684))
+
+= 3.0.23 - 04.18.2022 =
+* Feature - PPCP By Default enable Pay Later button. ([PFW-1005](https://github.com/angelleye/paypal-woocommerce/pull/1680))
+* Fix - Resolves PPCP - Billing Address / Phone Number Return. ([PFW-1016](https://github.com/angelleye/paypal-woocommerce/pull/1681))
+* Fix - Resolves PPCP - PayPal Smart button not displaying when cart is not empty. ([PFW-1010](https://github.com/angelleye/paypal-woocommerce/pull/1677))
+* Fix - WooCommerce Germanized Compatibility. ([PFW-1013](https://github.com/angelleye/paypal-woocommerce/pull/1678))
+* Fix - Resolves Auto enabled Create an Account on order Review page. ([PFW-1012](https://github.com/angelleye/paypal-woocommerce/pull/1679))
+
+= 3.0.22 - 04.05.2022 =
+* Tweak - Remove merchant-id from PayPal JS SDK URL. ([PFW-1005](https://github.com/angelleye/paypal-woocommerce/pull/1676))
+
+= 3.0.21 - 03.24.2022 =
+* Feature - Adds PPCP - First Party Integration. ([PFW-986](https://github.com/angelleye/paypal-woocommerce/pull/1671))
+* Fix - Resolves PPCP - Order Errors. ([PFW-992](https://github.com/angelleye/paypal-woocommerce/pull/1672))
+* Fix - Resolves a issue with extra comma. ([PFW-1007](https://github.com/angelleye/paypal-woocommerce/pull/1673))
+* Fix - Resolves PPCP - Method not supported or body is not present issue. ([PFW-1009](https://github.com/angelleye/paypal-woocommerce/pull/1675))
+
+= 3.0.20 - 03.14.2022 =
+* Fix - Resolves a issue with Refund order status when Multi-currency plugin active. ([PFW-996](https://github.com/angelleye/paypal-woocommerce/pull/1670))
+* Feature - Add descriptor in ACH - Braintree. ([PFW-998](https://github.com/angelleye/paypal-woocommerce/pull/1669))
+
+= 3.0.19 - 03.08.2022 =
+* Fix - Resolves a issue with Product description limit. ([PFW-999](https://github.com/angelleye/paypal-woocommerce/pull/1668))
+
+= 3.0.18 - 03.07.2022 =
+* Feature - PPCP - Add filter for product name. ([PFW-975](https://github.com/angelleye/paypal-woocommerce/pull/1667))
+* Fix - Resolves a issue with CartFlows Pro with PPCP. ([PFW-993](https://github.com/angelleye/paypal-woocommerce/pull/1666))
+
+= 3.0.17 - 02.28.2022 =
+* Feature -  CartFlows Pro Compatibility with PPCP. ([PFW-981](https://github.com/angelleye/paypal-woocommerce/pull/1663))
+* Feature -  PPCP - ACC - Enable/Disable specific credit card types. ([PFW-980](https://github.com/angelleye/paypal-woocommerce/pull/1661))
+* Tweak - Hide PayPal Billing Agreement field when PFWMA enable. ([PFW-984](https://github.com/angelleye/paypal-woocommerce/pull/1664))
+* Tweak - PPCP - ACC - Improve CSS Styling. ([PFW-982](https://github.com/angelleye/paypal-woocommerce/pull/1662))
+* Fix - Resolves a issue with PayPal request product name value. ([PFW-988](https://github.com/angelleye/paypal-woocommerce/pull/1660))
+
+= 3.0.16 - 02.07.2022 =
+* Fix - Replaces deprecated function. ([PFW-972](https://github.com/angelleye/paypal-woocommerce/pull/1655))
+* Fix - Resolves a issue with PayPal payment status. ([PFW-970](https://github.com/angelleye/paypal-woocommerce/pull/1656))
+
+= 3.0.15 - 01.26.2022 =
+* Feature - Add filter for intent. ([PFW-829](https://github.com/angelleye/paypal-woocommerce/pull/1649))
+* Tweak - Hide Billing Address option when Force shipping to the customer billing address is enable. ([PFW-963](https://github.com/angelleye/paypal-woocommerce/pull/1648))
+* Tweak - Updates PPCP - ACC - Field Labels. ([PFW-966](https://github.com/angelleye/paypal-woocommerce/pull/1651))
+* Fix - Resolves a issue with PayPal payment status. ([PFW-970](https://github.com/angelleye/paypal-woocommerce/pull/1652))
+* Fix - Resolves a issue with PPCP - Different names in PayPal and Woo Billing/Shipping. ([PFW-968](https://github.com/angelleye/paypal-woocommerce/pull/1653))
+* Fix - Resolves address not appearing issue at checkout. ([PFW-914](https://github.com/angelleye/paypal-woocommerce/pull/1654))
+* Fix - Resolves a issue when getmypid() has been disabled for security reasons. ([PFW-965](https://github.com/angelleye/paypal-woocommerce/pull/1650))
+
+= 3.0.14 - 01.11.2022 =
+* Feature - Adds CartFlows Pro Pro 1.8.0 compatibility. 
+
+= 3.0.13 - 01.10.2022 =
+* Feature - Adds new funding methods list. ([PFW-950](https://github.com/angelleye/paypal-woocommerce/pull/1641))
+* Feature - Adds PPCP - Smart Button Size and Height. ([PFW-912](https://github.com/angelleye/paypal-woocommerce/pull/1643))
+* Fix - Resolves order status not updating after Capturing funds. ([PFW-955](https://github.com/angelleye/paypal-woocommerce/pull/1644))
+* Fix - Resolves PayFlow conflict with WooCommerce Zapier plugin. ([PFW-867](https://github.com/angelleye/paypal-woocommerce/pull/1585))
+* Fix - Resolves Compatibility issue with WPML plugin. ([PFW-958](https://github.com/angelleye/paypal-woocommerce/pull/1645))
+
+= 3.0.12 - 12.27.2021 =
+* Feature - Adds Gateway title and shorting functionality for Advanced Credit Cards. ([PFW-949](https://github.com/angelleye/paypal-woocommerce/pull/1640))
+* Tweak - Resolves Advanced Credit Cards fields loading issue. ([PFW-935](https://github.com/angelleye/paypal-woocommerce/pull/1639))
+* Fix - Resolves a issue with WooCommerce Bookings plugin. ([PFW-948](https://github.com/angelleye/paypal-woocommerce/pull/1638))
+
+= 3.0.11 - 12.22.2021 =
+* Feature - Adds Myworks.software compatibility. ([PFW-945](https://github.com/angelleye/paypal-woocommerce/pull/1637))
+* Tweak - Resolves a issue with PayPal Fee showing up on non-PayPal orders. ([PFW-946](https://github.com/angelleye/paypal-woocommerce/pull/1636))
+
+= 3.0.10 - 12.20.2021 =
+* Fix - Resolves a hide/show issue with the Place order button. ([PFW-944](https://github.com/angelleye/paypal-woocommerce/pull/1635))
+
+= 3.0.9 - 12.16.2021 =
+* Fix - Resolves a problem processing refunds through WooCommerce with PayPal Express Checkout. ([PFW-940](https://github.com/angelleye/paypal-woocommerce/pull/1633))
+* Fix - Resolves a issue with Force shipping to the customer billing address" option enable. ([PFW-942](https://github.com/angelleye/paypal-woocommerce/pull/1632))
+* Fix - Resolves a issue with shipping address whrn local pickup shipping method used in PPCP payment method. ([PFW-941](https://github.com/angelleye/paypal-woocommerce/pull/1634))
+
+= 3.0.8 - 12.13.2021 =
+* Fix - Resolves decimal precision issue. ([PFW-938](https://github.com/angelleye/paypal-woocommerce/pull/1630))
+* Fix - Resolves fatal error with WP REST API V3. ([PFW-939](https://github.com/angelleye/paypal-woocommerce/pull/1631))
+
+= 3.0.7 - 12.03.2021 =
+* Feature - Adds option to display separate Credit Card payment option in checkout page. ([PFW-930](https://github.com/angelleye/paypal-woocommerce/pull/1629))
+
+= 3.0.6 - 11.29.2021 =
+* Tweak - Adjustments to Prevent duplicate PayPal order payment. ([PFW-900](https://github.com/angelleye/paypal-woocommerce/pull/1627))
+* Tweak - Adjustments to code to display PayPal Fee in order details page in admin side. ([PFW-907](https://github.com/angelleye/paypal-woocommerce/pull/1628))
+
+= 3.0.5 - 11.27.2021 =
+* Fix - Resolves an issue with Variable Products Not Opening PayPal Window. ([PFW-928](https://github.com/angelleye/paypal-woocommerce/pull/1626))
+* Fix - Resolves Settings Page Empty issue when Woo Subscriptions plugin active. ([PFW-923](https://github.com/angelleye/paypal-woocommerce/pull/1625))
+
+= 3.0.4 - 11.23.2021 =
+* Feature - Adds Payment Method on PPCP Review/Thank You page. ([PFW-922](https://github.com/angelleye/paypal-woocommerce/pull/1624))
+* Tweak - Adjustments to PPCP - On Hold / Failed Orders. ([PFW-927](https://github.com/angelleye/paypal-woocommerce/pull/1623))
+* Fix - Resolves Create account option becomes unchecked in Final Review page issue. ([PFW-898](https://github.com/angelleye/paypal-woocommerce/pull/1621))
+* Fix - Resolves an issue with PPCP - Credit Cards 3DS. ([PFW-921](https://github.com/angelleye/paypal-woocommerce/pull/1622))
+
+= 3.0.3 - 11.17.2021 =
+* Feature - Adds an option to enable/disable an admin email notification when PayPal errors occur. ([PFW-911](https://github.com/angelleye/paypal-woocommerce/issues/1618))
+* Tweak - Adjustments to PayPal sdk function to avoid time error. ([PFW-917](https://github.com/angelleye/paypal-woocommerce/pull/1616))
+* Tweak - Updates logic for localhost detection function. ([PFW-920](https://github.com/angelleye/paypal-woocommerce/pull/1619))
+* Fix - Resolves an issue with PPCP custom_id value. ([PFW-913](https://github.com/angelleye/paypal-woocommerce/pull/1617))
+
+= 3.0.2 - 11.15.2021 =
+* Feature - Adds Soft Descriptor setting to credit card gateways so you can set what shows on customer credit card statements. ([PFW-910](https://github.com/angelleye/paypal-woocommerce/issues/1612))
+* Feature - Adds Venmo Checkout Integration. ([PFW-885](https://github.com/angelleye/paypal-woocommerce/pull/1609))
+* Tweak - Adjustments to avoid errors when item calculations from Woo are not accurate. ([PFW-904](https://github.com/angelleye/paypal-woocommerce/pull/1612))
+* Tweak - Updates logic for Enable/Disable Advanced Credit Cards based on API response. ([PFW-894](https://github.com/angelleye/paypal-woocommerce/pull/1610))
+* Tweak - Updates logic for Display Payment gateways when smart buttons are disabled. ([PFW-897](https://github.com/angelleye/paypal-woocommerce/pull/1613))
+* Fix - Resolves an issue with Seller created Woo orders are not working properly. ([PFW-895](https://github.com/angelleye/paypal-woocommerce/pull/1611))
+* Fix - Resolves an issue with PPCP to Unable hide debit/credit cards on the cart page. ([PFW-905](https://github.com/angelleye/paypal-woocommerce/pull/1614))
+* Fix - Resolved shorting issue with payment gateways. ([PFW-896](https://github.com/angelleye/paypal-woocommerce/pull/1608))
+
+= 3.0.1 - 11.02.2021 =
+* Tweak - Adds Configure URL and Update plugin details. ([PFW-892](https://github.com/angelleye/paypal-woocommerce/pull/1605))
+* Fix - Resolves Gateway setting page issue. ([PFW-893](https://github.com/angelleye/paypal-woocommerce/pull/1604))
+
+= 3.0.0 - 11.02.2021 =
+* Feature - Adds PayPal Complete Payments. ([PFW-27](https://github.com/angelleye/paypal-woocommerce/pull/1603))
+
+= 2.5.19 - 18.10.2021 =
+* Feature - Re-Added required hooks for our PayPal for WooCommerce Multi-Account extension. ([PFW-813](https://github.com/angelleye/paypal-woocommerce/pull/1557))
+* Tweak - Adjustments for PHP 8.0 compatibility. ([PFW-863](https://github.com/angelleye/paypal-woocommerce/pull/1583))
+* Fix - Resolves Conflict with All Import Pro plugin. ([PFW-866](https://github.com/angelleye/paypal-woocommerce/pull/1586))
+* Fix - Resolves an issue with Express Checkout when Sending invoice from admin. ([PFW-853](https://github.com/angelleye/paypal-woocommerce/issues/1580))
+
+
+= 2.5.18- 10.07.2021 =
+* Tweak - Updates Partially Paid Email template Override. ([PFW-858](https://github.com/angelleye/paypal-woocommerce/pull/1579))
+* Fix - Resolves CSS Conflict. ([PFW-864](https://github.com/angelleye/paypal-woocommerce/pull/1581))
+
+= 2.5.17 - 09.30.2021 =
+* Tweak - Updates Braintree PayPal checkout type. ([PFW-494](https://github.com/angelleye/paypal-woocommerce/pull/1575))
+* Feature - Adds custom class at order page. ([PFW-152](https://github.com/angelleye/paypal-woocommerce/pull/1578))
+
+= 2.5.16 - 09.16.2021 =
+* Fix - Resolves PHP notice related to checkout page. ([PFW-856](https://github.com/angelleye/paypal-woocommerce/pull/1577))
+
+= 2.5.15 - 09.13.2021 =
+* Tweak - Upgrades Braintree Drop-in JS ([PFW-847](https://github.com/angelleye/paypal-woocommerce/pull/1573))
+* Fix - Resolves a PHP error, when PHP 8.0 version. ([PFW-839](https://github.com/angelleye/paypal-woocommerce/issues/1572))
+
+= 2.5.14 - 08.20.2021 =
+* Tweak - Adjusts CSS for Cancel Order button on Express Checkout review page. ([PFW-841](https://github.com/angelleye/paypal-woocommerce/pull/1567))
+* Fix - Resolves Payment Gateway Sorting issue. ([PFW-840](https://github.com/angelleye/paypal-woocommerce/pull/1566))
+
+= 2.5.13 - 08.20.2021 =
+* Fix - Resolves Braintree Compatibility with WooCommerce 2.6.2 issue. ([PFW-842](https://github.com/angelleye/paypal-woocommerce/pull/1568))
+
+= 2.5.12 - 07.19.2021 =
+* Fix - Resolves an issue with CartFlow with subscription. ([PFW-820](https://github.com/angelleye/paypal-woocommerce/pull/1562))
+
+= 2.5.11 - 07.12.2021 =
+* Tweak - Updates Update Braintree SDK. ([PFW-824](https://github.com/angelleye/paypal-woocommerce/pull/1560))
+
+= 2.5.10 - 07.01.2021 =
+* Fix - Resolves SG Optimizer issue. ([PFW-815](https://github.com/angelleye/paypal-woocommerce/pull/1558))
+
+= 2.5.9 - 05.25.2021 =
+* Fix - Resolves Braintree ACH issue. ([PFW-806](https://github.com/angelleye/paypal-woocommerce/pull/1552))
 
 = 2.5.8 - 05.18.2021 =
 * Feature - Adds Webtoffee Subscriptions compatibility. ([PFW-792](https://github.com/angelleye/paypal-woocommerce/pull/1549))
@@ -292,7 +474,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 2.1.15 - 03.27.2020 =
 * Tweak - Adds required hooks for our PayPal Shipment tracking. ([PFW-563](https://github.com/angelleye/paypal-woocommerce/pull/1423))
-* Tweak – Adjustments “Thank you” page message. ([PFW-566](https://github.com/angelleye/paypal-woocommerce/pull/1425))
+* Tweak – Adjustments “Thank you�? page message. ([PFW-566](https://github.com/angelleye/paypal-woocommerce/pull/1425))
 * Fix - Resolves jQuery conflict. ([PFW-565](https://github.com/angelleye/paypal-woocommerce/pull/1424))
 * Fix - Correct year format as per cardinal commerce docs. ([#1430](https://github.com/angelleye/paypal-woocommerce/pull/1430))
 * Fix - "WooCommerce Booster Currency Switcher" plugin compatibility. ([PFW-571](https://github.com/angelleye/paypal-woocommerce/pull/1429))
@@ -304,7 +486,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 2.1.13 - 01.29.2020 =
 * Feature - Adds WooCommerce 3.8.0 Compatibility. ([PFW-554](https://github.com/angelleye/paypal-woocommerce/pull/1416)) ([PFW-553](https://github.com/angelleye/paypal-woocommerce/pull/1418))
-* Tweak – Adjustments “Thank you” page message to comply with PayPal Guidelines. ([PFW-552](https://github.com/angelleye/paypal-woocommerce/pull/1414))
+* Tweak – Adjustments “Thank you�? page message to comply with PayPal Guidelines. ([PFW-552](https://github.com/angelleye/paypal-woocommerce/pull/1414))
 * Tweak - Adjustments to admin notice display. ([PFW-531](https://github.com/angelleye/paypal-woocommerce/pull/1417))
 * Fix - Resolves some PHP notices. ([PFW-66](https://github.com/angelleye/paypal-woocommerce/pull/1409)) ([PFW-163](https://github.com/angelleye/paypal-woocommerce/pull/1410))
 * Fix - Resolves an issue with Woo Subscriptions - Refund. ([PFW-550](https://github.com/angelleye/paypal-woocommerce/pull/1411))
@@ -1281,5 +1463,5 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Upgrade Notice ==
 
-= 1.5.0 =
+= 3.0.0 =
 After updating, make sure to clear any caching / CDN plugins you may be using.  Also, go into the plugin's gateway settings, review everything, and click Save even if you do not make any changes.

@@ -199,8 +199,11 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             $this->order_items = array();
             $roundedPayPalTotal = 0;
             $this->discount_amount = round($order->get_total_discount(), $this->decimals);
-            if ($order->get_discount_total() > 0 && $this->discount_amount == 0) {
-                $this->discount_amount = round($order->get_discount_total(), $this->decimals);
+            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+            if(!$old_wc) {
+                if ($order->get_discount_total() > 0 && $this->discount_amount == 0) {
+                    $this->discount_amount = round($order->get_discount_total(), $this->decimals);
+                }
             }
             if ($this->get_giftcard_amount($order_id) != false) {
                 $this->discount_amount = round($this->discount_amount + $this->get_giftcard_amount($order_id), $this->decimals);

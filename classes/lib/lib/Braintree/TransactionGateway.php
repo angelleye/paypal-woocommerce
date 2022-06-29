@@ -1,4 +1,5 @@
 <?php
+
 namespace Braintree;
 
 use InvalidArgumentException;
@@ -10,6 +11,7 @@ use InvalidArgumentException;
  *
  * <b>== More information ==</b>
  *
+ * // phpcs:ignore Generic.Files.LineLength
  * For more detailed information on Transactions, see {@link https://developers.braintreepayments.com/reference/response/transaction/php https://developers.braintreepayments.com/reference/response/transaction/php}
  *
  * @package    Braintree
@@ -45,6 +47,7 @@ class TransactionGateway
     private function create($attribs)
     {
         Util::verifyKeys(self::createSignature(), $attribs);
+        $attribs = Util::replaceKey($attribs, 'googlePayCard', 'androidPayCard');
         return $this->_doCreate('/transactions', ['transaction' => $attribs]);
     }
 
@@ -78,12 +81,11 @@ class TransactionGateway
             'channel',
             'customerId',
             'deviceData',
-            'deviceSessionId',
-            'fraudMerchantId',
             'merchantAccountId',
             'orderId',
             'paymentMethodNonce',
             'paymentMethodToken',
+            'productSku',
             'purchaseOrderNumber',
             'recurring',
             'serviceFeeAmount',
@@ -100,14 +102,26 @@ class TransactionGateway
             'transactionSource',
             'type',
             'venmoSdkPaymentMethodCode',
+            'scaExemption',
             'shippingAmount',
             'discountAmount',
             'shipsFromPostalCode',
             ['riskData' =>
-                ['customerBrowser', 'customerIp', 'customer_browser', 'customer_ip']
+                [
+                    'customerBrowser', 'customerIp', 'customerDeviceId',
+                    'customerLocationZip', 'customerTenure'],
             ],
             ['creditCard' =>
-                ['token', 'cardholderName', 'cvv', 'expirationDate', 'expirationMonth', 'expirationYear', 'number'],
+                [
+                    'token',
+                    'cardholderName',
+                    'cvv',
+                    'expirationDate',
+                    'expirationMonth',
+                    'expirationYear',
+                    'number',
+                    ['paymentReaderCardDetails' => ['encryptedCardData', 'keySerialNumber']],
+                ],
             ],
             ['customer' =>
                 [
@@ -118,15 +132,15 @@ class TransactionGateway
                 [
                     'firstName', 'lastName', 'company', 'countryName',
                     'countryCodeAlpha2', 'countryCodeAlpha3', 'countryCodeNumeric',
-                    'extendedAddress', 'locality', 'postalCode', 'region',
+                    'extendedAddress', 'locality', 'phoneNumber', 'postalCode', 'region',
                     'streetAddress'],
             ],
             ['shipping' =>
                 [
                     'firstName', 'lastName', 'company', 'countryName',
                     'countryCodeAlpha2', 'countryCodeAlpha3', 'countryCodeNumeric',
-                    'extendedAddress', 'locality', 'postalCode', 'region',
-                    'streetAddress'],
+                    'extendedAddress', 'locality', 'phoneNumber', 'postalCode', 'region',
+                    'shippingMethod', 'streetAddress'],
             ],
             ['threeDSecurePassThru' =>
                 [
@@ -186,7 +200,16 @@ class TransactionGateway
             ['customFields' => ['_anyKey_']],
             ['descriptor' => ['name', 'phone', 'url']],
             ['paypalAccount' => ['payeeId', 'payeeEmail', 'payerId', 'paymentId']],
-            ['applePayCard' => ['number', 'cardholderName', 'cryptogram', 'expirationMonth', 'expirationYear', 'eciIndicator']],
+            ['applePayCard' =>
+                [
+                    'cardholderName',
+                    'cryptogram',
+                    'eciIndicator',
+                    'expirationMonth',
+                    'expirationYear',
+                    'number'
+                ]
+            ],
             ['industry' =>
                 ['industryType',
                     ['data' =>
@@ -250,10 +273,39 @@ class TransactionGateway
                     ]
                 ]
             ],
-            ['lineItems' => ['quantity', 'name', 'description', 'kind', 'unitAmount', 'unitTaxAmount', 'totalAmount', 'discountAmount', 'taxAmount', 'unitOfMeasure', 'productCode', 'commodityCode', 'url']],
+            ['lineItems' =>
+                [
+                    'commodityCode',
+                    'description',
+                    'discountAmount',
+                    'kind',
+                    'name',
+                    'productCode',
+                    'quantity',
+                    'taxAmount',
+                    'totalAmount',
+                    'unitAmount',
+                    'unitOfMeasure',
+                    'unitTaxAmount',
+                    'url'
+                ]
+            ],
             ['externalVault' =>
                 ['status' , 'previousNetworkTransactionId'],
-            ]
+            ],
+            ['googlePayCard' =>
+                [
+                    'cryptogram',
+                    'eciIndicator',
+                    'expirationMonth',
+                    'expirationYear',
+                    'googleTransactionId',
+                    'number',
+                    'sourceCardLastFour',
+                    'sourceCardType'
+                ]
+            ],
+            ['installments' => ['count']]
         ];
     }
 
@@ -266,7 +318,23 @@ class TransactionGateway
             'shippingAmount',
             'discountAmount',
             'shipsFromPostalCode',
-            ['lineItems' => ['quantity', 'name', 'description', 'kind', 'unitAmount', 'unitTaxAmount', 'totalAmount', 'discountAmount', 'taxAmount', 'unitOfMeasure', 'productCode', 'commodityCode', 'url']],
+            ['lineItems' =>
+                [
+                    'commodityCode',
+                    'description',
+                    'discountAmount',
+                    'kind',
+                    'name',
+                    'productCode',
+                    'quantity',
+                    'taxAmount',
+                    'totalAmount',
+                    'unitAmount',
+                    'unitOfMeasure',
+                    'unitTaxAmount',
+                    'url'
+                ]
+            ],
         ];
     }
 
@@ -277,7 +345,11 @@ class TransactionGateway
 
     public static function refundSignature()
     {
-        return ['amount', 'orderId'];
+        return [
+            'amount',
+            'merchantAccountId',
+            'orderId'
+        ];
     }
 
     /**
@@ -318,17 +390,20 @@ class TransactionGateway
             return Transaction::factory($response['transaction']);
         } catch (Exception\NotFound $e) {
             throw new Exception\NotFound(
-            'transaction with id ' . $id . ' not found'
+                'transaction with id ' . $id . ' not found'
             );
         }
     }
     /**
      * new sale
-     * @param array $attribs
+     * @param array $attribs (Note: $recurring param is deprecated. Use $transactionSource instead)
      * @return Result\Successful|Result\Error
      */
     public function sale($attribs)
     {
+        if (array_key_exists('recurring', $attribs)) {
+            trigger_error('$recurring is deprecated, use $transactionSource instead', E_USER_DEPRECATED);
+        }
         return $this->create(array_merge(['type' => Transaction::SALE], $attribs));
     }
 
@@ -350,6 +425,7 @@ class TransactionGateway
      *
      * If <b>query</b> is a string, the search will be a basic search.
      * If <b>query</b> is a hash, the search will be an advanced search.
+     * // phpcs:ignore Generic.Files.LineLength
      * For more detailed information and examples, see {@link https://developers.braintreepayments.com/reference/request/transaction/search/php https://developers.braintreepayments.com/reference/request/transaction/search/php}
      *
      * @param mixed $query search query
@@ -400,6 +476,25 @@ class TransactionGateway
     }
 
     /**
+     * Adjusts the authorization amount of a transaction
+     *
+     * @access public
+     * @param string $transactionId
+     * @param string amount
+     *
+     * @return Result\Successful|Result\Error
+     * @throws Exception\Unexpected
+     */
+    public function adjustAuthorization($transactionId, $amount)
+    {
+        self::_validateId($transactionId);
+        $params = ['amount' => $amount];
+        $path = $this->_config->merchantPath() . '/transactions/' . $transactionId . '/adjust_authorization';
+        $response = $this->_http->put($path, ['transaction' => $params]);
+        return $this->_verifyGatewayResponse($response);
+    }
+
+    /**
      * void a transaction by id
      *
      * @param string $id transaction id
@@ -409,7 +504,7 @@ class TransactionGateway
     {
         $this->_validateId($transactionId);
 
-        $path = $this->_config->merchantPath() . '/transactions/'. $transactionId . '/void';
+        $path = $this->_config->merchantPath() . '/transactions/' . $transactionId . '/void';
         $response = $this->_http->put($path);
         return $this->_verifyGatewayResponse($response);
     }
@@ -428,7 +523,7 @@ class TransactionGateway
         Util::verifyKeys(self::submitForSettlementSignature(), $attribs);
         $attribs['amount'] = $amount;
 
-        $path = $this->_config->merchantPath() . '/transactions/'. $transactionId . '/submit_for_settlement';
+        $path = $this->_config->merchantPath() . '/transactions/' . $transactionId . '/submit_for_settlement';
         $response = $this->_http->put($path, ['transaction' => $attribs]);
         return $this->_verifyGatewayResponse($response);
     }
@@ -444,7 +539,7 @@ class TransactionGateway
         $this->_validateId($transactionId);
         Util::verifyKeys(self::updateDetailsSignature(), $attribs);
 
-        $path = $this->_config->merchantPath() . '/transactions/'. $transactionId . '/update_details';
+        $path = $this->_config->merchantPath() . '/transactions/' . $transactionId . '/update_details';
         $response = $this->_http->put($path, ['transaction' => $attribs]);
         return $this->_verifyGatewayResponse($response);
     }
@@ -455,7 +550,7 @@ class TransactionGateway
         Util::verifyKeys(self::submitForSettlementSignature(), $attribs);
         $attribs['amount'] = $amount;
 
-        $path = $this->_config->merchantPath() . '/transactions/'. $transactionId . '/submit_for_partial_settlement';
+        $path = $this->_config->merchantPath() . '/transactions/' . $transactionId . '/submit_for_partial_settlement';
         $response = $this->_http->post($path, ['transaction' => $attribs]);
         return $this->_verifyGatewayResponse($response);
     }
@@ -491,7 +586,7 @@ class TransactionGateway
     {
         self::_validateId($transactionId);
 
-        if(gettype($amount_or_options) == "array") {
+        if (gettype($amount_or_options) == "array") {
             $options = $amount_or_options;
         } else {
             $options = [
@@ -528,11 +623,12 @@ class TransactionGateway
      * @param string transaction id
      * @throws InvalidArgumentException
      */
-    private function _validateId($id = null) {
+    private function _validateId($id = null)
+    {
         if (empty($id)) {
-           throw new InvalidArgumentException(
-                   'expected transaction id to be set'
-                   );
+            throw new InvalidArgumentException(
+                'expected transaction id to be set'
+            );
         }
     }
 
@@ -554,13 +650,13 @@ class TransactionGateway
         if (isset($response['transaction'])) {
             // return a populated instance of Transaction
             return new Result\Successful(
-                    Transaction::factory($response['transaction'])
+                Transaction::factory($response['transaction'])
             );
-        } else if (isset($response['apiErrorResponse'])) {
+        } elseif (isset($response['apiErrorResponse'])) {
             return new Result\Error($response['apiErrorResponse']);
         } else {
             throw new Exception\Unexpected(
-            "Expected transaction or apiErrorResponse"
+                "Expected transaction or apiErrorResponse"
             );
         }
     }

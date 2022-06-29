@@ -1,4 +1,5 @@
 <?php
+
 namespace Braintree;
 
 /**
@@ -25,6 +26,8 @@ namespace Braintree;
  * @property-read string $referenceNumber
  * @property-read \DateTime $replyByDate
  * @property-read string $status
+ * @property-read string $chargebackProtectionLevel
+ * @property-read \Braintree\Dispute\PayPalMessageDetails[] $paypalMessages
  * @property-read \Braintree\Dispute\StatusHistoryDetails[] $statusHistory
  * @property-read \Braintree\Dispute\TransactionDetails $transaction
  * @property-read \Braintree\Dispute\TransactionDetails $transactionDetails
@@ -55,6 +58,11 @@ class Dispute extends Base
     const TRANSACTION_AMOUNT_DIFFERS      = "transaction_amount_differs";
     const RETRIEVAL                       = "retrieval";
 
+    /* Dispute ChargebackProtectionLevel */
+    const EFFORTLESS      = 'effortless';
+    const STANDARD        = 'standard';
+    const NOT_PROTECTED   = 'not_protected';
+
     /* Dispute Kind */
     const CHARGEBACK      = 'chargeback';
     const PRE_ARBITRATION = 'pre_arbitration';
@@ -71,21 +79,29 @@ class Dispute extends Base
         }
 
         if (isset($disputeAttribs['evidence'])) {
-            $evidenceArray = array_map(function($evidence) {
+            $evidenceArray = array_map(function ($evidence) {
                 return new Dispute\EvidenceDetails($evidence);
             }, $disputeAttribs['evidence']);
             $this->_set('evidence', $evidenceArray);
         }
 
+        if (isset($disputeAttribs['paypalMessages'])) {
+            $paypalMessagesArray = array_map(function ($paypalMessages) {
+                return new Dispute\PayPalMessageDetails($paypalMessages);
+            }, $disputeAttribs['paypalMessages']);
+            $this->_set('paypalMessages', $paypalMessagesArray);
+        }
+
         if (isset($disputeAttribs['statusHistory'])) {
-            $statusHistoryArray = array_map(function($statusHistory) {
+            $statusHistoryArray = array_map(function ($statusHistory) {
                 return new Dispute\StatusHistoryDetails($statusHistory);
             }, $disputeAttribs['statusHistory']);
             $this->_set('statusHistory', $statusHistoryArray);
         }
 
         if (isset($disputeAttribs['transaction'])) {
-            $this->_set('transaction',
+            $this->_set(
+                'transaction',
                 new Dispute\TransactionDetails($disputeAttribs['transaction'])
             );
         }
@@ -98,7 +114,7 @@ class Dispute extends Base
         return $instance;
     }
 
-    public function  __toString()
+    public function __toString()
     {
         $display = [
             'amount', 'reason', 'status',
@@ -106,11 +122,11 @@ class Dispute extends Base
             ];
 
         $displayAttributes = [];
-        foreach ($display AS $attrib) {
+        foreach ($display as $attrib) {
             $displayAttributes[$attrib] = $this->$attrib;
         }
         return __CLASS__ . '[' .
-                Util::attributesToString($displayAttributes) .']';
+                Util::attributesToString($displayAttributes) . ']';
     }
 
     /**
@@ -138,7 +154,14 @@ class Dispute extends Base
      * Adds text evidence to a dispute, given a dispute ID and content
      *
      * @param string $id
-     * @param string $contentOrRequest
+     * // phpcs:ignore Generic.Files.LineLength
+     * @param string|mixed $contentOrRequest If a string, $contentOrRequest is the text-based content for the dispute evidence.
+     * Alternatively, the second argument can also be an array containing:
+     *  string $content The text-based content for the dispute evidence, and
+     *  string $category The category for this piece of evidence
+     *  Note: (optional) string $tag parameter is deprecated, use $category instead.
+     *
+     *  Example: https://developers.braintreepayments.com/reference/request/dispute/add-text-evidence/php#submitting-categorized-evidence
      */
     public static function addTextEvidence($id, $contentOrRequest)
     {
@@ -184,5 +207,15 @@ class Dispute extends Base
     public static function search($query)
     {
         return Configuration::gateway()->dispute()->search($query);
+    }
+
+    /** @return array */
+    public static function allChargebackProtectionLevelTypes()
+    {
+        return [
+            Dispute::EFFORTLESS,
+            Dispute::STANDARD,
+            Dispute::NOT_PROTECTED
+        ];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Braintree;
 
 /**
@@ -10,15 +11,15 @@ class Version
     /**
      * class constants
      */
-    const MAJOR = 5;
-    const MINOR = 0;
+    const MAJOR = 6;
+    const MINOR = 3;
     const TINY = 0;
 
     /**
      * @ignore
      * @access protected
      */
-    protected function  __construct()
+    protected function __construct()
     {
     }
 

@@ -690,6 +690,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @return void
      */
     public function admin_options() {
+        do_action('angelleye_classic_gateway_sub_menu');
         $GLOBALS['hide_save_button'] = true;
         ?>
         <h3><?php _e('PayPal Advanced', 'paypal-for-woocommerce'); ?></h3>
@@ -981,9 +982,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @return void
      * */
     public function payment_fields() {
-
-        if ($this->description) {
-            echo wpautop(wptexturize($this->description));
+        $description = $this->get_description();
+        if ( $description ) {
+            echo wpautop( wp_kses_post( $description ) );
         }
         if ($this->supports('tokenization') && is_checkout()) {
             $this->tokenization_script();

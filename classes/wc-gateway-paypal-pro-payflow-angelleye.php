@@ -565,6 +565,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
 
     public function admin_options() {
+        do_action('angelleye_classic_gateway_sub_menu');
         global $current_user;
         $GLOBALS['hide_save_button'] = true;
         $user_id = $current_user->ID;
@@ -1329,6 +1330,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
              */
             if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_warning_codes))) {
                 $order->set_transaction_id($PayPalResult['PNREF']);
+                $order->save();
                 if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
                     $order->add_order_note('Card : ' . $PayPalResult['RESPMSG']);
                     add_post_meta($order_id, 'payment_action_authorization', $this->payment_action_authorization);
@@ -1470,6 +1472,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     }
                     if ($this->default_order_status == 'Completed' && apply_filters('angelleye_paypal_payflow_allow_default_order_status', true)) {
                         $order->update_status('completed');
+                        do_action( 'woocommerce_payment_complete', $order_id );
                     } else {
                         $order->payment_complete($PayPalResult['PNREF']);
                     }
@@ -1516,9 +1519,10 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
     public function payment_fields() {
         do_action('angelleye_before_fc_payment_fields', $this);
-        if ($this->description) {
-            echo '<p>' . wp_kses_post($this->description);
-        }
+        $description = $this->get_description();
+        if ( $description ) {
+            echo wpautop( wp_kses_post( $description ) );
+        }        
         if ($this->testmode == true) {
             echo '<p>';
             _e('NOTICE: SANDBOX (TEST) MODE ENABLED.', 'paypal-for-woocommerce');
@@ -1641,7 +1645,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
          */
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
 
-        add_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
+        do_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
         if (isset($PayPalResult['RESULT']) && $PayPalResult['RESULT'] == 0) {
             update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['PNREF']);
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);
@@ -2004,6 +2008,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_warning_codes))) {
                 $order->set_transaction_id($PayPalResult['PNREF']);
+                $order->save();
                 if (isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
                     $order->update_status('failed', __('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                     throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));

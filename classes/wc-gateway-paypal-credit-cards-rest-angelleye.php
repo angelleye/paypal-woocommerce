@@ -80,6 +80,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
      * @since    1.2
      */
     public function admin_options() {
+        do_action('angelleye_classic_gateway_sub_menu');
         $GLOBALS['hide_save_button'] = true;
         if ($this->is_valid_for_use_paypal_credit_card_rest()) {
             ?>
@@ -159,8 +160,9 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
      * @since    1.2
      */
     public function payment_fields() {
-        if ($this->description) {
-            echo wpautop(wptexturize($this->description));
+        $description = $this->get_description();
+        if ( $description ) {
+            echo wpautop( wp_kses_post( $description ) );
         }
         if ( $this->supports( 'tokenization' ) && is_checkout() ) {
             $this->tokenization_script();

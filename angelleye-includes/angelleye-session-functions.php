@@ -7,13 +7,6 @@ if (!function_exists('angelleye_set_session')) {
             if (!class_exists('WooCommerce') || !function_exists('WC')) {
                 return false;
             }
-            if (WC()->session == null) {
-                if (version_compare(WC_VERSION, '3.6.3', '>')) {
-                    WC()->initialize_session();
-                } else {
-                    angelleye_session_init();
-                }
-            }
             if (WC()->session) {
                 WC()->session->set($key, $value);
             } else {
@@ -31,13 +24,6 @@ if (!function_exists('angelleye_get_session')) {
         try {
             if (!class_exists('WooCommerce') || !function_exists('WC')) {
                 return false;
-            }
-            if (WC()->session == null) {
-                if (version_compare(WC_VERSION, '3.6.3', '>')) {
-                    WC()->initialize_session();
-                } else {
-                    angelleye_session_init();
-                }
             }
             if (WC()->session) {
                 $angelleye_session = WC()->session->get($key);
@@ -59,13 +45,6 @@ if (!function_exists('angelleye_unset_session')) {
             if (!class_exists('WooCommerce') || !function_exists('WC')) {
                 return false;
             }
-            if (WC()->session == null) {
-                if (version_compare(WC_VERSION, '3.6.3', '>')) {
-                    WC()->initialize_session();
-                } else {
-                    angelleye_session_init();
-                }
-            }
             if (WC()->session) {
                 WC()->session->__unset($key);
                 unset(WC()->session->$key);
@@ -83,9 +62,14 @@ if (!function_exists('angelleye_session_init')) {
         if (is_admin()) {
             return false;
         }
-        $session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
-        $session = new $session_class();
-        $session->init();
+        $old_wc = version_compare(WC_VERSION, '3.0', '<');
+        if(!$old_wc) {
+            $session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
+            $session = new $session_class();
+            $session->init();
+        } else {
+            return false;
+        }
     }
 
 }
