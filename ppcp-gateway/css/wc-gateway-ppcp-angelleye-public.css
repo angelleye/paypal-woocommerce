@@ -82,7 +82,7 @@
     display: block;
     margin: 15px 0px 15px 0px;
     position: relative;
-    z-index: 99999;
+    z-index: 1000;
 }
 .payment_box.payment_method_angelleye_ppcp > p {
     margin-bottom: 20px;
