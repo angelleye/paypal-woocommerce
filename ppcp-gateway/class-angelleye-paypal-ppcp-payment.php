@@ -396,7 +396,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
                 $item = array(
                     'name' => $product_name,
-                    'description' => $desc,
+                    'description' => apply_filters('angelleye_ppcp_product_description', $desc),
                     'sku' => $sku,
                     'category' => $category,
                     'quantity' => $values['quantity'],
@@ -1045,7 +1045,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
                 $item = array(
                     'name' => $product_name,
-                    'description' => $desc,
+                    'description' => apply_filters('angelleye_ppcp_product_description', $desc),
                     'sku' => $sku,
                     'category' => $category,
                     'quantity' => $values['quantity'],
