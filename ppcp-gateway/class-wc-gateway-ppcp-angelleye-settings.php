@@ -165,7 +165,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                 ),
                 'account_settings' => array(
-                    'title' => __('Account Settings', 'paypal-for-woocommerce'),
+                    'title' => __('PayPal Account Settings', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'description' => '',
                     'class' => 'ppcp_separator_heading',
@@ -252,19 +252,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'custom_attributes' => array('readonly' => 'readonly'),
                     'desc_tip' => true
                 ),
-                'smart_button_header' => array(
-                    'title' => __('Smart Payment Buttons Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
-                    'description' => __('', 'paypal-for-woocommerce'),
-                    'type' => 'title',
-                    'class' => 'ppcp_separator_heading',
-                ),
                 'product_button_settings' => array(
-                    'title' => __('Product Page', 'paypal-for-woocommerce'),
+                    'title' => __('Product Page Settings', 'paypal-for-woocommerce'),
                     'class' => '',
                     'description' => __('Enable the Product specific button settings, and the options set will be applied to the PayPal Smart buttons on your Product pages.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => '',
+                    'class' => 'ppcp_separator_heading',
                 ),
                 'enable_product_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -341,7 +334,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'product_button_size' => array(
                     'title' => __('Button Size', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
                     'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                     'default' => 'responsive',
                     'desc_tip' => true,
@@ -355,7 +348,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'product_button_height' => array(
                     'title' => __('Button Height', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => '',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
                     'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true,
@@ -387,11 +380,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     ),
                 ),
                 'cart_button_settings' => array(
-                    'title' => __('Cart Page', 'paypal-for-woocommerce'),
+                    'title' => __('Cart Page Settings', 'paypal-for-woocommerce'),
                     'class' => '',
                     'description' => __('Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your Cart page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => '',
+                    'class' => 'ppcp_separator_heading',
                 ),
                 'enable_cart_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -400,7 +393,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'label' => __('Enable PayPal Smart Button on the Cart page.', 'paypal-for-woocommerce'),
                     'default' => 'yes',
                     'desc_tip' => true,
-                    'description' => __('Optionally override global button settings above and configure buttons specific to Cart page.', 'paypal-for-woocommerce'),
+                    'description' => __('', 'paypal-for-woocommerce'),
                 ),
                 'cart_disallowed_funding_methods' => array(
                     'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
@@ -468,7 +461,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'cart_button_size' => array(
                     'title' => __('Button Size', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_cart_button_settings',
                     'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                     'default' => 'responsive',
                     'desc_tip' => true,
@@ -482,7 +475,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'cart_button_height' => array(
                     'title' => __('Button Height', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => '',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_cart_button_settings',
                     'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true,
@@ -514,20 +507,41 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     ),
                 ),
                 'checkout_button_settings' => array(
-                    'title' => __('Checkout Page', 'paypal-for-woocommerce'),
+                    'title' => __('Checkout Page Settings', 'paypal-for-woocommerce'),
                     'class' => '',
                     'description' => __('Enable the checkout specific button settings, and the options set will be applied to the PayPal buttons on your checkout page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => '',
+                    'class' => 'ppcp_separator_heading',
                 ),
                 'enable_checkout_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'class' => '',
                     'type' => 'checkbox',
-                    'label' => __('Enable PayPal Smart Button on the Checkout page.', 'paypal-for-woocommerce'),
+                    'label' => __('Enable PayPal Payments on the Checkout page.', 'paypal-for-woocommerce'),
                     'default' => 'yes',
                     'desc_tip' => true,
-                    'description' => __('Optionally override global button settings above and configure buttons specific to checkout page.', 'paypal-for-woocommerce'),
+                    'description' => __('if this option is disable, PayPal will be not display in checkout page.', 'paypal-for-woocommerce'),
+                ),
+                'checkout_page_display_option' => array(
+                    'title' => __('Checkout Page Display', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'options' => array(
+                        'top' => __('Display at the top of the checkout page.', 'paypal-for-woocommerce'),
+                        'regular' => __('Display in general list of enabled gateways on checkout page.', 'paypal-for-woocommerce'),
+                        'both' => __('Display both at the top and in the general list of gateways on the checkout page.')),
+                    'default' => 'regular',
+                    'class' => 'wc-enhanced-select',
+                    'description' => __('Displaying the checkout button at the top of the checkout page will allow users to skip filling out the forms and can potentially increase conversion rates.'),
+                    'desc_tip' => true,
+                ),
+                'checkout_disable_smart_button' => array(
+                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
+                    'class' => '',
+                    'type' => 'checkbox',
+                    'label' => __('Disable smart buttons in the regular list of payment gateways.', 'paypal-for-woocommerce'),
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'description' => __('', 'paypal-for-woocommerce'),
                 ),
                 'checkout_disallowed_funding_methods' => array(
                     'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
@@ -595,7 +609,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'checkout_button_size' => array(
                     'title' => __('Button Size', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_checkout_button_settings',
                     'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                     'default' => 'responsive',
                     'desc_tip' => true,
@@ -609,7 +623,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'checkout_button_height' => array(
                     'title' => __('Button Height', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => '',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_checkout_button_settings',
                     'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true,
@@ -641,11 +655,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     ),
                 ),
                 'mini_cart_button_settings' => array(
-                    'title' => __('Mini Cart Page', 'paypal-for-woocommerce'),
+                    'title' => __('Mini Cart Page Settings', 'paypal-for-woocommerce'),
                     'class' => '',
                     'description' => __('Enable the Mini Cart specific button settings, and the options set will be applied to the PayPal buttons on your Mini Cart page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
-                    'class' => '',
+                    'class' => 'ppcp_separator_heading',
                 ),
                 'enable_mini_cart_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -654,7 +668,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'label' => __('Enable PayPal Smart Button on the Mini Cart page.', 'paypal-for-woocommerce'),
                     'default' => 'yes',
                     'desc_tip' => true,
-                    'description' => __('Optionally override global button settings above and configure buttons specific to Mini Cart page.', 'paypal-for-woocommerce'),
+                    'description' => __('', 'paypal-for-woocommerce'),
                 ),
                 'mini_cart_disallowed_funding_methods' => array(
                     'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
@@ -722,7 +736,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'mini_cart_button_size' => array(
                     'title' => __('Button Size', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select in_context_checkout_part_other',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
                     'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                     'default' => 'responsive',
                     'desc_tip' => true,
@@ -736,7 +750,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'mini_cart_button_height' => array(
                     'title' => __('Button Height', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => '',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
                     'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true,

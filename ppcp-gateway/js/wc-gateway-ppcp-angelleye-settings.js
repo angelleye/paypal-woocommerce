@@ -217,7 +217,27 @@ jQuery(function ($) {
     }).change();
     $('#woocommerce_angelleye_ppcp_enable_checkout_button').change(function () {
         if ($(this).is(':checked')) {
-            $('.angelleye_ppcp_checkout_button_settings').closest('tr').show();
+            $('#woocommerce_angelleye_ppcp_checkout_disable_smart_button').closest('tr').show();
+            $('#woocommerce_angelleye_ppcp_checkout_page_display_option').closest('tr').show();
+            if ($('#woocommerce_angelleye_ppcp_checkout_disable_smart_button').is(':checked')) {
+                $('.angelleye_ppcp_checkout_button_settings').closest('tr').hide();
+            } else {
+                $('.angelleye_ppcp_checkout_button_settings').closest('tr').show();
+            }
+        } else {
+            $('#woocommerce_angelleye_ppcp_checkout_disable_smart_button').closest('tr').hide();
+            $('#woocommerce_angelleye_ppcp_checkout_page_display_option').closest('tr').hide();
+            $('.angelleye_ppcp_checkout_button_settings').closest('tr').hide();
+        }
+
+    }).change();
+    $('#woocommerce_angelleye_ppcp_checkout_disable_smart_button').change(function () {
+        if ($('#woocommerce_angelleye_ppcp_enable_checkout_button').is(':checked')) {
+            if ($(this).is(':checked')) {
+                $('.angelleye_ppcp_checkout_button_settings').closest('tr').hide();
+            } else {
+                $('.angelleye_ppcp_checkout_button_settings').closest('tr').show();
+            }
         } else {
             $('.angelleye_ppcp_checkout_button_settings').closest('tr').hide();
         }
