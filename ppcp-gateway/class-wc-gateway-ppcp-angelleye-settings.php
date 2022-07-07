@@ -533,6 +533,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'class' => 'wc-enhanced-select',
                     'description' => __('Displaying the checkout button at the top of the checkout page will allow users to skip filling out the forms and can potentially increase conversion rates.'),
                     'desc_tip' => true,
+                    'css' => 'min-width: 440px;',
                 ),
                 'checkout_disable_smart_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
