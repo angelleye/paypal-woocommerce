@@ -31,9 +31,16 @@
 .angelleye_ppcp-order-review #ship-to-different-address {
     display: none;
 }
-.angelleye_ppcp-order-review .woocommerce-billing-fields, .angelleye_ppcp-order-review .woocommerce-shipping-fields {
+.angelleye_ppcp-order-review .woocommerce-billing-fields h3, .angelleye_ppcp-order-review .woocommerce-shipping-fields h3 {
     display: none;
 }
+.angelleye_ppcp-order-review .woocommerce-billing-fields .angelleye_ppcp_billing_hide, .angelleye_ppcp-order-review .woocommerce-shipping-fields .angelleye_ppcp_shipping_hide {
+    display: none !important;
+    }
+
+
+
+
 .order_review_page_description {
     margin: 0 0 2em;
     position: relative;

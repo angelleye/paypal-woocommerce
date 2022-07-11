@@ -539,9 +539,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->enabled === false) {
             return $billing_fields;
         }
-        if (array_key_exists('billing_phone', $billing_fields)) {
-            $billing_fields['billing_phone']['required'] = false;
-        }
         return $billing_fields;
     }
 
@@ -876,6 +873,39 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
             }
         }
+        
+        $states_list = WC()->countries->get_states();
+        if (!empty($this->checkout_details)) {
+            $shipping_address = angelleye_ppcp_get_mapped_shipping_address($this->checkout_details);
+            if (!empty($shipping_address) && !empty($fields['shipping'])) {
+                foreach ($fields['shipping'] as $field => $value) {
+                    $address_key = str_replace('shipping_', '', $field);
+                    if($value['required']  === true && array_key_exists($address_key, $shipping_address) && empty($shipping_address[$address_key])) {
+                        
+                    } else {
+                        $fields['shipping'][$field]['class'][0] = $fields['shipping'][$field]['class'][0] . ' angelleye_ppcp_shipping_hide';
+                    }
+                    
+                    
+                }
+            }
+            $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+            if (!empty($billing_address) && !empty($fields['billing'])) {
+                foreach ($fields['billing'] as $field => $value) {
+                    $address_key = str_replace('billing_', '', $field);
+                    if($value['required']  === true && array_key_exists($address_key, $billing_address) && empty($billing_address[$address_key])) {
+                        
+                    } else {
+                        $fields['billing'][$field]['class'][0] = $fields['billing'][$field]['class'][0] . ' angelleye_ppcp_billing_hide';
+                    }
+                    
+                    
+                }
+            }
+            
+        }
+        
+        
         return $fields;
     }
 
