@@ -14,6 +14,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $client_token;
     protected static $_instance = null;
     public $advanced_card_payments_display_position;
+    public $enable_paypal_checkout_page;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -64,7 +65,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_get_properties() {
         $this->title = $this->settings->get('title', 'PayPal Complete Payments');
         $this->enabled = 'yes' === $this->settings->get('enabled', 'no');
-
+        $this->enable_paypal_checkout_page = 'yes' === $this->settings->get('enable_paypal_checkout_page', 'yes');
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         $this->order_review_page_enable_coupons = 'yes' === $this->settings->get('order_review_page_enable_coupons', 'yes');
         $this->order_review_page_title = apply_filters('angelleye_ppcp_order_review_page_title', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
@@ -144,7 +145,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->angelleye_ppcp_currency = in_array(get_woocommerce_currency(), $this->angelleye_ppcp_currency_list) ? get_woocommerce_currency() : 'USD';
         $this->enable_product_button = 'yes' === $this->settings->get('enable_product_button', 'yes');
         $this->enable_cart_button = 'yes' === $this->settings->get('enable_cart_button', 'yes');
-        $this->enable_checkout_button = 'yes' === $this->settings->get('enable_checkout_button', 'yes');
+        $this->checkout_disable_smart_button = 'yes' === $this->settings->get('checkout_disable_smart_button', 'no');
         $this->enable_mini_cart_button = 'yes' === $this->settings->get('enable_mini_cart_button', 'yes');
     }
 
@@ -204,7 +205,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->enable_cart_button) {
             add_action('woocommerce_proceed_to_checkout', array($this, 'display_paypal_button_cart_page'), 11);
         }
-        if ($this->enable_checkout_button) {
+        if ($this->checkout_disable_smart_button === false) {
             add_action('angelleye_ppcp_display_paypal_button_checkout_page', array($this, 'display_paypal_button_checkout_page'));
         }
         add_action('init', array($this, 'init'));
@@ -358,7 +359,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'three_d_secure_contingency' => $this->three_d_secure_contingency,
             'woocommerce_process_checkout' => wp_create_nonce('woocommerce-process_checkout'),
             'is_skip_final_review' => $this->angelleye_ppcp_is_skip_final_review() ? 'yes' : 'no',
-            'is_enable_checkout_button' => ($this->enable_checkout_button) ? 'yes' : 'no',
+            'is_checkout_disable_smart_button' => ($this->checkout_disable_smart_button) ? 'yes' : 'no',
             'enable_separate_payment_method' => ($this->enable_separate_payment_method === true) ? 'yes' : 'no',
             'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1'), WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')),
             'cardholder_name_required' => __('Cardholder\'s first and last name are required, please fill the checkout form required fields.', 'paypal-for-woocommerce'),
@@ -838,6 +839,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_short_gateway($methods) {
         $new_method = array();
         $angelleye_ppcp_cc = array();
+        if( $this->enable_paypal_checkout_page === false &&  $this->enable_separate_payment_method === true ) {
+            if (isset($methods['angelleye_ppcp'])) {
+                unset($methods['angelleye_ppcp']);
+            }
+        }
         if ($this->enable_separate_payment_method) {
             if (isset($methods['angelleye_ppcp_cc'])) {
                 $angelleye_ppcp_cc = $methods['angelleye_ppcp_cc'];

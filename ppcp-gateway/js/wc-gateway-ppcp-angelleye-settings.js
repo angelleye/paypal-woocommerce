@@ -215,7 +215,7 @@ jQuery(function ($) {
             $('.angelleye_ppcp_cart_button_settings').closest('tr').hide();
         }
     }).change();
-    $('#woocommerce_angelleye_ppcp_enable_checkout_button').change(function () {
+    $('#woocommerce_angelleye_ppcp_enable_paypal_checkout_page').change(function () {
         if ($(this).is(':checked')) {
             $('#woocommerce_angelleye_ppcp_checkout_disable_smart_button').closest('tr').show();
             $('#woocommerce_angelleye_ppcp_checkout_page_display_option').closest('tr').show();
@@ -232,7 +232,7 @@ jQuery(function ($) {
 
     }).change();
     $('#woocommerce_angelleye_ppcp_checkout_disable_smart_button').change(function () {
-        if ($('#woocommerce_angelleye_ppcp_enable_checkout_button').is(':checked')) {
+        if ($('#woocommerce_angelleye_ppcp_enable_paypal_checkout_page').is(':checked')) {
             if ($(this).is(':checked')) {
                 $('.angelleye_ppcp_checkout_button_settings').closest('tr').hide();
             } else {

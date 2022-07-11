@@ -513,7 +513,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
                 ),
-                'enable_checkout_button' => array(
+                'enable_paypal_checkout_page' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'class' => '',
                     'type' => 'checkbox',

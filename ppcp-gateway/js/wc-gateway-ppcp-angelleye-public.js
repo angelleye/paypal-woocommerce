@@ -4,6 +4,7 @@
         if (typeof angelleye_ppcp_manager === 'undefined') {
             return false;
         }
+        console.log(angelleye_ppcp_manager);
         var checkout_selector = '';
         if (angelleye_ppcp_manager.page === 'checkout') {
             if (angelleye_ppcp_manager.is_pay_page === 'yes') {
@@ -36,14 +37,14 @@
                         $('#place_order').hide();
                     }
                 } else if (angelleye_ppcp_manager.enable_separate_payment_method === 'yes') {
-                    if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_enable_checkout_button === 'yes') {
+                    if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
                         $('#place_order').hide();
                     } else {
                         $('#place_order').show();
                     }
                 }
             } else {
-                if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_enable_checkout_button === 'yes') {
+                if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
                     $('#place_order').hide();
                 } else {
                     $('#place_order').show();
