@@ -15,6 +15,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     protected static $_instance = null;
     public $advanced_card_payments_display_position;
     public $enable_paypal_checkout_page;
+    public $checkout_page_display_option;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -66,6 +67,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->title = $this->settings->get('title', 'PayPal Complete Payments');
         $this->enabled = 'yes' === $this->settings->get('enabled', 'no');
         $this->enable_paypal_checkout_page = 'yes' === $this->settings->get('enable_paypal_checkout_page', 'yes');
+        $this->checkout_page_display_option = $this->settings->get('checkout_page_display_option', 'regular');
+        
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         $this->order_review_page_enable_coupons = 'yes' === $this->settings->get('order_review_page_enable_coupons', 'yes');
         $this->order_review_page_title = apply_filters('angelleye_ppcp_order_review_page_title', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
@@ -839,7 +842,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_short_gateway($methods) {
         $new_method = array();
         $angelleye_ppcp_cc = array();
-        if( $this->enable_paypal_checkout_page === false) {
+        if( $this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
             if (isset($methods['angelleye_ppcp'])) {
                 unset($methods['angelleye_ppcp']);
             }
