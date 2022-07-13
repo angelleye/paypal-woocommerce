@@ -585,8 +585,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $body_request['payer']['email_address'] = $billing_email;
             }
             if (!empty($billing_phone)) {
-                $body_request['payer']['phone']['phone_type'] = 'HOME';
-                $body_request['payer']['phone']['phone_number']['national_number'] = preg_replace('/[^0-9]/', '', $billing_phone);
+                $billing_phone = preg_replace('/[^0-9]/', '', $billing_phone);
+                if (strlen($billing_phone) > 15) {
+                    $billing_phone = preg_replace('/^0+/', '', $billing_phone);
+                } elseif (strlen($billing_phone) > 14) {
+                    $billing_phone = preg_replace('/^0/', '', $billing_phone);
+                }
+                $billing_phone = substr($billing_phone, 0, 14);
+                if (!empty($billing_phone)) {
+                    $body_request['payer']['phone']['phone_type'] = 'HOME';
+                    $body_request['payer']['phone']['phone_number']['national_number'] = $billing_phone;
+                }
             }
             if (!empty($first_name)) {
                 $body_request['payer']['name']['given_name'] = $first_name;
@@ -634,8 +643,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $body_request['payer']['email_address'] = $email_address;
                 }
                 if (!empty($billing_phone)) {
-                    $body_request['payer']['phone']['phone_type'] = 'HOME';
-                    $body_request['payer']['phone']['phone_number']['national_number'] = preg_replace('/[^0-9]/', '', $billing_phone);
+                    $billing_phone = preg_replace('/[^0-9]/', '', $billing_phone);
+                    if (strlen($billing_phone) > 15) {
+                        $billing_phone = preg_replace('/^0+/', '', $billing_phone);
+                    } elseif (strlen($billing_phone) > 14) {
+                        $billing_phone = preg_replace('/^0/', '', $billing_phone);
+                    }
+                    $billing_phone = substr($billing_phone, 0, 14);
+                    if (!empty($billing_phone)) {
+                        $body_request['payer']['phone']['phone_type'] = 'HOME';
+                        $body_request['payer']['phone']['phone_number']['national_number'] = $billing_phone;
+                    }
                 }
                 if (!empty($address_1) && !empty($city) && !empty($state) && !empty($postcode) && !empty($country)) {
                     $body_request['payer']['address'] = array(
