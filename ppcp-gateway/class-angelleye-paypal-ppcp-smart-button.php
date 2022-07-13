@@ -839,7 +839,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_short_gateway($methods) {
         $new_method = array();
         $angelleye_ppcp_cc = array();
-        if( $this->enable_paypal_checkout_page === false &&  $this->enable_separate_payment_method === true ) {
+        if( $this->enable_paypal_checkout_page === false) {
             if (isset($methods['angelleye_ppcp'])) {
                 unset($methods['angelleye_ppcp']);
             }
@@ -847,7 +847,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->enable_separate_payment_method) {
             if (isset($methods['angelleye_ppcp_cc'])) {
                 $angelleye_ppcp_cc = $methods['angelleye_ppcp_cc'];
-                unset($methods['angelleye_ppcp_cc']);
+                if(count($methods) > 1) { 
+                    unset($methods['angelleye_ppcp_cc']);
+                }
             }
             foreach ($methods as $key => $method) {
                 if ($key === 'angelleye_ppcp') {
