@@ -163,6 +163,15 @@
   max-height: 25px;
   display: inline-block;
 }
+.angelleye_ppcp_checkout_message_guide {
+  max-width: 100%;
+  font-size: initial;
+  font-weight: normal;
+  display: block;
+  text-align: left;
+  width: auto;
+  margin-bottom: 20px;
+}
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large{
         width: 100%;

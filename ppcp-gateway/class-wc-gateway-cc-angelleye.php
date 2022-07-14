@@ -19,11 +19,21 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             );
             $this->angelleye_ppcp_load_class();
             $this->title = $this->settings->get('advanced_card_payments_title', 'Credit card');
+            $this->enable_paypal_checkout_page = 'yes' === $this->settings->get('enable_paypal_checkout_page', 'yes');
             $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
+            $this->checkout_page_display_option = $this->settings->get('checkout_page_display_option', 'regular');
+            $this->enable_separate_payment_method = 'yes' === $this->settings->get('enable_separate_payment_method', 'no');
             if ($this->advanced_card_payments) {
                 $this->enable_separate_payment_method = 'yes' === $this->settings->get('enable_separate_payment_method', 'no');
+                if ($this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
+                    $this->enable_separate_payment_method = true;
+                }
             } else {
-                $this->enable_separate_payment_method = false;
+                if ($this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
+                    $this->enable_separate_payment_method = true;
+                } else {
+                    $this->enable_separate_payment_method = false;
+                }
             }
         } catch (Exception $ex) {
             
