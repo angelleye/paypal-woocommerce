@@ -68,7 +68,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->enabled = 'yes' === $this->settings->get('enabled', 'no');
         $this->enable_paypal_checkout_page = 'yes' === $this->settings->get('enable_paypal_checkout_page', 'yes');
         $this->checkout_page_display_option = $this->settings->get('checkout_page_display_option', 'regular');
-
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         $this->order_review_page_enable_coupons = 'yes' === $this->settings->get('order_review_page_enable_coupons', 'yes');
         $this->order_review_page_title = apply_filters('angelleye_ppcp_order_review_page_title', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
@@ -76,6 +75,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
         $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
         $this->enable_separate_payment_method = 'yes' === $this->settings->get('enable_separate_payment_method', 'no');
+        $this->cart_button_position = $this->settings->get('cart_button_position', 'bottom');
         if ($this->advanced_card_payments) {
             $this->advanced_card_payments_display_position = $this->settings->get('advanced_card_payments_display_position', 'after');
             if ($this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
@@ -214,7 +214,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             add_action('woocommerce_after_add_to_cart_form', array($this, 'display_paypal_button_product_page'), 10);
         }
         if ($this->enable_cart_button) {
-            add_action('woocommerce_proceed_to_checkout', array($this, 'display_paypal_button_cart_page'), 11);
+            if ($this->cart_button_position === 'both') {
+                add_action('woocommerce_before_cart_table', array($this, 'display_paypal_button_cart_page_top'));
+                add_action('woocommerce_proceed_to_checkout', array($this, 'display_paypal_button_cart_page'), 11);
+            } elseif ($this->cart_button_position === 'top') {
+                add_action('woocommerce_before_cart_table', array($this, 'display_paypal_button_cart_page_top'));
+            } else {
+                add_action('woocommerce_proceed_to_checkout', array($this, 'display_paypal_button_cart_page'), 11);
+            }
         }
         if ($this->checkout_disable_smart_button === false) {
             add_action('angelleye_ppcp_display_paypal_button_checkout_page', array($this, 'display_paypal_button_checkout_page'));
@@ -316,7 +323,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $button_selector['angelleye_ppcp_product'] = '#angelleye_ppcp_product';
         } elseif (is_cart() && !WC()->cart->is_empty()) {
             $page = 'cart';
-            $button_selector['angelleye_ppcp_cart'] = '#angelleye_ppcp_cart';
+            if ($this->cart_button_position === 'both') {
+                $button_selector['angelleye_ppcp_cart'] = '#angelleye_ppcp_cart';
+                $button_selector['angelleye_ppcp_cart_top'] = '#angelleye_ppcp_cart_top';
+            } elseif ($this->cart_button_position === 'top') {
+                $button_selector['angelleye_ppcp_cart_top'] = '#angelleye_ppcp_cart_top';
+            } else {
+                $button_selector['angelleye_ppcp_cart'] = '#angelleye_ppcp_cart';
+            }
         } elseif (is_checkout_pay_page()) {
             $page = 'checkout';
             if ($this->checkout_page_display_option === 'top') {
@@ -437,6 +451,18 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart"></div><div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</div></div>';
         }
     }
+    
+    public function display_paypal_button_cart_page_top() {
+        if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
+            return false;
+        }
+        $this->angelleye_ppcp_smart_button_style_properties();
+        wp_enqueue_script($this->angelleye_ppcp_plugin_name);
+        if (WC()->cart->needs_payment()) {
+            wp_enqueue_script('angelleye-paypal-checkout-sdk');
+            echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart_top"></div></div>';
+        }
+    }
 
     public function display_paypal_button_top_checkout_page() {
         if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
@@ -505,45 +531,45 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $billing_edit_link = "&nbsp;&nbsp;&nbsp;<a class='angelleye_ppcp_edit_billing_address'>" . __('Edit', 'paypal-for-woocommerce') . "</a>";
         ?>
         <div class="angelleye_ppcp_billing_details">
-            <?php if (wc_ship_to_billing_address_only() && WC()->cart->needs_shipping()) { ?>
+        <?php if (wc_ship_to_billing_address_only() && WC()->cart->needs_shipping()) { ?>
                 <h3><?php esc_html_e('Billing &amp; Shipping', 'paypal-for-woocommerce'); ?> <?php echo $billing_edit_link; ?></h3>
             <?php } else { ?>
                 <h3>
-                    <?php
-                    esc_html_e('Billing details', 'paypal-for-woocommerce');
-                    if ($this->set_billing_address) {
-                        echo $billing_edit_link;
-                    }
-                    ?>
-                </h3>
                 <?php
-            }
-            $checkout_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
-            echo WC()->countries->get_formatted_address($checkout_details);
-            echo!empty($checkout_details['email']) ? '<p class="angelleye-woocommerce-customer-details-email">' . $checkout_details['email'] . '</p>' : '';
-            echo!empty($checkout_details['phone']) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $checkout_details['phone'] . '</p>' : '';
-            ?>
+                esc_html_e('Billing details', 'paypal-for-woocommerce');
+                if ($this->set_billing_address) {
+                    echo $billing_edit_link;
+                }
+                ?>
+                </h3>
+                    <?php
+                }
+                $checkout_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+                echo WC()->countries->get_formatted_address($checkout_details);
+                echo!empty($checkout_details['email']) ? '<p class="angelleye-woocommerce-customer-details-email">' . $checkout_details['email'] . '</p>' : '';
+                echo!empty($checkout_details['phone']) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $checkout_details['phone'] . '</p>' : '';
+                ?>
         </div>
-        <?php
-    }
-
-    public function paypal_shipping_details() {
-        if (empty($this->checkout_details)) {
-            return false;
+            <?php
         }
-        ?>
+
+        public function paypal_shipping_details() {
+            if (empty($this->checkout_details)) {
+                return false;
+            }
+            ?>
         <div class="angelleye_ppcp_shipping_details">
             <h3><?php _e('Shipping details', 'paypal-for-woocommerce'); ?>&nbsp;&nbsp;&nbsp;<a class="angelleye_ppcp_edit_shipping_address"><?php _e('Edit', 'paypal-for-woocommerce'); ?></a></h3>
-            <?php echo WC()->countries->get_formatted_address(angelleye_ppcp_get_mapped_shipping_address($this->checkout_details)); ?>
+        <?php echo WC()->countries->get_formatted_address(angelleye_ppcp_get_mapped_shipping_address($this->checkout_details)); ?>
         </div>
-        <?php
-    }
+            <?php
+        }
 
-    public function account_registration() {
-        $checkout = WC()->checkout();
-        if (!is_user_logged_in() && $checkout->enable_signup) {
-            if ($checkout->enable_guest_checkout) {
-                ?>
+        public function account_registration() {
+            $checkout = WC()->checkout();
+            if (!is_user_logged_in() && $checkout->enable_signup) {
+                if ($checkout->enable_guest_checkout) {
+                    ?>
                 <p class="form-row form-row-wide create-account">
                     <input class="input-checkbox" id="createaccount" <?php checked(( true === $checkout->get_value('createaccount') || ( true === apply_filters('woocommerce_create_account_default_checked', false) )), true) ?> type="checkbox" name="createaccount" value="1" /> <label for="createaccount" class="checkbox"><?php _e('Create an account?', 'paypal-for-woocommerce'); ?></label>
                 </p>
@@ -553,7 +579,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 ?>
                 <div class="create-account">
                     <p><?php _e('Create an account by entering the information below. If you are a returning customer please login at the top of the page.', 'paypal-for-woocommerce'); ?></p>
-                    <?php foreach ($checkout->checkout_fields['account'] as $key => $field) : ?>
+                <?php foreach ($checkout->checkout_fields['account'] as $key => $field) : ?>
                         <?php woocommerce_form_field($key, $field, $checkout->get_value($key)); ?>
                     <?php endforeach; ?>
                     <div class="clear"></div>
@@ -736,9 +762,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             ?>
             <div class="order_review_page_description">
                 <p>
-                    <?php
-                    echo wp_kses_post($this->order_review_page_description);
-                    ?>
+            <?php
+            echo wp_kses_post($this->order_review_page_description);
+            ?>
                 </p>
             </div>
             <?php
