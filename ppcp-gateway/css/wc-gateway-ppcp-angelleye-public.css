@@ -181,6 +181,7 @@
 }
 .angelleye_ppcp-button-container #angelleye_ppcp_cart_top {
     text-align: left;
+    margin-bottom: 20px;
 }
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large{
