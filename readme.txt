@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 6.0
-Stable tag: 3.0.29
+Stable tag: 3.0.30
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.30 - 07.11.2022 =
+* Feature - Adds new filter. ([PFW-1026](https://github.com/angelleye/paypal-woocommerce/pull/1704))
+* Feature - PPCP Advanced Credit Cards for Germany. ([PFW-1042](https://github.com/angelleye/paypal-woocommerce/pull/1706))
+* Fix - PPCP - Checkout Page - Translation Conflict. ([PFW-1069](https://github.com/angelleye/paypal-woocommerce/pull/1705))
+* Fix - PPCP - Pay Later Messaging - Banner is floating on top of other page elements. ([PFW-1065](https://github.com/angelleye/paypal-woocommerce/pull/1703))
+* Fix - PPCP - Final Review Page - Phone Number Handling. ([PFW-1068](https://github.com/angelleye/paypal-woocommerce/pull/1707))
 
 = 3.0.29 - 06.29.2022 =
 * Tweak - WooCommerce compatibility 6.6.0. ([PFW-1053](https://github.com/angelleye/paypal-woocommerce/pull/1700))
