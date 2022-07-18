@@ -751,8 +751,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'blocking' => true,
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
             );
-
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/capture', $args, 'capture_order');
+            $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+            if (!empty($angelleye_ppcp_payment_method_title)) {
+                update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
+            }
             if (isset($this->api_response['id']) && !empty($this->api_response['id'])) {
                 $return_response['paypal_order_id'] = $this->api_response['id'];
                 angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
@@ -1131,6 +1135,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/authorize', $args, 'authorize_order');
+            $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+            if (!empty($angelleye_ppcp_payment_method_title)) {
+                update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
+            }
             if (!empty($this->api_response['id'])) {
                 if (isset($woo_order_id) && !empty($woo_order_id)) {
                     angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
@@ -1240,6 +1249,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'cookies' => array()
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
+            $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+            if (!empty($angelleye_ppcp_payment_method_title)) {
+                update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
+            }
             if (!empty($this->api_response['id'])) {
                 angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
                 $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
@@ -1336,6 +1350,11 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
         $order = wc_get_order($order_id);
         $this->checkout_details = $this->checkout_details;
+        $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+        if (!empty($angelleye_ppcp_payment_method_title)) {
+            update_post_meta($order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+            update_post_meta($order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
+        }
         if ($this->paymentaction === 'capture' && !empty($this->checkout_details->status) && $this->checkout_details->status == 'COMPLETED' && $order !== false) {
             $transaction_id = isset($this->checkout_details->purchase_units[0]->payments->captures[0]->id) ? $this->checkout_details->purchase_units['0']->payments->captures[0]->id : '';
             $seller_protection = isset($this->checkout_details->purchase_units[0]->payments->captures[0]->seller_protection->status) ? $this->checkout_details->purchase_units[0]->payments->captures[0]->seller_protection->status : '';
