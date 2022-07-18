@@ -272,7 +272,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
                     'full_name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
                 ),
             ),
-            'custom_id' => $invoice_id,
+            'custom_id' => apply_filters('angelleye_ppcp_custom_id', $invoice_id),
             'invoice_id' => $invoice_id,
             'soft_descriptor' => $this->soft_descriptor
         );
