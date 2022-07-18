@@ -122,12 +122,12 @@
                         if (typeof data.success !== 'undefined') {
                             var messages = data.data.messages ? data.data.messages : data.data;
                             if ('string' === typeof messages) {
-                                showError('<ul class="woocommerce-error" role="alert">' + messages + '</ul>', $('form'));
+                                showError('<ul class="woocommerce-error" role="alert">' + messages + '</ul>', $('form#checkout'));
                             } else {
                                 var messageItems = messages.map(function (message) {
                                     return '<li>' + message + '</li>';
                                 }).join('');
-                                showError('<ul class="woocommerce-error" role="alert">' + messageItems + '</ul>', $('form'));
+                                showError('<ul class="woocommerce-error" role="alert">' + messageItems + '</ul>', $('form#checkout'));
                             }
                             return null;
                         } else {
@@ -241,12 +241,12 @@
                             if (typeof data.success !== 'undefined') {
                                 var messages = data.data.messages ? data.data.messages : data.data;
                                 if ('string' === typeof messages) {
-                                    showError('<ul class="woocommerce-error" role="alert">' + messages + '</ul>', $('form'));
+                                    showError('<ul class="woocommerce-error" role="alert">' + messages + '</ul>', $('form#checkout'));
                                 } else {
                                     var messageItems = messages.map(function (message) {
                                         return '<li>' + message + '</li>';
                                     }).join('');
-                                    showError('<ul class="woocommerce-error" role="alert">' + messageItems + '</ul>', $('form'));
+                                    showError('<ul class="woocommerce-error" role="alert">' + messageItems + '</ul>', $('form#checkout'));
                                 }
                                 return null;
                             } else {
@@ -287,7 +287,7 @@
                         var cardname = event.cards[0].type.replace("master-card", "mastercard").replace("american-express", "amex").replace("diners-club", "dinersclub").replace("-", "");
                         if (jQuery.inArray(cardname, angelleye_ppcp_manager.disable_cards) !== -1) {
                             $('#angelleye_ppcp-card-number').addClass('ppcp-invalid-cart');
-                            showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.card_not_supported + '</ul>', $('form'));
+                            showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.card_not_supported + '</ul>', $('form#checkout'));
                         } else {
                             $('#angelleye_ppcp-card-number').removeClass().addClass(cardname);
                             $('#angelleye_ppcp-card-number').addClass("input-text wc-credit-card-form-card-number hosted-field-braintree braintree-hosted-fields-valid");
@@ -326,14 +326,14 @@
                                 if (jQuery.inArray(cardname, angelleye_ppcp_manager.disable_cards) !== -1) {
                                     $(checkout_selector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
                                     $('#angelleye_ppcp-card-number').addClass('ppcp-invalid-cart');
-                                    showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.card_not_supported + '</ul>', $('form'));
+                                    showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.card_not_supported + '</ul>', $('form#checkout'));
                                     return;
                                 }
                             }
                         }
                     } else {
                         $(checkout_selector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
-                        showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.fields_not_valid + '</ul>', $('form'));
+                        showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.fields_not_valid + '</ul>', $('form#checkout'));
                         return;
                     }
                     var formValid = Object.keys(state.fields).every(function (key) {
@@ -341,7 +341,7 @@
                     });
                     if (formValid === false) {
                         $(checkout_selector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
-                        showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.fields_not_valid + '</ul>', $('form'));
+                        showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.fields_not_valid + '</ul>', $('form#checkout'));
                         return;
                     }
                     var contingencies = [];
@@ -364,7 +364,7 @@
                         lastName = document.getElementById('billing_last_name') ? document.getElementById('billing_last_name').value : '';
                     }
                     if (!firstName || !lastName) {
-                        showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.cardholder_name_required + '</ul>', $('form'));
+                        showError('<ul class="woocommerce-error" role="alert">' + angelleye_ppcp_manager.cardholder_name_required + '</ul>', $('form#checkout'));
                         $(checkout_selector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
                         return;
                     }
@@ -392,7 +392,7 @@
                         }
 
                         if (error_message !== '') {
-                            showError('<ul class="woocommerce-error" role="alert">' + error_message + '</ul>', $('form'));
+                            showError('<ul class="woocommerce-error" role="alert">' + error_message + '</ul>', $('form#checkout'));
                         }
                     }
                     );
