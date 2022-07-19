@@ -136,10 +136,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($woo_order_id != null) {
                 $order = wc_get_order($woo_order_id);
                 $body_request['purchase_units'][0]['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
-                $body_request['purchase_units'][0]['custom_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
+                $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
             } else {
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
-                $body_request['purchase_units'][0]['custom_id'] = $reference_id;
+                $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
             }
             $body_request['purchase_units'][0]['soft_descriptor'] = $this->soft_descriptor;
             if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
@@ -876,7 +876,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 )
             );
             $purchase_units['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
-            $purchase_units['custom_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
+            $purchase_units['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
             if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                 $purchase_units['amount']['breakdown']['item_total'] = array(
                     'currency_code' => angelleye_ppcp_get_currency($order_id),
@@ -1517,10 +1517,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($woo_order_id != null) {
                 $order = wc_get_order($woo_order_id);
                 $body_request['purchase_units'][0]['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
-                $body_request['purchase_units'][0]['custom_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
+                $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
             } else {
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
-                $body_request['purchase_units'][0]['custom_id'] = $reference_id;
+                $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
             }
             if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                 $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
