@@ -395,6 +395,20 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'description' => __('', 'paypal-for-woocommerce'),
                 ),
+                'cart_button_position' => array(
+                    'title' => __('Cart Button Position', 'paypal-for-woocommerce'),
+                    'label' => __('Where to display PayPal Smart button(s).', 'paypal-for-woocommerce'),
+                    'description' => __('Set where to display the PayPal Smart button(s).'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_cart_button_settings',
+                    'options' => array(
+                        'top' => 'At the top, above the shopping cart details.',
+                        'bottom' => 'At the bottom, below the shopping cart details.',
+                        'both' => 'Both at the top and bottom, above and below the shopping cart details.'
+                    ),
+                    'default' => 'bottom',
+                    'desc_tip' => true,
+                ),
                 'cart_disallowed_funding_methods' => array(
                     'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                     'type' => 'multiselect',
