@@ -442,7 +442,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             if(!empty($payment_method_title)) {
                 return $payment_method_title;
             } else {
-                parent::get_title();
+                return parent::get_title();
             }
         } catch (Exception $ex) {
             
