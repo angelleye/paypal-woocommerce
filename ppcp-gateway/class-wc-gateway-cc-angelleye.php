@@ -264,5 +264,24 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             
         }
     }
+    
+    public function get_title() {
+        try {
+            $payment_method_title = '';
+            if (isset($_GET['post'])) {
+                $theorder = wc_get_order( $_GET['post'] );
+                if($theorder) {
+                    $payment_method_title = get_post_meta($_GET['post'], '_payment_method_title', true);
+                }
+            }
+            if(!empty($payment_method_title)) {
+                return $payment_method_title;
+            } else {
+                parent::get_title();
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
 
 }
