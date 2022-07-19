@@ -48,7 +48,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->invoice_prefix = $this->settings->get('invoice_prefix', 'WC-PPCP');
         $this->soft_descriptor = $this->settings->get('soft_descriptor', '');
         $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
-        $this->enable_checkout_button = 'yes' === $this->settings->get('enable_checkout_button', 'yes');
+        $this->checkout_disable_smart_button = 'yes' === $this->settings->get('checkout_disable_smart_button', 'no');
         $this->error_email_notification = 'yes' === $this->settings->get('error_email_notification', 'yes');
         $this->AVSCodes = array("A" => "Address Matches Only (No ZIP)",
             "B" => "Address Matches Only (No ZIP)",

@@ -10,7 +10,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     public $seller_onboarding;
     public $payment_request;
     public $advanced_card_payments;
-    public $enable_checkout_button;
+    public $checkout_disable_smart_button;
 
     public function __construct() {
         try {
@@ -78,7 +78,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $this->sandbox = 'yes' === $this->get_option('testmode', 'no');
         $this->sandbox_merchant_id = $this->get_option('sandbox_merchant_id', '');
         $this->live_merchant_id = $this->get_option('live_merchant_id', '');
-        $this->enable_checkout_button = 'yes' === $this->get_option('enable_checkout_button', 'yes');
+        $this->checkout_disable_smart_button = 'yes' === $this->get_option('checkout_disable_smart_button', 'no');
         $this->sandbox_client_id = $this->get_option('sandbox_client_id', '');
         $this->sandbox_secret_id = $this->get_option('sandbox_api_secret', '');
         $this->live_client_id = $this->get_option('api_client_id', '');
@@ -170,7 +170,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         if ($description) {
             echo wpautop(wp_kses_post($description));
         }
-        if ($this->enable_checkout_button) {
+        if ($this->checkout_disable_smart_button === false) {
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
         } else {
             if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false && angelleye_ppcp_has_active_session() === false) {
@@ -417,7 +417,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                     'redirect' => wc_get_cart_url()
                 );
             }
-        } elseif ($this->enable_checkout_button === false && $this->advanced_card_payments === false) {
+        } elseif ($this->checkout_disable_smart_button === true && $this->advanced_card_payments === false) {
             angelleye_ppcp_set_session('angelleye_ppcp_woo_order_id', $woo_order_id);
             $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
             return $result;
