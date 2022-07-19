@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
-Tested up to: 6.0
-Stable tag: 3.0.30
+Tested up to: 6.0.1
+Stable tag: 3.0.31
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,15 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.31 - 07.11.2022 =
+* Fix - Resolves PPCP - Phone Number Format. ([PFW-1081](https://github.com/angelleye/paypal-woocommerce/pull/1708))
+* Fix - Resolves Conflict with WooCommerce Address Book. ([PFW-1079](https://github.com/angelleye/paypal-woocommerce/pull/1713))
+* Fix - Resolves Conflict with Checkout WC. ([PFW-1113](https://github.com/angelleye/paypal-woocommerce/pull/1714))
+* Feature - Adds PPCP - Checkout Page Options Enhancement. ([PFW-1072](https://github.com/angelleye/paypal-woocommerce/pull/1709))
+* Feature - PPCP - Proper display of payment gateway in order details. ([PFW-1083](https://github.com/angelleye/paypal-woocommerce/pull/1710))
+* Feature - Adds hook for CUSTOM parameter. ([PFW-1080](https://github.com/angelleye/paypal-woocommerce/pull/1711))
+* Feature - Adds PPCP - PayPal button placement options for Cart and Checkout. ([PFW-1055](https://github.com/angelleye/paypal-woocommerce/pull/1715))
 
 = 3.0.30 - 07.11.2022 =
 * Feature - Adds new filter. ([PFW-1026](https://github.com/angelleye/paypal-woocommerce/pull/1704))
