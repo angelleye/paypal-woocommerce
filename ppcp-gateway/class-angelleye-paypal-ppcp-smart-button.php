@@ -720,9 +720,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function maybe_clear_session_data() {
         try {
-            if (angelleye_ppcp_has_active_session()) {
-                unset(WC()->session->angelleye_ppcp_session);
-            }
+            unset(WC()->session->angelleye_ppcp_session);
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');

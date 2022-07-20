@@ -134,9 +134,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             wp_redirect(wc_get_checkout_url());
             exit();
         }
-        $order_id = absint(angelleye_ppcp_get_session('order_awaiting_payment'));
+        $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
         if (empty($order_id)) {
-            $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
+            $order_id = absint(WC()->session->get('order_awaiting_payment'));
         }
         if (angelleye_ppcp_is_valid_order($order_id) === false || empty($order_id)) {
             wp_redirect(wc_get_checkout_url());
@@ -175,9 +175,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         try {
             $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
             if (!empty($angelleye_ppcp_paypal_order_id)) {
-                $order_id = absint(WC()->session->get('order_awaiting_payment'));
+                $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
                 if (empty($order_id)) {
-                    $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
+                    $order_id = absint(WC()->session->get('order_awaiting_payment'));
                 }
                 $order = wc_get_order($order_id);
                 if ($order === false) {
@@ -235,9 +235,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     public function angelleye_ppcp_display_order_page() {
         try {
-            $order_id = absint(angelleye_ppcp_get_session('order_awaiting_payment'));
+            $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
             if (empty($order_id)) {
-                $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
+                $order_id = absint(WC()->session->get('order_awaiting_payment'));
             }
             if (angelleye_ppcp_is_valid_order($order_id) === false || empty($order_id)) {
                 wp_redirect(wc_get_cart_url());
