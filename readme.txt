@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 6.0.1
-Stable tag: 3.0.31
+Stable tag: 3.0.32
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.32 - 07.20.2022 =
+* Fix - Resolves PPCP - Payment Method Title Disappeared from Front End Checkout. ([PFW-1117](https://github.com/angelleye/paypal-woocommerce/pull/1716))
+* Fix - Resolves Conflict with Checkout WC. ([PFW-1118](https://github.com/angelleye/paypal-woocommerce/pull/1718))
+* Fix - Resolves WC order issue. ([PFW-1116](https://github.com/angelleye/paypal-woocommerce/pull/1719))
 
 = 3.0.31 - 07.11.2022 =
 * Fix - Resolves PPCP - Phone Number Format. ([PFW-1081](https://github.com/angelleye/paypal-woocommerce/pull/1708))
