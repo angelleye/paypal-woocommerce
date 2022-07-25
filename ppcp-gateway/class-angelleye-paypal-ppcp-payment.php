@@ -51,6 +51,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->checkout_disable_smart_button = 'yes' === $this->settings->get('checkout_disable_smart_button', 'no');
         $this->error_email_notification = 'yes' === $this->settings->get('error_email_notification', 'yes');
         $this->enable_paypal_checkout_page = 'yes' === $this->settings->get('enable_paypal_checkout_page', 'yes');
+        $this->send_items = 'yes' === $this->settings->get('send_items', 'yes');
         $this->AVSCodes = array("A" => "Address Matches Only (No ZIP)",
             "B" => "Address Matches Only (No ZIP)",
             "C" => "This tranaction was declined.",
@@ -143,53 +144,56 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
             }
             $body_request['purchase_units'][0]['soft_descriptor'] = $this->soft_descriptor;
-            if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
-                $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => $cart['total_item_amount'],
-                );
-            }
-            if (isset($cart['shipping']) && $cart['shipping'] > 0) {
-                $body_request['purchase_units'][0]['amount']['breakdown']['shipping'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => $cart['shipping'],
-                );
-            }
-            if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
-                $body_request['purchase_units'][0]['amount']['breakdown']['shipping_discount'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
-                );
-            }
-            if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
-                $body_request['purchase_units'][0]['amount']['breakdown']['tax_total'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => $cart['order_tax'],
-                );
-            }
-            if (isset($cart['discount']) && $cart['discount'] > 0) {
-                $body_request['purchase_units'][0]['amount']['breakdown']['discount'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => $cart['discount'],
-                );
-            }
             $body_request['purchase_units'][0]['payee']['merchant_id'] = $this->merchant_id;
-            if (isset($cart['items']) && !empty($cart['items'])) {
-                foreach ($cart['items'] as $key => $order_items) {
-                    $description = !empty($order_items['description']) ? $order_items['description'] : '';
-                    $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
-                    $body_request['purchase_units'][0]['items'][$key] = array(
-                        'name' => $product_name,
-                        'description' => html_entity_decode($description, ENT_NOQUOTES, 'UTF-8'),
-                        'sku' => $order_items['sku'],
-                        'category' => $order_items['category'],
-                        'quantity' => $order_items['quantity'],
-                        'unit_amount' =>
-                        array(
-                            'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                            'value' => $order_items['amount'],
-                        ),
+            if ($this->send_items === true) {
+                if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
+                    $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => $cart['total_item_amount'],
                     );
+                }
+                if (isset($cart['shipping']) && $cart['shipping'] > 0) {
+                    $body_request['purchase_units'][0]['amount']['breakdown']['shipping'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => $cart['shipping'],
+                    );
+                }
+                if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
+                    $body_request['purchase_units'][0]['amount']['breakdown']['shipping_discount'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
+                    );
+                }
+                if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
+                    $body_request['purchase_units'][0]['amount']['breakdown']['tax_total'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => $cart['order_tax'],
+                    );
+                }
+                if (isset($cart['discount']) && $cart['discount'] > 0) {
+                    $body_request['purchase_units'][0]['amount']['breakdown']['discount'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => $cart['discount'],
+                    );
+                }
+
+                if (isset($cart['items']) && !empty($cart['items'])) {
+                    foreach ($cart['items'] as $key => $order_items) {
+                        $description = !empty($order_items['description']) ? $order_items['description'] : '';
+                        $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
+                        $body_request['purchase_units'][0]['items'][$key] = array(
+                            'name' => $product_name,
+                            'description' => html_entity_decode($description, ENT_NOQUOTES, 'UTF-8'),
+                            'sku' => $order_items['sku'],
+                            'category' => $order_items['category'],
+                            'quantity' => $order_items['quantity'],
+                            'unit_amount' =>
+                            array(
+                                'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                                'value' => $order_items['amount'],
+                            ),
+                        );
+                    }
                 }
             }
             if ($woo_order_id != null) {
@@ -878,53 +882,56 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $purchase_units['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
             $purchase_units['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
-            if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
-                $purchase_units['amount']['breakdown']['item_total'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($order_id),
-                    'value' => $cart['total_item_amount'],
-                );
-            }
-            if (isset($cart['shipping']) && $cart['shipping'] > 0) {
-                $purchase_units['amount']['breakdown']['shipping'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($order_id),
-                    'value' => $cart['shipping'],
-                );
-            }
-            if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
-                $purchase_units['amount']['breakdown']['shipping_discount'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($order_id),
-                    'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
-                );
-            }
-            if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
-                $purchase_units['amount']['breakdown']['tax_total'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($order_id),
-                    'value' => $cart['order_tax'],
-                );
-            }
-            if (isset($cart['discount']) && $cart['discount'] > 0) {
-                $purchase_units['amount']['breakdown']['discount'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => $cart['discount'],
-                );
-            }
             $purchase_units['payee']['merchant_id'] = $this->merchant_id;
-            if (isset($cart['items']) && !empty($cart['items'])) {
-                foreach ($cart['items'] as $key => $order_items) {
-                    $description = !empty($order_items['description']) ? $order_items['description'] : '';
-                    $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
-                    $purchase_units['items'][$key] = array(
-                        'name' => $product_name,
-                        'description' => html_entity_decode($description, ENT_NOQUOTES, 'UTF-8'),
-                        'sku' => $order_items['sku'],
-                        'category' => $order_items['category'],
-                        'quantity' => $order_items['quantity'],
-                        'unit_amount' =>
-                        array(
-                            'currency_code' => angelleye_ppcp_get_currency($order_id),
-                            'value' => $order_items['amount'],
-                        ),
+            if ($this->send_items === true) {
+                if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
+                    $purchase_units['amount']['breakdown']['item_total'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($order_id),
+                        'value' => $cart['total_item_amount'],
                     );
+                }
+                if (isset($cart['shipping']) && $cart['shipping'] > 0) {
+                    $purchase_units['amount']['breakdown']['shipping'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($order_id),
+                        'value' => $cart['shipping'],
+                    );
+                }
+                if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
+                    $purchase_units['amount']['breakdown']['shipping_discount'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($order_id),
+                        'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
+                    );
+                }
+                if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
+                    $purchase_units['amount']['breakdown']['tax_total'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($order_id),
+                        'value' => $cart['order_tax'],
+                    );
+                }
+                if (isset($cart['discount']) && $cart['discount'] > 0) {
+                    $purchase_units['amount']['breakdown']['discount'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => $cart['discount'],
+                    );
+                }
+
+                if (isset($cart['items']) && !empty($cart['items'])) {
+                    foreach ($cart['items'] as $key => $order_items) {
+                        $description = !empty($order_items['description']) ? $order_items['description'] : '';
+                        $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
+                        $purchase_units['items'][$key] = array(
+                            'name' => $product_name,
+                            'description' => html_entity_decode($description, ENT_NOQUOTES, 'UTF-8'),
+                            'sku' => $order_items['sku'],
+                            'category' => $order_items['category'],
+                            'quantity' => $order_items['quantity'],
+                            'unit_amount' =>
+                            array(
+                                'currency_code' => angelleye_ppcp_get_currency($order_id),
+                                'value' => $order_items['amount'],
+                            ),
+                        );
+                    }
                 }
             }
             if (( $old_wc && ( $order->shipping_address_1 || $order->shipping_address_2 ) ) || (!$old_wc && $order->has_shipping_address() )) {
@@ -1523,53 +1530,56 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
             }
-            if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
-                $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => $cart['total_item_amount'],
-                );
-            }
-            if (isset($cart['shipping']) && $cart['shipping'] > 0) {
-                $body_request['purchase_units'][0]['amount']['breakdown']['shipping'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => $cart['shipping'],
-                );
-            }
-            if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
-                $body_request['purchase_units'][0]['amount']['breakdown']['shipping_discount'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
-                );
-            }
-            if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
-                $body_request['purchase_units'][0]['amount']['breakdown']['tax_total'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => $cart['order_tax'],
-                );
-            }
-            if (isset($cart['discount']) && $cart['discount'] > 0) {
-                $body_request['purchase_units'][0]['amount']['breakdown']['discount'] = array(
-                    'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                    'value' => $cart['discount'],
-                );
-            }
             $body_request['purchase_units'][0]['payee']['merchant_id'] = $this->merchant_id;
-            if (isset($cart['items']) && !empty($cart['items'])) {
-                foreach ($cart['items'] as $key => $order_items) {
-                    $description = !empty($order_items['description']) ? $order_items['description'] : '';
-                    $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
-                    $body_request['purchase_units'][0]['items'][$key] = array(
-                        'name' => $product_name,
-                        'description' => html_entity_decode($description, ENT_NOQUOTES, 'UTF-8'),
-                        'sku' => $order_items['sku'],
-                        'category' => $order_items['category'],
-                        'quantity' => $order_items['quantity'],
-                        'unit_amount' =>
-                        array(
-                            'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
-                            'value' => $order_items['amount'],
-                        ),
+            if ($this->send_items === true) {
+                if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
+                    $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => $cart['total_item_amount'],
                     );
+                }
+                if (isset($cart['shipping']) && $cart['shipping'] > 0) {
+                    $body_request['purchase_units'][0]['amount']['breakdown']['shipping'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => $cart['shipping'],
+                    );
+                }
+                if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
+                    $body_request['purchase_units'][0]['amount']['breakdown']['shipping_discount'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
+                    );
+                }
+                if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
+                    $body_request['purchase_units'][0]['amount']['breakdown']['tax_total'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => $cart['order_tax'],
+                    );
+                }
+                if (isset($cart['discount']) && $cart['discount'] > 0) {
+                    $body_request['purchase_units'][0]['amount']['breakdown']['discount'] = array(
+                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'value' => $cart['discount'],
+                    );
+                }
+
+                if (isset($cart['items']) && !empty($cart['items'])) {
+                    foreach ($cart['items'] as $key => $order_items) {
+                        $description = !empty($order_items['description']) ? $order_items['description'] : '';
+                        $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
+                        $body_request['purchase_units'][0]['items'][$key] = array(
+                            'name' => $product_name,
+                            'description' => html_entity_decode($description, ENT_NOQUOTES, 'UTF-8'),
+                            'sku' => $order_items['sku'],
+                            'category' => $order_items['category'],
+                            'quantity' => $order_items['quantity'],
+                            'unit_amount' =>
+                            array(
+                                'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                                'value' => $order_items['amount'],
+                            ),
+                        );
+                    }
                 }
             }
             if ($woo_order_id != null) {

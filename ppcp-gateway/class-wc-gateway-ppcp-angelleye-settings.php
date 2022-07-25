@@ -1332,6 +1332,13 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'no',
                     'desc_tip' => false,
                 ),
+                'send_items' => array(
+                    'title' => __('Send Item Details', 'paypal-for-woocommerce'),
+                    'label' => __('Send line item details to PayPal', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
+                    'default' => 'yes'
+                ),
                 'enable_advanced_card_payments' => array(
                     'title' => __('Advanced Credit Cards', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
