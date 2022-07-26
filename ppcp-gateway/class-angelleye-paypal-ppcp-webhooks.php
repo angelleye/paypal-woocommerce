@@ -6,23 +6,64 @@ if (!defined('ABSPATH')) {
 
 class AngellEYE_PayPal_PPCP_Webhooks {
 
+    protected static $_instance = null;
+
+    public static function instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+
     public function __construct() {
         try {
-
             $this->angelleye_ppcp_load_class();
             $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+            $this->enabled = 'yes' === $this->settings->get('enabled', 'no');
+            $this->error_email_notification = 'yes' === $this->settings->get('error_email_notification', 'yes');
             if ($this->is_sandbox) {
+                $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
+                $this->client_id = $this->settings->get('sandbox_client_id', '');
+                $this->secret_id = $this->settings->get('sandbox_api_secret', '');
                 $this->webhook = 'https://api.sandbox.paypal.com/v1/notifications/webhooks';
                 $this->webhook_id = 'angelleye_ppcp_sandbox_webhook_id';
                 $this->webhook_verify_url = 'https://api.sandbox.paypal.com/v1/notifications/verify-webhook-signature';
+                $this->partner_client_id = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
             } else {
                 $this->webhook = 'https://api.paypal.com/v1/notifications/webhooks';
                 $this->webhook_id = 'angelleye_ppcp_live_webhook_id';
                 $this->webhook_verify_url = 'https://api.paypal.com/v1/notifications/verify-webhook-signature';
+                $this->merchant_id = $this->settings->get('live_merchant_id', '');
+                $this->client_id = $this->settings->get('api_client_id', '');
+                $this->secret_id = $this->settings->get('api_secret', '');
+                $this->partner_client_id = PAYPAL_PPCP_PARTNER_CLIENT_ID;
             }
         } catch (Exception $ex) {
             
         }
+    }
+
+    public function is_valid_for_use() {
+        if ($this->enabled === false) {
+            return false;
+        }
+        if (!empty($this->merchant_id) || (!empty($this->client_id) && !empty($this->secret_id))) {
+            return true;
+        }
+        return false;
+    }
+
+    public function angelleye_ppcp_paypalauthassertion() {
+        $temp = array(
+            "alg" => "none"
+        );
+        $returnData = base64_encode(json_encode($temp)) . '.';
+        $temp = array(
+            "iss" => $this->partner_client_id,
+            "payer_id" => $this->merchant_id
+        );
+        $returnData .= base64_encode(json_encode($temp)) . '.';
+        return $returnData;
     }
 
     public function angelleye_ppcp_create_webhook() {
@@ -38,18 +79,13 @@ class AngellEYE_PayPal_PPCP_Webhooks {
             $webhook_request['event_types'][] = array('name' => 'PAYMENT.CAPTURE.PENDING');
             $webhook_request['event_types'][] = array('name' => 'PAYMENT.CAPTURE.REFUNDED');
             $webhook_request = angelleye_ppcp_remove_empty_key($webhook_request);
-            $webhook_request = json_encode($webhook_request);
-            $response = wp_remote_post($this->webhook, array(
+            $args = array(
                 'method' => 'POST',
-                'timeout' => 60,
-                'redirection' => 5,
-                'httpversion' => '1.1',
-                'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Basic " . $this->basicAuth, "prefer" => "return=representation", 'PayPal-Partner-Attribution-Id' => 'MBJTechnolabs_SI_SPB', 'PayPal-Request-Id' => $this->generate_request_id()),
-                'body' => $webhook_request,
-                'cookies' => array()
-                    )
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                'body' => $webhook_request
             );
+
+            $response = $this->api_request->request($this->webhook, $args, 'create_webhook');
             if (is_wp_error($response)) {
                 delete_transient('angelleye_ppcp_is_webhook_process_started');
                 $error_message = $response->get_error_message();
@@ -110,8 +146,7 @@ class AngellEYE_PayPal_PPCP_Webhooks {
             
         }
     }
-    
-    
+
     public function angelleye_ppcp_delete_exiting_webhook() {
         try {
             $response = wp_remote_get($this->webhook, array('headers' => array('Content-Type' => 'application/json', 'Authorization' => "Basic " . $this->basicAuth, "prefer" => "return=representation", 'PayPal-Partner-Attribution-Id' => 'MBJTechnolabs_SI_SPB')));
@@ -136,7 +171,7 @@ class AngellEYE_PayPal_PPCP_Webhooks {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -175,7 +210,7 @@ class AngellEYE_PayPal_PPCP_Webhooks {
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
-    
+
     public function angelleye_ppcp_handle_webhook_request_handler() {
         try {
             $bool = false;
@@ -541,5 +576,78 @@ class AngellEYE_PayPal_PPCP_Webhooks {
         }
     }
 
+    public function angelleye_ppcp_get_readable_message($error, $error_email_notification_param = array()) {
+        $message = '';
+        if (isset($error['name'])) {
+            switch ($error['name']) {
+                case 'VALIDATION_ERROR':
+                    foreach ($error['details'] as $e) {
+                        $message .= "\t" . $e['field'] . "\n\t" . $e['issue'] . "\n\n";
+                    }
+                    break;
+                case 'INVALID_REQUEST':
+                    foreach ($error['details'] as $e) {
+                        if (isset($e['field']) && isset($e['description'])) {
+                            $message .= "\t" . $e['field'] . "\n\t" . $e['description'] . "\n\n";
+                        } elseif (isset($e['issue'])) {
+                            $message .= "\t" . $e['issue'] . "n\n";
+                        }
+                    }
+                    break;
+                case 'BUSINESS_ERROR':
+                    $message .= $error['message'];
+                    break;
+                case 'UNPROCESSABLE_ENTITY' :
+                    foreach ($error['details'] as $e) {
+                        $message .= "\t" . $e['issue'] . ": " . $e['description'] . "\n\n";
+                    }
+                    break;
+            }
+        }
+        if (!empty($message)) {
+            
+        } else if (!empty($error['message'])) {
+            $message = $error['message'];
+        } else if (!empty($error['error_description'])) {
+            $message = $error['error_description'];
+        } else {
+            $message = $error;
+        }
+        if ($this->error_email_notification) {
+            $this->angelleye_ppcp_error_email_notification($error_email_notification_param, $message);
+        }
+        return $message;
+    }
+
+    public function angelleye_ppcp_error_email_notification($error_email_notification_param, $error_message) {
+        if (function_exists('WC')) {
+            try {
+                $mailer = WC()->mailer();
+                $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'PayPal Complete Payments Error Notification');
+                $message = '';
+                if (!empty($error_email_notification_param['request'])) {
+                    $message .= sprintf("<strong>" . __('Action: ', 'paypal-for-woocommerce') . "</strong>" . ucwords(str_replace('_', ' ', $error_email_notification_param['request'])) . PHP_EOL);
+                }
+                if (!empty($error_message)) {
+                    $message .= sprintf("<strong>" . __('Error: ', 'paypal-for-woocommerce') . "</strong>" . $error_message . PHP_EOL);
+                }
+                if (!empty($error_email_notification_param['order_id'])) {
+                    $message .= sprintf("<strong>" . __('Order ID: ', 'paypal-for-woocommerce') . "</strong>" . $error_email_notification_param['order_id'] . PHP_EOL);
+                }
+                if (is_user_logged_in()) {
+                    $userLogined = wp_get_current_user();
+                    $message .= sprintf("<strong>" . __('User ID: ', 'paypal-for-woocommerce') . "</strong>" . $userLogined->ID . PHP_EOL);
+                    $message .= sprintf("<strong>" . __('User Email: ', 'paypal-for-woocommerce') . "</strong>" . $userLogined->user_email . PHP_EOL);
+                }
+                $message .= sprintf("<strong>" . __('User IP: ', 'paypal-for-woocommerce') . "</strong>" . WC_Geolocation::get_ip_address() . PHP_EOL);
+                $message = apply_filters('ae_ppec_error_email_message', $message);
+                $message = $mailer->wrap_message($error_email_notify_subject, $message);
+                $mailer->send(get_option('admin_email'), strip_tags($error_email_notify_subject), $message);
+            } catch (Exception $ex) {
+                $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+                $this->api_log->log($ex->getMessage(), 'error');
+            }
+        }
+    }
 
 }

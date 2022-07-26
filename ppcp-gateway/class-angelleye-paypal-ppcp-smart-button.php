@@ -52,11 +52,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Webhooks')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-webhooks.php');
+            }
             $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
+            $this->webhook_request = AngellEYE_PayPal_PPCP_Webhooks::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -697,6 +701,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_session_manager() {
         try {
+            $this->webhook_request->angelleye_ppcp_create_webhook();
             if (!empty($_GET['paypal_order_id']) && !empty($_GET['paypal_payer_id'])) {
                 if (isset($_GET['from']) && 'product' === $_GET['from']) {
                     if (function_exists('wc_clear_notices')) {
