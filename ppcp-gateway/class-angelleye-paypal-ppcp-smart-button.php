@@ -126,6 +126,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
             $this->client_id = $this->sandbox_client_id;
             $this->secret_id = $this->sandbox_secret_id;
+            $this->webhook_id = 'angelleye_ppcp_sandbox_webhook_id';
             if ($this->is_sandbox_first_party_used === 'yes') {
                 $this->is_first_party_used = 'yes';
             } else {
@@ -135,6 +136,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->merchant_id = $this->settings->get('live_merchant_id', '');
             $this->client_id = $this->live_client_id;
             $this->secret_id = $this->live_secret_id;
+            $this->webhook_id = 'angelleye_ppcp_live_webhook_id';
             if ($this->is_live_first_party_used === 'yes') {
                 $this->is_first_party_used = 'yes';
             } else {
@@ -701,7 +703,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_session_manager() {
         try {
-            $this->webhook_request->angelleye_ppcp_create_webhook();
+            if (false === get_transient('angelleye_ppcp_is_webhook_process_started')) {
+                $webhook_id = get_option($this->webhook_id, '');
+                if (empty($webhook_id)) {
+                    $this->webhook_request->angelleye_ppcp_create_webhook();
+                }
+            }
+            
             if (!empty($_GET['paypal_order_id']) && !empty($_GET['paypal_payer_id'])) {
                 if (isset($_GET['from']) && 'product' === $_GET['from']) {
                     if (function_exists('wc_clear_notices')) {

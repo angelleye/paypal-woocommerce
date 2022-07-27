@@ -85,25 +85,17 @@ class AngellEYE_PayPal_PPCP_Webhooks {
                 'body' => $webhook_request
             );
 
-            $response = $this->api_request->request($this->webhook, $args, 'create_webhook');
-            if (is_wp_error($response)) {
+            $api_response = $this->api_request->request($this->webhook, $args, 'create_webhook');
+            if (is_wp_error($api_response)) {
                 delete_transient('angelleye_ppcp_is_webhook_process_started');
                 $error_message = $response->get_error_message();
                 $this->api_log->log('Error Message : ' . wc_print_r($error_message, true));
             } else {
                 ob_start();
                 $return_response = array();
-                $api_response = json_decode(wp_remote_retrieve_body($response), true);
-                $this->api_log->log('function called: angelleye_ppcp_create_webhooks_request');
                 if (!empty($api_response['id'])) {
-                    $this->api_log->log('Response Code: ' . wp_remote_retrieve_response_code($response));
-                    $this->api_log->log('Response Message: ' . wp_remote_retrieve_response_message($response));
-                    $this->api_log->log('Response Body: ' . wc_print_r($api_response, true));
                     update_option($this->webhook_id, $api_response['id']);
                 } else {
-                    $this->api_log->log('Response Body: ' . wc_print_r($api_response, true));
-                    $error = $this->angelleye_ppcp_get_readable_message($api_response);
-                    $this->api_log->log('Response Message: ' . wc_print_r($error, true));
                     if (isset($api_response['name']) && strpos($api_response['name'], 'WEBHOOK_NUMBER_LIMIT_EXCEEDED') !== false) {
                         $this->angelleye_ppcp_delete_first_webhook();
                         delete_transient('angelleye_ppcp_is_webhook_process_started');
@@ -122,7 +114,9 @@ class AngellEYE_PayPal_PPCP_Webhooks {
 
     public function angelleye_ppcp_delete_first_webhook() {
         try {
-            $response = wp_remote_get($this->webhook, array('headers' => array('Content-Type' => 'application/json', 'Authorization' => "Basic " . $this->basicAuth, "prefer" => "return=representation", 'PayPal-Partner-Attribution-Id' => 'MBJTechnolabs_SI_SPB')));
+            $response = wp_remote_get($this->webhook,
+                    array('headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()))
+            );
             $api_response = json_decode(wp_remote_retrieve_body($response), true);
             if (!empty($api_response['webhooks'])) {
                 foreach ($api_response['webhooks'] as $key => $webhooks) {
@@ -132,7 +126,7 @@ class AngellEYE_PayPal_PPCP_Webhooks {
                         'redirection' => 5,
                         'httpversion' => '1.1',
                         'blocking' => true,
-                        'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Basic " . $this->basicAuth, "prefer" => "return=representation", 'PayPal-Partner-Attribution-Id' => 'MBJTechnolabs_SI_SPB', 'PayPal-Request-Id' => $this->generate_request_id()),
+                        'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                         'cookies' => array()
                             )
                     );
@@ -149,7 +143,7 @@ class AngellEYE_PayPal_PPCP_Webhooks {
 
     public function angelleye_ppcp_delete_exiting_webhook() {
         try {
-            $response = wp_remote_get($this->webhook, array('headers' => array('Content-Type' => 'application/json', 'Authorization' => "Basic " . $this->basicAuth, "prefer" => "return=representation", 'PayPal-Partner-Attribution-Id' => 'MBJTechnolabs_SI_SPB')));
+            $response = wp_remote_get($this->webhook, array('headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion())));
             $api_response = json_decode(wp_remote_retrieve_body($response), true);
             if (!empty($api_response['webhooks'])) {
                 foreach ($api_response['webhooks'] as $key => $webhooks) {
@@ -160,7 +154,7 @@ class AngellEYE_PayPal_PPCP_Webhooks {
                             'redirection' => 5,
                             'httpversion' => '1.1',
                             'blocking' => true,
-                            'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Basic " . $this->basicAuth, "prefer" => "return=representation", 'PayPal-Partner-Attribution-Id' => 'MBJTechnolabs_SI_SPB', 'PayPal-Request-Id' => $this->generate_request_id()),
+                            'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                             'cookies' => array()
                                 )
                         );
@@ -270,7 +264,7 @@ class AngellEYE_PayPal_PPCP_Webhooks {
                     'redirection' => 5,
                     'httpversion' => '1.1',
                     'blocking' => true,
-                    'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Basic " . $this->basicAuth, "prefer" => "return=representation", 'PayPal-Partner-Attribution-Id' => 'MBJTechnolabs_SI_SPB', 'PayPal-Request-Id' => $this->generate_request_id()),
+                    'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                     'body' => json_encode($this->request),
                     'cookies' => array()
                         )
