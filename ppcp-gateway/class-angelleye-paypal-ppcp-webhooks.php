@@ -89,20 +89,20 @@ class AngellEYE_PayPal_PPCP_Webhooks {
             if (is_wp_error($api_response)) {
                 delete_transient('angelleye_ppcp_is_webhook_process_started');
                 $error_message = $response->get_error_message();
-                $this->api_log->log('Error Message : ' . wc_print_r($error_message, true));
+                $this->api_log->webhook_log('Error Message : ' . wc_print_r($error_message, true));
             } else {
                 ob_start();
                 $return_response = array();
                 if (!empty($api_response['id'])) {
                     update_option($this->webhook_id, $api_response['id']);
                 } else {
-                    if (isset($api_response['name']) && strpos($api_response['name'], 'WEBHOOK_NUMBER_LIMIT_EXCEEDED') !== false) {
+                    if (!empty($api_response['name']) && isset($api_response['name']) && strpos($api_response['name'], 'WEBHOOK_NUMBER_LIMIT_EXCEEDED') !== false) {
                         $this->angelleye_ppcp_delete_first_webhook();
                         delete_transient('angelleye_ppcp_is_webhook_process_started');
-                    } elseif ($api_response['name'] && strpos($api_response['name'], 'WEBHOOK_URL_ALREADY_EXISTS') !== false) {
+                    } elseif (!empty($api_response['name']) && $api_response['name'] && strpos($api_response['name'], 'WEBHOOK_URL_ALREADY_EXISTS') !== false) {
                         $this->angelleye_ppcp_delete_exiting_webhook();
                         delete_transient('angelleye_ppcp_is_webhook_process_started');
-                    } elseif ($api_response['details']['0']['field'] !== 'url') {
+                    } elseif (!empty($api_response['details']['0']['field']) && $api_response['details']['0']['field'] !== 'url') {
                         delete_transient('angelleye_ppcp_is_webhook_process_started');
                     }
                 }
@@ -114,25 +114,19 @@ class AngellEYE_PayPal_PPCP_Webhooks {
 
     public function angelleye_ppcp_delete_first_webhook() {
         try {
-            $response = wp_remote_get($this->webhook,
-                    array('headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()))
+
+            $args = array(
+                'method' => 'DELETE',
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
             );
-            $api_response = json_decode(wp_remote_retrieve_body($response), true);
+            $api_response = $this->api_request->request($this->webhook, $args, 'delete_webhook');
             if (!empty($api_response['webhooks'])) {
                 foreach ($api_response['webhooks'] as $key => $webhooks) {
-                    $response = wp_remote_request($this->webhook . $webhooks['id'], array(
-                        'timeout' => 60,
+                    $args = array(
                         'method' => 'DELETE',
-                        'redirection' => 5,
-                        'httpversion' => '1.1',
-                        'blocking' => true,
                         'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                        'cookies' => array()
-                            )
                     );
-                    $this->angelleye_ppcp_log('Response Code: ' . wp_remote_retrieve_response_code($response));
-                    $this->angelleye_ppcp_log('Response Message: ' . wp_remote_retrieve_response_message($response));
-                    $this->angelleye_ppcp_log('Response Body: ' . wc_print_r($api_response, true));
+                    $api_response = $this->api_request->request($this->webhook . '/' . $webhooks['id'], $args, 'delete_webhook');
                     return false;
                 }
             }
@@ -143,24 +137,16 @@ class AngellEYE_PayPal_PPCP_Webhooks {
 
     public function angelleye_ppcp_delete_exiting_webhook() {
         try {
-            $response = wp_remote_get($this->webhook, array('headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion())));
-            $api_response = json_decode(wp_remote_retrieve_body($response), true);
+            $args = array('headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()));
+            $api_response = $this->api_request->request($this->webhook, $args, 'get_webhook');
             if (!empty($api_response['webhooks'])) {
                 foreach ($api_response['webhooks'] as $key => $webhooks) {
                     if (isset($webhooks['url']) && strpos($webhooks['url'], site_url()) !== false) {
-                        $response = wp_remote_request($this->webhook . '/' . $webhooks['id'], array(
-                            'timeout' => 60,
+                        $args = array(
                             'method' => 'DELETE',
-                            'redirection' => 5,
-                            'httpversion' => '1.1',
-                            'blocking' => true,
                             'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                            'cookies' => array()
-                                )
                         );
-                        $this->angelleye_ppcp_log('Response Code: ' . wp_remote_retrieve_response_code($response));
-                        $this->angelleye_ppcp_log('Response Message: ' . wp_remote_retrieve_response_message($response));
-                        $this->angelleye_ppcp_log('Response Body: ' . wc_print_r($api_response, true));
+                        $api_response = $this->api_request->request($this->webhook . '/' . $webhooks['id'], $args, 'delete_webhook');
                     }
                 }
             }
@@ -200,8 +186,8 @@ class AngellEYE_PayPal_PPCP_Webhooks {
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
+            $this->api_log->webhook_log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->webhook_log($ex->getMessage(), 'error');
         }
     }
 
@@ -258,7 +244,7 @@ class AngellEYE_PayPal_PPCP_Webhooks {
         try {
             $this->angelleye_ppcp_prepare_webhook_validate_request($headers, $body);
             if (!empty($this->request)) {
-                $response = wp_remote_post($this->webhook_url, array(
+                $args = array(
                     'method' => 'POST',
                     'timeout' => 60,
                     'redirection' => 5,
@@ -267,8 +253,8 @@ class AngellEYE_PayPal_PPCP_Webhooks {
                     'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                     'body' => json_encode($this->request),
                     'cookies' => array()
-                        )
                 );
+                $api_response = $this->api_request->request($this->webhook, $args, 'validate_webhook');
             } else {
                 return false;
             }
@@ -277,12 +263,7 @@ class AngellEYE_PayPal_PPCP_Webhooks {
                 $this->angelleye_ppcp_log('Webhook Error Message : ' . wc_print_r($error_message, true));
                 return false;
             } else {
-                $return_response = array();
-                $api_response = json_decode(wp_remote_retrieve_body($response), true);
-                $this->angelleye_ppcp_log('Response Body: ' . wc_print_r($api_response, true));
                 if (!empty($api_response['verification_status']) && 'SUCCESS' === $api_response['verification_status']) {
-                    $this->angelleye_ppcp_log('Response Code: ' . wp_remote_retrieve_response_code($response));
-                    $this->angelleye_ppcp_log('Response Message: ' . wp_remote_retrieve_response_message($response));
                     return true;
                 } else {
                     return false;
@@ -546,30 +527,6 @@ class AngellEYE_PayPal_PPCP_Webhooks {
         return $body_request;
     }
 
-    public function angelleye_ppcp_get_generate_token() {
-        try {
-            $args = array(
-                'method' => 'POST',
-                'timeout' => 60,
-                'redirection' => 5,
-                'httpversion' => '1.1',
-                'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => "Basic " . $this->basicAuth, 'Accept-Language' => 'en_US'),
-                'cookies' => array(),
-                'body' => array(),
-            );
-            $paypal_api_response = wp_remote_get($this->generate_token_url, $args);
-            $body = wp_remote_retrieve_body($paypal_api_response);
-            $api_response = !empty($body) ? json_decode($body, true) : '';
-            if (!empty($api_response['client_token'])) {
-                return $api_response['client_token'];
-            }
-        } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
-        }
-    }
-
     public function angelleye_ppcp_get_readable_message($error, $error_email_notification_param = array()) {
         $message = '';
         if (isset($error['name'])) {
@@ -638,8 +595,8 @@ class AngellEYE_PayPal_PPCP_Webhooks {
                 $message = $mailer->wrap_message($error_email_notify_subject, $message);
                 $mailer->send(get_option('admin_email'), strip_tags($error_email_notify_subject), $message);
             } catch (Exception $ex) {
-                $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
-                $this->api_log->log($ex->getMessage(), 'error');
+                $this->api_log->webhook_log("The exception was created on line: " . $ex->getLine(), 'error');
+                $this->api_log->webhook_log($ex->getMessage(), 'error');
             }
         }
     }

@@ -90,30 +90,58 @@ class AngellEYE_PayPal_PPCP_Response {
 
     public function angelleye_ppcp_write_log($url, $request, $response, $action_name = 'Exception') {
         global $wp_version;
-        $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
-        $this->api_log->log('PayPal Environment: ' . $environment);
-        $this->api_log->log('WordPress Version: ' . $wp_version);
-        $this->api_log->log('WooCommerce Version: ' . WC()->version);
-        $this->api_log->log('PFW Version: ' . VERSION_PFW);
-        $this->api_log->log('Action: ' . ucwords(str_replace('_', ' ', $action_name)));
-        $this->api_log->log('Request URL: ' . $url);
-        $response_body = isset($response['body']) ? json_decode($response['body'], true) : $response;
-        if ($action_name === 'generate_signup_link') {
-            //$this->angelleye_ppcp_signup_link_write_log($request);
-        } elseif (!empty($request['body']) && is_array($request['body'])) {
-            $this->api_log->log('Request Body: ' . wc_print_r($request['body'], true));
-        } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
-            $this->api_log->log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
-        }
-        if (!empty($response_body['headers'])) {
-            $this->api_log->log('Response Headers: ' . wc_print_r($response_body['headers'], true));
-        }
-        if (!empty($response_body['body']) && is_array($response_body['body'])) {
-            $this->api_log->log('Response Body: ' . wc_print_r($response_body['body'], true));
-        } elseif (is_array($response_body)) {
-            $this->api_log->log('Response Body: ' . wc_print_r($response_body, true));
+        if (strpos($action_name, 'webhook') !== false) {
+            $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
+            $this->api_log->webhook_log('PayPal Environment: ' . $environment);
+            $this->api_log->webhook_log('WordPress Version: ' . $wp_version);
+            $this->api_log->webhook_log('WooCommerce Version: ' . WC()->version);
+            $this->api_log->webhook_log('PFW Version: ' . VERSION_PFW);
+            $this->api_log->webhook_log('Action: ' . ucwords(str_replace('_', ' ', $action_name)));
+            $this->api_log->webhook_log('Request URL: ' . $url);
+            $response_body = isset($response['body']) ? json_decode($response['body'], true) : $response;
+            if ($action_name === 'generate_signup_link') {
+                //$this->angelleye_ppcp_signup_link_write_log($request);
+            } elseif (!empty($request['body']) && is_array($request['body'])) {
+                $this->api_log->webhook_log('Request Body: ' . wc_print_r($request['body'], true));
+            } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
+                $this->api_log->webhook_log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
+            }
+            if (!empty($response_body['headers'])) {
+                $this->api_log->webhook_log('Response Headers: ' . wc_print_r($response_body['headers'], true));
+            }
+            if (!empty($response_body['body']) && is_array($response_body['body'])) {
+                $this->api_log->webhook_log('Response Body: ' . wc_print_r($response_body['body'], true));
+            } elseif (is_array($response_body)) {
+                $this->api_log->webhook_log('Response Body: ' . wc_print_r($response_body, true));
+            } else {
+                $this->api_log->webhook_log('Response Body: ' . wc_print_r(json_decode(wp_remote_retrieve_body($response_body), true), true));
+            }
         } else {
-            $this->api_log->log('Response Body: ' . wc_print_r(json_decode(wp_remote_retrieve_body($response_body), true), true));
+            $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
+            $this->api_log->log('PayPal Environment: ' . $environment);
+            $this->api_log->log('WordPress Version: ' . $wp_version);
+            $this->api_log->log('WooCommerce Version: ' . WC()->version);
+            $this->api_log->log('PFW Version: ' . VERSION_PFW);
+            $this->api_log->log('Action: ' . ucwords(str_replace('_', ' ', $action_name)));
+            $this->api_log->log('Request URL: ' . $url);
+            $response_body = isset($response['body']) ? json_decode($response['body'], true) : $response;
+            if ($action_name === 'generate_signup_link') {
+                //$this->angelleye_ppcp_signup_link_write_log($request);
+            } elseif (!empty($request['body']) && is_array($request['body'])) {
+                $this->api_log->log('Request Body: ' . wc_print_r($request['body'], true));
+            } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
+                $this->api_log->log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
+            }
+            if (!empty($response_body['headers'])) {
+                $this->api_log->log('Response Headers: ' . wc_print_r($response_body['headers'], true));
+            }
+            if (!empty($response_body['body']) && is_array($response_body['body'])) {
+                $this->api_log->log('Response Body: ' . wc_print_r($response_body['body'], true));
+            } elseif (is_array($response_body)) {
+                $this->api_log->log('Response Body: ' . wc_print_r($response_body, true));
+            } else {
+                $this->api_log->log('Response Body: ' . wc_print_r(json_decode(wp_remote_retrieve_body($response_body), true), true));
+            }
         }
     }
 

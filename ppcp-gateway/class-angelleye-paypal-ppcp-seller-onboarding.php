@@ -175,11 +175,15 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $merchant_email = '';
             }
             if ($this->is_sandbox) {
+                delete_option('angelleye_ppcp_sandbox_webhook_id');
+                delete_transient('angelleye_ppcp_is_webhook_process_started');
                 $this->settings->set('sandbox_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
                 $this->api_log->log("sandbox_merchant_id: " . $merchant_id, 'error');
                 $this->settings->set('enabled', 'yes');
             } else {
+                delete_option('angelleye_ppcp_live_webhook_id');
+                delete_transient('angelleye_ppcp_is_webhook_process_started');
                 $this->settings->set('live_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
                 $this->settings->set('enabled', 'yes');

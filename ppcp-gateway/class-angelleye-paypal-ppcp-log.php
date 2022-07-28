@@ -29,6 +29,13 @@ class AngellEYE_PayPal_PPCP_Log {
         }
     }
 
+    public function webhook_log($message, $level = 'info') {
+        if (empty($this->logger)) {
+            $this->logger = wc_get_logger();
+        }
+        $this->logger->log($level, $message, array('source' => 'angelleye_ppcp_webhook'));
+    }
+
     public function temp_log($message, $level = 'info') {
         if (empty($this->logger)) {
             $this->logger = wc_get_logger();
