@@ -775,28 +775,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         return $tag;
     }
 
-    public function validate_checkout($country, $state, $sec) {
-        $state_value = '';
-        $valid_states = WC()->countries->get_states(isset($country) ? $country : ( 'billing' === $sec ? WC()->customer->get_country() : WC()->customer->get_shipping_country() ));
-        if (!empty($valid_states) && is_array($valid_states)) {
-            $valid_state_values = array_flip(array_map('strtolower', $valid_states));
-            if (isset($valid_state_values[strtolower($state)])) {
-                $state_value = $valid_state_values[strtolower($state)];
-                return $state_value;
-            }
-        } else {
-            return $state;
-        }
-        if (!empty($valid_states) && is_array($valid_states) && sizeof($valid_states) > 0) {
-            if (!in_array($state, array_keys($valid_states))) {
-                return false;
-            } else {
-                return $state;
-            }
-        }
-        return $state_value;
-    }
-
     public function angelleye_ppcp_update_checkout_field_details() {
         if (empty($this->checkout_details)) {
             $this->checkout_details = angelleye_ppcp_get_session('angelleye_ppcp_paypal_transaction_details', false);
@@ -817,8 +795,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 foreach ($shipping_address as $field => $value) {
                     if (!empty($value)) {
                         if ('state' == $field) {
-                            if ($this->validate_checkout($shipping_address['country'], $value, 'shipping')) {
-                                $_POST['shipping_' . $field] = $this->validate_checkout($shipping_address['country'], $value, 'shipping');
+                            if (angelleye_ppcp_validate_checkout ($shipping_address['country'], $value, 'shipping')) {
+                                $_POST['shipping_' . $field] = angelleye_ppcp_validate_checkout ($shipping_address['country'], $value, 'shipping');
                             } else {
                                 if (isset($shipping_address['country']) && isset($states_list[$shipping_address['country']])) {
                                     $state_key = array_search($value, $states_list[$shipping_address['country']]);
@@ -839,8 +817,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     if (!empty($value)) {
                         if ('state' == $field) {
                             if (!empty($shipping_address['country'])) {
-                                if ($this->validate_checkout($shipping_address['country'], $value, 'shipping')) {
-                                    $_POST['billing_' . $field] = $this->validate_checkout($shipping_address['country'], $value, 'shipping');
+                                if (angelleye_ppcp_validate_checkout ($shipping_address['country'], $value, 'shipping')) {
+                                    $_POST['billing_' . $field] = angelleye_ppcp_validate_checkout ($shipping_address['country'], $value, 'shipping');
                                 } else {
                                     if (isset($shipping_address['country']) && isset($states_list[$shipping_address['country']])) {
                                         $state_key = array_search($value, $states_list[$shipping_address['country']]);
