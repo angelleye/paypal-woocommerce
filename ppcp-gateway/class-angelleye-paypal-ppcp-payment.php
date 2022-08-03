@@ -783,6 +783,11 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (isset($this->api_response['id']) && !empty($this->api_response['id'])) {
                 $return_response['paypal_order_id'] = $this->api_response['id'];
                 angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
+                $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+                if (!empty($angelleye_ppcp_payment_method_title)) {
+                    update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                    update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
+                }
                 if ($this->api_response['status'] == 'COMPLETED') {
                     $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
                     if (!empty($payment_source['card'])) {
@@ -834,6 +839,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if ($payment_status == 'COMPLETED') {
                         $order->payment_complete($transaction_id);
                         $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $this->title, ucfirst(strtolower($payment_status))));
+                    } elseif ($payment_status === 'DECLINED') {
+                        wc_add_notice(__('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.', 'paypal-for-woocommerce'), 'error');
+                        return false;
                     } else {
                         $payment_status_reason = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['status_details']['reason']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['status_details']['reason'] : '';
                         $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
@@ -841,14 +849,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                     angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
                     $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
+                    return true;
+                } else {
+                    return false;
                 }
-                $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
-                if (!empty($angelleye_ppcp_payment_method_title)) {
-                    update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
-                    update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
-                }
-                return true;
-            } else {
+               } else {
                 $error_email_notification_param = array(
                     'request' => 'capture_order',
                     'order_id' => $woo_order_id
@@ -1335,6 +1340,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if ($payment_status === 'COMPLETED') {
                     $order->payment_complete($transaction_id);
                     $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $this->title, ucfirst(strtolower($payment_status))));
+                } elseif ($payment_status === 'DECLINED') {
+                    if (function_exists('wc_add_notice')) {
+                        wc_add_notice(__('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.', 'paypal-for-woocommerce'), 'error');
+                    }
+                    return false;
                 } else {
                     $payment_status_reason = isset($this->api_response['status_details']['reason']) ? $this->api_response['status_details']['reason'] : '';
                     $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
