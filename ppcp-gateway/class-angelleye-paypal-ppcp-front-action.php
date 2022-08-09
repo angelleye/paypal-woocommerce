@@ -218,13 +218,22 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     exit();
                 } else {
                     unset(WC()->session->angelleye_ppcp_session);
-                    if (ob_get_length())
+                    if (ob_get_length()) {
                         ob_end_clean();
-                    wp_send_json_success(array(
-                        'result' => 'failure',
-                        'redirect' => wc_get_checkout_url()
-                    ));
-                    exit();
+                    }
+                    if(isset($_GET['is_pay_page']) && 'yes' === $_GET['is_pay_page'] ) {
+                        wp_send_json_success(array(
+                            'result' => 'failure',
+                            'redirect' => $order->get_checkout_payment_url()
+                        ));
+                        exit();
+                    } else {
+                        wp_send_json_success(array(
+                            'result' => 'failure',
+                            'redirect' => wc_get_checkout_url()
+                        ));
+                        exit();
+                    }
                 }
             }
         } catch (Exception $ex) {
