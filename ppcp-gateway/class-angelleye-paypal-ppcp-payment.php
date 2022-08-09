@@ -840,6 +840,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $order->payment_complete($transaction_id);
                         $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $this->title, ucfirst(strtolower($payment_status))));
                     } elseif ($payment_status === 'DECLINED') {
+                        $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $this->title));
                         wc_add_notice(__('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.', 'paypal-for-woocommerce'), 'error');
                         return false;
                     } else {
@@ -1341,6 +1342,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->payment_complete($transaction_id);
                     $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $this->title, ucfirst(strtolower($payment_status))));
                 } elseif ($payment_status === 'DECLINED') {
+                    $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $this->title));
                     if (function_exists('wc_add_notice')) {
                         wc_add_notice(__('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.', 'paypal-for-woocommerce'), 'error');
                     }
