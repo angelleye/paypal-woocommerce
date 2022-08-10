@@ -54,20 +54,23 @@
             var scrollElement = $('.woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout');
             if (!scrollElement.length) {
                 scrollElement = $('form.checkout');
+            } 
+            if(!scrollElement.length) {
+                scrollElement = $('form#order_review');
             }
-            if (scrollElement.length) {
-                $('html, body').animate({
-                    scrollTop: (scrollElement.offset().top - 100)
-                }, 1000);
-            }
+            if ( scrollElement.length ) {
+			$( 'html, body' ).animate( {
+				scrollTop: ( scrollElement.offset().top - 100 )
+			}, 1000 );
+		}
+            
         };
         var showError = function (error_message) {
             $('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
-            $('form.checkout').prepend('<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' + error_message + '</div>');
-            $('form.checkout').removeClass('processing').unblock();
-            $('form.checkout').find('.input-text, select, input:checkbox').trigger('validate').trigger('blur');
+            $(checkout_selector).prepend('<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' + error_message + '</div>');
+            $(checkout_selector).removeClass('processing').unblock();
+            $(checkout_selector).find('.input-text, select, input:checkbox').trigger('validate').trigger('blur');
             $.angelleye_ppcp_scroll_to_notices();
-            $(document.body).trigger('checkout_error', [error_message]);
         };
         var is_from_checkout = 'checkout' === angelleye_ppcp_manager.page;
         var is_from_product = 'product' === angelleye_ppcp_manager.page;
@@ -375,7 +378,7 @@
                     }).then(
                             function (payload) {
                                 if (payload.orderId) {
-                                    $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
+                                    $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page, function (data) {
                                         window.location.href = data.data.redirect;
                                     });
                                 }
