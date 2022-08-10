@@ -600,7 +600,7 @@ if (!function_exists('angelleye_ppcp_processor_response_code')) {
 
 }
 
-if (!function_exists('angelleye_ppcp_payment_method_title_list')) {
+if (!function_exists('angelleye_ppcp_get_payment_method_title')) {
 
     function angelleye_ppcp_get_payment_method_title($payment_name = '') {
         $final_payment_method_name = '';
@@ -631,18 +631,20 @@ if (!function_exists('angelleye_ppcp_payment_method_title_list')) {
         return apply_filters('angelleye_ppcp_get_payment_method_title', $final_payment_method_name, $payment_name, $list_payment_method);
     }
 
-    if (!function_exists('angelleye_ppcp_is_product_purchasable')) {
-
-        function angelleye_ppcp_is_product_purchasable($product) {
-            if (is_a($product, 'WC_Product') === false) {
-                return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
-            }
-            if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription') || $product->is_purchasable() === false || $product->get_price() == 0) {
-                return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
-            }
-            return apply_filters('angelleye_ppcp_is_product_purchasable', true, $product);
-        }
-
-    }
 }
+
+if (!function_exists('angelleye_ppcp_is_product_purchasable')) {
+
+    function angelleye_ppcp_is_product_purchasable($product) {
+        if (is_a($product, 'WC_Product') === false) {
+            return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
+        }
+        if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription') || ($product->get_price() == '' || $product->get_price() == 0)) {
+            return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
+        }
+        return apply_filters('angelleye_ppcp_is_product_purchasable', true, $product);
+    }
+
+}
+
 
