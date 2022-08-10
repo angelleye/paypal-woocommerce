@@ -600,7 +600,7 @@ if (!function_exists('angelleye_ppcp_processor_response_code')) {
 
 }
 
-if (!function_exists('angelleye_ppcp_payment_method_title_list')) {
+if (!function_exists('angelleye_ppcp_get_payment_method_title')) {
 
     function angelleye_ppcp_get_payment_method_title($payment_name = '') {
         $final_payment_method_name = '';
@@ -631,44 +631,45 @@ if (!function_exists('angelleye_ppcp_payment_method_title_list')) {
         return apply_filters('angelleye_ppcp_get_payment_method_title', $final_payment_method_name, $payment_name, $list_payment_method);
     }
 
-    if (!function_exists('angelleye_ppcp_is_product_purchasable')) {
+}
 
-        function angelleye_ppcp_is_product_purchasable($product) {
-            if (is_a($product, 'WC_Product') === false) {
-                return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
-            }
-            if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription') || $product->is_purchasable() === false || $product->get_price() == 0) {
-                return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
-            }
-            return apply_filters('angelleye_ppcp_is_product_purchasable', true, $product);
+if (!function_exists('angelleye_ppcp_is_product_purchasable')) {
+
+    function angelleye_ppcp_is_product_purchasable($product) {
+        if (is_a($product, 'WC_Product') === false) {
+            return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
         }
-
+        if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription') || ($product->get_price() == '' || $product->get_price() == 0)) {
+            return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
+        }
+        return apply_filters('angelleye_ppcp_is_product_purchasable', true, $product);
     }
 
-    if (!function_exists('angelleye_ppcp_validate_checkout')) {
+}
+if (!function_exists('angelleye_ppcp_validate_checkout')) {
 
-        function angelleye_ppcp_validate_checkout($country, $state, $sec) {
-            $state_value = '';
-            $valid_states = WC()->countries->get_states(isset($country) ? $country : ( 'billing' === $sec ? WC()->customer->get_country() : WC()->customer->get_shipping_country() ));
-            if (!empty($valid_states) && is_array($valid_states)) {
-                $valid_state_values = array_flip(array_map('strtolower', $valid_states));
-                if (isset($valid_state_values[strtolower($state)])) {
-                    $state_value = $valid_state_values[strtolower($state)];
-                    return $state_value;
-                }
+    function angelleye_ppcp_validate_checkout($country, $state, $sec) {
+        $state_value = '';
+        $valid_states = WC()->countries->get_states(isset($country) ? $country : ( 'billing' === $sec ? WC()->customer->get_country() : WC()->customer->get_shipping_country() ));
+        if (!empty($valid_states) && is_array($valid_states)) {
+            $valid_state_values = array_flip(array_map('strtolower', $valid_states));
+            if (isset($valid_state_values[strtolower($state)])) {
+                $state_value = $valid_state_values[strtolower($state)];
+                return $state_value;
+            }
+        } else {
+            return $state;
+        }
+        if (!empty($valid_states) && is_array($valid_states) && sizeof($valid_states) > 0) {
+            if (!in_array($state, array_keys($valid_states))) {
+                return false;
             } else {
                 return $state;
             }
-            if (!empty($valid_states) && is_array($valid_states) && sizeof($valid_states) > 0) {
-                if (!in_array($state, array_keys($valid_states))) {
-                    return false;
-                } else {
-                    return $state;
-                }
-            }
-            return $state_value;
         }
-
+        return $state_value;
     }
+
 }
+
 
