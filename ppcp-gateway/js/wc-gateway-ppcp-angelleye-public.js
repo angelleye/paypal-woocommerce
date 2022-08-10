@@ -14,9 +14,9 @@
         }
         if ($('.variations_form').length) {
             $('.variations_form').on('show_variation', function () {
-                $(angelleye_ppcp_button_selector).show();
+                $('#angelleye_ppcp_product').show();
             }).on('hide_variation', function () {
-                $(angelleye_ppcp_button_selector).hide();
+                $('#angelleye_ppcp_product').hide();
             });
         }
         var hide_show_place_order_button = function () {
