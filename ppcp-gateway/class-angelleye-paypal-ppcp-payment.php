@@ -1833,5 +1833,25 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
+    
+    public function angelleye_ppcp_get_authorized_payment($authorization_id) {
+        try {
+            $args = array(
+                'timeout' => 60,
+                'redirection' => 5,
+                'httpversion' => '1.1',
+                'blocking' => true,
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                //'body' => array(),
+                'cookies' => array()
+            );
+            $this->api_response = $this->api_request->request($this->auth . $authorization_id, $args, 'get_authorized');
+            $this->api_response = json_decode(json_encode($this->api_response), true);
+            return $this->api_response;
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
+        }
+    }
 
 }
