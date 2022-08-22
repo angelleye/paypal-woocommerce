@@ -1368,6 +1368,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (function_exists('wc_add_notice')) {
                     wc_add_notice($error_message, 'error');
                 }
+                if (!empty($error_message)) {
+                    $order->add_order_note('Error Message : ' . $error_message);
+                    throw new Exception($error_message);
+                }
                 return false;
             }
         } catch (Exception $ex) {
@@ -1712,20 +1716,20 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'PayPal Complete Payments Error Notification');
                 $message = '';
                 if (!empty($error_email_notification_param['request'])) {
-                    $message .= sprintf("<strong>" . __('Action: ', 'paypal-for-woocommerce') . "</strong>" . ucwords(str_replace('_', ' ', $error_email_notification_param['request'])) . PHP_EOL);
+                    $message .= "<strong>" . __('Action: ', 'paypal-for-woocommerce') . "</strong>" . ucwords(str_replace('_', ' ', $error_email_notification_param['request'])) . PHP_EOL;
                 }
                 if (!empty($error_message)) {
-                    $message .= sprintf("<strong>" . __('Error: ', 'paypal-for-woocommerce') . "</strong>" . $error_message . PHP_EOL);
+                    $message .= "<strong>" . __('Error: ', 'paypal-for-woocommerce') . "</strong>" . $error_message . PHP_EOL;
                 }
                 if (!empty($error_email_notification_param['order_id'])) {
-                    $message .= sprintf("<strong>" . __('Order ID: ', 'paypal-for-woocommerce') . "</strong>" . $error_email_notification_param['order_id'] . PHP_EOL);
+                    $message .= "<strong>" . __('Order ID: ', 'paypal-for-woocommerce') . "</strong>" . $error_email_notification_param['order_id'] . PHP_EOL;
                 }
                 if (is_user_logged_in()) {
                     $userLogined = wp_get_current_user();
-                    $message .= sprintf("<strong>" . __('User ID: ', 'paypal-for-woocommerce') . "</strong>" . $userLogined->ID . PHP_EOL);
-                    $message .= sprintf("<strong>" . __('User Email: ', 'paypal-for-woocommerce') . "</strong>" . $userLogined->user_email . PHP_EOL);
+                    $message .= "<strong>" . __('User ID: ', 'paypal-for-woocommerce') . "</strong>" . $userLogined->ID . PHP_EOL;
+                    $message .= "<strong>" . __('User Email: ', 'paypal-for-woocommerce') . "</strong>" . $userLogined->user_email . PHP_EOL;
                 }
-                $message .= sprintf("<strong>" . __('User IP: ', 'paypal-for-woocommerce') . "</strong>" . WC_Geolocation::get_ip_address() . PHP_EOL);
+                $message .= "<strong>" . __('User IP: ', 'paypal-for-woocommerce') . "</strong>" . WC_Geolocation::get_ip_address() . PHP_EOL;
                 $message = apply_filters('ae_ppec_error_email_message', $message);
                 $message = $mailer->wrap_message($error_email_notify_subject, $message);
                 $mailer->send(get_option('admin_email'), strip_tags($error_email_notify_subject), $message);

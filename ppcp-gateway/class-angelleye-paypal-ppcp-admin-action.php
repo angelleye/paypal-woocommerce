@@ -45,6 +45,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         add_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
         add_filter('woocommerce_order_actions', array($this, 'angelleye_ppcp_add_capture_charge_order_action'));
         add_action('woocommerce_order_action_angelleye_ppcp_capture_charge', array($this, 'angelleye_ppcp_maybe_capture_charge'));
+        add_action('add_meta_boxes', array($this, 'angelleye_ppcp_order_action_meta_box'), 10, 2);
     }
 
     public function angelleye_ppcp_capture_payment($order_id) {
@@ -57,6 +58,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         $payment_action = angelleye_ppcp_get_post_meta($order, '_payment_action');
         $auth_transaction_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
         if ('angelleye_ppcp' === $payment_method && $payment_action === 'authorize' && !empty($auth_transaction_id)) {
+            $paypal_order_id = angelleye_ppcp_get_post_meta($order, '_paypal_order_id');
+            $this->payment_request->angelleye_ppcp_get_checkout_details($paypal_order_id);
             $trans_details = $this->payment_request->angelleye_ppcp_show_details_authorized_payment($auth_transaction_id);
             if ($this->angelleye_ppcp_is_authorized_only($trans_details)) {
                 $this->payment_request->angelleye_ppcp_capture_authorized_payment($order_id);
@@ -120,11 +123,51 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             if (isset($trans_details->status) && !empty($trans_details->status)) {
                 $payment_status = $trans_details->status;
             }
-            if ('CREATED' === $payment_status) {
+            if ('CREATED' === $payment_status || 'PARTIALLY_CAPTURED' === $payment_status) {
                 return true;
             }
         }
         return false;
+    }
+
+    public function angelleye_ppcp_order_action_meta_box($post_type, $post) {
+        try {
+            if (isset($post->ID) && !empty($post->ID) && $post_type == 'shop_order') {
+                if ($this->angelleye_ppcp_is_display_paypal_transaction_details($post->ID)) {
+                    add_meta_box('angelleye-ppcp-order-action', __('PayPal Transaction History', 'paypal-for-woocommerce'), array($this, 'angelleye_ppcp_order_action_callback'), 'shop_order', 'normal', 'high', null);
+                }
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_is_display_paypal_transaction_details($post_id) {
+        try {
+            $order = wc_get_order($post_id);
+            if (empty($order)) {
+                return false;
+            }
+            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
+            $payment_action = $old_wc ? get_post_meta($order_id, '_payment_action', true) : get_post_meta($order->get_id(), '_payment_action', true);
+            if (isset($payment_method) && !empty($payment_method) && isset($payment_action) && !empty($payment_action)) {
+                if (($payment_method == 'angelleye_ppcp_cc' || $payment_method == 'angelleye_ppcp') && ($payment_method === "authorize" && $order->get_total() > 0)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+    
+    public function angelleye_ppcp_order_action_callback() {
+        
     }
 
 }
