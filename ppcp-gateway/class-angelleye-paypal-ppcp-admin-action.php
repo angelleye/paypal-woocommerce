@@ -265,7 +265,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         ?>
         <div class='wrap'>
             <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
-                <select name="angelleye_payment_action" id="angelleye_payment_action">
+                <select name="angelleye_ppcp_payment_action" id="angelleye_ppcp_payment_action">
                     <?php
                     $i = 0;
                     foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
@@ -281,7 +281,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 </select>
             <?php } ?>
             <?php if (isset($this->angelleye_ppcp_order_status_data['capture'])) { ?>
-                <div class="angelleye_ppcp_capture" style="display: inline">
+                <div class="angelleye_ppcp_capture_box" style="display: none;">
                     <select name="angelleye_ppcp_capture_data" id="angelleye_ppcp_capture_data">
                         <?php
                         $i = 0;
@@ -299,7 +299,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 </div>
             <?php } ?>
             <?php if (isset($this->angelleye_ppcp_order_status_data['refund'])) { ?>
-                <div class="angelleye_ppcp_refund" style="display: inline">
+                <div class="angelleye_ppcp_refund_box" style="display: none;">
                     <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data">
                         <?php
                         $i = 0;
@@ -317,7 +317,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 </div>
             <?php } ?>
             <?php if (isset($this->angelleye_ppcp_order_status_data['void'])) { ?>
-                <div class="angelleye_ppcp_void" style="display: inline">
+                <div class="angelleye_ppcp_void_box" style="display: none;">
                     <select name="angelleye_ppcp_void_data" id="angelleye_ppcp_void_data">
                         <?php
                         $i = 0;
