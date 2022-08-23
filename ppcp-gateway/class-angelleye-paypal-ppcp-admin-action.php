@@ -280,6 +280,60 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     ?>
                 </select>
             <?php } ?>
+            <?php if (isset($this->angelleye_ppcp_order_status_data['capture'])) { ?>
+                <div class="angelleye_ppcp_capture" style="display: inline">
+                    <select name="angelleye_ppcp_capture_data" id="angelleye_ppcp_capture_data">
+                        <?php
+                        $i = 0;
+                        foreach ($this->angelleye_ppcp_order_status_data['capture'] as $k => $v) :
+                            if ($i == 0) {
+                                echo '<option value="" >Select Action</option>';
+                            }
+                            ?>
+                            <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
+                            <?php
+                            $i = $i + 1;
+                        endforeach;
+                        ?>
+                    </select>
+                </div>
+            <?php } ?>
+            <?php if (isset($this->angelleye_ppcp_order_status_data['refund'])) { ?>
+                <div class="angelleye_ppcp_refund" style="display: inline">
+                    <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data">
+                        <?php
+                        $i = 0;
+                        foreach ($this->angelleye_ppcp_order_status_data['refund'] as $k => $v) :
+                            if ($i == 0) {
+                                echo '<option value="" >Select Action</option>';
+                            }
+                            ?>
+                            <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
+                            <?php
+                            $i = $i + 1;
+                        endforeach;
+                        ?>
+                    </select>
+                </div>
+            <?php } ?>
+            <?php if (isset($this->angelleye_ppcp_order_status_data['void'])) { ?>
+                <div class="angelleye_ppcp_void" style="display: inline">
+                    <select name="angelleye_ppcp_void_data" id="angelleye_ppcp_void_data">
+                        <?php
+                        $i = 0;
+                        foreach ($this->angelleye_ppcp_order_status_data['void'] as $k => $v) :
+                            if ($i == 0) {
+                                echo '<option value="" >Select Action</option>';
+                            }
+                            ?>
+                            <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
+                            <?php
+                            $i = $i + 1;
+                        endforeach;
+                        ?>
+                    </select>
+                </div>
+            <?php } ?>
         </div>
         <table class="widefat  angelleye_ppcp_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;border: none;">
             <tbody>
