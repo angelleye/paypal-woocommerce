@@ -364,23 +364,18 @@ jQuery(document).ready(function ($) {
     });
     
     jQuery('#angelleye_ppcp_payment_action').change(function () {
-        console.log('hello');
         if (jQuery(this).val() === 'refund') {
             jQuery('.angelleye_ppcp_refund_box').css('display', 'inline-block');
             jQuery('.angelleye_ppcp_capture_box').css('display', 'none');
-            jQuery('.angelleye_ppcp_void_box').css('display', 'none');
         } else if(jQuery(this).val() === 'capture') {
             jQuery('.angelleye_ppcp_capture_box').css('display', 'inline-block');
             jQuery('.angelleye_ppcp_refund_box').css('display', 'none');
-            jQuery('.angelleye_ppcp_void_box').css('display', 'none');
         } else if(jQuery(this).val() === 'void') {
             jQuery('.angelleye_ppcp_capture_box').css('display', 'none');
             jQuery('.angelleye_ppcp_refund_box').css('display', 'none');
-            jQuery('.angelleye_ppcp_void_box').css('display', 'inline-block');
         } else {
             jQuery('.angelleye_ppcp_capture_box').css('display', 'none');
             jQuery('.angelleye_ppcp_refund_box').css('display', 'none');
-            jQuery('.angelleye_ppcp_void_box').css('display', 'none');
         }
         if (jQuery(this).val().length === 0) {
             jQuery('#angelleye_ppcp_payment_submit_button').hide();

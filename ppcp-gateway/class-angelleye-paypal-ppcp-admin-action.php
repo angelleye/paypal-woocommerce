@@ -282,20 +282,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             <?php } ?>
             <?php if (isset($this->angelleye_ppcp_order_status_data['capture'])) { ?>
                 <div class="angelleye_ppcp_capture_box" style="display: none;">
-                    <select name="angelleye_ppcp_capture_data" id="angelleye_ppcp_capture_data">
-                        <?php
-                        $i = 0;
-                        foreach ($this->angelleye_ppcp_order_status_data['capture'] as $k => $v) :
-                            if ($i == 0) {
-                                echo '<option value="" >Select Action</option>';
-                            }
-                            ?>
-                            <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
-                            <?php
-                            $i = $i + 1;
-                        endforeach;
-                        ?>
-                    </select>
+                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_regular_price" class="short wc_input_price text-box" style="width: 220px">
                 </div>
             <?php } ?>
             <?php if (isset($this->angelleye_ppcp_order_status_data['refund'])) { ?>
@@ -314,26 +301,33 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         endforeach;
                         ?>
                     </select>
+                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_regular_price" class="short wc_input_price text-box" style="width: 220px">
                 </div>
-            <?php } ?>
-            <?php if (isset($this->angelleye_ppcp_order_status_data['void'])) { ?>
-                <div class="angelleye_ppcp_void_box" style="display: none;">
-                    <select name="angelleye_ppcp_void_data" id="angelleye_ppcp_void_data">
-                        <?php
-                        $i = 0;
-                        foreach ($this->angelleye_ppcp_order_status_data['void'] as $k => $v) :
-                            if ($i == 0) {
-                                echo '<option value="" >Select Action</option>';
-                            }
-                            ?>
-                            <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
-                            <?php
-                            $i = $i + 1;
-                        endforeach;
-                        ?>
-                    </select>
-                </div>
-            <?php } ?>
+            <?php } 
+            $_POST['is_submited']
+            ?>
+            <input type="hidden" value="no" name="is_submited" id="is_submited">
+            <input type="submit" id="angelleye_ppcp_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
+            <script>
+                    (function ($) {
+                        "use strict";
+                            $('#angelleye_ppcp_payment_submit_button').on('click', function (event) {
+                                if( $('#is_submited').val() === 'no') {
+                                    $('#is_submited').val('yes');
+                                    var r = confirm(<?php echo __( 'Are you sure?', 'paypal-for-woocommerce' ) ?>);
+                                    if (r == true) {
+                                        jQuery("#angelleye-pw-order-action").block({message:null,overlayCSS:{background:"#fff",opacity:.6}});
+                                        return r;
+                                    } else {
+                                        $('#is_submited').val('no');
+                                        jQuery("#angelleye-pw-order-action").unblock();
+                                        event.preventDefault();
+                                        return r;
+                                    }
+                                }
+                            });
+                    })(jQuery);
+                </script>
         </div>
         <table class="widefat  angelleye_ppcp_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;border: none;">
             <tbody>
