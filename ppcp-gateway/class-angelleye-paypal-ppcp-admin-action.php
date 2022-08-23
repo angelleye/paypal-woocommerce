@@ -12,6 +12,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public $ae_auth_amount = 0;
     public $order;
     public $currency_code;
+    public $ae_void_amount = 0;
+    public $angelleye_ppcp_order_status_data = array();
+    public $angelleye_ppcp_order_actions = array();
     protected static $_instance = null;
 
     public static function instance() {
@@ -185,7 +188,17 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
             if (isset($this->payment_response) && !empty($this->payment_response) && $this->payment_response['intent'] === 'AUTHORIZE') {
                 if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']) && !empty($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {
-                    krsort($this->payment_response['purchase_units']['0']['payments']['captures']);
+                    foreach ($this->payment_response['purchase_units']['0']['payments']['refunds'] as $key => $refunds) {
+                        $this->currency_code = $refunds['amount']['currency_code'];
+                        $line_item = array();
+                        $line_item['transaction_id'] = isset($refunds['id']) ? $refunds['id'] : 'N/A';
+                        $line_item['amount'] = isset($refunds['amount']['value']) ? wc_price($refunds['amount']['value'], array('currency' => $refunds['amount']['currency_code'])) : 'N/A';
+                        $line_item['payment_status'] = isset($refunds['status']) ? ucwords(str_replace('_', ' ', strtolower($refunds['status']))) : 'N/A';
+                        $line_item['expired_date'] = isset($refunds['expiration_time']) ? $refunds['expiration_time'] : 'N/A';
+                        $line_item['payment_action'] = __('Refund', '');
+                        $this->ae_refund_amount = $this->ae_refund_amount + $refunds['amount']['value'];
+                        $html_table_row[] = $line_item;
+                    }
                     foreach ($this->payment_response['purchase_units']['0']['payments']['captures'] as $key => $captures) {
                         $this->currency_code = $captures['amount']['currency_code'];
                         $line_item = array();
@@ -194,11 +207,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         $line_item['payment_status'] = isset($captures['status']) ? ucwords(str_replace('_', ' ', strtolower($captures['status']))) : 'N/A';
                         $line_item['expired_date'] = isset($captures['expiration_time']) ? $captures['expiration_time'] : 'N/A';
                         $line_item['payment_action'] = __('Capture', '');
-                        if (isset($captures['status']) && $captures['status'] === 'COMPLETED') {
-                            $this->ae_capture_amount = $this->ae_capture_amount + $captures['amount']['value'];
-                        } elseif (isset($captures['status']) && $captures['status'] === 'REFUNDED') {
-                            $this->ae_refund_amount = $this->ae_refund_amount + $captures['amount']['value'];
-                        }
+                        $this->angelleye_ppcp_order_status_data['refund'][$line_item['transaction_id']] = $captures['amount']['value'];
+                        $this->ae_capture_amount = $this->ae_capture_amount + $captures['amount']['value'];
                         $html_table_row[] = $line_item;
                     }
                     foreach ($this->payment_response['purchase_units']['0']['payments']['authorizations'] as $key => $authorizations) {
@@ -211,8 +221,17 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         $line_item['payment_action'] = isset($this->payment_response['intent']) ? ucwords(str_replace('_', ' ', strtolower($this->payment_response['intent']))) : 'N/A';
                         $html_table_row[] = $line_item;
                         $this->ae_auth_amount = $this->ae_auth_amount + $authorizations['amount']['value'];
+                        $this->angelleye_ppcp_order_status_data['capture'][$line_item['transaction_id']] = $authorizations['amount']['value'];
+                        $this->angelleye_ppcp_order_status_data['void'][$line_item['transaction_id']] = $authorizations['amount']['value'];
                     }
-                    //if($order->get_total() <= $auth && )
+                    if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'CREATED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
+                        $this->angelleye_ppcp_order_actions['void'] = __('Void', '');
+                        $this->angelleye_ppcp_order_actions['capture'] = __('Capture', '');
+                    }
+                    if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'PARTIALLY_CAPTURED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
+                        $this->angelleye_ppcp_order_actions['refund'] = __('Refund', '');
+                        $this->angelleye_ppcp_order_actions['capture'] = __('Capture', '');
+                    }
                     $this->angelleye_ppcp_display_payment_action();
                     $this->angelleye_ppcp_display_paypal_activity_table($html_table_row);
                 }
@@ -226,11 +245,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 $line_item['payment_status'] = isset($trans_details['status']) ? ucwords(str_replace('_', ' ', strtolower($trans_details['status']))) : 'N/A';
                 $line_item['expired_date'] = isset($trans_details['expiration_time']) ? $trans_details['expiration_time'] : 'N/A';
                 $line_item['payment_action'] = __('Authorize', '');
-                if (isset($trans_details['status']) && $trans_details['status'] === 'COMPLETED') {
-                    $capture = $capture + $trans_details['amount']['value'];
-                } elseif (isset($trans_details['status']) && $trans_details['status'] === 'REFUNDED') {
-                    $refund = $refund + $trans_details['amount']['value'];
-                }
                 $html_table_row[] = $line_item;
                 $this->angelleye_ppcp_display_paypal_activity_table($html_table_row);
             }
@@ -241,18 +255,57 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
 
     public function angelleye_ppcp_display_payment_action() {
         ?>
-        <table class="widefat angelleye_order_action_table" style="width: 190px;float: right;">
+        <div class='wrap'>
+            <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
+                <select name="angelleye_payment_action" id="angelleye_payment_action">
+                    <?php
+                    $i = 0;
+                    foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
+                        if ($i == 0) {
+                            echo '<option value="" >Select Action</option>';
+                        }
+                        ?>
+                        <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($v); ?></option>
+                        <?php
+                        $i = $i + 1;
+                    endforeach;
+                    ?>
+                </select>
+            <?php } ?>
+        </div>
+        <table class="widefat angelleye_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;">
             <tbody>
                 <tr>
                     <td><?php echo __('Order Total:', 'paypal-for-woocommerce'); ?></td>
                     <td><?php echo $this->order->get_formatted_order_total(); ?></td>
                 </tr>
-                <tr>
-                    <td><?php echo __('Total Capture:', 'paypal-for-woocommerce'); ?></td>
-                    <td><?php echo wc_price($this->ae_capture_amount, array('currency' => $this->currency_code)); ?></td>
-                </tr>
+                <?php if (isset($this->ae_auth_amount) && $this->ae_auth_amount > 0) { ?>
+                    <tr>
+                        <td><?php echo __('Total Authorize:', 'paypal-for-woocommerce'); ?></td>
+                        <td><?php echo wc_price($this->ae_auth_amount, array('currency' => $this->currency_code)); ?></td>
+                    </tr>
+                <?php } ?>
+                <?php if (isset($this->ae_capture_amount) && $this->ae_capture_amount > 0) { ?>
+                    <tr>
+                        <td><?php echo __('Total Capture:', 'paypal-for-woocommerce'); ?></td>
+                        <td><?php echo wc_price($this->ae_capture_amount, array('currency' => $this->currency_code)); ?></td>
+                    </tr>
+                <?php } ?>
+                <?php if (isset($this->ae_refund_amount) && $this->ae_refund_amount > 0) { ?>
+                    <tr>
+                        <td><?php echo __('Total Refund:', 'paypal-for-woocommerce'); ?></td>
+                        <td><?php echo wc_price($this->ae_refund_amount, array('currency' => $this->currency_code)); ?></td>
+                    </tr>
+                <?php } ?>
+                <?php if (isset($this->ae_void_amount) && $this->ae_void_amount > 0) { ?>
+                    <tr>
+                        <td><?php echo __('Total Void:', 'paypal-for-woocommerce'); ?></td>
+                        <td><?php echo wc_price($this->ae_void_amount, array('currency' => $this->currency_code)); ?></td>
+                    </tr>
+                <?php } ?>
             </tbody>
         </table>
+        <br/><br/>
         <br/><br/>
         <br/><br/>
         <br/><br/>
