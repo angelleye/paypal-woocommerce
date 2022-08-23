@@ -273,33 +273,27 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 </select>
             <?php } ?>
         </div>
-        <table class="widefat angelleye_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;">
+        <table class="widefat  angelleye_ppcp_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;border: none;">
             <tbody>
                 <tr>
                     <td><?php echo __('Order Total:', 'paypal-for-woocommerce'); ?></td>
                     <td><?php echo $this->order->get_formatted_order_total(); ?></td>
                 </tr>
-                <?php if (isset($this->ae_auth_amount) && $this->ae_auth_amount > 0) { ?>
-                    <tr>
-                        <td><?php echo __('Total Authorize:', 'paypal-for-woocommerce'); ?></td>
-                        <td><?php echo wc_price($this->ae_auth_amount, array('currency' => $this->currency_code)); ?></td>
-                    </tr>
-                <?php } ?>
                 <?php if (isset($this->ae_capture_amount) && $this->ae_capture_amount > 0) { ?>
                     <tr>
-                        <td><?php echo __('Total Capture:', 'paypal-for-woocommerce'); ?></td>
+                        <td><?php echo __('Capture: ', 'paypal-for-woocommerce'); ?></td>
                         <td><?php echo wc_price($this->ae_capture_amount, array('currency' => $this->currency_code)); ?></td>
                     </tr>
                 <?php } ?>
                 <?php if (isset($this->ae_refund_amount) && $this->ae_refund_amount > 0) { ?>
                     <tr>
-                        <td><?php echo __('Total Refund:', 'paypal-for-woocommerce'); ?></td>
+                        <td><?php echo __('Refund:', 'paypal-for-woocommerce'); ?></td>
                         <td><?php echo wc_price($this->ae_refund_amount, array('currency' => $this->currency_code)); ?></td>
                     </tr>
                 <?php } ?>
                 <?php if (isset($this->ae_void_amount) && $this->ae_void_amount > 0) { ?>
                     <tr>
-                        <td><?php echo __('Total Void:', 'paypal-for-woocommerce'); ?></td>
+                        <td><?php echo __('Void:', 'paypal-for-woocommerce'); ?></td>
                         <td><?php echo wc_price($this->ae_void_amount, array('currency' => $this->currency_code)); ?></td>
                     </tr>
                 <?php } ?>
