@@ -1805,6 +1805,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 case 'FAILED' :
                     $order->update_status('failed', sprintf(__('Payment via %s failed. PayPal reason: %s.', 'paypal-for-woocommerce'), $this->title, $pending_reason));
                     break;
+                case 'VOIDED' :
+                    $order->update_status('cancelled', sprintf(__('Payment via %s Voided.', 'paypal-for-woocommerce'), $this->title));
+                    break;
                 default:
                     break;
             endswitch;
@@ -1854,32 +1857,14 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_handle_order_payment_action($order_data) {
+    public function angelleye_ppcp_void_authorized_payment_admin($order, $order_data) {
         try {
-            if (isset($order_data['angelleye_ppcp_payment_action'])) {
-                $payment_action = $order_data['angelleye_ppcp_payment_action'];
-                switch ($payment_action) {
-                    case 'void': {
-                            $this->angelleye_ppcp_void_authorized_payment_admin($transaction_id);
-                        }
-                        break;
-                    case 'capture': {
-                            $this->angelleye_ppcp_capture_authorized_payment_admin($order);
-                        }
-                        break;
-                    case 'refund': {
-                            $this->angelleye_ppcp_refund_order_admin($order);
-                        }
-                        break;
-                }
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $note_to_payer = isset($order_data['angelleye_ppcp_note_to_buyer_void']) ? $order_data['angelleye_ppcp_note_to_buyer_void'] : '';
+            if (strlen($note_to_payer) > 255) {
+                $note_to_payer = substr($note_to_payer, 0, 252) . '...';
             }
-        } catch (Exception $ex) {
-            
-        }
-    }
-
-    public function angelleye_ppcp_void_authorized_payment_admin($authorization_id) {
-        try {
+            $authorization_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -1887,21 +1872,28 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'httpversion' => '1.1',
                 'blocking' => true,
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                //'body' => array(),
                 'cookies' => array()
             );
+            if (!empty($note_to_payer)) {
+                $void_arg = array(
+                    'note_to_payer' => $note_to_payer,
+                );
+                $args['body'] = $void_arg;
+            }
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/void', $args, 'void_authorized');
-            $this->api_response = json_decode(json_encode($this->api_response), FALSE);
-            return $this->api_response;
+            $this->api_response = json_decode(json_encode($this->api_response), true);
+            if (!empty($this->api_response['id'])) {
+                $payment_status = isset($this->api_response['status']) ? $this->api_response['status'] : '';
+                $this->angelleye_ppcp_update_woo_order_status($order_id, $payment_status, $pending_reason = '');
+            }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
 
-    public function angelleye_ppcp_capture_authorized_payment_admin($woo_order_id) {
+    public function angelleye_ppcp_capture_authorized_payment_admin($order, $order_data) {
         try {
-            $order = wc_get_order($woo_order_id);
             if ($order === false) {
                 return false;
             }
@@ -2021,9 +2013,8 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_refund_order_admin($order_id, $amount, $reason, $transaction_id) {
+    public function angelleye_ppcp_refund_order_admin($order, $order_data) {
         try {
-            $order = wc_get_order($order_id);
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;

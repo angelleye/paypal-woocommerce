@@ -56,9 +56,41 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         if (is_admin() && !defined('DOING_AJAX')) {
             add_action('add_meta_boxes', array($this, 'angelleye_ppcp_order_action_meta_box'), 10, 2);
             if (isset($_POST['is_ppcp_submited']) && 'yes' === $_POST['is_ppcp_submited']) {
-                $order_data = wc_clean($_POST);
-                $this->payment_request->angelleye_ppcp_handle_order_payment_action($order_data);
+                add_action('woocommerce_order_action_angelleye_ppcp_void_admin', array($this, 'angelleye_ppcp_admin_void_action_handler'), 10, 2);
+                add_action('woocommerce_order_action_angelleye_ppcp_capture_admin', array($this, 'angelleye_ppcp_admin_capture_action_handler'), 10, 2);
+                add_action('woocommerce_order_action_angelleye_ppcp_refund_admin', array($this, 'angelleye_ppcp_admin_refund_action_handler'), 10, 2);
             }
+        }
+        add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_ppcp_save'), 50, 2);
+    }
+
+    public function angelleye_ppcp_admin_void_action_handler($order, $order_data) {
+        try {
+            remove_action('woocommerce_order_action_angelleye_ppcp_void', array($this, 'angelleye_ppcp_admin_void_action_handler'));
+            remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
+            $this->payment_request->angelleye_ppcp_void_authorized_payment_admin($order, $order_data);
+        } catch (Exception $ex) {
+            
+        }
+    }
+    
+    public function angelleye_ppcp_admin_capture_action_handler($order, $order_data) {
+        try {
+            remove_action('woocommerce_order_action_angelleye_ppcp_capture', array($this, 'angelleye_ppcp_admin_capture_action_handler'));
+            remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
+            $this->payment_request->angelleye_ppcp_capture_authorized_payment_admin($order, $order_data);
+        } catch (Exception $ex) {
+            
+        }
+    }
+    
+    public function angelleye_ppcp_admin_refund_action_handler($order, $order_data) {
+        try {
+            remove_action('woocommerce_order_action_angelleye_ppcp_refund', array($this, 'angelleye_ppcp_admin_refund_action_handler'));
+            remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
+            $this->payment_request->angelleye_ppcp_refund_order_admin($order, $order_data);
+        } catch (Exception $ex) {
+            
         }
     }
 
@@ -244,6 +276,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         }
                         $this->angelleye_ppcp_order_actions['capture'] = __('Capture Funds', '');
                     }
+                    if( isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'VOIDED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status'] ) {
+                        unset($this->angelleye_ppcp_order_actions);
+                    }
                     $this->angelleye_ppcp_display_payment_action();
                     $this->angelleye_ppcp_display_paypal_activity_table($html_table_row);
                 }
@@ -268,6 +303,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public function angelleye_ppcp_display_payment_action() {
         ?>
         <div class='wrap'>
+            <?php if(isset($this->angelleye_ppcp_order_actions) && !empty($this->angelleye_ppcp_order_actions)) { ?>
             <table class="form-table">
                 <tbody>
                     <tr>
@@ -295,7 +331,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     </tr>
                 </tbody>
             </table>
-            <?php if (isset($this->angelleye_ppcp_order_status_data['capture'])) { ?>
+            <?php } ?>
+            <?php if (isset($this->angelleye_ppcp_order_status_data['capture']) && isset($this->angelleye_ppcp_order_actions['capture'])) { ?>
                 <p class="angelleye_ppcp_capture_box" style="display: none;"><b style="font-size: 14px;"><?php echo __('Enter the capture details below to move funds from your buyer\'s account to your account.', 'paypal-for-woocommerce'); ?></b></p>
                 <table class="form-table angelleye_ppcp_capture_box" style="display: none;">
                     <tbody>
@@ -325,7 +362,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     </tbody>
                 </table>
             <?php } ?>     
-            <?php if (isset($this->angelleye_ppcp_order_status_data['refund'])) { ?>
+            <?php if (isset($this->angelleye_ppcp_order_status_data['refund']) && isset($this->angelleye_ppcp_order_actions['refund'])) { ?>
                 <p class="angelleye_ppcp_refund_box" style="display: none;"><b style="font-size: 14px;"><?php echo __('You can issue a full or partial refund for 180 days after the original payment was sent.', 'paypal-for-woocommerce'); ?></b></p>
                 <table class="form-table angelleye_ppcp_refund_box" style="display: none;">
                     <tbody>
@@ -368,7 +405,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             <?php
         }
         ?>
-        <?php if (isset($this->angelleye_ppcp_order_status_data['void'])) { ?>
+        <?php if (isset($this->angelleye_ppcp_order_status_data['void']) && isset($this->angelleye_ppcp_order_actions['void'])) { ?>
 
             <p style="font-size: 14px;" class="angelleye_ppcp_void_box" style="display: none;">
                 <b>
@@ -460,6 +497,27 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             <?php
         } catch (Exception $ex) {
             
+        }
+    }
+
+    public function angelleye_ppcp_save($post_id, $post) {
+        if (!empty($_POST['save']) && $_POST['save'] == 'Submit') {
+            if (empty($post->ID)) {
+                return false;
+            }
+            if ($post->post_type != 'shop_order') {
+                return false;
+            }
+
+            $order = wc_get_order($post_id);
+            if (!empty($_POST['angelleye_ppcp_payment_action'])) {
+                $order_data = wc_clean($_POST);
+                $action = wc_clean($_POST['angelleye_ppcp_payment_action']);
+                $hook_name = 'angelleye_ppcp_' . strtolower($action) . '_admin';
+                if (!did_action('woocommerce_order_action_' . sanitize_title($hook_name))) {
+                    do_action('woocommerce_order_action_' . sanitize_title($hook_name), $order, $order_data);
+                }
+            }
         }
     }
 
