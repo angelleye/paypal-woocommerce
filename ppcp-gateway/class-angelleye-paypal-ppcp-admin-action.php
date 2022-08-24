@@ -326,13 +326,18 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 </table>
             <?php } ?>     
             <?php if (isset($this->angelleye_ppcp_order_status_data['refund'])) { ?>
-                <div class="angelleye_ppcp_refund_box" style="display: none;">
-                    <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data">
+                <p class="angelleye_ppcp_refund_box" style="display: none;"><b style="font-size: 14px;">You can issue a full or partial refund for 180 days after the original payment was sent.</b></p>
+                <table class="form-table angelleye_ppcp_refund_box" style="display: none;">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Transaction Id</th>
+                            <td>
+                                <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data">
                         <?php
                         $i = 0;
                         foreach ($this->angelleye_ppcp_order_status_data['refund'] as $k => $v) :
                             if ($i == 0) {
-                                echo '<option value="" >Select Action</option>';
+                                echo '<option value="" >Select Transaction Id</option>';
                             }
                             ?>
                             <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
@@ -341,7 +346,27 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         endforeach;
                         ?>
                     </select>
-                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_regular_price" class="short wc_input_price text-box" style="width: 220px">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Refund Amount</th>
+                            <td>
+                                <fieldset>
+                                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_refund_price" class="short wc_input_price text-box" style="width: 220px">                            
+                                </fieldset>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Note To Buyer (Optional)<span class="woocommerce-help-tip" data-tip="PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details."></span></th>
+                            <td>
+                                <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture"></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                    
+
                 </div>
                 <?php
             }
