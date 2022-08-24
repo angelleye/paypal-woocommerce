@@ -55,6 +55,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         add_action('woocommerce_order_action_angelleye_ppcp_capture_charge', array($this, 'angelleye_ppcp_maybe_capture_charge'));
         if (is_admin() && !defined('DOING_AJAX')) {
             add_action('add_meta_boxes', array($this, 'angelleye_ppcp_order_action_meta_box'), 10, 2);
+            if (isset($_POST['is_ppcp_submited']) && 'yes' === $_POST['is_ppcp_submited']) {
+                $order_data = wc_clean($_POST);
+                $this->payment_request->angelleye_ppcp_handle_order_payment_action($order_data);
+            }
         }
     }
 
@@ -264,27 +268,63 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public function angelleye_ppcp_display_payment_action() {
         ?>
         <div class='wrap'>
-            <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
-                <select name="angelleye_ppcp_payment_action" id="angelleye_ppcp_payment_action">
-                    <?php
-                    $i = 0;
-                    foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
-                        if ($i == 0) {
-                            echo '<option value="" >Select Action</option>';
-                        }
-                        ?>
-                        <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($v); ?></option>
-                        <?php
-                        $i = $i + 1;
-                    endforeach;
-                    ?>
-                </select>
-            <?php } ?>
+            <table class="form-table">
+                <tbody>
+                    <tr>
+                        <th scope="row" class="titledesc">
+                            <label for="angelleye_ppcp_payment_action">Select PayPal Action</label>
+                        </th>
+                        <td class="forminp forminp-text">
+                            <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
+                                <select name="angelleye_ppcp_payment_action" id="angelleye_ppcp_payment_action">
+                                    <?php
+                                    $i = 0;
+                                    foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
+                                        if ($i == 0) {
+                                            echo '<option value="" >Select Action</option>';
+                                        }
+                                        ?>
+                                        <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($v); ?></option>
+                                        <?php
+                                        $i = $i + 1;
+                                    endforeach;
+                                    ?>
+                                </select>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <?php if (isset($this->angelleye_ppcp_order_status_data['capture'])) { ?>
-                <div class="angelleye_ppcp_capture_box" style="display: none;">
-                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_regular_price" class="short wc_input_price text-box" style="width: 220px">
-                </div>
-            <?php } ?>
+                <p class="angelleye_ppcp_capture_box" style="display: none;"><b style="font-size: 14px;">Enter the capture details below to move funds from your buyer's account to your account.</b></p>
+                <table class="form-table angelleye_ppcp_capture_box" style="display: none;">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Additional Capture Possible</th>
+                            <td>
+                                <fieldset>
+                                    <label for="additional_capture_yes"><input type="radio" name="additionalCapture" value="yes" id="additional_capture_yes"><span>Yes (option to capture additional funds on this authorization if need)</span></label>
+                                    <label for="additional_capture_no"><input type="radio" name="additionalCapture" value="no" id="additional_capture_no"><span>No (no additional capture needed; close authorization after this capture)</span></label>
+                                </fieldset>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Capture Amount</th>
+                            <td>
+                                <fieldset>
+                                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_regular_price" class="short wc_input_price text-box" style="width: 220px">                            
+                                </fieldset>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Note To Buyer (Optional)<span class="woocommerce-help-tip" data-tip="PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details."></span></th>
+                            <td>
+                                <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture"></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            <?php } ?>     
             <?php if (isset($this->angelleye_ppcp_order_status_data['refund'])) { ?>
                 <div class="angelleye_ppcp_refund_box" style="display: none;">
                     <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data">
@@ -303,31 +343,32 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     </select>
                     <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_regular_price" class="short wc_input_price text-box" style="width: 220px">
                 </div>
-            <?php } 
-            $_POST['is_submited']
+                <?php
+            }
             ?>
-            <input type="hidden" value="no" name="is_submited" id="is_submited">
+            <?php if (isset($this->angelleye_ppcp_order_status_data['void'])) { ?>
+
+                <p style="font-size: 14px;" class="angelleye_ppcp_void_box" style="display: none;">
+                    <b>
+                        By initiating this void, you are canceling this authorization and will be unable to capture any funds remaining on the authorization.<br><br>
+                        Note: You will not be able to submit a partial void. Any submitted voids will void the entire open authorization amount.<br><br>
+                    </b>
+                </p>
+                <table class="form-table angelleye_ppcp_void_box" style="display: none;">
+                    <tbody>
+                        <tr>
+                            <th>Note To Buyer (Optional)<span class="woocommerce-help-tip" data-tip="PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details."></span></th>
+                            <td>
+                                <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_void" id="angelleye_ppcp_note_to_buyer_void"></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <?php
+            }
+            ?>
+            <input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited">
             <input type="submit" id="angelleye_ppcp_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
-            <script>
-                    (function ($) {
-                        "use strict";
-                            $('#angelleye_ppcp_payment_submit_button').on('click', function (event) {
-                                if( $('#is_submited').val() === 'no') {
-                                    $('#is_submited').val('yes');
-                                    var r = confirm(<?php echo __( 'Are you sure?', 'paypal-for-woocommerce' ) ?>);
-                                    if (r == true) {
-                                        jQuery("#angelleye-pw-order-action").block({message:null,overlayCSS:{background:"#fff",opacity:.6}});
-                                        return r;
-                                    } else {
-                                        $('#is_submited').val('no');
-                                        jQuery("#angelleye-pw-order-action").unblock();
-                                        event.preventDefault();
-                                        return r;
-                                    }
-                                }
-                            });
-                    })(jQuery);
-                </script>
         </div>
         <table class="widefat  angelleye_ppcp_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;border: none;">
             <tbody>
@@ -355,7 +396,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 <?php } ?>
             </tbody>
         </table>
-
         <?php
     }
 
