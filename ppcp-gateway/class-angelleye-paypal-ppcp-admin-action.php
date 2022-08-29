@@ -246,7 +246,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             $line_item['payment_status'] = isset($captures['status']) ? ucwords(str_replace('_', ' ', strtolower($captures['status']))) : 'N/A';
                             $line_item['expired_date'] = isset($captures['expiration_time']) ? $captures['expiration_time'] : 'N/A';
                             $line_item['payment_action'] = __('Capture', '');
-                            $this->angelleye_ppcp_order_status_data['refund'][$line_item['transaction_id']] = $captures['amount']['value'];
+                            if('COMPLETED' === $captures['status'] || 'PARTIALLY_REFUNDED' === $captures['status']) {
+                                $this->angelleye_ppcp_order_status_data['refund'][$line_item['transaction_id']] = $captures['amount']['value'];
+                            }
                             $this->ae_capture_amount = $this->ae_capture_amount + $captures['amount']['value'];
                             $html_table_row[] = $line_item;
                         }
@@ -275,6 +277,11 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             $this->angelleye_ppcp_order_actions['refund'] = __('Refund', '');
                         }
                         $this->angelleye_ppcp_order_actions['capture'] = __('Capture Funds', '');
+                    }
+                    if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'CAPTURED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
+                        if ($this->ae_refund_amount < $this->ae_capture_amount) {
+                            $this->angelleye_ppcp_order_actions['refund'] = __('Refund', '');
+                        }
                     }
                     if( isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'VOIDED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status'] ) {
                         unset($this->angelleye_ppcp_order_actions);

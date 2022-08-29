@@ -1902,14 +1902,15 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $note_to_payer = substr($note_to_payer, 0, 252) . '...';
             }
             $final_capture = false;
-            if (isset($order_data['additionalCapture']) && 'yes' === $order_data['additionalCapture']) {
+            if (isset($order_data['additionalCapture']) && 'no' === $order_data['additionalCapture']) {
                 $final_capture = true;
             }
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $capture_arg = array(
                 'amount' =>
                 array(
-                    'value' => $order->get_total(),
+                    'value' => isset($order_data['_angelleye_ppcp_regular_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_regular_price'], $decimals) : '',
                     'currency_code' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 ),
                 'note_to_payer' => $note_to_payer,
@@ -1930,6 +1931,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
             if (!empty($this->api_response['id'])) {
+                
             } else {
                 $error_email_notification_param = array(
                     'request' => 'capture_authorized',
@@ -1951,17 +1953,20 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($order === false) {
                 return false;
             }
+            $note_to_payer = isset($order_data['angelleye_ppcp_note_to_buyer_capture']) ? $order_data['angelleye_ppcp_note_to_buyer_capture'] : '';
+            if (strlen($note_to_payer) > 255) {
+                $note_to_payer = substr($note_to_payer, 0, 252) . '...';
+            }
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
-            if (!empty($amount) && $amount > 0) {
-                $body_request['amount'] = array(
-                    'value' => angelleye_ppcp_round($amount, $decimals),
-                    'currency_code' => $order->get_currency()
-                );
-            }
+            $body_request['amount'] = array(
+                'value' => isset($order_data['_angelleye_ppcp_refund_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_refund_price'], $decimals) : '',
+                'currency_code' => $order->get_currency()
+            );
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
+            $transaction_id = isset($order_data['angelleye_ppcp_refund_data']) ? $order_data['angelleye_ppcp_refund_data'] : '';
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -1974,6 +1979,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
             if (isset($this->api_response['status'])) {
+                
             } else {
                 $error_email_notification_param = array(
                     'request' => 'refund_order',
