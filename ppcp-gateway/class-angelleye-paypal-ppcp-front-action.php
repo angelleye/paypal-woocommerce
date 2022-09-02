@@ -148,7 +148,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         } else {
             $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
         }
-        angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
+        angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
         angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
         unset(WC()->session->angelleye_ppcp_session);
         if ($is_success) {
@@ -197,7 +197,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     } else {
                         $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
                     }
-                    angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
+                    angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
                     angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
                 } elseif ($liability_shift_result === 2) {
                     $is_success = false;
