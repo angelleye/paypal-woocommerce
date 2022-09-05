@@ -142,6 +142,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             wp_redirect(wc_get_checkout_url());
             exit();
         }
+        $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
         $order = wc_get_order($order_id);
         if ($this->paymentaction === 'capture') {
             $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($order_id, $need_to_update_order = false);
@@ -173,6 +174,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     public function angelleye_ppcp_cc_capture() {
         try {
+            $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
             $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
             if (!empty($angelleye_ppcp_paypal_order_id)) {
                 $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
