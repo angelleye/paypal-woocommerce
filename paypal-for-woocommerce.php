@@ -618,7 +618,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         	$this->plugin_screen_hook_suffix = add_submenu_page(
 			'options-general.php', 
 			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),
-			__( 'PayPal for WooCommerce', 'paypal-for-woocommerce' ),
+			__( 'Complete Payments', 'paypal-for-woocommerce' ),
 			'manage_options',
 			'paypal-for-woocommerce',
 			array( $this, 'display_plugin_admin_page'));	
