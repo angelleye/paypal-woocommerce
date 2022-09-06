@@ -1027,6 +1027,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 return apply_filters('angelleye_ppcp_skip_final_review', true);
             } elseif ((isset($angelleye_ppcp_checkout_post['terms']) || isset($angelleye_ppcp_checkout_post['legal'])) && $angelleye_ppcp_checkout_post['terms'] == 'on') {
                 return apply_filters('angelleye_ppcp_skip_final_review', true);
+            } else {
+                return apply_filters('angelleye_ppcp_skip_final_review', false);
             }
         }
         if ($this->skip_final_review == 'yes') {
