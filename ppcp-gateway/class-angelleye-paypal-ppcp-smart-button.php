@@ -1087,6 +1087,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (is_null(WC()->cart) || WC()->cart->is_empty()) {
                 return $paymentaction;
             } else {
+                $payment_action = array();
                 foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
                     $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
                     $is_enable_payment_action = get_post_meta($product_id, 'enable_payment_action', true);
@@ -1094,16 +1095,20 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                         $woo_product_payment_action = get_post_meta($product_id, 'woo_product_payment_action', true);
                         if (!empty($woo_product_payment_action)) {
                             if ($woo_product_payment_action === 'Authorization') {
-                                $paymentaction = 'authorize';
-                                return $paymentaction;
+                                $payment_action['authorize'] = 'authorize';
                             } elseif ($woo_product_payment_action === 'Sale') {
-                                $paymentaction = 'capture';
-                                return $paymentaction;
+                                $payment_action['capture'] = 'capture';
                             }
                         }
                     }
                 }
-                return $paymentaction;
+                if (isset($payment_action['authorize'])) {
+                    return $payment_action['authorize'];
+                } elseif ($payment_action['capture']) {
+                    return $payment_action['capture'];
+                } else {
+                    return $paymentaction;
+                }
             }
         } catch (Exception $ex) {
             return $paymentaction;
