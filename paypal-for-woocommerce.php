@@ -954,7 +954,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     if (count($products->posts) < 1) {
                         $errors = TRUE;
                         $update_count = 'zero';
-                        $redirect_url = admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=tools&processed=' . $update_count);
+                        $redirect_url = admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=general_settings&gateway=tool&processed=' . $update_count);
                         echo $redirect_url;
                     } else {
                         foreach ($products->posts as $target) {
@@ -1003,7 +1003,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     if ($update_count == 0) {
                         $update_count = 'zero';
                     }
-                    $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=tools&processed=' . $update_count);
+                    $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=tool&processed=' . $update_count);
                     echo $redirect_url;
                 } else {
                     //echo 'failed';
