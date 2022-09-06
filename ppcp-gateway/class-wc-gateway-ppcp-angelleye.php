@@ -62,8 +62,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $this->id = 'angelleye_ppcp';
         $this->icon = apply_filters('woocommerce_angelleye_paypal_checkout_icon', 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png');
         $this->has_fields = true;
-        $this->method_title = __('PayPal Complete Payments', 'paypal-for-woocommerce');
-        $this->method_description = __('Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce');
+        $this->method_title = __('WooCommerce Complete Payments - Powered by PayPal', 'paypal-for-woocommerce');
+        $this->method_description = __('The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce');
         $this->supports = array(
             'products',
             'refunds',
@@ -72,8 +72,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function angelleye_get_settings() {
-        $this->title = $this->get_option('title', 'PayPal Complete Payments');
-        $this->description = $this->get_option('description');
+        $this->title = $this->get_option('title', 'Complete Payments - Powered by PayPal');
+        $this->description = $this->get_option('description', '');
         $this->enabled = $this->get_option('enabled', 'no');
         $this->sandbox = 'yes' === $this->get_option('testmode', 'no');
         $this->sandbox_merchant_id = $this->get_option('sandbox_merchant_id', '');
