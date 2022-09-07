@@ -1,10 +1,13 @@
 .angelleye-paypal-for-woocommerce-shipping-tools-wrap {
     background: #fff none repeat scroll 0 0;
-    border-left: 4px solid #ffcc00;
+    
     float: left;
     margin: 10px 0;
     padding: 0 20px 10px;
     width: 824px;
+    border: 1px solid #dedede;
+    box-shadow: 0 20px 30px rgba(143, 163, 184, 0.15);
+    border-radius: 3px;
 }
 
 .angelleye-paypal-for-woocommerce-shipping-tools-wrap .angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section {
@@ -317,8 +320,8 @@ hr {
     list-style : disc;
 }
 sup {
-  vertical-align: top;
-  font-size: smaller;
+    vertical-align: top;
+    font-size: smaller;
 }
 .pms-muse-right-container {
     width: 50%;
@@ -326,7 +329,7 @@ sup {
     display: inline-block;
     margin-left: 28px;
     vertical-align: top;
-    
+
 }
 
 .pms-muse-right-container > div img {
