@@ -1,6 +1,6 @@
 .angelleye-paypal-for-woocommerce-shipping-tools-wrap {
     background: #fff none repeat scroll 0 0;
-    
+
     float: left;
     margin: 10px 0;
     padding: 0 20px 10px;
@@ -462,7 +462,70 @@ hr {
     }
 }
 
+.paypal_woocommerce_support {
+    padding: 30px;
+    background: rgb(255, 255, 255);
+    color: rgb(30, 30, 30);
+    position: relative;
+    box-shadow: rgb(0 0 0 / 10%) 0px 0px 0px 1px;
+    outline: none;
+    border-radius: calc(1px);
+}
+.paypal_woocommerce_support_downloads {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-column-gap: 35px;
+    margin: 40px 0 0 0;
+
+}
+
+.paypal_woocommerce_support_downloads li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  padding: 40px;
+  margin-bottom: 40px;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 20px 30px rgb(143 163 184 / 15%);
+  transition: all .25s ease;
+  border: 1px solid #dedede;
+}
+
+.paypal_woocommerce_support_downloads p {
+  min-height: 60px;
+}
+
+.paypal_woocommerce_support_downloads [class*="wplk-button"] {
+  min-width: 150px;
+  margin-bottom: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--buttonHeight, 35px);
+  padding: 0 var(--buttonPadding, 15px);
+  font-size: var(--buttonFontSize, 13px);
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  letter-spacing: .01em;
+  border-radius: 3px;
+  border-width: 1px;
+  border-style: solid;
+  box-sizing: border-box;
+  transition: color .2s ease,background .2s ease,transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.paypal_woocommerce_support_downloads .wplk-button {
+  color: rgba(46,68,83,.8);
+  background: #fff;
+  border-color: #e2e6eb;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 4%);
+}
 @media only all and (max-width: 500px) {
+    
     .wp-core-ui .angelleye-notice > .angelleye-notice-cta > input[type="email"],
     .angelleye-notice > .angelleye-notice-cta > button {
         display: block;
@@ -483,10 +546,12 @@ hr {
     .display_smart_button_previews {
         width: 100%;
     }
+    
 }
 
 @media screen and (min-width: 320px) and (max-width: 1120px) {
     #woocommerce_paypal_express_angelleye_smart_button_preview_title, .display_smart_button_previews, .display_smart_button_previews_button {
         width: 100%;
     }
+    
 }
