@@ -13,7 +13,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
     <br>
     <?php if ($active_tab == 'general_settings') { ?>
         <h2 class="nav-tab-wrapper">
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_payment_gateway_products" class="nav-tab <?php echo $gateway == 'paypal_payment_gateway_products' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Payment Gateway Products', 'paypal-for-woocommerce'); ?></a>
+            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_payment_gateway_products" class="nav-tab <?php echo $gateway == 'paypal_payment_gateway_products' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Complete Payments', 'paypal-for-woocommerce'); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_woocommerce_support" class="nav-tab <?php echo $gateway == 'paypal_woocommerce_support' ? 'nav-tab-active' : ''; ?>"><?php echo __('Support', 'paypal-for-woocommerce'); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=tool" class="nav-tab <?php echo $gateway == 'tool' ? 'nav-tab-active' : ''; ?>"><?php echo __('Tools', 'paypal-for-woocommerce'); ?></a>
             <?php do_action('angelleye_paypal_for_woocommerce_general_settings_tab'); ?>
@@ -24,59 +24,34 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
             ?>
             <div class="wrap angelleye_addons_wrap">
                 <div id="angelleye_paypal_marketing_table">
-                    <ul class="products">
-                        <li class="product">
-                            <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>">
-                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/ppcp.png'; ?>">
-                                <p><?php echo wp_trim_words(__('PayPal Complete Payments is the Angell EYE integration of PayPal\'s new Commerce Platform APIs. This includes PayPal Checkout and Direct Credit Card options. Also, it gives us the power of a hosted solution while still being able to distribute the plugin to be installed directly on your site', 'paypal-for-woocommerce'), $num_words = 48); ?></p>
-                            </a>
-                        </li>
-                        <li class="product">
-                            <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_express'); ?>">
-                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/paypal-express-checkout-logo.png'; ?>">
-                                <p><?php echo wp_trim_words(__('PayPal Express Checkout is a more advanced version of the standard PayPal payment option that is included with WooCommerce. It has more features included with it and allows us to more tightly integrate PayPal into WooCommerce. It is the recommended method of enabling PayPal payments in WooCommerce.', 'paypal-for-woocommerce'), $num_words = 40); ?></p>
-                            </a>
-                        </li>
-                        <li class="product">
-                            <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_pro_payflow'); ?>">
-                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/paypal-payflow-pro-logo.png'; ?>">
-                                <p><?php echo wp_trim_words(__('PayPal Payments Pro 2.0 is the latest release of PayPal’s Pro offering. It works on PayPal’s PayFlow Gateway as opposed to their original DoDirectPayment API. You need to be sure that your account is setup for this version of Pro before configuring this payment gateway or you will end up with errors when people attempt to pay you via credit card.', 'paypal-for-woocommerce'), $num_words = 48); ?></p>
-                            </a>
-                        </li>
-                        <li class="product">
-                            <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_pro'); ?>">
-                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/paypal-payments-pro-logo.png'; ?>">
-                                <p><?php echo wp_trim_words(__('PayPal’s Website Payments Pro 3.0 is the original Pro package that PayPal offered. It works on the DoDirectPayment API and is being slowly deprecated since the launch of Payments Pro 2.0 that works on the PayFlow API. You need to be sure that your account is setup for this version of Pro before configuring this payment gateway or you will end up with errors when people attempt to pay you via credit card.', 'paypal-for-woocommerce'), $num_words = 52); ?></p>
-                            </a>
-                        </li>
-                        <li class="product">
-                            <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=braintree'); ?>">
-                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/paypal-braintree-logo.png'; ?>">
-                                <p><?php echo wp_trim_words(__('Credit Card payments Powered by PayPal / Braintree. Checkout is seamless either via credit cards or PayPal, and customers can save a payment method to their account for future use or manage saved payment methods with a few clicks', 'paypal-for-woocommerce'), $num_words = 55); ?></p>
-                            </a>
-                        </li>
-                        <li class="product">
-                            <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_credit_card_rest'); ?>">
-                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/paypal-rest-credit-cards-logo.png'; ?>">
-                                <p><?php echo wp_trim_words(__('PayPal direct credit card payments using the REST API.  This allows you to accept credit cards directly on the site without the need for the full Payments Pro.', 'paypal-for-woocommerce'), $num_words = 55); ?></p>
-                            </a>
-                        </li>
-                        <li class="product">
-                            <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=paypal_advanced'); ?>">
-                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/paypal-payments-advanced-logo.png'; ?>">
-                                <p><?php echo wp_trim_words(__('PayPal Payments Advanced uses an iframe to seamlessly integrate PayPal hosted pages into the checkout process.', 'paypal-for-woocommerce'), $num_words = 55); ?></p>
-                            </a>
-                        </li>
-                        <li class="product">
-                            <a target="_blank" href="https://www.angelleye.com/product/woocommerce-paypal-plus-plugin">
-                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/paypal-for-woo-gateway-logos/paypal-plus-logo.png'; ?>">
-                                <p>
-                                    <?php echo __('PayPal Plus is a solution where PayPal offers PayPal, Credit Card and ELV as individual payment options on the payment selection page. The available payment methods are provided in a PayPal hosted iFrame.', 'paypal-for-woocommerce'); ?><br/><br/>
-                                </p>
-                            </a>
-                        </li>
+                    <div class="paypal_woocommerce_product">
+                        <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
 
-                    </ul>
+                            <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
+                            <br><br><br>
+                            <div class="paypal_woocommerce_product_onboard_content">
+                                <p>Welcome to the easiest one-stop solution for accepting PayPal, Debit and Credit Cards, with a lower per-transaction cost for cards than other gateways!</p>
+                            <p>
+                                Buyers may pay with Debit/Credit (no PayPal account required), and your fee will be only 2.69% + 49¢!
+                            </p>
+                            <p>
+                                Buyers may also choose to pay with
+
+                                PayPal Checkout, Pay Later, Venmo, and more!
+                            </p>    
+                            </div>
+
+                            
+
+
+
+
+
+
+
+
+                        </div>
+                    </div>
                 </div>
                 <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting'); ?>
             </div>
