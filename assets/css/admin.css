@@ -498,33 +498,8 @@ hr {
     min-height: 60px;
 }
 
-.paypal_woocommerce_support_downloads [class*="wplk-button"] {
-    min-width: 150px;
-    margin-bottom: 5px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: var(--buttonHeight, 35px);
-    padding: 0 var(--buttonPadding, 15px);
-    font-size: var(--buttonFontSize, 13px);
-    font-weight: 500;
-    outline: none;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    letter-spacing: .01em;
-    border-radius: 3px;
-    border-width: 1px;
-    border-style: solid;
-    box-sizing: border-box;
-    transition: color .2s ease,background .2s ease,transform .2s ease,border-color .2s ease,box-shadow .2s ease;
-}
-.paypal_woocommerce_support_downloads .wplk-button {
-    color: rgba(46,68,83,.8);
-    background: #fff;
-    border-color: #e2e6eb;
-    box-shadow: 0 1px 3px rgb(0 0 0 / 4%);
-}
+
+
 .paypal_woocommerce_product {
     padding: 30px;
     background: rgb(255, 255, 255);
@@ -583,6 +558,72 @@ hr {
     padding: 10px 45px 10px 45px;
     height: 60px;
     border-radius: 8px;
+    margin-right: 12px;
+}
+.paypal_woocommerce_product_onboard [class*="green-button"] {
+    min-width: 150px;
+    margin-bottom: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--buttonHeight, 35px);
+    padding: 0 var(--buttonPadding, 15px);
+    font-size: var(--buttonFontSize, 13px);
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    letter-spacing: .01em;
+    border-radius: 3px;
+    border-width: 1px;
+    border-style: solid;
+    box-sizing: border-box;
+    transition: color .2s ease,background .2s ease,transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.paypal_woocommerce_product_onboard .green-button {
+    color: #fdfdfe;
+    background: #1aae9f;
+    border-color: #e2e6eb;
+    font-size: 18px;
+    font-family: arial;
+    padding: 10px 45px 10px 45px;
+    height: 60px;
+    border-radius: 8px;
+    margin-right: 12px;
+}
+.paypal_woocommerce_product_onboard [class*="slate_gray"] {
+    min-width: 150px;
+    margin-bottom: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--buttonHeight, 35px);
+    padding: 0 var(--buttonPadding, 15px);
+    font-size: var(--buttonFontSize, 13px);
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    letter-spacing: .01em;
+    border-radius: 3px;
+    border-width: 1px;
+    border-style: solid;
+    box-sizing: border-box;
+    transition: color .2s ease,background .2s ease,transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.paypal_woocommerce_product_onboard .slate_gray {
+    color: #fdfdfe;
+    background: #788896;
+    border-color: #e2e6eb;
+    font-size: 18px;
+    font-family: arial;
+    padding: 10px 45px 10px 45px;
+    height: 60px;
+    border-radius: 8px;
+    margin-right: 12px;
+    width: 250px;
 }
 .paypal_woocommerce_product .paypal_woocommerce_product_onboard span.ppcp_onbard_icon .image {
     background: rgb(255, 255, 255);
@@ -600,9 +641,14 @@ hr {
     padding: 10px;
 }
 .paypal_woocommerce_product .paypal_woocommerce_product_onboard .paypal_woocommerce_product_onboard_content p {
-    font-size: 18px;
+    font-size: 20px;
     padding: 10px;
     font-family: arial;
+}
+
+.paypal_woocommerce_product_onboard_content .green_checkmark {
+    width: 95px;
+    height: 95px;
 }
 @media only all and (max-width: 500px) {
     .wp-core-ui .angelleye-notice > .angelleye-notice-cta > input[type="email"],
