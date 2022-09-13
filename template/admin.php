@@ -21,7 +21,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
         <?php
         if ($gateway == 'paypal_payment_gateway_products') {
 
-            $on_board = 'fully_connected';
+            $on_board = 'not_connected';
             ?>
             <div class="wrap angelleye_addons_wrap">
                 <div id="angelleye_paypal_marketing_table">
@@ -49,10 +49,11 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                                     <p><?php echo __('You’re currently setup and enjoying the benefits of <br>WooCommerce Complete Payments.', ''); ?></p>
                                     <p><?php echo __('However, we need additional verification to approve you for the reduced <br>rate of 2.69% on debit/credit cards.', ''); ?></p>
                                     <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', ''); ?></p>    
+                                    <br>
                                     <a href="https://wplaunchify.com/newsletter/" class="green-button" target="_blank"><?php echo __('Apply for Cheaper Fees!', ''); ?></a>
                                     <a href="https://wplaunchify.com/newsletter/" class="wplk-button" target="_blank"><?php echo __('Modify Setup', ''); ?></a>
                                     <a href="https://wplaunchify.com/newsletter/" class="slate_gray" target="_blank"><?php echo __('Learn More', ''); ?></a>
-                                    <br><br><br>
+                                    <br><br>
                                 </div>
                             </div>
                         </div>
@@ -66,10 +67,11 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                                     <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
                                     <p><?php echo __('You’re currently setup and enjoying the benefits of <br> WooCommerce Complete Payments.', ''); ?></p>
                                     <p><?php echo __('This includes a reduced rate for debit / credit cards of only 2.69% + 49¢!', ''); ?></p>
-                                    <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', ''); ?></p>    
+                                    <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', ''); ?></p>   
+                                    <br>
                                     <a href="https://wplaunchify.com/newsletter/" class="wplk-button" target="_blank"><?php echo __('Modify Setup', ''); ?></a>
                                     <a href="https://wplaunchify.com/newsletter/" class="slate_gray" target="_blank"><?php echo __('Learn More', ''); ?></a>
-                                    <br><br><br>
+                                    <br><br>
                                 </div>
                             </div>
                         </div>

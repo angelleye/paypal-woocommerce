@@ -526,7 +526,7 @@ hr {
     border: 1px solid #dedede;
 }
 .paypal_woocommerce_product_onboard p {
-    min-height: 60px;
+    min-height: 30px;
 }
 .paypal_woocommerce_product_onboard [class*="wplk-button"] {
     min-width: 150px;
@@ -642,7 +642,7 @@ hr {
 }
 .paypal_woocommerce_product .paypal_woocommerce_product_onboard .paypal_woocommerce_product_onboard_content p {
     font-size: 20px;
-    padding: 10px;
+    padding: 5px;
     font-family: arial;
 }
 
