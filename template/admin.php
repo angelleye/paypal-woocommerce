@@ -31,6 +31,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                             <br><br><br>
                             <div class="paypal_woocommerce_product_onboard_content">
                                 <p>Welcome to the easiest one-stop solution for accepting PayPal, Debit and Credit Cards, with a lower per-transaction cost for cards than other gateways!</p>
+                                <a href="https://wplaunchify.com/newsletter/" class="wplk-button" target="_blank">Start Now</a>
                             <p>
                                 Buyers may pay with Debit/Credit (no PayPal account required), and your fee will be only 2.69% + 49¢!
                             </p>
