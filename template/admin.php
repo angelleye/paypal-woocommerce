@@ -18,46 +18,25 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=tool" class="nav-tab <?php echo $gateway == 'tool' ? 'nav-tab-active' : ''; ?>"><?php echo __('Tools', 'paypal-for-woocommerce'); ?></a>
             <?php do_action('angelleye_paypal_for_woocommerce_general_settings_tab'); ?>
         </h2>
-
-        <?php
-        if ($gateway == 'paypal_payment_gateway_products') {
-            ?>
+        <?php if ($gateway == 'paypal_payment_gateway_products') { ?>
             <div class="wrap angelleye_addons_wrap">
                 <div id="angelleye_paypal_marketing_table">
                     <div class="paypal_woocommerce_product">
                         <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
-
                             <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
                             <br><br><br>
                             <div class="paypal_woocommerce_product_onboard_content">
-                                <p>Welcome to the easiest one-stop solution for accepting PayPal, Debit and Credit Cards, with a lower per-transaction cost for cards than other gateways!</p>
-                                <a href="https://wplaunchify.com/newsletter/" class="wplk-button" target="_blank">Start Now</a>
-                            <p>
-                                Buyers may pay with Debit/Credit (no PayPal account required), and your fee will be only 2.69% + 49¢!
-                            </p>
-                            <p>
-                                Buyers may also choose to pay with
-
-                                PayPal Checkout, Pay Later, Venmo, and more!
-                            </p>    
+                                <p><?php echo __('Welcome to the easiest one-stop solution for accepting PayPal, Debit and Credit Cards, with a lower per-transaction cost for cards than other gateways!', ''); ?></p>
+                                <a href="https://wplaunchify.com/newsletter/" class="wplk-button" target="_blank"><?php echo __('Start Now', ''); ?></a>
+                                <p><?php echo __('Buyers may pay with Debit/Credit (no PayPal account required), and your fee will be only 2.69% + 49¢!', ''); ?></p>
+                                <p><?php echo __('Buyers may also choose to pay with PayPal Checkout, Pay Later, Venmo, and more!', ''); ?></p>    
                             </div>
-
-                            
-
-
-
-
-
-
-
-
                         </div>
                     </div>
                 </div>
                 <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting'); ?>
             </div>
-            <?php
-        } elseif ($gateway == 'paypal_woocommerce_support') {
+        <?php } elseif ($gateway == 'paypal_woocommerce_support') {
             ?>
             <div class="wrap angelleye_addons_wrap">
                 <div id="angelleye_paypal_marketing_table">

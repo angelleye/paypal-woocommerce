@@ -579,7 +579,7 @@ hr {
     background: #6558f5;
     border-color: #e2e6eb;
     font-size: 18px;
-    font-family: Verdana, sans-serif;
+    font-family: arial;
     padding: 10px 45px 10px 45px;
     height: 60px;
     border-radius: 8px;
@@ -600,9 +600,9 @@ hr {
     padding: 10px;
 }
 .paypal_woocommerce_product .paypal_woocommerce_product_onboard .paypal_woocommerce_product_onboard_content p {
-    font-size: 17px;
+    font-size: 18px;
     padding: 10px;
-    font-weight: 501;
+    font-family: arial;
 }
 @media only all and (max-width: 500px) {
     .wp-core-ui .angelleye-notice > .angelleye-notice-cta > input[type="email"],
