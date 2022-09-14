@@ -20,64 +20,16 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
         </h2>
         <?php
         if ($gateway == 'paypal_payment_gateway_products') {
-
-            $on_board = 'not_connected';
+            if (!class_exists('AngellEYE_PayPal_PPCP_Admin_Onboarding')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php';
+            }
+            $admin_onboarding = AngellEYE_PayPal_PPCP_Admin_Onboarding::instance();
             ?>
             <div class="wrap angelleye_addons_wrap">
-                <div id="angelleye_paypal_marketing_table">
-                    <?php if ($on_board === 'not_connected') { ?>
-                        <div class="paypal_woocommerce_product">
-                            <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
-                                <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
-                                <br><br><br>
-                                <div class="paypal_woocommerce_product_onboard_content">
-                                    <p><?php echo __('Welcome to the easiest one-stop solution for accepting PayPal, Debit and Credit <br>Cards, with a lower per-transaction cost for cards than other gateways!', ''); ?></p>
-                                    <a href="https://wplaunchify.com/newsletter/" class="wplk-button" target="_blank"><?php echo __('Start Now', ''); ?></a>
-                                    <p><?php echo __('Buyers may pay with Debit/Credit (no PayPal account required), <br>and your fee will be only 2.69% + 49¢!', ''); ?></p>
-                                    <p><?php echo __('Buyers may also choose to pay with <br>PayPal Checkout, Pay Later, Venmo, and more!', ''); ?></p>    
-                                </div>
-                            </div>
-                        </div>
-                    <?php } elseif ($on_board === 'connected_but_not_acc') { ?>
-                        <div class="paypal_woocommerce_product">
-                            <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
-                                <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
-                                <br><br><br>
-                                <div class="paypal_woocommerce_product_onboard_content">
-                                    <br>
-                                    <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                                    <p><?php echo __('You’re currently setup and enjoying the benefits of <br>WooCommerce Complete Payments.', ''); ?></p>
-                                    <p><?php echo __('However, we need additional verification to approve you for the reduced <br>rate of 2.69% on debit/credit cards.', ''); ?></p>
-                                    <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', ''); ?></p>    
-                                    <br>
-                                    <a href="https://wplaunchify.com/newsletter/" class="green-button" target="_blank"><?php echo __('Apply for Cheaper Fees!', ''); ?></a>
-                                    <a href="https://wplaunchify.com/newsletter/" class="wplk-button" target="_blank"><?php echo __('Modify Setup', ''); ?></a>
-                                    <a href="https://wplaunchify.com/newsletter/" class="slate_gray" target="_blank"><?php echo __('Learn More', ''); ?></a>
-                                    <br><br>
-                                </div>
-                            </div>
-                        </div>
-                    <?php } elseif ($on_board === 'fully_connected') { ?>
-                        <div class="paypal_woocommerce_product">
-                            <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
-                                <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
-                                <br><br><br>
-                                <div class="paypal_woocommerce_product_onboard_content">
-                                    <br>
-                                    <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                                    <p><?php echo __('You’re currently setup and enjoying the benefits of <br> WooCommerce Complete Payments.', ''); ?></p>
-                                    <p><?php echo __('This includes a reduced rate for debit / credit cards of only 2.69% + 49¢!', ''); ?></p>
-                                    <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', ''); ?></p>   
-                                    <br>
-                                    <a href="https://wplaunchify.com/newsletter/" class="wplk-button" target="_blank"><?php echo __('Modify Setup', ''); ?></a>
-                                    <a href="https://wplaunchify.com/newsletter/" class="slate_gray" target="_blank"><?php echo __('Learn More', ''); ?></a>
-                                    <br><br>
-                                </div>
-                            </div>
-                        </div>
-                    <?php } ?>
-                </div>
-                <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting'); ?>
+                <?php
+                $admin_onboarding->view();
+                AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting');
+                ?>
             </div>
         <?php } elseif ($gateway == 'paypal_woocommerce_support') {
             ?>

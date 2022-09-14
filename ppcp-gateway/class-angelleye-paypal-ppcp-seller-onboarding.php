@@ -26,7 +26,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function __construct() {
         try {
-            if(is_angelleye_aws_down() == false) {
+            if (is_angelleye_aws_down() == false) {
                 $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE;
             } else {
                 $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE;
@@ -75,9 +75,14 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return $data;
     }
 
-    public function angelleye_generate_signup_link($testmode) {
+    public function angelleye_generate_signup_link($testmode, $page) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
         $body = $this->data();
+        if($page === 'gateway_settings') {
+            $body['return_url'] = add_query_arg(array('place' => 'gateway_settings', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
+        } else {
+            $body['return_url'] = add_query_arg(array('place' => 'admin_settings_onboarding', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
+        }
         if ($this->is_sandbox) {
             $tracking_id = angelleye_key_generator();
             $body['tracking_id'] = $tracking_id;
@@ -186,7 +191,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
             $this->settings->persist();
             $this->angelleye_get_seller_onboarding_status();
-            $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
+            if(isset($_GET['place']) && $_GET['place'] === 'gateway_settings' ) {
+                $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
+            } else {
+                $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products');
+            }
             wp_safe_redirect($redirect_url, 302);
             exit;
         } catch (Exception $ex) {
@@ -231,7 +240,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     $this->settings->persist();
                 }
             }
-            
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -241,6 +249,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_track_seller_onboarding_status($merchant_id) {
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
         if ($this->is_sandbox) {
             $partner_merchant_id = $this->sandbox_partner_merchant_id;
         } else {
@@ -291,5 +300,4 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         }
         return false;
     }
-
 }

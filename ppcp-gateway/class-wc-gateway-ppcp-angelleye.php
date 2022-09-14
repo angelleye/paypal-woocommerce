@@ -297,7 +297,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
                     if (($this->is_live_first_party_used !== 'yes' && $this->is_live_third_party_used !== 'yes' && $testmode === 'no') || ($this->is_sandbox_first_party_used !== 'yes' && $this->is_sandbox_third_party_used !== 'yes' && $testmode === 'yes')) {
-                        $signup_link = $this->angelleye_get_signup_link($testmode);
+                        $signup_link = $this->angelleye_get_signup_link($testmode, 'gateway_settings');
                         if ($signup_link) {
                             $url = add_query_arg($args, $signup_link);
                             $this->angelleye_display_paypal_signup_button($url, $id, $label);
@@ -367,11 +367,11 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         return ob_get_clean();
     }
 
-    public function angelleye_get_signup_link($testmode = 'yes') {
+    public function angelleye_get_signup_link($testmode = 'yes', $page) {
         try {
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php');
             $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
-            $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode);
+            $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode, $page);
             if (isset($seller_onboarding_result['links'])) {
                 foreach ($seller_onboarding_result['links'] as $link) {
                     if (isset($link['rel']) && 'action_url' === $link['rel']) {
