@@ -270,7 +270,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <br><br><br>
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
-                            <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
+                            <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/notice.png'; ?>"></span>
                             <p><?php echo __('In order to continue supporting you the best way we can with our plugin, we will be requiring that you connect to our app instead of using your own.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('This will allow us to continue bringing you all the features PayPal will provide in the future as well as offering lower rates on fees and more benefits!', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('Please use the button below to switch from using your own App credentials to using our App instead.  This change will be seamless, and you will not need to make any other adjustments now or going forward.', 'paypal-for-woocommerce'); ?></p>
