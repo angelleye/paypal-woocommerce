@@ -26,7 +26,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function __construct() {
         try {
-            if(is_angelleye_aws_down() == false) {
+            if (is_angelleye_aws_down() == false) {
                 $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE;
             } else {
                 $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE;
@@ -231,7 +231,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     $this->settings->persist();
                 }
             }
-            
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
