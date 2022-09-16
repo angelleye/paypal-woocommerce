@@ -17,7 +17,7 @@ jQuery(function ($) {
     if (typeof ppcp_angelleye_param === 'undefined') {
         return false;
     }
-    var ppcp_available = $('#woocommerce_angelleye_ppcp_enable_advanced_card_payments, #woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_enable_separate_payment_method').closest('tr');
+    var ppcp_available = $('#woocommerce_angelleye_ppcp_enable_advanced_card_payments, #woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_enable_separate_payment_method, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position, #woocommerce_angelleye_ppcp_disable_cards').closest('tr');
     if (ppcp_angelleye_param.is_advanced_card_payments === 'yes') {
         ppcp_available.show();
     } else {
@@ -64,7 +64,6 @@ jQuery(function ($) {
     $('#woocommerce_angelleye_ppcp_enable_advanced_card_payments').change(function () {
         if ($(this).is(':checked')) {
             if ($('#woocommerce_angelleye_ppcp_enable_paypal_checkout_page').is(':checked') && $('#woocommerce_angelleye_ppcp_checkout_page_display_option').val() !== 'top') {
-            
                 $('#woocommerce_angelleye_ppcp_enable_separate_payment_method').closest('tr').show();
             } else {
                 $('#woocommerce_angelleye_ppcp_enable_separate_payment_method').closest('tr').hide();
@@ -227,7 +226,7 @@ jQuery(function ($) {
         }
     }).change();
     $('#woocommerce_angelleye_ppcp_enable_paypal_checkout_page').change(function () {
-        if ($(this).is(':checked') ) {
+        if ($(this).is(':checked')) {
             if ($('#woocommerce_angelleye_ppcp_enable_advanced_card_payments').is(':checked') && $('#woocommerce_angelleye_ppcp_checkout_page_display_option').val() !== 'top') {
                 $('#woocommerce_angelleye_ppcp_enable_separate_payment_method').closest('tr').show();
                 $('#woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').show();
@@ -260,11 +259,11 @@ jQuery(function ($) {
             if ($(this).val() === 'top') {
                 $('#woocommerce_angelleye_ppcp_checkout_disable_smart_button').closest('tr').hide();
                 $('#woocommerce_angelleye_ppcp_enable_separate_payment_method').closest('tr').hide();
-            $('#woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').hide();
+                $('#woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').hide();
             } else {
                 $('#woocommerce_angelleye_ppcp_checkout_disable_smart_button').closest('tr').show();
                 $('#woocommerce_angelleye_ppcp_enable_separate_payment_method').closest('tr').show();
-            $('#woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').show();
+                $('#woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').show();
             }
         }
 
@@ -916,5 +915,9 @@ jQuery(function ($) {
             pay_later_messaging_payment_text_layout_logo_position.hide();
         }
     }).change();
+    var ppcp_available = $('#woocommerce_angelleye_ppcp_enable_advanced_card_payments, #woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_enable_separate_payment_method, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position, #woocommerce_angelleye_ppcp_disable_cards').closest('tr');
+    if (ppcp_angelleye_param.is_advanced_card_payments === 'no') {
+        ppcp_available.hide();
+    }
 });
    

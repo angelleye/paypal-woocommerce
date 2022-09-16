@@ -14,6 +14,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public $live_secret_id;
     public $on_board_status = 'NOT_CONNECTED';
     public $result;
+    public $dcc_applies;
     protected static $_instance = null;
 
     public static function instance() {
@@ -41,6 +42,11 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php';
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
+            }
+           
+            $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
         } catch (Exception $ex) {
@@ -82,15 +88,19 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             if ($this->is_sandbox_third_party_used === 'no' && $this->is_sandbox_first_party_used === 'no') {
                 $this->on_board_status = 'NOT_CONNECTED';
             } elseif ($this->is_sandbox_third_party_used === 'yes') {
-                $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->sandbox_merchant_id);
-                if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
+                if ($this->dcc_applies->for_country_currency() === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
-                    $this->settings->set('enable_advanced_card_payments', 'yes');
-                    $this->settings->persist();
                 } else {
-                    $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
-                    $this->settings->set('enable_advanced_card_payments', 'no');
-                    $this->settings->persist();
+                    $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->sandbox_merchant_id);
+                    if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
+                        $this->on_board_status = 'FULLY_CONNECTED';
+                        $this->settings->set('enable_advanced_card_payments', 'yes');
+                        $this->settings->persist();
+                    } else {
+                        $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
+                        $this->settings->set('enable_advanced_card_payments', 'no');
+                        $this->settings->persist();
+                    }
                 }
             } elseif ($this->is_sandbox_first_party_used === 'yes') {
                 $this->on_board_status = 'USED_FIRST_PARTY';
@@ -99,15 +109,19 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             if ($this->is_live_third_party_used === 'no' && $this->is_live_first_party_used === 'no') {
                 $this->on_board_status = 'NOT_CONNECTED';
             } elseif ($this->is_live_third_party_used === 'yes') {
-                $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->live_merchant_id);
-                if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
+                if ($this->dcc_applies->for_country_currency() === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
-                    $this->settings->set('enable_advanced_card_payments', 'yes');
-                    $this->settings->persist();
                 } else {
-                    $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
-                    $this->settings->set('enable_advanced_card_payments', 'no');
-                    $this->settings->persist();
+                    $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->live_merchant_id);
+                    if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
+                        $this->on_board_status = 'FULLY_CONNECTED';
+                        $this->settings->set('enable_advanced_card_payments', 'yes');
+                        $this->settings->persist();
+                    } else {
+                        $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
+                        $this->settings->set('enable_advanced_card_payments', 'no');
+                        $this->settings->persist();
+                    }
                 }
             } elseif ($this->is_live_first_party_used === 'yes') {
                 $this->on_board_status = 'USED_FIRST_PARTY';
@@ -238,7 +252,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
                             <p><?php echo __('You’re currently setup and enjoying the benefits of <br> WooCommerce Complete Payments.', 'paypal-for-woocommerce'); ?></p>
+                            <?php if ($this->dcc_applies->for_country_currency() === true) { ?>
                             <p><?php echo __('This includes a reduced rate for debit / credit cards of only 2.69% + 49¢!', 'paypal-for-woocommerce'); ?></p>
+                            <?php } ?>
                             <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>   
                             <br>
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button" target="_blank"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
@@ -255,7 +271,39 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                            <p><?php echo __('First Party WooCommerce Complete Payments Used.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('In order to continue supporting you the best way we can with our plugin, we will be requiring that you connect to our app instead of using your own.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('This will allow us to continue bringing you all the features PayPal will provide in the future as well as offering lower rates on fees and more benefits!', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('Please use the button below to switch from using your own App credentials to using our App instead.  This change will be seamless, and you will not need to make any other adjustments now or going forward.', 'paypal-for-woocommerce'); ?></p>
+                            <br>
+                            <?php
+                            $testmode = $this->sandbox ? 'yes' : 'no';
+                            $signup_link = $this->angelleye_get_signup_link($testmode, 'admin_settings_onboarding');
+                            if ($signup_link) {
+                                $args = array(
+                                    'displayMode' => 'minibrowser',
+                                );
+                                $url = add_query_arg($args, $signup_link);
+                                ?>
+                                <a target="_blank" class="wplk-button" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Start Now', 'paypal-for-woocommerce'); ?></a>    
+                                <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
+                                <?php
+                                $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
+                                ?>
+                                <script type="text/javascript">
+                                    document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                        element.addEventListener('click', (e) => {
+                                            if ('undefined' === typeof PAYPAL) {
+                                                e.preventDefault();
+                                                alert('PayPal');
+                                            }
+                                        });
+                                    });</script>
+                                <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
+                            } else {
+                                echo __('We could not properly connect to PayPal', '');
+                            }
+                            ?>  
+                            <br><br>    
                         </div>
                     </div>
                 </div>
