@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 6.0.2
-Stable tag: 3.0.36
+Stable tag: 3.0.37
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.37 - 09.19.2022 =
+* Fix - Resolves issue with Authorization and Capture History. ([PFW-1184](https://github.com/angelleye/paypal-woocommerce/pull/1739))
 
 = 3.0.36 - 09.19.2022 =
 * Feature - Adds  PPCP - Authorize and Partial Capture Functionality. ([PFW-1058](https://github.com/angelleye/paypal-woocommerce/pull/1728))
