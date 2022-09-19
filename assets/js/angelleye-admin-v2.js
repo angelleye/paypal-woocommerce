@@ -362,6 +362,48 @@ jQuery(document).ready(function ($) {
             jQuery('#angelleye_payment_submit_button').show();
         }
     });
+    
+   jQuery('#angelleye_ppcp_payment_action').change(function () {
+        if (jQuery(this).val() === 'refund') {
+            jQuery('.angelleye_ppcp_refund_box').show();
+            jQuery('.angelleye_ppcp_capture_box').hide();
+            jQuery('.angelleye_ppcp_void_box').hide();
+        } else if (jQuery(this).val() === 'capture') {
+            jQuery('.angelleye_ppcp_capture_box').show();
+            jQuery('.angelleye_ppcp_refund_box').hide();
+            jQuery('.angelleye_ppcp_void_box').hide();
+        } else if (jQuery(this).val() === 'void') {
+            jQuery('.angelleye_ppcp_capture_box').hide();
+            jQuery('.angelleye_ppcp_refund_box').hide();
+            jQuery('.angelleye_ppcp_void_box').show();
+        } else {
+            jQuery('.angelleye_ppcp_capture_box').hide();
+            jQuery('.angelleye_ppcp_refund_box').hide();
+            jQuery('.angelleye_ppcp_void_box').hide();
+        }
+        if (jQuery(this).val().length === 0) {
+            jQuery('#angelleye_ppcp_payment_submit_button').hide();
+            return false;
+        } else {
+            jQuery('#angelleye_ppcp_payment_submit_button').show();
+        }
+    }).change();
+     jQuery("#angelleye_ppcp_payment_submit_button").click(function (event) {
+        if (jQuery('#is_ppcp_submited').val() === 'no') {
+            jQuery('#is_ppcp_submited').val('yes');
+            var r = confirm('Are you sure?');
+            if (r === true) {
+                jQuery("#angelleye-ppcp-order-action").block({message: null, overlayCSS: {background: "#fff", opacity: .6}});
+                return r;
+            } else {
+                jQuery('#is_ppcp_submited').val('no');
+                jQuery("#angelleye-ppcp-order-action").unblock();
+                event.preventDefault();
+                return r;
+            }
+        }
+    });
+    
     jQuery('.admin_smart_button_preview').change(function () {
         display_angelleye_smart_button();
     });
