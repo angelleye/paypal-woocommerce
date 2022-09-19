@@ -386,6 +386,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function process_payment($woo_order_id) {
+        $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
         $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
         $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
         if (!empty($angelleye_ppcp_payment_method_title)) {
@@ -405,7 +406,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($woo_order_id);
             }
-            angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
+            angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
             angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
             if ($is_success) {
                 WC()->cart->empty_cart();

@@ -402,6 +402,9 @@ hr {
 .copy-shortcode {
     margin-left: 3px !important;
 }
+.widefat.angelleye_ppcp_order_action_table td {
+    text-align: right;
+}
 
 
 @media only all and (max-width: 1200px) {

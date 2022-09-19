@@ -1271,12 +1271,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woo_woocommerce_product_data_tabs($product_data_tabs) {
-            global $woocommerce, $pp_settings;
-            if(empty($pp_settings['enabled']) || $pp_settings['enabled'] != 'yes') {
-                return $product_data_tabs;
-            }
+            global $woocommerce;
             $gateways = $woocommerce->payment_gateways->payment_gateways();
-            if( !empty($gateways) ) {
+            if( (isset($gateways['paypal_express']) && 'yes' === $gateways['paypal_express']->enabled) ||  (isset($gateways['angelleye_ppcp']) && 'yes' === $gateways['angelleye_ppcp']->enabled)) {
                 $product_data_tabs['angelleye_paypal_for_woo_payment_action'] = array(
                     'label' => __( 'Payment Action', 'paypal-for-woocommerce' ),
                     'target' => 'angelleye_paypal_for_woo_payment_action',
@@ -1288,34 +1285,31 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function angelleye_paypal_for_woo_product_date_panels() {
             global $woocommerce, $post, $pp_settings;
-            if(empty($pp_settings['enabled']) || $pp_settings['enabled'] != 'yes') {
-                return false;
-            }
             ?>
             <div id="angelleye_paypal_for_woo_payment_action" class="panel woocommerce_options_panel">
                 <?php
-                woocommerce_wp_checkbox(
-                        array(
-                                'id'          => 'enable_payment_action',
-                                'label'       => __( 'Enable Payment Action', 'paypal-for-woocommerce' ),
-                        )
-                );
-               
-                woocommerce_wp_select(
-                    array(
-                            'id'          => 'woo_product_payment_action',
-                            'label'       => __( 'Payment Action', 'paypal-for-woocommerce' ),
-                            'options' => array(
-                                '' => 'Select Payment Action',
-                                'Sale' => 'Sale',
-                                'Authorization' => 'Authorization',
-                            ),
-                            'desc_tip'    => 'true',
-                            'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
-                    )
-                );
-                
                 $gateways = $woocommerce->payment_gateways->payment_gateways();
+                if( (isset($gateways['paypal_express']) && 'yes' === $gateways['paypal_express']->enabled) ||  (isset($gateways['angelleye_ppcp']) && 'yes' === $gateways['angelleye_ppcp']->enabled)) {
+                    woocommerce_wp_checkbox(
+                            array(
+                                    'id'          => 'enable_payment_action',
+                                    'label'       => __( 'Enable Payment Action', 'paypal-for-woocommerce' ),
+                            )
+                    );
+                    woocommerce_wp_select(
+                        array(
+                                'id'          => 'woo_product_payment_action',
+                                'label'       => __( 'Payment Action', 'paypal-for-woocommerce' ),
+                                'options' => array(
+                                    '' => 'Select Payment Action',
+                                    'Sale' => 'Immediate Capture',
+                                    'Authorization' => 'Authorization for Delayed Capture',
+                                ),
+                                'desc_tip'    => 'true',
+                                'description' => __('Immediate Capture will capture the funds immediately when the order is placed. Authorization for Delayed Capture will Authorize the payment to ensure valid funds - process (capture) the payment at a later day/time.'),
+                        )
+                    );
+                }
                 if( isset($gateways['paypal_pro_payflow']) && ( isset($gateways['paypal_pro_payflow']->enabled) && 'no' != $gateways['paypal_pro_payflow']->enabled ) ) {
                     woocommerce_wp_select(
                         array(
