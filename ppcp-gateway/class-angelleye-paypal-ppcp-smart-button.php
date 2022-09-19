@@ -254,6 +254,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_action('woocommerce_review_order_before_order_total', array($this, 'angelleye_ppcp_display_payment_method_title_review_page'));
         add_action('wp_loaded', array($this, 'angelleye_ppcp_prevent_add_to_cart_woo_action'), 1);
         add_action('init', array($this, 'angelleye_ppcp_woocommerce_before_checkout_process'), 0);
+        add_action('admin_notices', array($this, 'angelleye_ppcp_admin_notices'));
         add_filter('angelleye_ppcp_paymentaction', array($this, 'angelleye_ppcp_paymentaction_filter'), 10, 2);
         add_filter('angelleye_ppcp_paymentaction_product_page', array($this, 'angelleye_ppcp_paymentaction_product_page_filter'), 10, 2);
         add_shortcode('angelleye_ppcp_smart_button', array($this, 'angelleye_ppcp_display_paypal_smart_button_using_shortcode'), 9);
@@ -1086,6 +1087,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $_GET['wcf_checkout_id'] = $_POST['_wcf_checkout_id'];
             wc_maybe_define_constant('DOING_AJAX', true);
             wc_maybe_define_constant('WC_DOING_AJAX', true);
+        }
+    }
+
+    public function angelleye_ppcp_admin_notices() {
+        try {
+            if (($this->is_sandbox === true && $this->is_sandbox_first_party_used) || ($this->is_sandbox === false && $this->is_live_first_party_used)) {
+                echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('PayPal is requiring that users of our plugin onboard into our app instead of using their own PayPal App credentials.  Please make this change by December 31st, 2022 in order to continue using our plugin.  %s', 'paypal-for-woocommerce'), '<a target="_blank" href="https://www.angelleye.com/paypal-for-woocommerce-onboarding-requirement/">Learn More</a>')  . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss">Dismiss</button></div></div>';
+            }
+        } catch (Exception $ex) {
+            return $paymentaction;
         }
     }
 

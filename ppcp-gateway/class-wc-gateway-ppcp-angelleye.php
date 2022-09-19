@@ -327,8 +327,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_display_paypal_signup_button($url, $id, $label) {
         ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a>
-        <span class="angelleye_paypal_checkout_gateway_setting_sepraer"><?php echo __('OR', ''); ?></span>
-        <a href="#" class="angelleye_paypal_checkout_gateway_manual_credential_input"><?php echo __('Toggle to manual credential input', ''); ?></a>
+        <span class="angelleye_paypal_checkout_gateway_setting_sepraer"></span>
         <?php
     }
 
