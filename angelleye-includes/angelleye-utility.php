@@ -303,9 +303,11 @@ class AngellEYE_Utility {
                     case 'braintree' : {
                         $this->total_Order = $order->get_total();
                         $this->total_DoCapture = self::get_total('DoCapture', 'submitted_for_settlement', $order_id);
-                        if( $this->total_DoCapture == 0 ) {
-                            $this->total_DoCapture = self::get_total('DoCapture', 'settling', $order_id);
-                        }
+                        $this->total_DoCapture = $this->total_DoCapture + self::get_total('DoCapture', 'settling', $order_id);
+                        $this->total_DoCapture = $this->total_DoCapture + self::get_total('DoCapture', 'settled', $order_id);
+                        $this->total_DoCapture = $this->total_DoCapture + self::get_total('DoCapture', 'settlement_pending', $order_id);
+                        $this->total_DoCapture = $this->total_DoCapture + self::get_total('DoCapture', 'settlement_confirmed', $order_id);
+                        $this->total_DoCapture = self::number_format($this->total_DoCapture);
                         $this->total_Order = self::get_total('Order', 'Pending', $order_id);
                         $this->total_DoVoid = self::get_total('DoVoid', '', $order_id);
                         $this->total_Pending_DoAuthorization = self::get_total('DoAuthorization', 'Pending', $order_id);
@@ -1109,7 +1111,7 @@ class AngellEYE_Utility {
                         } else {
                             $remain_authorize_amount_text = '';
                         }
-                    } elseif ($payment_method == 'paypal_pro_payflow' || 'paypal_pro') {
+                    } elseif ($payment_method == 'paypal_pro_payflow' || $payment_method == 'paypal_pro') {
                         $this->total_DoVoid = self::get_total('DoVoid', '', $order_id);
                         $this->total_DoCapture = self::get_total('DoCapture', 'Completed', $order_id);
                         $remain_capture = $order->get_total() - ( $this->total_DoVoid + $this->total_DoCapture );
@@ -1210,7 +1212,11 @@ class AngellEYE_Utility {
                                 <?php
                                 $PAYMENTSTATUS = get_post_meta($post->ID, 'PAYMENTSTATUS', true);
                                 if (!empty($PAYMENTSTATUS)) {
-                                    echo esc_attr($PAYMENTSTATUS);
+                                    if( $PAYMENTSTATUS === 'submitted_for_settlement' ) {
+                                        echo 'Submitted for settlement';
+                                    } else {
+                                        echo esc_attr($PAYMENTSTATUS);
+                                    }
                                 }
                                 ?>
                             </td>
