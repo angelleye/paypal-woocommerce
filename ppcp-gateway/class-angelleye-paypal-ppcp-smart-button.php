@@ -254,6 +254,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_action('woocommerce_review_order_before_order_total', array($this, 'angelleye_ppcp_display_payment_method_title_review_page'));
         add_action('wp_loaded', array($this, 'angelleye_ppcp_prevent_add_to_cart_woo_action'), 1);
         add_action('init', array($this, 'angelleye_ppcp_woocommerce_before_checkout_process'), 0);
+        add_filter('angelleye_ppcp_paymentaction', array($this, 'angelleye_ppcp_paymentaction_filter'), 10, 2);
+        add_filter('angelleye_ppcp_paymentaction_product_page', array($this, 'angelleye_ppcp_paymentaction_product_page_filter'), 10, 2);
         add_shortcode('angelleye_ppcp_smart_button', array($this, 'angelleye_ppcp_display_paypal_smart_button_using_shortcode'), 9);
     }
 
@@ -271,7 +273,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function enqueue_scripts() {
-        global $post, $wp;
+        global $post, $wp, $product;
         if ((is_checkout() || is_checkout_pay_page() ) && $this->advanced_card_payments) {
             if (!isset($_GET['paypal_order_id'])) {
                 $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
@@ -315,9 +317,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $first_name = '';
         $last_name = '';
         $button_selector = array();
+        $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
         if (is_product()) {
             $page = 'product';
             $button_selector['angelleye_ppcp_product'] = '#angelleye_ppcp_product';
+            if (is_product()) {
+                $product_id = $post->ID;
+                $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction_product_page', $this->paymentaction, $product_id);
+            }
             $button_selector['angelleye_ppcp_product_shortcode'] = '#angelleye_ppcp_product_shortcode';
         } elseif (is_cart() && !WC()->cart->is_empty()) {
             $page = 'cart';
@@ -449,7 +456,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         wp_enqueue_script($this->angelleye_ppcp_plugin_name);
         if (WC()->cart->needs_payment()) {
             wp_enqueue_script('angelleye-paypal-checkout-sdk');
-            if($is_shortcode === 'yes') {
+            if ($is_shortcode === 'yes') {
                 echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_cart_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart_shortcode"></div></div></div>';
             } else {
                 echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart"></div><div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</div></div>';
@@ -493,7 +500,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (angelleye_ppcp_is_product_purchasable($product) === true) {
                 wp_enqueue_script('angelleye-paypal-checkout-sdk');
                 wp_enqueue_script($this->angelleye_ppcp_plugin_name);
-                if($is_shortcode === 'yes') {
+                if ($is_shortcode === 'yes') {
                     echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_product_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_product_shortcode"></div></div></div>';
                 } else {
                     echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_product"></div></div>';
@@ -513,7 +520,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if ($this->enable_separate_payment_method === false) {
                 $separator = '<div class="angelleye_ppcp-proceed-to-checkout-button-separator checkout_cc_separator" style="display:none;">&mdash;&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;&mdash;</div>';
             }
-            if($is_shortcode === 'yes') {
+            if ($is_shortcode === 'yes') {
                 echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_checkout_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout"></div>' . $separator . '</div></div>';
             } else {
                 echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout"></div>' . $separator . '</div>';
@@ -1079,6 +1086,70 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $_GET['wcf_checkout_id'] = $_POST['_wcf_checkout_id'];
             wc_maybe_define_constant('DOING_AJAX', true);
             wc_maybe_define_constant('WC_DOING_AJAX', true);
+        }
+    }
+
+    public function angelleye_ppcp_paymentaction_filter($paymentaction, $order_id) {
+        try {
+            if ($order_id !== null) {
+                $order = wc_get_order($order_id);
+                if ($order) {
+                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
+                    $paymentaction = angelleye_ppcp_get_post_meta($order, '_paymentaction');
+                    if (!empty($paymentaction)) {
+                        return $paymentaction;
+                    }
+                }
+            }
+            if (is_null(WC()->cart) || WC()->cart->is_empty()) {
+                return $paymentaction;
+            } else {
+                $payment_action = array();
+                foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+                    $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
+                    $is_enable_payment_action = get_post_meta($product_id, 'enable_payment_action', true);
+                    if ($is_enable_payment_action === 'yes') {
+                        $woo_product_payment_action = get_post_meta($product_id, 'woo_product_payment_action', true);
+                        if (!empty($woo_product_payment_action)) {
+                            if ($woo_product_payment_action === 'Authorization') {
+                                $payment_action['authorize'] = 'authorize';
+                            } elseif ($woo_product_payment_action === 'Sale') {
+                                $payment_action['capture'] = 'capture';
+                            }
+                        }
+                    }
+                }
+                if (isset($payment_action['authorize'])) {
+                    return $payment_action['authorize'];
+                } elseif ($payment_action['capture']) {
+                    return $payment_action['capture'];
+                } else {
+                    return $paymentaction;
+                }
+            }
+        } catch (Exception $ex) {
+            return $paymentaction;
+        }
+    }
+
+    public function angelleye_ppcp_paymentaction_product_page_filter($paymentaction, $product_id) {
+        try {
+            $is_enable_payment_action = get_post_meta($product_id, 'enable_payment_action', true);
+            if ($is_enable_payment_action === 'yes') {
+                $woo_product_payment_action = get_post_meta($product_id, 'woo_product_payment_action', true);
+                if (!empty($woo_product_payment_action)) {
+                    if ($woo_product_payment_action === 'Authorization') {
+                        $paymentaction = 'authorize';
+                        return $paymentaction;
+                    } elseif ($woo_product_payment_action === 'Sale') {
+                        $paymentaction = 'capture';
+                        return $paymentaction;
+                    }
+                }
+            }
+            return $paymentaction;
+        } catch (Exception $ex) {
+            
         }
     }
 

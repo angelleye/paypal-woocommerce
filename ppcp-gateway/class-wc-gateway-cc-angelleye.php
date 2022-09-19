@@ -117,7 +117,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($woo_order_id);
                 }
-                angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
+                angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
                 angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
                 if ($is_success) {
                     WC()->cart->empty_cart();

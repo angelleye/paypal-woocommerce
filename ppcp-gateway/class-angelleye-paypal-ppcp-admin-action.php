@@ -101,9 +101,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
-        $payment_action = angelleye_ppcp_get_post_meta($order, '_payment_action');
+        $paymentaction = angelleye_ppcp_get_post_meta($order, '_paymentaction');
         $auth_transaction_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
-        if ('angelleye_ppcp' === $payment_method && $payment_action === 'authorize' && !empty($auth_transaction_id)) {
+        if ('angelleye_ppcp' === $payment_method && $paymentaction === 'authorize' && !empty($auth_transaction_id)) {
             $trans_details = $this->payment_request->angelleye_ppcp_show_details_authorized_payment($auth_transaction_id);
             if ($this->angelleye_ppcp_is_authorized_only($trans_details)) {
                 $this->payment_request->angelleye_ppcp_capture_authorized_payment($order_id);
@@ -119,8 +119,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
         $transaction_id = $order->get_transaction_id();
-        $payment_action = angelleye_ppcp_get_post_meta($order, '_payment_action');
-        if ('angelleye_ppcp' === $payment_method && $transaction_id && $payment_action === 'authorize') {
+        $paymentaction = angelleye_ppcp_get_post_meta($order, '_paymentaction');
+        if ('angelleye_ppcp' === $payment_method && $transaction_id && $paymentaction === 'authorize') {
             $trans_details = $this->payment_request->angelleye_ppcp_show_details_authorized_payment($transaction_id);
             if ($this->angelleye_ppcp_is_authorized_only($trans_details)) {
                 $this->payment_request->angelleye_ppcp_void_authorized_payment($transaction_id);
@@ -139,14 +139,14 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
         $paypal_status = angelleye_ppcp_get_post_meta($order, '_payment_status');
-        $payment_action = angelleye_ppcp_get_post_meta($order, '_payment_action');
+        $paymentaction = angelleye_ppcp_get_post_meta($order, '_paymentaction');
         if ('angelleye_ppcp' !== $payment_method) {
             return $actions;
         }
         if (!is_array($actions)) {
             $actions = array();
         }
-        if ('CREATED' == $paypal_status && $payment_action === 'authorize') {
+        if ('CREATED' == $paypal_status && $paymentaction === 'authorize') {
             $actions['angelleye_ppcp_capture_charge'] = esc_html__('Capture Charge', 'paypal-for-woocommerce');
         }
         return $actions;
