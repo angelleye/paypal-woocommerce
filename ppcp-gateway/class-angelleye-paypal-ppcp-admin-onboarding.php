@@ -45,7 +45,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
             }
-           
+
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
@@ -101,6 +101,11 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         $this->settings->set('enable_advanced_card_payments', 'no');
                         $this->settings->persist();
                     }
+                    if($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
+                        set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
+                    } else {
+                        set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
+                    }
                 }
             } elseif ($this->is_sandbox_first_party_used === 'yes') {
                 $this->on_board_status = 'USED_FIRST_PARTY';
@@ -121,6 +126,11 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
                         $this->settings->set('enable_advanced_card_payments', 'no');
                         $this->settings->persist();
+                    }
+                    if($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
+                        set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
+                    } else {
+                        set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
                     }
                 }
             } elseif ($this->is_live_first_party_used === 'yes') {
@@ -193,7 +203,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <div class="paypal_woocommerce_product_onboard_content">
                             <p><?php echo __('Welcome to the easiest one-stop solution for accepting PayPal, Debit and Credit <br>Cards, with a lower per-transaction cost for cards than other gateways!', 'paypal-for-woocommerce'); ?></p>
                             <?php
-                            if(isset($_GET['testmode'])) {
+                            if (isset($_GET['testmode'])) {
                                 $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
                             } else {
                                 $testmode = $this->sandbox ? 'yes' : 'no';
@@ -257,7 +267,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
                             <p><?php echo __('You’re currently setup and enjoying the benefits of <br> WooCommerce Complete Payments - Powered by PayPal.', 'paypal-for-woocommerce'); ?></p>
                             <?php if ($this->dcc_applies->for_country_currency() === true) { ?>
-                            <p><?php echo __('This includes a reduced rate for debit / credit cards of only 2.69% + 49¢!', 'paypal-for-woocommerce'); ?></p>
+                                <p><?php echo __('This includes a reduced rate for debit / credit cards of only 2.69% + 49¢!', 'paypal-for-woocommerce'); ?></p>
                             <?php } ?>
                             <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>   
                             <br>
@@ -315,5 +325,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         </div>
         <?php
     }
+
+    
 
 }

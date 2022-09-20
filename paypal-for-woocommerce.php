@@ -75,6 +75,9 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE')) {
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE', 'https://ppcp.angelleye.com/production/PayPalMerchantIntegration/');
 }
+if (!defined('AE_FEE')) {
+    define('AE_FEE', 'ae_p_f');
+}
 
 
 /**

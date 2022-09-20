@@ -78,7 +78,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     public function angelleye_generate_signup_link($testmode, $page) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
         $body = $this->data();
-        if($page === 'gateway_settings') {
+        if ($page === 'gateway_settings') {
             $body['return_url'] = add_query_arg(array('place' => 'gateway_settings', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
         } else {
             $body['return_url'] = add_query_arg(array('place' => 'admin_settings_onboarding', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
@@ -191,7 +191,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
             $this->settings->persist();
             $this->angelleye_get_seller_onboarding_status();
-            if(isset($_GET['place']) && $_GET['place'] === 'gateway_settings' ) {
+            if (isset($_GET['place']) && $_GET['place'] === 'gateway_settings') {
                 $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
             } else {
                 $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products');
@@ -238,6 +238,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 } else {
                     $this->settings->set('enable_advanced_card_payments', 'no');
                     $this->settings->persist();
+                }
+                if($this->angelleye_ppcp_is_fee_enable($this->result)) {
+                    set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
+                } else {
+                    set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
                 }
             }
         } catch (Exception $ex) {
@@ -300,4 +305,24 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         }
         return false;
     }
+
+    public function angelleye_ppcp_is_fee_enable($response) {
+        try {
+            if (!empty($response)) {
+                if (isset($response['oauth_integrations']['0']['integration_type']) && 'OAUTH_THIRD_PARTY' === $response['oauth_integrations']['0']['integration_type']) {
+                    if (isset($response['oauth_integrations']['0']['oauth_third_party']['0']['scopes']) && is_array($response['oauth_integrations']['0']['oauth_third_party']['0']['scopes'])) {
+                        foreach ($response['oauth_integrations']['0']['oauth_third_party']['0']['scopes'] as $key => $scope) {
+                            if (strpos($scope, 'payments/partnerfee') !== false) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch (Exception $ex) {
+            
+        }
+    }
+
 }
