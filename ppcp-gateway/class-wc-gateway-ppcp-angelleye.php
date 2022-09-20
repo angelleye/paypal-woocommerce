@@ -327,8 +327,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_display_paypal_signup_button($url, $id, $label) {
         ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a>
-        <span class="angelleye_paypal_checkout_gateway_setting_sepraer"><?php echo __('OR', ''); ?></span>
-        <a href="#" class="angelleye_paypal_checkout_gateway_manual_credential_input"><?php echo __('Toggle to manual credential input', ''); ?></a>
+        <span class="angelleye_paypal_checkout_gateway_setting_sepraer"></span>
         <?php
     }
 
@@ -387,6 +386,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function process_payment($woo_order_id) {
+        $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
         $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
         $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
         if (!empty($angelleye_ppcp_payment_method_title)) {
@@ -406,7 +406,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($woo_order_id);
             }
-            angelleye_ppcp_update_post_meta($order, '_payment_action', $this->paymentaction);
+            angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
             angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
             if ($is_success) {
                 WC()->cart->empty_cart();

@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Complete Payments, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           3.0.35
+ * Version:           3.0.37
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,9 +13,9 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.5
- * Tested up to: 6.0.1
+ * Tested up to: 6.0.2
  * WC requires at least: 3.0.0
- * WC tested up to: 6.8.0
+ * WC tested up to: 6.9.2
  *
  *************
  * Attribution
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '3.0.35');
+    define('VERSION_PFW', '3.0.37');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -1271,12 +1271,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_paypal_for_woo_woocommerce_product_data_tabs($product_data_tabs) {
-            global $woocommerce, $pp_settings;
-            if(empty($pp_settings['enabled']) || $pp_settings['enabled'] != 'yes') {
-                return $product_data_tabs;
-            }
+            global $woocommerce;
             $gateways = $woocommerce->payment_gateways->payment_gateways();
-            if( !empty($gateways) ) {
+            if( (isset($gateways['paypal_express']) && 'yes' === $gateways['paypal_express']->enabled) ||  (isset($gateways['angelleye_ppcp']) && 'yes' === $gateways['angelleye_ppcp']->enabled)) {
                 $product_data_tabs['angelleye_paypal_for_woo_payment_action'] = array(
                     'label' => __( 'Payment Action', 'paypal-for-woocommerce' ),
                     'target' => 'angelleye_paypal_for_woo_payment_action',
@@ -1288,34 +1285,31 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         
         public function angelleye_paypal_for_woo_product_date_panels() {
             global $woocommerce, $post, $pp_settings;
-            if(empty($pp_settings['enabled']) || $pp_settings['enabled'] != 'yes') {
-                return false;
-            }
             ?>
             <div id="angelleye_paypal_for_woo_payment_action" class="panel woocommerce_options_panel">
                 <?php
-                woocommerce_wp_checkbox(
-                        array(
-                                'id'          => 'enable_payment_action',
-                                'label'       => __( 'Enable Payment Action', 'paypal-for-woocommerce' ),
-                        )
-                );
-               
-                woocommerce_wp_select(
-                    array(
-                            'id'          => 'woo_product_payment_action',
-                            'label'       => __( 'Payment Action', 'paypal-for-woocommerce' ),
-                            'options' => array(
-                                '' => 'Select Payment Action',
-                                'Sale' => 'Sale',
-                                'Authorization' => 'Authorization',
-                            ),
-                            'desc_tip'    => 'true',
-                            'description' => __('Sale will capture the funds immediately when the order is placed.  Authorization will authorize the payment but will not capture the funds.'),
-                    )
-                );
-                
                 $gateways = $woocommerce->payment_gateways->payment_gateways();
+                if( (isset($gateways['paypal_express']) && 'yes' === $gateways['paypal_express']->enabled) ||  (isset($gateways['angelleye_ppcp']) && 'yes' === $gateways['angelleye_ppcp']->enabled)) {
+                    woocommerce_wp_checkbox(
+                            array(
+                                    'id'          => 'enable_payment_action',
+                                    'label'       => __( 'Enable Payment Action', 'paypal-for-woocommerce' ),
+                            )
+                    );
+                    woocommerce_wp_select(
+                        array(
+                                'id'          => 'woo_product_payment_action',
+                                'label'       => __( 'Payment Action', 'paypal-for-woocommerce' ),
+                                'options' => array(
+                                    '' => 'Select Payment Action',
+                                    'Sale' => 'Immediate Capture',
+                                    'Authorization' => 'Authorization for Delayed Capture',
+                                ),
+                                'desc_tip'    => 'true',
+                                'description' => __('Immediate Capture will capture the funds immediately when the order is placed. Authorization for Delayed Capture will Authorize the payment to ensure valid funds - process (capture) the payment at a later day/time.'),
+                        )
+                    );
+                }
                 if( isset($gateways['paypal_pro_payflow']) && ( isset($gateways['paypal_pro_payflow']->enabled) && 'no' != $gateways['paypal_pro_payflow']->enabled ) ) {
                     woocommerce_wp_select(
                         array(
