@@ -40,7 +40,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->merchant_id = $this->settings->get('live_merchant_id', '');
             $this->partner_client_id = PAYPAL_PPCP_PARTNER_CLIENT_ID;
         }
-        $this->title = $this->settings->get('title', 'PayPal Complete Payments');
+        $this->title = $this->settings->get('title', 'WooCommerce Complete Payments - Powered by PayPal');
         $this->brand_name = $this->settings->get('brand_name', get_bloginfo('name'));
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
         $this->landing_page = $this->settings->get('landing_page', 'NO_PREFERENCE');
@@ -1715,7 +1715,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         if (function_exists('WC')) {
             try {
                 $mailer = WC()->mailer();
-                $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'PayPal Complete Payments Error Notification');
+                $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'WooCommerce Complete Payments - Powered by PayPal Error Notification');
                 $message = '';
                 if (!empty($error_email_notification_param['request'])) {
                     $message .= "<strong>" . __('Action: ', 'paypal-for-woocommerce') . "</strong>" . ucwords(str_replace('_', ' ', $error_email_notification_param['request'])) . PHP_EOL;
