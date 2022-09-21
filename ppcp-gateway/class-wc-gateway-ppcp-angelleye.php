@@ -141,6 +141,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function process_admin_options() {
+        delete_transient(AE_FEE);
         parent::process_admin_options();
     }
 

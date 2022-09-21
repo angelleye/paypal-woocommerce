@@ -16,6 +16,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public $result;
     public $dcc_applies;
     protected static $_instance = null;
+    public $ppcp_paypal_country = null;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -88,10 +89,13 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             if ($this->is_sandbox_third_party_used === 'no' && $this->is_sandbox_first_party_used === 'no') {
                 $this->on_board_status = 'NOT_CONNECTED';
             } elseif ($this->is_sandbox_third_party_used === 'yes') {
-                if ($this->dcc_applies->for_country_currency() === false) {
+                $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->sandbox_merchant_id);
+                if(isset($this->result['country'])) {
+                    $this->ppcp_paypal_country = $this->result['country'];
+                }
+                if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
                 } else {
-                    $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->sandbox_merchant_id);
                     if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
                         $this->settings->set('enable_advanced_card_payments', 'yes');
@@ -114,10 +118,13 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             if ($this->is_live_third_party_used === 'no' && $this->is_live_first_party_used === 'no') {
                 $this->on_board_status = 'NOT_CONNECTED';
             } elseif ($this->is_live_third_party_used === 'yes') {
-                if ($this->dcc_applies->for_country_currency() === false) {
+                $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->live_merchant_id);
+                if(isset($this->result['country'])) {
+                    $this->ppcp_paypal_country = $this->result['country'];
+                }
+                if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
                 } else {
-                    $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->live_merchant_id);
                     if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
                         $this->settings->set('enable_advanced_card_payments', 'yes');
@@ -266,7 +273,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
                             <p><?php echo __('You’re currently setup and enjoying the benefits of <br> Complete Payments - Powered by PayPal.', 'paypal-for-woocommerce'); ?></p>
-                            <?php if ($this->dcc_applies->for_country_currency() === true) { ?>
+                            <?php if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === true) { ?>
                                 <p><?php echo __('This includes a reduced rate for debit / credit cards of only 2.69% + 49¢!', 'paypal-for-woocommerce'); ?></p>
                             <?php } ?>
                             <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>   
