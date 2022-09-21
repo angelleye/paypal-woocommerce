@@ -394,7 +394,11 @@ hr {
     text-align: center;
     margin-left: 30%;
 }
-
+.paypal_woocommerce_support_downloads p {
+  font-size: 20px;
+  padding: 5px;
+  font-family: arial;
+}
 .paypal-px-btn:hover {
     background-color: #003087;
 }

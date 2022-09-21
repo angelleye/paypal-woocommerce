@@ -35,14 +35,14 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
             ?>
             <div class="wrap angelleye_addons_wrap">
                 <div id="angelleye_paypal_marketing_table">
-                    <div class="paypal_woocommerce_support">
+                    <div class="paypal_woocommerce_support paypal_woocommerce_product_onboard">
                         <ul class="paypal_woocommerce_support_downloads">
                             <li>
-                                <h3><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></h3>
+                                <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
                                 <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact support', 'paypal-for-woocommerce'); ?></a>
                             </li>
                             <li>
-                                <h3><?php echo __('Plugin Documentation', ''); ?></h3>
+                                <p><?php echo __('Plugin Documentation', ''); ?></p>
                                 <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="wplk-button" target="_blank"><?php echo __('Full Documentation', ''); ?></a>
                             </li>
 
