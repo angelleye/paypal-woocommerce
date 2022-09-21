@@ -246,7 +246,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                            <p><?php echo __('You’re currently setup and enjoying the benefits of <br>WooCommerce Complete Payments - Powered by PayPal.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('You’re currently setup and enjoying the benefits of <br>Complete Payments - Powered by PayPal.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('However, we need additional verification to approve you for the reduced <br>rate of 2.69% on debit/credit cards.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>    
                             <br>
@@ -265,7 +265,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                            <p><?php echo __('You’re currently setup and enjoying the benefits of <br> WooCommerce Complete Payments - Powered by PayPal.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('You’re currently setup and enjoying the benefits of <br> Complete Payments - Powered by PayPal.', 'paypal-for-woocommerce'); ?></p>
                             <?php if ($this->dcc_applies->for_country_currency() === true) { ?>
                                 <p><?php echo __('This includes a reduced rate for debit / credit cards of only 2.69% + 49¢!', 'paypal-for-woocommerce'); ?></p>
                             <?php } ?>

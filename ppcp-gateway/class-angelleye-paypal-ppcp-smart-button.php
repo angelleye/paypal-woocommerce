@@ -64,7 +64,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_get_properties() {
-        $this->title = $this->settings->get('title', 'WooCommerce Complete Payments - Powered by PayPal');
+        $this->title = $this->settings->get('title', 'Complete Payments - Powered by PayPal');
         $this->enabled = 'yes' === $this->settings->get('enabled', 'no');
         $this->enable_paypal_checkout_page = 'yes' === $this->settings->get('enable_paypal_checkout_page', 'yes');
         $this->checkout_page_display_option = $this->settings->get('checkout_page_display_option', 'regular');
@@ -1095,7 +1095,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_admin_notices() {
         try {
             if (($this->is_sandbox === true && $this->is_sandbox_first_party_used === 'yes') || ($this->is_sandbox === false && $this->is_live_first_party_used === 'yes')) {
-                echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('PayPal is requiring that users of our plugin onboard into our app instead of using their own PayPal App credentials.  Please make this change by December 31st, 2022 in order to continue using our plugin.  %s', 'paypal-for-woocommerce'), '<a target="_blank" href="https://www.angelleye.com/paypal-for-woocommerce-onboarding-requirement/">Learn More</a>')  . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss">Dismiss</button></div></div>';
+                if(isset($_GET['gateway']) && 'paypal_payment_gateway_products' === $_GET['gateway']) {
+                    return;
+                }
+                echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('PayPal is requiring that users of our plugin onboard into our app instead of using their own PayPal App credentials.  Please make this change by December 31st, 2022 in order to continue using our plugin.  %s  &nbsp&nbsp&nbsp<a class="button-primary" href="%s" style="margin-top: 6px;">Update Now</a>', 'paypal-for-woocommerce'), '<a target="_blank" href="https://www.angelleye.com/paypal-for-woocommerce-onboarding-requirement/">Learn More</a>', admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products')) . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss">Dismiss</button></div></div>';
             }
         } catch (Exception $ex) {
             return $paymentaction;

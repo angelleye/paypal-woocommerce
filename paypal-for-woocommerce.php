@@ -3,7 +3,7 @@
  * @wordpress-plugin
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
- * Description:       Easily enable WooCommerce Complete Payments - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
+ * Description:       Easily enable Complete Payments - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
  * Version:           3.0.37
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
