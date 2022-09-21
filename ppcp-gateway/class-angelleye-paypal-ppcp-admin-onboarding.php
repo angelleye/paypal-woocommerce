@@ -101,7 +101,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         $this->settings->set('enable_advanced_card_payments', 'no');
                         $this->settings->persist();
                     }
-                    if($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
+                    if ($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
                         set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
                     } else {
                         set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
@@ -127,7 +127,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         $this->settings->set('enable_advanced_card_payments', 'no');
                         $this->settings->persist();
                     }
-                    if($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
+                    if ($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
                         set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
                     } else {
                         set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
@@ -195,7 +195,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         //$this->angelleye_ppcp_admin_notices();
         ?>    
         <div id="angelleye_paypal_marketing_table">
-            <?php if ($this->on_board_status === 'NOT_CONNECTED') { ?>
+            <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
                 <div class="paypal_woocommerce_product">
                     <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
                         <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
@@ -233,7 +233,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 echo __('We could not properly connect to PayPal', '');
                             }
                             ?>  
-                            <p><?php echo __('Buyers may pay with Debit/Credit (no PayPal account required), <br>and your fee will be only 2.69% + 49¢!', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('Buyers that pay with Debit/Credit (no PayPal account required), <br>and your fee will be only 2.69% + 49¢!', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('Buyers may also choose to pay with <br>PayPal Checkout, Pay Later, Venmo, and more!', 'paypal-for-woocommerce'); ?></p>    
                         </div>
                     </div>
@@ -277,55 +277,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         </div>
                     </div>
                 </div>
-            <?php } elseif ($this->on_board_status === 'USED_FIRST_PARTY') { ?>
-                <div class="paypal_woocommerce_product">
-                    <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
-                        <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
-                        <br><br><br>
-                        <div class="paypal_woocommerce_product_onboard_content">
-                            <br>
-                            <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/notice.png'; ?>"></span>
-                            <p><?php echo __('In order to continue supporting you the best way we can with our plugin, we will be requiring that you connect to our app instead of using your own.', 'paypal-for-woocommerce'); ?></p>
-                            <p><?php echo __('This will allow us to continue bringing you all the features PayPal will provide in the future as well as offering lower rates on fees and more benefits!', 'paypal-for-woocommerce'); ?></p>
-                            <p><?php echo __('Please use the button below to switch from using your own App credentials to using our App instead.  This change will be seamless, and you will not need to make any other adjustments now or going forward.', 'paypal-for-woocommerce'); ?></p>
-                            <br>
-                            <?php
-                            $testmode = $this->sandbox ? 'yes' : 'no';
-                            $signup_link = $this->angelleye_get_signup_link($testmode, 'admin_settings_onboarding');
-                            if ($signup_link) {
-                                $args = array(
-                                    'displayMode' => 'minibrowser',
-                                );
-                                $url = add_query_arg($args, $signup_link);
-                                ?>
-                                <a target="_blank" class="wplk-button" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Start Now', 'paypal-for-woocommerce'); ?></a>    
-                                <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
-                                <?php
-                                $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
-                                ?>
-                                <script type="text/javascript">
-                                    document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
-                                        element.addEventListener('click', (e) => {
-                                            if ('undefined' === typeof PAYPAL) {
-                                                e.preventDefault();
-                                                alert('PayPal');
-                                            }
-                                        });
-                                    });</script>
-                                <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
-                            } else {
-                                echo __('We could not properly connect to PayPal', '');
-                            }
-                            ?>  
-                            <br><br>    
-                        </div>
-                    </div>
-                </div>
             <?php } ?>
         </div>
         <?php
     }
-
-    
 
 }
