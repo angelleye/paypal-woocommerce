@@ -937,7 +937,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
                 if (isset($cart['discount']) && $cart['discount'] > 0) {
                     $purchase_units['amount']['breakdown']['discount'] = array(
-                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'currency_code' => angelleye_ppcp_get_currency($order_id),
                         'value' => $cart['discount'],
                     );
                 }

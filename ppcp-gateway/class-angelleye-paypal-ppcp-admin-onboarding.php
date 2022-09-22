@@ -57,7 +57,11 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     }
 
     public function angelleye_ppcp_load_variable() {
-        $this->sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        if (isset($_GET['testmode'])) {
+            $this->sandbox = 'yes' === ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
+        } else {
+            $this->sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        }
         $this->sandbox_merchant_id = $this->settings->get('sandbox_merchant_id', '');
         $this->live_merchant_id = $this->settings->get('live_merchant_id', '');
         $this->sandbox_client_id = $this->settings->get('sandbox_client_id', '');
@@ -90,7 +94,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $this->on_board_status = 'NOT_CONNECTED';
             } elseif ($this->is_sandbox_third_party_used === 'yes') {
                 $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->sandbox_merchant_id);
-                if(isset($this->result['country'])) {
+                if (isset($this->result['country'])) {
                     $this->ppcp_paypal_country = $this->result['country'];
                 }
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
@@ -119,7 +123,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $this->on_board_status = 'NOT_CONNECTED';
             } elseif ($this->is_live_third_party_used === 'yes') {
                 $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->live_merchant_id);
-                if(isset($this->result['country'])) {
+                if (isset($this->result['country'])) {
                     $this->ppcp_paypal_country = $this->result['country'];
                 }
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
