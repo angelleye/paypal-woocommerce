@@ -17,6 +17,10 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public $dcc_applies;
     protected static $_instance = null;
     public $ppcp_paypal_country = null;
+    public $is_sandbox_third_party_used;
+    public $is_sandbox_first_party_used;
+    public $is_live_first_party_used;
+    public $is_live_third_party_used;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -28,7 +32,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public function __construct() {
         try {
             $this->angelleye_ppcp_load_class();
-            $this->angelleye_ppcp_load_variable();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -152,6 +155,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function angelleye_get_signup_link($testmode = 'yes', $page) {
         try {
+            
             $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode, $page);
             if (isset($seller_onboarding_result['links'])) {
                 foreach ($seller_onboarding_result['links'] as $link) {
@@ -167,43 +171,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         }
     }
 
-    public function angelleye_ppcp_admin_notices() {
-        $is_saller_onboarding_done = false;
-        $is_saller_onboarding_failed = false;
-        if (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done')) {
-            $is_saller_onboarding_done = true;
-            delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done');
-        } elseif (false !== get_transient('angelleye_ppcp_live_seller_onboarding_process_done')) {
-            $is_saller_onboarding_done = true;
-            delete_transient('angelleye_ppcp_live_seller_onboarding_process_done');
-        }
-        if ($is_saller_onboarding_done) {
-            echo '<div class="notice notice-success angelleye-notice is-dismissible" id="ppcp_success_notice_onboarding" style="display:none;">'
-            . '<div class="angelleye-notice-logo-original">'
-            . '<div class="ppcp_success_logo"><img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark.png" width="65" height="65"></div>'
-            . '</div>'
-            . '<div class="angelleye-notice-message">'
-            . '<h3>PayPal onboarding process successfully completed.</h3>'
-            . '</div>'
-            . '</div>';
-        } else {
-            if (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_failed')) {
-                $is_saller_onboarding_failed = true;
-                delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_failed');
-            } elseif (false !== get_transient('angelleye_ppcp_live_seller_onboarding_process_failed')) {
-                $is_saller_onboarding_failed = true;
-                delete_transient('angelleye_ppcp_live_seller_onboarding_process_failed');
-            }
-            if ($is_saller_onboarding_failed) {
-                echo '<div class="notice notice-error is-dismissible">'
-                . '<p>We could not properly connect to PayPal. Please reload the page to continue.</p>'
-                . '</div>';
-            }
-        }
-    }
-
     public function view() {
-        //$this->angelleye_ppcp_admin_notices();
+        $this->angelleye_ppcp_load_variable();
         ?>    
         <div id="angelleye_paypal_marketing_table">
             <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
