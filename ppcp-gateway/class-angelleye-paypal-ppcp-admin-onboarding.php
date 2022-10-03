@@ -155,7 +155,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function angelleye_get_signup_link($testmode = 'yes', $page) {
         try {
-            
+
             $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode, $page);
             if (isset($seller_onboarding_result['links'])) {
                 foreach ($seller_onboarding_result['links'] as $link) {
@@ -218,7 +218,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         </div>
                     </div>
                 </div>
-            <?php } elseif ($this->on_board_status === 'CONNECTED_BUT_NOT_ACC') { ?>
+            <?php
+            } elseif ($this->on_board_status === 'CONNECTED_BUT_NOT_ACC') {
+                wp_enqueue_style('ppcp_account_request_form_css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/ppcp_account_request_form.css', null, time());
+                wp_enqueue_script('ppcp_account_request_form_js', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/ppcp_account_request-form-modal.js', null, time(), true);
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/ppcp_account_request_form.php');
+                ?>
                 <div class="paypal_woocommerce_product">
                     <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
                         <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
@@ -230,7 +235,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <p><?php echo __('However, we need additional verification to approve you for the reduced <br>rate of 2.69% on debit/credit cards.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>    
                             <br>
-                            <a href="https://www.angelleye.com" class="green-button" target="_blank"><?php echo __('Apply for Cheaper Fees!', 'paypal-for-woocommerce'); ?></a>
+                            <a class="green-button open_ppcp_account_request_form" ><?php echo __('Apply for Cheaper Fees!', 'paypal-for-woocommerce'); ?></a>
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
                             <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                             <br><br>
