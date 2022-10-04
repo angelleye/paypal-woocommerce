@@ -184,7 +184,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => ''
                 ),
                 'live_disconnect' => array(
-                    'title' => __('Disconnect from PayPal', 'paypal-for-woocommerce'),
+                    'title' => __('PayPal Connection', 'paypal-for-woocommerce'),
                     'type' => 'angelleye_ppcp_text',
                     'mode' => 'live',
                     'description' => __('Click to reset current credentials and use another account.', 'paypal-for-woocommerce'),
@@ -199,7 +199,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => ''
                 ),
                 'sandbox_disconnect' => array(
-                    'title' => __('Disconnect from PayPal', 'paypal-for-woocommerce'),
+                    'title' => __('PayPal Connection', 'paypal-for-woocommerce'),
                     'type' => 'angelleye_ppcp_text',
                     'mode' => 'sandbox',
                     'description' => __('Click to reset current credentials and use another account.', 'paypal-for-woocommerce'),

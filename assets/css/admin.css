@@ -395,9 +395,9 @@ hr {
     margin-left: 30%;
 }
 .paypal_woocommerce_support_downloads p {
-  font-size: 20px;
-  padding: 5px;
-  font-family: arial;
+    font-size: 20px;
+    padding: 5px;
+    font-family: arial;
 }
 .paypal-px-btn:hover {
     background-color: #003087;
@@ -516,8 +516,6 @@ hr {
     border: 1px solid #dedede;
     box-shadow: 0 20px 30px rgba(143, 163, 184, 0.15);
     border-radius: 3px;
-
-
 }
 .paypal_woocommerce_product_onboard li {
     display: flex;
@@ -657,6 +655,31 @@ hr {
     width: 95px;
     height: 95px;
 }
+.ppcp_paypal_connection_image {
+    display: table-cell;
+    vertical-align: middle;
+    cursor: default;
+    line-height: 1.5;
+}
+
+.ppcp_paypal_connection_status h3 {
+    margin: 0px 4px !important;
+    font-size: 17px;
+}
+.ppcp_paypal_connection {
+    display: table-cell;
+    vertical-align: middle;
+    cursor: default;
+    line-height: 1.5;
+}
+.ppcp_paypal_connection_status {
+    display: block;
+    margin: 0px 1px 11px 7px;
+}
+.angelleye-ppcp-disconnect {
+    margin-top: 25px !important;
+}
+
 @media only all and (max-width: 500px) {
     .wp-core-ui .angelleye-notice > .angelleye-notice-cta > input[type="email"],
     .angelleye-notice > .angelleye-notice-cta > button {

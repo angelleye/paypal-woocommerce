@@ -4,21 +4,6 @@ $(document).ready(function () {
     if ($ppcp_account_requestModal) {
         new ModalWpr($ppcp_account_requestModal);
     }
-    $("#mixpanel-send-ppcp_account_request").click(function (e) {
-        e.preventDefault();
-        var data = {
-            action: 'angelleye_send_ppcp_account_request',
-            reason_details: $("#reason-other-details").val(),
-            reason: $("input[name='reason']:checked").val()
-
-        };
-        $.post(ajaxurl, data, function () {
-        }).done(function (response) {
-            window.location.replace($('#mixpanel-send-ppcp_account_request').attr("href"));
-        }).fail(function (response) {
-            window.location.replace($('#mixpanel-send-ppcp_account_request').attr("href"));
-        });
-    });
 });
 function ModalWpr(aElem) {
     var refThis = this;

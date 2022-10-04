@@ -28,7 +28,6 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
             <div class="wrap angelleye_addons_wrap">
                 <?php
                 $admin_onboarding->view();
-                AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting');
                 ?>
             </div>
         <?php } elseif ($gateway == 'paypal_woocommerce_support') {
