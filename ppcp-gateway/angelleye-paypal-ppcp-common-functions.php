@@ -677,6 +677,38 @@ if (!function_exists('angelleye_ppcp_validate_checkout')) {
         return $state_value;
     }
 
+    if (!function_exists('own_angelleye_sendy_list')) {
+
+        function own_angelleye_sendy_list($email) {
+            global $wp;
+            if (!empty($_SERVER['HTTP_REFERER'])) {
+                $current_url = $_SERVER['HTTP_REFERER'];
+            } else {
+                $current_url = home_url(add_query_arg(array(), $wp->request));
+            }
+            $url = 'https://sendy.angelleye.com/subscribe';
+            $response = wp_remote_post($url, array(
+                'method' => 'POST',
+                'timeout' => 45,
+                'redirection' => 5,
+                'httpversion' => '1.0',
+                'blocking' => true,
+                'headers' => array(),
+                'body' => array('list' => 'pjFolYKqSdLe57i4uuUz0g',
+                    'boolean' => 'true',
+                    'email' => $email,
+                    'gdpr' => 'true',
+                    'silent' => 'true',
+                    'api_key' => 'qFcoVlU2uG3AMYabNTrC',
+                    'referrer' => $current_url
+                ),
+                'cookies' => array()
+                    )
+            );
+            return $response;
+        }
+
+    }
 }
 
 

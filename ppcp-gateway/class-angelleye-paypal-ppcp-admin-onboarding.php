@@ -100,6 +100,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if (isset($this->result['country'])) {
                     $this->ppcp_paypal_country = $this->result['country'];
                 }
+                if (!empty($this->result['primary_email'])) {
+                    own_angelleye_sendy_list($this->result['primary_email']);
+                }
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
                 } else {
@@ -128,6 +131,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $this->result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->live_merchant_id);
                 if (isset($this->result['country'])) {
                     $this->ppcp_paypal_country = $this->result['country'];
+                }
+                if (!empty($this->result['primary_email'])) {
+                    own_angelleye_sendy_list($this->result['primary_email']);
                 }
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
@@ -178,7 +184,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
                 <div class="paypal_woocommerce_product">
                     <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
-                        <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
+                        <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
                         <br><br><br>
                         <div class="paypal_woocommerce_product_onboard_content">
                             <p><?php echo __('Welcome to the easiest one-stop solution for accepting PayPal, Debit and Credit <br>Cards, with a lower per-transaction cost for cards than most other gateways!', 'paypal-for-woocommerce'); ?></p>
@@ -225,7 +231,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 ?>
                 <div class="paypal_woocommerce_product">
                     <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
-                        <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
+                        <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
                         <br><br><br>
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
@@ -244,7 +250,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             <?php } elseif ($this->on_board_status === 'FULLY_CONNECTED') { ?>
                 <div class="paypal_woocommerce_product">
                     <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
-                        <span class="ppcp_onbard_icon"><img class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
+                        <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
                         <br><br><br>
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
@@ -267,6 +273,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     <p>Have A Question Or Need Expert Help?</p>
                     <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
                 </li>
+                <?php if ($this->on_board_status === 'CONNECTED_BUT_NOT_ACC' || $this->on_board_status === 'FULLY_CONNECTED') { ?>
+
+                <?php } ?>
             </ul>
         </div>
         <?php
