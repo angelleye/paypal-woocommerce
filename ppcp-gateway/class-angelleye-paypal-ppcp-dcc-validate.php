@@ -158,49 +158,47 @@ class AngellEYE_PayPal_PPCP_DCC_Validate {
      * Which countries support which credit cards.
      */
     private $country_card_matrix = array(
-        array(
-            'AU' => array(
-                'mastercard' => array(),
-                'visa' => array(),
-                'amex' => array('AUD'),
-            ),
-            'DE' => array(
-                'mastercard' => array(),
-                'visa' => array(),
-                'amex' => array('EUR'),
-            ),
-            'ES' => array(
-                'mastercard' => array(),
-                'visa' => array(),
-                'amex' => array('EUR'),
-            ),
-            'FR' => array(
-                'mastercard' => array(),
-                'visa' => array(),
-                'amex' => array('EUR'),
-            ),
-            'GB' => array(
-                'mastercard' => array(),
-                'visa' => array(),
-                'amex' => array('GBP', 'USD'),
-            ),
-            'IT' => array(
-                'mastercard' => array(),
-                'visa' => array(),
-                'amex' => array('EUR'),
-            ),
-            'US' => array(
-                'mastercard' => array(),
-                'visa' => array(),
-                'amex' => array('USD'),
-                'discover' => array('USD'),
-            ),
-            'CA' => array(
-                'mastercard' => array(),
-                'visa' => array(),
-                'amex' => array('CAD'),
-                'jcb' => array('CAD'),
-            ),
+        'AU' => array(
+            'mastercard' => array(),
+            'visa' => array(),
+            'amex' => array('AUD'),
+        ),
+        'DE' => array(
+            'mastercard' => array(),
+            'visa' => array(),
+            'amex' => array('EUR'),
+        ),
+        'ES' => array(
+            'mastercard' => array(),
+            'visa' => array(),
+            'amex' => array('EUR'),
+        ),
+        'FR' => array(
+            'mastercard' => array(),
+            'visa' => array(),
+            'amex' => array('EUR'),
+        ),
+        'GB' => array(
+            'mastercard' => array(),
+            'visa' => array(),
+            'amex' => array('GBP', 'USD'),
+        ),
+        'IT' => array(
+            'mastercard' => array(),
+            'visa' => array(),
+            'amex' => array('EUR'),
+        ),
+        'US' => array(
+            'mastercard' => array(),
+            'visa' => array(),
+            'amex' => array('USD'),
+            'discover' => array('USD'),
+        ),
+        'CA' => array(
+            'mastercard' => array(),
+            'visa' => array(),
+            'amex' => array('CAD'),
+            'jcb' => array('CAD'),
         )
     );
 
