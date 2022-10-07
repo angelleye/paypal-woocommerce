@@ -694,7 +694,7 @@ if (!function_exists('angelleye_ppcp_validate_checkout')) {
                 'httpversion' => '1.0',
                 'blocking' => true,
                 'headers' => array(),
-                'body' => array('list' => 'pjFolYKqSdLe57i4uuUz0g',
+                'body' => array('list' => 'oV0I12rDwJdMDL2jYzvwPQ',
                     'boolean' => 'true',
                     'email' => $email,
                     'gdpr' => 'true',

@@ -362,8 +362,8 @@ jQuery(document).ready(function ($) {
             jQuery('#angelleye_payment_submit_button').show();
         }
     });
-    
-   jQuery('#angelleye_ppcp_payment_action').change(function () {
+
+    jQuery('#angelleye_ppcp_payment_action').change(function () {
         if (jQuery(this).val() === 'refund') {
             jQuery('.angelleye_ppcp_refund_box').show();
             jQuery('.angelleye_ppcp_capture_box').hide();
@@ -388,7 +388,7 @@ jQuery(document).ready(function ($) {
             jQuery('#angelleye_ppcp_payment_submit_button').show();
         }
     }).change();
-     jQuery("#angelleye_ppcp_payment_submit_button").click(function (event) {
+    jQuery("#angelleye_ppcp_payment_submit_button").click(function (event) {
         if (jQuery('#is_ppcp_submited').val() === 'no') {
             jQuery('#is_ppcp_submited').val('yes');
             var r = confirm('Are you sure?');
@@ -403,7 +403,7 @@ jQuery(document).ready(function ($) {
             }
         }
     });
-    
+
     jQuery('.admin_smart_button_preview').change(function () {
         display_angelleye_smart_button();
     });
@@ -427,7 +427,7 @@ jQuery(document).ready(function ($) {
         if (api_username.length === 0 || api_password.length === 0 || api_signature.length === 0) {
             return false;
         }
-       
+
         jQuery(".display_smart_button_previews").html('');
         var angelleye_height = jQuery("#woocommerce_paypal_express_button_height").val();
         var angelleye_color = jQuery("#woocommerce_paypal_express_button_color").val();
@@ -452,7 +452,7 @@ jQuery(document).ready(function ($) {
 
         $(".display_smart_button_previews").removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
         $('.display_smart_button_previews').addClass('angelleye_' + angelleye_layout + '_' + button_size);
-        
+
         if (typeof paypal !== 'undefined') {
             paypal.Buttons({
                 style: style_object
@@ -468,4 +468,23 @@ jQuery(document).ready(function ($) {
             express_default_enable.hide();
         }
     }).change();
+
+    jQuery("#angelleye_ppcp_email_confirm").click(function () {
+        var data = {
+            'action': 'angelleye_ppcp_onboard_email_sendy_subscription',
+            'email': jQuery('#angelleye_ppcp_sendy_email').val()
+        };
+        jQuery.post(ajaxurl, data, function () {
+        }).done(function (response) {
+            console.log(response);
+            if (response.result === "true") {
+                jQuery('#angelleye_ppcp_sendy_msg').html(response.message);
+                jQuery('#angelleye_ppcp_sendy_email').val("");
+            } else {
+                jQuery('#angelleye_ppcp_sendy_msg').html(response.message);
+            }
+        }).fail(function (response) {
+            alert(response);
+        });
+    });
 });

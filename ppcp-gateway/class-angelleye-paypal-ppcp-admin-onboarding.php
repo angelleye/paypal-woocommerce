@@ -21,6 +21,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public $is_sandbox_first_party_used;
     public $is_live_first_party_used;
     public $is_live_third_party_used;
+    public $email_confirm_text_1;
+    public $email_confirm_text_2;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -102,7 +104,13 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
                 if (!empty($this->result['primary_email'])) {
                     own_angelleye_sendy_list($this->result['primary_email']);
+                    $this->email_confirm_text_1 = 'We see that your PayPal email address is' . ' <b>' . $this->result['primary_email'] . '</b>';
                 }
+                $admin_email = get_option("admin_email");
+                if ($this->result['primary_email'] != $admin_email) {
+                    $this->email_confirm_text_2 = 'We see that your site admin email address is' . ' <b>' . $admin_email . '</b>';
+                }
+
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
                 } else {
@@ -134,7 +142,13 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
                 if (!empty($this->result['primary_email'])) {
                     own_angelleye_sendy_list($this->result['primary_email']);
+                    $this->email_confirm_text_1 = 'We see that your PayPal email address is' . ' <b>' . $this->result['primary_email'] . '</b>';
                 }
+                $admin_email = get_option("admin_email");
+                if ($this->result['primary_email'] != $admin_email) {
+                    $this->email_confirm_text_2 = 'We see that your site admin email address is' . ' <b>' . $admin_email . '</b>';
+                }
+
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
                 } else {
@@ -268,13 +282,31 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     </div>
                 </div>
             <?php } ?>
-            <ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard">
+            <ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard ppcp_email_confirm">
                 <li>
-                    <p>Have A Question Or Need Expert Help?</p>
+                    <p >Have A Question Or Need Expert Help?</p>
                     <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
                 </li>
                 <?php if ($this->on_board_status === 'CONNECTED_BUT_NOT_ACC' || $this->on_board_status === 'FULLY_CONNECTED') { ?>
-
+                    <li>
+                        <?php echo '<p>' . $this->email_confirm_text_1 . '</p>'; ?>
+                        <?php echo '<p>' . $this->email_confirm_text_2 . '</p>'; ?>
+                        <p>
+                            <?php echo __('Please verify which email is best for us to send future notices about PayPal and payments in general so that you are always informed.', 'paypal-for-woocommerce'); ?>
+                        </p>
+                        <br>
+                        <div style="width:100%">
+                            <div class="custom-input-group">
+                                <input type="text" class="custom-form-control" id="angelleye_ppcp_sendy_email" placeholder="Your Email Address">
+                                <span class="custom-input-group-btn">
+                                    <button id="angelleye_ppcp_email_confirm" type="button" class="custom-btn custom-btn-primary">
+                                        <svg style="display: inline-block;color: rgba(0, 0, 0, 0.87);fill: #fff;height: 24px;width: 24px;transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;vertical-align: middle;margin-right: 0px;" viewBox="0 0 28 28"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"></path></svg>
+                                        <?php echo __('Submit', 'paypal-for-woocommerce'); ?></button>
+                                </span>
+                            </div>
+                            <div id="angelleye_ppcp_sendy_msg"></div>
+                        </div>
+                    </li>
                 <?php } ?>
             </ul>
         </div>
