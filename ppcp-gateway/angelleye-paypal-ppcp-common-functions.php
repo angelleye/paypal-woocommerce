@@ -106,6 +106,12 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
             } else {
                 $order_meta_value = $order->get_meta('_payment_action', $bool);
             }
+        } elseif (empty($order_meta_value) && $key === '_payment_action') {
+            if ($old_wc) {
+                $order_meta_value = get_post_meta($order->id, '_paymentaction', $bool);
+            } else {
+                $order_meta_value = $order->get_meta('_paymentaction', $bool);
+            }
         }
         return $order_meta_value;
     }

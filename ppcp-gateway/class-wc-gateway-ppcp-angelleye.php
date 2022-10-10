@@ -436,7 +436,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             if (isset($_GET['post'])) {
                 $theorder = wc_get_order( $_GET['post'] );
                 if($theorder) {
-                    $payment_method_title = get_post_meta($_GET['post'], '_payment_method_title', true);
+                    $payment_method_title = angelleye_ppcp_get_post_meta($theorder, '_payment_method_title', true);
                 }
             }
             if(!empty($payment_method_title)) {
