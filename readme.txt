@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
 Tested up to: 6.0.2
-Stable tag: 3.0.38
+Stable tag: 3.0.39
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.39 - 10.10.2022 =
+* Fix - Use Product name as Item description value. ([PFW-1170](https://github.com/angelleye/paypal-woocommerce/pull/1737))
+* Fix - Use WC inbuilt function. ([PFW-1190](https://github.com/angelleye/paypal-woocommerce/pull/1742))
+* Fix - Resolved issue with disable specific cards. ([PFW-1196](https://github.com/angelleye/paypal-woocommerce/pull/1743))
 
 = 3.0.38 - 09.22.2022 =
 * Fix - Resolves issue with Payment action. ([PFW-1187](https://github.com/angelleye/paypal-woocommerce/pull/1741))
