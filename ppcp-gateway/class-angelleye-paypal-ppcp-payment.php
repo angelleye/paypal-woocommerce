@@ -179,7 +179,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
                 if (isset($cart['items']) && !empty($cart['items'])) {
                     foreach ($cart['items'] as $key => $order_items) {
-                        $description = !empty($order_items['description']) ? $order_items['description'] : '';
+                        $description = !empty($order_items['description']) ? strip_shortcodes($order_items['description']) : '';
                         $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
                         $body_request['purchase_units'][0]['items'][$key] = array(
                             'name' => $product_name,
@@ -388,16 +388,15 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $product_name = substr($product_name, 0, 124) . '...';
                 }
                 if (empty($desc)) {
-                    $desc = wp_strip_all_tags($product->get_description());
-                    if (empty($desc)) {
-                        $desc = wp_strip_all_tags($product->get_short_description());
-                    }
+                    $desc = $product_name;
                 }
 
                 $desc = !empty($desc) ? $desc : '';
                 if (strlen($desc) > 127) {
                     $desc = substr($desc, 0, 124) . '...';
                 }
+                
+                $desc = strip_shortcodes($desc);
 
                 $item = array(
                     'name' => $product_name,
@@ -923,7 +922,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
                 if (isset($cart['items']) && !empty($cart['items'])) {
                     foreach ($cart['items'] as $key => $order_items) {
-                        $description = !empty($order_items['description']) ? $order_items['description'] : '';
+                        $description = !empty($order_items['description']) ? strip_shortcodes($order_items['description']) : '';
                         $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
                         $purchase_units['items'][$key] = array(
                             'name' => $product_name,
@@ -1071,14 +1070,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $product_name = substr($product_name, 0, 124) . '...';
                 }
                 if (empty($desc)) {
-                    $desc = wp_strip_all_tags($product->get_description());
-                    if (empty($desc)) {
-                        $desc = wp_strip_all_tags($product->get_short_description());
-                    }
+                    $desc = $product_name;
                 }
                 if (strlen($desc) > 127) {
                     $desc = substr($desc, 0, 124) . '...';
                 }
+                $desc = strip_shortcodes($desc);
                 $item = array(
                     'name' => $product_name,
                     'description' => apply_filters('angelleye_ppcp_product_description', $desc),
@@ -1588,7 +1585,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
                 if (isset($cart['items']) && !empty($cart['items'])) {
                     foreach ($cart['items'] as $key => $order_items) {
-                        $description = !empty($order_items['description']) ? $order_items['description'] : '';
+                        $description = !empty($order_items['description']) ? strip_shortcodes($order_items['description']) : '';
                         $product_name = !empty($order_items['name']) ? $order_items['name'] : '';
                         $body_request['purchase_units'][0]['items'][$key] = array(
                             'name' => $product_name,
