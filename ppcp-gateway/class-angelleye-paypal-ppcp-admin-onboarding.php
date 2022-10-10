@@ -283,10 +283,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 </div>
             <?php } ?>
             <ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard ppcp_email_confirm">
-                <li>
-                    <p >Have A Question Or Need Expert Help?</p>
-                    <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
-                </li>
                 <?php if ($this->on_board_status === 'CONNECTED_BUT_NOT_ACC' || $this->on_board_status === 'FULLY_CONNECTED') { ?>
                     <li>
                         <?php echo '<p>' . $this->email_confirm_text_1 . '</p>'; ?>
@@ -308,6 +304,10 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         </div>
                     </li>
                 <?php } ?>
+                    <li style="height: 150px;">
+                    <p >Have A Question Or Need Expert Help?</p>
+                    <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
+                </li>
             </ul>
         </div>
         <?php
