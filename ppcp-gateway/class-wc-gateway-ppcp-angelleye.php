@@ -351,25 +351,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         return ob_get_clean();
     }
 
-    public function angelleye_get_signup_link($testmode = 'yes', $page) {
-        try {
-            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php');
-            $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
-            $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode, $page);
-            if (isset($seller_onboarding_result['links'])) {
-                foreach ($seller_onboarding_result['links'] as $link) {
-                    if (isset($link['rel']) && 'action_url' === $link['rel']) {
-                        return isset($link['href']) ? $link['href'] : false;
-                    }
-                }
-            } else {
-                return false;
-            }
-        } catch (Exception $ex) {
-            
-        }
-    }
-
     public function process_payment($woo_order_id) {
         $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
         $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');

@@ -10,7 +10,6 @@ class AngellEYE_PayPal_PPCP_Payment {
     public $api_response;
     public $api_log;
     public $checkout_details;
-    public $ae_paypal_fee;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -80,7 +79,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             "U" => "Service Unavailable - N/A",
             "X" => "No Response - N/A"
         );
-        $this->ae_paypal_fee = $this->angelleye_ppcp_paypal_fee();
     }
 
     public function angelleye_ppcp_load_class() {
@@ -103,24 +101,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_paypal_fee() {
-        if (false === ( $value = get_transient(AE_FEE) )) {
-            if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
-                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php';
-            }
-            $seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
-            $result = $seller_onboarding->angelleye_track_seller_onboarding_status($this->merchant_id);
-            if ($seller_onboarding->angelleye_ppcp_is_fee_enable($result)) {
-                set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
-                return true;
-            } else {
-                set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
-                return false;
-            }
-        } else {
-            return 'yes' === $value;
-        }
-    }
+    
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
         try {

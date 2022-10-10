@@ -105,11 +105,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if (!empty($this->result['primary_email'])) {
                     own_angelleye_sendy_list($this->result['primary_email']);
                     $this->email_confirm_text_1 = 'We see that your PayPal email address is' . ' <b>' . $this->result['primary_email'] . '</b>';
+                    $admin_email = get_option("admin_email");
+                    if ($this->result['primary_email'] != $admin_email) {
+                        $this->email_confirm_text_2 = 'We see that your site admin email address is' . ' <b>' . $admin_email . '</b>';
+                    }
                 }
-                $admin_email = get_option("admin_email");
-                if ($this->result['primary_email'] != $admin_email) {
-                    $this->email_confirm_text_2 = 'We see that your site admin email address is' . ' <b>' . $admin_email . '</b>';
-                }
+
 
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
@@ -304,7 +305,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         </div>
                     </li>
                 <?php } ?>
-                    <li style="height: 150px;">
+                <li style="height: 150px;">
                     <p >Have A Question Or Need Expert Help?</p>
                     <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
                 </li>
