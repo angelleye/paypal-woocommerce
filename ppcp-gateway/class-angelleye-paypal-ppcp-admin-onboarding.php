@@ -199,7 +199,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 <div class="paypal_woocommerce_product">
                     <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
                         <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
-                        <br><br><br>
+                        <br><br>
                         <div class="paypal_woocommerce_product_onboard_content">
                             <p><?php echo __('Welcome to the easiest one-stop solution for accepting PayPal, Debit and Credit <br>Cards, with a lower per-transaction cost for cards than most other gateways!', 'paypal-for-woocommerce'); ?></p>
                             <?php
@@ -246,7 +246,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 <div class="paypal_woocommerce_product">
                     <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
                         <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
-                        <br><br><br>
+                        <br><br>
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
@@ -265,7 +265,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 <div class="paypal_woocommerce_product">
                     <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
                         <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
-                        <br><br><br>
+                        <br><br>
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
