@@ -109,10 +109,10 @@ class AngellEYE_PayPal_PPCP_Request {
         $args['body'] = wp_json_encode($body);
         $args['timeout'] = 70;
         $args['user-agent'] = 'PFW_PPCP';
-        if ($this->angelleye_ppcp_paypal_fee()) {
-            $args[AE_FEE] = true;
-        }
         $args['headers'] = array('Content-Type' => 'application/json');
+        if ($this->angelleye_ppcp_paypal_fee()) {
+            $args['headers'][AE_FEE] = "true";
+        }
         $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request', $args);
         return $this->result;
     }
@@ -174,10 +174,10 @@ class AngellEYE_PayPal_PPCP_Request {
             $seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
             $result = $seller_onboarding->angelleye_track_seller_onboarding_status($this->merchant_id);
             if ($seller_onboarding->angelleye_ppcp_is_fee_enable($result)) {
-                set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
+                set_transient(AE_FEE, 'yes', 12 * HOUR_IN_SECONDS);
                 return true;
             } else {
-                set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
+                set_transient(AE_FEE, 'no', 12 * HOUR_IN_SECONDS);
                 return false;
             }
         } else {
