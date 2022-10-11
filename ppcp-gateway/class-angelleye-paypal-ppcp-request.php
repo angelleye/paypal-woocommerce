@@ -109,7 +109,10 @@ class AngellEYE_PayPal_PPCP_Request {
         $args['body'] = wp_json_encode($body);
         $args['timeout'] = 70;
         $args['user-agent'] = 'PFW_PPCP';
-        $args['headers'] = array('Content-Type' => 'application/json', AE_FEE => $this->angelleye_ppcp_paypal_fee());
+        if ($this->angelleye_ppcp_paypal_fee()) {
+            $args[AE_FEE] = true;
+        }
+        $args['headers'] = array('Content-Type' => 'application/json');
         $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request', $args);
         return $this->result;
     }
