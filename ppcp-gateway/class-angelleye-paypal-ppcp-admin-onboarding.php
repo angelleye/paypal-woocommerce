@@ -284,10 +284,10 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 </div>
             <?php } ?>
             <ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard ppcp_email_confirm">
-                <?php if ($this->on_board_status === 'CONNECTED_BUT_NOT_ACC' || $this->on_board_status === 'FULLY_CONNECTED') { ?>
+                <?php if (($this->on_board_status === 'CONNECTED_BUT_NOT_ACC' || $this->on_board_status === 'FULLY_CONNECTED') && !empty($this->email_confirm_text_1)) { ?>
                     <li>
                         <?php echo '<p>' . $this->email_confirm_text_1 . '</p>'; ?>
-                        <?php echo '<p>' . $this->email_confirm_text_2 . '</p>'; ?>
+                        <?php echo  !empty($this->email_confirm_text_2) ?  '<p>' . $this->email_confirm_text_2 . '</p>' : ''; ?>
                         <p>
                             <?php echo __('Please verify which email is best for us to send future notices about PayPal and payments in general so that you are always informed.', 'paypal-for-woocommerce'); ?>
                         </p>
