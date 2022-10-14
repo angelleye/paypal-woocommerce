@@ -294,7 +294,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <?php } ?>
                         <br>
                         <div class="ppcp_sendy_confirm_parent">
-                            <input type="text" class="ppcp_sendy_confirm" id="angelleye_ppcp_sendy_email" placeholder="Your Email Address">
+                            <input type="text" class="ppcp_sendy_confirm" id="angelleye_ppcp_sendy_email" placeholder="Your Email Address" value="<?php echo !empty($this->result['primary_email']) ? $this->result['primary_email'] : '' ?>">
                             <button id="angelleye_ppcp_email_confirm" type="button" class="button button-primary button-primary-own"><?php echo __('Submit', 'paypal-for-woocommerce'); ?></button>
                         </div>
                         <div id="angelleye_ppcp_sendy_msg"></div>

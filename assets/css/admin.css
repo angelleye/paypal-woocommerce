@@ -621,6 +621,7 @@ hr {
     height: 60px;
     border-radius: 8px;
     margin-right: 12px;
+    margin-bottom: 20px;
 }
 .paypal_woocommerce_product_onboard [class*="slate_gray"] {
     min-width: 150px;
