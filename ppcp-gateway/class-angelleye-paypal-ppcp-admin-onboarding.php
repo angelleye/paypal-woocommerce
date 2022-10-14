@@ -51,7 +51,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
             }
-
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
@@ -93,7 +92,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             $this->is_live_third_party_used = 'no';
             $this->is_live_first_party_used = 'no';
         }
-
         if ($this->sandbox) {
             if ($this->is_sandbox_third_party_used === 'no' && $this->is_sandbox_first_party_used === 'no') {
                 $this->on_board_status = 'NOT_CONNECTED';
@@ -105,13 +103,13 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if (!empty($this->result['primary_email'])) {
                     own_angelleye_sendy_list($this->result['primary_email']);
                     $this->email_confirm_text_1 = 'We see that your PayPal email address is' . ' <b>' . $this->result['primary_email'] . '</b>';
-                    $admin_email = get_option("admin_email");
-                    if ($this->result['primary_email'] != $admin_email) {
-                        $this->email_confirm_text_2 = 'We see that your site admin email address is' . ' <b>' . $admin_email . '</b>';
-                    }
                 }
-
-
+                $admin_email = get_option("admin_email");
+                if ($this->result['primary_email'] != $admin_email) {
+                    $this->email_confirm_text_2 = 'We see that your site admin email address is' . ' <b>' . $admin_email . '</b>';
+                } else {
+                    $this->email_confirm_text_1 = 'We see that your email address is ' . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
+                }
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
                 } else {
@@ -151,7 +149,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 } else {
                     $this->email_confirm_text_1 = 'We see that your email address is ' . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
                 }
-
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
                 } else {
@@ -178,7 +175,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function angelleye_get_signup_link($testmode = 'yes', $page) {
         try {
-
             $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode, $page);
             if (isset($seller_onboarding_result['links'])) {
                 foreach ($seller_onboarding_result['links'] as $link) {
@@ -196,7 +192,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function view() {
         $this->angelleye_ppcp_load_variable();
-        ?>    
+        ?>
         <div id="angelleye_paypal_marketing_table">
             <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
                 <div class="paypal_woocommerce_product">
@@ -218,7 +214,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 );
                                 $url = add_query_arg($args, $signup_link);
                                 ?>
-                                <a target="_blank" class="wplk-button" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Start Now', 'paypal-for-woocommerce'); ?></a>    
+                                <a target="_blank" class="wplk-button" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Start Now', 'paypal-for-woocommerce'); ?></a>
                                 <?php
                                 $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
                                 ?>
@@ -235,7 +231,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             } else {
                                 echo __('We could not properly connect to PayPal', '');
                             }
-                            ?>  
+                            ?>
                             <p><?php echo __('Your <b>total</b> fee when buyers pay with Debit/Credit Card will be just 2.69% + 49¢.', 'paypal-for-woocommerce'); ?></p>
                         </div>
                     </div>
@@ -255,7 +251,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
                             <p><?php echo __('You’re currently setup and enjoying the benefits of <br>Complete Payments - Powered by PayPal.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('However, we need additional verification to approve you for the reduced <br>rate of 2.69% on debit/credit cards.', 'paypal-for-woocommerce'); ?></p>
-                            <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>    
+                            <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
                             <br>
                             <a class="green-button open_ppcp_account_request_form" ><?php echo __('Apply for Cheaper Fees!', 'paypal-for-woocommerce'); ?></a>
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
@@ -273,7 +269,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
                             <p><?php echo __('You’re currently setup and enjoying the benefits of <br> Complete Payments - Powered by PayPal.', 'paypal-for-woocommerce'); ?></p>
-                            <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>   
+                            <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
                             <br>
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
                             <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
@@ -294,19 +290,18 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <?php } ?>
                         <br>
                         <div class="ppcp_sendy_confirm_parent">
-                            <input type="text" class="ppcp_sendy_confirm" id="angelleye_ppcp_sendy_email" placeholder="Your Email Address" value="<?php echo !empty($this->result['primary_email']) ? $this->result['primary_email'] : '' ?>">
+                            <input type="text" class="ppcp_sendy_confirm" id="angelleye_ppcp_sendy_email" placeholder="Your Email Address" value="<?php echo!empty($this->result['primary_email']) ? $this->result['primary_email'] : '' ?>">
                             <button id="angelleye_ppcp_email_confirm" type="button" class="button button-primary button-primary-own"><?php echo __('Submit', 'paypal-for-woocommerce'); ?></button>
                         </div>
                         <div id="angelleye_ppcp_sendy_msg"></div>
                     </li>
                 <?php } ?>
                 <li>
-                    <p >Have A Question Or Need Expert Help?</p>
+                    <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
                     <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
                 </li>
             </ul>
         </div>
         <?php
     }
-
 }
