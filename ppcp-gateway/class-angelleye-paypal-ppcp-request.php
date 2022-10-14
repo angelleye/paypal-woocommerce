@@ -110,8 +110,10 @@ class AngellEYE_PayPal_PPCP_Request {
         $args['timeout'] = 70;
         $args['user-agent'] = 'PFW_PPCP';
         $args['headers'] = array('Content-Type' => 'application/json');
-        if ($this->angelleye_ppcp_paypal_fee()) {
-            $args['headers'][AE_FEE] = "true";
+        if ('seller_onboarding_status' !== $action_name) {
+            if ($this->angelleye_ppcp_paypal_fee()) {
+                $args['headers'][AE_FEE] = "true";
+            }
         }
         $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request', $args);
         return $this->result;

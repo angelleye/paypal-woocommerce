@@ -148,6 +148,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $admin_email = get_option("admin_email");
                 if ($this->result['primary_email'] != $admin_email) {
                     $this->email_confirm_text_2 = 'We see that your site admin email address is' . ' <b>' . $admin_email . '</b>';
+                } else {
+                    $this->email_confirm_text_1 = 'We see that your email address is ' . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
                 }
 
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
@@ -195,7 +197,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public function view() {
         $this->angelleye_ppcp_load_variable();
         ?>    
-        <div id="angelleye_paypal_marketing_table" style="width: 80%;">
+        <div id="angelleye_paypal_marketing_table">
             <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
                 <div class="paypal_woocommerce_product">
                     <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
@@ -284,25 +286,21 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 <?php if (($this->on_board_status === 'CONNECTED_BUT_NOT_ACC' || $this->on_board_status === 'FULLY_CONNECTED') && !empty($this->email_confirm_text_1)) { ?>
                     <li>
                         <?php echo '<p>' . $this->email_confirm_text_1 . '</p>'; ?>
-                        <?php echo  !empty($this->email_confirm_text_2) ?  '<p>' . $this->email_confirm_text_2 . '</p>' : ''; ?>
-                        <p>
-                            <?php echo __('Please verify which email is best for us to send future notices about PayPal and payments in general so that you are always informed.', 'paypal-for-woocommerce'); ?>
-                        </p>
+                        <?php if (!empty($this->email_confirm_text_2)) { ?>
+                            <?php echo '<p>' . $this->email_confirm_text_2 . '</p>'; ?>
+                            <p>
+                                <?php echo __('Please verify which email is best for us to send future notices about PayPal and payments in general so that you are always informed.', 'paypal-for-woocommerce'); ?>
+                            </p>
+                        <?php } ?>
                         <br>
-                        <div style="width:100%">
-                            <div class="custom-input-group">
-                                <input type="text" class="custom-form-control" id="angelleye_ppcp_sendy_email" placeholder="Your Email Address">
-                                <span class="custom-input-group-btn">
-                                    <button id="angelleye_ppcp_email_confirm" type="button" class="custom-btn custom-btn-primary">
-                                        <svg style="display: inline-block;color: rgba(0, 0, 0, 0.87);fill: #fff;height: 24px;width: 24px;transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;vertical-align: middle;margin-right: 0px;" viewBox="0 0 28 28"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"></path></svg>
-                                        <?php echo __('Submit', 'paypal-for-woocommerce'); ?></button>
-                                </span>
-                            </div>
-                            <div id="angelleye_ppcp_sendy_msg"></div>
+                        <div class="ppcp_sendy_confirm_parent">
+                            <input type="text" class="ppcp_sendy_confirm" id="angelleye_ppcp_sendy_email" placeholder="Your Email Address">
+                            <button id="angelleye_ppcp_email_confirm" type="button" class="button button-primary button-primary-own"><?php echo __('Submit', 'paypal-for-woocommerce'); ?></button>
                         </div>
+                        <div id="angelleye_ppcp_sendy_msg"></div>
                     </li>
                 <?php } ?>
-                <li style="height: 150px;">
+                <li>
                     <p >Have A Question Or Need Expert Help?</p>
                     <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
                 </li>

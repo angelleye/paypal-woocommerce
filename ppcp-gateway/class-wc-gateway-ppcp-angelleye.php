@@ -273,7 +273,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <div class="ppcp_paypal_connection_image">
                         <div class="ppcp_paypal_connection_image_status">
-                            <img src="http://kcppdevelopers.com/wp-content/plugins/paypal-for-woocommerce/assets/images/ppcp_check_mark_status.png" width="65" height="65">
+                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="65" height="65">
                         </div>
                     </div>
                     <div class="ppcp_paypal_connection">
