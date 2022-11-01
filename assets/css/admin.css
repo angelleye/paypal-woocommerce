@@ -509,12 +509,14 @@ hr {
 }
 .paypal_woocommerce_support_downloads {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: fit-content(100%);
     grid-column-gap: 30px;
     margin: 20px 0px 0px 0px;
     padding-left: 30px;
 }
-
+#angelleye_ppcp_sendy_email {
+  max-width: 350px;
+}
 .paypal_woocommerce_support_downloads li {
     display: flex;
     flex-direction: column;
@@ -660,7 +662,6 @@ hr {
     background: rgb(255, 255, 255);
     color: rgb(30, 30, 30);
     position: relative;
-    box-shadow: rgb(0 0 0 / 10%) 0px 0px 0px 1px;
     outline: none;
     border-radius: calc(1px);
 }

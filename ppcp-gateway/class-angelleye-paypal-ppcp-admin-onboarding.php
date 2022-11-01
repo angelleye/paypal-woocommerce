@@ -173,7 +173,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         }
     }
 
-    public function angelleye_get_signup_link($testmode = 'yes', $page) {
+    public function angelleye_get_signup_link($testmode, $page) {
         try {
             $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode, $page);
             if (isset($seller_onboarding_result['links'])) {
@@ -281,7 +281,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             <ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard ppcp_email_confirm">
                 <?php if (($this->on_board_status === 'CONNECTED_BUT_NOT_ACC' || $this->on_board_status === 'FULLY_CONNECTED') && !empty($this->email_confirm_text_1)) { ?>
                     <li>
-                        <p><?php echo __('Email List', 'paypal-for-woocommerce'); ?></p>
                         <?php echo '<p>' . $this->email_confirm_text_1 . '</p>'; ?>
                         <?php if (!empty($this->email_confirm_text_2)) { ?>
                             <?php echo '<p>' . $this->email_confirm_text_2 . '</p>'; ?>
