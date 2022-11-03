@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.5
-Tested up to: 6.0.2
-Stable tag: 3.0.39
+Tested up to: 6.1
+Stable tag: 3.0.40
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.40 - 11.03.2022 =
+* Feature - Adds 3DS2 for Braintree. ([PFW-1192](https://github.com/angelleye/paypal-woocommerce/pull/1748))
+* Feature - Adds German Translation. ([PFW-1199](https://github.com/angelleye/paypal-woocommerce/pull/1747))
+* Feature - Adds  push notification specific PFW gateway users. ([PFW-1204](https://github.com/angelleye/paypal-woocommerce/pull/1749))
+* Fix -  Resolved issue when smart button disable on checkout page. ([PFW-1200](https://github.com/angelleye/paypal-woocommerce/pull/1746))
 
 = 3.0.39 - 10.10.2022 =
 * Fix - Use Product name as Item description value. ([PFW-1170](https://github.com/angelleye/paypal-woocommerce/pull/1737))

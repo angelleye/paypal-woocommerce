@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable Complete Payments - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           3.0.39
+ * Version:           3.0.40
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,7 +13,7 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.5
- * Tested up to: 6.0.2
+ * Tested up to: 6.1
  * WC requires at least: 3.0.0
  * WC tested up to: 6.9.4
  *
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '3.0.39');
+    define('VERSION_PFW', '3.0.40');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -372,12 +372,31 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } 
             if(is_object($response)) {
                 foreach ($response->data as $key => $response_data) {
+                    $display = false;
                     if(!get_user_meta($user_id, $response_data->id)) {
-                        AngellEYE_Utility::angelleye_display_push_notification($response_data);
+                        if(!empty($response_data->ans_plugins) && is_array($response_data->ans_plugins)) {
+                            foreach ($response_data->ans_plugins as $key => $gateway_id) {
+                                if('paypal-for-woocommerce' === $gateway_id) {
+                                    $display = true;
+                                    break;
+                                } else {
+                                    $gateway_option = get_option('woocommerce_' . $gateway_id . '_settings');
+                                    if(!empty($gateway_option) && is_array($gateway_option)) {
+                                        if(isset($gateway_option['enabled']) && 'yes' === $gateway_option['enabled']) {
+                                            $display = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                            }
+                            if($display) {
+                                AngellEYE_Utility::angelleye_display_push_notification($response_data);
+                            }
+                        }
                     }
                 }
             }
-            
         }
 
         //init function
