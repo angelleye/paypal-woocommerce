@@ -369,12 +369,31 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } 
             if(is_object($response)) {
                 foreach ($response->data as $key => $response_data) {
+                    $display = false;
                     if(!get_user_meta($user_id, $response_data->id)) {
-                        AngellEYE_Utility::angelleye_display_push_notification($response_data);
+                        if(!empty($response_data->ans_plugins) && is_array($response_data->ans_plugins)) {
+                            foreach ($response_data->ans_plugins as $key => $gateway_id) {
+                                if('paypal-for-woocommerce' === $gateway_id) {
+                                    $display = true;
+                                    break;
+                                } else {
+                                    $gateway_option = get_option('woocommerce_' . $gateway_id . '_settings');
+                                    if(!empty($gateway_option) && is_array($gateway_option)) {
+                                        if(isset($gateway_option['enabled']) && 'yes' === $gateway_option['enabled']) {
+                                            $display = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                            }
+                            if($display) {
+                                AngellEYE_Utility::angelleye_display_push_notification($response_data);
+                            }
+                        }
                     }
                 }
             }
-            
         }
 
         //init function
