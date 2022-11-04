@@ -2678,8 +2678,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function payment_fields() {
-        if ($description = $this->get_description()) {
-            echo wpautop(wptexturize($description));
+        $description = $this->get_description();
+        if ( $description ) {
+            echo wpautop( wp_kses_post( $description ) );
         }
         if ($this->function_helper->ec_is_express_checkout() == false) {
             if ($this->supports('tokenization') && is_checkout()) {
@@ -2902,6 +2903,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 case 'cancel_order':
                     $this->function_helper->ec_clear_session_data();
                     $cancel_url = !empty($this->cancel_page_id) ? get_permalink($this->cancel_page_id) : wc_get_cart_url();
+                    if(!$cancel_url) {
+                        $cancel_url = wc_get_cart_url();
+                    }
                     wp_safe_redirect($cancel_url);
                     exit;
                 case 'set_express_checkout':

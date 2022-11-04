@@ -1651,7 +1651,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             wc_set_customer_auth_cookie($customer_id);
             angelleye_set_session('reload_checkout', true);
-            if ($first_name && apply_filters('woocommerce_checkout_update_customer_data', true, WC()->customer)) {
+            if ($first_name && apply_filters('woocommerce_checkout_update_customer_data', true, WC()->checkout())) {
                 $userdata = array(
                     'ID' => $customer_id,
                     'first_name' => $first_name,

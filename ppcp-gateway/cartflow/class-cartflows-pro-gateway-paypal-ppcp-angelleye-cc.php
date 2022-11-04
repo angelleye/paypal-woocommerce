@@ -70,6 +70,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
     }
 
     public function get_ppcp_meta() {
+        $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
         return array(
             'environment' => ($this->is_sandbox) ? 'sandbox' : '',
             'intent' => ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE',
@@ -272,7 +273,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
                     'full_name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
                 ),
             ),
-            'custom_id' => $invoice_id,
+            'custom_id' => apply_filters('angelleye_ppcp_custom_id', $invoice_id, $order),
             'invoice_id' => $invoice_id,
             'soft_descriptor' => $this->soft_descriptor
         );

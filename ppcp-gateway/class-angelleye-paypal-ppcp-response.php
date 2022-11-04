@@ -98,9 +98,6 @@ class AngellEYE_PayPal_PPCP_Response {
         $this->api_log->log('Action: ' . ucwords(str_replace('_', ' ', $action_name)));
         $this->api_log->log('Request URL: ' . $url);
         $response_body = isset($response['body']) ? json_decode($response['body'], true) : $response;
-        if(!empty($response_body['headers'])) {
-            $this->api_log->log('PayPal Debug ID: ' . $this->angelleye_ppcp_parse_headers($response_body['headers'], 'paypal-debug-id'));
-        }
         if ($action_name === 'generate_signup_link') {
             //$this->angelleye_ppcp_signup_link_write_log($request);
         } elseif (!empty($request['body']) && is_array($request['body'])) {
@@ -108,8 +105,9 @@ class AngellEYE_PayPal_PPCP_Response {
         } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
             $this->api_log->log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
         }
-        $this->api_log->log('Response Code: ' . wp_remote_retrieve_response_code($response));
-        $this->api_log->log('Response Message: ' . wp_remote_retrieve_response_message($response));
+        if (!empty($response_body['headers'])) {
+            $this->api_log->log('Response Headers: ' . wc_print_r($response_body['headers'], true));
+        }
         if (!empty($response_body['body']) && is_array($response_body['body'])) {
             $this->api_log->log('Response Body: ' . wc_print_r($response_body['body'], true));
         } elseif (is_array($response_body)) {

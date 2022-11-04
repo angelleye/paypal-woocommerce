@@ -473,15 +473,14 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function payment_fields() {
         global $woocommerce;
-        if ($this->description) {
-            echo wpautop(wptexturize($this->description));
+        $description = $this->get_description();
+        if ($description) {
+            echo wpautop(wptexturize($description));
         }
         if ( $this->supports( 'tokenization' ) ) {
             $this->tokenization_script();
         }
-        
         $this->angelleye_braintree_lib();
-        
         try {
             if (is_user_logged_in() && $this->enable_tokenized_payments == 'yes') {
                 $customer_id = get_current_user_id();
@@ -605,6 +604,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     var angelleye_dropinInstance;
                     
                     (function ($) {
+                        'use strict';
+                        $(function () {
                         var hasCreateAccountCheckbox = 0 < $( 'input#createaccount' ).length,
 			createAccount            = hasCreateAccountCheckbox && $( 'input#createaccount' ).is( ':checked' );
                         if ( createAccount || is_logged_in || is_registration_required ) {
@@ -769,6 +770,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             }
                             });
                         });
+                        });
                     }(jQuery));
                 </script>
                 <?php
@@ -796,6 +798,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 <script type="text/javascript">
                     var angelleye_dropinInstance;
                     (function ($) {
+                        'use strict';
+                            $(function () {
                             function is_angelleye_braintree_selected() {
                                 if ($('#payment_method_braintree').is(':checked')) {
                                     if($('#angelleye-account-holder-name').length) {
@@ -970,7 +974,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                 }, onComponent('hostedFields'));
                                 <?php if($this->threed_secure_enabled === true) { ?>
                                     braintree.threeDSecure.create({
-                                        client: client
+                                        client: client,
+                                        version: 2
                                     }, onComponent('threeDSecure'));
                                <?php  } ?>
                             }
@@ -1031,8 +1036,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         components.threeDSecure.verifyCard({
                                             amount: <?php echo $order_total ?>,
                                             nonce: payload.nonce,
-                                            addFrame: addFrame,
-                                            removeFrame: removeFrame
+                                            bin: payload.details.bin,
+                                            onLookupComplete : function (data, next) {
+                                                next();
+                                            }
                                         }, function (err, verification) {
                                             if (err) {
                                                 $('.woocommerce-error').remove();
@@ -1047,6 +1054,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                         });
                                   <?php  } ?>
                                 });
+                            });
                             });
                     }(jQuery));
                 </script>

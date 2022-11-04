@@ -100,6 +100,19 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
         } else {
             $order_meta_value = $order->get_meta($key, $bool);
         }
+        if (empty($order_meta_value) && $key === '_paymentaction') {
+            if ($old_wc) {
+                $order_meta_value = get_post_meta($order->id, '_payment_action', $bool);
+            } else {
+                $order_meta_value = $order->get_meta('_payment_action', $bool);
+            }
+        } elseif (empty($order_meta_value) && $key === '_payment_action') {
+            if ($old_wc) {
+                $order_meta_value = get_post_meta($order->id, '_paymentaction', $bool);
+            } else {
+                $order_meta_value = $order->get_meta('_paymentaction', $bool);
+            }
+        }
         return $order_meta_value;
     }
 
@@ -234,7 +247,7 @@ if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
             $billing_address['address_1'] = !empty($angelleye_ppcp_checkout_post['billing_address_1']) ? $angelleye_ppcp_checkout_post['billing_address_1'] : '';
             $billing_address['address_2'] = !empty($angelleye_ppcp_checkout_post['billing_address_2']) ? $angelleye_ppcp_checkout_post['billing_address_2'] : '';
             $billing_address['city'] = !empty($angelleye_ppcp_checkout_post['billing_city']) ? $angelleye_ppcp_checkout_post['billing_city'] : '';
-            $billing_address['state'] = !empty($angelleye_ppcp_checkout_post['billing_state']) ? $angelleye_ppcp_checkout_post['billing_state'] : '';
+            $billing_address['state'] = !empty($angelleye_ppcp_checkout_post['billing_state']) ? angelleye_ppcp_validate_checkout($angelleye_ppcp_checkout_post['billing_country'], $angelleye_ppcp_checkout_post['billing_state'], 'shipping') : '';
             $billing_address['postcode'] = !empty($angelleye_ppcp_checkout_post['billing_postcode']) ? $angelleye_ppcp_checkout_post['billing_postcode'] : '';
             $billing_address['phone'] = !empty($angelleye_ppcp_checkout_post['billing_phone']) ? $angelleye_ppcp_checkout_post['billing_phone'] : '';
             $billing_address['email'] = !empty($angelleye_ppcp_checkout_post['billing_email']) ? $angelleye_ppcp_checkout_post['billing_email'] : '';
@@ -255,7 +268,7 @@ if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
                     $billing_address['address_1'] = !empty($checkout_details->payer->address->address_line_1) ? $checkout_details->payer->address->address_line_1 : '';
                     $billing_address['address_2'] = !empty($checkout_details->payer->address->address_line_2) ? $checkout_details->payer->address->address_line_2 : '';
                     $billing_address['city'] = !empty($checkout_details->payer->address->admin_area_2) ? $checkout_details->payer->address->admin_area_2 : '';
-                    $billing_address['state'] = !empty($checkout_details->payer->address->admin_area_1) ? $checkout_details->payer->address->admin_area_1 : '';
+                    $billing_address['state'] = !empty($checkout_details->payer->address->admin_area_1) ? angelleye_ppcp_validate_checkout($checkout_details->payer->address->country_code, $checkout_details->payer->address->admin_area_1, 'shipping') : '';
                     $billing_address['postcode'] = !empty($checkout_details->payer->address->postal_code) ? $checkout_details->payer->address->postal_code : '';
                     $billing_address['country'] = !empty($checkout_details->payer->address->country_code) ? $checkout_details->payer->address->country_code : '';
                     $billing_address['phone'] = $phone;
@@ -263,7 +276,7 @@ if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
                     $billing_address['address_1'] = !empty($checkout_details->purchase_units[0]->shipping->address->address_line_1) ? $checkout_details->purchase_units[0]->shipping->address->address_line_1 : '';
                     $billing_address['address_2'] = !empty($checkout_details->purchase_units[0]->shipping->address->address_line_2) ? $checkout_details->purchase_units[0]->shipping->address->address_line_2 : '';
                     $billing_address['city'] = !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_2) ? $checkout_details->purchase_units[0]->shipping->address->admin_area_2 : '';
-                    $billing_address['state'] = !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_1) ? $checkout_details->purchase_units[0]->shipping->address->admin_area_1 : '';
+                    $billing_address['state'] = !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_1) ? angelleye_ppcp_validate_checkout($checkout_details->purchase_units[0]->shipping->address->country_code, $checkout_details->purchase_units[0]->shipping->address->admin_area_1, 'shipping') : '';
                     $billing_address['postcode'] = !empty($checkout_details->purchase_units[0]->shipping->address->postal_code) ? $checkout_details->purchase_units[0]->shipping->address->postal_code : '';
                     $billing_address['country'] = !empty($checkout_details->purchase_units[0]->shipping->address->country_code) ? $checkout_details->purchase_units[0]->shipping->address->country_code : '';
                     $billing_address['phone'] = $phone;
@@ -295,7 +308,7 @@ if (!function_exists('angelleye_ppcp_get_mapped_shipping_address')) {
             'address_1' => !empty($checkout_details->purchase_units[0]->shipping->address->address_line_1) ? $checkout_details->purchase_units[0]->shipping->address->address_line_1 : '',
             'address_2' => !empty($checkout_details->purchase_units[0]->shipping->address->address_line_2) ? $checkout_details->purchase_units[0]->shipping->address->address_line_2 : '',
             'city' => !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_2) ? $checkout_details->purchase_units[0]->shipping->address->admin_area_2 : '',
-            'state' => !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_1) ? $checkout_details->purchase_units[0]->shipping->address->admin_area_1 : '',
+            'state' => !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_1) ? angelleye_ppcp_validate_checkout($checkout_details->purchase_units[0]->shipping->address->country_code, $checkout_details->purchase_units[0]->shipping->address->admin_area_1, 'shipping') : '',
             'postcode' => !empty($checkout_details->purchase_units[0]->shipping->address->postal_code) ? $checkout_details->purchase_units[0]->shipping->address->postal_code : '',
             'country' => !empty($checkout_details->purchase_units[0]->shipping->address->country_code) ? $checkout_details->purchase_units[0]->shipping->address->country_code : '',
         );
@@ -600,7 +613,7 @@ if (!function_exists('angelleye_ppcp_processor_response_code')) {
 
 }
 
-if (!function_exists('angelleye_ppcp_payment_method_title_list')) {
+if (!function_exists('angelleye_ppcp_get_payment_method_title')) {
 
     function angelleye_ppcp_get_payment_method_title($payment_name = '') {
         $final_payment_method_name = '';
@@ -631,19 +644,45 @@ if (!function_exists('angelleye_ppcp_payment_method_title_list')) {
         return apply_filters('angelleye_ppcp_get_payment_method_title', $final_payment_method_name, $payment_name, $list_payment_method);
     }
 
-    if (!function_exists('angelleye_ppcp_is_product_purchasable')) {
+}
 
-        function angelleye_ppcp_is_product_purchasable($product) {
-            if (is_a($product, 'WC_Product') === false) {
-                return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
-            }
-            if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription') || $product->is_purchasable() === false || $product->get_price() == 0) {
-                return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
-            }
-            return apply_filters('angelleye_ppcp_is_product_purchasable', true, $product);
+if (!function_exists('angelleye_ppcp_is_product_purchasable')) {
+
+    function angelleye_ppcp_is_product_purchasable($product) {
+        if (is_a($product, 'WC_Product') === false) {
+            return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
         }
-
+        if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription') || ($product->get_price() == '' || $product->get_price() == 0)) {
+            return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
+        }
+        return apply_filters('angelleye_ppcp_is_product_purchasable', true, $product);
     }
+
+}
+if (!function_exists('angelleye_ppcp_validate_checkout')) {
+
+    function angelleye_ppcp_validate_checkout($country, $state, $sec) {
+        $state_value = '';
+        $valid_states = WC()->countries->get_states(isset($country) ? $country : ( 'billing' === $sec ? WC()->customer->get_country() : WC()->customer->get_shipping_country() ));
+        if (!empty($valid_states) && is_array($valid_states)) {
+            $valid_state_values = array_flip(array_map('strtolower', $valid_states));
+            if (isset($valid_state_values[strtolower($state)])) {
+                $state_value = $valid_state_values[strtolower($state)];
+                return $state_value;
+            }
+        } else {
+            return $state;
+        }
+        if (!empty($valid_states) && is_array($valid_states) && sizeof($valid_states) > 0) {
+            if (!in_array($state, array_keys($valid_states))) {
+                return false;
+            } else {
+                return $state;
+            }
+        }
+        return $state_value;
+    }
+
 }
 
 if (!function_exists('angelleye_ppcp_account_ready_to_paid')) {
