@@ -1271,6 +1271,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'currency_code' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 ),
                 'invoice_id' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number()),
+                'payment_instruction'=> array('payee' => array('merchant_id' => $this->merchant_id)),
                 'final_capture' => true,
             );
             $body_request = angelleye_ppcp_remove_empty_key($capture_arg);
@@ -1915,6 +1916,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'currency_code' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 ),
                 'note_to_payer' => $note_to_payer,
+                'payment_instruction'=> array('payee' => array('merchant_id' => $this->merchant_id)),
                 'invoice_id' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number()),
                 'final_capture' => $final_capture,
             );
