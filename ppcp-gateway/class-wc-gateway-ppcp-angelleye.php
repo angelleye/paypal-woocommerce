@@ -11,6 +11,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     public $payment_request;
     public $advanced_card_payments;
     public $checkout_disable_smart_button;
+    public $minified_version;
 
     public function __construct() {
         try {
@@ -121,6 +122,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->three_d_secure_contingency = $this->get_option('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
         $this->is_enabled = 'yes' === $this->get_option('enabled', 'no');
+        $this->minified_version = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
     }
 
     public function is_available() {
@@ -241,8 +243,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function enqueue_scripts() {
         if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
-            wp_enqueue_style('wc-gateway-ppcp-angelleye-settings-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-gateway-admin.css', array(), VERSION_PFW, 'all');
-            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings.js', array('jquery'), VERSION_PFW, true);
+            wp_enqueue_style('wc-gateway-ppcp-angelleye-settings-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-gateway-admin' . $this->minified_version . '.css', array(), VERSION_PFW, 'all');
+            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
             wp_localize_script('wc-gateway-ppcp-angelleye-settings', 'ppcp_angelleye_param', array(
                 'angelleye_ppcp_is_local_server' => ( angelleye_ppcp_is_local_server() == true) ? 'yes' : 'no',
                 'angelleye_ppcp_onboarding_endpoint' => WC_AJAX::get_endpoint('ppcp_login_seller'),
@@ -257,7 +259,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                     )
             );
         }
-        wp_enqueue_script('wc-gateway-ppcp-angelleye-settings-list', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings-list.js', array('jquery'), VERSION_PFW, true);
+        wp_enqueue_script('wc-gateway-ppcp-angelleye-settings-list', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings-list' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
     }
 
     public function generate_angelleye_ppcp_text_html($field_key, $data) {
