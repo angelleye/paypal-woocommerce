@@ -232,7 +232,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 echo __('We could not properly connect to PayPal', '');
                             }
                             ?>
-                                <p><?php echo __('Your <b>total</b> fee when buyers pay with Debit/Credit Card will be just 2.69% + 49¢.', 'paypal-for-woocommerce'); ?>&nbsp;<small style="font-size:10px;"><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/">Learn More</a></smart></p>
+                                <p><?php echo __('Your <b>total</b> fee when buyers pay with Debit/Credit Card will be just 2.69% + 49¢.', 'paypal-for-woocommerce'); ?><br><small style="font-size:10px;"><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/">Learn More</a></smart></p>
                         </div>
                     </div>
                 </div>
