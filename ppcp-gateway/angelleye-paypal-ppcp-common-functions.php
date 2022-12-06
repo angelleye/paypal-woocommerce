@@ -687,6 +687,12 @@ if (!function_exists('angelleye_ppcp_validate_checkout')) {
 
         function own_angelleye_sendy_list($email) {
             global $wp;
+            $name = '';
+            if (is_user_logged_in()) {
+               $first_name = get_user_meta( get_current_user_id(), 'billing_first_name', true );
+               $last_name = get_user_meta( get_current_user_id(), 'billing_last_name', true );
+               $name = $first_name . ' ' . $last_name;
+            }
             if (!empty($_SERVER['HTTP_REFERER'])) {
                 $current_url = $_SERVER['HTTP_REFERER'];
             } else {
@@ -703,6 +709,7 @@ if (!function_exists('angelleye_ppcp_validate_checkout')) {
                 'body' => array('list' => 'oV0I12rDwJdMDL2jYzvwPQ',
                     'boolean' => 'true',
                     'email' => $email,
+                    'name' => $name,
                     'gdpr' => 'true',
                     'silent' => 'true',
                     'api_key' => 'qFcoVlU2uG3AMYabNTrC',
