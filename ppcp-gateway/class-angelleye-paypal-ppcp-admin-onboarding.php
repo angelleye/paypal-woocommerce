@@ -300,6 +300,10 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
                     <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
                 </li>
+                <li>
+                    <p><?php echo __('Plugin Documentation', 'paypal-for-woocommerce'); ?></p>
+                    <a class="wplk-button" href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" target="_blank"><?php echo __('Plugin Documentation', 'paypal-for-woocommerce'); ?></a>
+                </li>
             </ul>
         </div>
         <?php

@@ -422,11 +422,6 @@ hr {
     text-align: center;
     margin-left: 30%;
 }
-.paypal_woocommerce_support_downloads p {
-    font-size: 20px;
-    padding: 5px;
-    font-family: arial;
-}
 .paypal-px-btn:hover {
     background-color: #003087;
 }
@@ -495,17 +490,6 @@ hr {
         margin: 10px;
         border-radius: 4px;
     }
-}
-
-.paypal_woocommerce_support {
-    padding: 30px;
-    background: rgb(255, 255, 255);
-    color: rgb(30, 30, 30);
-    position: relative;
-    outline: none;
-    border: 1px solid #dedede;
-    box-shadow: 0 20px 30px rgba(143, 163, 184, 0.15);
-    border-radius: 3px;
 }
 .paypal_woocommerce_support_downloads {
     display: grid;

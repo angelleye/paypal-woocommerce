@@ -14,7 +14,6 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
     <?php if ($active_tab == 'general_settings') { ?>
         <h2 class="nav-tab-wrapper">
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_payment_gateway_products" class="nav-tab <?php echo $gateway == 'paypal_payment_gateway_products' ? 'nav-tab-active' : ''; ?>"><?php echo __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'); ?></a>
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_woocommerce_support" class="nav-tab <?php echo $gateway == 'paypal_woocommerce_support' ? 'nav-tab-active' : ''; ?>"><?php echo __('Support', 'paypal-for-woocommerce'); ?></a>
             <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=tool" class="nav-tab <?php echo $gateway == 'tool' ? 'nav-tab-active' : ''; ?>"><?php echo __('Tools', 'paypal-for-woocommerce'); ?></a>
             <?php do_action('angelleye_paypal_for_woocommerce_general_settings_tab'); ?>
         </h2>
@@ -30,27 +29,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                 $admin_onboarding->view();
                 ?>
             </div>
-        <?php } elseif ($gateway == 'paypal_woocommerce_support') {
-            ?>
-            <div class="wrap angelleye_addons_wrap">
-                <div id="angelleye_paypal_marketing_table">
-                    <div class="paypal_woocommerce_support paypal_woocommerce_product_onboard">
-                        <ul class="paypal_woocommerce_support_downloads">
-                            <li>
-                                <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
-                                <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
-                            </li>
-                            <li>
-                                <p><?php echo __('Plugin Documentation', ''); ?></p>
-                                <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="wplk-button" target="_blank"><?php echo __('Full Documentation', ''); ?></a>
-                            </li>
-
-                        </ul>
-                    </div>
-                </div>
-                <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($id = 'admin_setting'); ?>
-            </div>
-            <?php
+        <?php
         } elseif ($gateway == 'tool') {
             ?>
             <div class="wrap">
