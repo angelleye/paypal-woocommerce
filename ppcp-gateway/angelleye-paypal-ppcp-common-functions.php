@@ -689,9 +689,13 @@ if (!function_exists('angelleye_ppcp_validate_checkout')) {
             global $wp;
             $name = '';
             if (is_user_logged_in()) {
-               $first_name = get_user_meta( get_current_user_id(), 'billing_first_name', true );
-               $last_name = get_user_meta( get_current_user_id(), 'billing_last_name', true );
-               $name = $first_name . ' ' . $last_name;
+                $first_name = get_user_meta(get_current_user_id(), 'billing_first_name', true);
+                $last_name = get_user_meta(get_current_user_id(), 'billing_last_name', true);
+                if (empty($first_name) || empty($last_name)) {
+                    $first_name = get_user_meta(get_current_user_id(), 'first_name', true);
+                    $last_name = get_user_meta(get_current_user_id(), 'last_name', true);
+                }
+                $name = $first_name . ' ' . $last_name;
             }
             if (!empty($_SERVER['HTTP_REFERER'])) {
                 $current_url = $_SERVER['HTTP_REFERER'];
