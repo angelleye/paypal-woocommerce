@@ -194,7 +194,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function view() {
         $this->angelleye_ppcp_load_variable();
-        $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
         ?>
         <div id="angelleye_paypal_marketing_table">
             <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
