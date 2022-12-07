@@ -37,7 +37,7 @@
 }
 .angelleye_ppcp-order-review .woocommerce-billing-fields .angelleye_ppcp_billing_hide, .angelleye_ppcp-order-review .woocommerce-shipping-fields .angelleye_ppcp_shipping_hide {
     display: none !important;
-    }
+}
 
 
 
@@ -164,21 +164,21 @@
     font-size: 1.5em;
 }
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.ppcp-invalid-cart, .woocommerce #payment div.payment_box .wc-credit-card-form div.ppcp-invalid-cart {
-     border-color: red;
+    border-color: red;
 }
 #payment ul.payment_methods li img.ppcp-card-icon {
-  padding: 0 0 3px 3px;
-  max-height: 25px;
-  display: inline-block;
+    padding: 0 0 3px 3px;
+    max-height: 25px;
+    display: inline-block;
 }
 .angelleye_ppcp_checkout_message_guide {
-  max-width: 100%;
-  font-size: initial;
-  font-weight: normal;
-  display: block;
-  text-align: left;
-  width: auto;
-  margin-bottom: 20px;
+    max-width: 100%;
+    font-size: initial;
+    font-weight: normal;
+    display: block;
+    text-align: left;
+    width: auto;
+    margin-bottom: 20px;
 }
 .angelleye_ppcp-button-container #angelleye_ppcp_cart_top {
     text-align: left;

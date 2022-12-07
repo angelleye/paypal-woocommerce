@@ -1524,7 +1524,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function angelleye_cc_ui_style() {
-            wp_enqueue_style('angelleye-cc-ui', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/angelleye-cc-ui.css', array(), VERSION_PFW);
+            wp_register_style('angelleye-cc-ui', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/angelleye-cc-ui.css', array(), VERSION_PFW);
         }
         
         public function angelleye_wc_order_statuses($order_statuses) {

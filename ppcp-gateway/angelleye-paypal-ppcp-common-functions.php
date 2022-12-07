@@ -684,5 +684,14 @@ if (!function_exists('angelleye_ppcp_validate_checkout')) {
     }
 
 }
+if (!function_exists('angelleye_ppcp_add_css_js')) {
+
+    function angelleye_ppcp_add_css_js() {
+        wp_enqueue_script('angelleye-paypal-checkout-sdk');
+        wp_enqueue_script('angelleye_ppcp');
+        wp_enqueue_style('angelleye_ppcp');
+    }
+
+}
 
 
