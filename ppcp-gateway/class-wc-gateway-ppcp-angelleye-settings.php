@@ -1329,7 +1329,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'label' => __('Set billing address in WooCommerce using the address returned by PayPal.', 'paypal-for-woocommerce'),
                     'description' => __('This does not apply when a billing address is provided by WooCommerce through the checkout page or from a logged in user profile.', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'default' => 'no',
+                    'default' => 'yes',
                     'desc_tip' => false,
                 ),
                 'send_items' => array(
