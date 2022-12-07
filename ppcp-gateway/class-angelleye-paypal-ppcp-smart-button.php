@@ -91,7 +91,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (wc_ship_to_billing_address_only()) {
             $this->set_billing_address = true;
         } else {
-            $this->set_billing_address = 'yes' === $this->settings->get('set_billing_address', 'no');
+            $this->set_billing_address = 'yes' === $this->settings->get('set_billing_address', 'yes');
         }
         $this->disable_term = 'yes' === $this->settings->get('disable_term', 'no');
         $this->skip_final_review = 'yes' === $this->settings->get('skip_final_review', 'no');
