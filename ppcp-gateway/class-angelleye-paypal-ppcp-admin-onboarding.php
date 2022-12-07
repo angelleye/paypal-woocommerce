@@ -255,7 +255,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                            <p><?php echo __('You’re currently setup and enjoying the benefits of <br>Complete Payments - Powered by PayPal.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('You’re currently setup and enjoying the benefits of Complete Payments. <br> Powered by PayPal - Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('However, we need additional verification to approve you for the reduced <br>rate of 2.69% on debit/credit cards.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
                             <br>
@@ -274,7 +274,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                            <p><?php echo __('You’re currently setup and enjoying the benefits of <br> Complete Payments - Powered by PayPal.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('You’re currently setup and enjoying the benefits of Complete Payments. <br> Powered by PayPal - Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
                             <br>
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
