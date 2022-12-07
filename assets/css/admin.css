@@ -665,6 +665,10 @@ hr {
     font-family: arial;
 }
 
+.paypal_woocommerce_product .paypal_woocommerce_product_onboard .paypal_woocommerce_product_onboard_content p.ppcp_paypal_fee {
+    font-size: 14px;
+}
+
 .paypal_woocommerce_product_onboard_content .green_checkmark {
     width: 95px;
     height: 95px;
