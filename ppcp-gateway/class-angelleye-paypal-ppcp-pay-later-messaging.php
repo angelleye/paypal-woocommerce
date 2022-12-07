@@ -7,6 +7,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     public $setting_obj;
     public $api_log;
     public $settings;
+    public $minified_version;
     protected static $_instance = null;
 
     public static function instance() {
@@ -62,6 +63,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (empty($this->pay_later_messaging_page_type)) {
             $this->enabled_pay_later_messaging = false;
         }
+        $this->minified_version = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
     }
 
     public function angelleye_ppcp_pay_later_messaging_properties() {

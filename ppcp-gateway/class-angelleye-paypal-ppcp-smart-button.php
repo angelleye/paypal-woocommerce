@@ -16,6 +16,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $advanced_card_payments_display_position;
     public $enable_paypal_checkout_page;
     public $checkout_page_display_option;
+    public $minified_version;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -145,6 +146,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $this->three_d_secure_contingency = $this->settings->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
         $this->disable_cards = $this->settings->get('disable_cards', array());
+        $this->minified_version = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+        
     }
 
     public function angelleye_ppcp_default_set_properties() {
@@ -394,7 +397,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $js_url = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
 
         wp_register_script('angelleye-paypal-checkout-sdk', $js_url, array(), null, false);
-        wp_register_script($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-public.js', array('jquery', 'angelleye-paypal-checkout-sdk'), VERSION_PFW, false);
+        wp_register_script($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-public' . $this->minified_version . '.js', array('jquery', 'angelleye-paypal-checkout-sdk'), VERSION_PFW, false);
         wp_localize_script($this->angelleye_ppcp_plugin_name, 'angelleye_ppcp_manager', array(
             'style_color' => $this->style_color,
             'style_shape' => $this->style_shape,
@@ -481,7 +484,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->angelleye_ppcp_smart_button_style_properties();
             if (WC()->cart->needs_payment()) {
                 angelleye_ppcp_add_css_js();
-                echo '<div class="angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout_top"></div></div><div class="angelleye_ppcp_checkout_message_guide">Skip the forms and pay faster with PayPal!</div>';
+                echo apply_filters('angelleye_ppcp_checkout_top_html', '<div class="angelleye_ppcp"><fieldset><legend class="express-title">' . __('PayPal Checkout', 'paypal-for-woocommerce') . '</legend><div class="wc_ppcp_express_checkout_gateways"><div class="angelleye_ppcp-gateway express_payment_method_ppcp"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout_top"></div></div></div></div></fieldset><span class="express-divider">OR</span></div>');
             }
         }
     }

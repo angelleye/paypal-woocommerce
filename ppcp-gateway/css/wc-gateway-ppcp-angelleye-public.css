@@ -1,5 +1,6 @@
 .angelleye_ppcp-button-container {
     text-align: center;
+    min-width: 305px;
 }
 .angelleye_ppcp-proceed-to-checkout-button-separator {
     display:inline-block;
@@ -182,6 +183,54 @@
 .angelleye_ppcp-button-container #angelleye_ppcp_cart_top {
     text-align: left;
     margin-bottom: 20px;
+}
+.express_payment_method_ppcp .angelleye_ppcp-button-container {
+    display: inline-block;
+    text-align: center;
+}
+.angelleye_ppcp fieldset {
+  border: 1px solid #d1d1d1;
+  border-radius: 3px;
+  margin-bottom: 20px;
+  padding: 15px 25px;
+  text-align: center;
+}
+.angelleye_ppcp fieldset legend {
+  font-weight: 500;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+.angelleye_ppcp #wc-ppcp-express-button {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.angelleye_ppcp .express-divider {
+  align-items: center;
+  background: transparent;
+  display: flex;
+  font-size: 16px;
+  left: 0;
+  right: 0;
+  top: -13px;
+  white-space: nowrap;
+  margin-bottom: 20px;
+}
+.angelleye_ppcp .express-divider::before {
+  background: #d1d1d1;
+  content: " ";
+  display: block;
+  height: 1px;
+  margin-right: 1rem;
+  width: 50%;
+}
+.angelleye_ppcp .express-divider::after {
+  background: #d1d1d1;
+  content: " ";
+  display: block;
+  height: 1px;
+  margin-left: 1rem;
+  width: 50%;
 }
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large{
