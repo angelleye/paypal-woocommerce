@@ -439,6 +439,10 @@
         $(checkout_selector).on('click', 'input[name="payment_method"]', function () {
             hide_show_place_order_button();
         });
+        
+        $(document.body).on('removed_coupon_in_checkout', function () {
+            window.location.href = window.location.href;
+        });
 
         function is_hosted_field_eligible() {
             if (is_from_checkout) {

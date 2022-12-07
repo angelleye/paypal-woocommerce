@@ -158,8 +158,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     public function payment_fields() {
         try {
             if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_has_active_session() === false) {
-                wp_enqueue_script('angelleye-paypal-checkout-sdk');
-                wp_enqueue_script('angelleye_ppcp');
+                angelleye_ppcp_add_css_js();
             }
 
             if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true) {
@@ -264,17 +263,17 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             
         }
     }
-    
+
     public function get_title() {
         try {
             $payment_method_title = '';
             if (isset($_GET['post'])) {
-                $theorder = wc_get_order( $_GET['post'] );
-                if($theorder) {
+                $theorder = wc_get_order($_GET['post']);
+                if ($theorder) {
                     $payment_method_title = angelleye_ppcp_get_post_meta($theorder, '_payment_method_title', true);
                 }
             }
-            if(!empty($payment_method_title)) {
+            if (!empty($payment_method_title)) {
                 return $payment_method_title;
             } else {
                 return parent::get_title();

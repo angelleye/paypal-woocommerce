@@ -165,20 +165,17 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function payment_fields() {
-
         $description = $this->get_description();
         if ($description) {
             echo wpautop(wp_kses_post($description));
         }
         if ($this->checkout_disable_smart_button === false) {
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
-        } else {
-            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false && angelleye_ppcp_has_active_session() === false) {
-                wp_enqueue_script('angelleye-paypal-checkout-sdk');
-                wp_enqueue_script($this->id);
-            }
         }
-        if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false) {
+        if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false && $this->advanced_card_payments === true) {
+            if (angelleye_ppcp_has_active_session() === false) {
+                angelleye_ppcp_add_css_js();
+            }
             parent::payment_fields();
             echo '<div id="payments-sdk__contingency-lightbox"></div>';
         }
@@ -267,7 +264,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                          ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                           ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <button type="button" class="button angelleye-ppcp-disconnect"><?php echo __('Disconnect', ''); ?></button>
@@ -292,7 +289,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                          ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                           ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
@@ -351,12 +348,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                            ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                             ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                            ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                             ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
                     <?php echo $this->get_description_html($data); // WPCS: XSS ok.     ?>
                 </fieldset>
@@ -434,12 +431,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         try {
             $payment_method_title = '';
             if (isset($_GET['post'])) {
-                $theorder = wc_get_order( $_GET['post'] );
-                if($theorder) {
+                $theorder = wc_get_order($_GET['post']);
+                if ($theorder) {
                     $payment_method_title = angelleye_ppcp_get_post_meta($theorder, '_payment_method_title', true);
                 }
             }
-            if(!empty($payment_method_title)) {
+            if (!empty($payment_method_title)) {
                 return $payment_method_title;
             } else {
                 return parent::get_title();
@@ -491,8 +488,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <tr>
             <td class="label stripe-fee">
-        <?php echo wc_help_tip(__('This represents the fee PayPal collects for the transaction.', 'paypal-for-woocommerce')); ?>
-        <?php esc_html_e('PayPal Fee:', 'paypal-for-woocommerce'); ?>
+                <?php echo wc_help_tip(__('This represents the fee PayPal collects for the transaction.', 'paypal-for-woocommerce')); ?>
+                <?php esc_html_e('PayPal Fee:', 'paypal-for-woocommerce'); ?>
             </td>
             <td width="1%"></td>
             <td class="total">

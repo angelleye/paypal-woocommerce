@@ -1518,6 +1518,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
 
     public function payment_fields() {
+        wp_enqueue_style('angelleye-cc-ui');
         do_action('angelleye_before_fc_payment_fields', $this);
         $description = $this->get_description();
         if ( $description ) {
