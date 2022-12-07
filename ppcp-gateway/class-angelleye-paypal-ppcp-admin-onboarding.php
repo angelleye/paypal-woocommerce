@@ -202,7 +202,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
                         <br><br>
                         <div class="paypal_woocommerce_product_onboard_content">
-                            <p><?php echo __('Welcome to the easiest one-stop solution for accepting PayPal, Debit and Credit <br>Cards, with a lower per-transaction cost for cards than most other gateways!', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('Welcome to the most Complete Payments solution available for WooCommerce. <br> Powered by PayPal - Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                             <?php
                             if (isset($_GET['testmode'])) {
                                 $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
@@ -234,7 +234,10 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 echo __('We could not properly connect to PayPal', '');
                             }
                             ?>
-                                <p><?php echo __('Your <b>total</b> fee when buyers pay with Debit/Credit Card will be just 2.69% + 49¢.', 'paypal-for-woocommerce'); ?><br><small style="font-size:10px;"><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/">Learn More</a></smart></p>
+                                <p><?php echo __('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a <b>total fee</b> of only 3.59% + 49¢.', 'paypal-for-woocommerce'); ?>
+                                    <br><br>
+                                    <?php echo __('Save money on Visa/MasterCard/Discover transactions <br>with a <b>total fee</b> of only 2.69% + 49¢.', 'paypal-for-woocommerce'); ?>
+                                    <br><small style="font-size:10px;"><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/">Learn More</a></smart></p>
                         </div>
                     </div>
                 </div>
