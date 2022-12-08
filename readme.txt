@@ -2,9 +2,9 @@
 Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
-Requires at least: 5.5
-Tested up to: 6.1
-Stable tag: 3.0.40
+Requires at least: 5.8
+Tested up to: 6.1.1
+Stable tag: 3.0.41
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,14 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.0.41 - 12.08.2022 =
+* Feature - Adds CSS and JS minified version. ([PFW-1210](https://github.com/angelleye/paypal-woocommerce/pull/1753))
+* Tweak - Update set billing address option. ([PFW-1216](https://github.com/angelleye/paypal-woocommerce/pull/1758))
+* Tweak - Update CSS and JS when required. ([PFW-1215](https://github.com/angelleye/paypal-woocommerce/pull/1757))
+* Tweak - Add min width to smart button container. ([PFW-1212](https://github.com/angelleye/paypal-woocommerce/pull/1756))
+* Tweak - PPCP - Modified top of checkout page UI. ([PFW-1209](https://github.com/angelleye/paypal-woocommerce/pull/1754))
+* Tweak - Pass all the billing info when subscription_change_payment API call. ([PFW-1208](https://github.com/angelleye/paypal-woocommerce/pull/1750))
 
 = 3.0.40 - 11.03.2022 =
 * Feature - Adds 3DS2 for Braintree. ([PFW-1192](https://github.com/angelleye/paypal-woocommerce/pull/1748))
