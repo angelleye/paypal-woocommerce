@@ -1401,7 +1401,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
                     'type' => 'text',
                     'description' => __('The value entered here will be displayed on the buyer\'s credit card statement.', 'paypal-for-woocommerce'),
-                    'default' => '',
+                    'default' => get_bloginfo('name'),
                     'desc_tip' => true,
                     'custom_attributes' => array('maxlength' => '22'),
                 ),
