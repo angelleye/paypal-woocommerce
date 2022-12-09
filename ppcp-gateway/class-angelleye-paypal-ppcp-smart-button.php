@@ -1009,14 +1009,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $order_data['billing_last_name'] = isset($billing_address['last_name']) ? $billing_address['last_name'] : '';
         $order_data['billing_email'] = isset($billing_address['email']) ? $billing_address['email'] : '';
         $order_data['billing_company'] = isset($billing_address['company']) ? $billing_address['company'] : '';
-        if ($this->set_billing_address) {
-            $order_data['billing_address_1'] = isset($billing_address['address_1']) ? $billing_address['address_1'] : '';
-            $order_data['billing_address_2'] = isset($billing_address['address_2']) ? $billing_address['address_2'] : '';
-            $order_data['billing_city'] = isset($billing_address['city']) ? $billing_address['city'] : '';
-            $order_data['billing_state'] = isset($billing_address['state']) ? $billing_address['state'] : '';
-            $order_data['billing_postcode'] = isset($billing_address['postcode']) ? $billing_address['postcode'] : '';
-            $order_data['billing_phone'] = isset($billing_address['phone']) ? $billing_address['phone'] : '';
-        }
+        $order_data['billing_country'] = isset($billing_address['country']) ? $billing_address['country'] : '';
+        $order_data['billing_address_1'] = isset($billing_address['address_1']) ? $billing_address['address_1'] : '';
+        $order_data['billing_address_2'] = isset($billing_address['address_2']) ? $billing_address['address_2'] : '';
+        $order_data['billing_city'] = isset($billing_address['city']) ? $billing_address['city'] : '';
+        $order_data['billing_state'] = isset($billing_address['state']) ? $billing_address['state'] : '';
+        $order_data['billing_postcode'] = isset($billing_address['postcode']) ? $billing_address['postcode'] : '';
+        $order_data['billing_phone'] = isset($billing_address['phone']) ? $billing_address['phone'] : '';
         $order_data['shipping_first_name'] = isset($shipping_address['first_name']) ? $shipping_address['first_name'] : '';
         $order_data['shipping_last_name'] = isset($shipping_address['last_name']) ? $shipping_address['last_name'] : '';
         $order_data['shipping_company'] = isset($shipping_address['company']) ? $shipping_address['company'] : '';
