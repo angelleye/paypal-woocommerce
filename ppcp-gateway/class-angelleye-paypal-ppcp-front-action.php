@@ -73,7 +73,20 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     if (isset($_GET['from']) && 'pay_page' === $_GET['from']) {
                         $woo_order_id = $_POST['woo_order_id'];
                         angelleye_ppcp_set_session('angelleye_ppcp_woo_order_id', $woo_order_id);
-                        $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
+                        $order = wc_get_order($woo_order_id);
+                        do_action('woocommerce_before_pay_action', $order);
+                        $error_messages = wc_get_notices('error');
+                        wc_clear_notices();
+                        if(empty($error_messages)){
+                            $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
+                        }else{
+                            $errors = [];
+                            foreach($error_messages as $error){
+                                $errors[] = $error['notice'];
+                            }
+                            ob_start();
+                            wp_send_json_error(array('messages' => $errors));
+                        }
                         exit();
                     } elseif (isset($_GET['from']) && 'checkout' === $_GET['from']) {
                         if (isset($_POST) && !empty($_POST)) {
