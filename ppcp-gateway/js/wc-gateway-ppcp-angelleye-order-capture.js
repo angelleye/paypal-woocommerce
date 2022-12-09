@@ -19,6 +19,7 @@
             $('.woocommerce-additional-fields').show();
             $(".angelleye_ppcp-order-review p").removeClass("angelleye_ppcp_shipping_hide");
         });
+        jQuery('.angelleye_ppcp-order-review #terms').prop('checked', true);
         if ($('#place_order').length) {
             $('html, body').animate({
                 scrollTop: ($('#place_order').offset().top - 500)

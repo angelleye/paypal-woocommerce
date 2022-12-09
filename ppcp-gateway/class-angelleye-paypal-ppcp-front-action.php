@@ -113,6 +113,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
                 case "direct_capture":
                     angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', wc_clean($_GET['paypal_order_id']));
+                    angelleye_ppcp_set_session('angelleye_ppcp_paypal_payer_id', wc_clean($_GET['paypal_payer_id']));
                     $this->angelleye_ppcp_direct_capture();
                     break;
                 case "regular_capture":
