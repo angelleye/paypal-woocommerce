@@ -186,6 +186,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'angelleye_classic_gateway_sub_menu', array($this, 'angelleye_classic_gateway_sub_menu'));
             add_action( 'wcv_save_product', array($this,'angelleye_wcv_save_product'));
             add_filter( 'admin_body_class', array( $this, 'angelleye_include_admin_body_class' ), 9999 );
+            add_action( 'current_screen', array( $this, 'angelleye_redirect_to_onboard' ), 9 );
             $this->customer_id;
         }
 
@@ -1630,6 +1631,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             } catch (Exception $ex) {
                 return $classes;
             }
+        }
+        
+        public function angelleye_redirect_to_onboard() {
+            $woocommerce_angelleye_ppcp_settings = get_option('woocommerce_angelleye_ppcp_settings', false);
+            $displayed_angelleye_onboard_screen = get_option('displayed_angelleye_onboard_screen', false);
+            if($woocommerce_angelleye_ppcp_settings === false && $displayed_angelleye_onboard_screen === false) {
+                update_option('displayed_angelleye_onboard_screen', 'yes');
+                wp_safe_redirect( admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products') );
+		exit;
+            }
+            
         }
     }
 }
