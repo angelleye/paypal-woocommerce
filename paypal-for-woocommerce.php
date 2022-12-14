@@ -3,7 +3,7 @@
  * @wordpress-plugin
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
- * Description:       Easily enable PayPal Complete Payments, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
+ * Description:       Easily enable Complete Payments - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
  * Version:           3.0.41
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
@@ -70,10 +70,13 @@ if (!defined('PAYPAL_PPCP_PARTNER_CLIENT_ID')) {
     define('PAYPAL_PPCP_PARTNER_CLIENT_ID', 'ATgw55qRjaDSlPur2FAkdAiB-QQuG5jlLsees-8dcxLiLla_nwbBSvSnCbUaGlmzxq9t2b8R9JGGSz1e');
 }
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE')) {
-    define('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE', 'https://zpyql2kd39.execute-api.us-east-2.amazonaws.com/production/PayPalMerchantIntegration/');
+    define('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE', 'https://3yjtbtgz0m.execute-api.us-east-2.amazonaws.com/default/PayPalMerchantIntegrationTest/');
 }
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE', 'https://ppcp.angelleye.com/production/PayPalMerchantIntegration/');
+}
+if (!defined('AE_FEE')) {
+    define('AE_FEE', 'ae_p_f');
 }
 
 
@@ -637,7 +640,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         	$this->plugin_screen_hook_suffix = add_submenu_page(
 			'options-general.php', 
 			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),
-			__( 'PayPal for WooCommerce', 'paypal-for-woocommerce' ),
+			__( 'Complete Payments', 'paypal-for-woocommerce' ),
 			'manage_options',
 			'paypal-for-woocommerce',
 			array( $this, 'display_plugin_admin_page'));	
@@ -973,7 +976,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     if (count($products->posts) < 1) {
                         $errors = TRUE;
                         $update_count = 'zero';
-                        $redirect_url = admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=tools&processed=' . $update_count);
+                        $redirect_url = admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=general_settings&gateway=tool&processed=' . $update_count);
                         echo $redirect_url;
                     } else {
                         foreach ($products->posts as $target) {
@@ -1022,7 +1025,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     if ($update_count == 0) {
                         $update_count = 'zero';
                     }
-                    $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=tools&processed=' . $update_count);
+                    $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=tool&processed=' . $update_count);
                     echo $redirect_url;
                 } else {
                     //echo 'failed';

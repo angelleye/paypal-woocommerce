@@ -66,9 +66,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             $this->settings = get_option($this->gateway_key, array());
             $defaults = array(
-                'title' => __('PayPal Complete Payments', 'paypal-for-woocommerce'),
+                'title' => __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'),
                 'description' => __(
-                        'Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce'
+                        'The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce'
                 )
             );
             foreach ($defaults as $key => $value) {
@@ -100,9 +100,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             $skip_final_review_option_not_allowed_terms = '';
             $skip_final_review_option_not_allowed_tokenized_payments = '';
             $woocommerce_enable_guest_checkout = get_option('woocommerce_enable_guest_checkout');
-            if ('yes' === get_option('woocommerce_registration_generate_username') && 'yes' === get_option('woocommerce_registration_generate_password')) {
-                $woocommerce_enable_guest_checkout = 'yes';
-            }
             if (isset($woocommerce_enable_guest_checkout) && ( $woocommerce_enable_guest_checkout === "no" )) {
                 $skip_final_review_option_not_allowed_guest_checkout = ' (The WooCommerce guest checkout option is disabled.  Therefore, the review page is required for login / account creation, and this option will be overridden.)';
             }
@@ -147,14 +144,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'label' => __('Enable PayPal Complete Payments', 'paypal-for-woocommerce'),
+                    'label' => __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'),
                     'default' => 'no',
                 ),
                 'title' => array(
                     'title' => __('Title', 'paypal-for-woocommerce'),
                     'type' => 'text',
                     'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
-                    'default' => __('PayPal Complete Payments', 'paypal-for-woocommerce'),
+                    'default' => __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
                 'description' => array(
@@ -187,14 +184,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => ''
                 ),
                 'live_disconnect' => array(
-                    'title' => __('Disconnect from PayPal', 'paypal-for-woocommerce'),
+                    'title' => __('PayPal Connection', 'paypal-for-woocommerce'),
                     'type' => 'angelleye_ppcp_text',
                     'mode' => 'live',
                     'description' => __('Click to reset current credentials and use another account.', 'paypal-for-woocommerce'),
                     'desc_tip' => '',
                 ),
                 'sandbox_onboarding' => array(
-                    'title' => __('Connect to PayPal', 'paypal-for-woocommerce'),
+                    'title' => __('Connect to PayPal Sandbox', 'paypal-for-woocommerce'),
                     'type' => 'angelleye_ppcp_onboarding',
                     'gateway' => 'angelleye_ppcp',
                     'mode' => 'sandbox',
@@ -202,7 +199,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => ''
                 ),
                 'sandbox_disconnect' => array(
-                    'title' => __('Disconnect from PayPal', 'paypal-for-woocommerce'),
+                    'title' => __('PayPal Connection', 'paypal-for-woocommerce'),
                     'type' => 'angelleye_ppcp_text',
                     'mode' => 'sandbox',
                     'description' => __('Click to reset current credentials and use another account.', 'paypal-for-woocommerce'),
@@ -1437,6 +1434,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             if (wc_coupons_enabled() === false) {
                 unset($this->angelleye_ppcp_gateway_setting['order_review_page_enable_coupons']);
+            }
+            if( get_option('woocommerce_enable_guest_checkout') === 'no' ) {
+                unset($this->angelleye_ppcp_gateway_setting['skip_final_review']);
+                unset($this->angelleye_ppcp_gateway_setting['disable_term']);
+                
             }
             if ((apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) === false) {
                 //disable_term

@@ -24,7 +24,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
         $this->angelleye_ppcp_load_class();
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
-        $this->title = $this->settings->get('title', 'PayPal Complete Payments');
+        $this->title = $this->settings->get('title', 'Complete Payments - Powered by PayPal');
         $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
         $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
         if ($this->dcc_applies->for_country_currency() === false) {

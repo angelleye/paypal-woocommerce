@@ -65,7 +65,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_get_properties() {
-        $this->title = $this->settings->get('title', 'PayPal Complete Payments');
+        $this->title = $this->settings->get('title', 'Complete Payments - Powered by PayPal');
         $this->enabled = 'yes' === $this->settings->get('enabled', 'no');
         $this->enable_paypal_checkout_page = 'yes' === $this->settings->get('enable_paypal_checkout_page', 'yes');
         $this->checkout_page_display_option = $this->settings->get('checkout_page_display_option', 'regular');
@@ -1051,6 +1051,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 return apply_filters('angelleye_ppcp_skip_final_review', true);
             } elseif ((isset($angelleye_ppcp_checkout_post['terms']) || isset($angelleye_ppcp_checkout_post['legal'])) && $angelleye_ppcp_checkout_post['terms'] == 'on') {
                 return apply_filters('angelleye_ppcp_skip_final_review', true);
+            } else {
+                return apply_filters('angelleye_ppcp_skip_final_review', false);
             }
         }
         if ($this->skip_final_review == 'yes') {

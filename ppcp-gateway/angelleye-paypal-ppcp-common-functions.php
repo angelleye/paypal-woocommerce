@@ -683,6 +683,49 @@ if (!function_exists('angelleye_ppcp_validate_checkout')) {
         return $state_value;
     }
 
+    if (!function_exists('own_angelleye_sendy_list')) {
+
+        function own_angelleye_sendy_list($email) {
+            global $wp;
+            $name = '';
+            if (is_user_logged_in()) {
+                $first_name = get_user_meta(get_current_user_id(), 'billing_first_name', true);
+                $last_name = get_user_meta(get_current_user_id(), 'billing_last_name', true);
+                if (empty($first_name) || empty($last_name)) {
+                    $first_name = get_user_meta(get_current_user_id(), 'first_name', true);
+                    $last_name = get_user_meta(get_current_user_id(), 'last_name', true);
+                }
+                $name = $first_name . ' ' . $last_name;
+            }
+            if (!empty($_SERVER['HTTP_REFERER'])) {
+                $current_url = $_SERVER['HTTP_REFERER'];
+            } else {
+                $current_url = home_url(add_query_arg(array(), $wp->request));
+            }
+            $url = 'https://sendy.angelleye.com/subscribe';
+            $response = wp_remote_post($url, array(
+                'method' => 'POST',
+                'timeout' => 45,
+                'redirection' => 5,
+                'httpversion' => '1.0',
+                'blocking' => true,
+                'headers' => array(),
+                'body' => array('list' => 'oV0I12rDwJdMDL2jYzvwPQ',
+                    'boolean' => 'true',
+                    'email' => $email,
+                    'name' => $name,
+                    'gdpr' => 'true',
+                    'silent' => 'true',
+                    'api_key' => 'qFcoVlU2uG3AMYabNTrC',
+                    'referrer' => $current_url
+                ),
+                'cookies' => array()
+                    )
+            );
+            return $response;
+        }
+
+    }
 }
 if (!function_exists('angelleye_ppcp_add_css_js')) {
 

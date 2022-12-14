@@ -63,8 +63,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $this->id = 'angelleye_ppcp';
         $this->icon = apply_filters('woocommerce_angelleye_paypal_checkout_icon', 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png');
         $this->has_fields = true;
-        $this->method_title = __('PayPal Complete Payments', 'paypal-for-woocommerce');
-        $this->method_description = __('Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce');
+        $this->method_title = __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce');
+        $this->method_description = __('The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce');
         $this->supports = array(
             'products',
             'refunds',
@@ -73,8 +73,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function angelleye_get_settings() {
-        $this->title = $this->get_option('title', 'PayPal Complete Payments');
-        $this->description = $this->get_option('description');
+        $this->title = $this->get_option('title', 'Complete Payments - Powered by PayPal');
+        $this->description = $this->get_option('description', '');
         $this->enabled = $this->get_option('enabled', 'no');
         $this->sandbox = 'yes' === $this->get_option('testmode', 'no');
         $this->sandbox_merchant_id = $this->get_option('sandbox_merchant_id', '');
@@ -143,6 +143,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function process_admin_options() {
+        delete_transient(AE_FEE);
         parent::process_admin_options();
     }
 
@@ -269,7 +270,17 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                     <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                           ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
-                    <button type="button" class="button angelleye-ppcp-disconnect"><?php echo __('Disconnect', ''); ?></button>
+                    <div class="ppcp_paypal_connection_image">
+                        <div class="ppcp_paypal_connection_image_status">
+                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="65" height="65">
+                        </div>
+                    </div>
+                    <div class="ppcp_paypal_connection">
+                        <div class="ppcp_paypal_connection_status">
+                            <h3><?php echo __('Congratulations, WooCommerce Complete Payments - Powered by PayPal is Connected.', 'paypal-for-woocommerce'); ?></h3>
+                        </div>
+                    </div>
+                    <button type="button" class="button angelleye-ppcp-disconnect"><?php echo __('Disconnect', 'paypal-for-woocommerce'); ?></button>
                     <p class="description"><?php echo wp_kses_post($data['description']); ?></p>
                 </td>
             </tr>
@@ -282,11 +293,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         if (isset($data['type']) && $data['type'] === 'angelleye_ppcp_onboarding') {
             $field_key = $this->get_field_key($field_key);
             $testmode = ( $data['mode'] === 'live' ) ? 'no' : 'yes';
-            $args = array(
-                'displayMode' => 'minibrowser',
-            );
-            $id = ($testmode === 'no') ? 'connect-to-production' : 'connect-to-sandbox';
-            $label = ($testmode === 'no') ? __('Connect to PayPal', 'paypal-for-woocommerce') : __('Connect to PayPal Sandbox', 'paypal-for-woocommerce');
             ob_start();
             ?>
             <tr valign="top">
@@ -296,25 +302,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
                     if (($this->is_live_first_party_used !== 'yes' && $this->is_live_third_party_used !== 'yes' && $testmode === 'no') || ($this->is_sandbox_first_party_used !== 'yes' && $this->is_sandbox_third_party_used !== 'yes' && $testmode === 'yes')) {
-                        $signup_link = $this->angelleye_get_signup_link($testmode);
-                        if ($signup_link) {
-                            $url = add_query_arg($args, $signup_link);
-                            $this->angelleye_display_paypal_signup_button($url, $id, $label);
-                            $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
-                            ?>
-                            <script type="text/javascript">
-                                document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
-                                    element.addEventListener('click', (e) => {
-                                        if ('undefined' === typeof PAYPAL) {
-                                            e.preventDefault();
-                                            alert('PayPal');
-                                        }
-                                    });
-                                });</script>
-                            <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
-                        } else {
-                            echo __('We could not properly connect to PayPal', '');
-                        }
+                        $setup_url = add_query_arg(array('testmode' => $testmode, 'utm_nooverride' => '1'), untrailingslashit(admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products')));
+                        ?>
+                        <a class="button-primary" href="<?php echo $setup_url; ?>"><?php echo __('Go To Setup', 'paypal-for-woocommerce'); ?></a>
+                        <?php
                     }
                     ?>
                 </td>
@@ -322,12 +313,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             <?php
             return ob_get_clean();
         }
-    }
-
-    public function angelleye_display_paypal_signup_button($url, $id, $label) {
-        ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a>
-        <span class="angelleye_paypal_checkout_gateway_setting_sepraer"></span>
-        <?php
     }
 
     public function generate_copy_text_html($key, $data) {
@@ -357,31 +342,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
                     <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                             ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
-                    <?php echo $this->get_description_html($data); // WPCS: XSS ok.     ?>
+                    <?php echo $this->get_description_html($data); // WPCS: XSS ok.        ?>
                 </fieldset>
             </td>
         </tr>
         <?php
         return ob_get_clean();
-    }
-
-    public function angelleye_get_signup_link($testmode = 'yes') {
-        try {
-            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php');
-            $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
-            $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode);
-            if (isset($seller_onboarding_result['links'])) {
-                foreach ($seller_onboarding_result['links'] as $link) {
-                    if (isset($link['rel']) && 'action_url' === $link['rel']) {
-                        return isset($link['href']) ? $link['href'] : false;
-                    }
-                }
-            } else {
-                return false;
-            }
-        } catch (Exception $ex) {
-            
-        }
     }
 
     public function process_payment($woo_order_id) {
@@ -518,7 +484,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         }
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
             echo '<div class="error notice-warning"><p>';
-            echo __("PayPal Complete Payments is not yet compatible with Woo Subscriptions. You will need to use <a target='_blank' href='" . admin_url("admin.php?page=wc-settings&tab=checkout&section=paypal_express") . "'>Classic Express Checkout</a> for now, and make sure you have <a target='_blank' href='https://www.angelleye.com/how-to-enable-paypal-billing-agreements-for-reference-transactions/'>Billing Agreements enabled on your account</a> in order to use this with Woo Subscriptions.", '');
+            echo __("Complete Payments - Powered by PayPal is not yet compatible with Woo Subscriptions. You will need to use <a target='_blank' href='" . admin_url("admin.php?page=wc-settings&tab=checkout&section=paypal_express") . "'>Classic Express Checkout</a> for now, and make sure you have <a target='_blank' href='https://www.angelleye.com/how-to-enable-paypal-billing-agreements-for-reference-transactions/'>Billing Agreements enabled on your account</a> in order to use this with Woo Subscriptions.", '');
             echo '</p></div>';
         }
 
@@ -551,8 +517,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
         $message = sprintf(
                 __(
-                        'PayPal Complete Payments is almost ready. To get started, <a href="%1$s">connect your account</a>.', 'paypal-for-woocommerce'
-                ), admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp#woocommerce_angelleye_ppcp_enabled')
+                        'Complete Payments - Powered by PayPal is almost ready. To get started, <a href="%1$s">connect your account</a>.', 'paypal-for-woocommerce'
+                ), admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products')
         );
         ?>
         <div class="notice notice-warning is-dismissible">

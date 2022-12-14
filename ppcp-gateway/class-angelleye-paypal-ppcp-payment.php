@@ -40,7 +40,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->merchant_id = $this->settings->get('live_merchant_id', '');
             $this->partner_client_id = PAYPAL_PPCP_PARTNER_CLIENT_ID;
         }
-        $this->title = $this->settings->get('title', 'PayPal Complete Payments');
+        $this->title = $this->settings->get('title', 'Complete Payments - Powered by PayPal');
         $this->brand_name = $this->settings->get('brand_name', get_bloginfo('name'));
         $this->paymentaction = $this->settings->get('paymentaction', 'capture');
         $this->landing_page = $this->settings->get('landing_page', 'NO_PREFERENCE');
@@ -100,6 +100,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
+
+    
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
         try {
@@ -915,7 +917,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
                 if (isset($cart['discount']) && $cart['discount'] > 0) {
                     $purchase_units['amount']['breakdown']['discount'] = array(
-                        'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
+                        'currency_code' => angelleye_ppcp_get_currency($order_id),
                         'value' => $cart['discount'],
                     );
                 }
@@ -1269,6 +1271,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'currency_code' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 ),
                 'invoice_id' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number()),
+                'payment_instruction'=> array('payee' => array('merchant_id' => $this->merchant_id)),
                 'final_capture' => true,
             );
             $body_request = angelleye_ppcp_remove_empty_key($capture_arg);
@@ -1712,7 +1715,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         if (function_exists('WC')) {
             try {
                 $mailer = WC()->mailer();
-                $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'PayPal Complete Payments Error Notification');
+                $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'Complete Payments - Powered by PayPal Error Notification');
                 $message = '';
                 if (!empty($error_email_notification_param['request'])) {
                     $message .= "<strong>" . __('Action: ', 'paypal-for-woocommerce') . "</strong>" . ucwords(str_replace('_', ' ', $error_email_notification_param['request'])) . PHP_EOL;
@@ -1913,6 +1916,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'currency_code' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 ),
                 'note_to_payer' => $note_to_payer,
+                'payment_instruction'=> array('payee' => array('merchant_id' => $this->merchant_id)),
                 'invoice_id' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number()),
                 'final_capture' => $final_capture,
             );
