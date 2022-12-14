@@ -92,6 +92,19 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         if (isset($_POST) && !empty($_POST)) {
                             add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), 10, 2);
                             WC()->checkout->process_checkout();
+                            if( wc_notice_count( 'error' ) > 0 ) {
+                                WC()->session->set( 'reload_checkout', true );
+                                $error_messages_data = wc_get_notices('error');
+                                $error_messages = array();
+                                foreach ($error_messages_data as $key => $value) {
+                                    $error_messages[] = $value['notice'];
+                                }
+                                wc_clear_notices();
+                                ob_start();
+                                wp_send_json_error(array('messages' => $error_messages));
+                                exit;
+                            }
+                            exit();
                         } else {
                             $_GET['from'] = 'cart';
                             $this->payment_request->angelleye_ppcp_create_order_request();
