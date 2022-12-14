@@ -260,6 +260,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('angelleye_ppcp_paymentaction', array($this, 'angelleye_ppcp_paymentaction_filter'), 10, 2);
         add_filter('angelleye_ppcp_paymentaction_product_page', array($this, 'angelleye_ppcp_paymentaction_product_page_filter'), 10, 2);
         add_shortcode('angelleye_ppcp_smart_button', array($this, 'angelleye_ppcp_display_paypal_smart_button_using_shortcode'), 9);
+        add_action('woocommerce_get_checkout_url', array($this, 'angelleye_ppcp_woocommerce_get_checkout_url'), 9999, 1);
     }
 
     /*
@@ -1177,6 +1178,27 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } catch (Exception $ex) {
             
         }
+    }
+    
+    public function angelleye_ppcp_woocommerce_get_checkout_url($checkout_url) {
+        try {
+            if(is_checkout() && angelleye_ppcp_has_active_session()) {
+                $checkout_url_parameter = array();
+                if(isset($_GET['paypal_order_id'])) {
+                    $checkout_url_parameter['paypal_order_id'] = wc_clean($_GET['paypal_order_id']);
+                }
+                if(isset($_GET['paypal_payer_id'])) {
+                    $checkout_url_parameter['paypal_payer_id'] = wc_clean($_GET['paypal_payer_id']);
+                }
+                if(isset($_GET['from'])) {
+                    $checkout_url_parameter['from'] = wc_clean($_GET['from']);
+                }
+                $checkout_url = add_query_arg($checkout_url_parameter, untrailingslashit($checkout_url));
+            } 
+        } catch (Exception $ex) {
+            return $checkout_url;
+        }
+        return $checkout_url;
     }
 
 }
