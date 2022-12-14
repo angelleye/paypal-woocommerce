@@ -46,7 +46,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->landing_page = $this->settings->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->settings->get('payee_preferred', 'no');
         $this->invoice_prefix = $this->settings->get('invoice_prefix', 'WC-PPCP');
-        $this->soft_descriptor = $this->settings->get('soft_descriptor', '');
+        $this->soft_descriptor = $this->settings->get('soft_descriptor', get_bloginfo('name'));
         $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
         $this->checkout_disable_smart_button = 'yes' === $this->settings->get('checkout_disable_smart_button', 'no');
         $this->error_email_notification = 'yes' === $this->settings->get('error_email_notification', 'yes');
