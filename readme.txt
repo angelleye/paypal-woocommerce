@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.1.1
-Stable tag: 3.0.41
+Stable tag: 3.1.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,20 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.1.0 - 12.15.2022 =
+* Feature - Upgrade PayPal seller onboarding flow. ([PFW-1074](https://github.com/angelleye/paypal-woocommerce/pull/1735))
+* Feature - Automatic Redirect to Onboarding. ([PFW-1203](https://github.com/angelleye/paypal-woocommerce/pull/1751))
+* Feature - PPCP - Credit Card Statement Name Default Value. ([PFW-1219](https://github.com/angelleye/paypal-woocommerce/pull/1760))
+* Feature - Adds checkout validation. ([PFW-1211](https://github.com/angelleye/paypal-woocommerce/pull/1761))
+* Tweak - Adjustment on Final Review Option. ([PFW-1179](https://github.com/angelleye/paypal-woocommerce/pull/1730))
+* Tweak - Rename Plugin in Menus. ([PFW-1177](https://github.com/angelleye/paypal-woocommerce/pull/1731))
+* Tweak - Rename Gateway Name / Title in Settings. ([PFW-1178](https://github.com/angelleye/paypal-woocommerce/pull/1732))
+* Tweak - Consolidate Tabs/Settings. ([PFW-1181](https://github.com/angelleye/paypal-woocommerce/pull/1733))
+* Tweak - Rename Payment Gateway in WooCommerce Settings -> Payments. ([PFW-1175](https://github.com/angelleye/paypal-woocommerce/pull/1734))
+* Fix - Province issue during checkout. ([PFW-1205](https://github.com/angelleye/paypal-woocommerce/pull/1762))
+* Fix - PPCP - Woo Conflict When Guest Checkout is Disabled and Email Already Exists. ([PFW-1221](https://github.com/angelleye/paypal-woocommerce/pull/1763))
+* Fix - PPCP - Validation Conflicts. ([PFW-1218](https://github.com/angelleye/paypal-woocommerce/pull/1764))
 
 = 3.0.41 - 12.08.2022 =
 * Feature - Adds CSS and JS minified version. ([PFW-1210](https://github.com/angelleye/paypal-woocommerce/pull/1753))
