@@ -148,7 +148,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function admin_options() {
-        $GLOBALS['hide_save_button'] = false;
         $this->angelleye_ppcp_admin_notices();
         wp_deregister_script('woocommerce_settings');
         wp_enqueue_script('wc-clipboard');
