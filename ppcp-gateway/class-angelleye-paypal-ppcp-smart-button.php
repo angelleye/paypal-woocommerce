@@ -278,7 +278,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function enqueue_scripts() {
         global $post, $wp, $product;
-        if ((is_checkout() || is_checkout_pay_page() ) && $this->advanced_card_payments) {
+        if ((is_checkout() || is_checkout_pay_page() ) && $this->advanced_card_payments && (is_order_received_page() === false)) {
             if (!isset($_GET['paypal_order_id'])) {
                 $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
             }
