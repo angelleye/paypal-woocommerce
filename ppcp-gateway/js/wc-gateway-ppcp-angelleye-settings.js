@@ -209,6 +209,8 @@ jQuery(function ($) {
         } else {
             $('#woocommerce_angelleye_ppcp_live_merchant_id').val('');
         }
+        $('#woocommerce_angelleye_ppcp_enabled').val(0);
+        $('#woocommerce_angelleye_ppcp_enabled').prop('checked', false); 
         $('.woocommerce-save-button').click();
     });
     $('#woocommerce_angelleye_ppcp_enable_product_button').change(function () {
