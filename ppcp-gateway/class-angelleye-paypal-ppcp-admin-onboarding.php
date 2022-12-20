@@ -24,6 +24,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public $is_live_third_party_used;
     public $email_confirm_text_1;
     public $email_confirm_text_2;
+    public $paypal_fee_structure;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -35,6 +36,17 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public function __construct() {
         try {
             $this->angelleye_ppcp_load_class();
+            $this->paypal_fee_structure = array(
+                'US' => array('paypal' => '3.59% + 49¢', 'acc' => '2.69% + 49¢'),
+                'UK' => array('paypal' => '3.0% + 30¢', 'acc' => '1.30% + 30¢'),
+                'CA' => array('paypal' => '3.0% + 30¢', 'acc' => '2.80% + 30¢'),
+                'AU' => array('paypal' => '2.70% + 30¢', 'acc' => '1.85% + 30¢'),
+                'FR' => array('paypal' => '3.00% + 35¢', 'acc' => '1.30% + 35¢'),
+                'DE' => array('paypal' => '3.09% + 39¢', 'acc' => '3.09% + 39¢'),
+                'IT' => array('paypal' => '3,50% + 35¢', 'acc' => '1,30% + 35¢'),
+                'ES' => array('paypal' => '3,00% + 05¢', 'acc' => '1,30% + 35¢'),
+                'default' => array('paypal' => '3.59% + 49¢', 'acc' => '2.69% + 49¢'),
+                );
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -94,6 +106,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             $this->is_live_third_party_used = 'no';
             $this->is_live_first_party_used = 'no';
         }
+        $region = wc_get_base_location();
+        $this->ppcp_paypal_country = $region['country'];
         if ($this->sandbox) {
             if ($this->is_sandbox_third_party_used === 'no' && $this->is_sandbox_first_party_used === 'no') {
                 $this->on_board_status = 'NOT_CONNECTED';
@@ -194,6 +208,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function view() {
         $this->angelleye_ppcp_load_variable();
+        
         ?>
         <div id="angelleye_paypal_marketing_table">
             <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
@@ -234,9 +249,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 echo __('We could not properly connect to PayPal', '');
                             }
                             ?>
-                                <p class="ppcp_paypal_fee"><?php echo __('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only 3.59% + 49¢.', 'paypal-for-woocommerce'); ?>
+                                <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
                                     <br><br>
-                                    <?php echo __('Save money on Visa/MasterCard/Discover transactions <br>with a total fee of only 2.69% + 49¢.', 'paypal-for-woocommerce'); ?>
+                                    <?php echo sprintf(__('Save money on Visa/MasterCard/Discover transactions <br>with a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
                                     <br><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/"><small style="font-size:12px;">Learn More</small></a></p>
                         </div>
                     </div>
@@ -256,7 +271,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
                             <p><?php echo __('You’re currently setup and enjoying the benefits of Complete Payments. <br> Powered by PayPal - Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
-                            <p><?php echo __('However, we need additional verification to approve you for the reduced <br>rate of 2.69% on debit/credit cards.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo sprintf(__('However, we need additional verification to approve you for the reduced <br>rate of %s on debit/credit cards.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?></p>
                             <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
                             <br>
                             <a class="green-button open_ppcp_account_request_form" ><?php echo __('Apply for Cheaper Fees!', 'paypal-for-woocommerce'); ?></a>
@@ -313,5 +328,17 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </ul>
         </div>
         <?php
+    }
+    
+    public function angelleye_ppcp_get_paypal_fee_structure($country, $product) {
+        try {
+            if(isset($this->paypal_fee_structure[$country])) {
+                return $this->paypal_fee_structure[$country][$product];
+            } else {
+                return $this->paypal_fee_structure['default'][$product];
+            }
+        } catch (Exception $ex) {
+
+        }
     }
 }
