@@ -218,8 +218,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     $order = wc_get_order($order_id);
                     $this->payment_request->angelleye_ppcp_update_order($order);
                 }
-                $api_response = $this->payment_request->angelleye_ppcp_get_checkout_details($angelleye_ppcp_paypal_order_id);
-                $liability_shift_result = $this->angelleye_ppcp_liability_shift($order, $api_response);
+                $liability_shift_result = 1;
+                if( $this->advanced_card_payments ) {
+                    $api_response = $this->payment_request->angelleye_ppcp_get_checkout_details($angelleye_ppcp_paypal_order_id);
+                    $liability_shift_result = $this->angelleye_ppcp_liability_shift($order, $api_response);
+                }
                 if ($liability_shift_result === 1) {
                     if ($this->paymentaction === 'capture') {
                         $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($order_id, false);
