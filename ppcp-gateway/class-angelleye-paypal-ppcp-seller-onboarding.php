@@ -7,7 +7,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     public $dcc_applies;
     public $ppcp_host;
     public $testmode;
-    public $settings;
+    public $setting_obj;
     public $host;
     public $partner_merchant_id;
     public $sandbox_partner_merchant_id;
@@ -58,7 +58,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
             }
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
         } catch (Exception $ex) {
@@ -137,14 +137,14 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         try {
             $this->is_sandbox = isset($data['env']) && 'sandbox' === $data['env'];
             $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
-            $this->settings->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
-            $this->settings->persist();
+            $this->setting_obj->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
+            $this->setting_obj->persist();
             if ($this->is_sandbox) {
-                $this->settings->set('enabled', 'yes');
+                $this->setting_obj->set('enabled', 'yes');
             } else {
-                $this->settings->set('enabled', 'yes');
+                $this->setting_obj->set('enabled', 'yes');
             }
-            $this->settings->persist();
+            $this->setting_obj->persist();
             if ($this->is_sandbox) {
                 set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
             } else {
@@ -171,8 +171,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (isset($_GET['testmode']) && 'yes' === $_GET['testmode']) {
                 $this->is_sandbox = true;
             }
-            $this->settings->set('enabled', 'yes');
-            $this->settings->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
+            $this->setting_obj->set('enabled', 'yes');
+            $this->setting_obj->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
             $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
             $merchant_id = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
             if (isset($_GET['merchantId'])) {
@@ -181,16 +181,16 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $merchant_email = '';
             }
             if ($this->is_sandbox) {
-                $this->settings->set('sandbox_merchant_id', $merchant_id);
+                $this->setting_obj->set('sandbox_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
                 $this->api_log->log("sandbox_merchant_id: " . $merchant_id, 'error');
-                $this->settings->set('enabled', 'yes');
+                $this->setting_obj->set('enabled', 'yes');
             } else {
-                $this->settings->set('live_merchant_id', $merchant_id);
+                $this->setting_obj->set('live_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
-                $this->settings->set('enabled', 'yes');
+                $this->setting_obj->set('enabled', 'yes');
             }
-            $this->settings->persist();
+            $this->setting_obj->persist();
             $this->angelleye_get_seller_onboarding_status();
             if (isset($_GET['place']) && $_GET['place'] === 'gateway_settings') {
                 $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
@@ -225,23 +225,23 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $seller_onboarding_status = $this->api_request->request($host_url, $args, 'get_tracking_status');
             if (!empty($seller_onboarding_status['merchant_id'])) {
                 if ($this->is_sandbox) {
-                    $this->settings->set('sandbox_merchant_id', $seller_onboarding_status['merchant_id']);
-                    $this->settings->set('enabled', 'yes');
+                    $this->setting_obj->set('sandbox_merchant_id', $seller_onboarding_status['merchant_id']);
+                    $this->setting_obj->set('enabled', 'yes');
                 } else {
-                    $this->settings->set('live_merchant_id', $seller_onboarding_status['merchant_id']);
-                    $this->settings->set('enabled', 'yes');
+                    $this->setting_obj->set('live_merchant_id', $seller_onboarding_status['merchant_id']);
+                    $this->setting_obj->set('enabled', 'yes');
                 }
-                $this->settings->persist();
+                $this->setting_obj->persist();
                 $this->result = $this->angelleye_track_seller_onboarding_status($seller_onboarding_status['merchant_id']);
                 if (!empty($this->result['primary_email'])) {
                     own_angelleye_sendy_list($this->result['primary_email']);
                 }
                 if ($this->angelleye_is_acdc_payments_enable($this->result)) {
-                    $this->settings->set('enable_advanced_card_payments', 'yes');
-                    $this->settings->persist();
+                    $this->setting_obj->set('enable_advanced_card_payments', 'yes');
+                    $this->setting_obj->persist();
                 } else {
-                    $this->settings->set('enable_advanced_card_payments', 'no');
-                    $this->settings->persist();
+                    $this->setting_obj->set('enable_advanced_card_payments', 'no');
+                    $this->setting_obj->persist();
                 }
                 if ($this->angelleye_ppcp_is_fee_enable($this->result)) {
                     set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
@@ -257,7 +257,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     }
 
     public function angelleye_track_seller_onboarding_status($merchant_id) {
-        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
         if ($this->is_sandbox) {
             $partner_merchant_id = $this->sandbox_partner_merchant_id;

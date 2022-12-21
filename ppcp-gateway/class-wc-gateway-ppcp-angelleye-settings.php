@@ -8,7 +8,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 
         public $angelleye_ppcp_gateway_setting;
         public $gateway_key;
-        public $settings = array();
+        public $setting_obj = array();
         public $dcc_applies;
         protected static $_instance = null;
 
@@ -39,7 +39,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             if (!$this->has($id)) {
                 return $default;
             }
-            return $this->settings[$id];
+            return $this->setting_obj[$id];
         }
 
         public function get_load() {
@@ -48,23 +48,23 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 
         public function has($id) {
             $this->load();
-            return array_key_exists($id, $this->settings);
+            return array_key_exists($id, $this->setting_obj);
         }
 
         public function set($id, $value) {
             $this->load();
-            $this->settings[$id] = $value;
+            $this->setting_obj[$id] = $value;
         }
 
         public function persist() {
-            update_option($this->gateway_key, $this->settings);
+            update_option($this->gateway_key, $this->setting_obj);
         }
 
         public function load() {
-            if ($this->settings) {
+            if ($this->setting_obj) {
                 return false;
             }
-            $this->settings = get_option($this->gateway_key, array());
+            $this->setting_obj = get_option($this->gateway_key, array());
             $defaults = array(
                 'title' => __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'),
                 'description' => __(
@@ -72,10 +72,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 )
             );
             foreach ($defaults as $key => $value) {
-                if (isset($this->settings[$key])) {
+                if (isset($this->setting_obj[$key])) {
                     continue;
                 }
-                $this->settings[$key] = $value;
+                $this->setting_obj[$key] = $value;
             }
             return true;
         }

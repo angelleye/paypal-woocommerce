@@ -2,7 +2,7 @@
 
 class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
-    public $settings;
+    public $setting_obj;
     public $settings_fields;
     public $api_log;
     public $dcc_applies;
@@ -47,8 +47,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
             }
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
-            $this->settings_fields = $this->settings->angelleye_ppcp_setting_fields();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj_fields = $this->setting_obj->angelleye_ppcp_setting_fields();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
@@ -148,7 +148,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function admin_options() {
-        $GLOBALS['hide_save_button'] = false;
         $this->angelleye_ppcp_admin_notices();
         wp_deregister_script('woocommerce_settings');
         wp_enqueue_script('wc-clipboard');
@@ -160,7 +159,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function init_form_fields() {
         try {
-            $this->form_fields = $this->settings_fields;
+            $this->form_fields = $this->setting_obj_fields;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');

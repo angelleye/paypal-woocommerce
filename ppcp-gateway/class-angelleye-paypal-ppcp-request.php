@@ -12,7 +12,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public $client_token;
     public $api_response;
     public $result;
-    public $settings;
+    public $setting_obj;
     public $api_request;
     protected static $_instance = null;
     public $api_log;
@@ -32,12 +32,12 @@ class AngellEYE_PayPal_PPCP_Request {
     }
 
     public function angelleye_get_settings() {
-        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
-        $this->paymentaction = $this->settings->get('paymentaction', 'capture');
-        $this->sandbox_client_id = $this->settings->get('sandbox_client_id', '');
-        $this->sandbox_secret_id = $this->settings->get('sandbox_api_secret', '');
-        $this->live_client_id = $this->settings->get('api_client_id', '');
-        $this->live_secret_id = $this->settings->get('api_secret', '');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
+        $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
+        $this->sandbox_client_id = $this->setting_obj->get('sandbox_client_id', '');
+        $this->sandbox_secret_id = $this->setting_obj->get('sandbox_api_secret', '');
+        $this->live_client_id = $this->setting_obj->get('api_client_id', '');
+        $this->live_secret_id = $this->setting_obj->get('api_secret', '');
         if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_id)) {
             $this->is_sandbox_first_party_used = 'yes';
             $this->is_sandbox_third_party_used = 'no';
@@ -59,7 +59,7 @@ class AngellEYE_PayPal_PPCP_Request {
             $this->is_live_first_party_used = 'no';
         }
         if ($this->is_sandbox) {
-            $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
+            $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
             $this->client_id = $this->sandbox_client_id;
             $this->secret_id = $this->sandbox_secret_id;
             if ($this->is_sandbox_first_party_used === 'yes') {
@@ -68,7 +68,7 @@ class AngellEYE_PayPal_PPCP_Request {
                 $this->is_first_party_used = 'no';
             }
         } else {
-            $this->merchant_id = $this->settings->get('live_merchant_id', '');
+            $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
             $this->client_id = $this->live_client_id;
             $this->secret_id = $this->live_secret_id;
             if ($this->is_live_first_party_used === 'yes') {
@@ -160,7 +160,7 @@ class AngellEYE_PayPal_PPCP_Request {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
             }
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_response = AngellEYE_PayPal_PPCP_Response::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');

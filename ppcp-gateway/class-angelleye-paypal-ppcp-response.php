@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_Response {
 
     public $api_log;
-    public $settings;
+    public $setting_obj;
     public $generate_signup_link_default_request_param;
     protected static $_instance = null;
 
@@ -55,7 +55,7 @@ class AngellEYE_PayPal_PPCP_Response {
                 ),
             ),
         );
-        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         add_action('angelleye_ppcp_request_respose_data', array($this, 'angelleye_ppcp_tpv_tracking'), 10, 3);
     }
 
@@ -125,7 +125,7 @@ class AngellEYE_PayPal_PPCP_Response {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');

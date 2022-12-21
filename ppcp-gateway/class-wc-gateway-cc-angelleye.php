@@ -4,6 +4,8 @@ if (!defined('ABSPATH')) {
 }
 
 class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
+    
+    public $setting_obj;
 
     public function __construct() {
         try {
@@ -18,13 +20,13 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 'pay_button'
             );
             $this->angelleye_ppcp_load_class();
-            $this->title = $this->settings->get('advanced_card_payments_title', 'Credit card');
-            $this->enable_paypal_checkout_page = 'yes' === $this->settings->get('enable_paypal_checkout_page', 'yes');
-            $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
-            $this->checkout_page_display_option = $this->settings->get('checkout_page_display_option', 'regular');
-            $this->enable_separate_payment_method = 'yes' === $this->settings->get('enable_separate_payment_method', 'no');
+            $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit card');
+            $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
+            $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
+            $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');
+            $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'no');
             if ($this->advanced_card_payments) {
-                $this->enable_separate_payment_method = 'yes' === $this->settings->get('enable_separate_payment_method', 'no');
+                $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'no');
                 if ($this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
                     $this->enable_separate_payment_method = true;
                 }
@@ -42,7 +44,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function get_icon() {
         $icon = parent::get_icon();
-        $icons = $this->settings->get('disable_cards', array());
+        $icons = $this->setting_obj->get('disable_cards', array());
         if (empty($icons)) {
             return $icon;
         }
@@ -231,7 +233,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
             }
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();

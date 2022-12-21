@@ -3,7 +3,7 @@ defined('ABSPATH') || exit;
 
 class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
-    public $settings;
+    public $setting_obj;
     public $seller_onboarding;
     public $sandbox;
     public $settings_sandbox;
@@ -53,7 +53,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
             }
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -65,15 +65,15 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         if (isset($_GET['testmode'])) {
             $this->sandbox = 'yes' === ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
         } else {
-            $this->sandbox = 'yes' === $this->settings->get('testmode', 'no');
+            $this->sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         }
-        $this->settings_sandbox = $this->settings->get('testmode', 'no');
-        $this->sandbox_merchant_id = $this->settings->get('sandbox_merchant_id', '');
-        $this->live_merchant_id = $this->settings->get('live_merchant_id', '');
-        $this->sandbox_client_id = $this->settings->get('sandbox_client_id', '');
-        $this->sandbox_secret_id = $this->settings->get('sandbox_api_secret', '');
-        $this->live_client_id = $this->settings->get('api_client_id', '');
-        $this->live_secret_id = $this->settings->get('api_secret', '');
+        $this->setting_sandbox = $this->setting_obj->get('testmode', 'no');
+        $this->sandbox_merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
+        $this->live_merchant_id = $this->setting_obj->get('live_merchant_id', '');
+        $this->sandbox_client_id = $this->setting_obj->get('sandbox_client_id', '');
+        $this->sandbox_secret_id = $this->setting_obj->get('sandbox_api_secret', '');
+        $this->live_client_id = $this->setting_obj->get('api_client_id', '');
+        $this->live_secret_id = $this->setting_obj->get('api_secret', '');
         if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_id)) {
             $this->is_sandbox_first_party_used = 'yes';
             $this->is_sandbox_third_party_used = 'no';
@@ -117,12 +117,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 } else {
                     if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
-                        $this->settings->set('enable_advanced_card_payments', 'yes');
-                        $this->settings->persist();
+                        $this->setting_obj->set('enable_advanced_card_payments', 'yes');
+                        $this->setting_obj->persist();
                     } else {
                         $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
-                        $this->settings->set('enable_advanced_card_payments', 'no');
-                        $this->settings->persist();
+                        $this->setting_obj->set('enable_advanced_card_payments', 'no');
+                        $this->setting_obj->persist();
                     }
                     if ($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
                         set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
@@ -156,12 +156,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 } else {
                     if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
-                        $this->settings->set('enable_advanced_card_payments', 'yes');
-                        $this->settings->persist();
+                        $this->setting_obj->set('enable_advanced_card_payments', 'yes');
+                        $this->setting_obj->persist();
                     } else {
                         $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
-                        $this->settings->set('enable_advanced_card_payments', 'no');
-                        $this->settings->persist();
+                        $this->setting_obj->set('enable_advanced_card_payments', 'no');
+                        $this->setting_obj->persist();
                     }
                     if ($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
                         set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
@@ -245,7 +245,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             } elseif ($this->on_board_status === 'CONNECTED_BUT_NOT_ACC') {
                 wp_enqueue_style('ppcp_account_request_form_css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/ppcp_account_request_form.css', null, time());
                 wp_enqueue_script('ppcp_account_request_form_js', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/ppcp_account_request-form-modal.js', null, time(), true);
-                $ppcp_account_request_form_url = add_query_arg(array('testmode' => $this->settings_sandbox), 'https://d1kjd56jkqxpts.cloudfront.net/ppcp-account-request/index.html');
+                $ppcp_account_request_form_url = add_query_arg(array('testmode' => $this->setting_sandbox), 'https://d1kjd56jkqxpts.cloudfront.net/ppcp-account-request/index.html');
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/ppcp_account_request_form.php');
                 ?>
                 <div class="paypal_woocommerce_product">
