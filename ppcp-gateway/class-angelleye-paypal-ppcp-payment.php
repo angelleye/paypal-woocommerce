@@ -47,7 +47,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->setting_obj->get('payee_preferred', 'no');
         $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
-        $this->soft_descriptor = $this->setting_obj->get('soft_descriptor', get_bloginfo('name'));
+        $this->soft_descriptor = $this->settings->get('soft_descriptor', substr(get_bloginfo('name'), 0, 21));
         $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
         $this->checkout_disable_smart_button = 'yes' === $this->setting_obj->get('checkout_disable_smart_button', 'no');
         $this->error_email_notification = 'yes' === $this->setting_obj->get('error_email_notification', 'yes');
@@ -102,8 +102,6 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    
-
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
         try {
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
@@ -146,7 +144,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
             }
-            $body_request['purchase_units'][0]['soft_descriptor'] = $this->soft_descriptor;
+            $body_request['purchase_units'][0]['soft_descriptor'] = angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor);
             $body_request['purchase_units'][0]['payee']['merchant_id'] = $this->merchant_id;
             if ($this->send_items === true) {
                 if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
@@ -881,6 +879,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);
             $purchase_units = array(
                 'reference_id' => $reference_id,
+                'soft_descriptor' => angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor),
                 'amount' =>
                 array(
                     'currency_code' => angelleye_ppcp_get_currency($order_id),
