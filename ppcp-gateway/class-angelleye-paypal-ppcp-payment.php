@@ -10,6 +10,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public $api_response;
     public $api_log;
     public $checkout_details;
+    public $setting_obj;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -20,7 +21,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
-        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         if ($this->is_sandbox) {
             $this->token_url = 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
             $this->order_url = 'https://api-m.sandbox.paypal.com/v2/checkout/orders/';
@@ -28,7 +29,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->paypal_refund_api = 'https://api-m.sandbox.paypal.com/v2/payments/captures/';
             $this->auth = 'https://api-m.sandbox.paypal.com/v2/payments/authorizations/';
             $this->generate_token_url = 'https://api-m.sandbox.paypal.com/v1/identity/generate-token';
-            $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
+            $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
             $this->partner_client_id = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
         } else {
             $this->token_url = 'https://api-m.paypal.com/v1/oauth2/token';
@@ -37,21 +38,21 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->paypal_refund_api = 'https://api-m.paypal.com/v2/payments/captures/';
             $this->auth = 'https://api-m.paypal.com/v2/payments/authorizations/';
             $this->generate_token_url = 'https://api-m.paypal.com/v1/identity/generate-token';
-            $this->merchant_id = $this->settings->get('live_merchant_id', '');
+            $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
             $this->partner_client_id = PAYPAL_PPCP_PARTNER_CLIENT_ID;
         }
-        $this->title = $this->settings->get('title', 'Complete Payments - Powered by PayPal');
-        $this->brand_name = $this->settings->get('brand_name', get_bloginfo('name'));
-        $this->paymentaction = $this->settings->get('paymentaction', 'capture');
-        $this->landing_page = $this->settings->get('landing_page', 'NO_PREFERENCE');
-        $this->payee_preferred = 'yes' === $this->settings->get('payee_preferred', 'no');
-        $this->invoice_prefix = $this->settings->get('invoice_prefix', 'WC-PPCP');
-        $this->soft_descriptor = $this->settings->get('soft_descriptor', get_bloginfo('name'));
-        $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
-        $this->checkout_disable_smart_button = 'yes' === $this->settings->get('checkout_disable_smart_button', 'no');
-        $this->error_email_notification = 'yes' === $this->settings->get('error_email_notification', 'yes');
-        $this->enable_paypal_checkout_page = 'yes' === $this->settings->get('enable_paypal_checkout_page', 'yes');
-        $this->send_items = 'yes' === $this->settings->get('send_items', 'yes');
+        $this->title = $this->setting_obj->get('title', 'Complete Payments - Powered by PayPal');
+        $this->brand_name = $this->setting_obj->get('brand_name', get_bloginfo('name'));
+        $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
+        $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
+        $this->payee_preferred = 'yes' === $this->setting_obj->get('payee_preferred', 'no');
+        $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
+        $this->soft_descriptor = $this->setting_obj->get('soft_descriptor', get_bloginfo('name'));
+        $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
+        $this->checkout_disable_smart_button = 'yes' === $this->setting_obj->get('checkout_disable_smart_button', 'no');
+        $this->error_email_notification = 'yes' === $this->setting_obj->get('error_email_notification', 'yes');
+        $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
+        $this->send_items = 'yes' === $this->setting_obj->get('send_items', 'yes');
         $this->AVSCodes = array("A" => "Address Matches Only (No ZIP)",
             "B" => "Address Matches Only (No ZIP)",
             "C" => "This tranaction was declined.",
@@ -93,7 +94,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
             }
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');

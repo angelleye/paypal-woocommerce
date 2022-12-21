@@ -7,7 +7,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     private $version;
     public $api_request;
     public $checkout_details;
-    public $settings;
+    public $setting_obj;
     public $api_log;
     public $dcc_applies;
     public $payment_request;
@@ -53,7 +53,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
             }
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
@@ -65,20 +65,20 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_get_properties() {
-        $this->title = $this->settings->get('title', 'Complete Payments - Powered by PayPal');
-        $this->enabled = 'yes' === $this->settings->get('enabled', 'no');
-        $this->enable_paypal_checkout_page = 'yes' === $this->settings->get('enable_paypal_checkout_page', 'yes');
-        $this->checkout_page_display_option = $this->settings->get('checkout_page_display_option', 'regular');
-        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
-        $this->order_review_page_enable_coupons = 'yes' === $this->settings->get('order_review_page_enable_coupons', 'yes');
+        $this->title = $this->setting_obj->get('title', 'Complete Payments - Powered by PayPal');
+        $this->enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
+        $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
+        $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
+        $this->order_review_page_enable_coupons = 'yes' === $this->setting_obj->get('order_review_page_enable_coupons', 'yes');
         $this->order_review_page_title = apply_filters('angelleye_ppcp_order_review_page_title', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
         $this->order_review_page_description = apply_filters('angelleye_ppcp_order_review_page_description', __("<strong>You're almost done!</strong><br>Review your information before you place your order.", 'paypal-for-woocommerce'));
-        $this->paymentaction = $this->settings->get('paymentaction', 'capture');
-        $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
-        $this->enable_separate_payment_method = 'yes' === $this->settings->get('enable_separate_payment_method', 'no');
-        $this->cart_button_position = $this->settings->get('cart_button_position', 'bottom');
+        $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
+        $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
+        $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'no');
+        $this->cart_button_position = $this->setting_obj->get('cart_button_position', 'bottom');
         if ($this->advanced_card_payments) {
-            $this->advanced_card_payments_display_position = $this->settings->get('advanced_card_payments_display_position', 'after');
+            $this->advanced_card_payments_display_position = $this->setting_obj->get('advanced_card_payments_display_position', 'after');
             if ($this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
                 $this->enable_separate_payment_method = true;
             }
@@ -86,19 +86,19 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->enable_separate_payment_method = false;
         }
 
-        $this->enabled_pay_later_messaging = 'yes' === $this->settings->get('enabled_pay_later_messaging', 'yes');
-        $this->pay_later_messaging_page_type = $this->settings->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
+        $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');
+        $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
         if (wc_ship_to_billing_address_only()) {
             $this->set_billing_address = true;
         } else {
-            $this->set_billing_address = 'yes' === $this->settings->get('set_billing_address', 'yes');
+            $this->set_billing_address = 'yes' === $this->setting_obj->get('set_billing_address', 'yes');
         }
-        $this->disable_term = 'yes' === $this->settings->get('disable_term', 'no');
-        $this->skip_final_review = 'yes' === $this->settings->get('skip_final_review', 'no');
-        $this->sandbox_client_id = $this->settings->get('sandbox_client_id', '');
-        $this->sandbox_secret_id = $this->settings->get('sandbox_api_secret', '');
-        $this->live_client_id = $this->settings->get('api_client_id', '');
-        $this->live_secret_id = $this->settings->get('api_secret', '');
+        $this->disable_term = 'yes' === $this->setting_obj->get('disable_term', 'no');
+        $this->skip_final_review = 'yes' === $this->setting_obj->get('skip_final_review', 'no');
+        $this->sandbox_client_id = $this->setting_obj->get('sandbox_client_id', '');
+        $this->sandbox_secret_id = $this->setting_obj->get('sandbox_api_secret', '');
+        $this->live_client_id = $this->setting_obj->get('api_client_id', '');
+        $this->live_secret_id = $this->setting_obj->get('api_secret', '');
         if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_id)) {
             $this->is_sandbox_first_party_used = 'yes';
             $this->is_sandbox_third_party_used = 'no';
@@ -120,7 +120,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->is_live_first_party_used = 'no';
         }
         if ($this->is_sandbox) {
-            $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
+            $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
             $this->client_id = $this->sandbox_client_id;
             $this->secret_id = $this->sandbox_secret_id;
             if ($this->is_sandbox_first_party_used === 'yes') {
@@ -129,7 +129,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $this->is_first_party_used = 'no';
             }
         } else {
-            $this->merchant_id = $this->settings->get('live_merchant_id', '');
+            $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
             $this->client_id = $this->live_client_id;
             $this->secret_id = $this->live_secret_id;
             if ($this->is_live_first_party_used === 'yes') {
@@ -144,23 +144,23 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->dcc_applies->for_country_currency() === false) {
             $this->advanced_card_payments = false;
         }
-        $this->three_d_secure_contingency = $this->settings->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
-        $this->disable_cards = $this->settings->get('disable_cards', array());
+        $this->three_d_secure_contingency = $this->setting_obj->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
+        $this->disable_cards = $this->setting_obj->get('disable_cards', array());
         $this->minified_version = ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
     }
 
     public function angelleye_ppcp_default_set_properties() {
         $this->angelleye_ppcp_currency_list = array('AUD', 'BRL', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'INR', 'ILS', 'JPY', 'MYR', 'MXN', 'TWD', 'NZD', 'NOK', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'SEK', 'CHF', 'THB', 'USD');
         $this->angelleye_ppcp_currency = in_array(get_woocommerce_currency(), $this->angelleye_ppcp_currency_list) ? get_woocommerce_currency() : 'USD';
-        $this->enable_product_button = 'yes' === $this->settings->get('enable_product_button', 'yes');
-        $this->enable_cart_button = 'yes' === $this->settings->get('enable_cart_button', 'yes');
-        $this->checkout_disable_smart_button = 'yes' === $this->settings->get('checkout_disable_smart_button', 'no');
-        $this->enable_mini_cart_button = 'yes' === $this->settings->get('enable_mini_cart_button', 'yes');
+        $this->enable_product_button = 'yes' === $this->setting_obj->get('enable_product_button', 'yes');
+        $this->enable_cart_button = 'yes' === $this->setting_obj->get('enable_cart_button', 'yes');
+        $this->checkout_disable_smart_button = 'yes' === $this->setting_obj->get('checkout_disable_smart_button', 'no');
+        $this->enable_mini_cart_button = 'yes' === $this->setting_obj->get('enable_mini_cart_button', 'yes');
     }
 
     public function angelleye_ppcp_smart_button_style_properties() {
         $this->disable_funding = array();
-        $this->style_layout = $this->settings->get('cart_button_layout', 'vertical');
+        $this->style_layout = $this->setting_obj->get('cart_button_layout', 'vertical');
         $this->style_color = 'gold';
         $this->style_shape = 'rect';
         $this->style_label = 'paypal';
@@ -168,41 +168,41 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->style_size = 'responsive';
         $this->style_height = '';
         if (is_product()) {
-            $this->disable_funding = $this->settings->get('product_disallowed_funding_methods', array());
-            $this->style_layout = $this->settings->get('product_button_layout', 'horizontal');
-            $this->style_color = $this->settings->get('product_style_color', 'gold');
-            $this->style_shape = $this->settings->get('product_style_shape', 'rect');
-            $this->style_size = $this->settings->get('product_button_size', 'responsive');
-            $this->style_height = $this->settings->get('product_button_height', '');
-            $this->style_label = $this->settings->get('product_button_label', 'paypal');
-            $this->style_tagline = $this->settings->get('product_button_tagline', 'yes');
+            $this->disable_funding = $this->setting_obj->get('product_disallowed_funding_methods', array());
+            $this->style_layout = $this->setting_obj->get('product_button_layout', 'horizontal');
+            $this->style_color = $this->setting_obj->get('product_style_color', 'gold');
+            $this->style_shape = $this->setting_obj->get('product_style_shape', 'rect');
+            $this->style_size = $this->setting_obj->get('product_button_size', 'responsive');
+            $this->style_height = $this->setting_obj->get('product_button_height', '');
+            $this->style_label = $this->setting_obj->get('product_button_label', 'paypal');
+            $this->style_tagline = $this->setting_obj->get('product_button_tagline', 'yes');
         } elseif (is_cart()) {
-            $this->disable_funding = $this->settings->get('cart_disallowed_funding_methods', array());
-            $this->style_layout = $this->settings->get('cart_button_layout', 'vertical');
-            $this->style_color = $this->settings->get('cart_style_color', 'gold');
-            $this->style_shape = $this->settings->get('cart_style_shape', 'rect');
-            $this->style_size = $this->settings->get('cart_button_size', 'responsive');
-            $this->style_height = $this->settings->get('cart_button_height', '');
-            $this->style_label = $this->settings->get('cart_button_label', 'paypal');
-            $this->style_tagline = $this->settings->get('cart_button_tagline', 'yes');
+            $this->disable_funding = $this->setting_obj->get('cart_disallowed_funding_methods', array());
+            $this->style_layout = $this->setting_obj->get('cart_button_layout', 'vertical');
+            $this->style_color = $this->setting_obj->get('cart_style_color', 'gold');
+            $this->style_shape = $this->setting_obj->get('cart_style_shape', 'rect');
+            $this->style_size = $this->setting_obj->get('cart_button_size', 'responsive');
+            $this->style_height = $this->setting_obj->get('cart_button_height', '');
+            $this->style_label = $this->setting_obj->get('cart_button_label', 'paypal');
+            $this->style_tagline = $this->setting_obj->get('cart_button_tagline', 'yes');
         } elseif (is_checkout() || is_checkout_pay_page()) {
-            $this->disable_funding = $this->settings->get('checkout_disallowed_funding_methods', array());
-            $this->style_layout = $this->settings->get('checkout_button_layout', 'vertical');
-            $this->style_color = $this->settings->get('checkout_style_color', 'gold');
-            $this->style_shape = $this->settings->get('checkout_style_shape', 'rect');
-            $this->style_size = $this->settings->get('checkout_button_size', 'responsive');
-            $this->style_height = $this->settings->get('checkout_button_height', '');
-            $this->style_label = $this->settings->get('checkout_button_label', 'paypal');
-            $this->style_tagline = $this->settings->get('checkout_button_tagline', 'yes');
+            $this->disable_funding = $this->setting_obj->get('checkout_disallowed_funding_methods', array());
+            $this->style_layout = $this->setting_obj->get('checkout_button_layout', 'vertical');
+            $this->style_color = $this->setting_obj->get('checkout_style_color', 'gold');
+            $this->style_shape = $this->setting_obj->get('checkout_style_shape', 'rect');
+            $this->style_size = $this->setting_obj->get('checkout_button_size', 'responsive');
+            $this->style_height = $this->setting_obj->get('checkout_button_height', '');
+            $this->style_label = $this->setting_obj->get('checkout_button_label', 'paypal');
+            $this->style_tagline = $this->setting_obj->get('checkout_button_tagline', 'yes');
         }
-        $this->mini_cart_disable_funding = $this->settings->get('mini_cart_disallowed_funding_methods', array());
-        $this->mini_cart_style_layout = $this->settings->get('mini_cart_button_layout', 'vertical');
-        $this->mini_cart_style_color = $this->settings->get('mini_cart_style_color', 'gold');
-        $this->mini_cart_style_shape = $this->settings->get('mini_cart_style_shape', 'rect');
-        $this->mini_cart_style_size = $this->settings->get('cart_button_size', 'responsive');
-        $this->mini_cart_style_height = $this->settings->get('cart_button_height', '');
-        $this->mini_cart_style_label = $this->settings->get('mini_cart_button_label', 'paypal');
-        $this->mini_cart_style_tagline = $this->settings->get('mini_cart_button_tagline', 'yes');
+        $this->mini_cart_disable_funding = $this->setting_obj->get('mini_cart_disallowed_funding_methods', array());
+        $this->mini_cart_style_layout = $this->setting_obj->get('mini_cart_button_layout', 'vertical');
+        $this->mini_cart_style_color = $this->setting_obj->get('mini_cart_style_color', 'gold');
+        $this->mini_cart_style_shape = $this->setting_obj->get('mini_cart_style_shape', 'rect');
+        $this->mini_cart_style_size = $this->setting_obj->get('cart_button_size', 'responsive');
+        $this->mini_cart_style_height = $this->setting_obj->get('cart_button_height', '');
+        $this->mini_cart_style_label = $this->setting_obj->get('mini_cart_button_label', 'paypal');
+        $this->mini_cart_style_tagline = $this->setting_obj->get('mini_cart_button_tagline', 'yes');
     }
 
     public function angelleye_ppcp_add_hooks() {

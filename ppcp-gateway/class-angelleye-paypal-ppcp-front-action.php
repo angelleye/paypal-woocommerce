@@ -7,7 +7,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     private $angelleye_ppcp_plugin_name;
     public $api_log;
     public $payment_request;
-    public $settings;
+    public $setting_obj;
     protected static $_instance = null;
     public $procceed = 1;
     public $reject = 2;
@@ -23,14 +23,14 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     public function __construct() {
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
         $this->angelleye_ppcp_load_class();
-        $this->paymentaction = $this->settings->get('paymentaction', 'capture');
-        $this->title = $this->settings->get('title', 'Complete Payments - Powered by PayPal');
-        $this->advanced_card_payments = 'yes' === $this->settings->get('enable_advanced_card_payments', 'no');
-        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
+        $this->title = $this->setting_obj->get('title', 'Complete Payments - Powered by PayPal');
+        $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         if ($this->dcc_applies->for_country_currency() === false) {
             $this->advanced_card_payments = false;
         }
-        $this->three_d_secure_contingency = $this->settings->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
+        $this->three_d_secure_contingency = $this->setting_obj->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
         if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
@@ -50,7 +50,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
             }
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
