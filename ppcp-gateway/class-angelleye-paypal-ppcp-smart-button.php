@@ -239,6 +239,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('woocommerce_coupons_enabled', array($this, 'angelleye_ppcp_woocommerce_coupons_enabled'), 999, 1);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_order_review_page_description'), 9);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_update_checkout_field_details'));
+        add_filter('woocommerce_checkout_get_value', array($this, 'angelleye_ppcp_woocommerce_checkout_get_value'), 999, 2);
         if ($this->enable_paypal_checkout_page === true && $this->checkout_page_display_option !== 'regular') {
             add_action('woocommerce_before_checkout_form', array($this, 'display_paypal_button_top_checkout_page'), 5);
         }
@@ -439,8 +440,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         wp_register_style($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/wc-gateway-ppcp-angelleye-public.css', array(), $this->version, 'all');
         if (angelleye_ppcp_has_active_session() && is_checkout()) {
             wp_enqueue_style($this->angelleye_ppcp_plugin_name);
-        } 
-        
+        }
     }
 
     public function is_valid_for_use() {
@@ -1179,26 +1179,87 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             
         }
     }
-    
+
     public function angelleye_ppcp_woocommerce_get_checkout_url($checkout_url) {
         try {
-            if(is_checkout() && angelleye_ppcp_has_active_session()) {
+            if (is_checkout() && angelleye_ppcp_has_active_session()) {
                 $checkout_url_parameter = array();
-                if(isset($_GET['paypal_order_id'])) {
+                if (isset($_GET['paypal_order_id'])) {
                     $checkout_url_parameter['paypal_order_id'] = wc_clean($_GET['paypal_order_id']);
                 }
-                if(isset($_GET['paypal_payer_id'])) {
+                if (isset($_GET['paypal_payer_id'])) {
                     $checkout_url_parameter['paypal_payer_id'] = wc_clean($_GET['paypal_payer_id']);
                 }
-                if(isset($_GET['from'])) {
+                if (isset($_GET['from'])) {
                     $checkout_url_parameter['from'] = wc_clean($_GET['from']);
                 }
                 $checkout_url = add_query_arg($checkout_url_parameter, untrailingslashit($checkout_url));
-            } 
+            }
         } catch (Exception $ex) {
             return $checkout_url;
         }
         return $checkout_url;
+    }
+
+    public function angelleye_ppcp_woocommerce_checkout_get_value($default, $key) {
+        if (strpos($key, '_state') !== false || strpos($key, '_country') !== false) {
+            if (empty($this->checkout_details)) {
+                $this->checkout_details = angelleye_ppcp_get_session('angelleye_ppcp_paypal_transaction_details', false);
+                if (empty($this->checkout_details)) {
+                    $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
+                    if (!empty($angelleye_ppcp_paypal_order_id)) {
+                        $this->checkout_details = $this->payment_request->angelleye_ppcp_get_checkout_details($angelleye_ppcp_paypal_order_id);
+                    }
+                }
+                if (empty($this->checkout_details)) {
+                    return $default;
+                }
+                angelleye_ppcp_set_session('angelleye_ppcp_paypal_transaction_details', $this->checkout_details);
+            }
+            $states_list = WC()->countries->get_states();
+            if ($key === 'shipping_state' || $key === 'shipping_country') {
+                $shipping_address = angelleye_ppcp_get_mapped_shipping_address($this->checkout_details);
+                if (!empty($shipping_address['state'])) {
+                    if (angelleye_ppcp_validate_checkout($shipping_address['country'], $shipping_address['state'], 'shipping')) {
+                        $_POST[$key] = angelleye_ppcp_validate_checkout($shipping_address['country'], $shipping_address['state'], 'shipping');
+                        return $_POST[$key];
+                    } else {
+                        if (isset($shipping_address['country']) && isset($states_list[$shipping_address['country']])) {
+                            $state_key = array_search($shipping_address['state'], $states_list[$shipping_address['country']]);
+                            $_POST[$key] = $state_key;
+                            return $_POST[$key];
+                        } else {
+                            $_POST[$key] = '';
+                        }
+                    }
+                } else {
+                    $_POST[$key] = wc_clean(stripslashes($shipping_address[$key]));
+                    return $_POST[$key];
+                }
+            } elseif ($key === 'billing_state' || $key = 'billing_country') {
+                $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+                if (!empty($billing_address['state'])) {
+                    if (!empty($billing_address['country'])) {
+                        if (angelleye_ppcp_validate_checkout($billing_address['country'], $billing_address['state'], 'billing')) {
+                            $_POST[$key] = angelleye_ppcp_validate_checkout($billing_address['country'], $billing_address['state'], 'billing');
+                            return $_POST[$key];
+                        } else {
+                            if (isset($billing_address['country']) && isset($states_list[$billing_address['country']])) {
+                                $state_key = array_search($billing_address['state'], $states_list[$billing_address['country']]);
+                                $_POST[$key] = $state_key;
+                                return $_POST[$key];
+                            } else {
+                                $_POST[$key] = '';
+                            }
+                        }
+                    }
+                } else {
+                    $_POST[$key] = wc_clean(stripslashes($billing_address[$key]));
+                    return $_POST[$key];
+                }
+            }
+        }
+        return $default;
     }
 
 }
