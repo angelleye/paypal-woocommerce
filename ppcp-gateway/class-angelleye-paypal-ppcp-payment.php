@@ -1182,7 +1182,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (isset($woo_order_id) && !empty($woo_order_id)) {
                     angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
                 }
-                if ($this->api_response['status'] == 'COMPLETED') {
+                $payment_status = isset($this->api_response['purchase_units']['0']['payments']['authorizations']['0']['status']) ? $this->api_response['purchase_units']['0']['payments']['authorizations']['0']['status'] : '';
+                if ($this->api_response['status'] == 'COMPLETED' && strtolower($payment_status) != "denied") {
                     $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
                     if (!empty($payment_source['card'])) {
                         $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
@@ -1251,6 +1252,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                     return true;
                 } else {
+                    wc_add_notice(__('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.'), 'error');
                     return false;
                 }
             } else {
