@@ -1242,6 +1242,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
                     }
                     angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
+                    angelleye_ppcp_update_post_meta($order, '_transaction_id', $transaction_id);
+                    angelleye_ppcp_update_post_meta($order, '_auth_transaction_id', $transaction_id);
+                    angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
                     $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                     $order->update_status('on-hold');
