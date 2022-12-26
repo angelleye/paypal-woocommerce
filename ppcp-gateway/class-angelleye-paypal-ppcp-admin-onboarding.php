@@ -75,7 +75,11 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function angelleye_ppcp_load_variable() {
         if (isset($_GET['testmode'])) {
-            $this->sandbox = 'yes' === ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
+            if(($_GET['testmode'] === 'yes')) {
+                $this->sandbox = true;
+            } else {
+                $this->sandbox = false;
+            }
         } else {
             $this->sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         }
@@ -208,7 +212,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function view() {
         $this->angelleye_ppcp_load_variable();
-        
         ?>
         <div id="angelleye_paypal_marketing_table">
             <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
