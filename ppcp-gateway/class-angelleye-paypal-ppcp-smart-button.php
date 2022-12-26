@@ -85,7 +85,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } else {
             $this->enable_separate_payment_method = false;
         }
-
+        $this->advanced_card_payments_title = $this->setting_obj->get('advanced_card_payments_title', 'Credit card');
         $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');
         $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
         if (wc_ship_to_billing_address_only()) {
@@ -262,6 +262,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('angelleye_ppcp_paymentaction_product_page', array($this, 'angelleye_ppcp_paymentaction_product_page_filter'), 10, 2);
         add_shortcode('angelleye_ppcp_smart_button', array($this, 'angelleye_ppcp_display_paypal_smart_button_using_shortcode'), 9);
         add_action('woocommerce_get_checkout_url', array($this, 'angelleye_ppcp_woocommerce_get_checkout_url'), 9999, 1);
+        add_filter('angelleye_ppcp_gateway_method_title', array($this, 'angelleye_ppcp_gateway_method_title'), 999, 1);
     }
 
     /*
@@ -428,7 +429,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'disable_cards' => $this->disable_cards,
             'first_name' => $first_name,
             'last_name' => $last_name,
-            'button_selector' => $button_selector
+            'button_selector' => $button_selector,
+            'advanced_card_payments_title' => $this->advanced_card_payments_title
                 )
         );
         if (is_checkout() && !empty($this->checkout_details)) {
@@ -1260,6 +1262,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         return $default;
+    }
+    public function angelleye_ppcp_gateway_method_title($method_title) {
+        if (is_admin() && isset($_GET['post'])) {
+            $payment_method_title = get_post_meta(wc_clean($_GET['post']), 'payment_method_title', true);
+            return $payment_method_title;
+        }
+        return $method_title;
     }
 
 }
