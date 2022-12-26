@@ -737,4 +737,20 @@ if (!function_exists('angelleye_ppcp_add_css_js')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_get_value')) {
+
+    function angelleye_ppcp_get_value($key, $value) {
+        switch ($key) {
+            case 'soft_descriptor':
+                if (!empty($value)) {
+                    return substr($value, 0, 21);
+                }
+                break;
+            default:
+                break;
+        }
+        return $value;
+    }
+
+}
 
