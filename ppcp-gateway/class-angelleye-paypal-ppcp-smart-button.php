@@ -239,6 +239,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('woocommerce_coupons_enabled', array($this, 'angelleye_ppcp_woocommerce_coupons_enabled'), 999, 1);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_order_review_page_description'), 9);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_update_checkout_field_details'));
+        add_filter('woocommerce_checkout_get_value', array($this, 'angelleye_ppcp_woocommerce_checkout_get_value'), 999, 2);
         if ($this->enable_paypal_checkout_page === true && $this->checkout_page_display_option !== 'regular') {
             add_action('woocommerce_before_checkout_form', array($this, 'display_paypal_button_top_checkout_page'), 5);
         }
@@ -1202,6 +1203,66 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         return $checkout_url;
     }
 
+    public function angelleye_ppcp_woocommerce_checkout_get_value($default, $key) {
+        if (strpos($key, '_state') !== false || strpos($key, '_country') !== false) {
+            if (empty($this->checkout_details)) {
+                $this->checkout_details = angelleye_ppcp_get_session('angelleye_ppcp_paypal_transaction_details', false);
+                if (empty($this->checkout_details)) {
+                    $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
+                    if (!empty($angelleye_ppcp_paypal_order_id)) {
+                        $this->checkout_details = $this->payment_request->angelleye_ppcp_get_checkout_details($angelleye_ppcp_paypal_order_id);
+                    }
+                }
+                if (empty($this->checkout_details)) {
+                    return $default;
+                }
+                angelleye_ppcp_set_session('angelleye_ppcp_paypal_transaction_details', $this->checkout_details);
+            }
+            $states_list = WC()->countries->get_states();
+            if ($key === 'shipping_state' || $key === 'shipping_country') {
+                $shipping_address = angelleye_ppcp_get_mapped_shipping_address($this->checkout_details);
+                if (!empty($shipping_address['state'])) {
+                    if (angelleye_ppcp_validate_checkout($shipping_address['country'], $shipping_address['state'], 'shipping')) {
+                        $_POST[$key] = angelleye_ppcp_validate_checkout($shipping_address['country'], $shipping_address['state'], 'shipping');
+                        return $_POST[$key];
+                    } else {
+                        if (isset($shipping_address['country']) && isset($states_list[$shipping_address['country']])) {
+                            $state_key = array_search($shipping_address['state'], $states_list[$shipping_address['country']]);
+                            $_POST[$key] = $state_key;
+                            return $_POST[$key];
+                        } else {
+                            $_POST[$key] = '';
+                        }
+                    }
+                } else {
+                    $_POST[$key] = wc_clean(stripslashes($shipping_address[$key]));
+                    return $_POST[$key];
+                }
+            } elseif ($key === 'billing_state' || $key = 'billing_country') {
+                $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+                if (!empty($billing_address['state'])) {
+                    if (!empty($billing_address['country'])) {
+                        if (angelleye_ppcp_validate_checkout($billing_address['country'], $billing_address['state'], 'billing')) {
+                            $_POST[$key] = angelleye_ppcp_validate_checkout($billing_address['country'], $billing_address['state'], 'billing');
+                            return $_POST[$key];
+                        } else {
+                            if (isset($billing_address['country']) && isset($states_list[$billing_address['country']])) {
+                                $state_key = array_search($billing_address['state'], $states_list[$billing_address['country']]);
+                                $_POST[$key] = $state_key;
+                                return $_POST[$key];
+                            } else {
+                                $_POST[$key] = '';
+                            }
+                        }
+                    }
+                } else {
+                    $_POST[$key] = wc_clean(stripslashes($billing_address[$key]));
+                    return $_POST[$key];
+                }
+            }
+        }
+        return $default;
+    }
     public function angelleye_ppcp_gateway_method_title($method_title) {
         if (is_admin() && isset($_GET['post'])) {
             $payment_method_title = get_post_meta(wc_clean($_GET['post']), 'payment_method_title', true);
