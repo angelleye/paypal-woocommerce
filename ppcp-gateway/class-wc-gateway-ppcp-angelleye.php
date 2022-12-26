@@ -63,7 +63,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $this->id = 'angelleye_ppcp';
         $this->icon = apply_filters('woocommerce_angelleye_paypal_checkout_icon', 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png');
         $this->has_fields = true;
-        $this->method_title = __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce');
+        $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', __('Complete Payments - Powered by PayPal method_title', 'paypal-for-woocommerce'));
         $this->method_description = __('The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce');
         $this->supports = array(
             'products',

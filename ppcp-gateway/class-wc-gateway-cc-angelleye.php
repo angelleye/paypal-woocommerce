@@ -11,7 +11,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         try {
             $this->id = 'angelleye_ppcp_cc';
             $this->icon = apply_filters('woocommerce_angelleye_ppcp_cc_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
-            $this->method_title = __('Credit card', 'paypal-for-woocommerce');
+            
             $this->method_description = __('Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce');
             $this->has_fields = true;
             $this->supports = array(
@@ -20,6 +20,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 'pay_button'
             );
             $this->angelleye_ppcp_load_class();
+            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit card'));
             $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit card');
             $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
             $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');

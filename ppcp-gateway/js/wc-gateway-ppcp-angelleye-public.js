@@ -310,14 +310,14 @@
                                 payment_method_element_selector = checkout_selector;
                             }
                         }
-                        if ($('#angelleye_ppcp_payment_method_title').length > 0) {
-                            $('#angelleye_ppcp_payment_method_title').empty();
+                        if ($('#angelleye_ppcp_cc_payment_method_title').length > 0) {
+                            $('#angelleye_ppcp_cc_payment_method_title').empty();
                         }
                         $('<input>', {
                             type: 'hidden',
-                            id: 'angelleye_ppcp_payment_method_title',
-                            name: 'angelleye_ppcp_payment_method_title',
-                            value: 'Advanced Credit Cards'
+                            id: 'angelleye_ppcp_cc_payment_method_title',
+                            name: 'angelleye_ppcp_cc_payment_method_title',
+                            value: angelleye_ppcp_manager.advanced_card_payments_title
                         }).appendTo(payment_method_element_selector);
                     }
                 });
