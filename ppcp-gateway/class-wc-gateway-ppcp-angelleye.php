@@ -84,6 +84,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $this->sandbox_secret_id = $this->get_option('sandbox_api_secret', '');
         $this->live_client_id = $this->get_option('api_client_id', '');
         $this->live_secret_id = $this->get_option('api_secret', '');
+        $this->soft_descriptor = $this->get_option('soft_descriptor', substr(get_bloginfo('name'), 0, 21));
         if (!empty($this->sandbox_client_id) && !empty($this->sandbox_secret_id)) {
             $this->is_sandbox_first_party_used = 'yes';
             $this->is_sandbox_third_party_used = 'no';
