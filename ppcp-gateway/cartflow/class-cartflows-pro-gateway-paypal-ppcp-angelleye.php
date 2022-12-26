@@ -32,8 +32,8 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
         } else {
             $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
         }
-        $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
-        $this->soft_descriptor = $this->setting_obj->get('soft_descriptor', get_bloginfo('name'));
+        $this->invoice_prefix = $this->settings->get('invoice_prefix', 'WC-PPCP');
+        $this->soft_descriptor = $this->settings->get('soft_descriptor', substr(get_bloginfo('name'), 0, 21));
         add_filter('cartflows_offer_supported_payment_gateway_slugs', array($this, 'angelleye_ppcp_cartflows_offer_supported_payment_gateway_slugs'));
         add_filter('cartflows_offer_js_localize', array($this, 'angelleye_ppcp_cartflows_offer_js_localize'));
         add_action('wp_enqueue_scripts', array($this, 'angelleye_ppcp_frontend_scripts'));
@@ -276,7 +276,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
             ),
             'custom_id' => apply_filters('angelleye_ppcp_custom_id', $invoice_id, $order),
             'invoice_id' => $invoice_id,
-            'soft_descriptor' => $this->soft_descriptor
+            'soft_descriptor' => angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor)
         );
         return array($purchase_unit);
     }

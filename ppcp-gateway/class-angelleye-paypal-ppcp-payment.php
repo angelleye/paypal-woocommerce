@@ -47,7 +47,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->setting_obj->get('payee_preferred', 'no');
         $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
-        $this->soft_descriptor = $this->setting_obj->get('soft_descriptor', get_bloginfo('name'));
+        $this->soft_descriptor = $this->setting_obj->get('soft_descriptor', substr(get_bloginfo('name'), 0, 21));
         $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
         $this->checkout_disable_smart_button = 'yes' === $this->setting_obj->get('checkout_disable_smart_button', 'no');
         $this->error_email_notification = 'yes' === $this->setting_obj->get('error_email_notification', 'yes');
@@ -102,8 +102,6 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    
-
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
         try {
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
@@ -149,7 +147,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
             }
-            $body_request['purchase_units'][0]['soft_descriptor'] = $this->soft_descriptor;
+            $body_request['purchase_units'][0]['soft_descriptor'] = angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor);
             $body_request['purchase_units'][0]['payee']['merchant_id'] = $this->merchant_id;
             if ($this->send_items === true) {
                 if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
@@ -884,6 +882,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);
             $purchase_units = array(
                 'reference_id' => $reference_id,
+                'soft_descriptor' => angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor),
                 'amount' =>
                 array(
                     'currency_code' => angelleye_ppcp_get_currency($order_id),
@@ -1185,7 +1184,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (isset($woo_order_id) && !empty($woo_order_id)) {
                     angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
                 }
-                if ($this->api_response['status'] == 'COMPLETED') {
+                $payment_status = isset($this->api_response['purchase_units']['0']['payments']['authorizations']['0']['status']) ? $this->api_response['purchase_units']['0']['payments']['authorizations']['0']['status'] : '';
+                if ($this->api_response['status'] == 'COMPLETED' && strtolower($payment_status) != "denied") {
                     $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
                     if (!empty($payment_source['card'])) {
                         $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
@@ -1245,12 +1245,16 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
                     }
                     angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
+                    angelleye_ppcp_update_post_meta($order, '_transaction_id', $transaction_id);
+                    angelleye_ppcp_update_post_meta($order, '_auth_transaction_id', $transaction_id);
+                    angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
                     $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                     $order->update_status('on-hold');
                     $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                     return true;
                 } else {
+                    wc_add_notice(__('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.'), 'error');
                     return false;
                 }
             } else {
