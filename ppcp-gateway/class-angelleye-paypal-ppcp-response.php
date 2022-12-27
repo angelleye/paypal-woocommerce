@@ -47,7 +47,9 @@ class AngellEYE_PayPal_PPCP_Response {
                                     'REFUND',
                                     'ADVANCED_TRANSACTIONS_SEARCH',
                                     'ACCESS_MERCHANT_INFORMATION',
-                                    'PARTNER_FEE'
+                                    'PARTNER_FEE',
+                                    "VAULT",
+                                    "BILLING_AGREEMENT"
                                 ),
                             ),
                         ),
@@ -226,6 +228,9 @@ class AngellEYE_PayPal_PPCP_Response {
             }
             if (isset($data['products'])) {
                 $this->generate_signup_link_default_request_param['products'] = $data['products'];
+            }
+            if (isset($data['capabilities'])) {
+                $this->generate_signup_link_default_request_param['capabilities'] = $data['capabilities'];
             }
             $this->api_log->log('Request Body: ' . wc_print_r($this->generate_signup_link_default_request_param, true));
         }
