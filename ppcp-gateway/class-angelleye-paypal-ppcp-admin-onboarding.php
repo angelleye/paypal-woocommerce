@@ -187,7 +187,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
                     }
                 }
-            } elseif ($this->is_live_first_party_used === 'yes') {
+            } elseif ($this->is_live_first_party_used === 'yes' || $this->is_sandbox_third_party_used === 'yes') {
                 $this->on_board_status = 'USED_FIRST_PARTY';
             }
         }

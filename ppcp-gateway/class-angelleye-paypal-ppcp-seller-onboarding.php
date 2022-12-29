@@ -225,9 +225,13 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $seller_onboarding_status = $this->api_request->request($host_url, $args, 'get_tracking_status');
             if (!empty($seller_onboarding_status['merchant_id'])) {
                 if ($this->is_sandbox) {
+                    $this->setting_obj->set('sandbox_client_id', '');
+                    $this->setting_obj->set('sandbox_api_secret', '');
                     $this->setting_obj->set('sandbox_merchant_id', $seller_onboarding_status['merchant_id']);
                     $this->setting_obj->set('enabled', 'yes');
                 } else {
+                    $this->setting_obj->set('api_client_id', '');
+                    $this->setting_obj->set('api_secret', '');
                     $this->setting_obj->set('live_merchant_id', $seller_onboarding_status['merchant_id']);
                     $this->setting_obj->set('enabled', 'yes');
                 }

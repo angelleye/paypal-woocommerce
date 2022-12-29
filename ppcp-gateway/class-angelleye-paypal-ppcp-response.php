@@ -71,7 +71,7 @@ class AngellEYE_PayPal_PPCP_Response {
             } else {
                 $body = wp_remote_retrieve_body($paypal_api_response);
                 $status_code = (int) wp_remote_retrieve_response_code($paypal_api_response);
-                if (201 < $status_code) {
+                if (201 < $status_code && $action_name !== 'update_order') {
                     delete_transient('is_angelleye_aws_down');
                 }
                 $response = !empty($body) ? json_decode($body, true) : '';
