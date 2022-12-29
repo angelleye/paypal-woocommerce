@@ -989,7 +989,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'path' => "/intent",
                 'value' => $intent
             );
-            $body_request = angelleye_ppcp_remove_empty_key($purchase_units);
             $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
             $args = array(
                 'timeout' => 70,
