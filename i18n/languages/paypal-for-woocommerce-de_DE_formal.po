@@ -1,12 +1,12 @@
-# Copyright (C) 2022 PayPal for WooCommerce
+# Copyright (C) 2023 PayPal for WooCommerce
 # This file is distributed under the same license as the PayPal for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: PayPal for WooCommerce 3.1.3\n"
+"Project-Id-Version: PayPal for WooCommerce 3.1.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/paypal-for-"
 "woocommerce\n"
-"POT-Creation-Date: 2022-12-26 17:44+0530\n"
-"PO-Revision-Date: 2022-12-28 14:41+0530\n"
+"POT-Creation-Date: 2023-01-04 13:09:13+00:00\n"
+"PO-Revision-Date: 2023-01-04 19:04+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE@formal\n"
@@ -772,7 +772,7 @@ msgstr "DoDirectPayment API-Aufruf fehlgeschlagen."
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1494
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2116
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2187
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1790
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1796
 msgid "User IP: "
 msgstr "Benutzer IP: "
 
@@ -783,7 +783,7 @@ msgstr "Benutzer IP: "
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:939
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1495
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2117
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1783
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1789
 msgid "Order ID: "
 msgstr "Bestell-ID: "
 
@@ -841,9 +841,9 @@ msgstr "PayPal Pro Payflow-Zahlung abgeschlossen (PNREF: %s)"
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1340
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2025
 #: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:808
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1202
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1366
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1479
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1208
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1372
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1485
 msgid "Address Verification Result"
 msgstr "Ergebnis der Adressverifizierung"
 
@@ -871,9 +871,9 @@ msgstr "Postalische Übereinstimmung: %s"
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1360
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2045
 #: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:817
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1211
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1375
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1488
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1217
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1381
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1494
 msgid "Card Security Code Result"
 msgstr "Kartenprüfnummer Ergebnis"
 
@@ -1153,7 +1153,7 @@ msgstr ""
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:1046
 #: classes/wc-gateway-paypal-pro-angelleye.php:2204
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1847
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1853
 msgid "No pending reason provided."
 msgstr "Es wurde kein noch ausstehender Grund angegeben."
 
@@ -4797,7 +4797,7 @@ msgstr "Warenkorb"
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2165
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:816
 msgid "Payment"
-msgstr ""
+msgstr "Zahlung"
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2205
 msgid "Home Page Settings"
@@ -6319,6 +6319,22 @@ msgstr ""
 msgid "Expired Date"
 msgstr ""
 
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:125
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:164
+msgid "We see that your PayPal email address is"
+msgstr "Wir sehen, dass Ihre PayPal-E-Mail-Adresse lautet"
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:129
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:168
+msgid "We see that your site admin email address is"
+msgstr ""
+"Wir sehen, dass Ihre E-Mail-Adresse für die Website-Administration lautet"
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:131
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:170
+msgid "We see that your email address is"
+msgstr "Wir sehen, dass Ihre E-Mail-Adresse lautet"
+
 #: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:223
 msgid ""
 "Welcome to the most Complete Payments solution available for WooCommerce. "
@@ -6468,62 +6484,62 @@ msgid "3D Secure response"
 msgstr "3D Secure Response"
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:797
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1191
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1355
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1468
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1197
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1361
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1474
 msgid "Card Details"
 msgstr "Karten-Details"
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:826
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1220
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1384
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1497
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1226
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1390
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1503
 msgid "Processor response code Result"
 msgstr "Antwortcode des Prozessors Ergebnis"
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:844
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1238
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1405
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1244
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1411
 msgid "Payment via %s: %s."
 msgstr "Zahlung via %s: %s."
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:846
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1240
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1407
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1809
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1246
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1413
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1815
 msgid "Payment via %s declined."
 msgstr "Zahlung via %s abgelehnt."
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:847
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1241
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1257
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1409
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1247
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1263
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1415
 msgid ""
 "Unfortunately your order cannot be processed as the originating bank/"
 "merchant has declined your transaction. Please attempt your purchase again."
 msgstr ""
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:854
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1251
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1401
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1518
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1532
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1257
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1407
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1524
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1538
 msgid "%s Transaction ID: %s"
 msgstr "%s Transaktions-ID: %s"
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1129
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1135
 msgid "Refunded %1$s - Refund ID: %2$s"
 msgstr "Rückerstattet %1$s – Rückerstattungs-ID: %2$s"
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1135
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1141
 msgid "Payment via %s Pending. Pending reason: %s."
 msgstr "Zahlung über %s ausstehend. Ausstehender Grund: %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1137
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1143
 msgid "Refund Amount %1$s - Refund ID: %2$s"
 msgstr "Rückerstattungsbetrag %1$s - Rückerstattungs-ID: %2$s"
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1254
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1260
 msgid ""
 "Payment authorized. Change payment status to processing or complete to "
 "capture funds."
@@ -6531,15 +6547,15 @@ msgstr ""
 "Zahlung autorisiert. Ändern Sie den Zahlungsstatus auf \"In Bearbeitung\" "
 "oder \"Abgeschlossen\", um Mittel zu erfassen."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1513
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1519
 msgid "Payment via %s: %s ."
 msgstr "Zahlung via %s: %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1526
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1532
 msgid "Payment via %s Pending. PayPal reason: %s."
 msgstr "Zahlung über %s Ausstehend. PayPal Grund: %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1535
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1541
 msgid ""
 "Payment authorized. Change order status to processing or complete for "
 "capture funds."
@@ -6547,23 +6563,23 @@ msgstr ""
 "Zahlung autorisiert. Ändern Sie den Zahlungsstatus auf \"In Bearbeitung\" "
 "oder \"Abgeschlossen\", um Mittel zu erfassen."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1777
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1783
 msgid "Action: "
 msgstr "Aktion: "
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1780
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1786
 msgid "Error: "
 msgstr "Fehler: "
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1787
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1793
 msgid "User ID: "
 msgstr "Benutzer-ID: "
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1788
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1794
 msgid "User Email: "
 msgstr "Benutzer-E-Mail:"
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1813
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1819
 msgid ""
 "BUYER_COMPLAINT: The payer initiated a dispute for this captured payment "
 "with PayPal."
@@ -6571,7 +6587,7 @@ msgstr ""
 "BUYER_COMPLAINT: Der Zahler hat einen Streit über diese erfasste Zahlung mit "
 "PayPal angestrengt."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1816
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1822
 msgid ""
 "CHARGEBACK: The captured funds were reversed in response to the payer "
 "disputing this captured payment with the issuer of the financial instrument "
@@ -6581,13 +6597,13 @@ msgstr ""
 "erfasste Zahlung beim Emittenten des Finanzinstruments, mit dem die erfasste "
 "Zahlung bezahlt wurde, bestritten hat."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1819
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1825
 msgid "ECHECK: The payer paid by an eCheck that has not yet cleared."
 msgstr ""
 "ECHECK: Der Zahler hat mit einem eCheck bezahlt, der noch nicht freigegeben "
 "wurde."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1822
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1828
 msgid ""
 "INTERNATIONAL_WITHDRAWAL: Visit your online account. In your **Account "
 "Overview**, accept and deny this payment."
@@ -6595,7 +6611,7 @@ msgstr ""
 "INTERNATIONAL_WITHDRAWAL: Besuchen Sie Ihr Online-Konto. Akzeptieren oder "
 "verweigern Sie diese Zahlung in Ihrer **Kontoübersicht**."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1825
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1831
 msgid ""
 "No additional specific reason can be provided. For more information about "
 "this captured payment, visit your account online or contact PayPal."
@@ -6604,11 +6620,11 @@ msgstr ""
 "Informationen zu dieser erfassten Zahlung besuchen Sie Ihr Konto online oder "
 "wenden Sie sich an PayPal."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1828
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1834
 msgid "PENDING_REVIEW: The captured payment is pending manual review."
 msgstr "PENDING_REVIEW: Die erfasste Zahlung ist noch nicht manuell überprüft."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1831
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1837
 msgid ""
 "RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION: The payee has not yet set up "
 "appropriate receiving preferences for their account. For more information "
@@ -6623,11 +6639,11 @@ msgstr ""
 "Szenarien angeboten, z. B. wenn die Währung der erfassten Zahlung von der "
 "Währung der primären Holding des Zahlungsempfängers abweicht."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1834
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1840
 msgid "REFUNDED: The captured funds were refunded."
 msgstr "REFUNDED: Die eingezogenen Beträge wurden erstattet."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1837
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1843
 msgid ""
 "TRANSACTION_APPROVED_AWAITING_FUNDING: The payer must send the funds for "
 "this captured payment. This code generally appears for manual EFTs."
@@ -6636,37 +6652,37 @@ msgstr ""
 "erfasste Zahlung senden. Dieser Code erscheint in der Regel bei manuellen "
 "EFTs."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1840
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1846
 msgid "UNILATERAL: The payee does not have a PayPal account."
 msgstr "UNILATERAL: Der Zahlungsempfänger verfügt nicht über ein PayPal-Konto."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1843
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1849
 msgid "VERIFICATION_REQUIRED: The payee's PayPal account is not verified."
 msgstr ""
 "VERIFICATION_REQUIRED: Das PayPal-Konto des Zahlungsempfängers ist nicht "
 "verifiziert."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1851
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1857
 msgid "Payment via %s Pending. PayPal Pending reason: %s."
 msgstr "Zahlung über %s ausstehend. PayPal Ausstehender Grund: %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1854
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1860
 msgid "Payment via %s declined. PayPal declined reason: %s."
 msgstr "Zahlung über %s abgelehnt. PayPal abgelehnt Grund: %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1859
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1865
 msgid "Payment via %s partially refunded. PayPal reason: %s."
 msgstr "Zahlung über %s teilweise zurückerstattet. PayPal-Grund: %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1862
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1868
 msgid "Payment via %s refunded. PayPal reason: %s."
 msgstr "Zahlung über %s zurückerstattet. PayPal-Grund: %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1864
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1870
 msgid "Payment via %s failed. PayPal reason: %s."
 msgstr "Zahlung über %s fehlgeschlagen. PayPal-Grund: %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1867
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1873
 msgid "Payment via %s Voided."
 msgstr ""
 
@@ -6805,7 +6821,7 @@ msgstr "Rückerstattung fehlgeschlagen."
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:69
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:147
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:154
-#: template/admin.php:16
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:66 template/admin.php:16
 msgid "Complete Payments - Powered by PayPal"
 msgstr ""
 
@@ -7333,10 +7349,6 @@ msgstr "Nur Fehler und Warnungen"
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1421
 msgid "Disabled"
 msgstr "Deaktiviert"
-
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:66
-msgid "Complete Payments - Powered by PayPal method_title"
-msgstr ""
 
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:280
 msgid ""
