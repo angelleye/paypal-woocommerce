@@ -249,7 +249,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                     });</script>
                                 <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
                             } else {
-                                echo __('We could not properly connect to PayPal', '');
+                                echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
                             }
                             ?>
                                 <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
