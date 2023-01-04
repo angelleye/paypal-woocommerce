@@ -983,6 +983,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'path' => "/purchase_units/@reference_id=='$reference_id'",
                 'value' => $body_request
             );
+            $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
+            $patch_request[] = array(
+                'op' => 'replace',
+                'path' => "/intent",
+                'value' => $intent
+            );
             $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
             $args = array(
                 'timeout' => 70,
