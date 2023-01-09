@@ -53,6 +53,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
             }
+            if ( defined( 'CFW_PATH' ) ) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
+            }
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
@@ -243,7 +246,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->enable_paypal_checkout_page === true && $this->checkout_page_display_option !== 'regular') {
             add_action('woocommerce_before_checkout_form', array($this, 'display_paypal_button_top_checkout_page'), 5);
         }
-        add_action('woocommerce_review_order_before_submit', array($this, 'angelleye_ppcp_cancel_button'));
+        add_action('woocommerce_review_order_before_submit', array($this, 'angelleye_ppcp_cancel_button'), 999);
         add_filter('sgo_js_minify_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_filter('sgo_javascript_combine_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_filter('sgo_javascript_combine_excluded_inline_content', array($this, 'angelleye_ppcp_exclude_javascript'), 999);

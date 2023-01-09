@@ -37,8 +37,12 @@
                     }
                 } else if (angelleye_ppcp_manager.enable_separate_payment_method === 'yes') {
                     if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
+                        $('#angelleye_ppcp_checkout').show();
+                        $('.angelleye_ppcp_message_payment').show();
                         $('#place_order').hide();
                     } else {
+                        $('#angelleye_ppcp_checkout').hide();
+                        $('.angelleye_ppcp_message_payment').hide();
                         $('#place_order').show();
                     }
                 }
