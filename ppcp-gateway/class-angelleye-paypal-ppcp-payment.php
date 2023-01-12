@@ -1551,6 +1551,8 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_get_generate_token() {
         try {
+            $unique_id = substr( 'angelleye_ppcp_' . strrev( uniqid() ), 0, 12 );
+            assert( is_string( $unique_id ) );
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -1559,7 +1561,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'blocking' => true,
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                 'cookies' => array(),
-                    //'body' => array(), //json_encode(array('customer_id' => 'customer_1234_wow'))
+                 'body' => wp_json_encode(
+				array(
+					'customer_id' => $unique_id,
+				)
+			)
             );
             $response = $this->api_request->request($this->generate_token_url, $args, 'get client token');
             if (!empty($response['client_token'])) {
