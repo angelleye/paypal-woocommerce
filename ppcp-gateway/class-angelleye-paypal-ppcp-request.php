@@ -115,6 +115,7 @@ class AngellEYE_PayPal_PPCP_Request {
                 $args['headers'][AE_FEE] = "true";
             }
         }
+        $args['headers']['plugin_version_id'] = VERSION_PFW;
         $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request', $args);
         return $this->result;
     }

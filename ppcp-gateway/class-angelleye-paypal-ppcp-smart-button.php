@@ -1232,8 +1232,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                         }
                     }
                 } else {
-                    $_POST[$key] = wc_clean(stripslashes($shipping_address[$key]));
-                    return $_POST[$key];
+                    if(isset($shipping_address[$key]) && !empty($shipping_address)) {
+                        $_POST[$key] = wc_clean(stripslashes($shipping_address[$key]));
+                        return $_POST[$key];
+                    }
                 }
             } elseif ($key === 'billing_state' || $key = 'billing_country') {
                 $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);

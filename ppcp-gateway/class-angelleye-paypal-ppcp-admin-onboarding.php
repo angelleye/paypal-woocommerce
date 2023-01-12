@@ -122,13 +122,13 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
                 if (!empty($this->result['primary_email'])) {
                     own_angelleye_sendy_list($this->result['primary_email']);
-                    $this->email_confirm_text_1 = 'We see that your PayPal email address is' . ' <b>' . $this->result['primary_email'] . '</b>';
+                    $this->email_confirm_text_1 = __('We see that your PayPal email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>';
                 }
                 $admin_email = get_option("admin_email");
                 if ($this->result['primary_email'] != $admin_email) {
-                    $this->email_confirm_text_2 = 'We see that your site admin email address is' . ' <b>' . $admin_email . '</b>';
+                    $this->email_confirm_text_2 = __('We see that your site admin email address is', 'paypal-for-woocommerce') . ' <b>' . $admin_email . '</b>';
                 } else {
-                    $this->email_confirm_text_1 = 'We see that your email address is ' . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
+                    $this->email_confirm_text_1 = __('We see that your email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
                 }
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
@@ -161,13 +161,13 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
                 if (!empty($this->result['primary_email'])) {
                     own_angelleye_sendy_list($this->result['primary_email']);
-                    $this->email_confirm_text_1 = 'We see that your PayPal email address is' . ' <b>' . $this->result['primary_email'] . '</b>';
+                    $this->email_confirm_text_1 = __('We see that your PayPal email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>';
                 }
                 $admin_email = get_option("admin_email");
                 if ($this->result['primary_email'] != $admin_email) {
-                    $this->email_confirm_text_2 = 'We see that your site admin email address is' . ' <b>' . $admin_email . '</b>';
+                    $this->email_confirm_text_2 = __('We see that your site admin email address is', 'paypal-for-woocommerce') . ' <b>' . $admin_email . '</b>';
                 } else {
-                    $this->email_confirm_text_1 = 'We see that your email address is ' . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
+                    $this->email_confirm_text_1 = __('We see that your email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
                 }
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
@@ -187,7 +187,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
                     }
                 }
-            } elseif ($this->is_live_first_party_used === 'yes') {
+            } elseif ($this->is_live_first_party_used === 'yes' || $this->is_sandbox_third_party_used === 'yes') {
                 $this->on_board_status = 'USED_FIRST_PARTY';
             }
         }
@@ -249,7 +249,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                     });</script>
                                 <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
                             } else {
-                                echo __('We could not properly connect to PayPal', '');
+                                echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
                             }
                             ?>
                                 <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>

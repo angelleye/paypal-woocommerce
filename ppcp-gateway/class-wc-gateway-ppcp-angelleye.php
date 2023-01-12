@@ -387,7 +387,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                     'redirect' => wc_get_cart_url()
                 );
             }
-        } elseif ($this->checkout_disable_smart_button === true && $this->advanced_card_payments === false) {
+        } elseif ($this->checkout_disable_smart_button === true) {
             angelleye_ppcp_set_session('angelleye_ppcp_woo_order_id', $woo_order_id);
             $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
             return $result;
