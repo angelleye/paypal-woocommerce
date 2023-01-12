@@ -754,3 +754,15 @@ if (!function_exists('angelleye_ppcp_get_value')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_is_cart_contains_subscription')) {
+
+    function angelleye_ppcp_is_cart_contains_subscription() {
+        $cart_contains_subscription = false;
+        if (class_exists('WC_Subscriptions_Order') && class_exists('WC_Subscriptions_Cart')) {
+            $cart_contains_subscription = WC_Subscriptions_Cart::cart_contains_subscription();
+        }
+        return apply_filters('angelleye_ppcp_sdk_parameter_vault', $cart_contains_subscription);
+    }
+
+}
+

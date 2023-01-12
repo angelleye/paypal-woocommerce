@@ -387,6 +387,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($enable_funding) && count($enable_funding) > 0) {
             $smart_js_arg['enable-funding'] = implode(',', $enable_funding);
         }
+        if(angelleye_ppcp_is_cart_contains_subscription()) {
+            $smart_js_arg['vault'] = 'true';
+        }
         if (isset($post->ID) && 'yes' == get_post_meta($post->ID, 'wcf-pre-checkout-offer', true)) {
             $pre_checkout_offer = "yes";
         } else {
@@ -453,7 +456,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function display_paypal_button_cart_page($is_shortcode = "") {
         if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
-            return false;
+           // return false;
         }
         $this->angelleye_ppcp_smart_button_style_properties();
         if (WC()->cart->needs_payment()) {
