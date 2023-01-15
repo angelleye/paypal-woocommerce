@@ -86,9 +86,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->enable_separate_payment_method = false;
         }
         if($this->enable_separate_payment_method === false) {
-            $this->advanced_card_payments_title = __('Credit card', 'paypal-for-woocommerce');
+            $this->advanced_card_payments_title = __('Credit Card', 'paypal-for-woocommerce');
         } else {
-            $this->advanced_card_payments_title = $this->setting_obj->get('advanced_card_payments_title', __('Credit card', 'paypal-for-woocommerce'));
+            $this->advanced_card_payments_title = $this->setting_obj->get('advanced_card_payments_title', __('Credit Card', 'paypal-for-woocommerce'));
         }
         $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');
         $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
