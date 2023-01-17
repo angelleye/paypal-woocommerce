@@ -766,3 +766,11 @@ if (!function_exists('angelleye_ppcp_is_cart_contains_subscription')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_is_subs_change_payment')) {
+
+    function angelleye_ppcp_is_subs_change_payment() {
+        return ( isset($_GET['pay_for_order']) && ( isset($_GET['change_payment_method']) || isset($_GET['change_gateway_flag'])) );
+    }
+
+}
+

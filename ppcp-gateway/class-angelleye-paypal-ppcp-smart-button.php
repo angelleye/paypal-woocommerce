@@ -387,7 +387,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!empty($enable_funding) && count($enable_funding) > 0) {
             $smart_js_arg['enable-funding'] = implode(',', $enable_funding);
         }
-        if(angelleye_ppcp_is_cart_contains_subscription()) {
+        if(angelleye_ppcp_is_cart_contains_subscription() || angelleye_ppcp_is_subs_change_payment()) {
             $smart_js_arg['vault'] = 'true';
         }
         if (isset($post->ID) && 'yes' == get_post_meta($post->ID, 'wcf-pre-checkout-offer', true)) {
