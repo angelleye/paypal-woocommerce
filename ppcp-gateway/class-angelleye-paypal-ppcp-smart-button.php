@@ -234,7 +234,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('woocommerce_default_address_fields', array($this, 'filter_default_address_fields'));
         add_filter('woocommerce_billing_fields', array($this, 'filter_billing_fields'));
         add_action('woocommerce_checkout_process', array($this, 'copy_checkout_details_to_post'));
-        add_action('woocommerce_cart_shipping_packages', array($this, 'maybe_add_shipping_information'));
+        add_action('woocommerce_cart_shipping_packages', array($this, 'maybe_add_shipping_information'), 999);
         add_filter('body_class', array($this, 'angelleye_ppcp_add_class_order_review_page'));
         add_filter('woocommerce_coupons_enabled', array($this, 'angelleye_ppcp_woocommerce_coupons_enabled'), 999, 1);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_order_review_page_description'), 9);
@@ -686,13 +686,20 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             return $packages;
         }
         $destination = angelleye_ppcp_get_mapped_shipping_address($this->checkout_details);
-        if (!empty($destination)) {
+        if (!empty($packages[0]['destination']) && !empty($destination)) {
             $packages[0]['destination']['country'] = $destination['country'];
             $packages[0]['destination']['state'] = $destination['state'];
             $packages[0]['destination']['postcode'] = $destination['postcode'];
             $packages[0]['destination']['city'] = $destination['city'];
             $packages[0]['destination']['address'] = $destination['address_1'];
             $packages[0]['destination']['address_2'] = $destination['address_2'];
+        } elseif(!empty ($packages['destination']) && !empty ($destination)) {
+            $packages['destination']['country'] = $destination['country'];
+            $packages['destination']['state'] = $destination['state'];
+            $packages['destination']['postcode'] = $destination['postcode'];
+            $packages['destination']['city'] = $destination['city'];
+            $packages['destination']['address'] = $destination['address_1'];
+            $packages['destination']['address_2'] = $destination['address_2'];
         }
         return $packages;
     }
@@ -794,9 +801,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $client_token = '';
             if (!isset($_GET['paypal_order_id'])) {
                 $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
+                $this->id_token = $this->payment_request->angelleye_ppcp_get_generate_id_token();
                 $client_token = "data-client-token='{$this->client_token}'";
+                $user_id_token = " data-user-id-token='{$this->id_token}'";
             }
-            $tag = str_replace(' src=', ' ' . $client_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
+            $tag = str_replace(' src=', ' ' . $client_token . $user_id_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
         }
         return $tag;
     }
@@ -1258,8 +1267,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                         }
                     }
                 } else {
-                    $_POST[$key] = wc_clean(stripslashes($billing_address[$key]));
-                    return $_POST[$key];
+                    if(isset($billing_address[$key]) && !empty($billing_address)) {
+                        $_POST[$key] = wc_clean(stripslashes($billing_address[$key]));
+                        return $_POST[$key];
+                    }
                 }
             }
         }

@@ -6,6 +6,16 @@ if (!defined('ABSPATH')) {
 
 class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
 
+    protected static $_instance = null;
+
+    public static function instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+
+        return self::$_instance;
+    }
+
     public function angelleye_ppcp_is_save_payment_token($current, $order_id) {
         if ((!empty($_POST['wc-' . $current->id . '-new-payment-method']) && $_POST['wc-' . $current->id . '-new-payment-method'] == true) || $this->is_subscription($order_id) || $this->angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
             return true;
@@ -21,39 +31,78 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
         }
     }
 
-    public function angelleye_ppcp_wc_save_payment_token($order_id) {
-        if ($this->angelleye_is_save_payment_token($this, $order_id)) {
-            if (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') {
-                $token_id = wc_clean($_POST['wc-paypal_pro-payment-token']);
+    public function angelleye_ppcp_wc_save_payment_token($order_id, $api_response) {
+        if ($this->angelleye_ppcp_is_save_payment_token($this, $order_id)) {
+
+
+
+            $payment_token = isset($api_response['payment_source']['card']['attributes']['vault']['id']) ? $api_response['payment_source']['card']['attributes']['vault']['id'] : '';
+            if (empty($payment_token)) {
+                $payment_token = isset($api_response['payment_source']['paypal']['attributes']['vault']['id']) ? $api_response['payment_source']['paypal']['attributes']['vault']['id'] : '';
+            }
+            if (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new') {
+                $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
                 $order->add_payment_token($token);
                 if ($this->is_subscription($order_id)) {
-                    $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
-                    $this->save_payment_token($order, $TRANSACTIONID);
+                    $this->save_payment_token($order, $payment_token);
+                }
+            } elseif (!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') {
+                $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
+                $token = WC_Payment_Tokens::get($token_id);
+                $order->add_payment_token($token);
+                if ($this->is_subscription($order_id)) {
+                    $this->save_payment_token($order, $payment_token);
                 }
             } else {
-                $TRANSACTIONID = $PayPalResult['TRANSACTIONID'];
-                $token = new WC_Payment_Token_CC();
-                if (0 != $order->get_user_id()) {
-                    $customer_id = $order->get_user_id();
-                } else {
-                    $customer_id = get_current_user_id();
-                }
-                $token->set_token($TRANSACTIONID);
-                $token->set_gateway_id($this->id);
-                $token->set_card_type($this->card_type_from_account_number($PayPalRequestData['CCDetails']['acct']));
-                $token->set_last4(substr($PayPalRequestData['CCDetails']['acct'], -4));
-                $token->set_expiry_month(substr($PayPalRequestData['CCDetails']['expdate'], 0, 2));
-                $token->set_expiry_year(substr($PayPalRequestData['CCDetails']['expdate'], 2, 5));
-                $token->set_user_id($customer_id);
-                if ($token->validate()) {
-                    $this->save_payment_token($order, $TRANSACTIONID);
-                    $save_result = $token->save();
-                    if ($save_result) {
-                        $order->add_payment_token($token);
+                if (!empty($api_response['payment_source']['card']['attributes']['vault']['id'])) {
+                    $token = new WC_Payment_Token_CC();
+                    $order = wc_get_order($order_id);
+                    if (0 != $order->get_user_id()) {
+                        $customer_id = $order->get_user_id();
+                    } else {
+                        $customer_id = get_current_user_id();
                     }
-                } else {
-                    $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
+                    $token->set_token($payment_token);
+                    $token->set_gateway_id($order->get_payment_method());
+                    $token->set_card_type($api_response['payment_source']['card']['brand']);
+                    $token->set_last4($api_response['payment_source']['card']['last_digits']);
+                    $token->set_expiry_month('05');
+                    $token->set_expiry_year('2025');
+                    $token->set_user_id($customer_id);
+                    if ($token->validate()) {
+                        $this->save_payment_token($order, $payment_token);
+                        $save_result = $token->save();
+                        if ($save_result) {
+                            $order->add_payment_token($token);
+                        }
+                    } else {
+                        $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
+                    }
+                } elseif (!empty($api_response['payment_source']['paypal']['attributes']['vault']['id'])) {
+                    $token = new WC_Payment_Token_CC();
+                    $order = wc_get_order($order_id);
+                    if (0 != $order->get_user_id()) {
+                        $customer_id = $order->get_user_id();
+                    } else {
+                        $customer_id = get_current_user_id();
+                    }
+                    $token->set_token($payment_token);
+                    $token->set_gateway_id($order->get_payment_method());
+                    $token->set_card_type('PayPal Billing Agreement');
+                    $token->set_last4(substr($payment_token, -4));
+                    $token->set_expiry_month(date('m'));
+                    $token->set_expiry_year(date('Y', strtotime('+20 years')));
+                    $token->set_user_id($customer_id);
+                    if ($token->validate()) {
+                        $this->save_payment_token($order, $payment_token);
+                        $save_result = $token->save();
+                        if ($save_result) {
+                            $order->add_payment_token($token);
+                        }
+                    } else {
+                        $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
+                    }
                 }
             }
         }
