@@ -17,7 +17,10 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
     }
 
     public function angelleye_ppcp_is_save_payment_token($current, $order_id) {
-        if ((!empty($_POST['wc-' . $current->id . '-new-payment-method']) && $_POST['wc-' . $current->id . '-new-payment-method'] == true) || $this->is_subscription($order_id) || $this->angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
+        if ((!empty($_POST['wc-angelleye_ppcp_cc-new-payment-method']) && $_POST['wc-angelleye_ppcp_cc-new-payment-method'] == true) || $this->is_subscription($order_id) || $this->angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
+            return true;
+        }
+        if ((!empty($_POST['wc-angelleye_ppcp-new-payment-method']) && $_POST['wc-angelleye_ppcp-new-payment-method'] == true) || $this->is_subscription($order_id) || $this->angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item()) {
             return true;
         }
         return false;
@@ -33,9 +36,6 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
 
     public function angelleye_ppcp_wc_save_payment_token($order_id, $api_response) {
         if ($this->angelleye_ppcp_is_save_payment_token($this, $order_id)) {
-
-
-
             $payment_token = isset($api_response['payment_source']['card']['attributes']['vault']['id']) ? $api_response['payment_source']['card']['attributes']['vault']['id'] : '';
             if (empty($payment_token)) {
                 $payment_token = isset($api_response['payment_source']['paypal']['attributes']['vault']['id']) ? $api_response['payment_source']['paypal']['attributes']['vault']['id'] : '';
@@ -129,5 +129,4 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
         }
         return $has_autoship_items;
     }
-
 }

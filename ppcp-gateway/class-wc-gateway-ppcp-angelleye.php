@@ -37,6 +37,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                 'subscription_payment_method_change_admin',
                 'subscription_date_changes',
                 'multiple_subscriptions',
+                'add_payment_method',
             );
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
