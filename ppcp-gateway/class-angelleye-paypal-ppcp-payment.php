@@ -215,6 +215,15 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             if ($woo_order_id != null) {
+                $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+                if (!empty($angelleye_ppcp_payment_method_title)) {
+                    update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                    update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
+                }
+                $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+                if (!empty($angelleye_ppcp_used_payment_method)) {
+                    update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                }
                 $order = wc_get_order($woo_order_id);
                 $old_wc = version_compare(WC_VERSION, '3.0', '<');
                 if (( $old_wc && ( $order->shipping_address_1 || $order->shipping_address_2 ) ) || (!$old_wc && $order->has_shipping_address() )) {
@@ -793,55 +802,48 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/capture', $args, 'capture_order');
-            if (isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'APPROVED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
-                $setup_token = $this->api_response['payment_source']['card']['attributes']['vault']['setup_token'];
-                $body_request = array('payment_source' => array('token' => array('id' => $setup_token, 'type' => 'SETUP_TOKEN')));
-                $args = array(
-                    'method' => 'GET',
-                    'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                    'body' => $body_request
-                );
-                $this->response = $this->api_request->request('https://api-m.sandbox.paypal.com/v3/vault/payment-tokens', $args, 'payment_tokens');
-            } elseif (isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'VAULTED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
-                if ($this->ppcp_payment_token->angelleye_ppcp_is_paypal_generated_customer_id_exist($this->is_sandbox) === false) {
-                    $customer_id = isset($this->api_response['payment_source']['card']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['card']['attributes']['vault']['customer']['id'] : '';
-                    if (isset($customer_id) && !empty($customer_id)) {
-                        $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
-                    }
-                }
-                if ($this->subscriptions_helper->is_subscription($woo_order_id)) {
-                    $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $this->api_response);
-                }
-            } elseif (isset($this->api_response['payment_source']['paypal']['attributes']['vault']['status']) && 'VAULTED' === $this->api_response['payment_source']['paypal']['attributes']['vault']['status']) {
-                if ($this->ppcp_payment_token->angelleye_ppcp_is_paypal_generated_customer_id_exist($this->is_sandbox) === false) {
-                    $customer_id = isset($this->api_response['payment_source']['paypal']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['paypal']['attributes']['vault']['customer']['id'] : '';
-                    if (isset($customer_id) && !empty($customer_id)) {
-                        $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
-                    }
-                }
-                if ($this->subscriptions_helper->is_subscription($woo_order_id)) {
-                    $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $this->api_response);
-                }
-            }
-            
-            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
-            if (!empty($angelleye_ppcp_used_payment_method)) {
-                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
-                
-            }
             $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
                 update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
             }
+            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+            if (!empty($angelleye_ppcp_used_payment_method)) {
+                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+            }
             if (isset($this->api_response['id']) && !empty($this->api_response['id'])) {
+                if (isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'APPROVED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
+                    $setup_token = $this->api_response['payment_source']['card']['attributes']['vault']['setup_token'];
+                    $body_request = array('payment_source' => array('token' => array('id' => $setup_token, 'type' => 'SETUP_TOKEN')));
+                    $args = array(
+                        'method' => 'GET',
+                        'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                        'body' => $body_request
+                    );
+                    $this->response = $this->api_request->request('https://api-m.sandbox.paypal.com/v3/vault/payment-tokens', $args, 'payment_tokens');
+                } elseif (isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'VAULTED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
+                    if ($this->ppcp_payment_token->angelleye_ppcp_is_paypal_generated_customer_id_exist($this->is_sandbox) === false) {
+                        $customer_id = isset($this->api_response['payment_source']['card']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['card']['attributes']['vault']['customer']['id'] : '';
+                        if (isset($customer_id) && !empty($customer_id)) {
+                            $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
+                        }
+                    }
+                    if ($this->subscriptions_helper->is_subscription($woo_order_id)) {
+                        $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $this->api_response);
+                    }
+                } elseif (isset($this->api_response['payment_source']['paypal']['attributes']['vault']['status']) && 'VAULTED' === $this->api_response['payment_source']['paypal']['attributes']['vault']['status']) {
+                    if ($this->ppcp_payment_token->angelleye_ppcp_is_paypal_generated_customer_id_exist($this->is_sandbox) === false) {
+                        $customer_id = isset($this->api_response['payment_source']['paypal']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['paypal']['attributes']['vault']['customer']['id'] : '';
+                        if (isset($customer_id) && !empty($customer_id)) {
+                            $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
+                        }
+                    }
+                    if ($this->subscriptions_helper->is_subscription($woo_order_id)) {
+                        $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $this->api_response);
+                    }
+                }
                 $return_response['paypal_order_id'] = $this->api_response['id'];
                 angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
-                $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
-                if (!empty($angelleye_ppcp_payment_method_title)) {
-                    update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
-                    update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
-                }
                 if ($this->api_response['status'] == 'COMPLETED') {
                     $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
                     if (!empty($payment_source['card'])) {
@@ -1237,6 +1239,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                 update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
                 update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
             }
+            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+            if (!empty($angelleye_ppcp_used_payment_method)) {
+                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+            }
             if (!empty($this->api_response['id'])) {
                 if (isset($woo_order_id) && !empty($woo_order_id)) {
                     angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
@@ -1404,6 +1410,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
                 update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
+            }
+            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+            if (!empty($angelleye_ppcp_used_payment_method)) {
+                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
             }
             if (!empty($this->api_response['id'])) {
                 angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
@@ -2324,11 +2334,15 @@ class AngellEYE_PayPal_PPCP_Payment {
             $body_request = $this->angelleye_ppcp_set_payer_details($order_id, $body_request);
             $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
             $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
-            if(!empty($payment_tokens_id) && $angelleye_ppcp_used_payment_method) {
-                if($angelleye_ppcp_used_payment_method === '')
-                $body_request['payment_source']['paypal'] = array('vault_id' => $payment_tokens_id);
+            if (!empty($payment_tokens_id) && $angelleye_ppcp_used_payment_method) {
+                if($angelleye_ppcp_used_payment_method === 'PayPal Checkout') {
+                    $use_payment_method = 'paypal';
+                } else {
+                    $use_payment_method = 'card';
+                }
+                $body_request['payment_source'][$use_payment_method] = array('vault_id' => $payment_tokens_id);
             }
-            
+
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $args = array(
                 'method' => 'POST',
@@ -2339,14 +2353,81 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (ob_get_length()) {
                 ob_end_clean();
             }
-            if (!empty($this->api_response['status'])) {
-                
+
+            if (isset($this->api_response['id']) && !empty($this->api_response['id'])) {
+                if ($this->api_response['status'] == 'COMPLETED') {
+                    $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
+                    if (!empty($payment_source['card'])) {
+                        $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
+                        $card_response_order_note .= "\n";
+                        $card_response_order_note .= 'Last digits : ' . $payment_source['card']['last_digits'];
+                        $card_response_order_note .= "\n";
+                        $card_response_order_note .= 'Brand : ' . angelleye_ppcp_readable($payment_source['card']['brand']);
+                        $card_response_order_note .= "\n";
+                        $card_response_order_note .= 'Card type : ' . angelleye_ppcp_readable($payment_source['card']['type']);
+                        $order->add_order_note($card_response_order_note);
+                    }
+                    $processor_response = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response'] : '';
+                    if (!empty($processor_response['avs_code'])) {
+                        $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
+                        $avs_response_order_note .= "\n";
+                        $avs_response_order_note .= $processor_response['avs_code'];
+                        if (isset($this->AVSCodes[$processor_response['avs_code']])) {
+                            $avs_response_order_note .= ' : ' . $this->AVSCodes[$processor_response['avs_code']];
+                        }
+                        $order->add_order_note($avs_response_order_note);
+                    }
+                    if (!empty($processor_response['cvv_code'])) {
+                        $cvv2_response_code = __('Card Security Code Result', 'paypal-for-woocommerce');
+                        $cvv2_response_code .= "\n";
+                        $cvv2_response_code .= $processor_response['cvv_code'];
+                        if (isset($this->CVV2Codes[$processor_response['cvv_code']])) {
+                            $cvv2_response_code .= ' : ' . $this->CVV2Codes[$processor_response['cvv_code']];
+                        }
+                        $order->add_order_note($cvv2_response_code);
+                    }
+                    if (!empty($processor_response['response_code'])) {
+                        $response_code = __('Processor response code Result', 'paypal-for-woocommerce');
+                        $response_code .= "\n";
+                        $response_code .= $processor_response['response_code'];
+                        if (angelleye_ppcp_processor_response_code($processor_response['response_code'])) {
+                            $response_code .= ' : ' . angelleye_ppcp_processor_response_code($processor_response['response_code']);
+                        }
+                        $order->add_order_note($response_code);
+                    }
+                    $currency_code = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
+                    $value = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value'] : '';
+                    angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
+                    angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
+                    angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
+                    $transaction_id = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['id']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['id'] : '';
+                    $seller_protection = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['seller_protection']['status']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['seller_protection']['status'] : '';
+                    $payment_status = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['status']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['status'] : '';
+                    if ($payment_status == 'COMPLETED') {
+                        $order->payment_complete($transaction_id);
+                        $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $this->title, ucfirst(strtolower($payment_status))));
+                    } elseif ($payment_status === 'DECLINED') {
+                        $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $this->title));
+                        wc_add_notice(__('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.', 'paypal-for-woocommerce'), 'error');
+                        return false;
+                    } else {
+                        $payment_status_reason = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['status_details']['reason']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['status_details']['reason'] : '';
+                        $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
+                    }
+                    angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
+                    $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
+                    $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 $error_email_notification_param = array(
-                    'request' => 'create_order',
-                    'order_id' => $order_id
+                    'request' => 'capture_order',
+                    'order_id' => $woo_order_id
                 );
-                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                return false;
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');

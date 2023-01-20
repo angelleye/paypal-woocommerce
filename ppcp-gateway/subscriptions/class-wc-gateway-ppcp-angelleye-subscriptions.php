@@ -26,7 +26,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
 
     public function process_payment($order_id) {
         if ($this->is_subscription($order_id)) {
-            if(AngellEYE_Utility::is_subs_change_payment()) {
+            if (AngellEYE_Utility::is_subs_change_payment()) {
                 return parent::subscription_change_payment($order_id);
             } elseif ($this->free_signup_with_token_payment_tokenization($order_id) == true) {
                 return parent::free_signup_order_payment($order_id);
@@ -43,6 +43,23 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
         $payment_tokens_id = get_post_meta($renewal_order_id, '_payment_tokens_id', true);
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);
+        }
+        
+        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($renewal_order_id)) {
+            $subscriptions = wcs_get_subscriptions_for_order($renewal_order_id);
+        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($renewal_order_id)) {
+            $subscriptions = wcs_get_subscriptions_for_renewal_order($renewal_order_id);
+        } else {
+            $subscriptions = array();
+        }
+        if (!empty($subscriptions)) {
+            foreach ($subscriptions as $subscription) {
+                $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
+                $angelleye_ppcp_used_payment_method = get_post_meta($subscription_parent_id, '_angelleye_ppcp_used_payment_method', true);
+                if (!empty($angelleye_ppcp_used_payment_method)) {
+                    update_post_meta($renewal_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                }
+            }
         }
         parent::process_subscription_payment($renewal_order, $amount_to_charge);
     }
@@ -65,7 +82,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
             if (empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
                 $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
                 $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
-                $payment_tokens_id = get_post_meta($subscription_parent_id, '_transaction_id', true);
+                $payment_tokens_id = get_post_meta($subscription_parent_id, '_payment_tokens_id', true);
                 if (!empty($payment_tokens_id)) {
                     update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
                 } else {
@@ -74,8 +91,6 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
             }
         }
     }
-
-    
 
     public function delete_resubscribe_meta($resubscribe_order) {
         $subscription_id = $this->wc_pre_30 ? $resubscribe_order->id : $resubscribe_order->get_id();
@@ -115,7 +130,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
                 foreach ($subscriptions as $subscription) {
                     $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
                     $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
-                    $payment_tokens_id = get_post_meta($subscription_parent_id, '_transaction_id', true);
+                    $payment_tokens_id = get_post_meta($subscription_parent_id, '_payment_tokens_id', true);
                     if (!empty($payment_tokens_id)) {
                         update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
                         update_post_meta($renewal_order_id, '_payment_tokens_id', $payment_tokens_id);
