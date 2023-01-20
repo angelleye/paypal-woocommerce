@@ -823,6 +823,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $this->api_response);
                 }
             }
+            
+            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+            if (!empty($angelleye_ppcp_used_payment_method)) {
+                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                
+            }
             $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
@@ -2213,7 +2219,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $body_request = array(
                 'intent' => $intent,
-                'application_context' => $this->angelleye_ppcp_application_context(),
                 'payment_method' => array('payee_preferred' => ($this->payee_preferred) ? 'IMMEDIATE_PAYMENT_REQUIRED' : 'UNRESTRICTED'),
                 'purchase_units' =>
                 array(
@@ -2284,10 +2289,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
-
-
             if ($order->needs_shipping_address()) {
-
                 if (( $old_wc && ( $order->shipping_address_1 || $order->shipping_address_2 ) ) || (!$old_wc && $order->has_shipping_address() )) {
                     $shipping_first_name = $old_wc ? $order->shipping_first_name : $order->get_shipping_first_name();
                     $shipping_last_name = $old_wc ? $order->shipping_last_name : $order->get_shipping_last_name();
@@ -2307,7 +2309,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
                     $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
                 }
-
                 if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                     $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                 }
@@ -2321,7 +2322,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
             $body_request = $this->angelleye_ppcp_set_payer_details($order_id, $body_request);
-            $body_request = $this->angelleye_ppcp_add_payment_source_parameter($body_request);
+            $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
+            $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+            if(!empty($payment_tokens_id) && $angelleye_ppcp_used_payment_method) {
+                if($angelleye_ppcp_used_payment_method === '')
+                $body_request['payment_source']['paypal'] = array('vault_id' => $payment_tokens_id);
+            }
+            
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $args = array(
                 'method' => 'POST',

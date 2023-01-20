@@ -75,24 +75,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
         }
     }
 
-    public function save_payment_token($order, $payment_tokens_id) {
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        parent::save_payment_token($order, $payment_tokens_id);
-        // Also store it on the subscriptions being purchased or paid for in the order
-        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
-            $subscriptions = wcs_get_subscriptions_for_order($order_id);
-        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order_id)) {
-            $subscriptions = wcs_get_subscriptions_for_renewal_order($order_id);
-        } else {
-            $subscriptions = array();
-        }
-        if (!empty($subscriptions)) {
-            foreach ($subscriptions as $subscription) {
-                $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
-                update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
-            }
-        }
-    }
+    
 
     public function delete_resubscribe_meta($resubscribe_order) {
         $subscription_id = $this->wc_pre_30 ? $resubscribe_order->id : $resubscribe_order->get_id();
