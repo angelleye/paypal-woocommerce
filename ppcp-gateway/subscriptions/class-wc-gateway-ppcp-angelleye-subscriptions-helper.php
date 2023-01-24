@@ -51,9 +51,16 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
 
     public function angelleye_ppcp_wc_save_payment_token($order_id, $api_response) {
         if ($this->angelleye_ppcp_is_save_payment_token($this, $order_id)) {
-            $payment_token = isset($api_response['payment_source']['card']['attributes']['vault']['id']) ? $api_response['payment_source']['card']['attributes']['vault']['id'] : '';
-            if (empty($payment_token)) {
-                $payment_token = isset($api_response['payment_source']['paypal']['attributes']['vault']['id']) ? $api_response['payment_source']['paypal']['attributes']['vault']['id'] : '';
+            $payment_token = '';
+            if(isset($api_response['payment_source']['card']['attributes']['vault']['id'])) {
+                $payment_token = $api_response['payment_source']['card']['attributes']['vault']['id'];
+            } elseif(isset ($api_response['payment_source']['paypal']['attributes']['vault']['id'])) {
+                $payment_token = $api_response['payment_source']['paypal']['attributes']['vault']['id'];
+            } elseif(isset ($api_response['payment_source']['venmo']['attributes']['vault']['id'])) {
+                $payment_token = $api_response['payment_source']['venmo']['attributes']['vault']['id'];
+            }
+            if(empty($payment_token)) {
+                return false;
             }
             if (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new') {
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
